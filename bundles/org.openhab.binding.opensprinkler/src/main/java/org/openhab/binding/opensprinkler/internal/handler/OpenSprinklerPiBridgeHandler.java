@@ -34,9 +34,11 @@ public class OpenSprinklerPiBridgeHandler extends OpenSprinklerBaseBridgeHandler
 
     @Nullable
     private OpenSprinklerPiConfig openSprinklerConfig;
+    private OpenSprinklerApiFactory apiFactory;
 
-    public OpenSprinklerPiBridgeHandler(Bridge bridge) {
+    public OpenSprinklerPiBridgeHandler(Bridge bridge, OpenSprinklerApiFactory apiFactory) {
         super(bridge);
+        this.apiFactory = apiFactory;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class OpenSprinklerPiBridgeHandler extends OpenSprinklerBaseBridgeHandler
 
         OpenSprinklerApi openSprinklerDevice;
         try {
-            openSprinklerDevice = OpenSprinklerApiFactory.getGpioApi(openSprinklerConfig.stations);
+            openSprinklerDevice = apiFactory.getGpioApi(openSprinklerConfig.stations);
             this.openSprinklerDevice = openSprinklerDevice;
         } catch (Exception exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,

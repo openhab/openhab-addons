@@ -15,6 +15,7 @@ package org.openhab.binding.opensprinkler.internal.api;
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 
 import com.pi4j.io.gpio.GpioController;
@@ -27,8 +28,9 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
  * that the OpenSprinkler PI device is using.
  *
  * @author Jonathan Giles, Chris Graham - Initial contribution
+ * @author Florian Schmidt - Refactor class visibility
  */
-public class OpenSprinklerGpioApi implements OpenSprinklerApi {
+class OpenSprinklerGpioApi implements OpenSprinklerApi {
     private int firmwareVersion = -1;
     private int numberOfStations = DEFAULT_STATION_COUNT;
 
@@ -49,7 +51,7 @@ public class OpenSprinklerGpioApi implements OpenSprinklerApi {
      *
      * @param stations The number of stations to control on the OpenSprinkler PI device.
      */
-    public OpenSprinklerGpioApi(int stations) {
+    OpenSprinklerGpioApi(int stations) {
         this.numberOfStations = stations;
         this.stationState = new boolean[stations];
 
@@ -110,10 +112,10 @@ public class OpenSprinklerGpioApi implements OpenSprinklerApi {
     }
 
     @Override
-    public boolean isStationOpen(int station) throws Exception {
+    public boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException {
         if (station < 0 || station >= numberOfStations) {
-            throw new Exception("This OpenSprinkler device only has " + this.numberOfStations + " but station "
-                    + station + " was requested for a status update.");
+            throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
+                    + " but station " + station + " was requested for a status update.");
         }
 
         pullStationState();

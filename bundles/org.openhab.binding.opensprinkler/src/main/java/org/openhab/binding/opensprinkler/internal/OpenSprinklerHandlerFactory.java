@@ -24,11 +24,14 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
 import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerDeviceHandler;
 import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerHttpBridgeHandler;
 import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerPiBridgeHandler;
 import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerStationHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link OpenSprinklerHandlerFactory} is responsible for creating things and thing
@@ -41,6 +44,12 @@ import org.osgi.service.component.annotations.Component;
 public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays
             .asList(OPENSPRINKLER_HTTP_BRIDGE, OPENSPRINKLER_PI_BRIDGE, OPENSPRINKLER_STATION, OPENSPRINKLER_DEVICE));
+    private OpenSprinklerApiFactory apiFactory;
+
+    @Activate
+    public OpenSprinklerHandlerFactory(@Reference OpenSprinklerApiFactory apiFactory) {
+        this.apiFactory = apiFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -52,11 +61,11 @@ public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(OPENSPRINKLER_HTTP_BRIDGE)) {
-            return new OpenSprinklerHttpBridgeHandler((Bridge) thing);
+            return new OpenSprinklerHttpBridgeHandler((Bridge) thing, this.apiFactory);
         } else if (thingTypeUID.equals(OPENSPRINKLER_STATION)) {
             return new OpenSprinklerStationHandler(thing);
         } else if (thingTypeUID.equals(OPENSPRINKLER_PI_BRIDGE)) {
-            return new OpenSprinklerPiBridgeHandler((Bridge) thing);
+            return new OpenSprinklerPiBridgeHandler((Bridge) thing, this.apiFactory);
         } else if (thingTypeUID.equals(OPENSPRINKLER_DEVICE)) {
             return new OpenSprinklerDeviceHandler(thing);
         }

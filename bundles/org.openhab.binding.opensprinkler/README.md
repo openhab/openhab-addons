@@ -33,6 +33,8 @@ Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, pasword="opendoor
 -   password: Admin password of the API. Factory default is: opendoor
 -   refresh: Number of seconds in between refreshing the Thing state with the API.
 -   stationIndex: The index of the station to communicate with, starting with 0 for the first station
+-   basicUsername: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
+-   basicPassword: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
 
 OpenSprinkler using the Pi interface
 

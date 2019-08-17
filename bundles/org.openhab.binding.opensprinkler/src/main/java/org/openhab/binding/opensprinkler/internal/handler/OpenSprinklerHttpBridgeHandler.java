@@ -36,9 +36,11 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
 
     @Nullable
     private OpenSprinklerHttpInterfaceConfig openSprinklerConfig;
+    private OpenSprinklerApiFactory apiFactory;
 
-    public OpenSprinklerHttpBridgeHandler(Bridge bridge) {
+    public OpenSprinklerHttpBridgeHandler(Bridge bridge, OpenSprinklerApiFactory apiFactory) {
         super(bridge);
+        this.apiFactory = apiFactory;
     }
 
     @Override
@@ -51,8 +53,7 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
 
         OpenSprinklerApi openSprinklerDevice;
         try {
-            openSprinklerDevice = OpenSprinklerApiFactory.getHttpApi(openSprinklerConfig.hostname,
-                    openSprinklerConfig.port, openSprinklerConfig.password);
+            openSprinklerDevice = apiFactory.getHttpApi(openSprinklerConfig);
             this.openSprinklerDevice = openSprinklerDevice;
         } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,

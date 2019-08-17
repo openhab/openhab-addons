@@ -11,7 +11,7 @@
 		<config-description>
 			<parameter name="hostname" type="text">
 				<label>Hostname</label>
-				<description>The host name or IP address of the OpenSprinkler Web API interface.</description>
+				<description>The host name or IP address of the OpenSprinkler Web API interface. It may or may not start with the protocol, e.g. in order to use https:// instead of the default http://.</description>
 				<default>localhost</default>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65335">
@@ -28,6 +28,16 @@
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
+			</parameter>
+			<parameter name="basicUsername" type="text">
+				<label>Basic Auth Username</label>
+				<description>Used if the OpenSprinkler device is behind a basic auth protected reverse proxy.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="basicPassword" type="text">
+				<label>Basic Auth Password</label>
+				<description>Used if the OpenSprinkler device is behind a basic auth protected reverse proxy.</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
