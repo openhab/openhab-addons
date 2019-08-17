@@ -15,11 +15,13 @@ package org.openhab.binding.rotel.internal.communication;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelException;
 import org.openhab.binding.rotel.internal.RotelModel;
 import org.slf4j.Logger;
@@ -38,7 +40,7 @@ public class RotelIpConnector extends RotelConnector {
     private String address;
     private int port;
 
-    private @NonNullByDefault({}) Socket clientSocket;
+    private @Nullable Socket clientSocket;
 
     /**
      * Constructor
@@ -59,14 +61,17 @@ public class RotelIpConnector extends RotelConnector {
     public synchronized void open() throws RotelException {
         logger.debug("Opening IP connection on IP {} port {}", this.address, this.port);
         try {
-            clientSocket = new Socket(this.address, this.port);
+            Socket clientSocket = new Socket(this.address, this.port);
             clientSocket.setSoTimeout(100);
 
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            setReaderThread(new RotelReaderThread(this));
-            getReaderThread().start();
+            Thread thread = new RotelReaderThread(this);
+            setReaderThread(thread);
+            thread.start();
+
+            this.clientSocket = clientSocket;
 
             setConnected(true);
 
@@ -82,12 +87,13 @@ public class RotelIpConnector extends RotelConnector {
     public synchronized void close() {
         logger.debug("Closing IP connection");
         super.cleanup();
+        Socket clientSocket = this.clientSocket;
         if (clientSocket != null) {
             try {
                 clientSocket.close();
             } catch (IOException e) {
             }
-            clientSocket = null;
+            this.clientSocket = null;
         }
         setConnected(false);
         logger.debug("IP connection closed");
@@ -102,7 +108,7 @@ public class RotelIpConnector extends RotelConnector {
      *
      * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the
      *         stream has been reached.
-     * 
+     *
      * @throws RotelException - If the input stream is null, if the first byte cannot be read for any reason
      *             other than the end of the file, if the input stream has been closed, or if some other I/O error
      *             occurs.
@@ -110,6 +116,7 @@ public class RotelIpConnector extends RotelConnector {
      */
     @Override
     protected int readInput(byte[] dataBuffer) throws RotelException, InterruptedIOException {
+        InputStream dataIn = this.dataIn;
         if (dataIn == null) {
             throw new RotelException("readInput failed: input stream is null");
         }

@@ -174,15 +174,15 @@ public abstract class RotelConnector {
     private boolean simu;
 
     /** The output stream */
-    protected @NonNullByDefault({}) OutputStream dataOut;
+    protected @Nullable OutputStream dataOut;
 
     /** The input stream */
-    protected @NonNullByDefault({}) InputStream dataIn;
+    protected @Nullable InputStream dataIn;
 
     /** true if the connection is established, false if not */
     private boolean connected;
 
-    private @NonNullByDefault({}) Thread readerThread;
+    private @Nullable Thread readerThread;
 
     private List<RotelMessageEventListener> listeners = new ArrayList<>();
 
@@ -261,15 +261,6 @@ public abstract class RotelConnector {
     }
 
     /**
-     * Get the thread that handles the feedback messages
-     *
-     * @return the thread
-     */
-    protected Thread getReaderThread() {
-        return readerThread;
-    }
-
-    /**
      * Set the thread that handles the feedback messages
      *
      * @param readerThread the thread
@@ -294,27 +285,30 @@ public abstract class RotelConnector {
      * Stop the thread that handles the feedback messages and close the opened input and output streams
      */
     protected void cleanup() {
+        Thread readerThread = this.readerThread;
         if (readerThread != null) {
             readerThread.interrupt();
             try {
                 readerThread.join();
             } catch (InterruptedException e) {
             }
-            readerThread = null;
+            this.readerThread = null;
         }
+        OutputStream dataOut = this.dataOut;
         if (dataOut != null) {
             try {
                 dataOut.close();
             } catch (IOException e) {
             }
-            dataOut = null;
+            this.dataOut = null;
         }
+        InputStream dataIn = this.dataIn;
         if (dataIn != null) {
             try {
                 dataIn.close();
             } catch (IOException e) {
             }
-            dataIn = null;
+            this.dataIn = null;
         }
     }
 
@@ -336,6 +330,7 @@ public abstract class RotelConnector {
         if (simu) {
             throw new RotelException("readInput failed: should not be called in simu mode");
         }
+        InputStream dataIn = this.dataIn;
         if (dataIn == null) {
             throw new RotelException("readInput failed: input stream is null");
         }
@@ -462,6 +457,7 @@ public abstract class RotelConnector {
         if (simu) {
             return;
         }
+        OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
             throw new RotelException("Send command \"" + cmd.getName() + "\" failed: output stream is null");
         }

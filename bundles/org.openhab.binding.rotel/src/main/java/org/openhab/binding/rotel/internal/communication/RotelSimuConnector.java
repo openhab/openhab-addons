@@ -87,8 +87,9 @@ public class RotelSimuConnector extends RotelConnector {
     @Override
     public synchronized void open() throws RotelException {
         logger.debug("Opening simulated connection");
-        setReaderThread(new RotelReaderThread(this));
-        getReaderThread().start();
+        Thread thread = new RotelReaderThread(this);
+        setReaderThread(thread);
+        thread.start();
         setConnected(true);
         logger.debug("Simulated connection opened");
     }
@@ -758,12 +759,14 @@ public class RotelSimuConnector extends RotelConnector {
             try {
                 source = getModel().getSourceFromCommand(cmd);
                 textLine1Left = source.getLabel();
-                textAscii = KEY_SOURCE + "=" + source.getCommand().getAsciiCommandV2();
+                RotelCommand command = source.getCommand();
+                textAscii = KEY_SOURCE + "=" + ((command != null) ? command.getAsciiCommandV2() : "");
                 mute = false;
             } catch (RotelException e) {
             }
         } else if (cmd == RotelCommand.SOURCE) {
-            textAscii = KEY_SOURCE + "=" + source.getCommand().getAsciiCommandV2();
+            RotelCommand command = source.getCommand();
+            textAscii = KEY_SOURCE + "=" + ((command != null) ? command.getAsciiCommandV2() : "");
         } else if (cmd == RotelCommand.STEREO) {
             dsp = RotelDsp.CAT4_NONE;
             textLine2 = "STEREO";
@@ -847,7 +850,8 @@ public class RotelSimuConnector extends RotelConnector {
                 source = getModel().getSourceFromCommand(cmd);
                 text = source.getLabel() + "  ZZZ";
                 textLine1Left = source.getLabel();
-                textAscii = KEY_SOURCE + "=" + source.getCommand().getAsciiCommandV2();
+                RotelCommand command = source.getCommand();
+                textAscii = KEY_SOURCE + "=" + ((command != null) ? command.getAsciiCommandV2() : "");
                 mute = false;
             } catch (RotelException e) {
             }

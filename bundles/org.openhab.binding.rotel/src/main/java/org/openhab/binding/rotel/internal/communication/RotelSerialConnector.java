@@ -13,10 +13,13 @@
 package org.openhab.binding.rotel.internal.communication;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.TooManyListenersException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
@@ -42,7 +45,7 @@ public class RotelSerialConnector extends RotelConnector implements SerialPortEv
     private String serialPortName;
     private SerialPortManager serialPortManager;
 
-    private @NonNullByDefault({}) SerialPort serialPort;
+    private @Nullable SerialPort serialPort;
 
     /**
      * Constructor
@@ -73,18 +76,19 @@ public class RotelSerialConnector extends RotelConnector implements SerialPortEv
 
             SerialPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
-            serialPort = commPort;
-            serialPort.setSerialPortParams(getModel().getBaudRate(), SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+            commPort.setSerialPortParams(getModel().getBaudRate(), SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
-            serialPort.enableReceiveThreshold(1);
-            serialPort.enableReceiveTimeout(100);
-            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+            commPort.enableReceiveThreshold(1);
+            commPort.enableReceiveTimeout(100);
+            commPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
 
-            dataIn = serialPort.getInputStream();
-            dataOut = serialPort.getOutputStream();
+            InputStream dataIn = commPort.getInputStream();
+            OutputStream dataOut = commPort.getOutputStream();
 
-            dataOut.flush();
-            if (dataIn.markSupported()) {
+            if (dataOut != null) {
+                dataOut.flush();
+            }
+            if (dataIn != null && dataIn.markSupported()) {
                 try {
                     dataIn.reset();
                 } catch (IOException e) {
@@ -95,14 +99,19 @@ public class RotelSerialConnector extends RotelConnector implements SerialPortEv
             // Start event listener, which will just sleep and slow down event
             // loop
             try {
-                serialPort.addEventListener(this);
-                serialPort.notifyOnDataAvailable(true);
+                commPort.addEventListener(this);
+                commPort.notifyOnDataAvailable(true);
             } catch (TooManyListenersException e) {
                 logger.debug("Too Many Listeners Exception: {}", e.getMessage(), e);
             }
 
-            setReaderThread(new RotelReaderThread(this));
-            getReaderThread().start();
+            Thread thread = new RotelReaderThread(this);
+            setReaderThread(thread);
+            thread.start();
+
+            this.serialPort = commPort;
+            this.dataIn = dataIn;
+            this.dataOut = dataOut;
 
             setConnected(true);
 
@@ -130,13 +139,14 @@ public class RotelSerialConnector extends RotelConnector implements SerialPortEv
     @Override
     public synchronized void close() {
         logger.debug("Closing serial connection");
+        SerialPort serialPort = this.serialPort;
         if (serialPort != null) {
             serialPort.removeEventListener();
         }
         super.cleanup();
         if (serialPort != null) {
             serialPort.close();
-            serialPort = null;
+            this.serialPort = null;
         }
         setConnected(false);
         logger.debug("Serial connection closed");

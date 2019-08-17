@@ -69,12 +69,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private static final RotelModel DEFAULT_MODEL = RotelModel.RSP1066;
     private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(60);
 
-    private @NonNullByDefault({}) ScheduledFuture<?> reconnectJob;
-    private @NonNullByDefault({}) ScheduledFuture<?> powerOnJob;
-    private @NonNullByDefault({}) ScheduledFuture<?> powerOffJob;
-    private @NonNullByDefault({}) ScheduledFuture<?> powerOnZone2Job;
-    private @NonNullByDefault({}) ScheduledFuture<?> powerOnZone3Job;
-    private @NonNullByDefault({}) ScheduledFuture<?> powerOnZone4Job;
+    private @Nullable ScheduledFuture<?> reconnectJob;
+    private @Nullable ScheduledFuture<?> powerOnJob;
+    private @Nullable ScheduledFuture<?> powerOffJob;
+    private @Nullable ScheduledFuture<?> powerOnZone2Job;
+    private @Nullable ScheduledFuture<?> powerOnZone3Job;
+    private @Nullable ScheduledFuture<?> powerOnZone4Job;
 
     private RotelStateDescriptionOptionProvider stateDescriptionProvider;
     private SerialPortManager serialPortManager;
@@ -89,20 +89,15 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
     private int currentZone = 1;
     private boolean selectingRecord;
-    @Nullable
-    private Boolean power;
+    private @Nullable Boolean power;
     private boolean powerZone2;
     private boolean powerZone3;
     private boolean powerZone4;
     private RotelSource source = RotelSource.CAT0_CD;
-    @Nullable
-    private RotelSource recordSource;
-    @Nullable
-    private RotelSource sourceZone2;
-    @Nullable
-    private RotelSource sourceZone3;
-    @Nullable
-    private RotelSource sourceZone4;
+    private @Nullable RotelSource recordSource;
+    private @Nullable RotelSource sourceZone2;
+    private @Nullable RotelSource sourceZone3;
+    private @Nullable RotelSource sourceZone4;
     private RotelDsp dsp = RotelDsp.CAT1_NONE;
     private int volume;
     private boolean mute;
@@ -1367,9 +1362,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Cancel the job that will consider the device as OFF
      */
     private void cancelPowerOffJob() {
+        ScheduledFuture<?> powerOffJob = this.powerOffJob;
         if (powerOffJob != null && !powerOffJob.isCancelled()) {
             powerOffJob.cancel(true);
-            powerOffJob = null;
+            this.powerOffJob = null;
         }
     }
 
@@ -1529,9 +1525,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Cancel the job scheduled when the device power (main zone) switched ON
      */
     private void cancelPowerOnJob() {
+        ScheduledFuture<?> powerOnJob = this.powerOnJob;
         if (powerOnJob != null && !powerOnJob.isCancelled()) {
             powerOnJob.cancel(true);
-            powerOnJob = null;
+            this.powerOnJob = null;
         }
     }
 
@@ -1571,9 +1568,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Cancel the job scheduled when the zone 2 power switched ON
      */
     private void cancelPowerOnZone2Job() {
+        ScheduledFuture<?> powerOnZone2Job = this.powerOnZone2Job;
         if (powerOnZone2Job != null && !powerOnZone2Job.isCancelled()) {
             powerOnZone2Job.cancel(true);
-            powerOnZone2Job = null;
+            this.powerOnZone2Job = null;
         }
     }
 
@@ -1613,9 +1611,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Cancel the job scheduled when the zone 3 power switched ON
      */
     private void cancelPowerOnZone3Job() {
+        ScheduledFuture<?> powerOnZone3Job = this.powerOnZone3Job;
         if (powerOnZone3Job != null && !powerOnZone3Job.isCancelled()) {
             powerOnZone3Job.cancel(true);
-            powerOnZone3Job = null;
+            this.powerOnZone3Job = null;
         }
     }
 
@@ -1655,9 +1654,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Cancel the job scheduled when the zone 4 power switched ON
      */
     private void cancelPowerOnZone4Job() {
+        ScheduledFuture<?> powerOnZone4Job = this.powerOnZone4Job;
         if (powerOnZone4Job != null && !powerOnZone4Job.isCancelled()) {
             powerOnZone4Job.cancel(true);
-            powerOnZone4Job = null;
+            this.powerOnZone4Job = null;
         }
     }
 
@@ -1705,9 +1705,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Cancel the reconnection job
      */
     private void cancelReconnectJob() {
+        ScheduledFuture<?> reconnectJob = this.reconnectJob;
         if (reconnectJob != null && !reconnectJob.isCancelled()) {
             reconnectJob.cancel(true);
-            reconnectJob = null;
+            this.reconnectJob = null;
         }
     }
 
@@ -1744,21 +1745,25 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 }
                 break;
             case CHANNEL_MAIN_RECORD_SOURCE:
+                RotelSource recordSource = this.recordSource;
                 if (isPowerOn() && recordSource != null) {
                     state = new StringType(recordSource.getName());
                 }
                 break;
             case CHANNEL_ZONE2_SOURCE:
+                RotelSource sourceZone2 = this.sourceZone2;
                 if (powerZone2 && sourceZone2 != null) {
                     state = new StringType(sourceZone2.getName());
                 }
                 break;
             case CHANNEL_ZONE3_SOURCE:
+                RotelSource sourceZone3 = this.sourceZone3;
                 if (powerZone3 && sourceZone3 != null) {
                     state = new StringType(sourceZone3.getName());
                 }
                 break;
             case CHANNEL_ZONE4_SOURCE:
+                RotelSource sourceZone4 = this.sourceZone4;
                 if (powerZone4 && sourceZone4 != null) {
                     state = new StringType(sourceZone4.getName());
                 }
@@ -1859,6 +1864,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @return true if main zone power state is known and known as ON
      */
     private boolean isPowerOn() {
+        Boolean power = this.power;
         return power != null && power.booleanValue();
     }
 

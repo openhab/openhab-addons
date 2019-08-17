@@ -236,10 +236,8 @@ public enum RotelCommand {
     private String name;
     private byte hexType;
     private byte hexKey;
-    @Nullable
-    private String asciiCommandV1;
-    @Nullable
-    private String asciiCommandV2;
+    private @Nullable String asciiCommandV1;
+    private @Nullable String asciiCommandV2;
 
     /**
      * Constructor

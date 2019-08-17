@@ -262,18 +262,12 @@ public enum RotelSource {
     private int category;
     private String name;
     private String label;
-    @Nullable
-    private RotelCommand command;
-    @Nullable
-    private RotelCommand recordCommand;
-    @Nullable
-    private RotelCommand mainZoneCommand;
-    @Nullable
-    private RotelCommand zone2Command;
-    @Nullable
-    private RotelCommand zone3Command;
-    @Nullable
-    private RotelCommand zone4Command;
+    private @Nullable RotelCommand command;
+    private @Nullable RotelCommand recordCommand;
+    private @Nullable RotelCommand mainZoneCommand;
+    private @Nullable RotelCommand zone2Command;
+    private @Nullable RotelCommand zone3Command;
+    private @Nullable RotelCommand zone4Command;
 
     /**
      * Constructor

@@ -132,14 +132,11 @@ public enum RotelModel {
     private int sourceCategory;
     private int nbAdditionalZones;
     private boolean additionalCommands;
-    @Nullable
-    private Integer volumeMax;
+    private @Nullable Integer volumeMax;
     private boolean directVolume;
-    @Nullable
-    private Integer toneLevelMax;
+    private @Nullable Integer toneLevelMax;
     private boolean playControl;
-    @Nullable
-    private RotelCommand zoneSelectCmd;
+    private @Nullable RotelCommand zoneSelectCmd;
     private int dspCategory;
     private byte deviceId;
     private int respNbChars;
@@ -318,6 +315,7 @@ public enum RotelModel {
      * @return the maximum volume or 0 if volume control is unavailable
      */
     public int getVolumeMax() {
+        Integer volumeMax = this.volumeMax;
         return volumeMax != null ? volumeMax.intValue() : 0;
     }
 
@@ -345,6 +343,7 @@ public enum RotelModel {
      * @return the maximum tone level or 0 if bass/treble control is unavailable
      */
     public int getToneLevelMax() {
+        Integer toneLevelMax = this.toneLevelMax;
         return toneLevelMax != null ? toneLevelMax.intValue() : 0;
     }
 
