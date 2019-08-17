@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
@@ -50,10 +51,10 @@ public abstract class SonyProjectorConnector {
     private SonyProjectorModel model;
 
     /** The output stream */
-    protected @NonNullByDefault({}) OutputStream dataOut;
+    protected @Nullable OutputStream dataOut;
 
     /** The input stream */
-    protected @NonNullByDefault({}) InputStream dataIn;
+    protected @Nullable InputStream dataIn;
 
     /** true if the connection is established, false if not */
     protected boolean connected;
@@ -1006,19 +1007,21 @@ public abstract class SonyProjectorConnector {
      */
     public void close() {
         if (connected) {
+            OutputStream dataOut = this.dataOut;
             if (dataOut != null) {
                 try {
                     dataOut.close();
                 } catch (IOException e) {
                 }
-                dataOut = null;
+                this.dataOut = null;
             }
+            InputStream dataIn = this.dataIn;
             if (dataIn != null) {
                 try {
                     dataIn.close();
                 } catch (IOException e) {
                 }
-                dataIn = null;
+                this.dataIn = null;
             }
             connected = false;
         }
@@ -1050,6 +1053,7 @@ public abstract class SonyProjectorConnector {
         if (simu) {
             throw new SonyProjectorException("readInput failed: should not be called in simu mode");
         }
+        InputStream dataIn = this.dataIn;
         if (dataIn == null) {
             throw new SonyProjectorException("readInput failed: input stream is null");
         }
@@ -1073,6 +1077,7 @@ public abstract class SonyProjectorConnector {
         if (simu) {
             return;
         }
+        OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
             throw new SonyProjectorException("writeCommand failed: output stream is null");
         }
