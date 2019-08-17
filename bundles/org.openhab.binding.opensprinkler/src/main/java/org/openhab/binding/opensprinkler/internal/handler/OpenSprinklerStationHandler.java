@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerStationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,19 +86,17 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         }
         try {
             if (command == OnOffType.ON) {
-                api.openStation(stationId);
+                api.openStation(stationId, config.duration);
             } else if (command == OnOffType.OFF) {
                 api.closeStation(stationId);
             } else {
                 logger.error("Received invalid command type for OpenSprinkler station ({}).", command);
             }
             updateChannels();
-        } catch (Exception exp) {
+        } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not control the station channel " + (stationId + 1) + " for the OpenSprinkler.");
-            logger.debug(
-                    "Could not control the station channel {} for the OpenSprinkler device. Exception received: {}",
-                    (stationId + 1), exp.toString());
+                    "Could not control the station channel " + (stationId + 1) + " for the OpenSprinkler. Error: "
+                            + exp.getMessage());
         }
     }
 

@@ -24,7 +24,7 @@ OpenSprinkler using the HTTP interface
 
 ```
 Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, pasword="opendoor", refresh=60] {
-    Thing station 01 [stationIndex=1]
+    Thing station 01 [stationIndex=1, duration=300]
 }
 ```
 
@@ -32,20 +32,28 @@ Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, pasword="opendoor
 -   port: Port the OpenSprinkler device is listening on. Usually 80.
 -   password: Admin password of the API. Factory default is: opendoor
 -   refresh: Number of seconds in between refreshing the Thing state with the API.
--   stationIndex: The index of the station to communicate with, starting with 0 for the first station
 -   basicUsername: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
 -   basicPassword: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
 
 OpenSprinkler using the Pi interface
 
 ```
-Bridge opensprinkler:http:http [stations=8, refresh=60] {
-    Thing station 01 [stationIndex=1]
+Bridge opensprinkler:pi:pi [stations=8, refresh=60] {
+    Thing station 01 [stationIndex=1, duration=300]
 }
 ```
 
 -   stations: Number of stations to control.
 -   refresh: Number of seconds in between refreshing the Thing state with the API.
+
+### Station Thing Configuration
+
+The `station` thing can be used with both bridge and has the following configuration properties:
+
+-   stationIndex: The index of the station to communicate with, starting with 0 for the first station
+-   duration: The time in seconds the station should be kept open when turned on the next time
+
+Be aware, that not all features of a station may be supported by the Pi interface bridge.
 
 ## Channels
 
@@ -70,8 +78,8 @@ demo.Things:
 
 ```
 Bridge opensprinkler:http:http [hostname="127.0.0.1", port=81, password="opendoor"] {
-    Thing station 01 [stationIndex=0]
-    Thing station 02 [stationIndex=1]
+    Thing station 01 [stationIndex=0, duration=300]
+    Thing station 02 [stationIndex=1, duration=600]
     Thing station 03 [stationIndex=2]
     Thing station 04 [stationIndex=3]
     Thing station 05 [stationIndex=4]
