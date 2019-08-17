@@ -17,7 +17,8 @@
 
   <modules>
     <!-- io -->
-    <module>org.openhab.io.azureiothub</module>
+    <!-- temporarily disabled due to malfunction -->
+    <!--module>org.openhab.io.azureiothub</module-->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.imperihome</module>
