@@ -59,7 +59,7 @@ public class DaikinWebTargets {
 
         //Daikin Airbase API
         getAirbaseBasicInfoUri = baseUri + "skyfi/common/basic_info";
-        getAirbaseControlInfoUri = baseUri + "skyfi/aircon/set_control_info";
+        setAirbaseControlInfoUri = baseUri + "skyfi/aircon/set_control_info";
         getAirbaseControlInfoUri = baseUri + "skyfi/aircon/get_control_info";
         getAirbaseSensorInfoUri = baseUri + "skyfi/aircon/get_sensor_info";
         getAirbaseModelInfoUri = baseUri + "skyfi/aircon/get_model_info";
