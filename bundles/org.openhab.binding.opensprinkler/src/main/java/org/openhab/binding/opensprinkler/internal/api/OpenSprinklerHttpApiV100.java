@@ -55,7 +55,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected boolean isInManualMode = false;
 
     private final Gson gson = new Gson();
-    protected Http http;
+    protected HttpRequestSender http;
 
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the OpenSprinkler
@@ -90,7 +90,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         this.password = config.password;
         this.basicUsername = config.basicUsername;
         this.basicPassword = config.basicPassword;
-        this.http = new Http(httpClient);
+        this.http = new HttpRequestSender(httpClient);
     }
 
     @Override
@@ -269,13 +269,13 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
      * @author Chris Graham - Initial contribution
      * @author Florian Schmidt - Reduce visibility of Http communication to Api
      */
-    protected class Http {
+    protected class HttpRequestSender {
         private static final int HTTP_OK_CODE = 200;
         private static final String USER_AGENT = "Mozilla/5.0";
 
         private final HttpClient httpClient;
 
-        public Http(HttpClient httpClient) {
+        public HttpRequestSender(HttpClient httpClient) {
             this.httpClient = httpClient;
         }
 
