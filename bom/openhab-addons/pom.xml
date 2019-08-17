@@ -880,11 +880,12 @@
       <artifactId>org.openhab.extensionservice.marketplace.automation</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.io.azureiothub</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+    <!-- temporarily disabled due to malfunction -->
+    <!--dependency-->
+      <!--groupId>org.openhab.addons.bundles</groupId-->
+      <!--artifactId>org.openhab.io.azureiothub</artifactId-->
+      <!--version>${project.version}</version-->
+    <!--/dependency-->
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.io.homekit</artifactId>
