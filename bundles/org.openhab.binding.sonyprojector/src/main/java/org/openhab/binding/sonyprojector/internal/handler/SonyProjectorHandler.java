@@ -64,7 +64,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
     private static final SonyProjectorModel DEFAULT_MODEL = SonyProjectorModel.VW520;
     private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(15);
 
-    private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     private boolean identifyProjector;
     private SonyProjectorModel projectorModel = DEFAULT_MODEL;
@@ -291,14 +291,15 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
         if (getThing().getThingTypeUID().equals(THING_TYPE_ETHERNET)) {
             SonyProjectorEthernetConfiguration config = getConfigAs(SonyProjectorEthernetConfiguration.class);
+            String configModel = config.model;
             logger.debug("Ethernet config host {}", config.host);
             logger.debug("Ethernet config port {}", config.port);
-            logger.debug("Ethernet config model {}", config.model);
+            logger.debug("Ethernet config model {}", configModel);
             logger.debug("Ethernet config community {}", config.community);
             if (config.host == null || config.host.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "host configuration setting undefined");
-            } else if (config.model == null || config.model.isEmpty()) {
+            } else if (configModel == null || configModel.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "model configuration setting undefined");
             } else {
@@ -306,22 +307,23 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
                 connector = simu ? new SonyProjectorSdcpSimuConnector(DEFAULT_MODEL)
                         : new SonyProjectorSdcpConnector(config.host, config.port, config.community, DEFAULT_MODEL);
-                identifyProjector = "AUTO".equals(config.model);
-                projectorModel = switchToModel("AUTO".equals(config.model) ? null : config.model, true);
+                identifyProjector = "AUTO".equals(configModel);
+                projectorModel = switchToModel("AUTO".equals(configModel) ? null : configModel, true);
 
                 updateStatus(ThingStatus.UNKNOWN);
             }
         } else if (getThing().getThingTypeUID().equals(THING_TYPE_SERIAL)) {
             SonyProjectorSerialConfiguration config = getConfigAs(SonyProjectorSerialConfiguration.class);
+            String configModel = config.model;
             logger.debug("Serial config port {}", config.port);
-            logger.debug("Serial config model {}", config.model);
+            logger.debug("Serial config model {}", configModel);
             if (config.port == null || config.port.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "port configuration setting undefined");
             } else if (config.port.toLowerCase().startsWith("rfc2217")) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "use Serial over IP connection thing type");
-            } else if (config.model == null || config.model.isEmpty()) {
+            } else if (configModel == null || configModel.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "model configuration setting undefined");
             } else {
@@ -330,15 +332,16 @@ public class SonyProjectorHandler extends BaseThingHandler {
                 connector = simu ? new SonyProjectorSerialSimuConnector(serialPortManager, DEFAULT_MODEL)
                         : new SonyProjectorSerialConnector(serialPortManager, config.port, DEFAULT_MODEL);
                 identifyProjector = false;
-                projectorModel = switchToModel(config.model, true);
+                projectorModel = switchToModel(configModel, true);
 
                 updateStatus(ThingStatus.UNKNOWN);
             }
         } else if (getThing().getThingTypeUID().equals(THING_TYPE_SERIAL_OVER_IP)) {
             SonyProjectorSerialOverIpConfiguration config = getConfigAs(SonyProjectorSerialOverIpConfiguration.class);
+            String configModel = config.model;
             logger.debug("Serial over IP config host {}", config.host);
             logger.debug("Serial over IP config port {}", config.port);
-            logger.debug("Serial over IP config model {}", config.model);
+            logger.debug("Serial over IP config model {}", configModel);
             if (config.host == null || config.host.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "host configuration setting undefined");
@@ -348,7 +351,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
             } else if (config.port <= 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "port configuration setting invalid");
-            } else if (config.model == null || config.model.isEmpty()) {
+            } else if (configModel == null || configModel.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "model configuration setting undefined");
             } else {
@@ -358,7 +361,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
                         : new SonyProjectorSerialOverIpConnector(serialPortManager, config.host, config.port,
                                 DEFAULT_MODEL);
                 identifyProjector = false;
-                projectorModel = switchToModel(config.model, true);
+                projectorModel = switchToModel(configModel, true);
 
                 updateStatus(ThingStatus.UNKNOWN);
             }
@@ -367,8 +370,9 @@ public class SonyProjectorHandler extends BaseThingHandler {
         if (!configOk) {
             connector = new SonyProjectorSdcpSimuConnector(DEFAULT_MODEL);
         } else {
+            ScheduledFuture<?> refreshJob = this.refreshJob;
             if (refreshJob == null || refreshJob.isCancelled()) {
-                refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+                this.refreshJob = scheduler.scheduleWithFixedDelay(() -> {
                     pollProjector();
                 }, 1, POLLING_INTERVAL, TimeUnit.SECONDS);
             }
@@ -380,9 +384,10 @@ public class SonyProjectorHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing handler for thing {}", getThing().getUID());
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
-            refreshJob = null;
+            this.refreshJob = null;
         }
         connector.close();
         super.dispose();
