@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ControlInfo {
-    private static Logger LOGGER = LoggerFactory.getLogger(ControlInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ControlInfo.class);
 
     public String ret;
     public boolean power = false;

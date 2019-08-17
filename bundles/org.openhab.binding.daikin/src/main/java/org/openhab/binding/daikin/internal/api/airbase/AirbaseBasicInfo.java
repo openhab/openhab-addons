@@ -15,7 +15,6 @@ package org.openhab.binding.daikin.internal.api.airbase;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class AirbaseBasicInfo {
-    private static Logger LOGGER = LoggerFactory.getLogger(AirbaseBasicInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseBasicInfo.class);
 
     public String ssid;
 

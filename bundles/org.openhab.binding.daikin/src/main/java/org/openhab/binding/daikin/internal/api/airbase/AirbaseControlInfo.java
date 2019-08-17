@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class AirbaseControlInfo {
-    private static Logger LOGGER = LoggerFactory.getLogger(AirbaseControlInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseControlInfo.class);
 
     public String ret;
     public boolean power = false;

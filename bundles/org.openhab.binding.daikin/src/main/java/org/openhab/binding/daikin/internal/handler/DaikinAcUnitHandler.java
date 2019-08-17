@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import javax.measure.quantity.Temperature;
 
@@ -44,7 +45,6 @@ import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanSpeed;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseMode;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
-import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseModelInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseZoneInfo;
 
@@ -243,17 +243,10 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
 
             updateTemperatureChannel(DaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
         }
-        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
         if (zoneInfo != null) {
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE1, zoneInfo.zone[1] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE2, zoneInfo.zone[2] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE3, zoneInfo.zone[3] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE4, zoneInfo.zone[4] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE5, zoneInfo.zone[5] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE6, zoneInfo.zone[6] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE7, zoneInfo.zone[7] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE8, zoneInfo.zone[8] ? OnOffType.ON : OnOffType.OFF);
+            IntStream.range(0, zoneInfo.zone.length).forEach(
+            idx -> updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE + idx, OnOffType.from(zoneInfo.zone[idx])));
         }
     }
 
@@ -349,7 +342,9 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
         AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
         AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone[zone] = command;
-        if (modelInfo.zonespresent >=zone) webTargets.setAirbaseZoneInfo(info, modelInfo);
+        if (modelInfo.zonespresent >=zone) {
+            webTargets.setAirbaseZoneInfo(info, modelInfo);
+        }
     }
 
 }

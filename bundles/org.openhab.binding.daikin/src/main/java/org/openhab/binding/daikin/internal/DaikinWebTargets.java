@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
@@ -115,12 +116,13 @@ public class DaikinWebTargets {
     }
 
     public void setAirbaseZoneInfo(AirbaseZoneInfo zoneinfo, AirbaseModelInfo modelinfo) throws DaikinCommunicationException {
-        int count=0;
-        count = (zoneinfo.zone[1] ? 1 : 0) + (zoneinfo.zone[2] ? 1 : 0) + (zoneinfo.zone[3] ? 1 : 0) + (zoneinfo.zone[4] ? 1 : 0) + (zoneinfo.zone[5] ? 1 : 0) + (zoneinfo.zone[6] ? 1 : 0) + (zoneinfo.zone[7] ? 1 : 0) + (zoneinfo.zone[8] ? 1 : 0) + modelinfo.commonzone;
+        long count = IntStream.range(0, zoneinfo.zone.length).filter(idx -> zoneinfo.zone[idx]).count() + modelinfo.commonzone;
         logger.debug("Number of open zones: \"{}\"", count);
 
         Map<String, String> queryParams = zoneinfo.getParamString();
-        if (count >= 1) invoke(setAirbaseZoneInfoUri, queryParams);
+        if (count >= 1) {
+            invoke(setAirbaseZoneInfoUri, queryParams);
+        }
     }
 
 

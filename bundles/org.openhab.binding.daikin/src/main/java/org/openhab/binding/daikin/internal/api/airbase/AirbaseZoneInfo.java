@@ -14,10 +14,9 @@ package org.openhab.binding.daikin.internal.api.airbase;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.stream.IntStream;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.StringTokenizer; 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class AirbaseZoneInfo {
-    private static Logger LOGGER = LoggerFactory.getLogger(AirbaseZoneInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseZoneInfo.class);
 
     public String zonenames;
     public boolean zone[] = new boolean[9];
@@ -60,24 +59,9 @@ public class AirbaseZoneInfo {
 
     public Map<String, String> getParamString() {
         Map<String, String> params = new LinkedHashMap<>();
-        StringBuilder onoffstring = new StringBuilder()
-            .append(zone[1] ? "1" : "0")
-            .append("%3b")
-            .append(zone[2] ? "1" : "0")
-            .append("%3b")
-            .append(zone[3] ? "1" : "0")
-            .append("%3b")
-            .append(zone[4] ? "1" : "0")
-            .append("%3b")
-            .append(zone[5] ? "1" : "0")
-            .append("%3b")
-            .append(zone[6] ? "1" : "0")
-            .append("%3b")
-            .append(zone[7] ? "1" : "0")
-            .append("%3b")
-            .append(zone[8] ? "1" : "0");
+        String onoffstring = IntStream.range(0, zone.length).mapToObj(idx -> zone[idx] ? "1" : "0").collect(Collectors.joining("%3b"));
         params.put("zone_name", zonenames);
-        params.put("zone_onoff", onoffstring.toString());
+        params.put("zone_onoff", onoffstring);
 
         return params;
     }

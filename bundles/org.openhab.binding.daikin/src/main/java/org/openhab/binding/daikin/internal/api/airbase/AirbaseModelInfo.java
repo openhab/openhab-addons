@@ -13,9 +13,7 @@
 package org.openhab.binding.daikin.internal.api.airbase;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -28,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class AirbaseModelInfo {
-    private static Logger LOGGER = LoggerFactory.getLogger(AirbaseModelInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseModelInfo.class);
 
     public String ret;
     public Integer zonespresent;

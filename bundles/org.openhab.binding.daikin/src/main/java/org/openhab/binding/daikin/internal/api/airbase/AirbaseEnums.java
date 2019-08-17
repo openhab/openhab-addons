@@ -31,7 +31,7 @@ public class AirbaseEnums {
         DRY(7),
         AUTO(3);
 
-        private static Logger LOGGER = LoggerFactory.getLogger(AirbaseMode.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseMode.class);
         private final int value;
 
         AirbaseMode(int value) {
@@ -62,7 +62,7 @@ public class AirbaseEnums {
         LEVEL_2("3"),
         LEVEL_3("5");
 
-        private static Logger LOGGER = LoggerFactory.getLogger(AirbaseFanSpeed.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseFanSpeed.class);
         private final String value;
 
         AirbaseFanSpeed(String value) {
@@ -94,7 +94,7 @@ public class AirbaseEnums {
         HORIZONTAL(2),
         VERTICAL_AND_HORIZONTAL(3);
 
-        private static Logger LOGGER = LoggerFactory.getLogger(AirbaseFanMovement.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseFanMovement.class);
         private final int value;
 
         AirbaseFanMovement(int value) {
