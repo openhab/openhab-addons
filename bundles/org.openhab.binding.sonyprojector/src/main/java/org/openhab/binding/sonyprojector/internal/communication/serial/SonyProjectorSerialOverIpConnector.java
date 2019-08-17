@@ -15,10 +15,12 @@ package org.openhab.binding.sonyprojector.internal.communication.serial;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorModel;
@@ -38,7 +40,7 @@ public class SonyProjectorSerialOverIpConnector extends SonyProjectorSerialConne
     private String address;
     private int port;
 
-    private @NonNullByDefault({}) Socket clientSocket;
+    private @Nullable Socket clientSocket;
 
     /**
      * Constructor
@@ -61,11 +63,13 @@ public class SonyProjectorSerialOverIpConnector extends SonyProjectorSerialConne
         if (!connected) {
             logger.debug("Opening serial over IP connection on IP {} port {}", this.address, this.port);
             try {
-                clientSocket = new Socket(this.address, this.port);
+                Socket clientSocket = new Socket(this.address, this.port);
                 clientSocket.setSoTimeout(100);
 
                 dataOut = new DataOutputStream(clientSocket.getOutputStream());
                 dataIn = new DataInputStream(clientSocket.getInputStream());
+
+                this.clientSocket = clientSocket;
 
                 connected = true;
 
@@ -82,12 +86,13 @@ public class SonyProjectorSerialOverIpConnector extends SonyProjectorSerialConne
         if (connected) {
             logger.debug("Closing serial over IP connection");
             super.close();
+            Socket clientSocket = this.clientSocket;
             if (clientSocket != null) {
                 try {
                     clientSocket.close();
                 } catch (IOException e) {
                 }
-                clientSocket = null;
+                this.clientSocket = null;
             }
             connected = false;
         }
@@ -107,6 +112,7 @@ public class SonyProjectorSerialOverIpConnector extends SonyProjectorSerialConne
      */
     @Override
     protected int readInput(byte[] dataBuffer) throws SonyProjectorException {
+        InputStream dataIn = this.dataIn;
         if (dataIn == null) {
             throw new SonyProjectorException("readInput failed: input stream is null");
         }
