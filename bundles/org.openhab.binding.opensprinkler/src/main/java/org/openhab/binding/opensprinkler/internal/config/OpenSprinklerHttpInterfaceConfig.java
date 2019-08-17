@@ -41,4 +41,12 @@ public class OpenSprinklerHttpInterfaceConfig {
      * Number of seconds in between refreshes from the OpenSprinkler device.
      */
     public int refresh = DEFAULT_REFRESH_RATE;
+    /**
+     * The basic auth username to use when the OpenSprinkler device is behind a reverse proxy with basic auth enabled.
+     */
+    public String basicUsername = null;
+    /**
+     * The basic auth password to use when the OpenSprinkler device is behind a reverse proxy with basic auth enabled.
+     */
+    public String basicPassword = null;
 }
