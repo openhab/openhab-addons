@@ -13,12 +13,15 @@
 package org.openhab.binding.sonyprojector.internal.communication.serial;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
@@ -57,7 +60,7 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
     private String serialPortName;
     private SerialPortManager serialPortManager;
 
-    private @NonNullByDefault({}) SerialPort serialPort;
+    private @Nullable SerialPort serialPort;
 
     /**
      * Constructor
@@ -100,18 +103,19 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
 
                 SerialPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
-                serialPort = commPort;
-                serialPort.setSerialPortParams(BAUD_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                commPort.setSerialPortParams(BAUD_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_EVEN);
-                serialPort.enableReceiveThreshold(8);
-                serialPort.enableReceiveTimeout(100);
-                serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+                commPort.enableReceiveThreshold(8);
+                commPort.enableReceiveTimeout(100);
+                commPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
 
-                dataIn = serialPort.getInputStream();
-                dataOut = serialPort.getOutputStream();
+                InputStream dataIn = commPort.getInputStream();
+                OutputStream dataOut = commPort.getOutputStream();
 
-                dataOut.flush();
-                if (dataIn.markSupported()) {
+                if (dataOut != null) {
+                    dataOut.flush();
+                }
+                if (dataIn != null && dataIn.markSupported()) {
                     try {
                         dataIn.reset();
                     } catch (IOException e) {
@@ -122,11 +126,15 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
                 // Start event listener, which will just sleep and slow down event
                 // loop
                 try {
-                    serialPort.addEventListener(this);
-                    serialPort.notifyOnDataAvailable(true);
+                    commPort.addEventListener(this);
+                    commPort.notifyOnDataAvailable(true);
                 } catch (TooManyListenersException e) {
                     logger.debug("Too Many Listeners Exception: {}", e.getMessage(), e);
                 }
+
+                this.serialPort = commPort;
+                this.dataIn = dataIn;
+                this.dataOut = dataOut;
 
                 connected = true;
 
@@ -153,13 +161,14 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
     public synchronized void close() {
         if (connected) {
             logger.debug("Closing serial connection");
+            SerialPort serialPort = this.serialPort;
             if (serialPort != null) {
                 serialPort.removeEventListener();
             }
             super.close();
             if (serialPort != null) {
                 serialPort.close();
-                serialPort = null;
+                this.serialPort = null;
             }
             connected = false;
         }

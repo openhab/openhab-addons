@@ -102,8 +102,7 @@ public enum SonyProjectorColorTemp {
 
     private int category;
     private String name;
-    @Nullable
-    private String label;
+    private @Nullable String label;
     private byte[] dataCode;
 
     /**
