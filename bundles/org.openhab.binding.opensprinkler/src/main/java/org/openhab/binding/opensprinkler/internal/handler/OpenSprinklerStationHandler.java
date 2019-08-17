@@ -74,46 +74,40 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "OpenSprinkler bridge has no initialized API.");
             return;
         }
-        try {
-            if (command == RefreshType.REFRESH) {
-                updateChannels();
-                return;
-            }
+
+        if (command != RefreshType.REFRESH) {
             switch (channelUID.getIdWithoutGroup()) {
                 case NEXT_DURATION:
-                    if (!(command instanceof QuantityType<?>)) {
-                        logger.info("Ignoring implausible non-DecimalType command for NEXT_DURATION");
-                        return;
-                    }
-                    Storage<BigDecimal> storage = this.storageService.getStorage(STORAGE_NAME);
-                    storage.put(DURATION_PREFIX + this.getStationIndex(), ((QuantityType<?>) command).toBigDecimal());
-                    updateState(channelUID, (DecimalType) command);
+                    handleNextDurationCommand(channelUID, command);
                     break;
                 case STATION_STATE:
-                    handleStationCommand(api, command);
+                    handleStationStateCommand(api, command);
                     break;
             }
-        } catch (Exception exp) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not control the OpenSprinkler.");
-            logger.debug("Error controlling and OpenSprinkler station. Exception received: {}", exp.toString());
         }
+        updateChannels();
     }
 
-    /**
-     * Handles control of an OpenSprnkler station based on commanded
-     * received by a channel call.
-     *
-     * @param command Command being issues to the channel.
-     */
-    protected void handleStationCommand(OpenSprinklerApi api, Command command) {
+    private void handleNextDurationCommand(ChannelUID channelUID, Command command) {
+        if (!(command instanceof QuantityType<?>)) {
+            logger.info("Ignoring implausible non-DecimalType command for NEXT_DURATION");
+            return;
+        }
+        Storage<BigDecimal> storage = this.storageService.getStorage(STORAGE_NAME);
+        storage.put(DURATION_PREFIX + this.getStationIndex(), ((QuantityType<?>) command).toBigDecimal());
+        updateState(channelUID, (DecimalType) command);
+    }
+
+    private void handleStationStateCommand(OpenSprinklerApi api, Command command) {
+        if (!(command instanceof OnOffType)) {
+            logger.error("Received invalid command type for OpenSprinkler station ({}).", command);
+            return;
+        }
         try {
             if (command == OnOffType.ON) {
                 api.openStation(this.getStationIndex(), nextStationDuration());
-            } else if (command == OnOffType.OFF) {
-                api.closeStation(this.getStationIndex());
             } else {
-                logger.error("Received invalid command type for OpenSprinkler station ({}).", command);
+                api.closeStation(this.getStationIndex());
             }
         } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -138,7 +132,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
      * @return State representation for the channel.
      */
     @Nullable
-    protected State getStationState(int stationId) {
+    private State getStationState(int stationId) {
         boolean stationOn = false;
         OpenSprinklerApi api = getApi();
         if (api == null) {
@@ -149,12 +143,10 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
         try {
             stationOn = api.isStationOpen(stationId);
-        } catch (Exception exp) {
+        } catch (GeneralApiException | CommunicationApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not get the station channel " + stationId + " current state from the OpenSprinkler thing.");
-            logger.debug(
-                    "Could not get current state of station channel {} for the OpenSprinkler device. Exception received: {}",
-                    (stationId + 1), exp.toString());
+                    "Could not get the station channel " + stationId
+                            + " current state from the OpenSprinkler thing. Error: " + exp.getMessage());
         }
 
         if (stationOn) {
@@ -171,7 +163,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
      * @return State representation for the channel.
      */
     @Nullable
-    protected State getRemainingWaterTime(int stationId) {
+    private State getRemainingWaterTime(int stationId) {
         long remainingWaterTime = 0;
         OpenSprinklerApi api = getApi();
         if (api == null) {
