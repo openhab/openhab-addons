@@ -105,6 +105,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
     private final SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider;
+    private final ChannelUID devicesChannelUID;
+    private final ChannelUID playlistsChannelUID;
 
     // Field members assigned in initialize method
     private @NonNullByDefault({}) Future<?> pollingFuture;
@@ -130,6 +132,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
         this.spotifyDynamicStateDescriptionProvider = spotifyDynamicStateDescriptionProvider;
+        devicesChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_DEVICES);
+        playlistsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_PLAYLISTS);
     }
 
     @Override
@@ -331,7 +335,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 // Collect devices and populate selection with available devices.
                 final List<Device> ld = devicesCache.getValue();
                 final List<Device> devices = ld == null ? Collections.emptyList() : ld;
-                spotifyDynamicStateDescriptionProvider.setDevices(devices);
+                spotifyDynamicStateDescriptionProvider.setDevices(devicesChannelUID, devices);
                 // Collect currently playing context.
                 final CurrentlyPlayingContext pc = playingContextCache.getValue();
                 final CurrentlyPlayingContext playingContext = pc == null ? EMPTY_CURRENTLYPLAYINGCONTEXT : pc;
@@ -341,7 +345,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
                 handleCommand.setLists(devices, playlists);
                 updatePlayerInfo(playingContext, playlists);
-                spotifyDynamicStateDescriptionProvider.setPlayList(playlists);
+                spotifyDynamicStateDescriptionProvider.setPlayLists(playlistsChannelUID, playlists);
 
                 updateDevicesStatus(devices, playingContext.isPlaying());
                 return true;
