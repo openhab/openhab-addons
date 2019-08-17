@@ -63,7 +63,7 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         }
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_INFO, getRequestRequiredOptions());
-        } catch (Exception exp) {
+        } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }

@@ -263,7 +263,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     /**
-     * This class contains static methods for communicating HTTP GET
+     * This class contains helper methods for communicating HTTP GET
      * and HTTP POST requests.
      *
      * @author Chris Graham - Initial contribution
@@ -342,7 +342,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
             if (response.getStatus() != HTTP_OK_CODE) {
                 throw new CommunicationApiException(
-                        "Error sending HTTP POST request to " + url + ". Got responce code: " + response.getStatus());
+                        "Error sending HTTP POST request to " + url + ". Got response code: " + response.getStatus());
             }
 
             return response.getContentAsString();
