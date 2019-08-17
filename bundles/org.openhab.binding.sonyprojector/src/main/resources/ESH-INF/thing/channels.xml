@@ -30,35 +30,35 @@
 	</channel-type>
 
 	<channel-type id="contrast" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Contrast</label>
 		<description>Adjust the contrast of the picture</description>
 		<state min="0" max="100" />
 	</channel-type>
 
 	<channel-type id="brightness" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Adjust the brightness of the picture</description>
 		<state min="0" max="100" />
 	</channel-type>
 
 	<channel-type id="color" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Color</label>
 		<description>Adjust the color density</description>
 		<state min="0" max="100" />
 	</channel-type>
 
 	<channel-type id="hue" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Hue</label>
 		<description>Adjust the color tone</description>
 		<state min="0" max="100" />
 	</channel-type>
 
 	<channel-type id="sharpness" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Sharpness</label>
 		<description>Sharpen the outline of the picture or reduce the noise</description>
 		<state min="0" max="100" />
@@ -77,7 +77,7 @@
 	</channel-type>
 
 	<channel-type id="irismanual" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Iris Manual</label>
 		<description>Force the iris aperture to a fixed value</description>
 		<state min="0" max="100" />
