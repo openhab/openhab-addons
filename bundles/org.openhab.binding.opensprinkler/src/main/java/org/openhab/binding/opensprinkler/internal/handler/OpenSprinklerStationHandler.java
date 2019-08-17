@@ -14,13 +14,19 @@ package org.openhab.binding.opensprinkler.internal.handler;
 
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 
+import java.math.BigDecimal;
+
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.storage.Storage;
+import org.eclipse.smarthome.core.storage.StorageService;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -42,13 +48,18 @@ import tec.uom.se.unit.Units;
  */
 @NonNullByDefault
 public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
+    private static final String STORAGE_NAME = "opensprinkler";
+    private static final String DURATION_PREFIX = "DURATION_";
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerStationHandler.class);
 
     @Nullable
     private OpenSprinklerStationConfig config;
 
-    public OpenSprinklerStationHandler(Thing thing) {
+    private StorageService storageService;
+
+    public OpenSprinklerStationHandler(Thing thing, StorageService storageService) {
         super(thing);
+        this.storageService = storageService;
     }
 
     @Override
@@ -58,11 +69,29 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        OpenSprinklerApi api = getApi();
+        if (api == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "OpenSprinkler bridge has no initialized API.");
+            return;
+        }
         try {
             if (command == RefreshType.REFRESH) {
                 updateChannels();
-            } else {
-                handleStationCommand(this.getStationIndex(), command);
+                return;
+            }
+            switch (channelUID.getIdWithoutGroup()) {
+                case NEXT_DURATION:
+                    if (!(command instanceof QuantityType<?>)) {
+                        logger.info("Ignoring implausible non-DecimalType command for NEXT_DURATION");
+                        return;
+                    }
+                    Storage<BigDecimal> storage = this.storageService.getStorage(STORAGE_NAME);
+                    storage.put(DURATION_PREFIX + this.getStationIndex(), ((QuantityType<?>) command).toBigDecimal());
+                    updateState(channelUID, (DecimalType) command);
+                    break;
+                case STATION_STATE:
+                    handleStationCommand(api, command);
+                    break;
             }
         } catch (Exception exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -75,29 +104,31 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
      * Handles control of an OpenSprnkler station based on commanded
      * received by a channel call.
      *
-     * @param stationId Int of the station to control. Starts at 0.
      * @param command Command being issues to the channel.
      */
-    protected void handleStationCommand(int stationId, Command command) {
-        OpenSprinklerApi api = getApi();
-        if (api == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "OpenSprinkler bridge has no initialized API.");
-            return;
-        }
+    protected void handleStationCommand(OpenSprinklerApi api, Command command) {
         try {
             if (command == OnOffType.ON) {
-                api.openStation(stationId, config.duration);
+                api.openStation(this.getStationIndex(), nextStationDuration());
             } else if (command == OnOffType.OFF) {
-                api.closeStation(stationId);
+                api.closeStation(this.getStationIndex());
             } else {
                 logger.error("Received invalid command type for OpenSprinkler station ({}).", command);
             }
-            updateChannels();
         } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not control the station channel " + (stationId + 1) + " for the OpenSprinkler. Error: "
-                            + exp.getMessage());
+                    "Could not control the station channel " + (this.getStationIndex() + 1)
+                            + " for the OpenSprinkler. Error: " + exp.getMessage());
         }
+    }
+
+    private BigDecimal nextStationDuration() {
+        BigDecimal nextDurationItemValue = nextDurationValue();
+        Channel nextDuration = getThing().getChannel(NEXT_DURATION);
+        if (nextDuration != null && isLinked(nextDuration.getUID()) && nextDurationItemValue != null) {
+            return nextDurationItemValue;
+        }
+        return config.duration;
     }
 
     /**
@@ -168,14 +199,28 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
                 if (currentDeviceState != null) {
                     updateState(channel, currentDeviceState);
                 }
+                break;
             case REMAINING_WATER_TIME:
                 State remainingWaterTime = getRemainingWaterTime(config.stationIndex);
                 if (remainingWaterTime != null) {
                     updateState(channel, remainingWaterTime);
                 }
+                break;
+            case NEXT_DURATION:
+                BigDecimal duration = nextDurationValue();
+                if (duration != null) {
+                    updateState(channel, new DecimalType(duration));
+                }
+                break;
             default:
                 logger.debug("Not updating unknown channel {}", channel);
         }
+    }
+
+    private @Nullable BigDecimal nextDurationValue() {
+        Storage<BigDecimal> storage = storageService.getStorage(STORAGE_NAME);
+        BigDecimal duration = storage.get(DURATION_PREFIX + this.getStationIndex());
+        return duration;
     }
 
     private int getStationIndex() {

@@ -62,7 +62,10 @@ The following channel is supported by the station thing.
 | Channel Type ID    | Item Type   |    | Description                                             |
 |--------------------|-------------|----|---------------------------------------------------------|
 | stationState       | Switch      | RW | This channel indicates whether station 01 is on or off. |
-| remainingWaterTime | Number:Time | R  | The time the station remains to be open.    |
+| remainingWaterTime | Number:Time | R  | The time the station remains to be open.                |
+| nextDuration       | Number:Time | RW | A configuration item, which time, if linked, will be    |
+|                    |             |    | used as the time the station will be kept open when     |
+|                    |             |    | switched on.
 
 
 
@@ -96,6 +99,7 @@ Switch Station01 (stations) { channel="opensprinkler:station:http:01:stationStat
 Number:Time Station01RaminingTime { channel="opensprinkler:station:http:01:remainingWaterTime" }
 Switch Station02 (stations) { channel="opensprinkler:station:http:02:stationState" }
 Switch Station03 (stations) { channel="opensprinkler:station:http:03:stationState" }
+Number:Time Station03NextDuration { channel="opensprinkler:station:http:03:nextDuration" }
 Switch Station04 (stations) { channel="opensprinkler:station:http:04:stationState" }
 Switch Station05 (stations) { channel="opensprinkler:station:http:05:stationState" }
 Switch Station06 (stations) { channel="opensprinkler:station:http:06:stationState" }
@@ -110,6 +114,7 @@ sitemap demo label="Main Menu"
 {
     Frame {
         Switch item=Station01
+        Selection item=Station03NextDuration mappings=[300="5 min", 600="10 min"]
     }
 }
 ```

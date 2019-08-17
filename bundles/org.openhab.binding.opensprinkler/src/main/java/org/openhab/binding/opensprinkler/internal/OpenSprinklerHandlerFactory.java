@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -45,10 +46,13 @@ public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays
             .asList(OPENSPRINKLER_HTTP_BRIDGE, OPENSPRINKLER_PI_BRIDGE, OPENSPRINKLER_STATION, OPENSPRINKLER_DEVICE));
     private OpenSprinklerApiFactory apiFactory;
+    private StorageService storageService;
 
     @Activate
-    public OpenSprinklerHandlerFactory(@Reference OpenSprinklerApiFactory apiFactory) {
+    public OpenSprinklerHandlerFactory(@Reference OpenSprinklerApiFactory apiFactory,
+            @Reference StorageService storageService) {
         this.apiFactory = apiFactory;
+        this.storageService = storageService;
     }
 
     @Override
@@ -63,7 +67,7 @@ public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(OPENSPRINKLER_HTTP_BRIDGE)) {
             return new OpenSprinklerHttpBridgeHandler((Bridge) thing, this.apiFactory);
         } else if (thingTypeUID.equals(OPENSPRINKLER_STATION)) {
-            return new OpenSprinklerStationHandler(thing);
+            return new OpenSprinklerStationHandler(thing, storageService);
         } else if (thingTypeUID.equals(OPENSPRINKLER_PI_BRIDGE)) {
             return new OpenSprinklerPiBridgeHandler((Bridge) thing, this.apiFactory);
         } else if (thingTypeUID.equals(OPENSPRINKLER_DEVICE)) {
