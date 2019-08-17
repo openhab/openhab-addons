@@ -85,6 +85,7 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
 
     private void handleCommandInternal(ChannelUID channelUID, Command command) throws DaikinCommunicationException {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        String channelId = channelUID.getId();
 
         switch (channelUID.getId()) {
             case DaikinBindingConstants.CHANNEL_AC_POWER:
@@ -126,57 +127,15 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
                     return;
                 }
                 break;
-            /* additional controls for Daikin Airbase */
-            case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE1:
-                if (command instanceof OnOffType) {
-                    changeZone(1, ((OnOffType) command).equals(OnOffType.ON));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE2:
-                if (command instanceof OnOffType) {
-                    changeZone(2, ((OnOffType) command).equals(OnOffType.ON));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE3:
-                if (command instanceof OnOffType) {
-                    changeZone(3, ((OnOffType) command).equals(OnOffType.ON));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE4:
-                if (command instanceof OnOffType) {
-                    changeZone(4, ((OnOffType) command).equals(OnOffType.ON));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE5:
-                if (command instanceof OnOffType) {
-                    changeZone(5, ((OnOffType) command).equals(OnOffType.ON));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE6:
-                if (command instanceof OnOffType) {
-                    changeZone(6, ((OnOffType) command).equals(OnOffType.ON));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE7:
-                if (command instanceof OnOffType) {
-                    changeZone(7, ((OnOffType) command).equals(OnOffType.ON));
-                    return;
-                }
-                break;
-            case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE8:
-                if (command instanceof OnOffType) {
-                    changeZone(8, ((OnOffType) command).equals(OnOffType.ON));
-                    return;
-                }
-                break;
         }
-
+        /* additional controls for Daikin Airbase */
+        if (channelId.startsWith(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE)) {
+            int zoneNumber = Integer.parseInt(channelUID.getId().substring(4));
+            if (command instanceof OnOffType) {
+                 changeZone(zoneNumber, command == OnOffType.ON);
+                 return;
+            }
+        }
         logger.warn("Received command of wrong type for thing '{}' on channel {}", thing.getUID().getAsString(),
                 channelUID.getId());
     }

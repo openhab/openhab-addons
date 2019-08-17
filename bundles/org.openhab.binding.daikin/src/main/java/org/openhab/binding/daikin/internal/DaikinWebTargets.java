@@ -65,7 +65,6 @@ public class DaikinWebTargets {
         getAirbaseModelInfoUri = baseUri + "skyfi/aircon/get_model_info";
         getAirbaseZoneInfoUri = baseUri + "skyfi/aircon/get_zone_setting";
         setAirbaseZoneInfoUri = baseUri + "skyfi/aircon/set_zone_setting";
-
     }
 
     // Standard Daikin API

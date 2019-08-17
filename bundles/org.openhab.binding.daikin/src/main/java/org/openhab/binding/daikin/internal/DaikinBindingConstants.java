@@ -48,6 +48,7 @@ public class DaikinBindingConstants {
 
     // additional channels for Airbase Controller
     public static final String CHANNEL_AIRBASE_AC_FAN_SPEED = "airbasefanspeed";
+    public static final String CHANNEL_AIRBASE_AC_ZONE = "zone";
     public static final String CHANNEL_AIRBASE_AC_ZONE1 = "zone1";
     public static final String CHANNEL_AIRBASE_AC_ZONE2 = "zone2";
     public static final String CHANNEL_AIRBASE_AC_ZONE3 = "zone3";
