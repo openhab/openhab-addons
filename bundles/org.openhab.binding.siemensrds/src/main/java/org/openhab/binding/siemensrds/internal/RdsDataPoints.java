@@ -66,8 +66,8 @@ class RdsDataPoints {
      */
     protected static final Logger LOGGER = LoggerFactory.getLogger(RdsDataPoints.class);
 
-    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(BasePoint.class, 
-            new PointDeserializer()).create();
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(BasePoint.class, new PointDeserializer())
+            .create();
 
     @SerializedName("totalCount")
     private String totalCount;
@@ -81,69 +81,38 @@ class RdsDataPoints {
      * execute an HTTP GET command on the remote cloud server to retrieve the JSON
      * response from the given urlString
      */
-    protected static String httpGenericGetJson(String apiKey, String token, String urlString) {
-        URL url;
-        try {
-            url = new URL(urlString);
-        } catch (MalformedURLException e) {
-            LOGGER.warn("httpGenericGetJson: invalid url {}", urlString);
-            return "";
-        }
-
+    protected static String httpGenericGetJson(String apiKey, String token, String urlString)
+            throws RdsCloudException, IOException {
         /*
          * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
          * preferred JETTY library; the reason is that JETTY does not allow sending the
          * square brackets characters "[]" verbatim over HTTP connections
          */
-        HttpsURLConnection https;
-        try {
-            https = (HttpsURLConnection) url.openConnection();
-        } catch (java.io.IOException e) {
-            LOGGER.warn("httpGenericGetJson: unable to connect to Cloud Server");
-            return "";
-        }
+        URL url = new URL(urlString);
+        HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
-        try {
-            https.setRequestMethod(HTTP_GET);
-        } catch (ProtocolException e) {
-            // we shouldn't ever reach here because HTTP GET is a valid method
-            return "";
-        }
+        https.setRequestMethod(HTTP_GET);
 
         https.setRequestProperty(USER_AGENT, MOZILLA);
         https.setRequestProperty(ACCEPT, APPLICATION_JSON);
         https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
         https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
 
-        int responseCode;
-        try {
-            responseCode = https.getResponseCode();
-        } catch (IOException e) {
-            LOGGER.warn("httpGenericGetJson: missing HTTP response from Cloud Server");
-            return "";
-        }
+        int responseCode = https.getResponseCode();
 
         if (responseCode != HttpURLConnection.HTTP_OK) {
-            LOGGER.warn("httpGenericGetJson: invalid HTTP response {} from Cloud Server", responseCode);
-            return "";
+            throw new RdsCloudException("invalid HTTP response");
         }
 
         try (InputStream inputStream = https.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                BufferedReader reader = new BufferedReader(inputStreamReader);) {
             String inputString;
             StringBuffer response = new StringBuffer();
-            BufferedReader reader = new BufferedReader(inputStreamReader);
             while ((inputString = reader.readLine()) != null) {
                 response.append(inputString);
             }
-
             return response.toString();
-        } catch (UnsupportedEncodingException e) {
-            // we shouldn't ever reach here because UTF8 is a valid encoding
-            return "";
-        } catch (IOException e) {
-            LOGGER.warn("httpGenericGetJson: unable to read response from Cloud Server");
-            return "";
         }
     }
 
@@ -153,22 +122,17 @@ class RdsDataPoints {
      * point values
      */
     public static @Nullable RdsDataPoints create(String apiKey, String token, String plantId) {
-        String json = httpGenericGetJson(apiKey, token, String.format(URL_POINTS, plantId));
-
-        LOGGER.debug("create: received {} characters (log:set TRACE to see all)", json.length());
-
-        if (LOGGER.isTraceEnabled())
-            LOGGER.trace("create: response={}", json);
-
-        if (json.isEmpty()) {
-            LOGGER.debug("create: empty JSON element");
-            return null;
-        }
-
         try {
+            String json = httpGenericGetJson(apiKey, token, String.format(URL_POINTS, plantId));
+
+            LOGGER.debug("create: received {} characters (log:set TRACE to see all)", json.length());
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("create: response={}", json);
+            }
+
             return GSON.fromJson(json, RdsDataPoints.class);
-        } catch (JsonSyntaxException e) {
-            LOGGER.debug("create: JSON syntax error");
+        } catch (JsonSyntaxException | RdsCloudException | IOException e) {
+            LOGGER.warn("point list creation error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
             return null;
         }
     }
@@ -176,35 +140,19 @@ class RdsDataPoints {
     /*
      * private method: execute an HTTP PUT on the server to set a data point value
      */
-    private void httpSetPointValueJson(String apiKey, String token, String pointId, String json) {
-        URL url;
-        String urlString = String.format(URL_SETVAL, pointId);
-        try {
-            url = new URL(urlString);
-        } catch (MalformedURLException e) {
-            LOGGER.warn("httpSetPointValueJson: invalid url {}", urlString);
-            return;
-        }
-
+    private void httpSetPointValueJson(String apiKey, String token, String pointId, String json)
+            throws RdsCloudException, UnsupportedEncodingException, ProtocolException, MalformedURLException,
+            IOException {
         /*
          * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
          * preferred JETTY library; the reason is that JETTY does not allow sending the
          * square brackets characters "[]" verbatim over HTTP connections
          */
-        HttpsURLConnection https;
-        try {
-            https = (HttpsURLConnection) url.openConnection();
-        } catch (java.io.IOException e) {
-            LOGGER.warn("httpSetPointValueJson: unable to connect to Cloud Server");
-            return;
-        }
+        URL url = new URL(String.format(URL_SETVAL, pointId));
 
-        try {
-            https.setRequestMethod(HTTP_PUT);
-        } catch (ProtocolException e) {
-            // we shouldn't ever reach here because HTTP PUT is a valid method
-            return;
-        }
+        HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+
+        https.setRequestMethod(HTTP_PUT);
 
         https.setRequestProperty(USER_AGENT, MOZILLA);
         https.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
@@ -216,24 +164,11 @@ class RdsDataPoints {
         try (OutputStream outputStream = https.getOutputStream();
                 DataOutputStream writer = new DataOutputStream(outputStream);) {
             writer.writeBytes(json);
-        } catch (IOException e) {
-            LOGGER.warn("httpSetPointValueJson: error sending request to Cloud Server");
-            return;
         }
 
-        int responseCode;
-        try {
-            responseCode = https.getResponseCode();
-        } catch (IOException e) {
-            LOGGER.warn("httpGetPlantListJson: missing HTTP response from Cloud Server");
-            return;
+        if (https.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            throw new RdsCloudException("invalid HTTP response");
         }
-
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            LOGGER.warn("httpGetPlantListJson: invalid HTTP response {} from Cloud Server", responseCode);
-            return;
-        }
-        return;
     }
 
     /*
@@ -361,10 +296,16 @@ class RdsDataPoints {
         if (pointId != null && point != null) {
             String json = point.commandJson(value);
 
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("setValue: {}=>{}", hierarchyName, json);
+            LOGGER.debug("setValue: {}=>{}", hierarchyName, json);
+
+            try {
+                httpSetPointValueJson(apiKey, token, pointId, json);
+            } catch (RdsCloudException | IOException e) {
+                LOGGER.warn("setValue: error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
+                return;
             }
-            httpSetPointValueJson(apiKey, token, pointId, json);
+        } else {
+            LOGGER.warn("setValue: point or pointId not found for {}", hierarchyName);
         }
     }
 
@@ -372,70 +313,69 @@ class RdsDataPoints {
      * public method: set a new data point value on the server
      */
     public boolean refresh(String apiKey, String token) {
-        @Nullable
-        RdsDataPoints newPoints = null;
-
-        if (valueFilter.isEmpty()) {
-            Set<String> set = new HashSet<>();
-            String pointId;
-
-            for (ChannelMap chan : CHAN_MAP) {
-                pointId = getPointId(chan.hierarchyName);
-                if (pointId != null) {
-                    set.add(String.format("\"%s\"", pointId));
-                }
-            }
-            valueFilter = String.join(",", set);
-        }
-
-        if (LOGGER.isTraceEnabled())
-            LOGGER.trace("refresh: request={}", valueFilter);
-
-        String json = httpGenericGetJson(apiKey, token, String.format(URL_VALUES, valueFilter));
-
-        LOGGER.debug("refresh: received {} characters (log:set TRACE to see all)", json.length());
-
-        if (LOGGER.isTraceEnabled())
-            LOGGER.trace("refresh: response={}", json);
-
-        if (json.isEmpty()) {
-            LOGGER.debug("refreshUsedValues: empty JSON element");
-            return false;
-        }
-
         try {
-            newPoints = GSON.fromJson(json, RdsDataPoints.class);
-        } catch (JsonSyntaxException e) {
-            LOGGER.debug("refreshUsedValues: JSON syntax error");
-            return false;
-        }
+            // initialize the value filter
+            if (valueFilter.isEmpty()) {
+                Set<String> set = new HashSet<>();
+                String pointId;
 
-        synchronized (this) {
-            for (Map.Entry<String, BasePoint> entry : newPoints.points.entrySet()) {
-                BasePoint nuPoint = entry.getValue();
-                BasePoint exPoint = points.get(entry.getKey());
+                for (ChannelMap chan : CHAN_MAP) {
+                    pointId = getPointId(chan.hierarchyName);
+                    if (pointId != null) {
+                        set.add(String.format("\"%s\"", pointId));
+                    }
+                }
+                valueFilter = String.join(",", set);
+            }
 
-                if (nuPoint instanceof BooleanPoint && exPoint instanceof BooleanPoint) {
-                    ((BooleanPoint) exPoint).value = ((BooleanPoint) nuPoint).value;
-                } else
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("refresh: request={}", valueFilter);
+            }
 
-                if (nuPoint instanceof TextPoint && exPoint instanceof TextPoint) {
-                    ((TextPoint) exPoint).value = ((TextPoint) nuPoint).value;
-                } else
+            String json = httpGenericGetJson(apiKey, token, String.format(URL_VALUES, valueFilter));
 
-                if (nuPoint instanceof NumericPoint && exPoint instanceof NumericPoint) {
-                    ((NumericPoint) exPoint).value = ((NumericPoint) nuPoint).value;
-                } else
+            LOGGER.debug("refresh: received {} characters (log:set TRACE to see all)", json.length());
 
-                if (nuPoint instanceof InnerValuePoint && exPoint instanceof InnerValuePoint) {
-                    ((InnerValuePoint) exPoint).inner.value = ((InnerValuePoint) nuPoint).inner.value;
-                    ((InnerValuePoint) exPoint).inner.presentPriority = ((InnerValuePoint) nuPoint).inner.presentPriority;
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("refresh: response={}", json);
+            }
+
+            @Nullable
+            RdsDataPoints newPoints = GSON.fromJson(json, RdsDataPoints.class);
+
+            synchronized (this) {
+                for (Map.Entry<String, BasePoint> entry : newPoints.points.entrySet()) {
+                    BasePoint newPoint = entry.getValue();
+                    BasePoint existingPoint = points.get(entry.getKey());
+
+                    if (newPoint instanceof BooleanPoint && existingPoint instanceof BooleanPoint) {
+                        ((BooleanPoint) existingPoint).value = ((BooleanPoint) newPoint).value;
+                    } else
+
+                    if (newPoint instanceof TextPoint && existingPoint instanceof TextPoint) {
+                        ((TextPoint) existingPoint).value = ((TextPoint) newPoint).value;
+                    } else
+
+                    if (newPoint instanceof NumericPoint && existingPoint instanceof NumericPoint) {
+                        ((NumericPoint) existingPoint).value = ((NumericPoint) newPoint).value;
+                    } else
+
+                    if (newPoint instanceof InnerValuePoint && existingPoint instanceof InnerValuePoint) {
+                        ((InnerValuePoint) existingPoint).inner.value = ((InnerValuePoint) newPoint).inner.value;
+                        ((InnerValuePoint) existingPoint).inner.presentPriority = ((InnerValuePoint) newPoint).inner.presentPriority;
+                    } else {
+                        LOGGER.warn("refresh: point type mismatch");
+                    }
+
                 }
             }
-        }
-        return true;
-    }
 
+            return true;
+        } catch (JsonSyntaxException | RdsCloudException | IOException e) {
+            LOGGER.warn("refresh: error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
+            return false;
+        }
+    }
 }
 
 /**
@@ -491,7 +431,7 @@ abstract class BasePoint {
     /*
      * => MUST be overridden
      */
-    abstract protected int asInt();
+    protected abstract int asInt();
 
     protected boolean isEnum() {
         return (enumParsed ? isEnum : initEnum());

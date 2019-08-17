@@ -14,6 +14,7 @@ package org.openhab.binding.siemensrds.internal;
 
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,20 +63,11 @@ class RdsPlants {
      * class that encapsulates the data
      */
     public static @Nullable RdsPlants create(String apiKey, String token) {
-        /*
-         * use the RdsDataPoints.httpGenericGetJson static method to fetch the JSON
-         */
-        String json = RdsDataPoints.httpGenericGetJson(apiKey, token, URL_PLANTS);
-
-        if (json.isEmpty()) {
-            LOGGER.debug("create: empty JSON element");
-            return null;
-        }
-
         try {
+            String json = RdsDataPoints.httpGenericGetJson(apiKey, token, URL_PLANTS);
             return GSON.fromJson(json, RdsPlants.class);
-        } catch (JsonSyntaxException e) {
-            LOGGER.debug("create: JSON syntax error");
+        } catch (JsonSyntaxException | RdsCloudException | IOException e) {
+            LOGGER.warn("plant list creation error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
             return null;
         }
     }

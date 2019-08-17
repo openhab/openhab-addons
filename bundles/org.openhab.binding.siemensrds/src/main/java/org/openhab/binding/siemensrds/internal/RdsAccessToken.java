@@ -20,10 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -67,34 +64,18 @@ class RdsAccessToken {
     /*
      * private method: execute the HTTP POST on the server
      */
-    private static String httpGetTokenJson(String apiKey, String user, String password) {
-        URL url;
-        try {
-            url = new URL(URL_TOKEN);
-        } catch (MalformedURLException e) {
-            // we shouldn't ever reach here because URL_TOKEN is hard coded as a valid url
-            return "";
-        }
-
+    private static String httpGetTokenJson(String apiKey, String user, String password)
+            throws RdsCloudException, IOException {
         /*
          * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
          * preferred JETTY library; the reason is that JETTY does not allow sending the
          * square brackets characters "[]" verbatim over HTTP connections
          */
-        HttpsURLConnection https;
-        try {
-            https = (HttpsURLConnection) url.openConnection();
-        } catch (java.io.IOException e) {
-            LOGGER.warn("httpGetTokenJson: unable to connect to Cloud Server");
-            return "";
-        }
+        URL url = new URL(URL_TOKEN);
 
-        try {
-            https.setRequestMethod(HTTP_POST);
-        } catch (ProtocolException e) {
-            // we shouldn't ever reach here because HTTP POST is a valid method
-            return "";
-        }
+        HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+
+        https.setRequestMethod(HTTP_POST);
 
         https.setRequestProperty(USER_AGENT, MOZILLA);
         https.setRequestProperty(ACCEPT, TEXT_PLAIN);
@@ -107,40 +88,21 @@ class RdsAccessToken {
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream);) {
             dataOutputStream.writeBytes(String.format(TOKEN_REQUEST, user, password));
             dataOutputStream.flush();
-        } catch (IOException e) {
-            LOGGER.warn("httpGetTokenJson: error sending request to Cloud Server");
-            return "";
         }
 
-        int responseCode;
-        try {
-            responseCode = https.getResponseCode();
-        } catch (IOException e) {
-            LOGGER.warn("httpGetTokenJson: missing HTTP response from Cloud Server");
-            return "";
-        }
-
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            LOGGER.warn("httpGetTokenJson: invalid HTTP response {} from Cloud Server", responseCode);
-            return "";
+        if (https.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            throw new RdsCloudException("invalid HTTP response");
         }
 
         try (InputStream inputStream = https.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                BufferedReader reader = new BufferedReader(inputStreamReader);) {
             String inputString;
             StringBuffer response = new StringBuffer();
-            BufferedReader reader = new BufferedReader(inputStreamReader);
             while ((inputString = reader.readLine()) != null) {
                 response.append(inputString);
             }
-
             return response.toString();
-        } catch (UnsupportedEncodingException e) {
-            // we shouldn't ever reach here because UTF8 is a valid encoding
-            return "";
-        } catch (IOException e) {
-            LOGGER.warn("httpGetTokenJson: unable to read response from Cloud Server");
-            return "";
         }
     }
 
@@ -149,17 +111,11 @@ class RdsAccessToken {
      * a class that encapsulates the data
      */
     public static @Nullable RdsAccessToken create(String apiKey, String user, String password) {
-        String json = httpGetTokenJson(apiKey, user, password);
-
-        if (json.isEmpty()) {
-            LOGGER.debug("create: empty JSON element");
-            return null;
-        }
-
         try {
+            String json = httpGetTokenJson(apiKey, user, password);
             return GSON.fromJson(json, RdsAccessToken.class);
-        } catch (JsonSyntaxException e) {
-            LOGGER.debug("create: JSON syntax error");
+        } catch (JsonSyntaxException | RdsCloudException | IOException e) {
+            LOGGER.warn("token creation error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
             return null;
         }
     }
