@@ -18,18 +18,7 @@
 			<channel id="fandir" typeId="acunit-fandir" />
 		</channels>
 
-		<config-description>
-			<parameter name="host" type="text" required="true">
-				<label>Host</label>
-				<description>The Host address of the Daikin AC unit.</description>
-				<context>network_address</context>
-			</parameter>
-			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh Interval</label>
-				<description>The number of seconds between fetches of the AC unit state.</description>
-				<default>60</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:daikin:config" />
 	</thing-type>
 
 	<thing-type id="airbase_ac_unit">
@@ -54,18 +43,7 @@
 
 		</channels>
 
-		<config-description>
-			<parameter name="host" type="text" required="true">
-				<label>Host</label>
-				<description>The Host address of the Daikin Airbase AC unit.</description>
-				<context>network_address</context>
-			</parameter>
-			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh Interval</label>
-				<description>The number of seconds between fetches of the AC unit state.</description>
-				<default>60</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:daikin:config" />
 	</thing-type>
 
 	<channel-type id="acunit-power">
