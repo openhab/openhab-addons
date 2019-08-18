@@ -602,19 +602,19 @@ public class SonyProjectorHandler extends BaseThingHandler {
                             state = new StringType(connector.getCalibrationPreset());
                             break;
                         case CHANNEL_CONTRAST:
-                            state = new DecimalType(connector.getContrast());
+                            state = new PercentType(connector.getContrast());
                             break;
                         case CHANNEL_BRIGHTNESS:
-                            state = new DecimalType(connector.getBrightness());
+                            state = new PercentType(connector.getBrightness());
                             break;
                         case CHANNEL_COLOR:
-                            state = new DecimalType(connector.getColor());
+                            state = new PercentType(connector.getColor());
                             break;
                         case CHANNEL_HUE:
-                            state = new DecimalType(connector.getHue());
+                            state = new PercentType(connector.getHue());
                             break;
                         case CHANNEL_SHARPNESS:
-                            state = new DecimalType(connector.getSharpness());
+                            state = new PercentType(connector.getSharpness());
                             break;
                         case CHANNEL_COLOR_TEMP:
                             state = new StringType(connector.getColorTemperature());
@@ -623,7 +623,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
                             state = new StringType(connector.getIrisMode());
                             break;
                         case CHANNEL_IRIS_MANUAL:
-                            state = new DecimalType(connector.getIrisManual());
+                            state = new PercentType(connector.getIrisManual());
                             break;
                         case CHANNEL_IRIS_SENSITIVITY:
                             state = new StringType(connector.getIrisSensitivity());

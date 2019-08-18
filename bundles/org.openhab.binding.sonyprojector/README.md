@@ -161,14 +161,14 @@ The following channels are available:
 | powerstate        | Power State              | String    | R           | Current detailed power state of the projector                           |                                                                                                                                                    |
 | input             | Video Input              | String    | RW          | Select the equipment from which to display images                       | Video, SVideo, InputA, Component, HDMI, HDMI1, HDMI2, DVI                                                                                          |
 | calibrationpreset | Calibrated Preset        | String    | RW          | Adjust the picture viewing mode by selecting one of the preset modes    | Film1, Film2, Digital, Reference, TV, Photo, Game, BRTCINE, BRTTV, Dynamic, Standard, Cinema, Cinema1, Cinema2, Cinema3, User, User1, User2, User3 |
-| contrast          | Contrast                 | Number    | RW          | Adjust the contrast of the picture                                      | Value between 0 and 100                                                                                                                            |
-| brightness        | Brightness               | Number    | RW          | Adjust the brightness of the picture                                    | Value between 0 and 100                                                                                                                            |
-| color             | Color                    | Number    | RW          | Adjust the color density                                                | Value between 0 and 100                                                                                                                            |
-| hue               | Hue                      | Number    | RW          | Adjust the color tone                                                   | Value between 0 and 100                                                                                                                            |
-| sharpness         | Sharpness                | Number    | RW          | Sharpen the outline of the picture or reduce the noise                  | Value between 0 and 100                                                                                                                            |
+| contrast          | Contrast                 | Dimmer    | RW          | Adjust the contrast of the picture                                      | Value between 0 and 100                                                                                                                            |
+| brightness        | Brightness               | Dimmer    | RW          | Adjust the brightness of the picture                                    | Value between 0 and 100                                                                                                                            |
+| color             | Color                    | Dimmer    | RW          | Adjust the color density                                                | Value between 0 and 100                                                                                                                            |
+| hue               | Hue                      | Dimmer    | RW          | Adjust the color tone                                                   | Value between 0 and 100                                                                                                                            |
+| sharpness         | Sharpness                | Dimmer    | RW          | Sharpen the outline of the picture or reduce the noise                  | Value between 0 and 100                                                                                                                            |
 | colortemperature  | Color Temperature        | String    | RW          | Adjust the color temperature                                            | D55, D65, D75, D93, DCI, High, Middle, Low, Low1, Low2, Custom, Custom1, Custom2, Custom3, Custom4, Custom5                                        |
 | irismode          | Iris Mode                | String    | RW          | Switch the iris aperture function                                       | AutoFull, Full, AutoLimited, Limited, On, Auto, Auto1, Auto2, Manual, Off                                                                          |
-| irismanual        | Iris Manual              | Number    | RW          | Force the iris aperture to a fixed value                                | Value between 0 and 100                                                                                                                            |
+| irismanual        | Iris Manual              | Dimmer    | RW          | Force the iris aperture to a fixed value                                | Value between 0 and 100                                                                                                                            |
 | irissensitivity   | Iris Sensitivity         | String    | RW          | Select the iris sensitivity                                             | Recommend, Fast, Slow                                                                                                                              |
 | lampcontrol       | Lamp Control             | String    | RW          | Switch the lamp output                                                  | High, Low                                                                                                                                          |
 | filmprojection    | Film Projection          | String    | RW          | Reproduce an image similar to that of projected film                    | On, Mode1, Mode2, Mode3, Off                                                                                                                       |
@@ -206,14 +206,14 @@ Switch proj_power "Power" { channel = "sonyprojector:ethernetconnection:proj:pow
 String proj_powerstate "Power State [%s]" { channel = "sonyprojector:ethernetconnection:proj:powerstate" }
 String proj_input "Video Input [%s]" { channel = "sonyprojector:ethernetconnection:proj:input" }
 String proj_calibrationpreset "Calibrated Preset [%s]" { channel = "sonyprojector:ethernetconnection:proj:calibrationpreset" }
-Number proj_contrast "Contrast [%d]" { channel = "sonyprojector:ethernetconnection:proj:contrast" }
-Number proj_brightness "Brightness [%d]" { channel = "sonyprojector:ethernetconnection:proj:brightness" }
-Number proj_color "Color [%d]" { channel = "sonyprojector:ethernetconnection:proj:color" }
-Number proj_hue "Hue [%d]" { channel = "sonyprojector:ethernetconnection:proj:hue" }
-Number proj_sharpness "Sharpness [%d]" { channel = "sonyprojector:ethernetconnection:proj:sharpness" }
+Dimmer proj_contrast "Contrast [%d]" { channel = "sonyprojector:ethernetconnection:proj:contrast" }
+Dimmer proj_brightness "Brightness [%d]" { channel = "sonyprojector:ethernetconnection:proj:brightness" }
+Dimmer proj_color "Color [%d]" { channel = "sonyprojector:ethernetconnection:proj:color" }
+Dimmer proj_hue "Hue [%d]" { channel = "sonyprojector:ethernetconnection:proj:hue" }
+Dimmer proj_sharpness "Sharpness [%d]" { channel = "sonyprojector:ethernetconnection:proj:sharpness" }
 String proj_colortemperature "Color Temperature [%s]" { channel = "sonyprojector:ethernetconnection:proj:colortemperature" }
 String proj_irismode "Iris Mode [%s]" { channel = "sonyprojector:ethernetconnection:proj:irismode" }
-Number proj_irismanual "Iris Manual [%d]" { channel = "sonyprojector:ethernetconnection:proj:irismanual" }
+Dimmer proj_irismanual "Iris Manual [%d]" { channel = "sonyprojector:ethernetconnection:proj:irismanual" }
 String proj_irissensitivity "Iris Sensitivity [%s]" { channel = "sonyprojector:ethernetconnection:proj:irissensitivity" }
 String proj_lampcontrol "Lamp Control [%s]" { channel = "sonyprojector:ethernetconnection:proj:lampcontrol" }
 String proj_filmprojection "Film Projection [%s]" { channel = "sonyprojector:ethernetconnection:proj:filmprojection" }
@@ -237,14 +237,14 @@ Switch proj3_power "Power" { channel = "sonyprojector:serialconnection:proj3:pow
 String proj3_powerstate "Power State [%s]" { channel = "sonyprojector:serialconnection:proj3:powerstate" }
 String proj3_input "Video Input [%s]" { channel = "sonyprojector:serialconnection:proj3:input" }
 String proj3_calibrationpreset "Calibrated Preset [%s]" { channel = "sonyprojector:serialconnection:proj3:calibrationpreset" }
-Number proj3_contrast "Contrast [%d]" { channel = "sonyprojector:serialconnection:proj3:contrast" }
-Number proj3_brightness "Brightness [%d]" { channel = "sonyprojector:serialconnection:proj3:brightness" }
-Number proj3_color "Color [%d]" { channel = "sonyprojector:serialconnection:proj3:color" }
-Number proj3_hue "Hue [%d]" { channel = "sonyprojector:serialconnection:proj3:hue" }
-Number proj3_sharpness "Sharpness [%d]" { channel = "sonyprojector:serialconnection:proj3:sharpness" }
+Dimmer proj3_contrast "Contrast [%d]" { channel = "sonyprojector:serialconnection:proj3:contrast" }
+Dimmer proj3_brightness "Brightness [%d]" { channel = "sonyprojector:serialconnection:proj3:brightness" }
+Dimmer proj3_color "Color [%d]" { channel = "sonyprojector:serialconnection:proj3:color" }
+Dimmer proj3_hue "Hue [%d]" { channel = "sonyprojector:serialconnection:proj3:hue" }
+Dimmer proj3_sharpness "Sharpness [%d]" { channel = "sonyprojector:serialconnection:proj3:sharpness" }
 String proj3_colortemperature "Color Temperature [%s]" { channel = "sonyprojector:serialconnection:proj3:colortemperature" }
 String proj3_irismode "Iris Mode [%s]" { channel = "sonyprojector:serialconnection:proj3:irismode" }
-Number proj3_irismanual "Iris Manual [%d]" { channel = "sonyprojector:serialconnection:proj3:irismanual" }
+Dimmer proj3_irismanual "Iris Manual [%d]" { channel = "sonyprojector:serialconnection:proj3:irismanual" }
 String proj3_irissensitivity "Iris Sensitivity [%s]" { channel = "sonyprojector:serialconnection:proj3:irissensitivity" }
 String proj3_lampcontrol "Lamp Control [%s]" { channel = "sonyprojector:serialconnection:proj3:lampcontrol" }
 String proj3_filmprojection "Film Projection [%s]" { channel = "sonyprojector:serialconnection:proj3:filmprojection" }
@@ -268,14 +268,14 @@ Switch proj4_power "Power" { channel = "sonyprojector:serialoveripconnection:pro
 String proj4_powerstate "Power State [%s]" { channel = "sonyprojector:serialoveripconnection:proj4:powerstate" }
 String proj4_input "Video Input [%s]" { channel = "sonyprojector:serialoveripconnection:proj4:input" }
 String proj4_calibrationpreset "Calibrated Preset [%s]" { channel = "sonyprojector:serialoveripconnection:proj4:calibrationpreset" }
-Number proj4_contrast "Contrast [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:contrast" }
-Number proj4_brightness "Brightness [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:brightness" }
-Number proj4_color "Color [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:color" }
-Number proj4_hue "Hue [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:hue" }
-Number proj4_sharpness "Sharpness [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:sharpness" }
+Dimmer proj4_contrast "Contrast [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:contrast" }
+Dimmer proj4_brightness "Brightness [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:brightness" }
+Dimmer proj4_color "Color [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:color" }
+Dimmer proj4_hue "Hue [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:hue" }
+Dimmer proj4_sharpness "Sharpness [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:sharpness" }
 String proj4_colortemperature "Color Temperature [%s]" { channel = "sonyprojector:serialoveripconnection:proj4:colortemperature" }
 String proj4_irismode "Iris Mode [%s]" { channel = "sonyprojector:serialoveripconnection:proj4:irismode" }
-Number proj4_irismanual "Iris Manual [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:irismanual" }
+Dimmer proj4_irismanual "Iris Manual [%d]" { channel = "sonyprojector:serialoveripconnection:proj4:irismanual" }
 String proj4_irissensitivity "Iris Sensitivity [%s]" { channel = "sonyprojector:serialoveripconnection:proj4:irissensitivity" }
 String proj4_lampcontrol "Lamp Control [%s]" { channel = "sonyprojector:serialoveripconnection:proj4:lampcontrol" }
 String proj4_filmprojection "Film Projection [%s]" { channel = "sonyprojector:serialoveripconnection:proj4:filmprojection" }
