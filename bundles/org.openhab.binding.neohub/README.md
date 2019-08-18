@@ -1,7 +1,7 @@
 # NeoHub Binding
 
 This is a binding for integrating Heatmiser room and underfloor heating control products.
-The NeoHub (bridge) binding allows you to connect openHab via TCP/IP to Heatmiser's NeoHub and integrate your NeoStat smart thermostats and NeoPlug smart plugs onto the bus.
+The NeoHub binding allows you to connect openHAB via TCP/IP to Heatmiser's NeoHub and integrate your NeoStat smart thermostats and NeoPlug smart plugs.
 
 See the manufacturers web site for more details: https://www.heatmiser.com
 
