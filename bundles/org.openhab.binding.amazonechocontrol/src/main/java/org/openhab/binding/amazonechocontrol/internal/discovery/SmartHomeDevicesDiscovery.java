@@ -12,7 +12,17 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.discovery;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_APPLIANCE_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_LIGHT_ENTITY_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_LIGHT_SUBDEVICE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_BRIGHTNESS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR_TEMPERATURE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_POWER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT_GROUP;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_PLUG;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -152,6 +162,9 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
             return;
         }
 
+        Boolean discoverOpenHabSmartHomeDevices = (Boolean) config.getProperties()
+                .get("discoverOpenHabSmartHomeDevices");
+
         for (Object smartHomeDevice : deviceList) {
             ThingUID bridgeThingUID = this.accountHandler.getThing().getUID();
             ThingTypeUID thingTypeId = null;
@@ -161,6 +174,11 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
 
             if (smartHomeDevice instanceof SmartHomeDevice) {
                 SmartHomeDevice shd = (SmartHomeDevice) smartHomeDevice;
+                if (discoverOpenHabSmartHomeDevices == null || discoverOpenHabSmartHomeDevices == false) {
+                    if ("OpenHab".equalsIgnoreCase(shd.manufacturerName)) {
+                        continue;
+                    }
+                }
 
                 if (!Arrays.asList(shd.applianceTypes).contains("SMARTPLUG")) {
                     thingTypeId = THING_TYPE_LIGHT;
