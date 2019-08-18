@@ -28,21 +28,23 @@ The binding supports only one thing and requires the configuration of the serial
 
 ## Channels
 
-| channel      | type               | description                                  |
-|--------------|--------------------|----------------------------------------------|
-| outsideTemp  | Number:Temperature | Temperature sensor in the outside air flow   |
-| outgoingTemp | Number:Temperature | Temperature sensor in the outgoing air flow  |
-| extractTemp  | Number:Temperature | Temperature sensor in the extract air flow   |
-| supplyTemp   | Number:Temperature | Temperature sensor in the supply air flow    |
-| setTemp      | Number:Temperature | Set temperature for supply (not always used) |
-| fanspeed     | Number             | Level of the fanspeed (1-8)                  |
-| bypassTemp   | Number:Temperature | Temperature to disable the bypass function   |
-| minFanspeed  | Number             | Minimal level of the fanspeed (1-8)          |
-| maxFanspeed  | Number             | Maximal level of the fanspeed (1-8)          |
-| rhLimit      | Number             | Limit for relative humidity sensor           |
-| hysteresis   | Number:Temperature | Hysteresis on defroster temperature          |
-| DCFanExtract | Number             | Speed reduction for the extract fan          |
-| DCFanSupply  | Number             | Speed reduction for the supply fan           |
+| channel        | type               | description                                   |
+|----------------|--------------------|-----------------------------------------------|
+| outsideTemp    | Number:Temperature | Temperature sensor in the outside air flow    |
+| outgoingTemp   | Number:Temperature | Temperature sensor in the outgoing air flow   |
+| extractTemp    | Number:Temperature | Temperature sensor in the extract air flow    |
+| supplyTemp     | Number:Temperature | Temperature sensor in the supply air flow     |
+| setTemp        | Number:Temperature | Set temperature for supply (not always used)  |
+| fanspeed       | Number             | Level of the fanspeed (1-8)                   |
+| bypassTemp     | Number:Temperature | Temperature to disable the bypass function    |
+| supplyStopTemp | Number:Temperature | Temperature to stop supply fan for defrosting |
+| preheatTemp    | Number:Temperature | Temperature to enable the preheater           |
+| minFanspeed    | Number             | Minimal level of the fanspeed (1-8)           |
+| maxFanspeed    | Number             | Maximal level of the fanspeed (1-8)           |
+| rhLimit        | Number             | Limit for relative humidity sensor            |
+| hysteresis     | Number:Temperature | Hysteresis on defroster temperature           |
+| DCFanExtract   | Number             | Speed reduction for the extract fan           |
+| DCFanSupply    | Number             | Speed reduction for the supply fan            |
 
 ## Full Example
 

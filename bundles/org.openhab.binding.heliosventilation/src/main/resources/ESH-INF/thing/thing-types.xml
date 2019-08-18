@@ -26,6 +26,9 @@
             <channel id="DCFanExtract" typeId="dc_fan_extract" />
             <channel id="DCFanSupply" typeId="dc_fan_supply" />
             
+            <channel id="powerState" typeId="power_state" />
+            <channel id="winterMode" typeId="winter_state" />
+            <channel id="adjustInveral" typeId="adjust_interval" />
 		</channels>
 
         <config-description>
@@ -160,6 +163,25 @@
         <label>Hysteresis</label>
         <description>Hysteresis on defroster temperature.</description>
         <state pattern="%d %unit%" min="1" max="10" readOnly="false" />
+    </channel-type>
+
+    <channel-type id="power_state" advanced="false">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <description>State of the ventilation system.</description>
+    </channel-type>
+
+    <channel-type id="winter_mode" advanced="false">
+        <item-type>Switch</item-type>
+        <label>Winter Mode</label>
+        <description>Ventilation system is in winter mode and will not use bypass for cooling. If OFF, the bypass function will be used for cooling if the outside temperature is above the Cell Bypass Temperature.</description>
+    </channel-type>
+
+    <channel-type id="adjust_interval" advanced="true">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Adjust Interval</label>
+        <category>HVAC</category>
+        <state pattern="%f %unit%" min="1" max="15" readOnly="false" />
     </channel-type>
 
 </thing:thing-descriptions>

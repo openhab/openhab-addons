@@ -13,27 +13,27 @@
 package org.openhab.binding.heliosventilation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
- * The {@link HeliosVentilationVariable} is a description of a variable in the Helios ventilation system.
+ * The {@link HeliosVentilationDataPoint} is a description of a datapoint in the Helios ventilation system.
  *
  * @author Raphael Mack - Initial contribution
  */
 @NonNullByDefault
-public class HeliosVentilationVariable {
+public class HeliosVentilationDataPoint {
     public enum type {
         TEMPERATURE,
         HYSTERESIS,
         FANSPEED,
-        BIT,
+        SWITCH,
         BYTE_PERCENT,
         PERCENT,
         NUMBER
@@ -61,25 +61,73 @@ public class HeliosVentilationVariable {
 
     private static final int BYTE_PERCENT_OFFSET = 52;
 
-    private ChannelUID channelUID;
+    /**
+     * parse fullSpec in the properties format to declare a datapoint
+     *
+     * @param fullSpec
+     * @throws HeliosPropertiesFormatException in case fullSpec is not parsable
+     */
+    public HeliosVentilationDataPoint(String name, String fullSpec) throws HeliosPropertiesFormatException {
+        String specWithoutComment;
+        if (fullSpec.contains("#")) {
+            specWithoutComment = fullSpec.substring(0, fullSpec.indexOf("#"));
+        } else {
+            specWithoutComment = fullSpec;
+        }
+        String[] tokens = specWithoutComment.split(",");
+        this.name = name;
+        if (tokens.length != 3) {
+            throw new HeliosPropertiesFormatException("invalid length", name, fullSpec);
+        }
+        try {
+            String addr = tokens[0];
+            String[] addrTokens;
+            if (addr.contains(":")) {
+                addrTokens = addr.split(":");
+            } else {
+                addrTokens = new String[] { addr };
+            }
 
-    public HeliosVentilationVariable(Thing thing, String name, byte address, boolean writable, type datatype) {
+            this.address = (byte) (int) Integer.decode(addrTokens[0]);
+            if (addrTokens.length > 1) {
+                bitStart = (byte) (int) Integer.decode(addrTokens[1]);
+                bitLength = 1;
+            }
+            if (addrTokens.length > 2) {
+                bitLength = (byte) (int) Integer.decode(addrTokens[1]) - bitStart + 1;
+            }
+            if (addrTokens.length > 3) {
+                throw new HeliosPropertiesFormatException(
+                        "invalid address spec: too many separators in bit specification", name, fullSpec);
+            }
+        } catch (NumberFormatException e) {
+            throw new HeliosPropertiesFormatException("invalid address spec", name, fullSpec);
+        }
+
+        this.writable = Boolean.parseBoolean(tokens[1]);
+        try {
+            this.datatype = type.valueOf(tokens[2].replaceAll("\\s+", ""));
+        } catch (IllegalArgumentException e) {
+            throw new HeliosPropertiesFormatException("invalid type spec", name, fullSpec);
+        }
+    }
+
+    public HeliosVentilationDataPoint(String name, byte address, boolean writable, type datatype) {
         this.datatype = datatype;
         this.writable = writable;
         this.name = name;
         this.address = address;
-        channelUID = new ChannelUID(thing.getUID(), name);
     }
 
     private String name;
     private boolean writable;
     private type datatype;
     private byte address;
+    private int bitStart;
+    private int bitLength;
 
-    /* @return the channelUID for this variable */
-    public ChannelUID channelUID() {
-        return channelUID;
-    }
+    @Nullable
+    private HeliosVentilationDataPoint link;
 
     public boolean isWritable() {
         return writable;
@@ -107,6 +155,17 @@ public class HeliosVentilationVariable {
     }
 
     /**
+     * @return the bit mask of the data point. 0xFF in case the full byte is used.
+     */
+    public byte bitMask() {
+        byte mask = (byte) 0xff;
+        if (datatype == type.NUMBER || datatype == type.SWITCH) {
+            mask = (byte) (((2 ^ bitLength) - 1) << bitStart);
+        }
+        return mask;
+    }
+
+    /**
      * interpret the given byte b and return the value as State.
      *
      * @param b
@@ -119,6 +178,15 @@ public class HeliosVentilationVariable {
         } else if (datatype == type.BYTE_PERCENT) {
             return new QuantityType<>((int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET)),
                     SmartHomeUnits.PERCENT);
+        } else if (datatype == type.SWITCH && bitLength == 1) {
+            if ((b & (1 << bitStart)) != 0) {
+                return OnOffType.ON;
+            } else {
+                return OnOffType.OFF;
+            }
+        } else if (datatype == type.NUMBER) {
+            int value = (b & bitMask()) >> bitStart;
+            return new DecimalType(value);
         } else if (datatype == type.PERCENT) {
             return new QuantityType<>(val, SmartHomeUnits.PERCENT);
         } else if (datatype == type.FANSPEED) {
@@ -141,27 +209,22 @@ public class HeliosVentilationVariable {
      * @return sting representation of byte value b in current datatype
      */
     public String asString(byte b) {
-        int val = b & 0xff;
-
-        if (datatype == type.TEMPERATURE) {
-            return String.format("%d °C", tempMap[val]);
-        } else if (datatype == type.FANSPEED) {
-            int i = 1;
-            while (i < fanspeedMap.length && fanspeedMap[i] < val) {
-                i++;
-            }
-            return String.format("%d", i);
-        } else if (datatype == type.BYTE_PERCENT) {
-            return String.format("%d %%", (int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET)));
-        } else if (datatype == type.PERCENT) {
-            return String.format("%d %%", val);
-        } else if (datatype == type.HYSTERESIS) {
-            return String.format("%d °C", val / 3);
+        State ste = asState(b);
+        String str = ste.toString();
+        if (ste instanceof UnDefType) {
+            return String.format("<unknown type> %02X ", b);
+        } else {
+            return str;
         }
-
-        return "<unknown type>" + String.format("%02X ", b);
     }
 
+    /**
+     * generate byte data to transmit
+     *
+     * @param val is the state of a channel
+     * @return byte value with RS485 representation. Bit level values are returned in the correct location, but other
+     *         bits/datapoints in the same address are zero.
+     */
     public byte getTransmitDataFor(State val) {
         byte result = 0;
         DecimalType value = val.as(DecimalType.class);
@@ -193,8 +256,46 @@ public class HeliosVentilationVariable {
             result = (byte) d;
         } else if (datatype == type.HYSTERESIS) {
             result = (byte) (value.intValue() * 3);
+        } else if (datatype == type.SWITCH || datatype == type.NUMBER) {
+            // those are the types supporting bit level specification
+            // output only the relevant bits
+            result = (byte) (value.intValue() << bitStart);
         }
 
         return result;
+    }
+
+    /**
+     * Get further datapoint linked to the same address.
+     *
+     * @return sister datapoint
+     */
+    @Nullable
+    public HeliosVentilationDataPoint link() {
+        return link;
+    }
+
+    /**
+     * Add a link to a datapoint on the same address.
+     * 
+     * @param link is the sister datapoint
+     */
+    public void append(HeliosVentilationDataPoint link) {
+        if (this.link == null) {
+            this.link = link;
+        } else {
+            this.link.append(link);
+        }
+    }
+
+    /**
+     * @return true iff writing to this datapoint requires a read-modify-write on the address
+     */
+    public boolean requiresReadModifyWrite() {
+        /*
+         * the address either has multiple datapoints linked to it or is a bit-level point
+         * this means we need to do read-modify-write on udpate and therefore we store the data in memory
+         */
+        return (bitMask() != (byte) 0xFF || link != null);
     }
 }
