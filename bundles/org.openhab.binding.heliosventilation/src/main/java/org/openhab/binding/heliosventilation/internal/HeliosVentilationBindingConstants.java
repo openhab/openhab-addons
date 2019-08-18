@@ -26,10 +26,13 @@ public class HeliosVentilationBindingConstants {
 
     public static final String BINDING_ID = "heliosventilation";
 
+    public static final String DATAPOINT_FILE = "datapoints.properties";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_HELIOS_VENTILATION = new ThingTypeUID(BINDING_ID, "ventilation");
 
     // List of all Channel ids
+    // TODO: remove channel ids
     public static final String CHANNEL_OUTSIDE_TEMP = "outsideTemp";
     public static final String CHANNEL_OUTGOING_TEMP = "outgoingTemp";
     public static final String CHANNEL_EXTRACT_TEMP = "extractTemp";
