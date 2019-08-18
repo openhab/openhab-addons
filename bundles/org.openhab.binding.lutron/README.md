@@ -169,6 +169,17 @@ Thing configuration file example:
 Thing keypad entrykeypad [ integrationId=10, model="W7B" autorelease=true ]
 ```
 
+Example rule triggered by a keypad button press:
+
+```
+rule ExampleScene
+when
+  Item entrykeypad_button4 received update ON
+then
+  Library1_Brightness.sendCommand(OFF)
+end
+```
+
 ### Tabletop seeTouch Keypads
 
 Tabletop seeTouch keypads use the **ttkeypad** thing.
@@ -415,6 +426,23 @@ Thing configuration file example:
 
 ```
 Thing timeclock timeclock [ integrationId=23 ]
+```
+
+Example rule to refresh sunrise/sunset channels daily and at restart:
+
+```
+import org.eclipse.smarthome.core.types.RefreshType
+
+rule "Lutron sunrise/sunset daily refresh"
+
+when
+  // Trigger at time 00:05:00 every day
+  Time cron "0 5 0 * * ?" or
+  Thing "lutron:timeclock:70acb5a7:23" changed to ONLINE
+then
+  Timeclock_Sunrise.sendCommand(RefreshType.REFRESH)
+  Timeclock_Sunset.sendCommand(RefreshType.REFRESH)
+end
 ```
 
 ## Channels
