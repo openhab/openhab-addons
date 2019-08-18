@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -77,19 +78,24 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
     private final Object commandLock = new Object();
 
+    private final ExpiringCacheMap<String, State> cache;
+
     public SonyProjectorHandler(Thing thing, SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider,
             SerialPortManager serialPortManager) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.serialPortManager = serialPortManager;
+        this.cache = new ExpiringCacheMap<>(TimeUnit.SECONDS.toMillis(POLLING_INTERVAL));
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channel = channelUID.getId();
         if (command instanceof RefreshType) {
-            logger.debug("REFRESH command from channel {} is ignored; will be handled by next projector state poll",
-                    channel);
+            State state = cache.get(channel);
+            if (state != null) {
+                updateState(channel, state);
+            }
             return;
         }
 
@@ -520,14 +526,17 @@ public class SonyProjectorHandler extends BaseThingHandler {
         } catch (SonyProjectorException e) {
             logger.debug("Get Status Power failed: {}", e.getMessage());
         }
-        updateState(CHANNEL_POWER, on ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_POWERSTATE, state);
+        updateChannelStateAndCache(CHANNEL_POWER, on ? OnOffType.ON : OnOffType.OFF);
+        updateChannelStateAndCache(CHANNEL_POWERSTATE, state);
         return on;
     }
 
-    private void refreshChannel(String channel, boolean requestValue) {
+    private @Nullable State requestProjectorValue(String channel, boolean requestValue) {
+        State state = null;
         boolean precond;
         switch (channel) {
+            case CHANNEL_POWER:
+            case CHANNEL_POWERSTATE:
             case CHANNEL_INPUT:
             case CHANNEL_CALIBRATION_PRESET:
             case CHANNEL_CONTRAST:
@@ -591,10 +600,16 @@ public class SonyProjectorHandler extends BaseThingHandler {
                 break;
         }
         if (isLinked(channel) && precond) {
-            State state = UnDefType.UNDEF;
+            state = UnDefType.UNDEF;
             if (requestValue) {
                 try {
                     switch (channel) {
+                        case CHANNEL_POWER:
+                            state = connector.getStatusPower().isOn() ? OnOffType.ON : OnOffType.OFF;
+                            break;
+                        case CHANNEL_POWERSTATE:
+                            state = new StringType(connector.getStatusPower().getName());
+                            break;
                         case CHANNEL_INPUT:
                             state = new StringType(connector.getInput());
                             break;
@@ -687,8 +702,26 @@ public class SonyProjectorHandler extends BaseThingHandler {
                     logger.debug("Refresh channel {} failed: {}", channel, e.getMessage());
                 }
             }
-            updateState(channel, state);
         }
+        return state;
     }
 
+    private void refreshChannel(String channel, boolean requestValue) {
+        updateChannelStateAndCache(channel, requestProjectorValue(channel, requestValue));
+    }
+
+    private void updateChannelStateAndCache(String channel, @Nullable State state) {
+        if (state != null) {
+            updateState(channel, state);
+
+            if (!cache.containsKey(channel)) {
+                cache.put(channel, () -> {
+                    synchronized (commandLock) {
+                        return requestProjectorValue(channel, true);
+                    }
+                });
+            }
+            cache.putValue(channel, state);
+        }
+    }
 }
