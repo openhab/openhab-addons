@@ -27,7 +27,7 @@ Once the NeoHub Thing has been created and it has successfully signed on, it wil
 
 The NeoHub Thing connects to the hub (bridge) to communicate with any respective connected NeoStat and NeoPlug Things.
 It signs on to the hub using the supplied connection parameters, and it polls the hub at regular intervals to read and write the data for each NeoXxx device.
-Before it can connect to the hub, the following Configuration Parameters must be entered.   
+Before it can connect to the hub, the following Configuration Parameters must be entered:
 
 | Configuration Parameter | Description                                                                               |
 |-------------------------|-------------------------------------------------------------------------------------------|
