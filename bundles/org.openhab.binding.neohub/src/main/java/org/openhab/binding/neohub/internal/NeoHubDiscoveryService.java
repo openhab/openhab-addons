@@ -50,7 +50,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
             .unmodifiableSet(Stream.of(THING_TYPE_NEOSTAT, THING_TYPE_NEOPLUG).collect(Collectors.toSet()));
 
     public NeoHubDiscoveryService(NeoHubHandler hub) {
-        // note: background discovery is enabled in the super method..
+        // note: background discovery is enabled in the super method
         super(DISCOVERABLE_THING_TYPES_UIDS, DISCOVERY_TIMEOUT);
         this.hub = hub;
     }
@@ -73,7 +73,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.info("start background discovery..");
+        logger.debug("start background discovery..");
 
         if (discoveryScheduler == null || discoveryScheduler.isCancelled()) {
             discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 10, DISCOVERY_REFRESH_PERIOD,
@@ -83,7 +83,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.info("stop background discovery..");
+        logger.debug("stop background discovery..");
 
         if (discoveryScheduler != null && !discoveryScheduler.isCancelled()) {
             discoveryScheduler.cancel(true);

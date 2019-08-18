@@ -86,7 +86,10 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
         // create a new discovery service
         NeoHubDiscoveryService ds = new NeoHubDiscoveryService(handler);
 
-        // register the discovery service with the OpenHAB framework
+        // activate the discovery service
+        ds.activate();
+
+        // register the discovery service
         ServiceRegistration<?> serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), ds,
                 new Hashtable<String, Object>());
 
@@ -95,9 +98,6 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
          * hub is destroyed
          */
         discoServices.put(handler.getThing().getUID(), serviceReg);
-
-        // finally activate the discovery service
-        ds.activate();
     }
 
     /*
@@ -108,7 +108,7 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
         ServiceRegistration<?> serviceReg = discoServices.remove(handler.getThing().getUID());
 
         if (serviceReg != null) {
-            // retrieve the respective discovery service from the OpenHAB framework
+            // retrieve the respective discovery service
             NeoHubDiscoveryService disco = (NeoHubDiscoveryService) bundleContext.getService(serviceReg.getReference());
 
             // and unregister the service

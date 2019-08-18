@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
- * The {@link NeoStatHandler} is the OpenHab Handler for NeoStat devices Note:
+ * The {@link NeoStatHandler} is the openHAB Handler for NeoStat devices Note:
  * inherits almost all the functionality of a {@link NeoBaseHandler}
  * 
  * @author Andrew Fiddian-Green - Initial contribution
@@ -37,9 +37,6 @@ public class NeoStatHandler extends NeoBaseHandler {
         super(thing);
     }
 
-    /*
-     * build the command string
-     */
     @Override
     protected String toNeoHubBuildCommandString(String channelId, Command command) {
         if (command instanceof QuantityType<?> && channelId.equals(CHAN_TARGET_TEMP)) {
@@ -53,24 +50,22 @@ public class NeoStatHandler extends NeoBaseHandler {
         return "";
     }
 
-    /*
-     * executes a (de-bounced) update on the respective OpenHAB channels
-     */
     @Override
-    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo device) {
+    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo deviceInfo) {
         toOpenHabSendValueDebounced(CHAN_TARGET_TEMP,
-                new QuantityType<Temperature>(device.getTargetTemperature(), SIUnits.CELSIUS));
+                new QuantityType<Temperature>(deviceInfo.getTargetTemperature(), SIUnits.CELSIUS));
 
         toOpenHabSendValueDebounced(CHAN_ROOM_TEMP,
-                new QuantityType<Temperature>(device.getRoomTemperature(), SIUnits.CELSIUS));
+                new QuantityType<Temperature>(deviceInfo.getRoomTemperature(), SIUnits.CELSIUS));
 
         toOpenHabSendValueDebounced(CHAN_FLOOR_TEMP,
-                new QuantityType<Temperature>(device.getFloorTemperature(), SIUnits.CELSIUS));
+                new QuantityType<Temperature>(deviceInfo.getFloorTemperature(), SIUnits.CELSIUS));
 
-        toOpenHabSendValueDebounced(CHAN_OCC_MODE_PRESENT, OnOffType.from(!device.isStandby()));
+        toOpenHabSendValueDebounced(CHAN_OCC_MODE_PRESENT, OnOffType.from(!deviceInfo.isStandby()));
 
         toOpenHabSendValueDebounced(CHAN_STAT_OUTPUT_STATE,
-                (device.isHeating() || device.isPreHeating() ? new StringType(VAL_HEATING) : new StringType(VAL_OFF)));
+                (deviceInfo.isHeating() || deviceInfo.isPreHeating() ? new StringType(VAL_HEATING)
+                        : new StringType(VAL_OFF)));
     }
 
 }

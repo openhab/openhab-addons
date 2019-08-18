@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * NeoHubConnector handles the ASCII based communication via TCP between OpenHAB
+ * NeoHubConnector handles the ASCII based communication via TCP between openHAB
  * and NeoHub
  * 
  * @author Sebastian Prehn - Initial contribution
@@ -61,7 +61,7 @@ public class NeoHubSocket {
      * @throws IOException, RuntimeException
      * 
      */
-    public synchronized String sendMessage(final String request) throws IOException, RuntimeException {
+    public synchronized String sendMessage(final String request) throws IOException, NeoHubException {
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(hostname, port), TCP_SOCKET_IMEOUT * 1000);
 
@@ -96,7 +96,7 @@ public class NeoHubSocket {
                 }
 
                 if (response.isEmpty()) {
-                    throw new RuntimeException("empty response string");
+                    throw new NeoHubException("empty response string");
                 }
 
                 return response;

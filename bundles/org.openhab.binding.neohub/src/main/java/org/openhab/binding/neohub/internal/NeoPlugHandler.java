@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
- * The {@link NeoPlugHandler} is the OpenHab Handler for NeoPlug devices Note:
+ * The {@link NeoPlugHandler} is the OpenHAB Handler for NeoPlug devices Note:
  * inherits almost all the functionality of a {@link NeoBaseHandler}
  * 
  * @author Andrew Fiddian-Green - Initial contribution
@@ -33,9 +33,6 @@ public class NeoPlugHandler extends NeoBaseHandler {
 
     // =========== methods of NeoBaseHandler that are overridden ================
 
-    /*
-     * build the command string
-     */
     @Override
     protected String toNeoHubBuildCommandString(String channelId, Command command) {
         if (command instanceof OnOffType && channelId.equals(CHAN_PLUG_OUTPUT_STATE)) {
@@ -48,10 +45,6 @@ public class NeoPlugHandler extends NeoBaseHandler {
         return "";
     }
 
-    /*
-     * if it is a manual command, insert a command to turn on manual mode then send
-     * the original command to the hub
-     */
     @Override
     protected void toNeoHubSendCommandSet(String channelId, Command command) {
         // if this is a manual command, switch to manual mode first..
@@ -62,13 +55,10 @@ public class NeoPlugHandler extends NeoBaseHandler {
         toNeoHubSendCommand(channelId, command);
     }
 
-    /*
-     * => executes a (de-bounced) update on the respective OpenHAB channels
-     */
     @Override
-    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo device) {
-        toOpenHabSendValueDebounced(CHAN_PLUG_AUTO_MODE, OnOffType.from(!device.stateManual()));
+    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo deviceInfo) {
+        toOpenHabSendValueDebounced(CHAN_PLUG_AUTO_MODE, OnOffType.from(!deviceInfo.stateManual()));
 
-        toOpenHabSendValueDebounced(CHAN_PLUG_OUTPUT_STATE, OnOffType.from(device.isTimerOn()));
+        toOpenHabSendValueDebounced(CHAN_PLUG_OUTPUT_STATE, OnOffType.from(deviceInfo.isTimerOn()));
     }
 }

@@ -37,8 +37,6 @@ Before it can connect to the hub, the following Configuration Parameters must be
 | portNumber              | Port number of the NeoHub (Default=4242)                                                  |
 | pollingInterval         | Time (seconds) between polling requests to the NeoHub (Minimum=4; Maximum=60; Default=60) |
 
-Note: You must create ONLY ONE Thing of the type NeoHub; duplicate NeoHub Things risk causing communication errors.   
-
 ## Thing Configuration for "NeoStat" and "NeoPlug"
 
 The NeoHub Thing connects to the hub (bridge) to communicate with any NeoStat or NeoPlug devices that are connected to it.
@@ -76,11 +74,10 @@ The following Channels, and their associated channel types are shown below.
 ### `demo.things` File
 
 ```
-Bridge neohub:neohub:myhubname "Heatmiser NeoHub" [ hostName="192.168.1.123", portNumber=4242, pollingInterval=60 ]
-
-Thing neohub:neoplug:myhubname:mydownstairs "Downstairs Plug" @ "Hall" [ deviceNameInHub="Hall Plug" ]
-
-Thing neohub:neostat:myhubname:myupstairs "Upstairs Thermostat" @ "Landing"  [ deviceNameInHub="Landing Thermostat" ]
+Bridge neohub:neohub:myhubname "Heatmiser NeoHub" [ hostName="192.168.1.123", portNumber=4242, pollingInterval=60 ] {
+    Thing neohub:neoplug:myhubname:mydownstairs "Downstairs Plug" @ "Hall" [ deviceNameInHub="Hall Plug" ]
+    Thing neohub:neostat:myhubname:myupstairs "Upstairs Thermostat" @ "Landing"  [ deviceNameInHub="Landing Thermostat" ]
+}
 ```
 
 ### `demo.items` File

@@ -18,17 +18,18 @@
 
 			<parameter name="hostName" type="text" required="true">
 				<label>Host Name</label>
+				<context>network-address</context>
 				<description>Host name (IP address) of the NeoHub</description>
 			</parameter>
 
-			<parameter name="portNumber" type="integer" required="true">
+			<parameter name="portNumber" type="integer" required="false">
 				<label>Port Number</label>
 				<description>Port number of the NeoHub</description>
 				<default>4242</default>
 			</parameter>
 
 			<parameter name="pollingInterval" type="integer" min="10"
-				required="true">
+				required="false">
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling the NeoHub (min=4, max/default=60)</description>
 				<default>60</default>
