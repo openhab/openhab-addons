@@ -60,7 +60,7 @@ Here's an example of a configuration for a bus stop in Seattle, WA, USA that has
 `demo.things`:
 
 ```
-Bridge onebusaway:api:pugentsound [apiKey="your-api-key", apiServer="api.pugetsound.onebusaway.org"] {
+Bridge onebusaway:api:pugetsound [apiKey="your-api-key", apiServer="api.pugetsound.onebusaway.org"] {
   Bridge onebusaway:stop:1_26860 [stopId="1_26860"] {
     Thing onebusaway:route:1_100193 [routeId="1_100193"]
     Thing onebusaway:route:1_102574 [routeId="1_102574"]
