@@ -12,13 +12,4 @@
 	<artifactId>org.openhab.binding.siemensrds</artifactId>
 	<name>openHAB Add-ons :: Bundles :: Siemens RDS Binding</name>
 	
-	<dependencies>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.3</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
-
 </project>

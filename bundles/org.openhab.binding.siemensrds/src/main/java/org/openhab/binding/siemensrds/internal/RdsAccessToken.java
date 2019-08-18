@@ -16,9 +16,13 @@ import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -47,6 +52,8 @@ class RdsAccessToken {
      */
     protected static final Logger LOGGER = LoggerFactory.getLogger(RdsAccessToken.class);
 
+    private static final Gson GSON = new Gson();
+
     @SerializedName("access_token")
     private String accessToken;
     @SerializedName(".expires")
@@ -57,72 +64,60 @@ class RdsAccessToken {
     /*
      * private method: execute the HTTP POST on the server
      */
-    private static String httpGetTokenJson(String apiKey, String user, String password) {
-        String result = "";
+    private static String httpGetTokenJson(String apiKey, String user, String password)
+            throws RdsCloudException, IOException {
+        /*
+         * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
+         * preferred JETTY library; the reason is that JETTY does not allow sending the
+         * square brackets characters "[]" verbatim over HTTP connections
+         */
+        URL url = new URL(URL_TOKEN);
 
-        try {
-            URL url = new URL(URL_TOKEN);
+        HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
-            /*
-             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
-             * preferred JETTY library; the reason is that JETTY does not allow sending the
-             * square brackets characters "[]" verbatim over HTTP connections
-             */
-            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+        https.setRequestMethod(HTTP_POST);
 
-            https.setRequestMethod(HTTP_POST);
+        https.setRequestProperty(USER_AGENT, MOZILLA);
+        https.setRequestProperty(ACCEPT, TEXT_PLAIN);
+        https.setRequestProperty(CONTENT_TYPE, TEXT_PLAIN);
+        https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
 
-            https.setRequestProperty(USER_AGENT, MOZILLA);
-            https.setRequestProperty(ACCEPT, TEXT_PLAIN);
-            https.setRequestProperty(CONTENT_TYPE, TEXT_PLAIN);
-            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
+        https.setDoOutput(true);
 
-            String requestStr = String.format(TOKEN_REQUEST, user, password);
-
-            https.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(https.getOutputStream());
-            wr.writeBytes(requestStr);
-            wr.flush();
-            wr.close();
-
-            int responseCode = https.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(https.getInputStream(), "UTF8"));
-                String inStr;
-                StringBuffer response = new StringBuffer();
-                while ((inStr = in.readLine()) != null) {
-                    response.append(inStr);
-                }
-                in.close();
-                result = response.toString();
-            } else {
-                LOGGER.debug("httpGetTokenJson: http error={}", responseCode);
-            }
-        } catch (Exception e) {
-            LOGGER.debug("httpGetTokenJson: exception={}", e.getMessage());
+        try (OutputStream outputStream = https.getOutputStream();
+                DataOutputStream dataOutputStream = new DataOutputStream(outputStream);) {
+            dataOutputStream.writeBytes(String.format(TOKEN_REQUEST, user, password));
+            dataOutputStream.flush();
         }
 
-        return result;
+        if (https.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            throw new RdsCloudException("invalid HTTP response");
+        }
+
+        try (InputStream inputStream = https.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                BufferedReader reader = new BufferedReader(inputStreamReader);) {
+            String inputString;
+            StringBuffer response = new StringBuffer();
+            while ((inputString = reader.readLine()) != null) {
+                response.append(inputString);
+            }
+            return response.toString();
+        }
     }
 
     /*
      * public method: execute a POST on the cloud server, parse the JSON, and create
      * a class that encapsulates the data
      */
-    @Nullable
-    public static RdsAccessToken create(String apiKey, String user, String password) {
-        String json = httpGetTokenJson(apiKey, user, password);
-
+    public static @Nullable RdsAccessToken create(String apiKey, String user, String password) {
         try {
-            if (!json.equals("")) {
-                Gson gson = new Gson();
-
-                return gson.fromJson(json, RdsAccessToken.class);
-            }
-        } catch (Exception e) {
-            LOGGER.debug("create: exception={}", e.getMessage());
+            String json = httpGetTokenJson(apiKey, user, password);
+            return GSON.fromJson(json, RdsAccessToken.class);
+        } catch (JsonSyntaxException | RdsCloudException | IOException e) {
+            LOGGER.warn("token creation error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
+            return null;
         }
-        return null;
     }
 
     /*
@@ -140,7 +135,7 @@ class RdsAccessToken {
             try {
                 expDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z").parse(expires);
             } catch (ParseException e) {
-                LOGGER.debug("isExpired: exception={}", e.getMessage());
+                LOGGER.debug("isExpired: expiry date parsing exception");
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());

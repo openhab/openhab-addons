@@ -27,8 +27,7 @@
 				<description>The password that was used to register the smart thermostats</description>
 			</parameter>
 
-			<parameter name="pollingInterval" type="integer" min="10"
-				required="true">
+			<parameter name="pollingInterval" type="integer" min="8" max="60" required="true">
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling requests (min=8, max/default=60)</description>
 				<default>60</default>
@@ -139,8 +138,7 @@
 		<label>Target Temperature</label>
 		<description>Target temperature setting</description>
 		<category>temperature</category>
-		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30"
-			step="0.5" />
+		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30" step="0.5" />
 	</channel-type>
 
 	<channel-type id="thermostatOutputState">

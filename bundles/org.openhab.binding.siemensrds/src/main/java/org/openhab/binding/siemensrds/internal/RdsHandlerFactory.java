@@ -106,11 +106,11 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
         ServiceRegistration<?> serviceReg = discos.remove(handler.getThing().getUID());
 
         if (serviceReg != null) {
-            // unregister the service
-            serviceReg.unregister();
-
             // retrieve the respective discovery service
             RdsDiscoveryService disco = (RdsDiscoveryService) bundleContext.getService(serviceReg.getReference());
+
+            // unregister the service
+            serviceReg.unregister();
 
             // deactivate the service
             if (disco != null)

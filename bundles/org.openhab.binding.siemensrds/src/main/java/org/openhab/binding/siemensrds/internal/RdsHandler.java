@@ -355,11 +355,9 @@ public class RdsHandler extends BaseThingHandler {
      * private method: returns the cloud handler
      */
     private RdsCloudHandler getCloudHandler() {
-        @Nullable
-        Bridge b;
+        @Nullable Bridge b;
 
-        @Nullable
-        BridgeHandler h;
+        @Nullable BridgeHandler h;
 
         if ((b = getBridge()) != null && (h = b.getHandler()) != null && h instanceof RdsCloudHandler) {
             return (RdsCloudHandler) h;
