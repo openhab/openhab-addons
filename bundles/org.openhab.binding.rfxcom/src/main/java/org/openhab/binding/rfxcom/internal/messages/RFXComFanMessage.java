@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
@@ -64,13 +65,44 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
         MED(2, WESTINGHOUSE_7226640, CASAFAN, LUCCI_AIR_FAN),
         LOW(3, WESTINGHOUSE_7226640, CASAFAN, LUCCI_AIR_FAN),
         OFF(4, WESTINGHOUSE_7226640, CASAFAN, LUCCI_AIR_FAN),
-        LIGHT(5, WESTINGHOUSE_7226640, CASAFAN, LUCCI_AIR_FAN);
+        LIGHT(5, WESTINGHOUSE_7226640, CASAFAN, LUCCI_AIR_FAN),
+
+        FALMEC_POWER_OFF(1, 0, FALMEC),
+        FALMEC_SPEED_1(2, 1, FALMEC),
+        FALMEC_SPEED_2(3, 2, FALMEC),
+        FALMEC_SPEED_3(4, 3, FALMEC),
+        FALMEC_SPEED_4(5, 4, FALMEC),
+        FALMEC_TIMER_1(6, FALMEC),
+        FALMEC_TIMER_2(7, FALMEC),
+        FALMEC_TIMER_3(8, FALMEC),
+        FALMEC_TIMER_4(9, FALMEC),
+        FALMEC_LIGHT_ON(10, FALMEC),
+        FALMEC_LIGHT_OFF(11, FALMEC),
+
+        FT1211R_POWER(1, 0, FT1211R),
+        FT1211R_LIGHT(2, FT1211R),
+        FT1211R_SPEED_1(3, 1, FT1211R),
+        FT1211R_SPEED_2(4, 1, FT1211R),
+        FT1211R_SPEED_3(5, 1, FT1211R),
+        FT1211R_SPEED_4(6, 1, FT1211R),
+        FT1211R_SPEED_5(7, 1, FT1211R),
+        FT1211R_FORWARD_REVERSE(8, FT1211R),
+        FT1211R_TIMER_1H(9, FT1211R),
+        FT1211R_TIMER_4H(10, FT1211R),
+        FT1211R_TIMER_8H(11, FT1211R),
+        ;
 
         private final int command;
+        private final Integer speed;
         private final List<SubType> supportedBySubTypes;
 
         Commands(int command, SubType... supportedSubType) {
+            this(command, null, supportedSubType);
+        }
+
+        Commands(int command, Integer speed, SubType... supportedSubType) {
             this.command = command;
+            this.speed = speed;
             this.supportedBySubTypes = Arrays.asList(supportedSubType);
         }
 
@@ -79,11 +111,22 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
             return (byte) command;
         }
 
+        public Integer getSpeed() {
+            return speed;
+        }
+
         @Override
         public List<SubType> supportedBySubTypes() {
             return supportedBySubTypes;
         }
     }
+
+    private static final List<SubType> GENERIC_SUB_TYPES = Arrays.asList(WESTINGHOUSE_7226640, CASAFAN, LUCCI_AIR_FAN);
+
+    private static final List<Commands> LIGHT_ON_COMMANDS = Arrays.asList(Commands.LIGHT, Commands.FALMEC_LIGHT_ON);
+    private static final List<Commands> ON_COMMANDS = Arrays.asList(Commands.HI, Commands.MED, Commands.LOW,
+            Commands.FALMEC_SPEED_1, Commands.FALMEC_SPEED_2, Commands.FALMEC_SPEED_3, Commands.FALMEC_SPEED_4);
+    private static final List<Commands> OFF_COMMANDS = Arrays.asList(Commands.OFF, Commands.FALMEC_POWER_OFF);
 
     private SubType subType;
     private int sensorId;
@@ -159,10 +202,20 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 return handleFanSpeedChannel();
 
             case CHANNEL_COMMAND:
-                return handleCommandChannel(channelId);
+                return handleCommandChannel();
 
             default:
                 return super.convertToState(channelId);
+        }
+    }
+
+    private State handleLightChannel() {
+        if (LIGHT_ON_COMMANDS.contains(command)) {
+            return OnOffType.ON;
+        } else if (command == Commands.FALMEC_LIGHT_OFF) {
+            return OnOffType.OFF;
+        } else {
+            return UnDefType.UNDEF;
         }
     }
 
@@ -174,31 +227,25 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
             case OFF:
                 return StringType.valueOf(command.toString());
 
+            case FALMEC_POWER_OFF:
+            case FALMEC_SPEED_1:
+            case FALMEC_SPEED_2:
+            case FALMEC_SPEED_3:
+            case FALMEC_SPEED_4:
+                return new DecimalType(command.getSpeed());
+
             default:
                 return null;
         }
     }
 
-    private State handleLightChannel() {
-        if (command == Commands.LIGHT) {
+    private State handleCommandChannel() {
+        if (ON_COMMANDS.contains(command)) {
             return OnOffType.ON;
+        } else if (OFF_COMMANDS.contains(command)) {
+            return OnOffType.OFF;
         } else {
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private State handleCommandChannel(String channelId) {
-        switch (command) {
-            case HI:
-            case MED:
-            case LOW:
-                return OnOffType.ON;
-
-            case OFF:
-                return OnOffType.OFF;
-
-            default:
-                return null;
+            return null;
         }
     }
 
@@ -206,23 +253,15 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_COMMAND:
-                if (type instanceof OnOffType) {
-                    command = (type == OnOffType.ON ? Commands.MED : Commands.OFF);
-                } else {
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
-                }
+                command = handleCommand(channelId, type);
                 break;
 
             case CHANNEL_FAN_SPEED:
-                handleFanSpeedCommand(channelId, type);
+                command = handleFanSpeedCommand(channelId, type);
                 break;
 
             case CHANNEL_FAN_LIGHT:
-                if (type == OnOffType.ON) {
-                    command = Commands.LIGHT;
-                } else {
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
-                }
+                command = handleFanLightCommand(channelId, type);
                 break;
 
             default:
@@ -230,7 +269,18 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
         }
     }
 
-    private void handleFanSpeedCommand(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    private Commands handleCommand(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        if (type instanceof OnOffType) {
+            if (GENERIC_SUB_TYPES.contains(subType)) {
+                return (type == OnOffType.ON ? Commands.MED : Commands.OFF);
+            } else if (subType == FALMEC) {
+                return (type == OnOffType.ON ? Commands.FALMEC_SPEED_2 : Commands.FALMEC_POWER_OFF);
+            }
+        }
+        throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
+    }
+
+    private Commands handleFanSpeedCommand(String channelId, Type type) throws RFXComUnsupportedChannelException {
         if (type instanceof StringType) {
             String stringCommand = type.toString();
             switch (stringCommand) {
@@ -238,11 +288,39 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 case "MED":
                 case "LOW":
                 case "OFF":
-                    command = Commands.valueOf(stringCommand);
-                    break;
-                default:
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
+                    return Commands.valueOf(stringCommand);
+            }
+        } else if (type instanceof DecimalType) {
+            switch (((DecimalType) type).intValue()) {
+                case 0:
+                    return Commands.FALMEC_POWER_OFF;
+                case 1:
+                    return Commands.FALMEC_SPEED_1;
+                case 2:
+                    return Commands.FALMEC_SPEED_2;
+                case 3:
+                    return Commands.FALMEC_SPEED_3;
+                case 4:
+                    return Commands.FALMEC_SPEED_4;
             }
         }
+        throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
+    }
+
+    private Commands handleFanLightCommand(String channelId, Type type) throws RFXComUnsupportedChannelException {
+        if (type == OnOffType.ON) {
+            switch (subType) {
+                case LUCCI_AIR_FAN:
+                case CASAFAN:
+                case WESTINGHOUSE_7226640:
+                    return Commands.LIGHT;
+
+                case FALMEC:
+                    return Commands.FALMEC_LIGHT_ON;
+            }
+        } else if (type == OnOffType.OFF && subType == FALMEC) {
+            return Commands.FALMEC_LIGHT_OFF;
+        }
+        throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
     }
 }
