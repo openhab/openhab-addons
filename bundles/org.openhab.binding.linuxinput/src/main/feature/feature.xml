@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.linuxinput-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-linuxinput" description="Linux Input Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-enxio/0.19</bundle>
+        <!-- we have to copy and extend the already provided imports -->
+        <bundle dependency="true">wrap:mvn:com.github.jnr/jnr-posix/3.0.47$overwrite=merge&amp;Import-Package=jnr.ffi.provider.jffi,jnr.constants,jnr.constants.platform,jnr.constants.platform.windows,jnr.ffi,jnr.ffi.annotations,jnr.ffi.byref,jnr.ffi.mapper,jnr.ffi.provider,jnr.ffi.types,com.kenai.jffi,jnr.ffi.provider.converters</bundle>
+        <bundle>mvn:com.github.jnr/jffi/1.2.18/jar/native</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jffi/1.2.18/jar/complete</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-constants/0.9.11</bundle>
+        <bundle dependency="true">mvn:com.github.jnr/jnr-ffi/2.1.9</bundle>
+        <bundle dependency="true">wrap:mvn:com.github.jnr/jnr-a64asm/1.0.0$Bundle-Name=jnr-a64asm&amp;Bundle-SymbolicName=com.github.jnr.jnr-a64asm&amp;Bundle-Version=1.0.0</bundle>
+        <bundle dependency="true">wrap:mvn:com.github.jnr/jnr-x86asm/1.0.2$Bundle-Name=jnr-x86asm&amp;Bundle-SymbolicName=com.github.jnr.jnr-x86asm&amp;Bundle-Version=1.0.2</bundle>
+        <bundle dependency="true">mvn:org.ow2.asm/asm/5.0.3</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.linuxinput/${project.version}</bundle>
+    </feature>
+</features>
