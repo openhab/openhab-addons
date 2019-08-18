@@ -32,8 +32,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonSyntaxException;
-
 /**
  * The {@link NeoHubHandler} is the OpenHab Handler for NeoHub devices
  *
@@ -158,19 +156,18 @@ public class NeoHubHandler extends BaseBridgeHandler {
             return NeoHubReturnResult.ERR_INITIALIZATION;
         }
 
-        if (logger.isDebugEnabled())
-            logger.debug("sending command {}", commandStr);
+        try {
+            socket.sendMessage(commandStr);
 
-        if (socket.sendMessage(commandStr) == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "communication error, status => offline!");
+            // start a fast polling burst (to confirm the status change)
+            startFastPollingBurst();
+
+            return NeoHubReturnResult.SUCCEEDED;
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
+                    .format("set value error \"%s\", cause \"%s\", status => offline..", e.getMessage(), e.getCause()));
             return NeoHubReturnResult.ERR_COMMUNICATION;
         }
-
-        // start a fast polling burst (to confirm the status change)
-        startFastPollingBurst();
-
-        return NeoHubReturnResult.SUCCEEDED;
     }
 
     /*
@@ -184,26 +181,21 @@ public class NeoHubHandler extends BaseBridgeHandler {
             return null;
         }
 
-        @Nullable
-        String response = socket.sendMessage(CMD_CODE_INFO);
-        if ((response == null) || response.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "communication error, status => offline!");
-            return null;
-        }
-
         try {
             @Nullable
-            NeoHubInfoResponse result = NeoHubInfoResponse.createInfoResponse(response);
+            String response = socket.sendMessage(CMD_CODE_INFO);
+
+            @Nullable
+            NeoHubInfoResponse infoResponse = NeoHubInfoResponse.createInfoResponse(response);
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                         "JSON info packet received, status => online..");
             }
-            return result;
+            return infoResponse;
 
-        } catch (JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "JSON syntax error, status => offline..");
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
+                    .format("polling error \"%s\", cause \"%s\", status => offline..", e.getMessage(), e.getCause()));
             return null;
         }
     }

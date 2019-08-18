@@ -57,11 +57,11 @@ public class NeoHubSocket {
      * sends the message over the network to the NeoHub and returns its response
      * 
      * @param request the message to be sent to the NeoHub
-     * @return response received from neohub or <code>null</code> if network problem
-     *         occurred
+     * @return response received from NeoHub
+     * @throws IOException, RuntimeException
      * 
      */
-    public synchronized String sendMessage(final String request) {
+    public synchronized String sendMessage(final String request) throws IOException, RuntimeException {
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(hostname, port), TCP_SOCKET_IMEOUT * 1000);
 
@@ -73,39 +73,34 @@ public class NeoHubSocket {
                 }
 
                 writer.write(request);
-                writer.write(0); // NUL terminate the command string
+                writer.write(0); // NULL terminate the command string
                 writer.flush();
 
-                StringBuilder response = new StringBuilder();
-                int in;
-                while ((in = reader.read()) > 0) {// NUL termination & end of stream (-1)
-                    response.append((char) in);
+                StringBuilder builder = new StringBuilder();
+                int inChar;
+                while ((inChar = reader.read()) > 0) { // NULL termination & end of stream (-1)
+                    builder.append((char) inChar);
                 }
 
-                String responseStr = response.toString();
+                String response = builder.toString();
 
                 if (logger.isTraceEnabled()) {
-                    logger.trace("received {} characters..", responseStr.length());
-                    logger.trace("<< {}", responseStr);
+                    logger.trace("received {} characters..", response.length());
+                    logger.trace("<< {}", response);
                 } else
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("received {} characters (set log level to TRACE to see full string)..",
-                            responseStr.length());
-                    logger.debug("<< {} ...", responseStr.substring(1, Math.min(responseStr.length(), 30)));
+                            response.length());
+                    logger.debug("<< {} ...", response.substring(1, Math.min(response.length(), 30)));
                 }
-                return responseStr;
 
-            } catch (IOException e) {
-                logger.warn("communication error with hub");
-                logger.debug(String.format("error cause = %s!'", e.toString()));
-                return null;
+                if (response.isEmpty()) {
+                    throw new RuntimeException("empty response string");
+                }
+
+                return response;
             }
-
-        } catch (IOException e) {
-            logger.warn("unable to connect to hub");
-            logger.debug(String.format("error cause = %s!'", e.toString()));
-            return null;
         }
     }
 

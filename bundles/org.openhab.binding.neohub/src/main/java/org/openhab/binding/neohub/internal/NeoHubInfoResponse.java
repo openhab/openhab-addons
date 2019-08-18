@@ -160,13 +160,11 @@ class NeoHubInfoResponse {
      * 
      * @param response the JSON INFO request
      * @return a NeoHubInfoResponse wrapper around the JSON response
+     * @throws JsonSyntaxException
+     * 
      */
     static @Nullable NeoHubInfoResponse createInfoResponse(String response) throws JsonSyntaxException {
-        try {
-            return GSON.fromJson(response, NeoHubInfoResponse.class);
-        } catch (JsonSyntaxException e) {
-            throw e;
-        }
+        return GSON.fromJson(response, NeoHubInfoResponse.class);
     }
 
     /*
