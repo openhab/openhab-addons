@@ -11,15 +11,3 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab2-addons
-
-== Third-party Content
-
-JsonPath
-* License: Apache 2.0 License
-* Project: https://github.com/json-path/JsonPath
-* Source:  https://github.com/json-path/JsonPath
-
-ASM
-* License: BSD License
-* Project: https://asm.ow2.io/
-* Source:  https://gitlab.ow2.org/asm/asm
