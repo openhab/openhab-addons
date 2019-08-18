@@ -4,9 +4,7 @@
 
     <feature name="openhab-transformation-jinja" description="Jinja Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.8</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.8</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.8</bundle>
+        <feature dependency="true">openhab.tp-jackson</feature>
         <bundle dependency="true">mvn:com.google.guava/guava/21.0</bundle>
         <bundle dependency="true">mvn:ch.obermuhlner/big-math/2.1.0</bundle>
         <bundle dependency="true">mvn:org.jsoup/jsoup/1.8.3</bundle>

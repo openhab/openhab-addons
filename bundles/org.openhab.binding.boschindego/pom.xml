@@ -15,24 +15,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.9.8</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.9.8</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.9.8</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>de.zazaz.iot.bosch.indego.bosch-indego-controller-lib</artifactId>
       <version>0.8</version>

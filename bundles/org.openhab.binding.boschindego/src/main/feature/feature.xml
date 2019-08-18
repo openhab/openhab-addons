@@ -4,9 +4,7 @@
 
     <feature name="openhab-binding-boschindego" description="Bosch Indego Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.8</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.8</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.8</bundle>
+        <feature dependency="true">openhab.tp-jackson</feature>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.5</bundle>
         <bundle dependency="true">mvn:org.openhab.osgiify/de.zazaz.iot.bosch.indego.bosch-indego-controller-lib/0.8</bundle>
