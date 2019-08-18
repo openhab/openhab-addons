@@ -14,13 +14,8 @@ package org.openhab.binding.siemensrds.internal;
 
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
 import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -28,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -43,6 +39,8 @@ class RdsPlants {
 
     @SerializedName("items")
     private List<PlantInfo> plants;
+
+    private static final Gson GSON = new Gson();
 
     static class PlantInfo {
 
@@ -61,64 +59,17 @@ class RdsPlants {
     }
 
     /*
-     * execute the HTTP GET on the server
-     */
-    private static String httpGetPlantListJson(String apiKey, String token) {
-        String result = "";
-        try {
-            URL url = new URL(URL_PLANTS);
-
-            /*
-             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
-             * preferred JETTY library; the reason is that JETTY does not allow sending the
-             * square brackets characters "[]" verbatim over HTTP connections
-             */
-            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-
-            https.setRequestMethod(HTTP_GET);
-
-            https.setRequestProperty(USER_AGENT, MOZILLA);
-            https.setRequestProperty(ACCEPT, APPLICATION_JSON);
-            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
-            https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
-
-            int responseCode = https.getResponseCode();
-
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(https.getInputStream(), "UTF8"));
-                String inStr;
-                StringBuffer response = new StringBuffer();
-                while ((inStr = in.readLine()) != null) {
-                    response.append(inStr);
-                }
-                in.close();
-                result = response.toString();
-            } else {
-                LOGGER.debug("httpGetPlantListJson: http error={}", responseCode);
-            }
-        } catch (Exception e) {
-            LOGGER.debug("httpGetPlantListJson: exception={}", e.getMessage());
-        }
-
-        return result;
-    }
-
-    /*
      * public method: execute a GET on the cloud server, parse JSON, and create a
      * class that encapsulates the data
      */
-    @Nullable
-    public static RdsPlants create(String apiKey, String token) {
+    public static @Nullable RdsPlants create(String apiKey, String token) {
         try {
-            String json = httpGetPlantListJson(apiKey, token);
-            if (!json.equals("")) {
-                Gson gson = new Gson();
-                return gson.fromJson(json, RdsPlants.class);
-            }
-        } catch (Exception e) {
-            LOGGER.debug("create: exception={}", e.getMessage());
+            String json = RdsDataPoints.httpGenericGetJson(apiKey, token, URL_PLANTS);
+            return GSON.fromJson(json, RdsPlants.class);
+        } catch (JsonSyntaxException | RdsCloudException | IOException e) {
+            LOGGER.warn("plant list creation error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
+            return null;
         }
-        return null;
     }
 
     /*
