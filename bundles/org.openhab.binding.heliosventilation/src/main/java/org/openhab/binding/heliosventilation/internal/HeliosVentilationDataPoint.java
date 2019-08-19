@@ -87,14 +87,15 @@ public class HeliosVentilationDataPoint {
             } else {
                 addrTokens = new String[] { addr };
             }
-
+            bitLength = 8;
+            bitStart = 0;
             this.address = (byte) (int) Integer.decode(addrTokens[0]);
             if (addrTokens.length > 1) {
                 bitStart = (byte) (int) Integer.decode(addrTokens[1]);
                 bitLength = 1;
             }
             if (addrTokens.length > 2) {
-                bitLength = (byte) (int) Integer.decode(addrTokens[1]) - bitStart + 1;
+                bitLength = (byte) (int) Integer.decode(addrTokens[2]) - bitStart + 1;
             }
             if (addrTokens.length > 3) {
                 throw new HeliosPropertiesFormatException(
@@ -160,7 +161,7 @@ public class HeliosVentilationDataPoint {
     public byte bitMask() {
         byte mask = (byte) 0xff;
         if (datatype == type.NUMBER || datatype == type.SWITCH) {
-            mask = (byte) (((2 ^ bitLength) - 1) << bitStart);
+            mask = (byte) (((1 << bitLength) - 1) << bitStart);
         }
         return mask;
     }
@@ -277,7 +278,7 @@ public class HeliosVentilationDataPoint {
 
     /**
      * Add a link to a datapoint on the same address.
-     * 
+     *
      * @param link is the sister datapoint
      */
     public void append(HeliosVentilationDataPoint link) {

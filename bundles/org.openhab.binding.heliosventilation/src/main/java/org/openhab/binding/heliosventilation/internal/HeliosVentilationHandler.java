@@ -393,27 +393,31 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                 }
             });
         } else if (command instanceof DecimalType || command instanceof QuantityType || command instanceof OnOffType) {
-            datapoints.values().forEach((v) -> {
-                String x = channelUID.getId();
-                if (channelUID.getThingUID().equals(thing.getUID()) && v.getName().equals(channelUID.getId())) {
-                    if (v.isWritable()) {
-                        byte txFrame[] = { 0x01, BUSMEMBER_ME, BUSMEMBER_CONTROLBOARDS, v.address(), 0x00, 0x00 };
-                        txFrame[4] = v.getTransmitDataFor((State) command);
-                        if (v.requiresReadModifyWrite()) {
-                            txFrame[4] |= memory.get(v.address()) & ~v.bitMask();
+            datapoints.values().forEach((outer) -> {
+                HeliosVentilationDataPoint v = outer;
+                do {
+                    if (channelUID.getThingUID().equals(thing.getUID()) && v.getName().equals(channelUID.getId())) {
+                        if (v.isWritable()) {
+                            byte txFrame[] = { 0x01, BUSMEMBER_ME, BUSMEMBER_CONTROLBOARDS, v.address(), 0x00, 0x00 };
+                            txFrame[4] = v.getTransmitDataFor((State) command);
+                            if (v.requiresReadModifyWrite()) {
+                                txFrame[4] |= memory.get(v.address()) & ~v.bitMask();
+                                memory.put(v.address(), txFrame[4]);
+                            }
+                            txFrame[5] = (byte) checksum(txFrame);
+                            tx(txFrame);
+
+                            txFrame[2] = BUSMEMBER_SLAVEBOARDS;
+                            txFrame[5] = (byte) checksum(txFrame);
+                            tx(txFrame);
+
+                            txFrame[2] = BUSMEMBER_MAINBOARD;
+                            txFrame[5] = (byte) checksum(txFrame);
+                            tx(txFrame);
                         }
-                        txFrame[5] = (byte) checksum(txFrame);
-                        tx(txFrame);
-
-                        txFrame[2] = BUSMEMBER_SLAVEBOARDS;
-                        txFrame[5] = (byte) checksum(txFrame);
-                        tx(txFrame);
-
-                        txFrame[2] = BUSMEMBER_MAINBOARD;
-                        txFrame[5] = (byte) checksum(txFrame);
-                        tx(txFrame);
                     }
-                }
+                    v = v.link();
+                } while (v != null);
             });
         }
 

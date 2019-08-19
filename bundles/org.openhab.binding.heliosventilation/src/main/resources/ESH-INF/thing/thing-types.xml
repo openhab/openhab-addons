@@ -25,8 +25,15 @@
             <channel id="hysteresis" typeId="hysteresis" />
             <channel id="DCFanExtract" typeId="dc_fan_extract" />
             <channel id="DCFanSupply" typeId="dc_fan_supply" />
+            <channel id="maintenanceInterval" typeId="maintenance_interval" />
             
+            <channel id="radiatorType" typeId="radiator_type" />
+            <channel id="switchType" typeId="switch_type" />
+            <channel id="cascade" typeId="cascade_mode" />
+            <channel id="RHLevelAuto" typeId="rh_level_auto" />
             <channel id="powerState" typeId="power_state" />
+            <channel id="co2State" typeId="co2_state" />
+            <channel id="rhState" typeId="rh_state" />
             <channel id="winterMode" typeId="winter_state" />
             <channel id="adjustInveral" typeId="adjust_interval" />
 		</channels>
@@ -171,15 +178,56 @@
         <description>State of the ventilation system.</description>
     </channel-type>
 
-    <channel-type id="winter_mode" advanced="false">
+    <channel-type id="co2_state" advanced="false">
+        <item-type>Switch</item-type>
+        <label>CO2 Control</label>
+        <description>Control the ventilation system by CO2 sensor.</description>
+    </channel-type>
+
+    <channel-type id="rh_state" advanced="false">
+        <item-type>Switch</item-type>
+        <label>Humidity Control</label>
+        <description>Control the ventilation system by humidity sensor.</description>
+    </channel-type>
+
+    <channel-type id="winter_state" advanced="false">
         <item-type>Switch</item-type>
         <label>Winter Mode</label>
         <description>Ventilation system is in winter mode and will not use bypass for cooling. If OFF, the bypass function will be used for cooling if the outside temperature is above the Cell Bypass Temperature.</description>
     </channel-type>
 
+    <channel-type id="rh_level_auto" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Auto Humidity level</label>
+    </channel-type>
+
+    <channel-type id="radiator_type" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Water radiator</label>
+        <description>Ventilation system with water radiator (ON) or electric radiator (OFF).</description>
+    </channel-type>
+
+    <channel-type id="switch_type" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Boost switch</label>
+        <description>External switch is used for boost (ON) or fireplace (OFF).</description>
+    </channel-type>
+
+    <channel-type id="cascade_mode" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Cascaded ventilation system</label>
+    </channel-type>
+
     <channel-type id="adjust_interval" advanced="true">
         <item-type>Number:Dimensionless</item-type>
         <label>Adjust Interval</label>
+        <category>HVAC</category>
+        <state pattern="%f %unit%" min="1" max="15" readOnly="false" />
+    </channel-type>
+
+    <channel-type id="maintenance_interval" advanced="true">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Maintenance Interval</label>
         <category>HVAC</category>
         <state pattern="%f %unit%" min="1" max="15" readOnly="false" />
     </channel-type>
