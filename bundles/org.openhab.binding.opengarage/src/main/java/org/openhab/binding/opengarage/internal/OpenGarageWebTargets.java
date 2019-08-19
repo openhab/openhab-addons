@@ -56,7 +56,6 @@ public class OpenGarageWebTargets {
           }
     }
 
-
     private String invoke(String uri) throws OpenGarageCommunicationException {
         return invoke(uri, "");
     }

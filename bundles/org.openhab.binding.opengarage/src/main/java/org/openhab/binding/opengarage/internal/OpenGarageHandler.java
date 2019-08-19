@@ -59,26 +59,23 @@ public class OpenGarageHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            handleCommandInternal(channelUID, command);
+            logger.warn("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
+                         channelUID.getId());
+            switch (channelUID.getId()) {
+                case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
+                    if (command instanceof OnOffType) {
+                        changeStatus(((OnOffType) command).equals(OnOffType.ON));
+                        return;
+                    }
+                    break;
+                default:
+            }
+
+            logger.debug("Received command {} of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(),
+                        channelUID.getId());
         } catch (OpenGarageCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
-    }
-
-    private void handleCommandInternal(ChannelUID channelUID, Command command) throws OpenGarageCommunicationException {
-        logger.warn("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
-                    channelUID.getId());
-        switch (channelUID.getId()) {
-            case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
-                if (command instanceof OnOffType) {
-                    changeStatus(((OnOffType) command).equals(OnOffType.ON));
-                    return;
-                }
-                break;
-        }
-
-        logger.warn("Received command {} of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(),
-                    channelUID.getId());
     }
 
     @Override
@@ -95,25 +92,12 @@ public class OpenGarageHandler extends BaseThingHandler {
         }
     }
 
-    @Override
-    public void dispose() {
-        super.dispose();
-        stopPoll();
-    }
-
     private void schedulePoll() {
         if (pollFuture != null) {
             pollFuture.cancel(false);
         }
         logger.debug("Scheduling poll for 500ms out, then every {} s", refreshInterval);
         pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, refreshInterval, TimeUnit.SECONDS);
-    }
-
-    private synchronized void stopPoll() {
-        if (pollFuture != null && !pollFuture.isCancelled()) {
-            pollFuture.cancel(true);
-            pollFuture = null;
-        }
     }
 
     private synchronized void poll() {
