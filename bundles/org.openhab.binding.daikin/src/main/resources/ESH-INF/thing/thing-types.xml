@@ -18,18 +18,32 @@
 			<channel id="fandir" typeId="acunit-fandir" />
 		</channels>
 
-		<config-description>
-			<parameter name="host" type="text" required="true">
-				<label>Host</label>
-				<description>The Host address of the Daikin AC unit.</description>
-				<context>network_address</context>
-			</parameter>
-			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh Interval</label>
-				<description>The number of seconds between fetches of the AC unit state.</description>
-				<default>60</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:daikin:config" />
+	</thing-type>
+
+	<thing-type id="airbase_ac_unit">
+		<label>Daikin Airbase AC Unit</label>
+		<description>Daikin Airbase AC Unit</description>
+
+		<channels>
+			<channel id="power" typeId="acunit-power" />
+			<channel id="settemp" typeId="acunit-settemp" />
+			<channel id="indoortemp" typeId="acunit-indoortemp" />
+			<channel id="outdoortemp" typeId="acunit-outdoortemp" />
+			<channel id="mode" typeId="acunit-mode" />
+			<channel id="airbasefanspeed" typeId="airbase-acunit-fan" />
+			<channel id="zone1" typeId="airbase-acunit-zone1" />
+			<channel id="zone2" typeId="airbase-acunit-zone2" />
+			<channel id="zone3" typeId="airbase-acunit-zone3" />
+			<channel id="zone4" typeId="airbase-acunit-zone4" />
+			<channel id="zone5" typeId="airbase-acunit-zone5" />
+			<channel id="zone6" typeId="airbase-acunit-zone6" />
+			<channel id="zone7" typeId="airbase-acunit-zone7" />
+			<channel id="zone8" typeId="airbase-acunit-zone8" />
+
+		</channels>
+
+		<config-description-ref uri="thing-type:daikin:config" />
 	</thing-type>
 
 	<channel-type id="acunit-power">
@@ -113,6 +127,68 @@
 				<option value="VERTICAL_AND_HORIZONTAL">vertical and horizontal</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="airbase-acunit-fan">
+		<item-type>String</item-type>
+		<label>Fan</label>
+		<description>Current fan speed setting of the AC unit</description>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="LEVEL_1">Low</option>
+				<option value="LEVEL_2">Medium</option>
+				<option value="LEVEL_3">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="airbase-acunit-zone1">
+		<item-type>Switch</item-type>
+		<label>Zone 1</label>
+		<description>Zone 1 for the AC unit</description>
+	</channel-type>
+
+	<channel-type id="airbase-acunit-zone2">
+		<item-type>Switch</item-type>
+		<label>Zone 2</label>
+		<description>Zone 2 for the AC unit</description>
+	</channel-type>
+
+	<channel-type id="airbase-acunit-zone3">
+		<item-type>Switch</item-type>
+		<label>Zone 3</label>
+		<description>Zone 3 for the AC unit</description>
+	</channel-type>
+
+	<channel-type id="airbase-acunit-zone4">
+		<item-type>Switch</item-type>
+		<label>Zone 4</label>
+		<description>Zone 4 for the AC unit</description>
+	</channel-type>
+
+	<channel-type id="airbase-acunit-zone5">
+		<item-type>Switch</item-type>
+		<label>Zone 5</label>
+		<description>Zone 5 for the AC unit</description>
+	</channel-type>
+
+	<channel-type id="airbase-acunit-zone6">
+		<item-type>Switch</item-type>
+		<label>Zone 6</label>
+		<description>Zone 6 for the AC unit</description>
+	</channel-type>
+
+	<channel-type id="airbase-acunit-zone7">
+		<item-type>Switch</item-type>
+		<label>Zone 7</label>
+		<description>Zone 7 for the AC unit</description>
+	</channel-type>
+
+	<channel-type id="airbase-acunit-zone8">
+		<item-type>Switch</item-type>
+		<label>Zone 8</label>
+		<description>Zone 8 for the AC unit</description>
 	</channel-type>
 
 </thing:thing-descriptions>
