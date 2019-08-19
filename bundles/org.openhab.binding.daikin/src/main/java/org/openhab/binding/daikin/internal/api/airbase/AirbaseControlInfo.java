@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.daikin.internal.api;
+package org.openhab.binding.daikin.internal.api.airbase;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,9 +18,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
-import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
-import org.openhab.binding.daikin.internal.api.Enums.Mode;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanMovement;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanSpeed;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,26 +28,26 @@ import org.slf4j.LoggerFactory;
  * Class for holding the set of parameters used by set and get control info.
  *
  * @author Tim Waterhouse - Initial Contribution
- * @author Paul Smedley <paul@smedley.id.au> - mods for Daikin Airbase
+ * @author Paul Smedley <paul@smedley.id.au> - Mods for Daikin Airbase Units
  *
  */
-public class ControlInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ControlInfo.class);
+public class AirbaseControlInfo {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseControlInfo.class);
 
     public String ret;
     public boolean power = false;
-    public Mode mode = Mode.AUTO;
+    public AirbaseMode mode = AirbaseMode.AUTO;
     /** Degrees in Celsius. */
     public Optional<Double> temp = Optional.empty();
-    public FanSpeed fanSpeed = FanSpeed.AUTO;
-    public FanMovement fanMovement = FanMovement.STOPPED;
+    public AirbaseFanSpeed fanSpeed = AirbaseFanSpeed.AUTO;
+    public AirbaseFanMovement fanMovement = AirbaseFanMovement.STOPPED;
     /* Not supported by all units. Sets the target humidity for dehumidifying. */
     public Optional<Integer> targetHumidity = Optional.empty();
 
-    private ControlInfo() {
+    private AirbaseControlInfo() {
     }
 
-    public static ControlInfo parse(String response) {
+    public static AirbaseControlInfo parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("="))
@@ -58,18 +58,17 @@ public class ControlInfo {
                     return new String[] { key, value };
                 }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
 
-        ControlInfo info = new ControlInfo();
+        AirbaseControlInfo info = new AirbaseControlInfo();
         info.ret = responseMap.get("ret");
         info.power = "1".equals(responseMap.get("pow"));
         info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> parseInt(value))
-                .map(value -> Mode.fromValue(value)).orElse(Mode.AUTO);
+                .map(value -> AirbaseMode.fromValue(value)).orElse(AirbaseMode.AUTO);
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> parseDouble(value));
-        info.fanSpeed = Optional.ofNullable(responseMap.get("f_rate")).map(value -> FanSpeed.fromValue(value))
-                .orElse(FanSpeed.AUTO);
+        info.fanSpeed = Optional.ofNullable(responseMap.get("f_rate")).map(value -> AirbaseFanSpeed.fromValue(value))
+                .orElse(AirbaseFanSpeed.AUTO);
         info.fanMovement = Optional.ofNullable(responseMap.get("f_dir")).flatMap(value -> parseInt(value))
-                .map(value -> FanMovement.fromValue(value)).orElse(FanMovement.STOPPED);
+                .map(value -> AirbaseFanMovement.fromValue(value)).orElse(AirbaseFanMovement.STOPPED);
         info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(value -> parseInt(value));
-
         return info;
     }
 
