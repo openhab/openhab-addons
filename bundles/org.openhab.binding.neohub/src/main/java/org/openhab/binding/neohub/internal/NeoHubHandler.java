@@ -167,6 +167,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             return NeoHubReturnResult.SUCCEEDED;
         } catch (Exception e) {
 <<<<<<< HEAD
+<<<<<<< HEAD
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn("set value error \"{}\"", e.getMessage());
 =======
@@ -175,6 +176,10 @@ public class NeoHubHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             logger.warn(msg);
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            logger.warn("set value error \"{}\"", e.getMessage());
+>>>>>>> Maven errors fixed
             return NeoHubReturnResult.ERR_COMMUNICATION;
         }
     }
@@ -204,6 +209,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             return lastInfoResponse;
         } catch (Exception e) {
 <<<<<<< HEAD
+<<<<<<< HEAD
             logger.warn("set value error \"{}\"", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
 =======
@@ -212,6 +218,10 @@ public class NeoHubHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
             logger.warn(msg);
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+            logger.warn("set value error \"{}\"", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+>>>>>>> Maven errors fixed
             return null;
         }
     }
