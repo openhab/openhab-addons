@@ -20,7 +20,7 @@
 /bundles/org.openhab.binding.bluetooth.bluegiga/ @cdjackson @kaikreuzer
 /bundles/org.openhab.binding.bluetooth.bluez/ @cdjackson @kaikreuzer
 /bundles/org.openhab.binding.bluetooth.blukii/ @kaikreuzer
-/bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
+/bundles/org.openhab.binding.bluetooth.ruuvitag @ssalonen
 /bundles/org.openhab.binding.boschindego/ @jofleck
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
 /bundles/org.openhab.binding.buienradar/ @gedejong
@@ -58,7 +58,6 @@
 /bundles/org.openhab.binding.hdpowerview/ @beowulfe
 /bundles/org.openhab.binding.helios/ @kgoderis
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
-/bundles/org.openhab.binding.hpprinter/ @cossey
 /bundles/org.openhab.binding.hue/ @cweitkamp
 /bundles/org.openhab.binding.hyperion/ @tavalin
 /bundles/org.openhab.binding.icloud/ @pgfeller
@@ -78,11 +77,10 @@
 /bundles/org.openhab.binding.lgtvserial/ @fa2k
 /bundles/org.openhab.binding.lgwebos/ @sprehn
 /bundles/org.openhab.binding.lifx/ @wborn
-/bundles/org.openhab.binding.linuxinput/ @t-8ch
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.logreader/ @paulianttila
 /bundles/org.openhab.binding.loxone/ @ppieczul
-/bundles/org.openhab.binding.lutron/ @actong @bobadair
+/bundles/org.openhab.binding.lutron/ @actong
 /bundles/org.openhab.binding.mail/ @J-N-K
 /bundles/org.openhab.binding.max/ @marcelrv
 /bundles/org.openhab.binding.mcp23017/ @aogorek
@@ -101,6 +99,7 @@
 /bundles/org.openhab.binding.nanoleaf/ @raepple
 /bundles/org.openhab.binding.neato/ @jjlauterbach
 /bundles/org.openhab.binding.neeo/ @tmrobert8
+/bundles/org.openhab.binding.neohub/ @andrewfg
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
@@ -114,7 +113,7 @@
 /bundles/org.openhab.binding.onewiregpio/ @aogorek
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.onkyo/ @pail23 @paulianttila
-/bundles/org.openhab.binding.opensprinkler/ @CrackerStealth @FlorianSW
+/bundles/org.openhab.binding.opensprinkler/ @CrackerStealth
 /bundles/org.openhab.binding.openuv/ @clinique
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.orvibo/ @tavalin
@@ -138,7 +137,6 @@
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
-/bundles/org.openhab.binding.siemensrds/ @andrewfg
 /bundles/org.openhab.binding.silvercrestwifisocket/ @jmvaz
 /bundles/org.openhab.binding.sleepiq/ @syphr42
 /bundles/org.openhab.binding.smaenergymeter/ @monnimeter
