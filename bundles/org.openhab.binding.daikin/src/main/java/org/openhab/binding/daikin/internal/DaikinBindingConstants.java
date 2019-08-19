@@ -49,16 +49,7 @@ public class DaikinBindingConstants {
     // additional channels for Airbase Controller
     public static final String CHANNEL_AIRBASE_AC_FAN_SPEED = "airbasefanspeed";
     public static final String CHANNEL_AIRBASE_AC_ZONE = "zone";
-/*
-    public static final String CHANNEL_AIRBASE_AC_ZONE1 = "zone1";
-    public static final String CHANNEL_AIRBASE_AC_ZONE2 = "zone2";
-    public static final String CHANNEL_AIRBASE_AC_ZONE3 = "zone3";
-    public static final String CHANNEL_AIRBASE_AC_ZONE4 = "zone4";
-    public static final String CHANNEL_AIRBASE_AC_ZONE5 = "zone5";
-    public static final String CHANNEL_AIRBASE_AC_ZONE6 = "zone6";
-    public static final String CHANNEL_AIRBASE_AC_ZONE7 = "zone7";
-    public static final String CHANNEL_AIRBASE_AC_ZONE8 = "zone8";
-*/
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_AC_UNIT, THING_TYPE_AIRBASE_AC_UNIT).collect(Collectors.toSet()));
 }
