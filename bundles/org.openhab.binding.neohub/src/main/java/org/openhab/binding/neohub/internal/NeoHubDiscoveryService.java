@@ -130,7 +130,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
         thingDiscovered(device);
 
-        logger.debug(String.format("discovered device=%s, name=%s ..", deviceType, deviceOpenHabId));
+        logger.debug("discovered device={}, name={} ..", deviceType, deviceOpenHabId);
     }
 
 }

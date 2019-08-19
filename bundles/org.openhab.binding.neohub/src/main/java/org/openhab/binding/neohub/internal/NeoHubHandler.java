@@ -166,10 +166,8 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
             return NeoHubReturnResult.SUCCEEDED;
         } catch (Exception e) {
-            String msg = String.format("set value error \"%s\", cause \"%s\", status => offline..", e.getMessage(),
-                    e.getCause());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
-            logger.warn(msg);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            logger.warn("set value error \"{}\"", e.getMessage());
             return NeoHubReturnResult.ERR_COMMUNICATION;
         }
     }
@@ -198,10 +196,8 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
             return lastInfoResponse;
         } catch (Exception e) {
-            String msg = String.format("set value error \"%s\", cause \"%s\", status => offline..", e.getMessage(),
-                    e.getCause());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
-            logger.warn(msg);
+            logger.warn("set value error \"{}\"", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return null;
         }
     }
