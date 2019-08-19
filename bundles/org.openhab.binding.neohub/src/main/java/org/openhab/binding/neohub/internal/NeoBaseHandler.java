@@ -42,6 +42,9 @@ public class NeoBaseHandler extends BaseThingHandler {
 
     /*
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Error messages simplified, and log.warn() added
      * error messages
      */
     private static final String MSG_HUB_CONFIG = "hub needs to be initialized!";
@@ -53,8 +56,11 @@ public class NeoBaseHandler extends BaseThingHandler {
     private static final String MSG_MISSING_PARAM = "Missing parameter \"deviceNameInHub\"";
 
     /*
+<<<<<<< HEAD
 =======
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+>>>>>>> Error messages simplified, and log.warn() added
      * an object used to de-bounce state changes between openHAB and the NeoHub
      */
     protected NeoHubDebouncer debouncer = new NeoHubDebouncer();
@@ -86,11 +92,15 @@ public class NeoBaseHandler extends BaseThingHandler {
 
         if (config == null || config.deviceNameInHub == null || config.deviceNameInHub.isEmpty()) {
 <<<<<<< HEAD
+<<<<<<< HEAD
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MSG_MISSING_PARAM);
 =======
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Missing parameter \"deviceNameInHub\"");
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MSG_MISSING_PARAM);
+>>>>>>> Error messages simplified, and log.warn() added
             return;
         }
         refreshStateOnline(getNeoHub());
@@ -107,23 +117,33 @@ public class NeoBaseHandler extends BaseThingHandler {
         if (hub == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
 <<<<<<< HEAD
+<<<<<<< HEAD
             logger.warn(MSG_HUB_CONFIG);
 =======
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+            logger.warn(MSG_HUB_CONFIG);
+>>>>>>> Error messages simplified, and log.warn() added
             return false;
         }
 
         if (!hub.isConfigured(config.deviceNameInHub)) {
+<<<<<<< HEAD
 <<<<<<< HEAD
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
             logger.warn(MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
 =======
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not configured in hub");
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+            logger.warn(MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
+>>>>>>> Error messages simplified, and log.warn() added
             return false;
         }
 
         if (!hub.isOnline(config.deviceNameInHub)) {
+<<<<<<< HEAD
 <<<<<<< HEAD
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn(MSG_FMT_DEVICE_COMM, getThing().getLabel());
@@ -131,6 +151,10 @@ public class NeoBaseHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Device configured, but not communicating");
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            logger.warn(MSG_FMT_DEVICE_COMM, getThing().getLabel());
+>>>>>>> Error messages simplified, and log.warn() added
             return false;
         }
 
@@ -177,6 +201,7 @@ public class NeoBaseHandler extends BaseThingHandler {
                 switch (hub.toNeoHubSendChannelValue(cmdStr)) {
                 case SUCCEEDED:
 <<<<<<< HEAD
+<<<<<<< HEAD
                     logger.debug(MSG_FMT_COMMAND_OK, getThing().getLabel());
 
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
@@ -186,6 +211,11 @@ public class NeoBaseHandler extends BaseThingHandler {
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         logger.debug("command for {} succeeded, status => online.", getThing().getLabel());
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+                    logger.debug(MSG_FMT_COMMAND_OK, getThing().getLabel());
+
+                    if (getThing().getStatus() != ThingStatus.ONLINE) {
+>>>>>>> Error messages simplified, and log.warn() added
                         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                     }
 
@@ -196,23 +226,32 @@ public class NeoBaseHandler extends BaseThingHandler {
 
                 case ERR_COMMUNICATION:
 <<<<<<< HEAD
+<<<<<<< HEAD
                     logger.warn(MSG_HUB_COMM);
 =======
                     logger.warn("hub communication error for {}, status => offline!", getThing().getLabel());
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+                    logger.warn(MSG_HUB_COMM);
+>>>>>>> Error messages simplified, and log.warn() added
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     break;
 
                 case ERR_INITIALIZATION:
 <<<<<<< HEAD
+<<<<<<< HEAD
                     logger.debug(MSG_HUB_CONFIG);
 =======
                     logger.debug("hub initialization error for {}, status => offline!", getThing().getLabel());
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+                    logger.debug(MSG_HUB_CONFIG);
+>>>>>>> Error messages simplified, and log.warn() added
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                     break;
                 }
             } else {
+<<<<<<< HEAD
 <<<<<<< HEAD
                 logger.debug(MSG_HUB_CONFIG);
             }
@@ -224,6 +263,12 @@ public class NeoBaseHandler extends BaseThingHandler {
         } else {
             logger.debug("invalid or empty command for {}!", getThing().getLabel());
 >>>>>>> Changes suggested by @kaikreuzer and clean branch for pull request
+=======
+                logger.debug(MSG_HUB_CONFIG);
+            }
+        } else {
+            logger.debug(MSG_FMT_COMMAND_BAD, command.toString());
+>>>>>>> Error messages simplified, and log.warn() added
         }
     }
 
