@@ -9,7 +9,8 @@ Opengarage controllers from https://opensprinkler.com/product/opengarage/ are su
 
 ## Discovery
 
-Auto-discover is not currently supported. You need to manually add a new item using it's IP address.
+Auto-discover is not currently supported. 
+You need to manually add a new item using its IP address.
 
 ## Thing Configuration
 
@@ -22,10 +23,11 @@ As a minimum, the IP address is needed:
 
 ## Channels
 
-| channel  | type   | description                                      |
-|----------|--------|--------------------------------------------------|
-| distance | Number | Distance reading from the OpenGarage controller  |
-| status   | Switch | Door status OFF = Closed, ON = Open              |
+| channel  | type   | description                                            |
+|----------|--------|--------------------------------------------------------|
+| distance | Number | Distance reading from the OpenGarage controller        |
+| status   | Switch | Door status OFF = Closed, ON = Open                    |
+| vehicle  | String | Report vehicle presence from the OpenGarage controller |
 
 ## Full Example
 
@@ -40,6 +42,7 @@ opengarage.items:
 ```
 Switch OpenGarage_Status { channel="opengarage:opengarage:garage:status" }
 Number:Distance OpenGarage_Distance { channel="opengarage:opengarage:garage:setpoint" }
+String OpenGarage_Vehicle { channel="opengarage:opengarage:garage:vehicle" }
 ```
 
 opengarage.sitemap:
@@ -49,6 +52,7 @@ Switch item=OpenGarage_Status icon="garagedoorclosed" mappings=[ON=Open]  visibi
 Switch item=OpenGarage_Status icon="garagedooropen"   mappings=[OFF=Close] visibility=[OpenGarage_Status == OPEN]
 Switch item=OpenGarage_Status icon="garage" 
 Text item=OpenGarage_Distance label="OG distance"
+String item=OpenGarage_Vehicle label=Vehicle Presence"
 ```
 
 

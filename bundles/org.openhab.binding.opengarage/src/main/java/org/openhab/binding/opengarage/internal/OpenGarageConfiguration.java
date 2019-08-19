@@ -13,17 +13,13 @@
 package org.openhab.binding.opengarage.internal;
 
 /**
- * The {@link OpenGarageConfiguration} class contains fields mapping thing configuration parameters.
+ * The OpenGarageConfiguration class contains fields mapping thing configuration parameters.
  *
  * @author Paul Smedley - Initial contribution
  */
 public class OpenGarageConfiguration {
-
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
-    public String host = null;
-    public long port;
-    public String password;
-    public long refresh;
+    public String hostname;
+    public long port = 80;
+    public String password = "opendoor";
+    public long refresh = 10;
 }

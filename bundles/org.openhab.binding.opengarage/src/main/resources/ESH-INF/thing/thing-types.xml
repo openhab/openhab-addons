@@ -4,10 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="opengarage">
 		<label>OpenGarage</label>
-		<description>OpenGarage Binding</description>
+		<description>OpenGarage Controller</description>
 
 		<channels>
 			<channel id="distance" typeId="opengarage-distance" />
@@ -16,31 +15,27 @@
 		</channels>
 
 		<config-description>
-			<parameter name="host" type="text" required="true">
-				<label>Host Name</label>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname/IP Address</label>
 				<description>The host name or IP address of the OpenGarage Web API interface.</description>
-				<default>localhost</default>
 			</parameter>
-			<parameter name="port" type="integer" required="true" min="1" max="65335">
+			<parameter name="port" type="integer" min="1" max="65335">
 				<label>Port</label>
 				<description>Port of the OpenGarage Web API interface.</description>
-				<default>80</default>
 			</parameter>
-			<parameter name="password" type="text" required="true">
+			<parameter name="password" type="text">
 				<label>Password</label>
 				<description>The admin password used to access the Web API interface.</description>
-				<default>opendoor</default>
+				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
-				<default>10</default>
 			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<!-- Sample Channel Type -->
 	<channel-type id="opengarage-distance">
 		<item-type>Number:Length</item-type>
 		<label>Distance</label>

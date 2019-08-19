@@ -37,17 +37,5 @@ public class OpenGarageBindingConstants {
     public static final String CHANNEL_OG_STATUS = "status";
     public static final String CHANNEL_OG_VEHICLE = "vehicle";
 
-
-    public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 30;
-    public static final int DEFAULT_REFRESH_RATE = 60;
-    public static final short DISCOVERY_SUBNET_MASK = 24;
-    public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
-    public static final int DISCOVERY_THREAD_POOL_SHUTDOWN_WAIT_TIME_SECONDS = 300;
-    public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
-    public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE = 500;
-    public static final int DISCOVERY_DEFAULT_IP_TIMEOUT_RATE = 750;
-    public static final String DEFAULT_ADMIN_PASSWORD = "opendoor";
-    public static final int DEFAULT_API_PORT = 80;
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(OPENGARAGE_THING);
 }

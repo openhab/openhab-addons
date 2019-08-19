@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.opengarage.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -41,14 +42,15 @@ import java.util.concurrent.TimeUnit;
  * @author Paul Smedley - Initial contribution
  */
 
+@NonNullByDefault
 public class OpenGarageHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenGarageHandler.class);
 
     private long refreshInterval;
 
-    private OpenGarageWebTargets webTargets;
-    private ScheduledFuture<?> pollFuture;
+    private @Nullable OpenGarageWebTargets webTargets;
+    private @Nullable ScheduledFuture<?> pollFuture;
 
     public OpenGarageHandler(Thing thing) {
         super(thing);
@@ -75,31 +77,22 @@ public class OpenGarageHandler extends BaseThingHandler {
                 break;
         }
 
-        if (RefreshType.REFRESH != command) {
-            logger.warn("Received command {} of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(),
+        logger.warn("Received command {} of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(),
                     channelUID.getId());
-        } 
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Opengarage Unit");
         OpenGarageConfiguration config = getConfigAs(OpenGarageConfiguration.class);
-        logger.debug("config.host = {}, refresh = {}, password = {}, port = {}", config.host, config.refresh, config.password, config.port);
-        if (config.host == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
+        logger.debug("config.hostname = {}, refresh = {}, port = {}", config.hostname, config.refresh, config.port);
+        if (config.hostname == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
         } else {
-            webTargets = new OpenGarageWebTargets(config.host, config.port, config.password);
+            webTargets = new OpenGarageWebTargets(config.hostname, config.port, config.password);
             refreshInterval = config.refresh;
 
             schedulePoll();
         }
-    }
-
-    @Override
-    public void handleRemoval() {
-        super.handleRemoval();
-        stopPoll();
     }
 
     @Override
@@ -140,14 +133,11 @@ public class OpenGarageHandler extends BaseThingHandler {
         ControllerVariables controllerVariables = webTargets.getControllerVariables();
         updateStatus(ThingStatus.ONLINE);
         if (controllerVariables != null) {
-        logger.debug("Updating Thing/Items");
             updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE, new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
             if (controllerVariables.door==0) {
-                logger.debug("Door state == closed, {}, {}",controllerVariables.door, false);
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
             }
             if (controllerVariables.door==1) {
-                logger.debug("Door state == open, {}, {}",controllerVariables.door, true);
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.ON);
             }
             if (controllerVariables.vehicle==0)
