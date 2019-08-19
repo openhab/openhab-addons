@@ -41,6 +41,17 @@ public class NeoBaseHandler extends BaseThingHandler {
     protected NeoBaseConfiguration config;
 
     /*
+     * error messages
+     */
+    private static final String MSG_HUB_CONFIG = "hub needs to be initialized!";
+    private static final String MSG_HUB_COMM = "error communicating with the hub!";
+    private static final String MSG_FMT_DEVICE_CONFIG = "device {} needs to configured in hub!";
+    private static final String MSG_FMT_DEVICE_COMM = "device {} not communicating with hub!";
+    private static final String MSG_FMT_COMMAND_OK = "command for {} succeeded.";
+    private static final String MSG_FMT_COMMAND_BAD = "{} is an invalid or empty command!";
+    private static final String MSG_MISSING_PARAM = "Missing parameter \"deviceNameInHub\"";
+
+    /*
      * an object used to de-bounce state changes between openHAB and the NeoHub
      */
     protected NeoHubDebouncer debouncer = new NeoHubDebouncer();
@@ -71,8 +82,7 @@ public class NeoBaseHandler extends BaseThingHandler {
         config = getConfigAs(NeoBaseConfiguration.class);
 
         if (config == null || config.deviceNameInHub == null || config.deviceNameInHub.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing parameter \"deviceNameInHub\"");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MSG_MISSING_PARAM);
             return;
         }
         refreshStateOnline(getNeoHub());
@@ -88,17 +98,19 @@ public class NeoBaseHandler extends BaseThingHandler {
     private boolean refreshStateOnline(NeoHubHandler hub) {
         if (hub == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            logger.warn(MSG_HUB_CONFIG);
             return false;
         }
 
         if (!hub.isConfigured(config.deviceNameInHub)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not configured in hub");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+            logger.warn(MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
             return false;
         }
 
         if (!hub.isOnline(config.deviceNameInHub)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Device configured, but not communicating");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            logger.warn(MSG_FMT_DEVICE_COMM, getThing().getLabel());
             return false;
         }
 
@@ -144,10 +156,9 @@ public class NeoBaseHandler extends BaseThingHandler {
                  */
                 switch (hub.toNeoHubSendChannelValue(cmdStr)) {
                 case SUCCEEDED:
-                    logger.debug("command succeeded.");
+                    logger.debug(MSG_FMT_COMMAND_OK, getThing().getLabel());
 
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
-                        logger.debug("command for {} succeeded, status => online.", getThing().getLabel());
                         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                     }
 
@@ -157,20 +168,20 @@ public class NeoBaseHandler extends BaseThingHandler {
                     break;
 
                 case ERR_COMMUNICATION:
-                    logger.warn("hub communication error for {}, status => offline!", getThing().getLabel());
+                    logger.warn(MSG_HUB_COMM);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     break;
 
                 case ERR_INITIALIZATION:
-                    logger.debug("hub initialization error for {}, status => offline!", getThing().getLabel());
+                    logger.debug(MSG_HUB_CONFIG);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                     break;
                 }
             } else {
-                logger.debug("hub for {} not found!", getThing().getLabel());
+                logger.debug(MSG_HUB_CONFIG);
             }
         } else {
-            logger.debug("invalid or empty command for {}!", getThing().getLabel());
+            logger.debug(MSG_FMT_COMMAND_BAD, command.toString());
         }
     }
 
