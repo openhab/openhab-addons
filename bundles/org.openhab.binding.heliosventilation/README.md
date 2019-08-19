@@ -23,29 +23,92 @@ The binding requires access to the serial device connecting to the RS485 bus as 
 
 ## Thing Configuration
 
-The binding supports only one thing and requires the configuration of the serial port (typically /dev/ttyUSB0 on Linux and COM3 on Windows) and the polling time which is the cycle time after which the binding tries to reconnect to the bus and requests data updates.
+The binding supports only one thing and requires the configuration of the serial port (typically /dev/ttyUSB0 on Linux and COM3 on Windows) and optionally the polling time which is the cycle time after which the binding tries to reconnect to the bus and requests data updates.
 
 
 ## Channels
 
-| channel        | type               | description                                   |
-|----------------|--------------------|-----------------------------------------------|
-| outsideTemp    | Number:Temperature | Temperature sensor in the outside air flow    |
-| outgoingTemp   | Number:Temperature | Temperature sensor in the outgoing air flow   |
-| extractTemp    | Number:Temperature | Temperature sensor in the extract air flow    |
-| supplyTemp     | Number:Temperature | Temperature sensor in the supply air flow     |
-| setTemp        | Number:Temperature | Set temperature for supply (not always used)  |
-| fanspeed       | Number             | Level of the fanspeed (1-8)                   |
-| bypassTemp     | Number:Temperature | Temperature to disable the bypass function    |
-| supplyStopTemp | Number:Temperature | Temperature to stop supply fan for defrosting |
-| preheatTemp    | Number:Temperature | Temperature to enable the preheater           |
-| minFanspeed    | Number             | Minimal level of the fanspeed (1-8)           |
-| maxFanspeed    | Number             | Maximal level of the fanspeed (1-8)           |
-| rhLimit        | Number             | Limit for relative humidity sensor            |
-| hysteresis     | Number:Temperature | Hysteresis on defroster temperature           |
-| DCFanExtract   | Number             | Speed reduction for the extract fan           |
-| DCFanSupply    | Number             | Speed reduction for the supply fan            |
+Supported operation channels:
+| channel            | type               | description                                   |
+|--------------------|--------------------|-----------------------------------------------|
+| outsideTemp        | Number:Temperature | Temperature sensor in the outside air flow    |
+| outgoingTemp       | Number:Temperature | Temperature sensor in the outgoing air flow   |
+| extractTemp        | Number:Temperature | Temperature sensor in the extract air flow    |
+| supplyTemp         | Number:Temperature | Temperature sensor in the supply air flow     |
+| setTemp            | Number:Temperature | Set temperature for supply (not always used)  |
+| fanspeed           | Number             | Level of the fanspeed (1-8)                   |
+| powerState         | Switch             | Main power switch                             |
+| co2State           | Switch             | Switch for CO2 regulation                     |
+| rhState            | Switch             | Switch for humidity regulation                |
+| winterMode         | Switch             | Switch to set winter mode                     |
+
+Supported configuration channels:
+| channel            | type               | description                                   |
+|--------------------|--------------------|-----------------------------------------------|
+| bypassTemp         | Number:Temperature | Temperature to disable the bypass function    |
+| supplyStopTemp     | Number:Temperature | Temperature to stop supply fan for defrosting |
+| preheatTemp        | Number:Temperature | Temperature to enable the preheater           |
+| minFanspeed        | Number             | Minimal level of the fanspeed (1-8)           |
+| maxFanspeed        | Number             | Maximal level of the fanspeed (1-8)           |
+| rhLimit            | Number             | Limit for relative humidity sensor            |
+| hysteresis         | Number:Temperature | Hysteresis on defroster temperature           |
+| DCFanExtract       | Number             | Speed reduction for the extract fan           |
+| DCFanSupply        | Number             | Speed reduction for the supply fan            |
+| maintenanceInterval| Number             | Maintenance interval in months                |
+| adjustInveral      | Number             | Adjust interval in minutes for air quality    |
+| RHLevelAuto        | Switch             | Automatic base humidity determination         |  
+| switchType         | Switch             | External Switch type (Boost or Fireplace)     |  
+| radiatorType       | Switch             | Use water (ON) or electric (OFF) radiator     |
+| cascade            | Switch             | System is cascaded                            |
+
+Note: the configuration channels are not intended to be written regularly.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+Things:
+
+```
+heliosventilation:ventilation:MyKWL  [ serialPort=/dev/ttyUSB0 ]
+```
+
+Items:
+
+```
+Switch KWLOnOff { channel="helios:ventilation:MyKWL:powerState" }
+Switch KWLWinter { channel="helios:ventilation:MyKWL:winterMode" }
+
+Group VentilationTemp "Measured Temperatures in Ventilation System"
+
+Number:Temperature Outside_Temperature "Outside Temperature [%.1f °C]" <temperature> (VentilationTemp) { channel="heliosventilation:ventilation:MyKWL:outsideTemp" }
+Number:Temperature Outgoing_Temperature "Outgoing Temperature [%.1f °C]" <temperature> (VentilationTemp) { channel="heliosventilation:ventilation:MyKWL:outgoingTemp" }
+Number:Temperature Extract_Temperature "Extract Temperature [%.1f °C]" <temperature> (VentilationTemp) { channel="heliosventilation:ventilation:MyKWL:extractTemp" }
+Number:Temperature Supply_Temperature "Supply Temperature [%.1f °C]" <temperature> (VentilationTemp) { channel="heliosventilation:ventilation:MyKWL:supplyTemp" }
+
+Number Fan_Speed "Fan Speed" <fan> { channel="heliosventilation:ventilation:MyKWL:fanspeed" }
+Number Min_Fan_Speed "Min Fan Speed" <fan> { channel="heliosventilation:ventilation:MyKWL:minFanspeed" }
+Number Max_Fan_Speed "Max Fan Speed" <fan> { channel="heliosventilation:ventilation:MyKWL:maxFanspeed" }
+
+```
+
+Sitemap:
+
+```
+sitemap helios_kwl label="Helios Ventilation" {
+	Frame label="Temperatures" {
+        Text item=Outside_Temperature
+        Text item=Outgoing_Temperature
+        Text item=Extract_Temperature
+        Text item=Supply_Temperature
+	}
+	Frame label="Control" {
+       Switch item=KWLOnOff
+       Switch item=KWLWinter
+       Slider item=Fan_Speed icon="fan" minValue=1 maxValue=8 step=1
+
+	}
+	Frame label="Configuration" {
+		Slider item=Min_Fan_Speed
+		Setpoint item=Min_Fan_Speed icon="fan"
+	}
+}
+```
