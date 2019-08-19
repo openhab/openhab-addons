@@ -10,30 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.daikin.internal.api;
+package org.openhab.binding.daikin.internal.api.airbase;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Container class for enums related to Daikin A/C systems
+ * Container class for enums related to Daikin Airbase A/C systems
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Paul Smedley <paul@smedley.id.au> - Mods for Daikin Airbase Units
  *
  */
-public class Enums {
-    public enum Mode {
+public class AirbaseEnums {
+    public enum AirbaseMode {
         UNKNOWN(-1),
-        AUTO(0),
-        DEHUMIDIFIER(2),
-        COLD(3),
-        HEAT(4),
-        FAN(6);
+        FAN(0),
+        HEAT(1),
+        COLD(2),
+        DRY(7),
+        AUTO(3);
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(Mode.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseMode.class);
         private final int value;
 
-        Mode(int value) {
+        AirbaseMode(int value) {
             this.value = value;
         }
 
@@ -41,8 +42,8 @@ public class Enums {
             return value;
         }
 
-        public static Mode fromValue(int value) {
-            for (Mode m : Mode.values()) {
+        public static AirbaseMode fromValue(int value) {
+            for (AirbaseMode m : AirbaseMode.values()) {
                 if (m.getValue() == value) {
                     return m;
                 }
@@ -55,19 +56,16 @@ public class Enums {
         }
     }
 
-    public enum FanSpeed {
+    public enum AirbaseFanSpeed {
         AUTO("A"),
-        SILENCE("B"),
-        LEVEL_1("3"),
-        LEVEL_2("4"),
-        LEVEL_3("5"),
-        LEVEL_4("6"),
-        LEVEL_5("7");
+        LEVEL_1("1"),
+        LEVEL_2("3"),
+        LEVEL_3("5");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(FanSpeed.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseFanSpeed.class);
         private final String value;
 
-        FanSpeed(String value) {
+        AirbaseFanSpeed(String value) {
             this.value = value;
         }
 
@@ -75,8 +73,8 @@ public class Enums {
             return value;
         }
 
-        public static FanSpeed fromValue(String value) {
-            for (FanSpeed m : FanSpeed.values()) {
+        public static AirbaseFanSpeed fromValue(String value) {
+            for (AirbaseFanSpeed m : AirbaseFanSpeed.values()) {
                 if (m.getValue().equals(value)) {
                     return m;
                 }
@@ -89,17 +87,17 @@ public class Enums {
         }
     }
 
-    public enum FanMovement {
+    public enum AirbaseFanMovement {
         UNKNOWN(-1),
         STOPPED(0),
         VERTICAL(1),
         HORIZONTAL(2),
         VERTICAL_AND_HORIZONTAL(3);
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(FanMovement.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseFanMovement.class);
         private final int value;
 
-        FanMovement(int value) {
+        AirbaseFanMovement(int value) {
             this.value = value;
         }
 
@@ -107,8 +105,8 @@ public class Enums {
             return value;
         }
 
-        public static FanMovement fromValue(int value) {
-            for (FanMovement m : FanMovement.values()) {
+        public static AirbaseFanMovement fromValue(int value) {
+            for (AirbaseFanMovement m : AirbaseFanMovement.values()) {
                 if (m.getValue() == value) {
                     return m;
                 }
