@@ -68,7 +68,7 @@ Note: the configuration channels are not intended to be written regularly.
 Things:
 
 ```
-heliosventilation:ventilation:MyKWL  [ serialPort=/dev/ttyUSB0 ]
+heliosventilation:ventilation:MyKWL  [ serialPort="/dev/ttyUSB0" ]
 ```
 
 Items:
@@ -108,7 +108,7 @@ sitemap helios_kwl label="Helios Ventilation" {
 	}
 	Frame label="Configuration" {
 		Slider item=Min_Fan_Speed
-		Setpoint item=Min_Fan_Speed icon="fan"
+		Setpoint item=Max_Fan_Speed icon="fan"
 	}
 }
 ```
