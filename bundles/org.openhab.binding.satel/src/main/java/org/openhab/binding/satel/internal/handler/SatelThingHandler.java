@@ -61,16 +61,35 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
         }
     }
 
+    /**
+     * Updates switch channel with given state.
+     *
+     * @param channelID channel ID
+     * @param switchOn  if <code>true</code> the channel is updated with ON state, with OFF state otherwise
+     */
     protected void updateSwitch(String channelID, boolean switchOn) {
         ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), channelID);
         updateSwitch(channelUID, switchOn);
     }
 
+    /**
+     * Updates switch channel with given state.
+     *
+     * @param channelUID channel UID
+     * @param switchOn   if <code>true</code> the channel is updated with ON state, with OFF state otherwise
+     */
     protected void updateSwitch(ChannelUID channelUID, boolean switchOn) {
         State state = switchOn ? OnOffType.ON : OnOffType.OFF;
         updateState(channelUID, state);
     }
 
+    /**
+     * Creates bitset of given size with particular bits set to 1.
+     *
+     * @param size bitset size in bytes
+     * @param ids  bits to set, first bit is 1
+     * @return bitset as array of bytes
+     */
     protected byte[] getObjectBitset(int size, int... ids) {
         byte[] bitset = new byte[size];
         for (int id : ids) {

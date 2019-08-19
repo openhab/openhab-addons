@@ -63,6 +63,11 @@ public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
         updateThing(thingBuilder.build());
     }
 
+    /**
+     * Defines the thing as a wireless or wired device.
+     *
+     * @return <code>true</code> if the thing is, or is configured as a wireless device
+     */
     protected boolean isWirelessDevice() {
         return thingConfig.isWireless();
     }
@@ -106,6 +111,12 @@ public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
         }
     }
 
+    /**
+     * Returns channel UID for given state type.
+     *
+     * @param stateType state type to get channel UID for
+     * @return channel UID object
+     */
     private ChannelUID getChannelUID(StateType stateType) {
         String channelId = stateType.toString().toLowerCase();
         return new ChannelUID(getThing().getUID(), channelId);

@@ -87,8 +87,7 @@ public enum IntegraType {
     /**
      * Returns Integra type for given code.
      *
-     * @param code
-     *                 code to get type for
+     * @param code code to get type for
      * @return Integra type object
      */
     public static IntegraType valueOf(int code) {
