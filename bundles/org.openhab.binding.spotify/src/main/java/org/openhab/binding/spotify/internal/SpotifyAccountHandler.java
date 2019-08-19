@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.spotify.internal.api.model.Device;
 
 /**
@@ -24,7 +25,7 @@ import org.openhab.binding.spotify.internal.api.model.Device;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public interface SpotifyAccountHandler {
+public interface SpotifyAccountHandler extends ThingHandler {
 
     /**
      * @return The {@link ThingUID} associated with this Spotify Account Handler
