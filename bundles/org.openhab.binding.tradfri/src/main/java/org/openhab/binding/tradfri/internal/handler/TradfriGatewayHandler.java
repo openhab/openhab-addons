@@ -110,7 +110,16 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
         } else {
             String currentFirmware = thing.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
             if (isNullOrEmpty(currentFirmware)
-                    || MIN_SUPPORTED_VERSION.compareTo(new TradfriVersion(currentFirmware)) > 0) {
+                    || MIN_SUPPORTED_VERSION.compareTo(new TradfriVersion(currentFirmware)) <= 0) {
+                // newer firmware (>= MIN_SUPPORTED_VERSION)
+                // Running async operation to retrieve new <'identity','key'> pair
+                scheduler.execute(() -> {
+                    boolean success = obtainIdentityAndPreSharedKey();
+                    if (success) {
+                        establishConnection();
+                    }
+                });
+            } else {
                 // older firmware - fall back to authentication with security code
                 // in this case the Thing configuration will not be persisted
                 if (!isNullOrEmpty(currentFirmware)) {
@@ -125,14 +134,6 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
                 updateConfiguration(editedConfig);
 
                 establishConnection();
-            } else {
-                // Running async operation to retrieve new <'identity','key'> pair
-                scheduler.execute(() -> {
-                    boolean success = obtainIdentityAndPreSharedKey();
-                    if (success) {
-                        establishConnection();
-                    }
-                });
             }
         }
     }
