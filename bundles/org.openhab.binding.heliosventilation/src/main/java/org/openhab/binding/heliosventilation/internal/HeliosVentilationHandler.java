@@ -93,9 +93,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
         this.serialPortManager = serialPortManager;
     }
 
-    // TODO: add Thread see
-    // bundles/org.openhab.binding.plugwise/src/main/java/org/openhab/binding/plugwise/internal/PlugwiseMessageSender.java
-
     /**
      * parse datapoints from properties
      *
@@ -250,8 +247,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
         }
 
         datapoints.values().forEach((v) -> {
-            // TODO check if really only linked channels are polled
-            // TODO if (isLinked(channelUID)) {
             if (isLinked(v.getName())) {
                 poll(v);
             }
