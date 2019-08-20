@@ -42,7 +42,7 @@ public abstract class PrefixedResponse<ResponseType> implements Response<Respons
       throws ResponseException {
     this.prefix = prefix;
     this.specifiedErrors = specifiedErrors;
-    this.result = this.parse(response);
+    this.result = parse(response);
   }
 
   public ResponseType getResult() {

@@ -126,7 +126,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   public void handleCommand(ChannelUID channelUID, Command command) {
     logger.trace("Received command {} on channel {}", command, channelUID.getId());
     try {
-      PJLinkDevice device = this.getDevice();
+      PJLinkDevice device = getDevice();
       switch (channelUID.getId()) {
         case CHANNEL_POWER:
           logger.trace("Received power command" + command);
@@ -190,7 +190,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     } catch (ConfigurationException e) {
       updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
     } catch (AuthenticationException e) {
-      this.handleAuthenticationException(e);
+      handleAuthenticationException(e);
     }
   }
 
@@ -203,7 +203,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
       } catch (ResponseException | IOException e) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
       } catch (AuthenticationException e) {
-        this.handleAuthenticationException(e);
+        handleAuthenticationException(e);
       } catch (ConfigurationException e) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
       }
@@ -213,7 +213,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   protected PJLinkDeviceConfiguration getConfiguration() throws ConfigurationException {
     PJLinkDeviceConfiguration config = this.config;
     try {
-      this.validateConfigurationParameters(this.getThing().getConfiguration().getProperties());
+      validateConfigurationParameters(getThing().getConfiguration().getProperties());
     } catch (ConfigValidationException e) {
       String message = e.getValidationMessages().entrySet().stream()
           .map((Map.Entry<String, String> a) -> (a.getKey() + ": " + a.getValue())).collect(Collectors.joining("; "));
@@ -247,7 +247,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   }
 
   private void setupDevice() throws ConfigurationException, IOException, AuthenticationException, ResponseException {
-    PJLinkDevice device = this.getDevice();
+    PJLinkDevice device = getDevice();
     device.checkAvailability();
 
     updateDeviceProperties(device);
@@ -323,7 +323,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
       states.add(new StateOption(input.getPJLinkRepresentation(), input.getText()));
     }
 
-    ChannelUID channelUid = new ChannelUID(this.getThing().getUID(), PJLinkDeviceBindingConstants.CHANNEL_INPUT);
+    ChannelUID channelUid = new ChannelUID(getThing().getUID(), PJLinkDeviceBindingConstants.CHANNEL_INPUT);
     this.stateDescriptionProvider.setStateOptions(channelUid, states);
   }
 }

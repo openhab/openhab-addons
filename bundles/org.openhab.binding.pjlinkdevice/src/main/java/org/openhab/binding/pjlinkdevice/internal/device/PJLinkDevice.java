@@ -91,13 +91,13 @@ public class PJLinkDevice {
   }
 
   protected Socket connect() throws IOException, ResponseException, AuthenticationException {
-    return this.connect(false);
+    return connect(false);
   }
 
   protected BufferedReader getReader() throws IOException, ResponseException, AuthenticationException {
     BufferedReader reader = this.reader;
     if (reader == null) {
-      this.reader = reader = new BufferedReader(new InputStreamReader(this.connect().getInputStream()));
+      this.reader = reader = new BufferedReader(new InputStreamReader(connect().getInputStream()));
     }
     return reader;
   }
@@ -123,7 +123,7 @@ public class PJLinkDevice {
 
     if (forceReconnect || connectionTooOld) {
       if (socket != null) {
-        this.closeSocket(socket);
+        closeSocket(socket);
       }
     }
 
@@ -138,7 +138,7 @@ public class PJLinkDevice {
       this.socket = socket = new Socket();
       socket.connect(socketAddress, timeout);
       socket.setSoTimeout(timeout);
-      BufferedReader reader = this.getReader();
+      BufferedReader reader = getReader();
       String header = reader.readLine();
       if (header == null) {
         throw new ResponseException("No PJLink header received from the device");
@@ -153,11 +153,11 @@ public class PJLinkDevice {
           logger.debug("Authentication needed");
           this.authenticationRequired = true;
           if (this.adminPassword == null) {
-            this.closeSocket(socket);
+            closeSocket(socket);
             throw new AuthenticationException("No password provided, but device requires authentication");
           } else {
             try {
-              this.authenticate(header.substring("PJLINK 1 ".length()));
+              authenticate(header.substring("PJLINK 1 ".length()));
             } catch (AuthenticationException e) {
               // propagate AuthenticationException
               throw e;
@@ -200,7 +200,7 @@ public class PJLinkDevice {
     this.prefixForNextCommand = "";
     for (int numberOfTries = 0; true; numberOfTries++) {
       try {
-        Socket socket = this.connect();
+        Socket socket = connect();
         socket.getOutputStream().write((fullCommand).getBytes());
         socket.getOutputStream().flush();
 
@@ -230,7 +230,7 @@ public class PJLinkDevice {
   }
 
   public void checkAvailability() throws IOException, AuthenticationException, ResponseException {
-    this.connect();
+    connect();
   }
 
   public String getName() throws IOException, ResponseException, AuthenticationException {

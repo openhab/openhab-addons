@@ -50,6 +50,6 @@ public abstract class AbstractCommand<RequestType extends Request, ResponseType 
     if ("PJLINK ERRA".equalsIgnoreCase(responseString)) {
       throw new AuthenticationException("Authentication error, wrong password provided?");
     }
-    return this.parseResponse(responseString);
+    return parseResponse(responseString);
   }
 }

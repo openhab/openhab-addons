@@ -63,7 +63,7 @@ public class Input {
 
   public Input(String value) throws ResponseException {
     this.value = value;
-    this.validate();
+    validate();
   }
 
   @Override
@@ -104,9 +104,9 @@ public class Input {
     if (this.value.length() != 2) {
       throw new ResponseException("Illegal input description: " + value);
     }
-    this.getInputType();
-    if (!INPUT_NUMBER_PATTERN.matcher(this.getInputNumber()).matches()) {
-      throw new ResponseException("Illegal channel number: " + this.getInputNumber());
+    getInputType();
+    if (!INPUT_NUMBER_PATTERN.matcher(getInputNumber()).matches()) {
+      throw new ResponseException("Illegal channel number: " + getInputNumber());
     }
   }
 
@@ -119,6 +119,6 @@ public class Input {
   }
 
   public String getText() throws ResponseException {
-    return this.getInputType().getText() + " " + this.getInputNumber();
+    return getInputType().getText() + " " + getInputNumber();
   }
 }

@@ -47,7 +47,7 @@ public class AuthenticationCommand<ResponseType extends Response<?>> implements 
 
   @Override
   public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
-    this.device.addPrefixToNextCommand(this.createRequest().getRequestString());
+    this.device.addPrefixToNextCommand(createRequest().getRequestString());
     return this.testCommand.execute();
   }
 
