@@ -101,6 +101,7 @@
 /bundles/org.openhab.binding.nanoleaf/ @raepple
 /bundles/org.openhab.binding.neato/ @jjlauterbach
 /bundles/org.openhab.binding.neeo/ @tmrobert8
+/bundles/org.openhab.binding.neohub/ @andrewfg
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
