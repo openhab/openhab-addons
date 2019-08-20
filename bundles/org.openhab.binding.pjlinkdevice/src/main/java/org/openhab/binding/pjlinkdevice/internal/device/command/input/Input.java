@@ -97,17 +97,21 @@ public class Input {
   }
 
   public String getInputNumber() throws ResponseException {
-    return this.value.substring(1, 2);
+    String inputNumber = this.value.substring(1, 2);
+    if (!INPUT_NUMBER_PATTERN.matcher(inputNumber).matches()) {
+      throw new ResponseException("Illegal channel number: " + inputNumber);
+    }
+
+    return inputNumber;
   }
 
   public void validate() throws ResponseException {
     if (this.value.length() != 2) {
       throw new ResponseException("Illegal input description: " + value);
     }
+    // these method also validate
     getInputType();
-    if (!INPUT_NUMBER_PATTERN.matcher(getInputNumber()).matches()) {
-      throw new ResponseException("Illegal channel number: " + getInputNumber());
-    }
+    getInputNumber();
   }
 
   public String getValue() {
