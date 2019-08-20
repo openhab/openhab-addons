@@ -74,8 +74,8 @@ heliosventilation:ventilation:MyKWL  [ serialPort="/dev/ttyUSB0" ]
 Items:
 
 ```
-Switch KWLOnOff { channel="helios:ventilation:MyKWL:powerState" }
-Switch KWLWinter { channel="helios:ventilation:MyKWL:winterMode" }
+Switch KWLOnOff { channel="heliosventilation:ventilation:MyKWL:powerState" }
+Switch KWLWinter { channel="heliosventilation:ventilation:MyKWL:winterMode" }
 
 Group VentilationTemp "Measured Temperatures in Ventilation System"
 
@@ -94,21 +94,20 @@ Sitemap:
 
 ```
 sitemap helios_kwl label="Helios Ventilation" {
-	Frame label="Temperatures" {
-        Text item=Outside_Temperature
-        Text item=Outgoing_Temperature
-        Text item=Extract_Temperature
-        Text item=Supply_Temperature
-	}
-	Frame label="Control" {
-       Switch item=KWLOnOff
-       Switch item=KWLWinter
-       Slider item=Fan_Speed icon="fan" minValue=1 maxValue=8 step=1
-
-	}
-	Frame label="Configuration" {
-		Slider item=Min_Fan_Speed
-		Setpoint item=Max_Fan_Speed icon="fan"
-	}
+        Frame label="Temperatures" {
+              Text item=Outside_Temperature
+              Text item=Outgoing_Temperature
+              Text item=Extract_Temperature
+              Text item=Supply_Temperature
+        }
+        Frame label="Control" {
+              Switch item=KWLOnOff
+              Switch item=KWLWinter
+              Slider item=Fan_Speed icon="fan" minValue=1 maxValue=8 step=1
+        }
+        Frame label="Configuration" {
+              Slider item=Min_Fan_Speed
+              Setpoint item=Max_Fan_Speed icon="fan"
+        }
 }
 ```
