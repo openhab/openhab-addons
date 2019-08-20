@@ -28,16 +28,16 @@ import java.util.regex.Pattern;
 public class Input {
 
     enum InputType {
-        RGB("RGB", "1"),
-        VIDEO("Video", "2"),
-        DIGITAL("Digital", "3"),
-        STORAGE("Storage", "4"),
-        NETWORK("Network", "5");
+        RGB("RGB", '1'),
+        VIDEO("Video", '2'),
+        DIGITAL("Digital", '3'),
+        STORAGE("Storage", '4'),
+        NETWORK("Network", '5');
 
         private String text;
-        private String code;
+        private char code;
 
-        private InputType(String text, String code) {
+        private InputType(String text, char code) {
             this.text = text;
             this.code = code;
         }
@@ -48,7 +48,7 @@ public class Input {
 
         public static InputType parseString(String value) throws ResponseException {
             for (InputType result : InputType.values()) {
-                if (result.code.equals(value.substring(0, 1))) {
+                if (result.code == value.charAt(0)) {
                     return result;
                 }
             }
