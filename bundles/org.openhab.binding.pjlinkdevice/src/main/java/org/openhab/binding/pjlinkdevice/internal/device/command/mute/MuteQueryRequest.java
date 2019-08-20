@@ -24,9 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MuteQueryRequest implements Request {
 
-    @Override
-    public String getRequestString() {
-        return "%1AVMT ?";
-    }
+  @Override
+  public String getRequestString() {
+    return "%1AVMT ?";
+  }
 
 }

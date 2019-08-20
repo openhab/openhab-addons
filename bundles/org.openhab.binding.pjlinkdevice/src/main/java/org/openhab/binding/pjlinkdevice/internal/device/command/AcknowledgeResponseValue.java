@@ -21,28 +21,28 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum AcknowledgeResponseValue {
-    OK("Success", "OK");
+  OK("Success", "OK");
 
-    private String text;
-    private String code;
+  private String text;
+  private String code;
 
-    private AcknowledgeResponseValue(String text, String code) {
-        this.text = text;
-        this.code = code;
+  private AcknowledgeResponseValue(String text, String code) {
+    this.text = text;
+    this.code = code;
+  }
+
+  public String getText() {
+    return this.text;
+  }
+
+  public static AcknowledgeResponseValue getValueForCode(String code) throws ResponseException {
+    for (AcknowledgeResponseValue result : AcknowledgeResponseValue.values()) {
+      if (result.code.equalsIgnoreCase(code)) {
+        return result;
+      }
     }
 
-    public String getText() {
-        return this.text;
-    }
-
-    public static AcknowledgeResponseValue getValueForCode(String code) throws ResponseException {
-        for (AcknowledgeResponseValue result : AcknowledgeResponseValue.values()) {
-            if (result.code.equalsIgnoreCase(code)) {
-                return result;
-            }
-        }
-
-        throw new ResponseException("Cannot understand status: " + code);
-    }
+    throw new ResponseException("Cannot understand status: " + code);
+  }
 
 }

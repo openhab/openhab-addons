@@ -26,39 +26,41 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * This command is used to authenticate to the device after the connection established.
  * As authentication can only be done in conjunction with a real command, a testCommand must be passed to authenticate.
  *
- * The authentication procedure is described in <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> chapter 5.1. Authentication procedure
+ * The authentication procedure is described in
+ * <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> chapter 5.1. Authentication
+ * procedure
  *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault
 public class AuthenticationCommand<ResponseType extends Response<?>> implements Command<ResponseType> {
 
-    private String challenge;
-    private Command<ResponseType> testCommand;
-    private PJLinkDevice device;
+  private String challenge;
+  private Command<ResponseType> testCommand;
+  private PJLinkDevice device;
 
-    public AuthenticationCommand(PJLinkDevice pjLinkDevice, String challenge, Command<ResponseType> testCommand) {
-        this.device = pjLinkDevice;
-        this.challenge = challenge;
-        this.testCommand = testCommand;
-    }
+  public AuthenticationCommand(PJLinkDevice pjLinkDevice, String challenge, Command<ResponseType> testCommand) {
+    this.device = pjLinkDevice;
+    this.challenge = challenge;
+    this.testCommand = testCommand;
+  }
 
-    @Override
-    public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
-        this.device.addPrefixToNextCommand(this.createRequest().getRequestString());
-        return this.testCommand.execute();
-    }
+  @Override
+  public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
+    this.device.addPrefixToNextCommand(this.createRequest().getRequestString());
+    return this.testCommand.execute();
+  }
 
-    protected AuthenticationRequest<ResponseType> createRequest() {
-        return new AuthenticationRequest<ResponseType>(this);
-    }
+  protected AuthenticationRequest<ResponseType> createRequest() {
+    return new AuthenticationRequest<ResponseType>(this);
+  }
 
-    public String getChallenge() {
-        return this.challenge;
-    }
+  public String getChallenge() {
+    return this.challenge;
+  }
 
-    public PJLinkDevice getDevice() {
-        return this.device;
-    }
+  public PJLinkDevice getDevice() {
+    return this.device;
+  }
 
 }

@@ -37,97 +37,97 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Discovery of PJLink devices. Checks IP addresses in parallel processing.
  * 
- * Generating IP addresses and checking them is done by the subclasses implementing 
+ * Generating IP addresses and checking them is done by the subclasses implementing
  * {@link AbstractDiscoveryParticipant#generateAddressesToScan} and {@link AbstractDiscoveryParticipant#checkAddress}
  * 
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault
 public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryService {
-    protected final Logger logger = LoggerFactory.getLogger(DiscoveryParticipantClass1.class);
-    private Integer scannedIPcount = 0;
-    private @Nullable ExecutorService executorService = null;
+  protected final Logger logger = LoggerFactory.getLogger(DiscoveryParticipantClass1.class);
+  private Integer scannedIPcount = 0;
+  private @Nullable ExecutorService executorService = null;
 
-    public AbstractDiscoveryParticipant(Set<@NonNull ThingTypeUID> supportedThingTypes, int timeout,
-            boolean backgroundDiscoveryEnabledByDefault) throws IllegalArgumentException {
-        super(supportedThingTypes, timeout, backgroundDiscoveryEnabledByDefault);
+  public AbstractDiscoveryParticipant(Set<@NonNull ThingTypeUID> supportedThingTypes, int timeout,
+      boolean backgroundDiscoveryEnabledByDefault) throws IllegalArgumentException {
+    super(supportedThingTypes, timeout, backgroundDiscoveryEnabledByDefault);
+  }
+
+  protected ExecutorService getExecutorService() {
+    ExecutorService executorService = this.executorService;
+    if (executorService == null) {
+      this.executorService = executorService = Executors
+          .newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
     }
+    return executorService;
+  }
 
-    protected ExecutorService getExecutorService() {
-        ExecutorService executorService = this.executorService;
-        if(executorService == null) {
-          this.executorService = executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+  @Override
+  protected void startScan() {
+    logger.trace("PJLinkProjectorDiscoveryParticipant startScan");
+    Set<InetAddress> addressesToScan = generateAddressesToScan();
+    scannedIPcount = 0;
+    for (InetAddress ip : addressesToScan) {
+      getExecutorService().execute(() -> {
+        Thread.currentThread().setName("Discovery thread " + ip);
+        checkAddress(ip, PJLinkDeviceBindingConstants.DEFAULT_PORT,
+            PJLinkDeviceBindingConstants.DEFAULT_SCAN_TIMEOUT_SECONDS);
+
+        synchronized (scannedIPcount) {
+          scannedIPcount += 1;
+          logger.debug("Scanned {} of {} IPs", scannedIPcount, addressesToScan.size());
+          if (scannedIPcount == addressesToScan.size()) {
+            logger.debug("Scan of {} IPs successful", scannedIPcount);
+            stopScan();
+          }
         }
-        return executorService;
+      });
+    }
+  }
+
+  @Override
+  protected synchronized void stopScan() {
+    super.stopScan();
+    ExecutorService executorService = this.executorService;
+    if (executorService == null) {
+      return;
     }
 
-    @Override
-    protected void startScan() {
-        logger.trace("PJLinkProjectorDiscoveryParticipant startScan");
-        Set<InetAddress> addressesToScan = generateAddressesToScan();
-        scannedIPcount = 0;
-        for (InetAddress ip : addressesToScan) {
-            getExecutorService().execute(() -> {
-                Thread.currentThread().setName("Discovery thread " + ip);
-                checkAddress(ip, PJLinkDeviceBindingConstants.DEFAULT_PORT,
-                        PJLinkDeviceBindingConstants.DEFAULT_SCAN_TIMEOUT_SECONDS);
+    try {
+      executorService.awaitTermination(10000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt(); // Reset interrupt flag
+    }
+    executorService.shutdown();
+  }
 
-                synchronized (scannedIPcount) {
-                    scannedIPcount += 1;
-                    logger.debug("Scanned {} of {} IPs", scannedIPcount, addressesToScan.size());
-                    if (scannedIPcount == addressesToScan.size()) {
-                        logger.debug("Scan of {} IPs successful", scannedIPcount);
-                        stopScan();
-                    }
-                }
-            });
+  public static ThingUID createServiceUID(String ip, int tcpPort) {
+    // uid must not contains dots
+    return new ThingUID(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK,
+        ip.replace('.', '_') + "_" + String.valueOf(tcpPort));
+  }
+
+  protected abstract void checkAddress(InetAddress ip, int tcpPort, int timeout);
+
+  private Set<InetAddress> generateAddressesToScan() {
+    try {
+      Set<InetAddress> addressesToScan = new HashSet<InetAddress>();
+      ArrayList<NetworkInterface> interfaces = java.util.Collections.list(NetworkInterface.getNetworkInterfaces());
+      for (NetworkInterface networkInterface : interfaces) {
+        if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+          continue;
         }
-    }
-
-    @Override
-    protected synchronized void stopScan() {
-        super.stopScan();
-        ExecutorService executorService = this.executorService;
-        if (executorService == null) {
-            return;
+        for (InterfaceAddress i : networkInterface.getInterfaceAddresses()) {
+          collectAddressesToScan(addressesToScan, i);
         }
-
-        try {
-            executorService.awaitTermination(10000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Reset interrupt flag
-        }
-        executorService.shutdown();
+      }
+      return addressesToScan;
+    } catch (SocketException e) {
+      logger.debug("Could not enumerate network interfaces", e);
     }
+    return new HashSet<InetAddress>();
+  }
 
-    public static ThingUID createServiceUID(String ip, int tcpPort) {
-        // uid must not contains dots
-        return new ThingUID(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK,
-                ip.replace('.', '_') + "_" + String.valueOf(tcpPort));
-    }
-
-    protected abstract void checkAddress(InetAddress ip, int tcpPort, int timeout);
-
-    private Set<InetAddress> generateAddressesToScan() {
-        try {
-            Set<InetAddress> addressesToScan = new HashSet<InetAddress>();
-            ArrayList<NetworkInterface> interfaces = java.util.Collections
-                    .list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface networkInterface : interfaces) {
-                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                    continue;
-                }
-                for (InterfaceAddress i : networkInterface.getInterfaceAddresses()) {
-                    collectAddressesToScan(addressesToScan, i);
-                }
-            }
-            return addressesToScan;
-        } catch (SocketException e) {
-            logger.debug("Could not enumerate network interfaces", e);
-        }
-        return new HashSet<InetAddress>();
-    }
-
-    protected abstract void collectAddressesToScan(Set<InetAddress> addressesToScan, InterfaceAddress i);
+  protected abstract void collectAddressesToScan(Set<InetAddress> addressesToScan, InterfaceAddress i);
 
 }

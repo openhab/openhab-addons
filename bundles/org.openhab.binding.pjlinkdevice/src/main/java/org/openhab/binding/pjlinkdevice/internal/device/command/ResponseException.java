@@ -21,21 +21,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ResponseException extends Exception {
-    private static final long serialVersionUID = -3319800607314286998L;
-    public ResponseException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
+  private static final long serialVersionUID = -3319800607314286998L;
 
-    public ResponseException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public ResponseException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    super(message, cause, enableSuppression, writableStackTrace);
+  }
 
-    public ResponseException(String message) {
-        super(message);
-    }
+  public ResponseException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public ResponseException(Throwable cause) {
-        super(cause);
-    }
+  public ResponseException(String message) {
+    super(message);
+  }
+
+  public ResponseException(Throwable cause) {
+    super(cause);
+  }
 
 }

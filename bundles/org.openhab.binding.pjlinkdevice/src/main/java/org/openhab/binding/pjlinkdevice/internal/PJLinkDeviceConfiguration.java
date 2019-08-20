@@ -22,13 +22,13 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class PJLinkDeviceConfiguration {
-    public @Nullable String ipAddress;
-    public int tcpPort;
+  public @Nullable String ipAddress;
+  public int tcpPort;
 
-    public @Nullable String adminPassword;
+  public @Nullable String adminPassword;
 
-    public int refresh;
-    public boolean refreshPower;
-    public boolean refreshMute;
-    public boolean refreshInputChannel;
+  public int refresh;
+  public boolean refreshPower;
+  public boolean refreshMute;
+  public boolean refreshInputChannel;
 }

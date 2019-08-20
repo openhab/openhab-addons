@@ -27,99 +27,98 @@ import java.util.regex.Pattern;
 @NonNullByDefault
 public class Input {
 
-    private static final Pattern INPUT_NUMBER_PATTERN = Pattern.compile("[0-9A-Z]");
+  private static final Pattern INPUT_NUMBER_PATTERN = Pattern.compile("[0-9A-Z]");
 
-    enum InputType {
-        RGB("RGB", '1'),
-        VIDEO("Video", '2'),
-        DIGITAL("Digital", '3'),
-        STORAGE("Storage", '4'),
-        NETWORK("Network", '5');
+  enum InputType {
+    RGB("RGB", '1'),
+    VIDEO("Video", '2'),
+    DIGITAL("Digital", '3'),
+    STORAGE("Storage", '4'),
+    NETWORK("Network", '5');
 
-        private String text;
-        private char code;
+    private String text;
+    private char code;
 
-        private InputType(String text, char code) {
-            this.text = text;
-            this.code = code;
+    private InputType(String text, char code) {
+      this.text = text;
+      this.code = code;
+    }
+
+    public String getText() {
+      return this.text;
+    }
+
+    public static InputType parseString(String value) throws ResponseException {
+      for (InputType result : InputType.values()) {
+        if (result.code == value.charAt(0)) {
+          return result;
         }
+      }
 
-        public String getText() {
-            return this.text;
-        }
-
-        public static InputType parseString(String value) throws ResponseException {
-            for (InputType result : InputType.values()) {
-                if (result.code == value.charAt(0)) {
-                    return result;
-                }
-            }
-
-            throw new ResponseException("Unknown input channel type: " + value);
-        }
+      throw new ResponseException("Unknown input channel type: " + value);
     }
+  }
 
-    private String value;
+  private String value;
 
-    public Input(String value) throws ResponseException {
-        this.value = value;
-        this.validate();
+  public Input(String value) throws ResponseException {
+    this.value = value;
+    this.validate();
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + value.hashCode();
+    return result;
+  }
+
+  @Override
+  public boolean equals(@Nullable Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + value.hashCode();
-        return result;
+    if (obj == null) {
+      return false;
     }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Input other = (Input) obj;
-        if (!value.equals(other.value)) {
-            return false;
-        }
-        return true;
+    if (getClass() != obj.getClass()) {
+      return false;
     }
-
-
-    public InputType getInputType() throws ResponseException {
-        return InputType.parseString(this.value);
+    Input other = (Input) obj;
+    if (!value.equals(other.value)) {
+      return false;
     }
+    return true;
+  }
 
-    public String getInputNumber() throws ResponseException {
-        return this.value.substring(1, 2);
-    }
+  public InputType getInputType() throws ResponseException {
+    return InputType.parseString(this.value);
+  }
 
-    public void validate() throws ResponseException {
-        if (this.value.length() != 2) {
-            throw new ResponseException("Illegal input description: " + value);
-        }
-        this.getInputType();
-        if (!INPUT_NUMBER_PATTERN.matcher(this.getInputNumber()).matches()) {
-            throw new ResponseException("Illegal channel number: " + this.getInputNumber());
-        }
-    }
+  public String getInputNumber() throws ResponseException {
+    return this.value.substring(1, 2);
+  }
 
-    public String getValue() {
-        return this.value;
+  public void validate() throws ResponseException {
+    if (this.value.length() != 2) {
+      throw new ResponseException("Illegal input description: " + value);
     }
+    this.getInputType();
+    if (!INPUT_NUMBER_PATTERN.matcher(this.getInputNumber()).matches()) {
+      throw new ResponseException("Illegal channel number: " + this.getInputNumber());
+    }
+  }
 
-    public String getPJLinkRepresentation() {
-        return this.value;
-    }
+  public String getValue() {
+    return this.value;
+  }
 
-    public String getText() throws ResponseException {
-        return this.getInputType().getText() + " " + this.getInputNumber();
-    }
+  public String getPJLinkRepresentation() {
+    return this.value;
+  }
+
+  public String getText() throws ResponseException {
+    return this.getInputType().getText() + " " + this.getInputNumber();
+  }
 }

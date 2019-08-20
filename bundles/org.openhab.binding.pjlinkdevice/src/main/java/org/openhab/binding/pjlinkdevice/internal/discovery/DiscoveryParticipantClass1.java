@@ -42,64 +42,64 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @Component(service = DiscoveryService.class, configurationPid = "org.openhab.binding.pjlinkdevice.internal.discovery.DiscoveryParticipantClass1")
 @NonNullByDefault
 public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
-    public DiscoveryParticipantClass1() throws IllegalArgumentException {
-        super(Collections.singleton(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK), 60, true);
+  public DiscoveryParticipantClass1() throws IllegalArgumentException {
+    super(Collections.singleton(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK), 60, true);
 
-        logger.trace("PJLinkProjectorDiscoveryParticipant constructor");
+    logger.trace("PJLinkProjectorDiscoveryParticipant constructor");
+  }
+
+  @Override
+  protected void collectAddressesToScan(Set<InetAddress> addressesToScan, InterfaceAddress i) {
+    // only scan IPv4
+    if (!(i.getAddress() instanceof Inet4Address)) {
+      return;
+    }
+    // only scan Class C networks
+    if (i.getNetworkPrefixLength() < 24) {
+      return;
     }
 
-    @Override
-    protected void collectAddressesToScan(Set<InetAddress> addressesToScan, InterfaceAddress i) {
-        // only scan IPv4
-        if (!(i.getAddress() instanceof Inet4Address)) {
-            return;
-        }
-        // only scan Class C networks
-        if (i.getNetworkPrefixLength() < 24) {
-            return;
-        }
-
-        SubnetUtils utils = new SubnetUtils(i.getAddress().getHostAddress() + "/" + i.getNetworkPrefixLength());
-        for (String addressToScan : utils.getInfo().getAllAddresses()) {
-            try {
-                logger.debug("Add address to scan: {}", addressToScan);
-                addressesToScan.add(InetAddress.getByName(addressToScan));
-            } catch (UnknownHostException e) {
-                logger.debug("Unknown Host", e);
-            }
-        }
+    SubnetUtils utils = new SubnetUtils(i.getAddress().getHostAddress() + "/" + i.getNetworkPrefixLength());
+    for (String addressToScan : utils.getInfo().getAllAddresses()) {
+      try {
+        logger.debug("Add address to scan: {}", addressToScan);
+        addressesToScan.add(InetAddress.getByName(addressToScan));
+      } catch (UnknownHostException e) {
+        logger.debug("Unknown Host", e);
+      }
     }
+  }
 
-    @Override
-    protected void checkAddress(InetAddress ip, int tcpPort, int timeout) {
-        PJLinkDevice device = new PJLinkDevice(tcpPort, ip, null, timeout);
+  @Override
+  protected void checkAddress(InetAddress ip, int tcpPort, int timeout) {
+    PJLinkDevice device = new PJLinkDevice(tcpPort, ip, null, timeout);
+    try {
+      Map<String, Object> properties = new HashMap<>();
+      properties.put(PJLinkDeviceBindingConstants.PARAMETER_HOSTNAME, ip.getHostAddress());
+      properties.put(PJLinkDeviceBindingConstants.PARAMETER_PORT, tcpPort);
+      String description = "Unknown PJLink Device";
+      try {
+        device.checkAvailability();
+
         try {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_HOSTNAME, ip.getHostAddress());
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_PORT, tcpPort);
-            String description = "Unknown PJLink Device";
-            try {
-                device.checkAvailability();
-
-                try {
-                    description = device.getFullDescription();
-                    logger.debug("got name {}", description);
-                } catch (ResponseException e) {
-                    logger.debug("Could not find a name for PJLink device", e);
-                    // okay, no name
-                }
-            } catch (AuthenticationException e) {
-                properties.put(PJLinkDeviceBindingConstants.PROPERTY_AUTHENTICATION_REQUIRED, true);
-            }
-            logger.debug("Adding thing");
-            thingDiscovered(DiscoveryResultBuilder.create(createServiceUID(ip.getHostAddress(), tcpPort))
-                    .withTTL(PJLinkDeviceBindingConstants.DISCOVERY_RESULT_TTL_SECONDS).withProperties(properties)
-                    .withLabel(description).build());
-            logger.debug("Added thing");
-        } catch (ResponseException | IOException e) {
-            logger.debug("No PJLinkDevice here {} {}", ip, e.getStackTrace());
-            // no device here
+          description = device.getFullDescription();
+          logger.debug("got name {}", description);
+        } catch (ResponseException e) {
+          logger.debug("Could not find a name for PJLink device", e);
+          // okay, no name
         }
+      } catch (AuthenticationException e) {
+        properties.put(PJLinkDeviceBindingConstants.PROPERTY_AUTHENTICATION_REQUIRED, true);
+      }
+      logger.debug("Adding thing");
+      thingDiscovered(DiscoveryResultBuilder.create(createServiceUID(ip.getHostAddress(), tcpPort))
+          .withTTL(PJLinkDeviceBindingConstants.DISCOVERY_RESULT_TTL_SECONDS).withProperties(properties)
+          .withLabel(description).build());
+      logger.debug("Added thing");
+    } catch (ResponseException | IOException e) {
+      logger.debug("No PJLinkDevice here {} {}", ip, e.getStackTrace());
+      // no device here
     }
+  }
 
 }

@@ -24,16 +24,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MuteInstructionRequest implements Request {
 
-    private MuteInstructionCommand command;
+  private MuteInstructionCommand command;
 
-    public MuteInstructionRequest(MuteInstructionCommand command) {
-        this.command = command;
-    }
+  public MuteInstructionRequest(MuteInstructionCommand command) {
+    this.command = command;
+  }
 
-    @Override
-    public String getRequestString() {
-        return "%1AVMT " + this.command.getTargetChannel().getPJLinkRepresentation()
-                + this.command.getTargetState().getPJLinkRepresentation();
-    }
+  @Override
+  public String getRequestString() {
+    return "%1AVMT " + this.command.getTargetChannel().getPJLinkRepresentation()
+        + this.command.getTargetState().getPJLinkRepresentation();
+  }
 
 }

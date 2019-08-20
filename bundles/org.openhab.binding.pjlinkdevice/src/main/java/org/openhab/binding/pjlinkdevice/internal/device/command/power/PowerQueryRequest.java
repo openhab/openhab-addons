@@ -24,9 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PowerQueryRequest implements Request {
 
-    @Override
-    public String getRequestString() {
-        return "%1POWR ?";
-    }
+  @Override
+  public String getRequestString() {
+    return "%1POWR ?";
+  }
 
 }

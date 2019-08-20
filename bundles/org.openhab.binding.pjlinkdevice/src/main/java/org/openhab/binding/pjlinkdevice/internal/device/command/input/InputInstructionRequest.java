@@ -24,15 +24,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class InputInstructionRequest implements Request {
 
-    private InputInstructionCommand command;
+  private InputInstructionCommand command;
 
-    public InputInstructionRequest(InputInstructionCommand command) {
-        this.command = command;
-    }
+  public InputInstructionRequest(InputInstructionCommand command) {
+    this.command = command;
+  }
 
-    @Override
-    public String getRequestString() {
-        return "%1INPT " + this.command.getTarget().getPJLinkRepresentation();
-    }
+  @Override
+  public String getRequestString() {
+    return "%1INPT " + this.command.getTarget().getPJLinkRepresentation();
+  }
 
 }

@@ -24,15 +24,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PowerInstructionRequest implements Request {
 
-    private PowerInstructionCommand command;
+  private PowerInstructionCommand command;
 
-    public PowerInstructionRequest(PowerInstructionCommand command) {
-        this.command = command;
-    }
+  public PowerInstructionRequest(PowerInstructionCommand command) {
+    this.command = command;
+  }
 
-    @Override
-    public String getRequestString() {
-        return "%1POWR " + this.command.getTarget().getPJLinkRepresentation();
-    }
+  @Override
+  public String getRequestString() {
+    return "%1POWR " + this.command.getTarget().getPJLinkRepresentation();
+  }
 
 }

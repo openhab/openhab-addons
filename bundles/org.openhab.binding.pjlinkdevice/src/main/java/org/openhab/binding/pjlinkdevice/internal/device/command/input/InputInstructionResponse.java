@@ -29,16 +29,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class InputInstructionResponse extends PrefixedResponse<AcknowledgeResponseValue> {
-    private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<ErrorCode>(Arrays.asList(
-       ErrorCode.OUT_OF_PARAMETER, ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE ));
+  private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<ErrorCode>(
+      Arrays.asList(ErrorCode.OUT_OF_PARAMETER, ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
 
-    public InputInstructionResponse(String response) throws ResponseException {
-        super("INPT=", SPECIFIED_ERRORCODES, response);
-    }
+  public InputInstructionResponse(String response) throws ResponseException {
+    super("INPT=", SPECIFIED_ERRORCODES, response);
+  }
 
-    @Override
-    protected AcknowledgeResponseValue parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
-        return AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
-    }
+  @Override
+  protected AcknowledgeResponseValue parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
+    return AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
+  }
 
 }

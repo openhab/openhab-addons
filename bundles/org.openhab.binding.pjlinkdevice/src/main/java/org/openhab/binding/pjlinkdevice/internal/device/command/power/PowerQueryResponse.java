@@ -24,42 +24,42 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class PowerQueryResponse extends PrefixedResponse<PowerQueryResponse.PowerQueryResponseValue> {
-    public enum PowerQueryResponseValue {
-        STAND_BY("Stand-by", "0"),
-        POWER_ON("Power on", "1"),
-        COOLING_DOWN("Cooling down", "2"),
-        WARMING_UP("Warming up", "3");
+  public enum PowerQueryResponseValue {
+    STAND_BY("Stand-by", "0"),
+    POWER_ON("Power on", "1"),
+    COOLING_DOWN("Cooling down", "2"),
+    WARMING_UP("Warming up", "3");
 
-        private String text;
-        private String code;
+    private String text;
+    private String code;
 
-        private PowerQueryResponseValue(String text, String code) {
-            this.text = text;
-            this.code = code;
-        }
-
-        public String getText() {
-            return this.text;
-        }
-
-        public static PowerQueryResponseValue parseString(String code) throws ResponseException {
-            for (PowerQueryResponseValue result : PowerQueryResponseValue.values()) {
-                if (result.code.equals(code)) {
-                    return result;
-                }
-            }
-
-            throw new ResponseException("Cannot understand status: " + code);
-        }
-
+    private PowerQueryResponseValue(String text, String code) {
+      this.text = text;
+      this.code = code;
     }
 
-    public PowerQueryResponse(String response) throws ResponseException {
-        super("POWR=", response);
+    public String getText() {
+      return this.text;
     }
 
-    @Override
-    protected PowerQueryResponseValue parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
-        return PowerQueryResponseValue.parseString(responseWithoutPrefix);
+    public static PowerQueryResponseValue parseString(String code) throws ResponseException {
+      for (PowerQueryResponseValue result : PowerQueryResponseValue.values()) {
+        if (result.code.equals(code)) {
+          return result;
+        }
+      }
+
+      throw new ResponseException("Cannot understand status: " + code);
     }
+
+  }
+
+  public PowerQueryResponse(String response) throws ResponseException {
+    super("POWR=", response);
+  }
+
+  @Override
+  protected PowerQueryResponseValue parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
+    return PowerQueryResponseValue.parseString(responseWithoutPrefix);
+  }
 }

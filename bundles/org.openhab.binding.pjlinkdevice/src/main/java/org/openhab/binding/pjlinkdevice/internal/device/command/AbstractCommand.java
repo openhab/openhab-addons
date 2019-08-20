@@ -21,34 +21,35 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Common base class for most PJLink commands.
  *
- * Takes care of generating the request string, sending it to the device, authentication error checking and response parsing.
+ * Takes care of generating the request string, sending it to the device, authentication error checking and response
+ * parsing.
  *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault
 public abstract class AbstractCommand<RequestType extends Request, ResponseType extends Response<?>>
-        implements Command<ResponseType> {
-    private PJLinkDevice pjLinkDevice;
+    implements Command<ResponseType> {
+  private PJLinkDevice pjLinkDevice;
 
-    public AbstractCommand(PJLinkDevice pjLinkDevice) {
-        this.pjLinkDevice = pjLinkDevice;
+  public AbstractCommand(PJLinkDevice pjLinkDevice) {
+    this.pjLinkDevice = pjLinkDevice;
+  }
+
+  public PJLinkDevice getDevice() {
+    return this.pjLinkDevice;
+  }
+
+  protected abstract RequestType createRequest();
+
+  protected abstract ResponseType parseResponse(String response) throws ResponseException;
+
+  @Override
+  public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
+    RequestType request = createRequest();
+    String responseString = this.pjLinkDevice.execute(request.getRequestString() + "\r");
+    if ("PJLINK ERRA".equalsIgnoreCase(responseString)) {
+      throw new AuthenticationException("Authentication error, wrong password provided?");
     }
-
-    public PJLinkDevice getDevice() {
-        return this.pjLinkDevice;
-    }
-
-    protected abstract RequestType createRequest();
-
-    protected abstract ResponseType parseResponse(String response) throws ResponseException;
-
-    @Override
-    public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
-        RequestType request = createRequest();
-        String responseString = this.pjLinkDevice.execute(request.getRequestString() + "\r");
-        if ("PJLINK ERRA".equalsIgnoreCase(responseString)) {
-            throw new AuthenticationException("Authentication error, wrong password provided?");
-        }
-        return this.parseResponse(responseString);
-    }
+    return this.parseResponse(responseString);
+  }
 }

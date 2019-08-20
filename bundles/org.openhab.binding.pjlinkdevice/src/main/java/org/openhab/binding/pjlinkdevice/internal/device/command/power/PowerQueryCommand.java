@@ -19,24 +19,25 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This command is used for retrieving the devices power status as described in <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> 4.2. Power status query
+ * This command is used for retrieving the devices power status as described in
+ * <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> 4.2. Power status query
  *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault
 public class PowerQueryCommand extends AbstractCommand<PowerQueryRequest, PowerQueryResponse> {
 
-    public PowerQueryCommand(PJLinkDevice pjLinkDevice) {
-        super(pjLinkDevice);
-    }
+  public PowerQueryCommand(PJLinkDevice pjLinkDevice) {
+    super(pjLinkDevice);
+  }
 
-    @Override
-    public PowerQueryRequest createRequest() {
-        return new PowerQueryRequest();
-    }
+  @Override
+  public PowerQueryRequest createRequest() {
+    return new PowerQueryRequest();
+  }
 
-    @Override
-    public PowerQueryResponse parseResponse(String response) throws ResponseException {
-        return new PowerQueryResponse(response);
-    }
+  @Override
+  public PowerQueryResponse parseResponse(String response) throws ResponseException {
+    return new PowerQueryResponse(response);
+  }
 }

@@ -28,7 +28,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-
 /**
  * The {@link PJLinkDeviceHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -38,26 +37,26 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.pjlinkdevice", service = { ThingHandlerFactory.class })
 public class PJLinkDeviceHandlerFactory extends BaseThingHandlerFactory {
-    private InputChannelStateDescriptionProvider stateDescriptionProvider;
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PJLINK);
+  private InputChannelStateDescriptionProvider stateDescriptionProvider;
+  private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PJLINK);
 
-    @Activate
-    public PJLinkDeviceHandlerFactory(@Reference InputChannelStateDescriptionProvider provider) {
-        this.stateDescriptionProvider = provider;
+  @Activate
+  public PJLinkDeviceHandlerFactory(@Reference InputChannelStateDescriptionProvider provider) {
+    this.stateDescriptionProvider = provider;
+  }
+
+  @Override
+  public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+    return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+  }
+
+  @Override
+  protected @Nullable ThingHandler createHandler(Thing thing) {
+    ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+    if (THING_TYPE_PJLINK.equals(thingTypeUID)) {
+      return new PJLinkDeviceHandler(thing, this.stateDescriptionProvider);
     }
 
-    @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-    }
-
-    @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (THING_TYPE_PJLINK.equals(thingTypeUID)) {
-            return new PJLinkDeviceHandler(thing, this.stateDescriptionProvider);
-        }
-
-        return null;
-    }
+    return null;
+  }
 }

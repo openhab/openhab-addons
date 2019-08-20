@@ -30,23 +30,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AuthenticationRequest<ResponseType extends Response<?>> implements Request {
 
-    private AuthenticationCommand<ResponseType> command;
+  private AuthenticationCommand<ResponseType> command;
 
-    public AuthenticationRequest(AuthenticationCommand<ResponseType> command) {
-        this.command = command;
-    }
+  public AuthenticationRequest(AuthenticationCommand<ResponseType> command) {
+    this.command = command;
+  }
 
-    @Override
-    public String getRequestString() throws AuthenticationException {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            String toBeDigested = (this.command.getChallenge() + this.command.getDevice().getAdminPassword());
-            byte[] digest = md.digest(toBeDigested.getBytes());
-            BigInteger bigInt = new BigInteger(1, digest);
-            return bigInt.toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            throw new AuthenticationException(e);
-        }
+  @Override
+  public String getRequestString() throws AuthenticationException {
+    try {
+      MessageDigest md = MessageDigest.getInstance("MD5");
+      String toBeDigested = (this.command.getChallenge() + this.command.getDevice().getAdminPassword());
+      byte[] digest = md.digest(toBeDigested.getBytes());
+      BigInteger bigInt = new BigInteger(1, digest);
+      return bigInt.toString(16);
+    } catch (NoSuchAlgorithmException e) {
+      throw new AuthenticationException(e);
     }
+  }
 
 }

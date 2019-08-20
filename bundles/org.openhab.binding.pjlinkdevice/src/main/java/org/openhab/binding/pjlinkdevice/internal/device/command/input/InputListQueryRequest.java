@@ -24,9 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class InputListQueryRequest implements Request {
 
-    @Override
-    public String getRequestString() {
-        return "%1INST ?";
-    }
+  @Override
+  public String getRequestString() {
+    return "%1INST ?";
+  }
 
 }

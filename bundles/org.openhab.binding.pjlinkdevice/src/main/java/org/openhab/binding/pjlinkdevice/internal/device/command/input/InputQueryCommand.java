@@ -19,24 +19,25 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This command is used for retrieving the currently selected input of the device as described in <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> chapter 4.4. Input switch query
+ * This command is used for retrieving the currently selected input of the device as described in
+ * <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> chapter 4.4. Input switch query
  *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault
 public class InputQueryCommand extends AbstractCommand<InputQueryRequest, InputQueryResponse> {
 
-    public InputQueryCommand(PJLinkDevice pjLinkDevice) {
-        super(pjLinkDevice);
-    }
+  public InputQueryCommand(PJLinkDevice pjLinkDevice) {
+    super(pjLinkDevice);
+  }
 
-    @Override
-    public InputQueryRequest createRequest() {
-        return new InputQueryRequest();
-    }
+  @Override
+  public InputQueryRequest createRequest() {
+    return new InputQueryRequest();
+  }
 
-    @Override
-    public InputQueryResponse parseResponse(String response) throws ResponseException {
-        return new InputQueryResponse(response);
-    }
+  @Override
+  public InputQueryResponse parseResponse(String response) throws ResponseException {
+    return new InputQueryResponse(response);
+  }
 }

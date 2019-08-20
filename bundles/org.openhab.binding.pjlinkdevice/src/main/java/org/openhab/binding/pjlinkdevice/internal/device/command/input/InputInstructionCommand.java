@@ -19,31 +19,33 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This command is used for setting the current input of the device as described in <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> chapter 4.3. Input switch instruction
+ * This command is used for setting the current input of the device as described in
+ * <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> chapter 4.3. Input switch
+ * instruction
  *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault
 public class InputInstructionCommand extends AbstractCommand<InputInstructionRequest, InputInstructionResponse> {
 
-    private Input target;
+  private Input target;
 
-    public InputInstructionCommand(PJLinkDevice pjLinkDevice, Input target) {
-        super(pjLinkDevice);
-        this.target = target;
-    }
+  public InputInstructionCommand(PJLinkDevice pjLinkDevice, Input target) {
+    super(pjLinkDevice);
+    this.target = target;
+  }
 
-    public Input getTarget() {
-      return target;
-    }
-    
-    @Override
-    public InputInstructionRequest createRequest() {
-        return new InputInstructionRequest(this);
-    }
+  public Input getTarget() {
+    return target;
+  }
 
-    @Override
-    public InputInstructionResponse parseResponse(String response) throws ResponseException {
-        return new InputInstructionResponse(response);
-    }
+  @Override
+  public InputInstructionRequest createRequest() {
+    return new InputInstructionRequest(this);
+  }
+
+  @Override
+  public InputInstructionResponse parseResponse(String response) throws ResponseException {
+    return new InputInstructionResponse(response);
+  }
 }

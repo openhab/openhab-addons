@@ -24,13 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class IdentificationResponse extends PrefixedResponse<String> {
-    public IdentificationResponse(IdentificationCommand command, String response) throws ResponseException {
-        super(command.getIdentificationProperty().getPJLinkCommandPrefix() + "=", response);
-    }
+  public IdentificationResponse(IdentificationCommand command, String response) throws ResponseException {
+    super(command.getIdentificationProperty().getPJLinkCommandPrefix() + "=", response);
+  }
 
-    @Override
-    protected String parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
-        return responseWithoutPrefix;
-    }
+  @Override
+  protected String parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
+    return responseWithoutPrefix;
+  }
 
 }

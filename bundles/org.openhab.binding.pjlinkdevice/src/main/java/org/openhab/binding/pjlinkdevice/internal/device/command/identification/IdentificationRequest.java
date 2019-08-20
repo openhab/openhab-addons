@@ -24,15 +24,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class IdentificationRequest implements Request {
 
-    private IdentificationCommand command;
+  private IdentificationCommand command;
 
-    public IdentificationRequest(IdentificationCommand command) {
-        this.command = command;
-    }
+  public IdentificationRequest(IdentificationCommand command) {
+    this.command = command;
+  }
 
-    @Override
-    public String getRequestString() {
-        return "%1" + this.command.getIdentificationProperty().getPJLinkCommandPrefix() + " ?";
-    }
+  @Override
+  public String getRequestString() {
+    return "%1" + this.command.getIdentificationProperty().getPJLinkCommandPrefix() + " ?";
+  }
 
 }

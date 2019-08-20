@@ -29,22 +29,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class InputListQueryResponse extends PrefixedResponse<Set<Input>> {
-    private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<ErrorCode>(Arrays.asList(
-      ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE ));
+  private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<ErrorCode>(
+      Arrays.asList(ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
 
-    public InputListQueryResponse(String response) throws ResponseException {
-        super("INST=", SPECIFIED_ERRORCODES, response);
-    }
+  public InputListQueryResponse(String response) throws ResponseException {
+    super("INST=", SPECIFIED_ERRORCODES, response);
+  }
 
-    @Override
-    protected Set<Input> parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
-        Set<Input> result = new HashSet<Input>();
-        int pos = 0;
-        while (pos < responseWithoutPrefix.length()) {
-            result.add(new Input(responseWithoutPrefix.substring(pos, pos + 2)));
-            pos += 3;
-        }
-        return result;
+  @Override
+  protected Set<Input> parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
+    Set<Input> result = new HashSet<Input>();
+    int pos = 0;
+    while (pos < responseWithoutPrefix.length()) {
+      result.add(new Input(responseWithoutPrefix.substring(pos, pos + 2)));
+      pos += 3;
     }
+    return result;
+  }
 
 }

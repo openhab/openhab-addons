@@ -24,9 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ErrorStatusQueryRequest implements Request {
 
-    @Override
-    public String getRequestString() {
-        return "%1ERST ?";
-    }
+  @Override
+  public String getRequestString() {
+    return "%1ERST ?";
+  }
 
 }

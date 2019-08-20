@@ -24,12 +24,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class InputQueryResponse extends PrefixedResponse<Input> {
-    public InputQueryResponse(String response) throws ResponseException {
-        super("INPT=", response);
-    }
+  public InputQueryResponse(String response) throws ResponseException {
+    super("INPT=", response);
+  }
 
-    @Override
-    protected Input parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
-        return new Input(responseWithoutPrefix);
-    }
+  @Override
+  protected Input parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
+    return new Input(responseWithoutPrefix);
+  }
 }
