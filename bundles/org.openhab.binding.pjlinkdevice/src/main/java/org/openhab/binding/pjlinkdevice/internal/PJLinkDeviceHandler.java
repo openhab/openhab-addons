@@ -263,7 +263,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         PJLinkDeviceConfiguration config = PJLinkDeviceHandler.this.getConfiguration();
         boolean atLeastOneChannelToBeRefreshed = config.refreshPower || config.refreshMute || config.refreshInputChannel;
         if (config.refresh > 0 && atLeastOneChannelToBeRefreshed) {
-            refreshJob = scheduler.scheduleWithFixedDelay(() -> {this.refresh(config);}, 0, config.refresh, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(() -> refresh(config), 0, config.refresh, TimeUnit.SECONDS);
         }
     }
 
