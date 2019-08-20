@@ -1,6 +1,7 @@
 # PJLink Binding
 
-This binding allows you to control devices with [PJLink](https://pjlink.jbmia.or.jp/english/) support. PJLink is a protocol that was developed to standardize IP control of digital projectors, but can also be used by other device types.
+This binding allows you to control devices with [PJLink](https://pjlink.jbmia.or.jp/english/) support. 
+PJLink is a protocol that was developed to standardize IP control of digital projectors, but can also be used by other device types.
 
 Aspects that can be controlled via PJLink are power on/off, input source selection and volume/mute setting.
 
