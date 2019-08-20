@@ -98,19 +98,19 @@ public class NeoBaseHandler extends BaseThingHandler {
     private boolean refreshStateOnline(NeoHubHandler hub) {
         if (hub == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            logger.warn(MSG_HUB_CONFIG);
+            logger.debug(MSG_HUB_CONFIG);
             return false;
         }
 
         if (!hub.isConfigured(config.deviceNameInHub)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
-            logger.warn(MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
+            logger.debug(MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
             return false;
         }
 
         if (!hub.isOnline(config.deviceNameInHub)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            logger.warn(MSG_FMT_DEVICE_COMM, getThing().getLabel());
+            logger.debug(MSG_FMT_DEVICE_COMM, getThing().getLabel());
             return false;
         }
 
@@ -168,7 +168,7 @@ public class NeoBaseHandler extends BaseThingHandler {
                     break;
 
                 case ERR_COMMUNICATION:
-                    logger.warn(MSG_HUB_COMM);
+                    logger.debug(MSG_HUB_COMM);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     break;
 
