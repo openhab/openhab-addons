@@ -12,21 +12,12 @@
  */
 package org.openhab.binding.pjlinkdevice.internal;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.binding.BaseDynamicStateDescriptionProvider;
+import org.eclipse.smarthome.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
-import org.eclipse.smarthome.core.types.StateDescription;
-import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
-import org.eclipse.smarthome.core.types.StateOption;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Dynamic provider of state options for the input selection of the PJLink device.
@@ -35,28 +26,15 @@ import org.osgi.service.component.annotations.Deactivate;
  */
 @Component(service = { DynamicStateDescriptionProvider.class, InputChannelStateDescriptionProvider.class })
 @NonNullByDefault
-public class InputChannelStateDescriptionProvider implements DynamicStateDescriptionProvider {
-    private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
-
-    public void setStateOptions(ChannelUID channelUID, List<StateOption> options) {
-        channelOptionsMap.put(channelUID, options);
+public class InputChannelStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
+    @Reference
+    protected void setChannelTypeI18nLocalizationService(
+            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
     }
 
-    @Override
-    public @Nullable StateDescription getStateDescription(Channel channel, @Nullable StateDescription original,
-            @Nullable Locale locale) {
-        List<StateOption> options = channelOptionsMap.get(channel.getUID());
-        if (options == null) {
-            return null;
-        }
-
-        StateDescriptionFragmentBuilder builder = (original == null) ? StateDescriptionFragmentBuilder.create()
-            : StateDescriptionFragmentBuilder.create(original);
-        return builder.withOptions(options).build().toStateDescription();
-    }
-
-    @Deactivate
-    public void deactivate() {
-        channelOptionsMap.clear();
+    protected void unsetChannelTypeI18nLocalizationService(
+            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.channelTypeI18nLocalizationService = null;
     }
 }
