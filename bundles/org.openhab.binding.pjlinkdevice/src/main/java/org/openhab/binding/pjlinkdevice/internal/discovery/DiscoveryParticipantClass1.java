@@ -13,6 +13,7 @@
 package org.openhab.binding.pjlinkdevice.internal.discovery;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.UnknownHostException;
@@ -50,7 +51,7 @@ public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
     @Override
     protected void collectAddressesToScan(Set<InetAddress> addressesToScan, InterfaceAddress i) {
         // only scan IPv4
-        if (!java.net.Inet4Address.class.isInstance(i.getAddress())) {
+        if (!(i.getAddress() instanceof Inet4Address)) {
             return;
         }
         // only scan Class C networks
