@@ -38,7 +38,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Nils Schnabel - Initial contribution
  */
 
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "org.openhab.binding.pjlinkdevice.internal.discovery.DiscoveryParticipantClass1")
+@Component(service = DiscoveryService.class, configurationPid = "org.openhab.binding.pjlinkdevice.internal.discovery.DiscoveryParticipantClass1")
 @NonNullByDefault
 public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
     public DiscoveryParticipantClass1() throws IllegalArgumentException {
