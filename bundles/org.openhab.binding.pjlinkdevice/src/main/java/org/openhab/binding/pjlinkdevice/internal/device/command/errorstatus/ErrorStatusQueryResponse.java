@@ -96,9 +96,11 @@ public class ErrorStatusQueryResponse extends PrefixedResponse<Map<ErrorStatusQu
         }
     }
 
+    private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES =  new HashSet<ErrorCode>(Arrays.asList(
+      ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
+
     public ErrorStatusQueryResponse(String response) throws ResponseException {
-        super("ERST=", new HashSet<ErrorCode>(
-                Arrays.asList(new ErrorCode[] { ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })), response);
+        super("ERST=", SPECIFIED_ERRORCODES, response);
     }
 
     @Override
