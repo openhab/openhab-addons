@@ -13,7 +13,6 @@
 package org.openhab.binding.opengarage.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -49,8 +48,8 @@ public class OpenGarageHandler extends BaseThingHandler {
 
     private long refreshInterval;
 
-    private @Nullable OpenGarageWebTargets webTargets;
-    private @Nullable ScheduledFuture<?> pollFuture;
+    private @NonNullByDefault({}) OpenGarageWebTargets webTargets;
+    private @NonNullByDefault({}) ScheduledFuture<?> pollFuture;
 
     public OpenGarageHandler(Thing thing) {
         super(thing);
