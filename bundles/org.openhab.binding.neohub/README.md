@@ -22,8 +22,6 @@ If the Configuration Parameters are all valid, then the NeoHub Thing will automa
 If the sign on succeeds, the Thing will indicate its status as Online, otherwise it will show an error status. 
 
 Once the NeoHub Thing has been created and it has successfully signed on, it will automatically interrogate the server to discover all the respective NeoStat and NeoPlug Things that are connected to the hub.
-After a short while, all discovered Things will be displayed in the PaperUI Inbox.
-If in future you add new devices to your hub then these new devices will also appear in the Inbox.    
 
 ## Thing Configuration for "NeoHub"
 
