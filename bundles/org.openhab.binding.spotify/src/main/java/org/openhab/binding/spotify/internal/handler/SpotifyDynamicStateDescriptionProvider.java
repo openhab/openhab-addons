@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
@@ -36,8 +35,8 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class SpotifyDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
-    private Map<ChannelUID, @Nullable List<Device>> devicesByChannel = new HashMap<>();
-    private Map<ChannelUID, @Nullable List<Playlist>> playlistsByChannel = new HashMap<>();
+    private final Map<ChannelUID, List<Device>> devicesByChannel = new HashMap<>();
+    private final Map<ChannelUID, List<Playlist>> playlistsByChannel = new HashMap<>();
 
     public void setDevices(ChannelUID channelUID, List<Device> spotifyDevices) {
         final List<Device> devices = devicesByChannel.get(channelUID);
@@ -55,11 +54,12 @@ public class SpotifyDynamicStateDescriptionProvider extends BaseDynamicStateDesc
         final List<Playlist> playlists = playlistsByChannel.get(channelUID);
 
         if (playlists == null || (spotifyPlaylists.size() != playlists.size() || !spotifyPlaylists.stream()
-                .allMatch(sp -> playlists.stream().anyMatch(p -> p.getUri() != null && sp.getUri().equals(p.getUri())
+                .allMatch(sp -> playlists.stream().anyMatch(p -> p.getUri() != null && p.getUri().equals(sp.getUri())
                         && p.getName() != null && p.getName().equals(sp.getName()))))) {
             playlistsByChannel.put(channelUID, spotifyPlaylists);
-            setStateOptions(channelUID, spotifyPlaylists.stream()
-                    .map(device -> new StateOption(device.getUri(), device.getName())).collect(Collectors.toList()));
+            setStateOptions(channelUID,
+                    spotifyPlaylists.stream().map(playlist -> new StateOption(playlist.getUri(), playlist.getName()))
+                            .collect(Collectors.toList()));
         }
     }
 
