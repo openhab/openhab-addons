@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 @NonNullByDefault
 public class Input {
 
+    private static final Pattern INPUT_NUMBER_PATTERN = Pattern.compile("[0-9A-Z]");
+
     enum InputType {
         RGB("RGB", '1'),
         VIDEO("Video", '2'),
@@ -104,7 +106,7 @@ public class Input {
             throw new ResponseException("Illegal input description: " + value);
         }
         this.getInputType();
-        if (!Pattern.compile("[0-9A-Z]").matcher(this.getInputNumber()).matches()) {
+        if (!INPUT_NUMBER_PATTERN.matcher(this.getInputNumber()).matches()) {
             throw new ResponseException("Illegal channel number: " + this.getInputNumber());
         }
     }
