@@ -12,12 +12,4 @@
   <artifactId>org.openhab.binding.pjlinkdevice</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: PJLink Binding</name>
-
-  <dependencies>
-    <dependency>
-      <groupId>commons-net</groupId>
-      <artifactId>commons-net</artifactId>
-      <version>3.3</version>
-    </dependency>
-  </dependencies>
 </project>
