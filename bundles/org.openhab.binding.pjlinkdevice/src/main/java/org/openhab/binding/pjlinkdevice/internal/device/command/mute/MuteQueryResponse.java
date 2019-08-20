@@ -70,9 +70,12 @@ public class MuteQueryResponse extends PrefixedResponse<MuteQueryResponse.MuteQu
         }
     }
 
+    
+    private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<ErrorCode>(Arrays.asList(
+      ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE ));
+
     public MuteQueryResponse(String response) throws ResponseException {
-        super("AVMT=", new HashSet<ErrorCode>(
-                Arrays.asList(new ErrorCode[] { ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })), response);
+        super("AVMT=", SPECIFIED_ERRORCODES, response);
     }
 
     @Override

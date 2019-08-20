@@ -29,9 +29,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MuteInstructionResponse extends PrefixedResponse<AcknowledgeResponseValue> {
+    private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<ErrorCode>(Arrays.asList(
+      ErrorCode.OUT_OF_PARAMETER, ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE ));
+
     public MuteInstructionResponse(String response) throws ResponseException {
-        super("AVMT=", new HashSet<ErrorCode>(Arrays.asList(
-                new ErrorCode[] { ErrorCode.OUT_OF_PARAMETER, ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })), response);
+        super("AVMT=", SPECIFIED_ERRORCODES, response);
     }
 
     @Override
