@@ -60,21 +60,17 @@ import java.net.UnknownHostException;
 @NonNullByDefault
 public class PJLinkDeviceHandler extends BaseThingHandler {
 
-    @Nullable
-    private PJLinkDeviceConfiguration config;
+    private @Nullable PJLinkDeviceConfiguration config;
 
-    @Nullable
-    private PJLinkDevice device;
+    private @Nullable PJLinkDevice device;
 
     private InputChannelStateDescriptionProvider stateDescriptionProvider;
 
     private final Logger logger = LoggerFactory.getLogger(PJLinkDeviceHandler.class);
 
-    @Nullable
-    private ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
-    @Nullable
-    private ScheduledFuture<?> setupJob;
+    private @Nullable ScheduledFuture<?> setupJob;
 
     public PJLinkDeviceHandler(Thing thing, InputChannelStateDescriptionProvider stateDescriptionProvider) {
         super(thing);

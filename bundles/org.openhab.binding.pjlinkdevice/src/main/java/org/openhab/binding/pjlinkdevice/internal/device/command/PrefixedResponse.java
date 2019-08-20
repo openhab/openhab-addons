@@ -30,8 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public abstract class PrefixedResponse<ResponseType> implements Response<ResponseType> {
     private String prefix;
-    @Nullable
-    private Set<ErrorCode> specifiedErrors;
+    private @Nullable Set<ErrorCode> specifiedErrors;
     private ResponseType result;
 
     public PrefixedResponse(String prefix, String response) throws ResponseException {

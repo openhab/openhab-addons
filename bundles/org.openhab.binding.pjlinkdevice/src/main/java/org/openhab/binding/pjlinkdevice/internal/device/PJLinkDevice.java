@@ -65,18 +65,14 @@ public class PJLinkDevice {
     private static final int TIMEOUT = 30000;
     protected int tcpPort;
     protected InetAddress ipAddress;
-    @Nullable
-    protected String adminPassword;
+    protected @Nullable String adminPassword;
     protected boolean authenticationRequired;
-    @Nullable
-    protected BufferedReader reader;
-    @Nullable
-    protected Socket socket;
+    protected @Nullable BufferedReader reader;
+    protected @Nullable Socket socket;
     protected int timeout = TIMEOUT;
     private final Logger logger = LoggerFactory.getLogger(PJLinkDevice.class);
     private String prefixForNextCommand = "";
-    @Nullable
-    private Instant socketCreatedOn;
+    private @Nullable Instant socketCreatedOn;
 
     public PJLinkDevice(int tcpPort, InetAddress ipAddress, @Nullable String adminPassword, int timeout) {
         this.tcpPort = tcpPort;

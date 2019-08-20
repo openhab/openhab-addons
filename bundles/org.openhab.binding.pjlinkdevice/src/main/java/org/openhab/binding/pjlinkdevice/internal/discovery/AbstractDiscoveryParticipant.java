@@ -46,8 +46,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryService {
     protected final Logger logger = LoggerFactory.getLogger(DiscoveryParticipantClass1.class);
     private Integer scannedIPcount = 0;
-    @Nullable
-    private ExecutorService executorService = null;
+    private @Nullable ExecutorService executorService = null;
 
     public AbstractDiscoveryParticipant(Set<@NonNull ThingTypeUID> supportedThingTypes, int timeout,
             boolean backgroundDiscoveryEnabledByDefault) throws IllegalArgumentException {
