@@ -38,14 +38,14 @@ public class PJLinkDeviceBindingConstants {
     public static final String CHANNEL_VIDEO_MUTE = "videoMute";
 
     public static final int DEFAULT_PORT = 4352;
-    public static final int DEFAULT_SCAN_TIMEOUT = 60;
+    public static final int DEFAULT_SCAN_TIMEOUT_SECONDS = 60;
 
     // configuration
     public static final String PARAMETER_HOSTNAME = "ipAddress";
     public static final String PARAMETER_PORT = "tcpPort";
     public static final String PARAMETER_PASSWORD = "adminPassword";
     public static final String PARAMETER_REFRESH = "refresh";
-    public static final long DISCOVERY_RESULT_TTL = TimeUnit.MINUTES.toSeconds(10);
+    public static final long DISCOVERY_RESULT_TTL_SECONDS = TimeUnit.MINUTES.toSeconds(10);
 
     // information disclosed by device
     public static final String PROPERTY_CLASS = "disclosedPjLinkClass";

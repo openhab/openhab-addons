@@ -70,7 +70,7 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
             getExecutorService().execute(() -> {
                 Thread.currentThread().setName("Discovery thread " + ip);
                 checkAddress(ip, PJLinkDeviceBindingConstants.DEFAULT_PORT,
-                        PJLinkDeviceBindingConstants.DEFAULT_SCAN_TIMEOUT);
+                        PJLinkDeviceBindingConstants.DEFAULT_SCAN_TIMEOUT_SECONDS);
 
                 synchronized (scannedIPcount) {
                     scannedIPcount += 1;

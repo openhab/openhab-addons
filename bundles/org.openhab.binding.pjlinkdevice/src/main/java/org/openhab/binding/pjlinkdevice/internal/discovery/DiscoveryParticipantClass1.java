@@ -92,7 +92,7 @@ public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
             }
             logger.debug("Adding thing");
             thingDiscovered(DiscoveryResultBuilder.create(createServiceUID(ip.getHostAddress(), tcpPort))
-                    .withTTL(PJLinkDeviceBindingConstants.DISCOVERY_RESULT_TTL).withProperties(properties)
+                    .withTTL(PJLinkDeviceBindingConstants.DISCOVERY_RESULT_TTL_SECONDS).withProperties(properties)
                     .withLabel(description).build());
             logger.debug("Added thing");
         } catch (ResponseException | IOException e) {
