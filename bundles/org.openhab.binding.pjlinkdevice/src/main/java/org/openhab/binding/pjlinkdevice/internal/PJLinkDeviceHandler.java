@@ -147,10 +147,12 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                 if (command == RefreshType.REFRESH) {
                     StringType input = new StringType(device.getInputStatus().getResult().getValue());
                     updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT, input);
-                } else {
+                } else if(command instanceof StringType) {
                     logger.trace("Received input command" + command);
                     Input input = new Input(((StringType) command).toString());
                     device.setInput(input);
+                } else {
+                    logger.debug("Received unknown channel command" + command);
                 }
                 break;
             case CHANNEL_AUDIO_MUTE:
