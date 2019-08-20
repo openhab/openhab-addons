@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<features xmlns="http://karaf.apache.org/xmlns/features/v1.5.0" name="org.openhab.binding.neohub-2.5.0-SNAPSHOT">
-    <feature version="0.0.0">
-        <feature>openhab-runtime-base</feature>
-        <bundle>mvn:org.openhab.addons.bundles/org.openhab.binding.neohub/2.5.0-SNAPSHOT</bundle>
-    </feature>
-</features>
