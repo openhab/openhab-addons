@@ -97,14 +97,14 @@ public class NeoBaseHandler extends BaseThingHandler {
      */
     private boolean refreshStateOnline(NeoHubHandler hub) {
         if (hub == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            logger.debug(MSG_HUB_CONFIG);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+            logger.warn("Unexpected situation - please report a bug: " + MSG_HUB_CONFIG);
             return false;
         }
 
         if (!hub.isConfigured(config.deviceNameInHub)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
-            logger.debug(MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+            logger.warn("Unexpected situation - please report a bug: " + MSG_FMT_DEVICE_CONFIG, getThing().getLabel());
             return false;
         }
 
@@ -173,7 +173,7 @@ public class NeoBaseHandler extends BaseThingHandler {
                     break;
 
                 case ERR_INITIALIZATION:
-                    logger.debug(MSG_HUB_CONFIG);
+                    logger.warn("Unexpected situation - please report a bug: " + MSG_HUB_CONFIG);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                     break;
                 }
