@@ -102,8 +102,10 @@ public class PJLinkDevice {
       return reader;
     }
 
-    protected void closeSocket(Socket socket) throws IOException {
-      socket.close();
+    protected void closeSocket(@Nullable Socket socket) throws IOException {
+      if(socket != null) {
+         socket.close();
+      }
       this.socket = null;
       this.reader = null;
     }
@@ -194,26 +196,26 @@ public class PJLinkDevice {
     }
 
     public synchronized String execute(String command) throws IOException, AuthenticationException, ResponseException {
-        Socket socket = this.connect();
         String fullCommand = this.prefixForNextCommand + command;
-
         this.prefixForNextCommand = "";
-        int numberOfTries = 0;
-        while (true) {
-            numberOfTries++;
+        for (int numberOfTries = 0; true; numberOfTries++) {
             try {
+                Socket socket = this.connect();
                 socket.getOutputStream().write((fullCommand).getBytes());
                 socket.getOutputStream().flush();
 
+                // success, no further tries needed
                 break;
             } catch (java.net.SocketException e) {
-                if (numberOfTries < 2) {
-                    this.connect(true);
-                } else {
+                closeSocket(socket);
+                socket = null;
+                if (numberOfTries >= 2) {
+                    // do not retry endlessly
                     throw e;
                 }
             }
         }
+
         String response = null;
         while ((response = getReader().readLine()) != null && response.isEmpty()) {
             logger.debug("Got empty string response for request '{}' from {}, waiting for another line", response,
@@ -340,7 +342,7 @@ public class PJLinkDevice {
         try {
             Socket socket = this.socket;
             if(socket != null) {
-                socket.close();
+                closeSocket(socket);
             }
         } catch(IOException e) {
           // okay then, at least we tried
