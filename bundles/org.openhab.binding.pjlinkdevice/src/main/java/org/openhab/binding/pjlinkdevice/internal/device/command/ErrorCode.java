@@ -42,7 +42,7 @@ public enum ErrorCode {
 
     public static @Nullable ErrorCode getValueForCode(String code) {
         for (ErrorCode result : ErrorCode.values()) {
-            if (result.code.equals(code.toUpperCase())) {
+            if (result.code.equalsIgnoreCase(code)) {
                 return result;
             }
         }

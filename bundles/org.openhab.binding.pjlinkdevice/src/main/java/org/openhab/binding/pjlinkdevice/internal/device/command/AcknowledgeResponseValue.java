@@ -37,7 +37,7 @@ public enum AcknowledgeResponseValue {
 
     public static AcknowledgeResponseValue getValueForCode(String code) throws ResponseException {
         for (AcknowledgeResponseValue result : AcknowledgeResponseValue.values()) {
-            if (result.code.equals(code.toUpperCase())) {
+            if (result.code.equalsIgnoreCase(code)) {
                 return result;
             }
         }
