@@ -658,21 +658,19 @@ public abstract class RotelConnector {
 
         final int idxFlags = model.isCharsBeforeFlags() ? (4 + model.getRespNbChars()) : 4;
         final byte[] flags = Arrays.copyOfRange(incomingMessage, idxFlags, idxFlags + model.getRespNbFlags());
-        // for (int i = 1; i <= flags.length; i++) {
-        // try {
-        // logger.debug("handleValidHexMessage: Flag {} = {} bits 7-0 = {} {} {} {} {} {} {} {}", i,
-        // Integer.toHexString(flags[i - 1] & 0x000000FF),
-        // RotelLocationInMessage.isBitFlagOn(flags, new RotelLocationInMessage(i, 7)),
-        // RotelLocationInMessage.isBitFlagOn(flags, new RotelLocationInMessage(i, 6)),
-        // RotelLocationInMessage.isBitFlagOn(flags, new RotelLocationInMessage(i, 5)),
-        // RotelLocationInMessage.isBitFlagOn(flags, new RotelLocationInMessage(i, 4)),
-        // RotelLocationInMessage.isBitFlagOn(flags, new RotelLocationInMessage(i, 3)),
-        // RotelLocationInMessage.isBitFlagOn(flags, new RotelLocationInMessage(i, 2)),
-        // RotelLocationInMessage.isBitFlagOn(flags, new RotelLocationInMessage(i, 1)),
-        // RotelLocationInMessage.isBitFlagOn(flags, new RotelLocationInMessage(i, 0)));
-        // } catch (RotelException e1) {
-        // }
-        // }
+        if (logger.isTraceEnabled()) {
+            for (int i = 1; i <= flags.length; i++) {
+                try {
+                    logger.trace("handleValidHexMessage: Flag {} = {} bits 7-0 = {} {} {} {} {} {} {} {}", i,
+                            Integer.toHexString(flags[i - 1] & 0x000000FF), RotelFlagsMapping.isBitFlagOn(flags, i, 7),
+                            RotelFlagsMapping.isBitFlagOn(flags, i, 6), RotelFlagsMapping.isBitFlagOn(flags, i, 5),
+                            RotelFlagsMapping.isBitFlagOn(flags, i, 4), RotelFlagsMapping.isBitFlagOn(flags, i, 3),
+                            RotelFlagsMapping.isBitFlagOn(flags, i, 2), RotelFlagsMapping.isBitFlagOn(flags, i, 1),
+                            RotelFlagsMapping.isBitFlagOn(flags, i, 0));
+                } catch (RotelException e1) {
+                }
+            }
+        }
         try {
             dispatchKeyValue(KEY_POWER_ZONE2, model.isZone2On(flags) ? POWER_ON : STANDBY);
         } catch (RotelException e1) {

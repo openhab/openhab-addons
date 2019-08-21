@@ -222,7 +222,7 @@ public class RotelFlagsMapping {
      *
      * @throws RotelException in case of out of bounds value for the flag number or the bit number
      */
-    private static boolean isBitFlagOn(byte[] flags, int flagNumber, int bitNumber) throws RotelException {
+    public static boolean isBitFlagOn(byte[] flags, int flagNumber, int bitNumber) throws RotelException {
         if (flagNumber < 1 || flagNumber > flags.length) {
             throw new RotelException("Flag number out of bounds");
         }
