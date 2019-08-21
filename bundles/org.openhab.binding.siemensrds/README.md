@@ -79,8 +79,8 @@ The PaperUI automatic Discovery service (see above) discovers the "Plant Id" cod
 
 ```
 Bridge siemensrds:climatixic:mybridgename "Climatix IC Account" [ userEmail="email@example.com", userPassword="secret", apiKey="32-character-code-provided-by-siemens", pollingInterval=60 ] {
-    Thing siemensrds:rds:mybridgename:mydownstairs "Downstairs Thermostat" @ "Hall" [ plantId="Pd0123456-789a-bcde-0123456789abcdef0" ]
-    Thing siemensrds:rds:mybridgename:myupstairs "Upstairs Thermostat" @ "Landing" [ plantId="Pd0123456-789a-bcde-f0123456789abcdef" ]
+    Thing rds mydownstairs "Downstairs Thermostat" @ "Hall" [ plantId="Pd0123456-789a-bcde-0123456789abcdef0" ]
+    Thing rds myupstairs "Upstairs Thermostat" @ "Landing" [ plantId="Pd0123456-789a-bcde-f0123456789abcdef" ]
 }
 ```
 
