@@ -102,7 +102,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         }
         ThingRegistry thingRegistry = this.thingRegistry;
         if (thingRegistry == null) {
-            return originalStateDescription;
+            return null;
         }
         if (CHANNEL_TYPE_BLUETHOOTH_MAC.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
@@ -266,6 +266,6 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     .withOptions(options).build().toStateDescription();
             return result;
         }
-        return originalStateDescription;
+        return null;
     }
 }
