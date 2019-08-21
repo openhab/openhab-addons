@@ -73,8 +73,8 @@ The following Channels, and their associated channel types are shown below.
 
 ```
 Bridge neohub:neohub:myhubname "Heatmiser NeoHub" [ hostName="192.168.1.123", portNumber=4242, pollingInterval=60 ] {
-    Thing neohub:neoplug:myhubname:mydownstairs "Downstairs Plug" @ "Hall" [ deviceNameInHub="Hall Plug" ]
-    Thing neohub:neostat:myhubname:myupstairs "Upstairs Thermostat" @ "Landing"  [ deviceNameInHub="Landing Thermostat" ]
+    Thing neoplug mydownstairs "Downstairs Plug" @ "Hall" [ deviceNameInHub="Hall Plug" ]
+    Thing neostat myupstairs "Upstairs Thermostat" @ "Landing" [ deviceNameInHub="Landing Thermostat" ]
 }
 ```
 
