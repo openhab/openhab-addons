@@ -13,6 +13,7 @@
 package org.openhab.binding.opengarage.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -32,6 +33,7 @@ import org.openhab.binding.opengarage.internal.OpenGarageConfiguration;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,7 +51,7 @@ public class OpenGarageHandler extends BaseThingHandler {
     private long refreshInterval;
 
     private @NonNullByDefault({}) OpenGarageWebTargets webTargets;
-    private @NonNullByDefault({}) ScheduledFuture<?> pollFuture;
+    private @Nullable ScheduledFuture<?> pollFuture;
 
     public OpenGarageHandler(Thing thing) {
         super(thing);
@@ -91,6 +93,12 @@ public class OpenGarageHandler extends BaseThingHandler {
         }
     }
 
+    @Override
+    public void dispose() {
+        super.dispose();
+        stopPoll();
+    }
+
     private void schedulePoll() {
         if (pollFuture != null) {
             pollFuture.cancel(false);
@@ -99,7 +107,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, refreshInterval, TimeUnit.SECONDS);
     }
 
-    private synchronized void poll() {
+    private void poll() {
         try {
             logger.debug("Polling for state");
             pollStatus();
@@ -109,6 +117,15 @@ public class OpenGarageHandler extends BaseThingHandler {
         } catch (RuntimeException e) {
             logger.warn("Unexpected error connecting to OpenGarage controller", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void stopPoll() {
+        final Future<?> future = pollFuture;
+        if (future != null && !future.isCancelled()) {
+            future.cancel(true);
+            pollFuture.cancel(true);
+            pollFuture = null;
         }
     }
 
