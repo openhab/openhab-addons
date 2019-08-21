@@ -73,10 +73,10 @@ public class RotelFlagsMapping {
      *            right channel indicator
      * @param surroundRightBitNumber the bit number in the flag in which to find the surround right channel indicator
      */
-    public RotelFlagsMapping(int multiInputFlagNumber, int multiInputBitNumber, int zone2FlagNumber, int zone2BitNumber,
-            int zone3FlagNumber, int zone3BitNumber, int zone4FlagNumber, int zone4BitNumber, int centerFlagNumber,
-            int centerBitNumber, int surroundLeftFlagNumber, int surroundLeftBitNumber, int surroundRightFlagNumber,
-            int surroundRightBitNumber) {
+    private RotelFlagsMapping(int multiInputFlagNumber, int multiInputBitNumber, int zone2FlagNumber,
+            int zone2BitNumber, int zone3FlagNumber, int zone3BitNumber, int zone4FlagNumber, int zone4BitNumber,
+            int centerFlagNumber, int centerBitNumber, int surroundLeftFlagNumber, int surroundLeftBitNumber,
+            int surroundRightFlagNumber, int surroundRightBitNumber) {
         this.multiInputFlagNumber = multiInputFlagNumber;
         this.multiInputBitNumber = multiInputBitNumber;
         this.zone2FlagNumber = zone2FlagNumber;
