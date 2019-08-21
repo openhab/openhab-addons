@@ -928,146 +928,16 @@ public abstract class RotelConnector {
         } else if (searchZone
                 && (valueLowerCase.startsWith(KEY1_HEX_ZONE2) || valueLowerCase.startsWith(KEY2_HEX_ZONE2))) {
             value = value.substring(
-                    valueLowerCase.startsWith(KEY1_HEX_ZONE2) ? KEY1_HEX_ZONE2.length() : KEY2_HEX_ZONE2.length())
-                    .trim();
-            valueLowerCase = value.toLowerCase();
-            if (valueLowerCase.startsWith(KEY1_HEX_VOLUME) || valueLowerCase.startsWith(KEY2_HEX_VOLUME)) {
-                value = extractNumber(value, valueLowerCase.startsWith(KEY1_HEX_VOLUME) ? KEY1_HEX_VOLUME.length()
-                        : KEY2_HEX_VOLUME.length());
-                dispatchKeyValue(KEY_VOLUME_ZONE2, value);
-                dispatchKeyValue(KEY_MUTE_ZONE2, MSG_VALUE_OFF);
-            } else if (valueLowerCase.startsWith(KEY_HEX_MUTE)) {
-                value = value.substring(KEY_HEX_MUTE.length()).trim();
-                if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
-                    dispatchKeyValue(KEY_MUTE_ZONE2, MSG_VALUE_ON);
-                } else {
-                    logger.debug("Invalid value {} for zone mute", value);
-                }
-            } else if (!MSG_VALUE_OFF.equalsIgnoreCase(value)) {
-                RotelSource source = parseSource(value, true);
-                if (source != null) {
-                    RotelCommand cmd = source.getZone2Command();
-                    if (cmd != null) {
-                        value = cmd.getAsciiCommandV2();
-                        if (value != null) {
-                            dispatchKeyValue(KEY_SOURCE_ZONE2, value);
-                            if (!multipleInfo) {
-                                dispatchKeyValue(KEY_MUTE_ZONE2, MSG_VALUE_OFF);
-                            }
-                        }
-                    }
-                } else {
-                    logger.debug("Invalid value {} for zone 2 source", value);
-                }
-            }
+                    valueLowerCase.startsWith(KEY1_HEX_ZONE2) ? KEY1_HEX_ZONE2.length() : KEY2_HEX_ZONE2.length());
+            parseZone2(value, multipleInfo);
         } else if (searchZone && valueLowerCase.startsWith(KEY_HEX_ZONE3)) {
-            value = value.substring(KEY_HEX_ZONE3.length()).trim();
-            valueLowerCase = value.toLowerCase();
-            if (valueLowerCase.startsWith(KEY1_HEX_VOLUME) || valueLowerCase.startsWith(KEY2_HEX_VOLUME)) {
-                value = extractNumber(value, valueLowerCase.startsWith(KEY1_HEX_VOLUME) ? KEY1_HEX_VOLUME.length()
-                        : KEY2_HEX_VOLUME.length());
-                dispatchKeyValue(KEY_VOLUME_ZONE3, value);
-                dispatchKeyValue(KEY_MUTE_ZONE3, MSG_VALUE_OFF);
-            } else if (valueLowerCase.startsWith(KEY_HEX_MUTE)) {
-                value = value.substring(KEY_HEX_MUTE.length()).trim();
-                if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
-                    dispatchKeyValue(KEY_MUTE_ZONE3, MSG_VALUE_ON);
-                } else {
-                    logger.debug("Invalid value {} for zone mute", value);
-                }
-            } else if (!MSG_VALUE_OFF.equalsIgnoreCase(value)) {
-                RotelSource source = parseSource(value, true);
-                if (source != null) {
-                    RotelCommand cmd = source.getZone3Command();
-                    if (cmd != null) {
-                        value = cmd.getAsciiCommandV2();
-                        if (value != null) {
-                            dispatchKeyValue(KEY_SOURCE_ZONE3, value);
-                            if (!multipleInfo) {
-                                dispatchKeyValue(KEY_MUTE_ZONE3, MSG_VALUE_OFF);
-                            }
-                        }
-                    }
-                } else {
-                    logger.debug("Invalid value {} for zone 3 source", value);
-                }
-            }
+            parseZone3(value.substring(KEY_HEX_ZONE3.length()), multipleInfo);
         } else if (searchZone && valueLowerCase.startsWith(KEY_HEX_ZONE4)) {
-            value = value.substring(KEY_HEX_ZONE4.length()).trim();
-            valueLowerCase = value.toLowerCase();
-            if (valueLowerCase.startsWith(KEY1_HEX_VOLUME) || valueLowerCase.startsWith(KEY2_HEX_VOLUME)) {
-                value = extractNumber(value, valueLowerCase.startsWith(KEY1_HEX_VOLUME) ? KEY1_HEX_VOLUME.length()
-                        : KEY2_HEX_VOLUME.length());
-                dispatchKeyValue(KEY_VOLUME_ZONE4, value);
-                dispatchKeyValue(KEY_MUTE_ZONE4, MSG_VALUE_OFF);
-            } else if (valueLowerCase.startsWith(KEY_HEX_MUTE)) {
-                value = value.substring(KEY_HEX_MUTE.length()).trim();
-                if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
-                    dispatchKeyValue(KEY_MUTE_ZONE4, MSG_VALUE_ON);
-                } else {
-                    logger.debug("Invalid value {} for zone mute", value);
-                }
-            } else if (!MSG_VALUE_OFF.equalsIgnoreCase(value)) {
-                RotelSource source = parseSource(value, true);
-                if (source != null) {
-                    RotelCommand cmd = source.getZone4Command();
-                    if (cmd != null) {
-                        value = cmd.getAsciiCommandV2();
-                        if (value != null) {
-                            dispatchKeyValue(KEY_SOURCE_ZONE4, value);
-                            if (!multipleInfo) {
-                                dispatchKeyValue(KEY_MUTE_ZONE4, MSG_VALUE_OFF);
-                            }
-                        }
-                    }
-                } else {
-                    logger.debug("Invalid value {} for zone 4 source", value);
-                }
-            }
+            parseZone4(value.substring(KEY_HEX_ZONE4.length()), multipleInfo);
         } else if (searchRecord && valueLowerCase.startsWith(KEY_HEX_RECORD)) {
-            value = value.substring(KEY_HEX_RECORD.length()).trim();
-            RotelSource source = parseSource(value, true);
-            if (source != null) {
-                RotelCommand cmd = source.getRecordCommand();
-                if (cmd != null) {
-                    value = cmd.getAsciiCommandV2();
-                    if (value != null) {
-                        dispatchKeyValue(KEY_RECORD, value);
-                    }
-                }
-            } else {
-                logger.debug("Invalid value {} for record source", value);
-            }
+            parseRecord(value.substring(KEY_HEX_RECORD.length()));
         } else if (searchSource || searchRecordAfterSource) {
-            RotelSource source = parseSource(value, false);
-            if (source != null) {
-                if (searchSource) {
-                    RotelCommand cmd = source.getCommand();
-                    if (cmd != null) {
-                        String value2 = cmd.getAsciiCommandV2();
-                        if (value2 != null) {
-                            dispatchKeyValue(KEY_SOURCE, value2);
-                            if (!multipleInfo) {
-                                dispatchKeyValue(KEY_MUTE, MSG_VALUE_OFF);
-                            }
-                        }
-                    }
-                }
-
-                if (searchRecordAfterSource) {
-                    value = value.substring(source.getLabel().length()).trim();
-                    source = parseSource(value, true);
-                    if (source != null) {
-                        RotelCommand cmd = source.getRecordCommand();
-                        if (cmd != null) {
-                            value = cmd.getAsciiCommandV2();
-                            if (value != null) {
-                                dispatchKeyValue(KEY_RECORD, value);
-                            }
-                        }
-                    }
-                }
-            }
+            parseSourceAndRecord(value, searchSource, searchRecordAfterSource, multipleInfo);
         }
     }
 
@@ -1093,6 +963,157 @@ public abstract class RotelConnector {
             }
         }
         return source;
+    }
+
+    private void parseSourceAndRecord(String text, boolean searchSource, boolean searchRecordAfterSource,
+            boolean multipleInfo) {
+        RotelSource source = parseSource(text, false);
+        if (source != null) {
+            if (searchSource) {
+                RotelCommand cmd = source.getCommand();
+                if (cmd != null) {
+                    String value2 = cmd.getAsciiCommandV2();
+                    if (value2 != null) {
+                        dispatchKeyValue(KEY_SOURCE, value2);
+                        if (!multipleInfo) {
+                            dispatchKeyValue(KEY_MUTE, MSG_VALUE_OFF);
+                        }
+                    }
+                }
+            }
+
+            if (searchRecordAfterSource) {
+                String value = text.substring(source.getLabel().length()).trim();
+                source = parseSource(value, true);
+                if (source != null) {
+                    RotelCommand cmd = source.getRecordCommand();
+                    if (cmd != null) {
+                        value = cmd.getAsciiCommandV2();
+                        if (value != null) {
+                            dispatchKeyValue(KEY_RECORD, value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void parseRecord(String text) {
+        String value = text.trim();
+        RotelSource source = parseSource(value, true);
+        if (source != null) {
+            RotelCommand cmd = source.getRecordCommand();
+            if (cmd != null) {
+                value = cmd.getAsciiCommandV2();
+                if (value != null) {
+                    dispatchKeyValue(KEY_RECORD, value);
+                }
+            }
+        } else {
+            logger.debug("Invalid value {} for record source", value);
+        }
+    }
+
+    private void parseZone2(String text, boolean multipleInfo) {
+        String value = text.trim();
+        String valueLowerCase = value.toLowerCase();
+        if (valueLowerCase.startsWith(KEY1_HEX_VOLUME) || valueLowerCase.startsWith(KEY2_HEX_VOLUME)) {
+            value = extractNumber(value,
+                    valueLowerCase.startsWith(KEY1_HEX_VOLUME) ? KEY1_HEX_VOLUME.length() : KEY2_HEX_VOLUME.length());
+            dispatchKeyValue(KEY_VOLUME_ZONE2, value);
+            dispatchKeyValue(KEY_MUTE_ZONE2, MSG_VALUE_OFF);
+        } else if (valueLowerCase.startsWith(KEY_HEX_MUTE)) {
+            value = value.substring(KEY_HEX_MUTE.length()).trim();
+            if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                dispatchKeyValue(KEY_MUTE_ZONE2, MSG_VALUE_ON);
+            } else {
+                logger.debug("Invalid value {} for zone mute", value);
+            }
+        } else if (!MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+            RotelSource source = parseSource(value, true);
+            if (source != null) {
+                RotelCommand cmd = source.getZone2Command();
+                if (cmd != null) {
+                    value = cmd.getAsciiCommandV2();
+                    if (value != null) {
+                        dispatchKeyValue(KEY_SOURCE_ZONE2, value);
+                        if (!multipleInfo) {
+                            dispatchKeyValue(KEY_MUTE_ZONE2, MSG_VALUE_OFF);
+                        }
+                    }
+                }
+            } else {
+                logger.debug("Invalid value {} for zone 2 source", value);
+            }
+        }
+    }
+
+    private void parseZone3(String text, boolean multipleInfo) {
+        String value = text.trim();
+        String valueLowerCase = value.toLowerCase();
+        if (valueLowerCase.startsWith(KEY1_HEX_VOLUME) || valueLowerCase.startsWith(KEY2_HEX_VOLUME)) {
+            value = extractNumber(value,
+                    valueLowerCase.startsWith(KEY1_HEX_VOLUME) ? KEY1_HEX_VOLUME.length() : KEY2_HEX_VOLUME.length());
+            dispatchKeyValue(KEY_VOLUME_ZONE3, value);
+            dispatchKeyValue(KEY_MUTE_ZONE3, MSG_VALUE_OFF);
+        } else if (valueLowerCase.startsWith(KEY_HEX_MUTE)) {
+            value = value.substring(KEY_HEX_MUTE.length()).trim();
+            if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                dispatchKeyValue(KEY_MUTE_ZONE3, MSG_VALUE_ON);
+            } else {
+                logger.debug("Invalid value {} for zone mute", value);
+            }
+        } else if (!MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+            RotelSource source = parseSource(value, true);
+            if (source != null) {
+                RotelCommand cmd = source.getZone3Command();
+                if (cmd != null) {
+                    value = cmd.getAsciiCommandV2();
+                    if (value != null) {
+                        dispatchKeyValue(KEY_SOURCE_ZONE3, value);
+                        if (!multipleInfo) {
+                            dispatchKeyValue(KEY_MUTE_ZONE3, MSG_VALUE_OFF);
+                        }
+                    }
+                }
+            } else {
+                logger.debug("Invalid value {} for zone 3 source", value);
+            }
+        }
+    }
+
+    private void parseZone4(String text, boolean multipleInfo) {
+        String value = text.trim();
+        String valueLowerCase = value.toLowerCase();
+        if (valueLowerCase.startsWith(KEY1_HEX_VOLUME) || valueLowerCase.startsWith(KEY2_HEX_VOLUME)) {
+            value = extractNumber(value,
+                    valueLowerCase.startsWith(KEY1_HEX_VOLUME) ? KEY1_HEX_VOLUME.length() : KEY2_HEX_VOLUME.length());
+            dispatchKeyValue(KEY_VOLUME_ZONE4, value);
+            dispatchKeyValue(KEY_MUTE_ZONE4, MSG_VALUE_OFF);
+        } else if (valueLowerCase.startsWith(KEY_HEX_MUTE)) {
+            value = value.substring(KEY_HEX_MUTE.length()).trim();
+            if (MSG_VALUE_ON.equalsIgnoreCase(value)) {
+                dispatchKeyValue(KEY_MUTE_ZONE4, MSG_VALUE_ON);
+            } else {
+                logger.debug("Invalid value {} for zone mute", value);
+            }
+        } else if (!MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+            RotelSource source = parseSource(value, true);
+            if (source != null) {
+                RotelCommand cmd = source.getZone4Command();
+                if (cmd != null) {
+                    value = cmd.getAsciiCommandV2();
+                    if (value != null) {
+                        dispatchKeyValue(KEY_SOURCE_ZONE4, value);
+                        if (!multipleInfo) {
+                            dispatchKeyValue(KEY_MUTE_ZONE4, MSG_VALUE_OFF);
+                        }
+                    }
+                }
+            } else {
+                logger.debug("Invalid value {} for zone 4 source", value);
+            }
+        }
     }
 
     /**
