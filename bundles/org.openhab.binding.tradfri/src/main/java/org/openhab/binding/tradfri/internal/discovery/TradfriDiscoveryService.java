@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -42,8 +44,8 @@ import com.google.gson.JsonSyntaxException;
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
  * @author Andre Fuechsel - fixed the results removal
  */
+@NonNullByDefault
 public class TradfriDiscoveryService extends AbstractDiscoveryService implements DeviceUpdateListener {
-
     private final Logger logger = LoggerFactory.getLogger(TradfriDiscoveryService.class);
 
     private final TradfriGatewayHandler handler;
@@ -85,10 +87,10 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void onUpdate(String instanceId, JsonObject data) {
+    public void onUpdate(@Nullable String instanceId, @Nullable JsonObject data) {
         ThingUID bridge = handler.getThing().getUID();
         try {
-            if (data.has(INSTANCE_ID)) {
+            if (data != null && data.has(INSTANCE_ID)) {
                 int id = data.get(INSTANCE_ID).getAsInt();
                 String type = data.get(TYPE).getAsString();
                 JsonObject deviceInfo = data.get(DEVICE).getAsJsonObject();
@@ -145,8 +147,9 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
 
                 Map<String, Object> properties = new HashMap<>(1);
                 properties.put("id", id);
-                properties.put(PROPERTY_MODEL_ID, model);
-
+                if (model != null) {
+                    properties.put(PROPERTY_MODEL_ID, model);
+                }
                 if (deviceInfo.get(DEVICE_VENDOR) != null) {
                     properties.put(PROPERTY_VENDOR, deviceInfo.get(DEVICE_VENDOR).getAsString());
                 }
