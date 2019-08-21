@@ -15,6 +15,7 @@ package org.openhab.binding.tradfri.internal;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 import org.eclipse.californium.scandium.DTLSConnector;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@NonNullByDefault
 public class TradfriCoapEndpoint extends CoapEndpoint {
 
     private final Logger logger = LoggerFactory.getLogger(TradfriCoapEndpoint.class);
