@@ -14,6 +14,8 @@ package org.openhab.binding.tradfri.internal.model;
 
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.tradfri.internal.TradfriColor;
@@ -30,6 +32,7 @@ import com.google.gson.JsonPrimitive;
  * @author Holger Reichert - Support for color bulbs
  * @author Christoph Weitkamp - Restructuring and refactoring of the binding
  */
+@NonNullByDefault
 public class TradfriLightData extends TradfriDeviceData {
 
     private final Logger logger = LoggerFactory.getLogger(TradfriLightData.class);
@@ -47,7 +50,7 @@ public class TradfriLightData extends TradfriDeviceData {
         return this;
     }
 
-    public PercentType getBrightness() {
+    public @Nullable PercentType getBrightness() {
         PercentType result = null;
 
         JsonElement dimmer = attributes.get(DIMMER);
@@ -82,7 +85,7 @@ public class TradfriLightData extends TradfriDeviceData {
         return this;
     }
 
-    public PercentType getColorTemperature() {
+    public @Nullable PercentType getColorTemperature() {
         JsonElement colorX = attributes.get(COLOR_X);
         JsonElement colorY = attributes.get(COLOR_Y);
         if (colorX != null && colorY != null) {
@@ -100,7 +103,7 @@ public class TradfriLightData extends TradfriDeviceData {
         return this;
     }
 
-    public HSBType getColor() {
+    public @Nullable HSBType getColor() {
         // XY color coordinates plus brightness is needed for color calculation
         JsonElement colorX = attributes.get(COLOR_X);
         JsonElement colorY = attributes.get(COLOR_Y);

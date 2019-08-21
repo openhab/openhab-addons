@@ -14,6 +14,8 @@ package org.openhab.binding.tradfri.internal.model;
 
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.DEVICE_BATTERY_LEVEL;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
@@ -24,6 +26,7 @@ import com.google.gson.JsonElement;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public abstract class TradfriWirelessDeviceData extends TradfriDeviceData {
 
     public TradfriWirelessDeviceData(String attributesNodeName) {
@@ -34,7 +37,7 @@ public abstract class TradfriWirelessDeviceData extends TradfriDeviceData {
         super(attributesNodeName, json);
     }
 
-    public DecimalType getBatteryLevel() {
+    public @Nullable DecimalType getBatteryLevel() {
         if (generalInfo.get(DEVICE_BATTERY_LEVEL) != null) {
             return new DecimalType(generalInfo.get(DEVICE_BATTERY_LEVEL).getAsInt());
         } else {
@@ -42,7 +45,7 @@ public abstract class TradfriWirelessDeviceData extends TradfriDeviceData {
         }
     }
 
-    public OnOffType getBatteryLow() {
+    public @Nullable OnOffType getBatteryLow() {
         if (generalInfo.get(DEVICE_BATTERY_LEVEL) != null) {
             return generalInfo.get(DEVICE_BATTERY_LEVEL).getAsInt() <= 10 ? OnOffType.ON : OnOffType.OFF;
         } else {
