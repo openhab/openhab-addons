@@ -21,9 +21,14 @@ package org.openhab.binding.knx.internal.config;
 public class SerialBridgeConfiguration extends BridgeConfiguration {
 
     private String serialPort;
+    private boolean useCEMI;
 
     public String getSerialPort() {
         return serialPort;
+    }
+    
+    public Boolean getUseCEMI() {
+        return useCEMI;
     }
 
 }

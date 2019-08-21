@@ -26,6 +26,7 @@ import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.KNXNetworkLinkFT12;
 import tuwien.auto.calimero.link.medium.TPSettings;
+import tuwien.auto.calimero.serial.FT12Connection;
 
 /**
  * Serial specific {@link AbstractKNXClient} implementation.
@@ -38,13 +39,15 @@ public class SerialClient extends AbstractKNXClient {
     private final Logger logger = LoggerFactory.getLogger(SerialClient.class);
 
     private final String serialPort;
+    private final boolean useCEMI;
 
     public SerialClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
-            int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort,
+            int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort, boolean useCEMI,
             StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
                 statusUpdateCallback);
         this.serialPort = serialPort;
+        this.useCEMI = useCEMI;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class SerialClient extends AbstractKNXClient {
         try {
             RXTXVersion.getVersion();
             logger.debug("Establishing connection to KNX bus through FT1.2 on serial port {}.", serialPort);
-            return new KNXNetworkLinkFT12(serialPort, new TPSettings());
+            return new KNXNetworkLinkFT12(new FT12Connection(serialPort), new TPSettings(), useCEMI);
 
         } catch (NoClassDefFoundError e) {
             throw new KNXException(
