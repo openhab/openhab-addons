@@ -23,11 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class RotelException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    // Parameterless Constructor
     public RotelException() {
     }
 
-    // Constructor that accepts a message
     public RotelException(String message) {
         super(message);
     }
