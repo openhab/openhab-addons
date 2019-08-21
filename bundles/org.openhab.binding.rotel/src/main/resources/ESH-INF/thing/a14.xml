@@ -6,8 +6,8 @@
 
 	<!-- Rotel A14 Connection Thing Type -->
 	<thing-type id="a14">
-		<label>A14 Connection</label>
-		<description>Connection to the Rotel A14</description>
+		<label>A14 Integrated Amplifier</label>
+		<description>Connection to the Rotel A14 integrated amplifier</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

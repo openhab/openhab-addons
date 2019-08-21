@@ -6,8 +6,8 @@
 
 	<!-- Rotel RT-09 Connection Thing Type -->
 	<thing-type id="rt09">
-		<label>RT-09 Connection</label>
-		<description>Connection to the Rotel RT-09</description>
+		<label>RT-09 Tuner</label>
+		<description>Connection to the Rotel RT-09 tuner</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

@@ -6,8 +6,8 @@
 
 	<!-- Rotel RA-1572 Connection Thing Type -->
 	<thing-type id="ra1572">
-		<label>RA-1572 Connection</label>
-		<description>Connection to the Rotel RA-1572</description>
+		<label>RA-1572 Integrated Amplifier</label>
+		<description>Connection to the Rotel RA-1572 integrated amplifier</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

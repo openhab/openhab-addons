@@ -6,8 +6,8 @@
 
 	<!-- Rotel RCX-1500 Connection Thing Type -->
 	<thing-type id="rcx1500">
-		<label>RCX-1500 Connection</label>
-		<description>Connection to the Rotel RCX-1500</description>
+		<label>RCX-1500 Stereo Receiver</label>
+		<description>Connection to the Rotel RCX-1500 stereo receiver</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

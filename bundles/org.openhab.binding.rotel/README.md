@@ -28,49 +28,49 @@ The binding has been tested with a RSP-1066 and a RSP-1570.
 
 This binding supports the following thing types:
 
-| Thing Type | Description                      |
-|------------|----------------------------------|
-| a11        | Connection to the Rotel A11      |
-| a12        | Connection to the Rotel A12      |
-| a14        | Connection to the Rotel A14      |
-| cd11       | Connection to the Rotel CD11     |
-| cd14       | Connection to the Rotel CD14     |
-| ra11       | Connection to the Rotel RA-11    |
-| ra12       | Connection to the Rotel RA-12    |
-| ra1570     | Connection to the Rotel RA-1570  |
-| ra1572     | Connection to the Rotel RA-1572  |
-| ra1592     | Connection to the Rotel RA-1592  |
-| rap1580    | Connection to the Rotel RAP-1580 |
-| rc1570     | Connection to the Rotel RC-1570  |
-| rc1572     | Connection to the Rotel RC-1572  |
-| rc1590     | Connection to the Rotel RC-1590  |
-| rcd1570    | Connection to the Rotel RCD-1570 |
-| rcd1572    | Connection to the Rotel RCD-1572 |
-| rcx1500    | Connection to the Rotel RCX-1500 |
-| rdd1580    | Connection to the Rotel RDD-1580 |
-| rdg1520    | Connection to the Rotel RDG-1520 |
-| rsp1066    | Connection to the Rotel RSP-1066 |
-| rsp1068    | Connection to the Rotel RSP-1068 |
-| rsp1069    | Connection to the Rotel RSP-1069 |
-| rsp1098    | Connection to the Rotel RSP-1098 |
-| rsp1570    | Connection to the Rotel RSP-1570 |
-| rsp1572    | Connection to the Rotel RSP-1572 |
-| rsp1576    | Connection to the Rotel RSP-1576 |
-| rsp1582    | Connection to the Rotel RSP-1582 |
-| rsx1055    | Connection to the Rotel RSX-1055 |
-| rsx1056    | Connection to the Rotel RSX-1056 |
-| rsx1057    | Connection to the Rotel RSX-1057 |
-| rsx1058    | Connection to the Rotel RSX-1058 |
-| rsx1065    | Connection to the Rotel RSX-1065 |
-| rsx1067    | Connection to the Rotel RSX-1067 |
-| rsx1550    | Connection to the Rotel RSX-1550 |
-| rsx1560    | Connection to the Rotel RSX-1560 |
-| rsx1562    | Connection to the Rotel RSX-1562 |
-| rt09       | Connection to the Rotel RT-09    |
-| rt11       | Connection to the Rotel RT-11    |
-| rt1570     | Connection to the Rotel RT-1570  |
-| t11        | Connection to the Rotel T11      |
-| t14        | Connection to the Rotel T14      |
+| Thing Type | Description                                                   |
+|------------|---------------------------------------------------------------|
+| a11        | Connection to the Rotel A11 integrated amplifier              |
+| a12        | Connection to the Rotel A12 integrated amplifier              |
+| a14        | Connection to the Rotel A14 integrated amplifier              |
+| cd11       | Connection to the Rotel CD11 CD player                        |
+| cd14       | Connection to the Rotel CD14 CD player                        |
+| ra11       | Connection to the Rotel RA-11 integrated amplifier            |
+| ra12       | Connection to the Rotel RA-12 integrated amplifier            |
+| ra1570     | Connection to the Rotel RA-1570 integrated amplifier          |
+| ra1572     | Connection to the Rotel RA-1572 integrated amplifier          |
+| ra1592     | Connection to the Rotel RA-1592 integrated amplifier          |
+| rap1580    | Connection to the Rotel RAP-1580 surround amplified processor |
+| rc1570     | Connection to the Rotel RC-1570 stereo preamplifier           |
+| rc1572     | Connection to the Rotel RC-1572 stereo preamplifier           |
+| rc1590     | Connection to the Rotel RC-1590 stereo preamplifier           |
+| rcd1570    | Connection to the Rotel RCD-1570 CD player                    |
+| rcd1572    | Connection to the Rotel RCD-1572 CD player                    |
+| rcx1500    | Connection to the Rotel RCX-1500 stereo receiver              |
+| rdd1580    | Connection to the Rotel RDD-1580 stereo DAC                   |
+| rdg1520    | Connection to the Rotel RDG-1520 tuner                        |
+| rsp1066    | Connection to the Rotel RSP-1066 surround processor           |
+| rsp1068    | Connection to the Rotel RSP-1068 surround processor           |
+| rsp1069    | Connection to the Rotel RSP-1069 surround processor           |
+| rsp1098    | Connection to the Rotel RSP-1098 surround processor           |
+| rsp1570    | Connection to the Rotel RSP-1570 surround processor           |
+| rsp1572    | Connection to the Rotel RSP-1572 surround processor           |
+| rsp1576    | Connection to the Rotel RSP-1576 surround processor           |
+| rsp1582    | Connection to the Rotel RSP-1582 surround processor           |
+| rsx1055    | Connection to the Rotel RSX-1055 surround receiver            |
+| rsx1056    | Connection to the Rotel RSX-1056 surround receiver            |
+| rsx1057    | Connection to the Rotel RSX-1057 surround receiver            |
+| rsx1058    | Connection to the Rotel RSX-1058 surround receiver            |
+| rsx1065    | Connection to the Rotel RSX-1065 surround receiver            |
+| rsx1067    | Connection to the Rotel RSX-1067 surround receiver            |
+| rsx1550    | Connection to the Rotel RSX-1550 surround receiver            |
+| rsx1560    | Connection to the Rotel RSX-1560 surround receiver            |
+| rsx1562    | Connection to the Rotel RSX-1562 surround receiver            |
+| rt09       | Connection to the Rotel RT-09 tuner                           |
+| rt11       | Connection to the Rotel RT-11 tuner                           |
+| rt1570     | Connection to the Rotel RT-1570 tuner                         |
+| t11        | Connection to the Rotel T11 tuner                             |
+| t14        | Connection to the Rotel T14 tuner                             |
 
 ## Discovery
 

@@ -6,8 +6,8 @@
 
 	<!-- Rotel RC-1572 Connection Thing Type -->
 	<thing-type id="rc1572">
-		<label>RC-1572 Connection</label>
-		<description>Connection to the Rotel RC-1572</description>
+		<label>RC-1572 Stereo Preamplifier</label>
+		<description>Connection to the Rotel RC-1572 stereo preamplifier</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

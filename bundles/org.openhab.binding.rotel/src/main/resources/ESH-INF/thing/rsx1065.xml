@@ -6,8 +6,8 @@
 
 	<!-- Rotel RSX-1065 Connection Thing Type -->
 	<thing-type id="rsx1065">
-		<label>RSX-1065 Connection</label>
-		<description>Connection to the Rotel RSX-1065</description>
+		<label>RSX-1065 Surround Receiver</label>
+		<description>Connection to the Rotel RSX-1065 surround receiver</description>
 
 		<channel-groups>
 			<channel-group id="mainZone" typeId="mainZoneType1" />

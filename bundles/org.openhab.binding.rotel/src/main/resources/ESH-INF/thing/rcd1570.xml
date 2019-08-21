@@ -6,8 +6,8 @@
 
 	<!-- Rotel RCD-1570 Connection Thing Type -->
 	<thing-type id="rcd1570">
-		<label>RCD-1570 Connection</label>
-		<description>Connection to the Rotel RCD-1570</description>
+		<label>RCD-1570 CD Player</label>
+		<description>Connection to the Rotel RCD-1570 CD player</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

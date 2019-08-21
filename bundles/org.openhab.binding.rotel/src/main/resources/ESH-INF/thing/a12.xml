@@ -6,8 +6,8 @@
 
 	<!-- Rotel A12 Connection Thing Type -->
 	<thing-type id="a12">
-		<label>A12 Connection</label>
-		<description>Connection to the Rotel A12</description>
+		<label>A12 Integrated Amplifier</label>
+		<description>Connection to the Rotel A12 integrated amplifier</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

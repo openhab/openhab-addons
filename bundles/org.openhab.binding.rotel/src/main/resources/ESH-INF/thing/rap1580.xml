@@ -6,8 +6,8 @@
 
 	<!-- Rotel RAP-1580 Connection Thing Type -->
 	<thing-type id="rap1580">
-		<label>RAP-1580 Connection</label>
-		<description>Connection to the Rotel RAP-1580</description>
+		<label>RAP-1580 Surround Amplified Processor</label>
+		<description>Connection to the Rotel RAP-1580 surround amplified processor</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

@@ -6,8 +6,8 @@
 
 	<!-- Rotel RT-1570 Connection Thing Type -->
 	<thing-type id="rt1570">
-		<label>RT-1570 Connection</label>
-		<description>Connection to the Rotel RT-1570</description>
+		<label>RT-1570 Tuner</label>
+		<description>Connection to the Rotel RT-1570 tuner</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

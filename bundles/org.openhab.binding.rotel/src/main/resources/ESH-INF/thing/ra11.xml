@@ -6,8 +6,8 @@
 
 	<!-- Rotel RA-11 Connection Thing Type -->
 	<thing-type id="ra11">
-		<label>RA-11 Connection</label>
-		<description>Connection to the Rotel RA-11</description>
+		<label>RA-11 Integrated Amplifier</label>
+		<description>Connection to the Rotel RA-11 integrated amplifier</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

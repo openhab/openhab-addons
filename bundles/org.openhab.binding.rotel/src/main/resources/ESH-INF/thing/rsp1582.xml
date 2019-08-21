@@ -6,8 +6,8 @@
 
 	<!-- Rotel RSP-1582 Connection Thing Type -->
 	<thing-type id="rsp1582">
-		<label>RSP-1582 Connection</label>
-		<description>Connection to the Rotel RSP-1582</description>
+		<label>RSP-1582 Surround Processor</label>
+		<description>Connection to the Rotel RSP-1582 surround processor</description>
 
 		<channels>
 			<channel id="power" typeId="power" />

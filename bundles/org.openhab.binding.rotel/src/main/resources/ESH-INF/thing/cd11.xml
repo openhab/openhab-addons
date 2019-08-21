@@ -6,8 +6,8 @@
 
 	<!-- Rotel CD11 Connection Thing Type -->
 	<thing-type id="cd11">
-		<label>CD11 Connection</label>
-		<description>Connection to the Rotel CD11</description>
+		<label>CD11 CD Player</label>
+		<description>Connection to the Rotel CD11 CD player</description>
 
 		<channels>
 			<channel id="power" typeId="power" />
