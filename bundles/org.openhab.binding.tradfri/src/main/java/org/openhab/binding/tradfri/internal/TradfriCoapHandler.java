@@ -16,6 +16,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -30,13 +32,14 @@ import com.google.gson.JsonParser;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@NonNullByDefault
 public class TradfriCoapHandler implements CoapHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TradfriCoapHandler.class);
     private final JsonParser parser = new JsonParser();
 
-    private CoapCallback callback;
-    private CompletableFuture<String> future;
+    private @Nullable CoapCallback callback;
+    private @Nullable CompletableFuture<String> future;
 
     /**
      * Constructor for using a callback
@@ -57,9 +60,14 @@ public class TradfriCoapHandler implements CoapHandler {
     }
 
     @Override
-    public void onLoad(CoapResponse response) {
+    public void onLoad(@Nullable CoapResponse response) {
+        if (response == null) {
+            logger.trace("received empty CoAP response");
+            return;
+        }
         logger.debug("CoAP response\noptions: {}\npayload: {}", response.getOptions(), response.getResponseText());
         if (response.isSuccess()) {
+            final CoapCallback callback = this.callback;
             if (callback != null) {
                 try {
                     callback.onUpdate(parser.parse(response.getResponseText()));
@@ -68,6 +76,7 @@ public class TradfriCoapHandler implements CoapHandler {
                     logger.warn("Observed value is no valid json: {}, {}", response.getResponseText(), e.getMessage());
                 }
             }
+            final CompletableFuture<String> future = this.future;
             if (future != null) {
                 String data = response.getResponseText();
                 future.complete(data);
