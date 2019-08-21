@@ -124,7 +124,6 @@ public class OpenGarageHandler extends BaseThingHandler {
         final Future<?> future = pollFuture;
         if (future != null && !future.isCancelled()) {
             future.cancel(true);
-            pollFuture.cancel(true);
             pollFuture = null;
         }
     }
