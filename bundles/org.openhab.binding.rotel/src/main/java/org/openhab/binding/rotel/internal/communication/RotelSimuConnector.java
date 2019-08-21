@@ -119,7 +119,7 @@ public class RotelSimuConnector extends RotelConnector {
         try {
             Thread.sleep(20);
         } catch (InterruptedException e) {
-            throw new InterruptedIOException(e.getMessage());
+            Thread.currentThread().interrupt();
         }
         return 0;
     }
