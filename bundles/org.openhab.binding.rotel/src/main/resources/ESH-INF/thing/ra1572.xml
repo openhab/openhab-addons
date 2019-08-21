@@ -18,34 +18,7 @@
 			<channel id="treble" typeId="treble" />
 		</channels>
 
-		<config-description>
-			<parameter name="serialPort" type="text" required="false">
-				<context>serial-port</context>
-				<label>Serial Port</label>
-				<description>Serial port to use for connecting to the Rotel device</description>
-			</parameter>
-			<parameter name="host" type="text" required="false">
-				<context>network-address</context>
-				<label>Address</label>
-				<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device (serial over IP)</description>
-			</parameter>
-			<parameter name="port" type="integer" required="false">
-				<label>Port</label>
-				<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port 9590</description>
-				<default>9590</default>
-			</parameter>
-			<parameter name="protocol" type="text" required="false">
-				<label>Protocol Version</label>
-				<description>Choose one of the two protocol versions (depends on your device firmware)</description>
-				<limitToOptions>true</limitToOptions>
-				<options>
-					<option value="ASCII_V1">ASCII V1</option>
-					<option value="ASCII_V2">ASCII V2</option>
-				</options>
-				<default>ASCII_V2</default>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:sonyprojector:serialandipandprotocol" />
 	</thing-type>
 
 </thing:thing-descriptions>

@@ -22,22 +22,7 @@
 			<property name="protocol">ASCII_V2</property>
 		</properties>
 
-		<config-description>
-			<parameter name="serialPort" type="text" required="false">
-				<context>serial-port</context>
-				<label>Serial Port</label>
-				<description>Serial port to use for connecting to the Rotel device</description>
-			</parameter>
-			<parameter name="host" type="text" required="false">
-				<context>network-address</context>
-				<label>Address</label>
-				<description>Host name or IP address of the machine connected to the Rotel device (serial over IP)</description>
-			</parameter>
-			<parameter name="port" type="integer" required="false">
-				<label>Port</label>
-				<description>Communication port (serial over IP)</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:sonyprojector:serial" />
 	</thing-type>
 
 </thing:thing-descriptions>
