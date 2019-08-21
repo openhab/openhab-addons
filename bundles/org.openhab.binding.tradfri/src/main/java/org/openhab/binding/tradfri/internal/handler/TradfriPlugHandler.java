@@ -14,6 +14,7 @@ package org.openhab.binding.tradfri.internal.handler;
 
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.CHANNEL_POWER;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -31,6 +32,7 @@ import com.google.gson.JsonElement;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@NonNullByDefault
 public class TradfriPlugHandler extends TradfriThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TradfriPlugHandler.class);
