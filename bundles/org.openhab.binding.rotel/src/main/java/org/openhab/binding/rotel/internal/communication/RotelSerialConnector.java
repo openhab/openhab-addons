@@ -16,14 +16,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.TooManyListenersException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
-import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
-import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
@@ -38,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class RotelSerialConnector extends RotelConnector implements SerialPortEventListener {
+public class RotelSerialConnector extends RotelConnector {
 
     private final Logger logger = LoggerFactory.getLogger(RotelSerialConnector.class);
 
@@ -95,16 +92,6 @@ public class RotelSerialConnector extends RotelConnector implements SerialPortEv
                 }
             }
 
-            // RXTX serial port library causes high CPU load
-            // Start event listener, which will just sleep and slow down event
-            // loop
-            try {
-                commPort.addEventListener(this);
-                commPort.notifyOnDataAvailable(true);
-            } catch (TooManyListenersException e) {
-                logger.debug("Too Many Listeners Exception: {}", e.getMessage(), e);
-            }
-
             Thread thread = new RotelReaderThread(this);
             setReaderThread(thread);
             thread.start();
@@ -150,14 +137,5 @@ public class RotelSerialConnector extends RotelConnector implements SerialPortEv
         }
         setConnected(false);
         logger.debug("Serial connection closed");
-    }
-
-    @Override
-    public void serialEvent(SerialPortEvent serialPortEvent) {
-        try {
-            logger.debug("RXTX library CPU load workaround, sleep forever");
-            Thread.sleep(Long.MAX_VALUE);
-        } catch (InterruptedException e) {
-        }
     }
 }
