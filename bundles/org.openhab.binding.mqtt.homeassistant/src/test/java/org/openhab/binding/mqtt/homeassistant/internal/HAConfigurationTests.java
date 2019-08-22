@@ -17,10 +17,6 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.openhab.binding.mqtt.homeassistant.internal.BaseChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.ChannelConfigurationTypeAdapterFactory;
-import org.openhab.binding.mqtt.homeassistant.internal.ComponentFan;
-import org.openhab.binding.mqtt.homeassistant.internal.ComponentSwitch;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -95,7 +91,7 @@ public class HAConfigurationTests {
                 + "    \"state_topic\":\"O/~\",\n" //
                 + "    \"command_topic\":\"P~Q\",\n" //
                 + "    \"device\":{\n" //
-                + "        \"ids\":[\"H\"],\n" //
+                + "        \"ids\":\"H\",\n" //
                 + "        \"cns\":[{\n" //
                 + "           \"type\": \"I1\",\n" //
                 + "           \"identifier\": \"I2\"\n" //
@@ -114,6 +110,7 @@ public class HAConfigurationTests {
         assertThat(config.availability_topic, is("D/E"));
         assertThat(config.state_topic, is("O/D/"));
         assertThat(config.command_topic, is("P~Q"));
+        assertThat(config.device.identifiers, contains("H"));
 
     }
 
