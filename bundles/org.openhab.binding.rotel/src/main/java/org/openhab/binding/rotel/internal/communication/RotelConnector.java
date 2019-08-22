@@ -134,6 +134,7 @@ public abstract class RotelConnector {
     public static final String KEY_TRACK = "track";
     public static final String KEY_DSP_MODE = "dsp_mode";
     public static final String KEY_DIMMER = "dimmer";
+    public static final String KEY_FREQ = "freq";
 
     // Special keys used by the binding
     public static final String KEY_LINE1 = "line1";

@@ -227,6 +227,7 @@ public enum RotelCommand {
     TRACK_FORWARD("Track Forward", RotelConnector.PRIMARY_CMD, (byte) 0x09, "track_fwd", "trkf"),
     TRACK_BACKWORD("Track Backward", RotelConnector.PRIMARY_CMD, (byte) 0x08, "track_back", "trkb"),
     TRACK("Request current CD track number", null, "track"),
+    FREQUENCY("Request current frequency for digital source input", "get_current_freq", "freq"),
     DISPLAY_REFRESH("Display Refresh", RotelConnector.PRIMARY_CMD, (byte) 0xFF),
     DIMMER_LEVEL_GET("Request current front display dimmer level", "get_current_dimmer", "dimmer"),
     DIMMER_LEVEL_SET("Set front display dimmer to level", "dimmer_", "dimmer_"),

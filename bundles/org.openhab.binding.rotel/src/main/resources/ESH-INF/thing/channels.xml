@@ -156,6 +156,13 @@
 		<state pattern="%d" readOnly="true" />
 	</channel-type>
 
+	<channel-type id="frequency" advanced="true">
+		<item-type>Number</item-type>
+		<label>Current Frequency</label>
+		<description>The current frequency for digital source input</description>
+		<state readOnly="true" />
+	</channel-type>
+
 	<channel-type id="frontPanelLine" advanced="true">
 		<item-type>String</item-type>
 		<label>Front Panel Line</label>

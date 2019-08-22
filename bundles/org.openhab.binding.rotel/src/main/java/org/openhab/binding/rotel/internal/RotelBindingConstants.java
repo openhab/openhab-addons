@@ -87,6 +87,7 @@ public class RotelBindingConstants {
     public static final String CHANNEL_MAIN_TREBLE = "mainZone#treble";
     public static final String CHANNEL_PLAY_CONTROL = "playControl";
     public static final String CHANNEL_TRACK = "track";
+    public static final String CHANNEL_FREQUENCY = "frequency";
     public static final String CHANNEL_LINE1 = "mainZone#line1";
     public static final String CHANNEL_LINE2 = "mainZone#line2";
     public static final String CHANNEL_BRIGHTNESS = "brightness";

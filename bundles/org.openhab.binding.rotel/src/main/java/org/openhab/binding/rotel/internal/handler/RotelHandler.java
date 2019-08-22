@@ -116,6 +116,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private int treble;
     private RotelPlayStatus playStatus = RotelPlayStatus.STOPPED;
     private int track;
+    private double frequency;
     private String frontPanelLine1 = "";
     private String frontPanelLine2 = "";
     private int brightness;
@@ -1238,6 +1239,14 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         updateChannelState(CHANNEL_TRACK);
                     }
                     break;
+                case RotelConnector.KEY_FREQ:
+                    if (RotelConnector.MSG_VALUE_OFF.equalsIgnoreCase(value)) {
+                        frequency = 0.0;
+                    } else {
+                        frequency = Double.parseDouble(value);
+                    }
+                    updateChannelState(CHANNEL_FREQUENCY);
+                    break;
                 case RotelConnector.KEY_DIMMER:
                     brightness = Integer.parseInt(value);
                     updateChannelState(CHANNEL_BRIGHTNESS);
@@ -1290,6 +1299,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateChannelState(CHANNEL_MAIN_TREBLE);
         updateChannelState(CHANNEL_PLAY_CONTROL);
         updateChannelState(CHANNEL_TRACK);
+        updateChannelState(CHANNEL_FREQUENCY);
         updateChannelState(CHANNEL_BRIGHTNESS);
     }
 
@@ -1502,6 +1512,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 connector.sendCommand(RotelCommand.DSP_MODE);
                                 Thread.sleep(50);
                             }
+                            if (connector.getModel().canGetFrequency()) {
+                                connector.sendCommand(RotelCommand.FREQUENCY);
+                                Thread.sleep(50);
+                            }
                             if (connector.getModel().hasDimmerControl() && connector.getModel().canGetDimmerLevel()) {
                                 connector.sendCommand(RotelCommand.DIMMER_LEVEL_GET);
                                 Thread.sleep(50);
@@ -1536,6 +1550,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             }
                             if (connector.getModel().hasDspControl()) {
                                 connector.sendCommand(RotelCommand.DSP_MODE);
+                                Thread.sleep(50);
+                            }
+                            if (connector.getModel().canGetFrequency()) {
+                                connector.sendCommand(RotelCommand.FREQUENCY);
                                 Thread.sleep(50);
                             }
                             if (connector.getModel().hasDimmerControl() && connector.getModel().canGetDimmerLevel()) {
@@ -1878,6 +1896,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             state = PlayPauseType.PAUSE;
                             break;
                     }
+                }
+                break;
+            case CHANNEL_FREQUENCY:
+                if (frequency > 0.0 && isPowerOn()) {
+                    state = new DecimalType(frequency);
                 }
                 break;
             case CHANNEL_LINE1:
