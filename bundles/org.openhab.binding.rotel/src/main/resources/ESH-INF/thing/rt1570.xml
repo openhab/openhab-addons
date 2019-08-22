@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="power" typeId="power" />
 			<channel id="source" typeId="source" />
+			<channel id="brightness" typeId="brightness" />
 		</channels>
 
 		<properties>

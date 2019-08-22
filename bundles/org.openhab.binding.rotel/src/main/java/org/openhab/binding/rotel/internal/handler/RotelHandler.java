@@ -14,6 +14,7 @@ package org.openhab.binding.rotel.internal.handler;
 
 import static org.openhab.binding.rotel.internal.RotelBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.EventObject;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -25,6 +26,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -116,6 +118,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private int track;
     private String frontPanelLine1 = "";
     private String frontPanelLine2 = "";
+    private int brightness;
 
     private Object sequenceLock = new Object();
 
@@ -714,6 +717,24 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
                         }
                         break;
+                    case CHANNEL_BRIGHTNESS:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else if (!connector.getModel().hasDimmerControl()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
+                        } else if (command instanceof PercentType) {
+                            int dimmer = (int) Math.round(((PercentType) command).doubleValue() / 100.0
+                                    * (connector.getModel().getDimmerLevelMax()
+                                            - connector.getModel().getDimmerLevelMin()))
+                                    + connector.getModel().getDimmerLevelMin();
+                            connector.sendCommand(RotelCommand.DIMMER_LEVEL_SET, dimmer);
+                        } else {
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
+                        }
+                        break;
                     default:
                         success = false;
                         logger.debug("Command {} from channel {} failed: nnexpected command", command, channel);
@@ -1217,6 +1238,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         updateChannelState(CHANNEL_TRACK);
                     }
                     break;
+                case RotelConnector.KEY_DIMMER:
+                    brightness = Integer.parseInt(value);
+                    updateChannelState(CHANNEL_BRIGHTNESS);
+                    break;
                 case RotelConnector.KEY_UPDATE_MODE:
                 case RotelConnector.KEY_DISPLAY_UPDATE:
                     break;
@@ -1265,6 +1290,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateChannelState(CHANNEL_MAIN_TREBLE);
         updateChannelState(CHANNEL_PLAY_CONTROL);
         updateChannelState(CHANNEL_TRACK);
+        updateChannelState(CHANNEL_BRIGHTNESS);
     }
 
     /**
@@ -1476,6 +1502,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 connector.sendCommand(RotelCommand.DSP_MODE);
                                 Thread.sleep(50);
                             }
+                            if (connector.getModel().hasDimmerControl() && connector.getModel().canGetDimmerLevel()) {
+                                connector.sendCommand(RotelCommand.DIMMER_LEVEL_GET);
+                                Thread.sleep(50);
+                            }
                             break;
                         case ASCII_V2:
                             connector.sendCommand(RotelCommand.UPDATE_AUTO);
@@ -1506,6 +1536,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             }
                             if (connector.getModel().hasDspControl()) {
                                 connector.sendCommand(RotelCommand.DSP_MODE);
+                                Thread.sleep(50);
+                            }
+                            if (connector.getModel().hasDimmerControl() && connector.getModel().canGetDimmerLevel()) {
+                                connector.sendCommand(RotelCommand.DIMMER_LEVEL_GET);
                                 Thread.sleep(50);
                             }
                             break;
@@ -1851,6 +1885,15 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 break;
             case CHANNEL_LINE2:
                 state = new StringType(frontPanelLine2);
+                break;
+            case CHANNEL_BRIGHTNESS:
+                if (isPowerOn() && connector.getModel().hasDimmerControl()) {
+                    long dimmerPct = Math.round((double) (brightness - connector.getModel().getDimmerLevelMin())
+                            / (double) (connector.getModel().getDimmerLevelMax()
+                                    - connector.getModel().getDimmerLevelMin())
+                            * 100.0);
+                    state = new PercentType(BigDecimal.valueOf(dimmerPct));
+                }
                 break;
             default:
                 break;

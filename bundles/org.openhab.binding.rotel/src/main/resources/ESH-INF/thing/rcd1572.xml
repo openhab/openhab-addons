@@ -13,6 +13,7 @@
 			<channel id="power" typeId="power" />
 			<channel id="playControl" typeId="system.media-control" />
 			<channel id="track" typeId="track" />
+			<channel id="brightness" typeId="brightness" />
 		</channels>
 
 		<config-description-ref uri="thing-type:sonyprojector:serialandprotocol" />

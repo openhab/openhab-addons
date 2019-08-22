@@ -16,6 +16,7 @@
 			<channel id="mute" typeId="mute" />
 			<channel id="bass" typeId="bass" />
 			<channel id="treble" typeId="treble" />
+			<channel id="brightness" typeId="brightness" />
 		</channels>
 
 		<properties>

@@ -15,6 +15,7 @@
 			<channel id="dsp" typeId="dsp" />
 			<channel id="volume" typeId="volume" />
 			<channel id="mute" typeId="mute" />
+			<channel id="brightness" typeId="brightness" />
 		</channels>
 
 		<properties>

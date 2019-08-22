@@ -150,33 +150,34 @@ The following channels are available:
 | dsp, mainZone#dsp | DSP Mode            | String    | Select the DSP mode                   | NONE, STEREO3, STEREO5, STEREO7, STEREO9, STEREO11, MUSIC1, MUSIC2, MUSIC3, MUSIC4, PROLOGIC, PLIICINEMA, PLIIMUSIC, PLIIGAME, PLIIZ, NEO6MUSIC, NEO6CINEMA, ATMOS, NEURALX, BYPASS |
 | volume, mainZone#volume, zone2#volume, zone3#volume, zone4#volume | Volume              | Number    | Adjust the volume                     | INCREASE, DECREASE, value          |
 | mute, mainZone#mute, zone2#mute, zone3#mute, zone4#mute | Mute                | Switch    | Mute/unmute the sound                 | ON, OFF                            |
-| bass, mainZone#bass | Bass Adjustment     | Number    | Adjust the bass                       | INCREASE, DECREASE, value          |
-| treble, mainZone#treble | Treble Adjustment   | Number    | Adjust the treble                     | INCREASE, DECREASE, value          |
-| playControl  | Playback Control    | Player    | Control the playback                  | PLAY, PAUSE, NEXT, PREVIOUS        |
-| track        | Current Track       | Number    | The current CD track number           |                                    |
-| mainZone#line1 | Front Panel Line 1  | String    | The first line displayed on the device front panel |                                    |
-| mainZone#line2 | Front Panel Line 2  | String    | The second line displayed on the device front panel |                                    |
+| bass, mainZone#bass | Bass Adjustment           | Number    | Adjust the bass                                          | INCREASE, DECREASE, value          |
+| treble, mainZone#treble | Treble Adjustment     | Number    | Adjust the treble                                        | INCREASE, DECREASE, value          |
+| playControl    | Playback Control               | Player    | Control the playback                                     | PLAY, PAUSE, NEXT, PREVIOUS        |
+| track          | Current Track                  | Number    | The current CD track number                              |                                    |
+| mainZone#line1 | Front Panel Line 1             | String    | The first line displayed on the device front panel       |                                    |
+| mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
+| brightness     | Front Panel Display Brightness | Dimmer    | The backlight brightness level of the device front panel |                                    |
 
 Here are the list of channels available for each thing type:
 
 | Thing Type | Available channels                                                                    |
 |------------|---------------------------------------------------------------------------------------|
-| a11        | power, source, volume, mute, bass, treble                                             |
-| a12        | power, source, volume, mute, bass, treble                                             |
-| a14        | power, source, volume, mute, bass, treble                                             |
-| cd11       | power, playControl, track                                                             |
-| cd14       | power, playControl, track                                                             |
-| ra11       | power, source, volume, mute, bass, treble, playControl                                |
-| ra12       | power, source, volume, mute, bass, treble, playControl                                |
-| ra1570     | power, source, volume, mute, bass, treble, playControl                                |
-| ra1572     | power, source, volume, mute, bass, treble                                             |
-| ra1592     | power, source, volume, mute, bass, treble                                             |
-| rap1580    | power, source, dsp, volume, mute                                                      |
-| rc1570     | power, source, volume, mute, bass, treble, playControl                                |
-| rc1572     | power, source, volume, mute, bass, treble                                             |
-| rc1590     | power, source, volume, mute, bass, treble                                             |
-| rcd1570    | power, playControl                                                                    |
-| rcd1572    | power, playControl, track                                                             |
+| a11        | power, source, volume, mute, bass, treble, brightness                                 |
+| a12        | power, source, volume, mute, bass, treble, brightness                                 |
+| a14        | power, source, volume, mute, bass, treble, brightness                                 |
+| cd11       | power, playControl, track, brightness                                                 |
+| cd14       | power, playControl, track, brightness                                                 |
+| ra11       | power, source, volume, mute, bass, treble, playControl, brightness                    |
+| ra12       | power, source, volume, mute, bass, treble, playControl, brightness                    |
+| ra1570     | power, source, volume, mute, bass, treble, playControl, brightness                    |
+| ra1572     | power, source, volume, mute, bass, treble, brightness                                 |
+| ra1592     | power, source, volume, mute, bass, treble, brightness                                 |
+| rap1580    | power, source, dsp, volume, mute, brightness                                          |
+| rc1570     | power, source, volume, mute, bass, treble, playControl, brightness                    |
+| rc1572     | power, source, volume, mute, bass, treble, brightness                                 |
+| rc1590     | power, source, volume, mute, bass, treble, brightness                                 |
+| rcd1570    | power, playControl, brightness                                                        |
+| rcd1572    | power, playControl, track, brightness                                                 |
 | rcx1500    | power, source, volume, mute, playControl                                              |
 | rdd1580    | power, source, playControl                                                            |
 | rdg1520    | power, source, playControl                                                            |
@@ -186,8 +187,8 @@ Here are the list of channels available for each thing type:
 | rsp1098    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
 | rsp1570    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1572    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
-| rsp1576    | power, source, dsp, volume, mute                                                      |
-| rsp1582    | power, source, dsp, volume, mute                                                      |
+| rsp1576    | power, source, dsp, volume, mute, brightness                                          |
+| rsp1582    | power, source, dsp, volume, mute, brightness                                          |
 | rsx1055    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume |
 | rsx1056    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
 | rsx1057    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
@@ -197,11 +198,11 @@ Here are the list of channels available for each thing type:
 | rsx1550    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsx1560    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsx1562    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
-| rt09       | power, source, playControl                                                            |
-| rt11       | power, source                                                                         |
-| rt1570     | power, source                                                                         |
-| t11        | power, source                                                                         |
-| t14        | power, source                                                                         |
+| rt09       | power, source, playControl, brightness                                                |
+| rt11       | power, source, brightness                                                             |
+| rt1570     | power, source, brightness                                                             |
+| t11        | power, source, brightness                                                             |
+| t14        | power, source, brightness                                                             |
 
 ## Full Example
 
@@ -274,10 +275,12 @@ Number amp_volume "Volume [%d]" { channel="rotel:ra1592:preamp:volume" }
 Switch amp_mute "Mute" { channel="rotel:ra1592:preamp:mute" }
 Number amp_bass "Bass Adjustment [%d]" { channel="rotel:ra1592:preamp:bass" }
 Number amp_treble "Treble Adjustment [%d]" { channel="rotel:ra1592:preamp:treble" }
+Dimmer amp_brightness "Display brightness" { channel="rotel:ra1592:preamp:brightness" }
 
 Switch cd_power "Power" { channel="rotel:cd14:cd:power" }
 Player cd_control "Playback" { channel="rotel:cd14:cd:power" }
 Number cd_track "Track [%d]" { channel="rotel:cd14:cd:power" }
+Dimmer cd_brightness "Display brightness" { channel="rotel:cd14:cd:brightness" }
 ```
 
 example.sitemap:
@@ -324,8 +327,10 @@ Slider item=amp_volume minValue=0 maxValue=96
 Switch item=amp_mute
 Slider item=amp_bass minValue=-10 maxValue=10
 Slider item=amp_treble minValue=-10 maxValue=10
+Slider item=amp_brightness
 
 Switch item=cd_power
 Default item=cd_control
 Text item=cd_track
+Slider item=cd_brightness
 ```

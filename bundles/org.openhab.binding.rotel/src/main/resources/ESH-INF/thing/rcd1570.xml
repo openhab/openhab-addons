@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="power" typeId="power" />
 			<channel id="playControl" typeId="system.media-control" />
+			<channel id="brightness" typeId="brightness" />
 		</channels>
 
 		<properties>

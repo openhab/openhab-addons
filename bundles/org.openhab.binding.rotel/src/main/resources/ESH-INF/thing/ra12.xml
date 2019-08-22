@@ -17,6 +17,7 @@
 			<channel id="bass" typeId="bass" />
 			<channel id="treble" typeId="treble" />
 			<channel id="playControl" typeId="system.media-control" />
+			<channel id="brightness" typeId="brightness" />
 		</channels>
 
 		<properties>

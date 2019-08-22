@@ -162,4 +162,10 @@
 		<description>The line content displayed on the device front panel</description>
 	</channel-type>
 
+	<channel-type id="brightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Front Panel Display Brightness</label>
+		<description>The backlight brightness level of the device front panel</description>
+	</channel-type>
+
 </thing:thing-descriptions>

@@ -133,6 +133,7 @@ public abstract class RotelConnector {
     public static final String KEY2_PLAY_STATUS = "status";
     public static final String KEY_TRACK = "track";
     public static final String KEY_DSP_MODE = "dsp_mode";
+    public static final String KEY_DIMMER = "dimmer";
 
     // Special keys used by the binding
     public static final String KEY_LINE1 = "line1";
@@ -410,6 +411,13 @@ public abstract class RotelConnector {
                                     messageStr += String.format("-%02d", -value);
                                 }
                                 break;
+                            case DIMMER_LEVEL_SET:
+                                if (value > 0 && model.getDimmerLevelMin() < 0) {
+                                    messageStr += String.format("+%d", value);
+                                } else {
+                                    messageStr += String.format("%d", value);
+                                }
+                                break;
                             default:
                                 break;
                         }
@@ -440,6 +448,13 @@ public abstract class RotelConnector {
                                     messageStr += String.format("+%02d", value);
                                 } else {
                                     messageStr += String.format("-%02d", -value);
+                                }
+                                break;
+                            case DIMMER_LEVEL_SET:
+                                if (value > 0 && model.getDimmerLevelMin() < 0) {
+                                    messageStr += String.format("+%d", value);
+                                } else {
+                                    messageStr += String.format("%d", value);
                                 }
                                 break;
                             default:
