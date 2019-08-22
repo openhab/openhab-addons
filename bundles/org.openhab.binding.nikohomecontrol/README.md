@@ -85,7 +85,7 @@ For Niko Home Control II:
 
 ```
 Bridge nikohomecontrol:bridge2:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>,
-                                           profile=<touch profile>, password=<password>,
+                                           profile="<touch profile>", password="<password>",
                                            refresh=<Refresh interval> ]
 ```
 
@@ -101,14 +101,14 @@ The Thing configuration for **Niko Home Control actions** has the following synt
 
 ```
 Thing nikohomecontrol:<thing type>:<bridgeId>:<thingId> "Label" @ "Location"
-                        [ actionId=<Niko Home Control action ID>,
+                        [ actionId="<Niko Home Control action ID>",
                           step=<dimmer increase/decrease step value> ]
 ```
 
 or nested in the bridge configuration:
 
 ```
-<thing type> <thingId> "Label" @ "Location" [ actionId=<Niko Home Control action ID>,
+<thing type> <thingId> "Label" @ "Location" [ actionId="<Niko Home Control action ID>",
                          step=<dimmer increase/decrease step value> ]
 ```
 
@@ -145,13 +145,13 @@ The Thing configuration for **Niko Home Control thermostats** has the following 
 
 ```
 Thing nikohomecontrol:thermostat:<bridgeId>:<thingId> "Label" @ "Location"
-                        [ thermostatId=<Niko Home Control thermostat ID> ]
+                        [ thermostatId="<Niko Home Control thermostat ID>" ]
 ```
 
 or nested in the bridge configuration:
 
 ```
-thermostat <thingId> "Label" @ "Location" [ thermostatId=<Niko Home Control thermostat ID> ]
+thermostat <thingId> "Label" @ "Location" [ thermostatId="<Niko Home Control thermostat ID>" ]
 ```
 
 `thingId` can have any value, but will be set to the same value as the thermostatId parameter if discovery is used.
@@ -221,11 +221,11 @@ All of this has not been implemented.
 
 ```
 Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300 ] {
-    pushButton 1 "AllOff" [ actionId=1 ]
-    onOff 2 "LivingRoom" @ "Downstairs" [ actionId=2 ]
-    dimmer 3 "TVRoom" [ actionId=3, step=5 ]
-    blind 4 [ actionId=4 ]
-    thermostat 5 [ thermostatId=0, overruleTime=10 ]
+    pushButton 1 "AllOff" [ actionId="1" ]
+    onOff 2 "LivingRoom" @ "Downstairs" [ actionId="2" ]
+    dimmer 3 "TVRoom" [ actionId="3", step=5 ]
+    blind 4 [ actionId="4" ]
+    thermostat 5 [ thermostatId="0", overruleTime=10 ]
 }
 
 Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8883, profile="openHAB", password="mypassword", refresh=300 ] {
@@ -237,10 +237,10 @@ Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8883, profile="o
 }
 
 Bridge nikohomecontrol:bridge:nhc3 [ addr="192.168.0.110" ] {
-    onOff 11 @ "Upstairs"[ actionId=11 ]
-    dimmer 12 [ actionId=12, step=5 ]
-    blind 13 [ actionId=13 ]
-    thermostat 14 [ thermostatId=10 ]
+    onOff 11 @ "Upstairs" [ actionId="11" ]
+    dimmer 12 [ actionId="12", step=5 ]
+    blind 13 [ actionId="13" ]
+    thermostat 14 [ thermostatId="10" ]
 }
 ```
 
