@@ -38,6 +38,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.snmp.internal.config.SnmpChannelConfiguration;
 import org.openhab.binding.snmp.internal.config.SnmpInternalChannelConfiguration;
 import org.openhab.binding.snmp.internal.config.SnmpTargetConfiguration;
@@ -183,12 +184,7 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         response.getVariableBindings().forEach(variable -> {
             OID oid = variable.getOid();
             Variable value = variable.getVariable();
-            if (value.isException()) {
-                logger.warn("Error: request {}:{} returned '{}'", event.getPeerAddress(), oid, variable.toString());
-                return;
-            } else {
-                updateChannels(oid, value, readChannelSet);
-            }
+            updateChannels(oid, value, readChannelSet);
         });
     }
 
@@ -219,6 +215,7 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         SnmpDatatype datatype;
         Variable onValue = null;
         Variable offValue = null;
+        State exceptionValue = UnDefType.UNDEF;
 
         if (CHANNEL_TYPE_UID_NUMBER.equals(channel.getChannelTypeUID())) {
             if (config.datatype == null) {
@@ -228,6 +225,9 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             } else {
                 datatype = config.datatype;
             }
+            if (config.exceptionValue != null) {
+                exceptionValue = DecimalType.valueOf(config.exceptionValue);
+            }
         } else if (CHANNEL_TYPE_UID_STRING.equals(channel.getChannelTypeUID())) {
             if (config.datatype == null) {
                 datatype = SnmpDatatype.STRING;
@@ -235,6 +235,9 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                 return null;
             } else {
                 datatype = config.datatype;
+            }
+            if (config.exceptionValue != null) {
+                exceptionValue = StringType.valueOf(config.exceptionValue);
             }
         } else if (CHANNEL_TYPE_UID_SWITCH.equals(channel.getChannelTypeUID())) {
             if (config.datatype == null) {
@@ -253,12 +256,15 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                 logger.warn("illegal value configuration for channel {}", channel.getUID());
                 return null;
             }
+            if (config.exceptionValue != null) {
+                exceptionValue = OnOffType.from(config.exceptionValue);
+            }
         } else {
             logger.warn("unknown channel type found for channel {}", channel.getUID());
             return null;
         }
         return new SnmpInternalChannelConfiguration(channel.getUID(), new OID(config.oid), config.mode, datatype,
-                onValue, offValue);
+                onValue, offValue, exceptionValue, config.doNotLogException);
     }
 
     private void generateChannelConfigs() {
@@ -287,7 +293,12 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                     logger.warn("channel uid {} in channel config set but channel not found", channelUID);
                     return;
                 }
-                if (CHANNEL_TYPE_UID_NUMBER.equals(channel.getChannelTypeUID())) {
+                if (value.isException()) {
+                    if (!channelConfig.doNotLogException) {
+                        logger.info("SNMP Exception: request {} returned '{}'", oid, value);
+                    }
+                    state = channelConfig.exceptionValue;
+                } else if (CHANNEL_TYPE_UID_NUMBER.equals(channel.getChannelTypeUID())) {
                     try {
                         if (channelConfig.datatype == SnmpDatatype.FLOAT) {
                             state = new DecimalType(value.toString());
