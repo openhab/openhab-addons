@@ -27,4 +27,7 @@ public class SnmpChannelConfiguration {
 
     public String onvalue;
     public String offvalue;
+    public String exceptionValue;
+
+    public boolean doNotLogException = false;
 }
