@@ -104,6 +104,19 @@ The `datatype` parameter is used to convert the configuration strings to the nee
 | string   | String | a channel with a string value   |
 | switch   | Switch | a channel that has two states   |
 
+
+### SNMP Exception (Error) Handling
+
+The standard behaviour if an SNMP exception occurs this is to log at `INFO` level and set the channel value to `UNDEF`.
+This can be adjusted at channel level with advanced options.
+
+The logging can be suppressed with the `doNotLogException` parameter.
+If this is set to `true` any SNMP exception is not considered as faulty.
+The default value is `false`.
+
+By setting `exceptionValue` the default `UNDEF` value can be changed.
+Valid values are all valid values for that channel (i.e. `ON`/`OFF` for a switch channel, a string for a string channel and a number for a number channel).
+
 ## Full Example
 
 demo.things:
@@ -115,6 +128,7 @@ Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
       Type number : outBytes [ oid=".1.3.6.1.2.1.31.1.1.1.10.2", mode="READ" ]
       Type number : if4Status [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="TRAP" ]
       Type switch : if4Command [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="READ_WRITE", datatype="UINT32", onvalue="2", offvalue="0" ]
+      Type switch : devicePresent [ oid="1.3.6.1.2.1.2.2.1.221.4.192.168.0.1", mode="READ", datatype="UINT32", onValue="1", doNotLogException="true", exceptionValue="OFF" ]
 }
 ```
 
@@ -125,6 +139,7 @@ Number inBytes "Router bytes in [%d]" { channel="snmp:target:router:inBytes" }
 Number outBytes "Router bytes out [%d]" { channel="snmp:target:router:outBytes" }
 Number if4Status "Router interface 4 status [%d]" { channel="snmp:target:router:if4Status" }
 Switch if4Command "Router interface 4 switch [%s]" { channel="snmp:target:router:if4Command" }
+Switch devicePresent "Phone connected [%s]" { channel="snmp:target:router:devicePresent" }
 ```
 
 demo.sitemap:
@@ -137,6 +152,7 @@ sitemap demo label="Main Menu"
         Text item=outBytes
         Text item=if4Status
         Switch item=if4Command
+        Text item=devicePresent
     }
 }
 ```
