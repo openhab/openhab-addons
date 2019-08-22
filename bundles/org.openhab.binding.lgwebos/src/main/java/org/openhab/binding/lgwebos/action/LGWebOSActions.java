@@ -93,7 +93,7 @@ public class LGWebOSActions implements ThingActions {
     public void showToast(
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
             throws IOException {
-        showToast(LGWebOSActions.class.getResource("/openhab-logo-square.png").toString(), text);
+        getControl(ToastControl.class).ifPresent(control -> control.showToast(text, createResponseListener()));
     }
 
     @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconLabel")
