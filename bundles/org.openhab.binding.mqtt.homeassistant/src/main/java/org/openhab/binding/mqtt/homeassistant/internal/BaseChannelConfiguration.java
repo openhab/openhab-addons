@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -110,6 +112,35 @@ public abstract class BaseChannelConfiguration {
     static class Connection {
         protected @Nullable String type;
         protected @Nullable String identifier;
+    }
+
+    public String getThingName() {
+        @Nullable
+        String result = null;
+
+        if (this.device != null) {
+            result = this.device.name;
+        }
+        if (result == null) {
+            result = name;
+        }
+        return result;
+    }
+
+    public String getThingId(String defaultId) {
+        @Nullable
+        String result = null;
+        if (this.device != null) {
+            result = this.device.getId();
+        }
+        if (result == null) {
+            result = unique_id;
+        }
+        try {
+            return URLEncoder.encode(result != null ? result : defaultId, "UTF-8").replace(".", "%2E");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Map<String, Object> appendToProperties(Map<String, Object> properties) {

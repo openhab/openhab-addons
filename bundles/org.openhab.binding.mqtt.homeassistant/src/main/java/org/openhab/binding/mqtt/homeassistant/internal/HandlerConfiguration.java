@@ -34,6 +34,7 @@ public class HandlerConfiguration {
     /**
      * hint: cannot be final, or <code>getConfigAs</code> will not work.
      * The object id. This is comparable to a Homie Device.
+     * For multiple components in one thing, this is a comma separated list of object ids.
      */
     public String objectid;
 

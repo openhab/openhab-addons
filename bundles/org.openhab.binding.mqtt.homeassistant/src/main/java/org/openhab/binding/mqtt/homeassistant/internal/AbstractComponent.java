@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
@@ -78,7 +80,11 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
         if (groupId == null || StringUtils.isBlank(groupId)) {
             groupId = this.haID.getFallbackGroupId();
         }
-        groupId = URLEncoder.encode(groupId).replace(".", "%DOT");
+        try {
+            groupId = URLEncoder.encode(groupId, "UTF-8").replace(".", "%2E");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
 
         this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, groupId);
         this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), groupId);
@@ -119,6 +125,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      * @param channelTypeProvider The channel type provider
      */
     public void addChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
+        channelTypeProvider.setChannelGroupType(groupTypeUID(), type());
         channels.values().forEach(v -> v.addChannelTypes(channelTypeProvider));
     }
 
@@ -130,6 +137,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      */
     public void removeChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
         channels.values().forEach(v -> v.removeChannelTypes(channelTypeProvider));
+        channelTypeProvider.removeChannelGroupType(groupTypeUID());
     }
 
     /**
@@ -197,4 +205,10 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
         channels.values().forEach(c -> c.resetState());
     }
 
+    /**
+     * Return the channel group definition for this component.
+     */
+    public ChannelGroupDefinition getGroupDefinition() {
+        return new ChannelGroupDefinition(channelGroupUID.getId(), groupTypeUID(), name(), null);
+    }
 }

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,7 +44,7 @@ public class HaID {
      * Creates a {@link HaID} object for a given HomeAssistant MQTT topic.
      *
      * @param mqttTopic A topic like "homeassistant/binary_sensor/garden/config" or
-     *     "homeassistant/binary_sensor/0/garden/config"
+     *            "homeassistant/binary_sensor/0/garden/config"
      */
     public HaID(String mqttTopic) {
         String[] strings = mqttTopic.split("/");
@@ -139,40 +142,44 @@ public class HaID {
      * @param config
      * @return newly created HaID
      */
-    public static HaID fromConfig(HandlerConfiguration config) {
-        String objectID = config.objectid;
-        String nodeID = "";
+    public static Collection<HaID> fromConfig(HandlerConfiguration config) {
+        Collection<HaID> result = new ArrayList<>();
 
-        if (StringUtils.contains(objectID, '/')) {
-            String[] parts = objectID.split("/");
+        for (String objectID : config.objectid.split("\\s?,\\s?")) {
+            String nodeID = "";
 
-            if (parts.length != 2) {
-                throw new IllegalArgumentException(
-                        "Bad configuration. objectid must be <objectId> or <nodeId>/<objectId>!");
+            if (StringUtils.contains(objectID, '/')) {
+                String[] parts = objectID.split("/");
+
+                if (parts.length != 2) {
+                    throw new IllegalArgumentException(
+                            "Bad configuration. objectid must be <objectId> or <nodeId>/<objectId>!");
+                }
+                nodeID = parts[0];
+                objectID = parts[1];
             }
-            nodeID = parts[0];
-            objectID = parts[1];
+            result.add(new HaID(config.basetopic, objectID, nodeID, "+"));
         }
-        return new HaID(config.basetopic, objectID, nodeID, "+");
+        return result;
     }
 
     /**
-     * Create a new thing configuration which contains the information from this HaID.
+     * Return the object ID to put into the HandlerConfiguration for this component.
      * <p>
      * <code>objectid</code> in the thing configuration will be
      * <code>nodeID/objectID<code> from the HaID, if <code>nodeID</code> is not empty.
      * <p>
      * <code>component</code> value will not be preserved.
      *
-     * @return the new thing configuration
+     * @return the object id
      */
-    public HandlerConfiguration toHandlerConfiguration() {
+    public String toOjectId() {
         String objectID = this.objectID;
         if (StringUtils.isNotBlank(nodeID)) {
             objectID = nodeID + "/" + objectID;
         }
 
-        return new HandlerConfiguration(baseTopic, objectID);
+        return objectID;
     }
 
     /**
