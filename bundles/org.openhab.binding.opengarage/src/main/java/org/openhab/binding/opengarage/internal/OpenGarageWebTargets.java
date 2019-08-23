@@ -68,6 +68,7 @@ public class OpenGarageWebTargets {
             try {
                 response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
             } catch (IOException ex) {
+                logger.debug("{}", ex.getLocalizedMessage(), ex);
                 // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
                 // error check below consistent.
                 response = null;
