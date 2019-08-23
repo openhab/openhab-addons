@@ -30,7 +30,7 @@ public class OpenGarageWebTargets {
 
     private String getControllerVariablesUri;
     private String changeControllerVariablesUri;
-    private Logger logger = LoggerFactory.getLogger(OpenGarageWebTargets.class);
+    private final Logger logger = LoggerFactory.getLogger(OpenGarageWebTargets.class);
 
     public OpenGarageWebTargets(String ipAddress, long port, String password) {
         String baseUri = "http://" + ipAddress + ":" + port + "/";
