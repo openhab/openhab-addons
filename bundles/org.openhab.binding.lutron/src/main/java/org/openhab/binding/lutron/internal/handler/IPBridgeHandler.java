@@ -368,8 +368,10 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 if (handler != null) {
                     try {
                         handler.handleUpdate(type, paramString.split(","));
-                    } catch (Exception e) {
-                        logger.warn("Error processing update: {}", e.getMessage(), e);
+                    } catch (NumberFormatException e) {
+                        logger.warn("Number format exception parsing update: {}", line);
+                    } catch (RuntimeException e) {
+                        logger.warn("Runtime exception while processing update: {}", line, e);
                     }
                 } else {
                     logger.debug("No thing configured for integration ID {}", integrationId);
