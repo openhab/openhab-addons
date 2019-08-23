@@ -102,7 +102,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         if (pollFuture != null) {
             pollFuture.cancel(false);
         }
-        logger.debug("Scheduling poll for 500ms out, then every {} s", refreshInterval);
+        logger.debug("Scheduling poll for 1 second out, then every {} s", refreshInterval);
         pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, refreshInterval, TimeUnit.SECONDS);
     }
 
