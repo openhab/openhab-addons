@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Paul Smedley - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.opengarage")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.opengarage")
 @NonNullByDefault
 public class OpenGarageHandlerFactory extends BaseThingHandlerFactory {
 
