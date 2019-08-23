@@ -43,7 +43,7 @@ public class OpenGarageWebTargets {
         return ControllerVariables.parse(response);
     }
 
-    public void setControllerVariables(Boolean request) throws OpenGarageCommunicationException {
+    public void setControllerVariables(boolean request) throws OpenGarageCommunicationException {
         logger.debug("Received request: {}", request);
           if (request.equals(true)) {
               logger.debug("Received request to open door");
