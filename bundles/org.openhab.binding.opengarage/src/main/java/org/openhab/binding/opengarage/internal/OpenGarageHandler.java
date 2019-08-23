@@ -134,7 +134,6 @@ public class OpenGarageHandler extends BaseThingHandler {
             updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE, new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
             if (controllerVariables.door == 0) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
-            }
             } else if (controllerVariables.door == 1) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.ON);
             }
@@ -144,8 +143,10 @@ public class OpenGarageHandler extends BaseThingHandler {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle detected"));
             } else if (controllerVariables.vehicle == 3) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle Status Unknown"));
+            }
         }
     }
+
     private void changeStatus(boolean status) throws OpenGarageCommunicationException {
         webTargets.setControllerVariables(status);
     }
