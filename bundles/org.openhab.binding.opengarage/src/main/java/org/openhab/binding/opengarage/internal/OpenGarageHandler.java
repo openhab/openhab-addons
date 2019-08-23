@@ -42,7 +42,6 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Paul Smedley - Initial contribution
  */
-
 @NonNullByDefault
 public class OpenGarageHandler extends BaseThingHandler {
 

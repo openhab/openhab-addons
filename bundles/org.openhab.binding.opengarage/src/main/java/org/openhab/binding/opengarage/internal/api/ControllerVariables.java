@@ -27,15 +27,15 @@ import org.slf4j.LoggerFactory;
 public class ControllerVariables {
     private static Logger LOGGER = LoggerFactory.getLogger(ControllerVariables.class);
 
-    public Integer dist;
-    public Integer door;
-    public Integer vehicle;
-    public Integer rcnt;
-    public Integer fwv;
+    public int dist;
+    public int door;
+    public int vehicle;
+    public int rcnt;
+    public int fwv;
     public String name;
     public String mac;
     public String cid;
-    public Integer rssi;
+    public int rssi;
 
 
     private ControllerVariables() {
