@@ -25,7 +25,7 @@ As a minimum, the IP address is needed:
 
 | channel  | type   | description                                            |
 |----------|--------|--------------------------------------------------------|
-| distance | Number | Distance reading from the OpenGarage controller        |
+| distance | Number:Length | Distance reading from the OpenGarage controller (default in cm)       |
 | status   | Switch | Door status OFF = Closed, ON = Open                    |
 | vehicle  | String | Report vehicle presence from the OpenGarage controller |
 
