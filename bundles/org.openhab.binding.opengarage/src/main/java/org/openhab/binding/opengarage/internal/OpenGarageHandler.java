@@ -133,7 +133,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
         if (controllerVariables != null) {
             updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE, new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
-            if (controllerVariables.door==0) {
+            if (controllerVariables.door == 0) {
                 updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, OnOffType.OFF);
             }
             if (controllerVariables.door==1) {
