@@ -65,7 +65,9 @@ The following channel is supported by the station thing.
 | remainingWaterTime | Number:Time | R  | The time the station remains to be open.                |
 | nextDuration       | Number:Time | RW | A configuration item, which time, if linked, will be    |
 |                    |             |    | used as the time the station will be kept open when     |
-|                    |             |    | switched on.
+|                    |             |    | switched on. It's advised to add persistence for items  |
+|                    |             |    | linked to this channel, the binding does not persist    |
+|                    |             |    | values of it.
 
 
 

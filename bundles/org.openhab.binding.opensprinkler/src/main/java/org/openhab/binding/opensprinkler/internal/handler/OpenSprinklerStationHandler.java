@@ -24,8 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.storage.Storage;
-import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -48,18 +46,15 @@ import tec.uom.se.unit.Units;
  */
 @NonNullByDefault
 public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
-    private static final String STORAGE_NAME = "opensprinkler";
-    private static final String DURATION_PREFIX = "DURATION_";
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerStationHandler.class);
 
     @Nullable
     private OpenSprinklerStationConfig config;
+    @Nullable
+    private BigDecimal nextDurationTime;
 
-    private StorageService storageService;
-
-    public OpenSprinklerStationHandler(Thing thing, StorageService storageService) {
+    public OpenSprinklerStationHandler(Thing thing) {
         super(thing);
-        this.storageService = storageService;
     }
 
     @Override
@@ -93,8 +88,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             logger.info("Ignoring implausible non-DecimalType command for NEXT_DURATION");
             return;
         }
-        Storage<BigDecimal> storage = this.storageService.getStorage(STORAGE_NAME);
-        storage.put(DURATION_PREFIX + this.getStationIndex(), ((QuantityType<?>) command).toBigDecimal());
+        this.nextDurationTime = ((QuantityType<?>) command).toBigDecimal();
         updateState(channelUID, (DecimalType) command);
     }
 
@@ -210,9 +204,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     }
 
     private @Nullable BigDecimal nextDurationValue() {
-        Storage<BigDecimal> storage = storageService.getStorage(STORAGE_NAME);
-        BigDecimal duration = storage.get(DURATION_PREFIX + this.getStationIndex());
-        return duration;
+        return nextDurationTime;
     }
 
     private int getStationIndex() {
