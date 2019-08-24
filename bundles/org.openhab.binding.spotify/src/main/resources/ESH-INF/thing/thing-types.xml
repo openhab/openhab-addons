@@ -157,7 +157,6 @@ bridge you have configured.</description>
 		<item-type>String</item-type>
 		<label>Playlists</label>
 		<description>List of the users playlists</description>
-		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="playlistName">
