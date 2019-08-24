@@ -23,13 +23,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.spotify.internal.SpotifyAccountHandler;
 import org.openhab.binding.spotify.internal.SpotifyBindingConstants;
 import org.openhab.binding.spotify.internal.api.model.Device;
@@ -43,7 +44,8 @@ import org.slf4j.LoggerFactory;
  * @author Hilbrand Bouwkamp - Simplfied code to make call to shared code
  */
 @NonNullByDefault
-public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService {
+public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
 
     // id for device is derived by stripping id of device with this length
     private static final int PLAYER_ID_LENGTH = 4;
@@ -56,15 +58,13 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceDiscoveryService.class);
 
-    private final SpotifyAccountHandler bridgeHandler;
-    private final ThingUID bridgeUID;
+    private @NonNullByDefault({}) SpotifyAccountHandler bridgeHandler;
+    private @NonNullByDefault({}) ThingUID bridgeUID;
 
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
-    public SpotifyDeviceDiscoveryService(SpotifyAccountHandler bridgeHandler, HttpClient httpClient) {
+    public SpotifyDeviceDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
-        this.bridgeHandler = bridgeHandler;
-        this.bridgeUID = bridgeHandler.getUID();
     }
 
     @Override
@@ -72,6 +72,7 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService {
         return SUPPORTED_THING_TYPES_UIDS;
     }
 
+    @Override
     public void activate() {
         Map<String, @Nullable Object> properties = new HashMap<>();
         properties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, Boolean.TRUE);
@@ -81,6 +82,19 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService {
     @Override
     public void deactivate() {
         super.deactivate();
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof SpotifyAccountHandler) {
+            bridgeHandler = (SpotifyAccountHandler) handler;
+            bridgeUID = bridgeHandler.getUID();
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 
     @Override
