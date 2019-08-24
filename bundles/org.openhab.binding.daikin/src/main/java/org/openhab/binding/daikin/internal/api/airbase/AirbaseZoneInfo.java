@@ -59,7 +59,7 @@ public class AirbaseZoneInfo {
 
     public Map<String, String> getParamString() {
         Map<String, String> params = new LinkedHashMap<>();
-        String onoffstring = IntStream.range(0, zone.length).mapToObj(idx -> zone[idx] ? "1" : "0").collect(Collectors.joining("%3b"));
+        String onoffstring = IntStream.range(1, zone.length).mapToObj(idx -> zone[idx] ? "1" : "0").collect(Collectors.joining("%3b"));
         params.put("zone_name", zonenames);
         params.put("zone_onoff", onoffstring);
 
