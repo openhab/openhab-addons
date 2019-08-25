@@ -97,6 +97,8 @@ public class DiscoverComponents implements MqttMessageSubscriber {
                     transformationServiceProvider);
         }
         if (component != null) {
+            component.setConfigSeen();
+
             logger.trace("Found HomeAssistant thing {} component {}", haID.objectID, haID.component);
             if (discoveredListener != null) {
                 discoveredListener.componentDiscovered(haID, component);

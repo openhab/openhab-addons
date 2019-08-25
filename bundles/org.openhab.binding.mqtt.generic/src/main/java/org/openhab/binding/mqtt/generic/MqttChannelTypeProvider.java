@@ -137,7 +137,7 @@ public class MqttChannelTypeProvider implements ThingTypeProvider, ChannelGroupT
                 .withChannelDefinitions(baseType.getChannelDefinitions())
                 .withExtensibleChannelTypeIds(baseType.getExtensibleChannelTypeIds())
                 .withSupportedBridgeTypeUIDs(baseType.getSupportedBridgeTypeUIDs())
-                .withProperties(baseType.getProperties()).isListed(baseType.isListed());
+                .withProperties(baseType.getProperties()).isListed(false);
 
         String representationProperty = baseType.getRepresentationProperty();
         if (representationProperty != null) {
