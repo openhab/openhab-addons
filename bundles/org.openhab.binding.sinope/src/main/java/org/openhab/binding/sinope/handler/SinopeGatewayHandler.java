@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.sinope.handler;
 
@@ -22,6 +26,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,37 +38,37 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.sinope.SinopeBindingConstants;
 import org.openhab.binding.sinope.internal.SinopeConfigStatusMessage;
 import org.openhab.binding.sinope.internal.config.SinopeConfig;
+import org.openhab.binding.sinope.internal.core.SinopeApiLoginAnswer;
+import org.openhab.binding.sinope.internal.core.SinopeApiLoginRequest;
+import org.openhab.binding.sinope.internal.core.SinopeDeviceReportAnswer;
+import org.openhab.binding.sinope.internal.core.base.SinopeAnswer;
+import org.openhab.binding.sinope.internal.core.base.SinopeDataAnswer;
+import org.openhab.binding.sinope.internal.core.base.SinopeDataRequest;
+import org.openhab.binding.sinope.internal.core.base.SinopeRequest;
 import org.openhab.binding.sinope.internal.discovery.SinopeThingsDiscoveryService;
+import org.openhab.binding.sinope.internal.util.ByteUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ca.tulip.sinope.core.SinopeApiLoginAnswer;
-import ca.tulip.sinope.core.SinopeApiLoginRequest;
-import ca.tulip.sinope.core.SinopeDeviceReportAnswer;
-import ca.tulip.sinope.core.internal.SinopeAnswer;
-import ca.tulip.sinope.core.internal.SinopeDataAnswer;
-import ca.tulip.sinope.core.internal.SinopeDataRequest;
-import ca.tulip.sinope.core.internal.SinopeRequest;
-import ca.tulip.sinope.util.ByteUtil;
 
 /**
  * The {@link SinopeGatewayHandler} is responsible for handling commands for the Sinopé Gateway.
  *
  * @author Pascal Larin - Initial contribution
  */
+@NonNullByDefault
 public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
 
     private static final int FIRST_POLL_INTERVAL = 1; // In second
     private final Logger logger = LoggerFactory.getLogger(SinopeGatewayHandler.class);
-    private ScheduledFuture<?> pollFuture;
+    private @Nullable ScheduledFuture<?> pollFuture;
     private long refreshInterval; // In seconds
     private final List<SinopeThermostatHandler> thermostatHandlers = new CopyOnWriteArrayList<>();
     private int seq = 1;
-    private Socket clientSocket;
+    private @Nullable Socket clientSocket;
     private boolean searching; // In searching mode..
-    private ScheduledFuture<?> pollSearch;
+    private @Nullable ScheduledFuture<?> pollSearch;
 
-    public SinopeGatewayHandler(Bridge bridge) {
+    public SinopeGatewayHandler(final Bridge bridge) {
         super(bridge);
     }
 
@@ -189,10 +195,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     }
 
     public boolean registerThermostatHandler(SinopeThermostatHandler thermostatHandler) {
-        if (thermostatHandler == null) {
-            logger.error("It's not allowed to pass a null thermostatHandler.");
-            return false;
-        }
         return thermostatHandlers.add(thermostatHandler);
     }
 
@@ -251,7 +253,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             if (connectToBridge()) {
                 logger.debug("Successful login");
                 try {
-                    while (clientSocket.isConnected() && !clientSocket.isClosed()) {
+                    while (clientSocket != null && clientSocket.isConnected() && !clientSocket.isClosed()) {
                         SinopeDeviceReportAnswer answ;
                         answ = new SinopeDeviceReportAnswer(clientSocket.getInputStream());
                         logger.debug("Got report answer: {}", answ);
@@ -289,7 +291,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         schedulePoll();
     }
 
-    public Socket getClientSocket() throws UnknownHostException, IOException {
+    public @Nullable Socket getClientSocket() throws UnknownHostException, IOException {
         if (connectToBridge()) {
             return clientSocket;
         }
