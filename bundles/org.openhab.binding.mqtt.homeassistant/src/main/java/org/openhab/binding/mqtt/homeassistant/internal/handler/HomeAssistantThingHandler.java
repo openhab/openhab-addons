@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -116,8 +116,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     @Override
     public void initialize() {
         config = getConfigAs(HandlerConfiguration.class);
-        if (StringUtils.isEmpty(config.objectid)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID unknown");
+        if (CollectionUtils.isEmpty(config.topics)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IDevice topic unknown");
             return;
         }
         discoveryHomeAssistantIDs.addAll(HaID.fromConfig(config));

@@ -109,9 +109,9 @@ public class HaID {
      * @return newly created HaID
      */
     public static HaID fromConfig(String baseTopic, Configuration config) {
-        String objectID = (String) config.get("objectid");
-        String nodeID = (String) config.getProperties().getOrDefault("nodeid", "");
         String component = (String) config.get("component");
+        String nodeID = (String) config.getProperties().getOrDefault("nodeid", "");
+        String objectID = (String) config.get("objectid");
         return new HaID(baseTopic, objectID, nodeID, component);
     }
 
@@ -145,41 +145,40 @@ public class HaID {
     public static Collection<HaID> fromConfig(HandlerConfiguration config) {
         Collection<HaID> result = new ArrayList<>();
 
-        for (String objectID : config.objectid.split("\\s?,\\s?")) {
-            String nodeID = "";
+        for (String topic : config.topics) {
+            String[] parts = topic.split("/");
 
-            if (StringUtils.contains(objectID, '/')) {
-                String[] parts = objectID.split("/");
-
-                if (parts.length != 2) {
+            switch (parts.length) {
+                case 2:
+                    result.add(new HaID(config.basetopic, parts[1], "", parts[0]));
+                    break;
+                case 3:
+                    result.add(new HaID(config.basetopic, parts[2], parts[1], parts[0]));
+                    break;
+                default:
                     throw new IllegalArgumentException(
-                            "Bad configuration. objectid must be <objectId> or <nodeId>/<objectId>!");
-                }
-                nodeID = parts[0];
-                objectID = parts[1];
+                            "Bad configuration. topic must be <component>/<objectId> or <component>/<nodeId>/<objectId>!");
             }
-            result.add(new HaID(config.basetopic, objectID, nodeID, "+"));
         }
         return result;
     }
 
     /**
-     * Return the object ID to put into the HandlerConfiguration for this component.
+     * Return the topic to put into the HandlerConfiguration for this component.
      * <p>
      * <code>objectid</code> in the thing configuration will be
      * <code>nodeID/objectID<code> from the HaID, if <code>nodeID</code> is not empty.
      * <p>
-     * <code>component</code> value will not be preserved.
      *
-     * @return the object id
+     * @return the short topic.
      */
-    public String toOjectId() {
+    public String toShortTopic() {
         String objectID = this.objectID;
         if (StringUtils.isNotBlank(nodeID)) {
             objectID = nodeID + "/" + objectID;
         }
 
-        return objectID;
+        return component + "/" + objectID;
     }
 
     /**

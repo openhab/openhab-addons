@@ -17,6 +17,7 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.junit.Test;
@@ -39,10 +40,11 @@ public class HaIDTests {
 
         assertThat(restore, is(subject));
 
-        HandlerConfiguration haConfig = new HandlerConfiguration(subject.baseTopic, subject.toOjectId());
+        HandlerConfiguration haConfig = new HandlerConfiguration(subject.baseTopic,
+                Collections.singletonList(subject.toShortTopic()));
 
         Collection<HaID> restoreList = HaID.fromConfig(haConfig);
-        assertThat(restoreList, hasItem(new HaID("homeassistant/+/name/config")));
+        assertThat(restoreList, hasItem(new HaID("homeassistant/switch/name/config")));
     }
 
     @Test
@@ -61,10 +63,11 @@ public class HaIDTests {
 
         assertThat(restore, is(subject));
 
-        HandlerConfiguration haConfig = new HandlerConfiguration(subject.baseTopic, subject.toOjectId());
+        HandlerConfiguration haConfig = new HandlerConfiguration(subject.baseTopic,
+                Collections.singletonList(subject.toShortTopic()));
 
         Collection<HaID> restoreList = HaID.fromConfig(haConfig);
-        assertThat(restoreList, hasItem(new HaID("homeassistant/+/node/name/config")));
+        assertThat(restoreList, hasItem(new HaID("homeassistant/switch/node/name/config")));
     }
 
 }

@@ -16,13 +16,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -87,8 +87,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     protected MQTTTopicDiscoveryService mqttTopicDiscovery;
 
     public HomeAssistantDiscovery() {
-        super(Stream.of(MqttBindingConstants.HOMEASSISTANT_MQTT_THING).collect(Collectors.toSet()), 3, true,
-                BASE_TOPIC + "/#");
+        super(null, 3, true, BASE_TOPIC + "/#");
         this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
     }
 
@@ -114,18 +113,6 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
     protected void unsetTypeProvider(MqttChannelTypeProvider provider) {
         this.typeProvider = null;
-    }
-
-    /**
-     * Returns true if the version is something like "3.x". We accept
-     * version 3 up to but not including version 4 of the homie spec.
-     */
-    public static boolean checkVersion(String versionString) {
-        String[] strings = versionString.split("\\.");
-        if (strings.length < 2) {
-            return false;
-        }
-        return strings[0].equals("3");
     }
 
     @Override
@@ -179,10 +166,10 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         final String componentNames = components.stream().map(id -> id.component)
                 .map(c -> HA_COMP_TO_NAME.getOrDefault(c, c)).collect(Collectors.joining(", "));
 
-        final String objectids = components.stream().map(id -> id.toOjectId()).collect(Collectors.joining(","));
+        final List<String> topics = components.stream().map(id -> id.toShortTopic()).collect(Collectors.toList());
 
         Map<String, Object> properties = new HashMap<>();
-        HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, objectids);
+        HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, topics);
         properties = handlerConfig.appendToProperties(properties);
         properties = config.appendToProperties(properties);
         // First remove an already discovered thing with the same ID
