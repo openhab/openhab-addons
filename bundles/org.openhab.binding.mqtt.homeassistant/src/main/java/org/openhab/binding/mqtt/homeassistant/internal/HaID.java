@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -21,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.util.UIDUtils;
 
 /**
  * HomeAssistant MQTT components use a specific MQTT topic layout,
@@ -192,7 +191,8 @@ public class HaID {
     public String getGroupId(@Nullable final String uniqueId) {
         String result = uniqueId;
 
-        if (StringUtils.isBlank(result)) {
+        // the null test is only here so the compile knows, result is not null afterwards
+        if (result == null || StringUtils.isBlank(result)) {
             StringBuilder str = new StringBuilder();
 
             if (StringUtils.isNotBlank(nodeID)) {
@@ -202,11 +202,7 @@ public class HaID {
             result = str.toString();
         }
 
-        try {
-            return URLEncoder.encode(result, "UTF-8").replace(".", "%2E");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return UIDUtils.encode(result);
     }
 
     /**
