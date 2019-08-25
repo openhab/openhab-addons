@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelGroupUID;
@@ -76,15 +73,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
 
         this.haID = componentConfiguration.getHaID();
 
-        String groupId = channelConfiguration.unique_id;
-        if (groupId == null || StringUtils.isBlank(groupId)) {
-            groupId = this.haID.getFallbackGroupId();
-        }
-        try {
-            groupId = URLEncoder.encode(groupId, "UTF-8").replace(".", "%2E");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        String groupId = this.haID.getGroupId(channelConfiguration.unique_id);
 
         this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, groupId);
         this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), groupId);

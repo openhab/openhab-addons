@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -185,16 +187,26 @@ public class HaID {
      * The default group id is the unique_id of the component, given in the config-json.
      * If the unique id is not set, then a fallback is constructed from the HaID information.
      *
-     * @return fallback group id
+     * @return group id
      */
-    public String getFallbackGroupId() {
-        StringBuilder str = new StringBuilder();
+    public String getGroupId(@Nullable final String uniqueId) {
+        String result = uniqueId;
 
-        if (StringUtils.isNotBlank(nodeID)) {
-            str.append(nodeID).append('_');
+        if (StringUtils.isBlank(result)) {
+            StringBuilder str = new StringBuilder();
+
+            if (StringUtils.isNotBlank(nodeID)) {
+                str.append(nodeID).append('_');
+            }
+            str.append(objectID).append('_').append(component);
+            result = str.toString();
         }
-        str.append(objectID).append('_').append(component);
-        return str.toString();
+
+        try {
+            return URLEncoder.encode(result, "UTF-8").replace(".", "%2E");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
