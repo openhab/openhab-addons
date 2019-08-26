@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelDefinitionBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
+import org.eclipse.smarthome.core.util.UIDUtils;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
@@ -71,8 +72,8 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
         this.topic = topic + "/" + nodeID;
         this.nodeID = nodeID;
         this.callback = callback;
-        channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, this.topic.replace('/', '_'));
-        channelGroupUID = new ChannelGroupUID(thingUID, nodeID);
+        channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, UIDUtils.encode(this.topic));
+        channelGroupUID = new ChannelGroupUID(thingUID, UIDUtils.encode(nodeID));
         properties = new ChildMap<>();
     }
 
@@ -205,17 +206,19 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
 
     /**
      * Creates a list of retained topics related to the node
+     *
      * @return Returns a list of relative topics
      */
     public ArrayList<String> getRetainedTopics() {
         ArrayList<String> topics = new ArrayList<String>();
 
-        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(
-            f -> {return String.format("%s/$%s", this.nodeID, f.getName());}).collect(Collectors.toList()));
+        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
+            return String.format("%s/$%s", this.nodeID, f.getName());
+        }).collect(Collectors.toList()));
 
-        this.properties.stream().map(
-            p -> p.getRetainedTopics().stream().map(
-                a -> {return String.format("%s/%s", this.nodeID, a);}).collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
+        this.properties.stream().map(p -> p.getRetainedTopics().stream().map(a -> {
+            return String.format("%s/%s", this.nodeID, a);
+        }).collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
 
         return topics;
     }
