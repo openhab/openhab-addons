@@ -23,8 +23,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaSirenHandler} is responsible for handling commands,
@@ -35,8 +33,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SomfyTahomaSirenHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaSirenHandler.class);
-
     public SomfyTahomaSirenHandler(Thing thing) {
         super(thing);
         stateNames.put(BATTERY, "core:BatteryState");
@@ -46,9 +42,9 @@ public class SomfyTahomaSirenHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+            return;
         }
 
         //it is possible only to disable the siren

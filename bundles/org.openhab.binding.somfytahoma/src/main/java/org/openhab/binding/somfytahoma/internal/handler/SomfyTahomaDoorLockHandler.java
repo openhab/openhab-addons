@@ -22,9 +22,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaDoorLockHandler} is responsible for handling commands,
@@ -35,8 +32,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SomfyTahomaDoorLockHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaDoorLockHandler.class);
-
     public SomfyTahomaDoorLockHandler(Thing thing) {
         super(thing);
         stateNames.put(OPEN, "core:OpenClosedState");
@@ -45,15 +40,12 @@ public class SomfyTahomaDoorLockHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("DoorLock channel: {} received command: {}", channelUID.getId(), command);
+        super.handleCommand(channelUID, command);
         if (OPEN.equals(channelUID.getId()) && command instanceof OnOffType) {
             sendCommand(command.equals(OnOffType.ON) ? "open" : "close", "[]");
         }
         if (LOCK.equals(channelUID.getId()) && command instanceof OnOffType) {
             sendCommand(command.equals(OnOffType.ON) ? "lock" : "unlock", "[]");
-        }
-        if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
         }
     }
 }

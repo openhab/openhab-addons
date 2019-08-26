@@ -14,17 +14,16 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
@@ -43,9 +42,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     private HashMap<String, Integer> typeTable = new HashMap<>();
     protected HashMap<String, String> stateNames = new HashMap<>();
 
-    //cache
-    private @Nullable ExpiringCache<List<SomfyTahomaState>> thingStates;
-
     public SomfyTahomaBaseThingHandler(Thing thing) {
         super(thing);
     }
@@ -56,36 +52,15 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        thingStates = new ExpiringCache<>(CACHE_EXPIRY, () -> getThingStates());
-
-        if (ThingStatus.ONLINE == getBridge().getStatus()) {
-            SomfyTahomaState state = getCachedThingState(STATUS_STATE);
-            updateThingStatus(state);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
     }
 
-    private synchronized @Nullable SomfyTahomaState getCachedThingState(String state) {
-        logger.debug("Getting cached state: {} for url: {}", state, getURL());
-        List<SomfyTahomaState> states = thingStates.getValue();
-        if (states != null) {
-            for (SomfyTahomaState st : states) {
-                if (st.getName().equals(state)) {
-                    logger.debug("Returning cached value: {} for state name: {}", st.getValue(), st.getName());
-                    return st;
-                }
-            }
-        }
-        return null;
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Received command {} for channel {}", command, channelUID);
     }
 
     protected boolean isAlwaysOnline() {
         return false;
-    }
-
-    protected @Nullable List<SomfyTahomaState> getThingStates() {
-        return getBridgeHandler() != null ? getBridgeHandler().getAllStates(getStateNames().values(), getURL()) : null;
     }
 
     protected @Nullable SomfyTahomaBridgeHandler getBridgeHandler() {
@@ -280,31 +255,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
-    public void updateChannelState(ChannelUID channelUID) {
-        String stateName = getStateNames().get(channelUID.getId());
-        Channel channel = getChannelByChannelUID(channelUID);
-        if (channel == null) {
-            return;
-        }
-        if (stateName == null) {
-            logger.debug("Cannot find corresponding state name for channel: {}!", channelUID.getId());
-            return;
-        }
-        SomfyTahomaState tahomaState = getCachedThingState(stateName);
-        State state = parseTahomaState(channel.getAcceptedItemType(), tahomaState);
-
-        if (UnDefType.NULL.equals(state)) {
-            // relogin
-            getBridgeHandler().login();
-            tahomaState = getCachedThingState(stateName);
-            state = parseTahomaState(channel.getAcceptedItemType(), tahomaState);
-        }
-
-        if (state != null) {
-            updateState(channelUID, state);
-        }
-    }
-
     private @Nullable Channel getChannelByChannelUID(ChannelUID channelUID) {
         if (thing.getChannel(channelUID.getId()) != null) {
             return thing.getChannel(channelUID.getId());
@@ -313,7 +263,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         return null;
     }
 
-    public void updateThingChannels(ArrayList<SomfyTahomaState> states) {
+    public void updateThingChannels(List<SomfyTahomaState> states) {
         // update channel values
         for (Channel channel : thing.getChannels()) {
             if (isChannelLinked(channel)) {

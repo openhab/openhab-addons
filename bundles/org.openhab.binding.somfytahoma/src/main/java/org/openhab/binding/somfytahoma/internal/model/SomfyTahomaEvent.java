@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyTahomaEvent {
     private String name = "";
     private String deviceURL = "";
+    private String gatewayId = "";
     private ArrayList<SomfyTahomaState> deviceStates = new ArrayList<>();
 
     public String getName() {
@@ -34,6 +35,10 @@ public class SomfyTahomaEvent {
 
     public String getDeviceUrl() {
         return deviceURL;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
     }
 
     public ArrayList<SomfyTahomaState> getDeviceStates() {

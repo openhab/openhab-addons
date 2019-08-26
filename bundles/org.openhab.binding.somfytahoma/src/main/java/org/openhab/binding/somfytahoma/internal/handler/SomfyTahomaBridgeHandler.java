@@ -154,6 +154,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             if (data.isSuccess()) {
                 logger.debug("SomfyTahoma version: {}", data.getVersion());
                 updateStatus(ThingStatus.ONLINE);
+                updateAllStates();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error logging in: " + data.getError());
                 if (data.getError().startsWith(TOO_MANY_REQUESTS)) {
@@ -324,63 +325,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         return null;
     }
 
-
-    private String getFormattedParameters(Collection<String> stateNames) {
-        ArrayList<String> uniqueNames = new ArrayList<>();
-        for (String name : stateNames) {
-            if (!uniqueNames.contains(name)) {
-                uniqueNames.add(name);
-            }
-        }
-        StringBuilder sb = new StringBuilder("{\"name\": \"" + STATUS_STATE + "\"}");
-        for (String name : uniqueNames) {
-            sb.append(',');
-            sb.append("{\"name\": \"").append(name).append("\"}");
-        }
-        logger.trace("Formatted parameters: {}", sb);
-        return sb.toString();
-    }
-
-
-    public @Nullable
-    synchronized List<SomfyTahomaState> getAllStates(Collection<String> stateNames, String deviceUrl) {
-        String url;
-        String line = "";
-
-        logger.debug("Getting states for a device: {}", deviceUrl);
-        try {
-            url = TAHOMA_URL + "getStates";
-            String urlParameters = "[{\"deviceURL\": \"" + deviceUrl + "\", \"states\": ["
-                    + getFormattedParameters(stateNames) + "]}]";
-
-            line = sendDataToTahomaWithCookie(url, urlParameters);
-
-            SomfyTahomaStatesResponse data = gson.fromJson(line, SomfyTahomaStatesResponse.class);
-            SomfyTahomaDeviceWithState device = data.getDevices().get(0);
-            if (!device.hasStates()) {
-                logger.debug("Device: {} has not returned any state", deviceUrl);
-            }
-            return device.getStates();
-        } catch (JsonSyntaxException e) {
-            logger.debug("Received data: {} is not JSON", line, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
-        } catch (SomfyTahomaException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
-        } catch (ExecutionException e) {
-            if (isAuthenticationChallenge(e)) {
-                login();
-            } else {
-                logger.debug("Cannot send getStates command!", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-        } catch (InterruptedException | TimeoutException e) {
-            logger.debug("Cannot send getStates command!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-        }
-
-        return null;
-    }
-
     private void getTahomaUpdates() {
         logger.debug("Getting Tahoma Updates...");
         if (ThingStatus.OFFLINE == thing.getStatus() && !reLogin()) {
@@ -401,13 +345,25 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 processStateChangedEvent(event);
                 break;
             case "RefreshAllDevicesStatesCompletedEvent":
-                scheduler.schedule(() -> {
-                    //force update thing states
-                    updateAllStates();
-                }, 1, TimeUnit.SECONDS);
+                break;
+            case "GatewayAliveEvent":
+            case "GatewayDownEvent":
+                processGatewayEvent(event);
                 break;
             default:
                 //ignore other states
+        }
+    }
+
+    private void processGatewayEvent(SomfyTahomaEvent event) {
+        //update gateway status
+        for (Thing th : getThing().getThings()) {
+            if (THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
+                SomfyTahomaGatewayHandler gatewayHandler = (SomfyTahomaGatewayHandler) th.getHandler();
+                if (gatewayHandler.getGateWayId().equals(event.getGatewayId())) {
+                    gatewayHandler.updateStatusChannel();
+                }
+            }
         }
     }
 
@@ -425,7 +381,16 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 SomfyTahomaBaseThingHandler handler = (SomfyTahomaBaseThingHandler) th.getHandler();
                 if (handler != null) {
                     handler.updateThingStatus(states);
+                    handler.updateThingChannels(states);
                 }
+            }
+        }
+
+        //update gateway status
+        for (Thing th : getThing().getThings()) {
+            if (THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
+                SomfyTahomaGatewayHandler gatewayHandler = (SomfyTahomaGatewayHandler) th.getHandler();
+                gatewayHandler.updateStatusChannel();
             }
         }
     }
@@ -437,7 +402,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         Thing thing = getThingByDeviceUrl(deviceUrl);
 
         if (thing != null) {
-            logger.debug("Updating status of thing: {}", thing.getUID().getId());
+            logger.debug("Updating status of thing: {}", thing.getLabel());
             SomfyTahomaBaseThingHandler handler = (SomfyTahomaBaseThingHandler) thing.getHandler();
 
             if (handler != null) {
@@ -792,10 +757,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (JsonSyntaxException e) {
             logger.debug("Received data: {} is not JSON", line, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
-        } catch (SomfyTahomaException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
-            return UNAUTHORIZED;
-        } catch (ExecutionException e) {
+        } catch (SomfyTahomaException | ExecutionException e) {
             if (isAuthenticationChallenge(e)) {
                 login();
                 return UNAUTHORIZED;

@@ -23,8 +23,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaDockHandler} is responsible for handling commands,
@@ -35,8 +33,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SomfyTahomaDockHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaDockHandler.class);
-
     public SomfyTahomaDockHandler(Thing thing) {
         super(thing);
         stateNames.put(BATTERY_STATUS, BATTERY_STATUS_STATE);
@@ -46,9 +42,9 @@ public class SomfyTahomaDockHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+            return;
         }
 
         if (SIREN_STATUS.equals(channelUID.getId()) && command instanceof StringType) {

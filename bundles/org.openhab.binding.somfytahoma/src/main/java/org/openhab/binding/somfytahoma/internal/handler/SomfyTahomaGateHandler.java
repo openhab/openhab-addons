@@ -21,8 +21,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaGateHandler} is responsible for handling commands,
@@ -33,8 +31,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SomfyTahomaGateHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaGateHandler.class);
-
     public SomfyTahomaGateHandler(Thing thing) {
         super(thing);
         stateNames.put(GATE_STATE, "core:OpenClosedPedestrianState");
@@ -42,9 +38,9 @@ public class SomfyTahomaGateHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+            return;
         } else {
             if (GATE_COMMAND.equals(channelUID.getId())) {
                 sendCommand(getGateCommand(command.toString().toLowerCase()), "[]");
