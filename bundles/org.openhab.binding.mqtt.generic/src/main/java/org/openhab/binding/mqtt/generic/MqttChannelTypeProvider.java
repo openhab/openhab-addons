@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.thing.type.ThingTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
 import org.openhab.binding.mqtt.generic.internal.MqttThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -51,19 +52,16 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = false, service = { ThingTypeProvider.class, ChannelTypeProvider.class,
         ChannelGroupTypeProvider.class, MqttChannelTypeProvider.class })
 public class MqttChannelTypeProvider implements ThingTypeProvider, ChannelGroupTypeProvider, ChannelTypeProvider {
-    private @NonNullByDefault({}) ThingTypeRegistry typeRegistry;
+    private final ThingTypeRegistry typeRegistry;
 
     private final Map<ChannelTypeUID, ChannelType> types = new HashMap<>();
     private final Map<ChannelGroupTypeUID, ChannelGroupType> groups = new HashMap<>();
     private final Map<ThingTypeUID, ThingType> things = new HashMap<>();
 
-    @Reference
-    protected void setTypeRegistry(ThingTypeRegistry provider) {
-        this.typeRegistry = provider;
-    }
-
-    protected void unsetTypeRegistry(ThingTypeRegistry provider) {
-        this.typeRegistry = null;
+    @Activate
+    public MqttChannelTypeProvider(@Reference ThingTypeRegistry typeRegistry) {
+        super();
+        this.typeRegistry = typeRegistry;
     }
 
     @Override
@@ -92,7 +90,7 @@ public class MqttChannelTypeProvider implements ThingTypeProvider, ChannelGroupT
         return things.values();
     }
 
-    public Set<@NonNull ThingTypeUID> getThingTypesUIDs() {
+    public Set<@NonNull ThingTypeUID> getThingTypeUIDs() {
         return things.keySet();
     }
 

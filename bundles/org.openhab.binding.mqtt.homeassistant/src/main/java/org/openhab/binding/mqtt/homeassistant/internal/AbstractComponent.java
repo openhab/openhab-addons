@@ -107,7 +107,6 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     }
 
     private @Nullable OnOffType getAvailability() {
-        @Nullable
         CChannel channel = this.availablityChannel;
 
         if (channel == null) {
@@ -132,16 +131,18 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
             int timeout) {
         CompletableFuture<@Nullable Void> all = CompletableFuture.completedFuture(null);
 
+        all = channels.values().stream().map(v -> v.start(connection, scheduler, timeout)).reduce(all,
+                (f, v) -> f.thenCompose(b -> v));
+
         if (availablityChannel != null) {
             all = all.thenCompose(v -> availablityChannel.start(connection, scheduler, timeout));
         }
 
-        return channels.values().stream().map(v -> v.start(connection, scheduler, timeout)).reduce(all,
-                (f, v) -> f.thenCompose(b -> v));
+        return all;
     }
 
     /**
-     * Unsubscribe from all state channels of the component.
+     * Unsubscribes from all state channels of the component.
      *
      * @return A future that completes as soon as all subscriptions removals have been performed. Completes
      *         exceptionally on errors.
@@ -149,10 +150,12 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     public CompletableFuture<@Nullable Void> stop() {
         CompletableFuture<@Nullable Void> all = CompletableFuture.completedFuture(null);
 
+        all = channels.values().stream().map(v -> v.stop()).reduce(all, (f, v) -> f.thenCompose(b -> v));
+
         if (availablityChannel != null) {
             all = all.thenCompose(v -> availablityChannel.stop());
         }
-        return channels.values().stream().map(v -> v.stop()).reduce(all, (f, v) -> f.thenCompose(b -> v));
+        return all;
     }
 
     /**

@@ -117,7 +117,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
     @Override
     public Set<@NonNull ThingTypeUID> getSupportedThingTypes() {
-        return typeProvider.getThingTypesUIDs();
+        return typeProvider.getThingTypeUIDs();
     }
 
     @Override
