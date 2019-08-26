@@ -21,7 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
-import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
+import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +62,11 @@ public class OpenSprinklerDiscoveryJob implements Runnable {
             InetAddress address = InetAddress.getByName(ip);
 
             if (canEstablishConnection(address, DEFAULT_API_PORT)) {
-                OpenSprinklerApi openSprinkler = OpenSprinklerApiFactory.getHttpApi(ip, DEFAULT_API_PORT,
-                        DEFAULT_ADMIN_PASSWORD);
+                OpenSprinklerHttpInterfaceConfig config = new OpenSprinklerHttpInterfaceConfig();
+                config.hostname = ip;
+                config.port = DEFAULT_API_PORT;
+                config.password = DEFAULT_ADMIN_PASSWORD;
+                OpenSprinklerApi openSprinkler = discoveryClass.getApiFactory().getHttpApi(config);
 
                 return (openSprinkler != null);
             } else {

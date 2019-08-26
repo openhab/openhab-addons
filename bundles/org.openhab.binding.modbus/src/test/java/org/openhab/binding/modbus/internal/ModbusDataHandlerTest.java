@@ -127,9 +127,7 @@ public class ModbusDataHandlerTest extends JavaTest {
         }
 
         public ItemChannelLinkRegistryTestImpl() {
-            super();
-            this.setThingRegistry(thingRegistry);
-            setItemRegistry(itemRegistry);
+            super(thingRegistry, itemRegistry);
             ManagedItemChannelLinkProviderExtension provider = new ManagedItemChannelLinkProviderExtension();
             addProvider(provider);
             setManagedProvider(provider);

@@ -18,25 +18,38 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerHTTPHandler;
-import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerPiHandler;
+import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
+import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerDeviceHandler;
+import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerHttpBridgeHandler;
+import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerPiBridgeHandler;
+import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerStationHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link OpenSprinklerHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Chris Graham - Initial contribution
+ * @author Florian Schmidt - Split channels to their own things
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.opensprinkler")
 public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(OPENSPRINKLER_THING, OPENSPRINKLERPI_THING));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays
+            .asList(OPENSPRINKLER_HTTP_BRIDGE, OPENSPRINKLER_PI_BRIDGE, OPENSPRINKLER_STATION, OPENSPRINKLER_DEVICE));
+    private OpenSprinklerApiFactory apiFactory;
+
+    @Activate
+    public OpenSprinklerHandlerFactory(@Reference OpenSprinklerApiFactory apiFactory) {
+        this.apiFactory = apiFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,10 +60,14 @@ public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(OPENSPRINKLER_THING)) {
-            return new OpenSprinklerHTTPHandler(thing);
-        } else if (thingTypeUID.equals(OPENSPRINKLERPI_THING)) {
-            return new OpenSprinklerPiHandler(thing);
+        if (thingTypeUID.equals(OPENSPRINKLER_HTTP_BRIDGE)) {
+            return new OpenSprinklerHttpBridgeHandler((Bridge) thing, this.apiFactory);
+        } else if (thingTypeUID.equals(OPENSPRINKLER_STATION)) {
+            return new OpenSprinklerStationHandler(thing);
+        } else if (thingTypeUID.equals(OPENSPRINKLER_PI_BRIDGE)) {
+            return new OpenSprinklerPiBridgeHandler((Bridge) thing, this.apiFactory);
+        } else if (thingTypeUID.equals(OPENSPRINKLER_DEVICE)) {
+            return new OpenSprinklerDeviceHandler(thing);
         }
 
         return null;

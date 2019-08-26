@@ -378,8 +378,8 @@ public class MiIoAsyncCommunication {
                 socket.close();
             }
             senderThread.interrupt();
-        } catch (Exception e) {
-            logger.debug("Error while closing ", e.getMessage());
+        } catch (SecurityException e) {
+            logger.debug("Error while closing: {} ", e.getMessage());
         }
     }
 

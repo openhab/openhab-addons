@@ -35,7 +35,7 @@ public class YeelightCeilingHandler extends YeelightHandlerBase {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        handleCommandHelper(channelUID, command, "Handle Ceiling Command {}");
+        handleCommandHelper(channelUID, command, "Handle Ceiling Command");
     }
 
     @Override

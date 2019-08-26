@@ -51,7 +51,7 @@ public class ParadoxCommunicatorFactory {
         try {
             return createCommunicator(panelType);
         } catch (IOException | ParadoxException e) {
-            logger.warn("Unable to create communicator for Panel {}. Exception={}", panelTypeStr, e);
+            logger.warn("Unable to create communicator for Panel {}. Exception={}", panelTypeStr, e.getMessage());
             return null;
         }
     }

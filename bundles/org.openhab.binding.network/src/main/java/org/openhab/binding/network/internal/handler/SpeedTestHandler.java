@@ -139,7 +139,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
             return;
         } else {
             stopSpeedTest();
-            logger.warn(errorMessage);
+            logger.warn("Speedtest failed: {}", errorMessage);
         }
     }
 

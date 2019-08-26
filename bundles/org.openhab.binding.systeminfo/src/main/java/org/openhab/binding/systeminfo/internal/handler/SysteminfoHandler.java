@@ -23,7 +23,8 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -46,39 +47,40 @@ import org.slf4j.LoggerFactory;
  *
  * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papzov - Separate the creation of the systeminfo object and its initialization
+ * @author Wouter Born - Add null annotations
  */
-
+@NonNullByDefault
 public class SysteminfoHandler extends BaseThingHandler {
     /**
      * Refresh interval for {@link #highPriorityChannels} in seconds.
      */
-    private BigDecimal refreshIntervalHighPriority;
+    private @NonNullByDefault({}) BigDecimal refreshIntervalHighPriority;
 
     /**
      * Refresh interval for {@link #mediumPriorityChannels} in seconds.
      */
-    private BigDecimal refreshIntervalMediumPriority;
+    private @NonNullByDefault({}) BigDecimal refreshIntervalMediumPriority;
 
     /**
      * Channels with priority configuration parameter set to High. They usually need frequent update of the state like
      * CPU load, or information about the free and used memory.
      * They are updated periodically at {@link #refreshIntervalHighPriority}.
      */
-    private Set<ChannelUID> highPriorityChannels = new HashSet<>();
+    private final Set<ChannelUID> highPriorityChannels = new HashSet<>();
 
     /**
      * Channels with priority configuration parameter set to Medium. These channels usually need update of the
      * state not so oft like battery capacity, storage used and etc.
      * They are updated periodically at {@link #refreshIntervalMediumPriority}.
      */
-    private Set<ChannelUID> mediumPriorityChannels = new HashSet<>();
+    private final Set<ChannelUID> mediumPriorityChannels = new HashSet<>();
 
     /**
      * Channels with priority configuration parameter set to Low. They represent static information or information
      * that is updated rare- e.g. CPU name, storage name and etc.
      * They are updated only at {@link #initialize()}.
      */
-    private Set<ChannelUID> lowPriorityChannels = new HashSet<>();
+    private final Set<ChannelUID> lowPriorityChannels = new HashSet<>();
 
     /**
      * Wait time for the creation of Item-Channel links in seconds. This delay is needed, because the Item-Channel
@@ -88,12 +90,12 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private SysteminfoInterface systeminfo;
 
-    ScheduledFuture<?> highPriorityTasks;
-    ScheduledFuture<?> mediumPriorityTasks;
+    private @Nullable ScheduledFuture<?> highPriorityTasks;
+    private @Nullable ScheduledFuture<?> mediumPriorityTasks;
 
     private Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
 
-    public SysteminfoHandler(@NonNull Thing thing, SysteminfoInterface systeminfo) {
+    public SysteminfoHandler(Thing thing, @Nullable SysteminfoInterface systeminfo) {
         super(thing);
         if (systeminfo != null) {
             this.systeminfo = systeminfo;
@@ -124,7 +126,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Systeminfo implementation is instantiated!");
             return true;
         } catch (Exception e) {
-            logger.error("Cannot instantate Systeminfo object!", e);
+            logger.warn("Cannot instantiate Systeminfo object!", e);
             return false;
         }
     }
@@ -238,13 +240,11 @@ public class SysteminfoHandler extends BaseThingHandler {
     }
 
     private void publishData(Set<ChannelUID> channels) {
-        if (channels != null) {
-            Iterator<ChannelUID> iter = channels.iterator();
-            while (iter.hasNext()) {
-                ChannelUID channeUID = iter.next();
-                if (isLinked(channeUID.getId())) {
-                    publishDataForChannel(channeUID);
-                }
+        Iterator<ChannelUID> iter = channels.iterator();
+        while (iter.hasNext()) {
+            ChannelUID channeUID = iter.next();
+            if (isLinked(channeUID.getId())) {
+                publishDataForChannel(channeUID);
             }
         }
     }
@@ -252,12 +252,7 @@ public class SysteminfoHandler extends BaseThingHandler {
     private void publishDataForChannel(ChannelUID channelUID) {
         State state = getInfoForChannel(channelUID);
         String channelID = channelUID.getId();
-        if (state != null) {
-            updateState(channelID, state);
-        } else {
-            logger.warn("Channel with ID {} cannot be updated! No information available for the selected device.",
-                    channelID);
-        }
+        updateState(channelID, state);
     }
 
     public Set<ChannelUID> getHighPriorityChannels() {
@@ -282,6 +277,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      */
     private State getInfoForChannel(ChannelUID channelUID) {
         State state = null;
+
         String channelID = channelUID.getId();
         String channelIDWithoutGroup = channelUID.getIdWithoutGroup();
         String channelGroupID = channelUID.getGroupId();
@@ -291,7 +287,9 @@ public class SysteminfoHandler extends BaseThingHandler {
         // The channelGroup may contain deviceIndex. It must be deleted from the channelID, because otherwise the
         // switch will not find the correct method below.
         // All digits are deleted from the ID
-        channelID = channelGroupID.replaceAll("\\d+", "") + "#" + channelIDWithoutGroup;
+        if (channelGroupID != null) {
+            channelID = channelGroupID.replaceAll("\\d+", "") + "#" + channelIDWithoutGroup;
+        }
 
         try {
             switch (channelID) {
@@ -315,9 +313,6 @@ public class SysteminfoHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_SENSORS_FAN_SPEED:
                     state = systeminfo.getSensorsFanSpeed(deviceIndex);
-                    break;
-                case CHANNEL_CPU_LOAD:
-                    state = systeminfo.getCpuLoad();
                     break;
                 case CHANNEL_CPU_LOAD_1:
                     state = systeminfo.getCpuLoad1();
@@ -465,22 +460,26 @@ public class SysteminfoHandler extends BaseThingHandler {
      * @return natural number (number >=0)
      */
     private int getDeviceIndex(ChannelUID channelUID) {
-        int deviceIndex = 0;
-        if (channelUID.getGroupId().contains(CHANNEL_GROUP_PROCESS)) {
+        String channelGroupID = channelUID.getGroupId();
+        if (channelGroupID == null) {
+            return 0;
+        }
+
+        if (channelGroupID.contains(CHANNEL_GROUP_PROCESS)) {
             // Only in this case the deviceIndex is part of the channel configuration - PID (Process Identifier)
             int pid = getPID(channelUID);
-            deviceIndex = pid;
             logger.debug("Channel with UID {} tracks process with PID: {}", channelUID, pid);
-        } else {
-            String channelGroupID = channelUID.getGroupId();
-            char lastChar = channelGroupID.charAt(channelGroupID.length() - 1);
-            if (Character.isDigit(lastChar)) {
-                // All non-digits are deleted from the ID
-                String deviceIndexPart = channelGroupID.replaceAll("\\D+", "");
-                deviceIndex = Integer.parseInt(deviceIndexPart);
-            }
+            return pid;
         }
-        return deviceIndex;
+
+        char lastChar = channelGroupID.charAt(channelGroupID.length() - 1);
+        if (Character.isDigit(lastChar)) {
+            // All non-digits are deleted from the ID
+            String deviceIndexPart = channelGroupID.replaceAll("\\D+", "");
+            return Integer.parseInt(deviceIndexPart);
+        }
+
+        return 0;
     }
 
     /**
@@ -492,14 +491,18 @@ public class SysteminfoHandler extends BaseThingHandler {
     private int getPID(ChannelUID channelUID) {
         int pid = 0;
         try {
-            Configuration channelProperties = this.thing.getChannel(channelUID.getId()).getConfiguration();
-            BigDecimal pidValue = (BigDecimal) channelProperties.get(PID_PARAM);
-            if (pidValue == null || pidValue.intValue() < 0) {
-                throw new IllegalArgumentException("Invalid value for Process Identifier.");
+            Channel channel = this.thing.getChannel(channelUID.getId());
+            if (channel != null) {
+                Configuration channelProperties = channel.getConfiguration();
+                BigDecimal pidValue = (BigDecimal) channelProperties.get(PID_PARAM);
+                if (pidValue == null || pidValue.intValue() < 0) {
+                    throw new IllegalArgumentException("Invalid value for Process Identifier.");
+                } else {
+                    pid = pidValue.intValue();
+                }
             } else {
-                pid = pidValue.intValue();
+                logger.debug("Channel does not exist ! Fall back to default value.");
             }
-
         } catch (ClassCastException e) {
             logger.debug("Channel configuration cannot be read ! Fall back to default value.", e);
         } catch (IllegalArgumentException e) {
@@ -523,17 +526,14 @@ public class SysteminfoHandler extends BaseThingHandler {
     }
 
     private boolean isConfigurationKeyChanged(Configuration currentConfig, Configuration newConfig, String key) {
-        if (currentConfig != null && newConfig != null) {
-            Object currentValue = currentConfig.get(key);
-            Object newValue = newConfig.get(key);
+        Object currentValue = currentConfig.get(key);
+        Object newValue = newConfig.get(key);
 
-            if (currentValue == null) {
-                return (newValue != null);
-            }
-
-            return !currentValue.equals(newValue);
+        if (currentValue == null) {
+            return (newValue != null);
         }
-        return true;
+
+        return !currentValue.equals(newValue);
     }
 
     @Override
@@ -586,13 +586,16 @@ public class SysteminfoHandler extends BaseThingHandler {
     }
 
     private void stopScheduledUpdates() {
-        if (highPriorityTasks != null) {
+        ScheduledFuture<?> localHighPriorityTasks = highPriorityTasks;
+        if (localHighPriorityTasks != null) {
             logger.debug("High prioriy tasks will not be run anymore !");
-            highPriorityTasks.cancel(true);
+            localHighPriorityTasks.cancel(true);
         }
-        if (mediumPriorityTasks != null) {
+
+        ScheduledFuture<?> localMediumPriorityTasks = mediumPriorityTasks;
+        if (localMediumPriorityTasks != null) {
             logger.debug("Medium prioriy tasks will not be run anymore !");
-            mediumPriorityTasks.cancel(true);
+            localMediumPriorityTasks.cancel(true);
         }
     }
 

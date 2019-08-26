@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class SpotifyHandleCommands {
 
-    private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SpotifyHandleCommands.class);
 
     private final SpotifyApi spotifyApi;
 

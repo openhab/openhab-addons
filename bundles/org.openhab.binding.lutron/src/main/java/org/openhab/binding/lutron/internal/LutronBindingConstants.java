@@ -46,6 +46,7 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_TIMECLOCK = new ThingTypeUID(BINDING_ID, "timeclock");
     public static final ThingTypeUID THING_TYPE_GREENMODE = new ThingTypeUID(BINDING_ID, "greenmode");
     public static final ThingTypeUID THING_TYPE_QSIO = new ThingTypeUID(BINDING_ID, "qsio");
+    public static final ThingTypeUID THING_TYPE_GRAFIKEYEKEYPAD = new ThingTypeUID(BINDING_ID, "grafikeyekeypad");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
@@ -65,6 +66,7 @@ public class LutronBindingConstants {
     public static final String USER = "user";
     public static final String PASSWORD = "password";
     public static final String SERIAL_NUMBER = "serialNumber";
+    public static final String DISCOVERY_FILE = "discoveryFile";
 
     // Thing config properties
     public static final String INTEGRATION_ID = "integrationId";

@@ -71,6 +71,7 @@ import org.openhab.binding.darksky.internal.model.DarkSkyCurrentlyData;
 import org.openhab.binding.darksky.internal.model.DarkSkyDailyData.DailyData;
 import org.openhab.binding.darksky.internal.model.DarkSkyHourlyData.HourlyData;
 import org.openhab.binding.darksky.internal.model.DarkSkyJsonWeatherData;
+import org.openhab.binding.darksky.internal.model.DarkSkyJsonWeatherData.AlertsData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,10 +96,13 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
 
     private static final String CHANNEL_GROUP_HOURLY_FORECAST_PREFIX = "forecastHours";
     private static final String CHANNEL_GROUP_DAILY_FORECAST_PREFIX = "forecastDay";
+    private static final String CHANNEL_GROUP_ALERTS_PREFIX = "alerts";
     private static final Pattern CHANNEL_GROUP_HOURLY_FORECAST_PREFIX_PATTERN = Pattern
             .compile(CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + "([0-9]*)");
     private static final Pattern CHANNEL_GROUP_DAILY_FORECAST_PREFIX_PATTERN = Pattern
             .compile(CHANNEL_GROUP_DAILY_FORECAST_PREFIX + "([0-9]*)");
+    private static final Pattern CHANNEL_GROUP_ALERTS_PREFIX_PATTERN = Pattern
+            .compile(CHANNEL_GROUP_ALERTS_PREFIX + "([0-9]*)");
 
     // keeps track of all jobs
     private static final Map<String, Job> JOBS = new ConcurrentHashMap<>();
@@ -108,6 +112,7 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
     // keeps track of the parsed counts
     private int forecastHours = 24;
     private int forecastDays = 8;
+    private int numberOfAlerts = 0;
 
     private @Nullable DarkSkyChannelConfiguration sunriseTriggerChannelConfig;
     private @Nullable DarkSkyChannelConfiguration sunsetTriggerChannelConfig;
@@ -123,14 +128,14 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
         DarkSkyWeatherAndForecastConfiguration config = getConfigAs(DarkSkyWeatherAndForecastConfiguration.class);
 
         boolean configValid = true;
-        if (StringUtils.trimToNull(config.getLocation()) == null) {
+        if (StringUtils.trimToNull(config.location) == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-location");
             configValid = false;
         }
 
         try {
-            location = new PointType(config.getLocation());
+            location = new PointType(config.location);
         } catch (IllegalArgumentException e) {
             location = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -138,16 +143,22 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
             configValid = false;
         }
 
-        int newForecastHours = config.getForecastHours();
+        int newForecastHours = config.forecastHours;
         if (newForecastHours < 0 || newForecastHours > 48) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-hours");
             configValid = false;
         }
-        int newForecastDays = config.getForecastDays();
+        int newForecastDays = config.forecastDays;
         if (newForecastDays < 0 || newForecastDays > 8) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-days");
+            configValid = false;
+        }
+        int newNumberOfAlerts = config.numberOfAlerts;
+        if (newNumberOfAlerts < 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-not-supported-number-of-alerts");
             configValid = false;
         }
 
@@ -200,6 +211,21 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     }
                 }
                 forecastDays = newForecastDays;
+            }
+            if (numberOfAlerts != newNumberOfAlerts) {
+                logger.debug("Rebuilding alerts channel groups.");
+                if (numberOfAlerts > newNumberOfAlerts) {
+                    for (int i = newNumberOfAlerts + 1; i <= numberOfAlerts; ++i) {
+                        toBeRemovedChannels
+                                .addAll(removeChannelsOfGroup(CHANNEL_GROUP_ALERTS_PREFIX + Integer.toString(i)));
+                    }
+                } else {
+                    for (int i = numberOfAlerts + 1; i <= newNumberOfAlerts; ++i) {
+                        toBeAddedChannels.addAll(createChannelsForGroup(
+                                CHANNEL_GROUP_ALERTS_PREFIX + Integer.toString(i), CHANNEL_GROUP_TYPE_ALERTS));
+                    }
+                }
+                numberOfAlerts = newNumberOfAlerts;
             }
             ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
             for (Channel channel : toBeAddedChannels) {
@@ -363,6 +389,11 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     updateDailyForecastChannel(channelUID, i);
                     break;
                 }
+                Matcher alertsMatcher = CHANNEL_GROUP_ALERTS_PREFIX_PATTERN.matcher(channelGroupId);
+                if (alertsMatcher.find() && (i = Integer.parseInt(alertsMatcher.group(1))) >= 1) {
+                    updateAlertsChannel(channelUID, i);
+                    break;
+                }
                 break;
         }
     }
@@ -418,15 +449,15 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                 case CHANNEL_RAIN:
                     state = getQuantityTypeState(
                             PRECIP_TYPE_RAIN.equals(currentData.getPrecipType()) ? currentData.getPrecipIntensity() : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_SNOW:
                     state = getQuantityTypeState(
                             PRECIP_TYPE_SNOW.equals(currentData.getPrecipType()) ? currentData.getPrecipIntensity() : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_INTENSITY:
-                    state = getQuantityTypeState(currentData.getPrecipIntensity(), MILLI(METRE));
+                    state = getQuantityTypeState(currentData.getPrecipIntensity(), MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
                     state = getQuantityTypeState(currentData.getPrecipProbability() * 100, PERCENT);
@@ -506,16 +537,16 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     state = getQuantityTypeState(
                             PRECIP_TYPE_RAIN.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
                                     : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_SNOW:
                     state = getQuantityTypeState(
                             PRECIP_TYPE_SNOW.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
                                     : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_INTENSITY:
-                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLI(METRE));
+                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
                     state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
@@ -593,16 +624,16 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     state = getQuantityTypeState(
                             PRECIP_TYPE_RAIN.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
                                     : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_SNOW:
                     state = getQuantityTypeState(
                             PRECIP_TYPE_SNOW.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
                                     : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_INTENSITY:
-                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLI(METRE));
+                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
                     state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
@@ -635,6 +666,45 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
             updateState(channelUID, state);
         } else {
             logger.debug("No weather data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
+        }
+    }
+
+    /**
+     * Update the channel from the last Dark Sky data retrieved.
+     *
+     * @param channelUID the id identifying the channel to be updated
+     * @param count
+     */
+    private void updateAlertsChannel(ChannelUID channelUID, int count) {
+        String channelId = channelUID.getIdWithoutGroup();
+        String channelGroupId = channelUID.getGroupId();
+        if (weatherData != null && weatherData.getAlerts() != null && weatherData.getAlerts().size() > count) {
+            AlertsData alertsData = weatherData.getAlerts().get(count - 1);
+            State state = UnDefType.UNDEF;
+            switch (channelId) {
+                case CHANNEL_ALERT_TITLE:
+                    state = getStringTypeState(alertsData.title);
+                    break;
+                case CHANNEL_ALERT_DESCRIPTION:
+                    state = getStringTypeState(alertsData.description);
+                    break;
+                case CHANNEL_ALERT_SEVERITY:
+                    state = getStringTypeState(alertsData.severity);
+                    break;
+                case CHANNEL_ALERT_ISSUED:
+                    state = getDateTimeTypeState(alertsData.time);
+                    break;
+                case CHANNEL_ALERT_EXPIRES:
+                    state = getDateTimeTypeState(alertsData.expires);
+                    break;
+                case CHANNEL_ALERT_URI:
+                    state = getStringTypeState(alertsData.uri);
+                    break;
+            }
+            logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
+            updateState(channelUID, state);
+        } else {
+            logger.debug("No data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
         }
     }
 

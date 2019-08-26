@@ -17,6 +17,8 @@ import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -33,13 +35,15 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papazov - Pass systeminfo service to the SysteminfoHandler constructor
+ * @author Wouter Born - Add null annotations
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.systeminfo")
 public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
 
-    private SysteminfoInterface systeminfo;
+    private @NonNullByDefault({}) SysteminfoInterface systeminfo;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,7 +51,7 @@ public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_COMPUTER)) {

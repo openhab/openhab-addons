@@ -55,7 +55,6 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
     private DataOutputStream tx;
     private DataInputStream rx;
 
-
     private boolean isOnline;
 
     public AbstractCommunicator(String ipAddress, int tcpPort, ScheduledExecutorService scheduler)
@@ -123,7 +122,8 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
             syncQueue.moveRequest();
         } catch (IOException e) {
             syncQueue.removeSendRequest();
-            logger.debug("Error while sending packet with request={}. IOException={}. Will discard this request.", request, e);
+            logger.debug("Error while sending packet with request={}. IOException={}. Will discard this request.",
+                    request, e.getMessage());
         }
     }
 
@@ -141,18 +141,19 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
                 IResponse response = new Response(request, bytesData);
                 handleReceivedPacket(response);
             } else if (SyncQueue.getInstance().peekReceiveQueue()
-                .isTimeStampExpired(PACKET_EXPIRATION_TRESHOLD_MILLISECONDS)) {
+                    .isTimeStampExpired(PACKET_EXPIRATION_TRESHOLD_MILLISECONDS)) {
                 logger.debug("Unable to receive proper package for {} time. Rescheduling...", retryCounter);
             } else {
                 IRequest requestInQueue = syncQueue.poll();
                 logger.debug("Error receiving packet after reaching the set treshold of retries. Request: {}",
-                    requestInQueue);
+                        requestInQueue);
                 retryCounter = 0;
             }
         } catch (IOException e) {
             IRequest request = syncQueue.poll();
             retryCounter = 0;
-            logger.debug("Unable to receive package due to IO Exception. Request {}. Exception={}", request, e);
+            logger.debug("Unable to receive package due to IO Exception. Request {}. Exception={}", request,
+                    e.getMessage());
         }
     }
 
@@ -253,7 +254,7 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
 
     protected ParadoxIPPacket createParadoxIpPacket(IPPacketPayload payload) {
         ParadoxIPPacket readEpromIPPacket = new ParadoxIPPacket(payload)
-            .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
+                .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
         return readEpromIPPacket;
     }
 

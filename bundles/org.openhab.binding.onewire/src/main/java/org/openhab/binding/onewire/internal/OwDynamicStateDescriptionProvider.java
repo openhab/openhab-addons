@@ -72,7 +72,7 @@ public class OwDynamicStateDescriptionProvider implements DynamicStateDescriptio
             logger.trace("returning new stateDescription for {}", channel.getUID());
             return descriptions.get(channel.getUID());
         } else {
-            return originalStateDescription;
+            return null;
         }
     }
 }

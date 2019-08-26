@@ -84,9 +84,9 @@ public class SolarLogHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Communication error with the device. Please retry later.");
             } catch (JsonSyntaxException je) {
-                logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je);
+                logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
             } catch (Exception e) {
-                logger.warn("Error refreshing source {}: {}", getThing().getUID(), e);
+                logger.warn("Error refreshing source {}: {}", getThing().getUID(), e.getMessage(), e);
             }
         }, 0, config.refreshInterval < 15 ? 15 : config.refreshInterval, TimeUnit.SECONDS); // Minimum interval is 15 s
     }
@@ -121,7 +121,7 @@ public class SolarLogHandler extends BaseThingHandler {
                             updateState(channel.getUID(), state);
                         }
                     } else {
-                        logger.debug("Error refreshing source {}", getThing().getUID(), channelConfig.getId());
+                        logger.debug("Error refreshing source {}: {}", getThing().getUID(), channelConfig.getId());
                     }
                 }
             }

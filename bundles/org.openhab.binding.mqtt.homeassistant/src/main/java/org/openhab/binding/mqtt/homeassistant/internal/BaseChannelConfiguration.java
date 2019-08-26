@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -92,6 +93,7 @@ public abstract class BaseChannelConfiguration {
     protected @Nullable Device device;
 
     static class Device {
+        @JsonAdapter(ListOrStringDeserializer.class)
         protected @Nullable List<String> identifiers;
         protected @Nullable List<Connection> connections;
         protected @Nullable String manufacturer;

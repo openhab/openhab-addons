@@ -250,7 +250,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
             }
         }
         if (command instanceof StringType) {
-            logger.debug("handleSoundSettings set {} {}", command);
+            logger.debug("handleSoundSettings set {}", command);
             connection.setSoundSettings("soundField", ((StringType) command).toString());
         }
     }

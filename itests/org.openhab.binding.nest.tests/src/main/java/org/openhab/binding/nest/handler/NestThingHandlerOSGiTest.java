@@ -260,7 +260,8 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
     }
 
     protected void putStreamingEventData(String json) throws IOException {
-        String singleLineJson = json.replaceAll("\n\\s+", "").replaceAll("\n", "");
+        String singleLineJson = json.replaceAll("\n\r\\s+", "").replaceAll("\n\\s+", "").replaceAll("\n\r", "")
+                .replaceAll("\n", "");
         servlet.queueEvent(PUT, singleLineJson);
     }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.sonyprojector.internal.communication.sdcp;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
@@ -58,7 +59,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
     private int port;
     private String community;
 
-    private @NonNullByDefault({}) Socket clientSocket;
+    private @Nullable Socket clientSocket;
 
     /**
      * Constructor
@@ -117,11 +118,13 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
         if (!connected) {
             logger.debug("Opening SDCP connection IP {} port {}", this.address, this.port);
             try {
-                clientSocket = new Socket(this.address, this.port);
+                Socket clientSocket = new Socket(this.address, this.port);
                 clientSocket.setSoTimeout(200);
 
                 dataOut = new DataOutputStream(clientSocket.getOutputStream());
                 dataIn = new DataInputStream(clientSocket.getInputStream());
+
+                this.clientSocket = clientSocket;
 
                 connected = true;
 
@@ -138,12 +141,13 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
         if (connected) {
             logger.debug("closing SDCP connection");
             super.close();
+            Socket clientSocket = this.clientSocket;
             if (clientSocket != null) {
                 try {
                     clientSocket.close();
                 } catch (IOException e) {
                 }
-                clientSocket = null;
+                this.clientSocket = null;
             }
             connected = false;
         }
@@ -183,6 +187,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
      */
     @Override
     protected int readInput(byte[] dataBuffer) throws SonyProjectorException {
+        InputStream dataIn = this.dataIn;
         if (dataIn == null) {
             throw new SonyProjectorException("readInput failed: input stream is null");
         }
@@ -221,7 +226,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
         }
         logger.debug("readResponse: {}", HexUtils.bytesToHex(message));
         if (count < MSG_MIN_SIZE) {
-            logger.debug("readResponse: unexpected response data length: {]", count);
+            logger.debug("readResponse: unexpected response data length: {}", count);
             throw new SonyProjectorException("Unexpected response data length");
         }
         return message;

@@ -12,46 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.handler;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC_TRACK_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_ASCENDING_ALARM;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH_DEVICE_NAME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH_MAC;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_BASS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_MIDRANGE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_TREBLE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_IMAGE_URL;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_LAST_VOICE_COMMAND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_LENGTH;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_PROGRESS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_PROGRESS_TIME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MUSIC_PROVIDER_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_ALARM;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_MUSIC_ALARM;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_REMINDER;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_TIMER;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NOTIFICATION_VOLUME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAYER;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_ALARM_SOUND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_MUSIC_VOICE_COMMAND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_ON_DEVICE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PROVIDER_DISPLAY_NAME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_RADIO;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_RADIO_STATION_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_REMIND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SHUFFLE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_START_COMMAND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_START_ROUTINE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SUBTITLE1;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SUBTITLE2;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TEXT_TO_SPEECH;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TEXT_TO_SPEECH_VOLUME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TITLE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_VOLUME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_SERIAL_NUMBER;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.FLASH_BRIEFING_COMMAND_PREFIX;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -1184,7 +1145,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             }
 
         } catch (Exception e) {
-            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID(), e);
+            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID(), e.getMessage(), e);
 
             disableUpdate = false;
             throw e; // Rethrow same exception

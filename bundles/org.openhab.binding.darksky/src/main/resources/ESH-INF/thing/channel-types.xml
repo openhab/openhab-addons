@@ -90,6 +90,19 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="alerts">
+		<label>Weather Warnings</label>
+		<description>Weather warnings issued for the requested location.</description>
+		<channels>
+			<channel id="title" typeId="alert-title" />
+			<channel id="description" typeId="alert-description" />
+			<channel id="severity" typeId="alert-severity" />
+			<channel id="issued" typeId="alert-issued" />
+			<channel id="expires" typeId="alert-expires" />
+			<channel id="uri" typeId="alert-uri" />
+		</channels>
+	</channel-group-type>
+
 	<!-- Channels for Dark Sky Binding -->
 	<channel-type id="time-stamp">
 		<item-type>DateTime</item-type>
@@ -248,49 +261,49 @@
 	</channel-type>
 
 	<channel-type id="rain">
-		<item-type>Number:Length</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Rain</label>
-		<description>Rain volume for the last 3 hours.</description>
+		<description>Current rain intensity.</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="forecasted-rain">
-		<item-type>Number:Length</item-type>
-		<label>Forecasted Rain</label>
-		<description>Forecasted rain volume for the next 3 hours.</description>
+		<item-type>Number:Speed</item-type>
+		<label>Forecasted Rain Intensity</label>
+		<description>Forecasted rain intensity.</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="snow">
-		<item-type>Number:Length</item-type>
-		<label>Snow</label>
-		<description>Snow volume for the last 3 hours.</description>
+		<item-type>Number:Speed</item-type>
+		<label>Snow Intensity</label>
+		<description>Current snow intensity.</description>
 		<category>Snow</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="forecasted-snow">
-		<item-type>Number:Length</item-type>
-		<label>Forecasted Snow</label>
-		<description>Forecasted snow volume for the next 3 hours.</description>
+		<item-type>Number:Speed</item-type>
+		<label>Forecasted Snow Intensity</label>
+		<description>Forecasted snow intensity.</description>
 		<category>Snow</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="precip-intensity">
-		<item-type>Number:Length</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Precipitation Intensity</label>
 		<description>Current precipitation intensity.</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="forecasted-precip-intensity">
-		<item-type>Number:Length</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Forecasted Precipitation Intensity</label>
 		<description>Forecasted precipitation intensity.</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="precip-probability">
@@ -417,6 +430,48 @@
 			</options>
 		</event>
 		<config-description-ref uri="channel-type:darksky:sunrise-sunset-event" />
+	</channel-type>
+
+	<channel-type id="alert-title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>A brief description of the alert.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alert-description">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>A detailed description of the alert.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alert-severity">
+		<item-type>String</item-type>
+		<label>Severity</label>
+		<description>The severity of the alert.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alert-issued">
+		<item-type>DateTime</item-type>
+		<label>Issued</label>
+		<description>The time at which the alert was issued.</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="alert-expires">
+		<item-type>DateTime</item-type>
+		<label>Expires</label>
+		<description>The time at which the alert will expire.</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="alert-uri" advanced="true">
+		<item-type>String</item-type>
+		<label>URI</label>
+		<description>An external URI that one may refer to for detailed information about the alert.</description>
+		<state readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>
