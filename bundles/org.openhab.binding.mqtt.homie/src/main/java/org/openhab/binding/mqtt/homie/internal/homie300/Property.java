@@ -85,7 +85,7 @@ public class Property implements AttributeChanged {
         this.parentNode = node;
         this.propertyID = propertyID;
         channelUID = new ChannelUID(node.uid(), UIDUtils.encode(propertyID));
-        channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID, this.topic.replace('/', '_'));
+        channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID, UIDUtils.encode(this.topic));
         type = ChannelTypeBuilder.trigger(channelTypeUID, "dummy").build(); // Dummy value
         channel = ChannelBuilder.create(channelUID, "dummy").build();// Dummy value
     }
