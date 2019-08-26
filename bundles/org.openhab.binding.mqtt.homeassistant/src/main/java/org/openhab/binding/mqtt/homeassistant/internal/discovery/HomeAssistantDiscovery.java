@@ -58,6 +58,7 @@ import com.google.gson.GsonBuilder;
 @Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.mqttha")
 @NonNullByDefault
 public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
+    @SuppressWarnings("unused")
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);
     protected final Map<String, Set<HaID>> componentsPerThingID = new TreeMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new TreeMap<>();
