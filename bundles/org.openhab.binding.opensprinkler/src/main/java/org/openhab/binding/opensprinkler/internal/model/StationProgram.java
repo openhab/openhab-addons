@@ -15,7 +15,7 @@ package org.openhab.binding.opensprinkler.internal.model;
 /**
  * The {@link StationProgram} class corresponds to the program set in the station.
  *
- * @author Chris Graham - Initial contribution
+ * @author Florian Schmidt - Initial contribution
  */
 public class StationProgram {
     public final long remainingWaterTime;
