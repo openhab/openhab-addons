@@ -41,7 +41,7 @@ public class KM200BindingConstants {
     public static final ThingTypeUID THING_TYPE_SYSTEM_SENSOR = new ThingTypeUID(BINDING_ID, "sensor");
     public static final ThingTypeUID THING_TYPE_NOTIFICATION = new ThingTypeUID(BINDING_ID, "notification");
     public static final ThingTypeUID THING_TYPE_SWITCH_PROGRAM = new ThingTypeUID(BINDING_ID, "switchProgram");
-
+    public static final ThingTypeUID THING_TYPE_SYSTEMSTATES = new ThingTypeUID(BINDING_ID, "systemStates");
     // Other constants
 
     public static final String SWITCH_PROGRAM_REPLACEMENT = "__current__";
