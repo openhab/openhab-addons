@@ -16,6 +16,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -77,9 +80,13 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
                 scheduler, null, gson, transformationServiceProvider));
 
-        HandlerConfiguration config = new HandlerConfiguration("homeassistant", "object");
+        HandlerConfiguration config = new HandlerConfiguration("homeassistant",
+                Collections.singletonList("switch/object"));
 
-        discover.startDiscovery(connection, 50, HaID.fromConfig(config), discovered).get(100, TimeUnit.MILLISECONDS);
+        Set<HaID> discoveryIds = new HashSet<>();
+        discoveryIds.addAll(HaID.fromConfig(config));
+
+        discover.startDiscovery(connection, 50, discoveryIds, discovered).get(100, TimeUnit.MILLISECONDS);
 
     }
 }

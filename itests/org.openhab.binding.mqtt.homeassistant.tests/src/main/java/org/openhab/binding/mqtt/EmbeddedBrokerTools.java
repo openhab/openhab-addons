@@ -14,7 +14,6 @@ package org.openhab.binding.mqtt;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 

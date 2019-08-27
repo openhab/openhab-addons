@@ -20,6 +20,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,11 +173,12 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
 
         // Start the discovery for 100ms. Forced timeout after 300ms.
         HaID haID = new HaID(testObjectTopic);
-        CompletableFuture<Void> future = discover.startDiscovery(connection, 100, haID, cd).thenRun(() -> {
-        }).exceptionally(e -> {
-            failure = e;
-            return null;
-        });
+        CompletableFuture<Void> future = discover.startDiscovery(connection, 100, Collections.singleton(haID), cd)
+                .thenRun(() -> {
+                }).exceptionally(e -> {
+                    failure = e;
+                    return null;
+                });
 
         assertTrue(latch.await(300, TimeUnit.MILLISECONDS));
         future.get(100, TimeUnit.MILLISECONDS);

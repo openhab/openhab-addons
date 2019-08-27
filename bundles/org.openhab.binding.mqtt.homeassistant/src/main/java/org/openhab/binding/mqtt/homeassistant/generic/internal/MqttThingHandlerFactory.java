@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -27,7 +28,6 @@ import org.eclipse.smarthome.core.transform.TransformationHelper;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
-import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -50,7 +50,12 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID) || isHomeassistantDynamicType(thingTypeUID);
+    }
+
+    private boolean isHomeassistantDynamicType(ThingTypeUID thingTypeUID) {
+        return StringUtils.equals(MqttBindingConstants.BINDING_ID, thingTypeUID.getBindingId())
+                && StringUtils.startsWith(thingTypeUID.getId(), MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId());
     }
 
     @Activate
@@ -78,7 +83,7 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
+        if (supportsThingType(thingTypeUID)) {
             return new HomeAssistantThingHandler(thing, typeProvider, this, 10000, 2000);
         }
         return null;

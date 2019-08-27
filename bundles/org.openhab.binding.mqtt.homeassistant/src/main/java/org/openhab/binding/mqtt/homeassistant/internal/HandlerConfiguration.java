@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,20 +33,44 @@ public class HandlerConfiguration {
      * The MQTT prefix topic
      */
     public String basetopic;
+
     /**
      * hint: cannot be final, or <code>getConfigAs</code> will not work.
-     * The object id. This is comparable to a Homie Device.
+     * List of configuration topics.
+     * <ul>
+     * <li>
+     * Each topic is gets the base topic prepended.
+     * </li>
+     * <li>
+     * each topic has:
+     * <ol>
+     * <li>
+     * <code>component</code> (e.g. "switch", "light", ...)
+     * </li>
+     * <li>
+     * <code>node_id</code> (optional)
+     * </li>
+     * <li>
+     * <code>object_id</code> This is only to allow for separate topics for each device
+     * </li>
+     * <li>
+     * "config"
+     * </li>
+     * </ol>
+     * </li>
+     * </ul>
+     *
      */
-    public String objectid;
+    public List<String> topics;
 
     public HandlerConfiguration() {
-        this("homeassistant", "");
+        this("homeassistant", Collections.emptyList());
     }
 
-    public HandlerConfiguration(String basetopic, String objectid) {
+    public HandlerConfiguration(String basetopic, List<String> topics) {
         super();
         this.basetopic = basetopic;
-        this.objectid = objectid;
+        this.topics = topics;
     }
 
     /**
@@ -55,7 +81,7 @@ public class HandlerConfiguration {
      */
     public <T extends Map<String, Object>> T appendToProperties(T properties) {
         properties.put("basetopic", basetopic);
-        properties.put("objectid", objectid);
+        properties.put("topics", topics);
         return properties;
     }
 }
