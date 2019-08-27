@@ -82,7 +82,7 @@ public class ModbusDataReadOutMessageTest {
                 add(new ModbusValue(40071, 276));
                 add(new ModbusValue(40014, 454));
                 add(new ModbusValue(40007, 257));
-                add(new ModbusValue(47381, -80));
+                add(new ModbusValue(47381, 65456));
                 add(new ModbusValue(47418, 75));
                 add(new ModbusValue(45001, 0));
                 add(new ModbusValue(40008, 269));
@@ -113,7 +113,7 @@ public class ModbusDataReadOutMessageTest {
                 add(new ModbusValue(40022, 49));
                 add(new ModbusValue(45001, 0));
                 add(new ModbusValue(43009, 268));
-                add(new ModbusValue(43005, -1514));
+                add(new ModbusValue(43005, 64022));
                 add(new ModbusValue(43514, 7));
                 add(new ModbusValue(43416, 6939));
                 add(new ModbusValue(43424, 714));
@@ -143,7 +143,7 @@ public class ModbusDataReadOutMessageTest {
                 add(new ModbusValue(40022, 50));
                 add(new ModbusValue(45001, 0));
                 add(new ModbusValue(43009, 268));
-                add(new ModbusValue(43005, -1518));
+                add(new ModbusValue(43005, 64018));
                 add(new ModbusValue(43514, 7));
                 add(new ModbusValue(43416, 7004));
                 add(new ModbusValue(43424, 721));
@@ -173,7 +173,7 @@ public class ModbusDataReadOutMessageTest {
                 add(new ModbusValue(40022, 213));
                 add(new ModbusValue(45001, 0));
                 add(new ModbusValue(43009, 268));
-                add(new ModbusValue(43005, -1383));
+                add(new ModbusValue(43005, 64153));
                 add(new ModbusValue(43514, 2));
                 add(new ModbusValue(43416, 6938));
                 add(new ModbusValue(43424, 714));
