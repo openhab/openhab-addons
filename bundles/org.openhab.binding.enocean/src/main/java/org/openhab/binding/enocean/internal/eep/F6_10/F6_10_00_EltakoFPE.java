@@ -40,7 +40,7 @@ public class F6_10_00_EltakoFPE extends _RPSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc, Configuration config) {
 
         if (channelId.equals(CHANNEL_CONTACT)) {
             EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
