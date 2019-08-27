@@ -101,7 +101,7 @@ public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
                 for (int i = NibeHeatPumpProtocol.OFFSET_DATA; i < (msglen - 1); i += 4) {
 
                     int id = ((rawMessage[i + 1] & 0xFF) << 8 | (rawMessage[i + 0] & 0xFF));
-                    int value = (short) ((rawMessage[i + 3] & 0xFF) << 8 | (rawMessage[i + 2] & 0xFF));
+                    int value = (rawMessage[i + 3] & 0xFF) << 8 | (rawMessage[i + 2] & 0xFF);
 
                     if (id != 0xFFFF) {
                         vals.add(new ModbusValue(id, value));

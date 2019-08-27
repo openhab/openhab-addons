@@ -56,8 +56,8 @@ enum eTokenType
   WRITE_TOKEN
 };
     
-// message buffer for RS-485 communication
-#define MAX_DATA_LEN 255
+// message buffer for RS-485 communication. Max message length is 80 bytes + 6 bytes header
+#define MAX_DATA_LEN 128
 
 #define NIBE_CALLBACK_MSG_RECEIVED void (*callback_msg_received)(const byte* const data, int len)
 #define NIBE_CALLBACK_MSG_RECEIVED_TOKEN int (*callback_msg_token_received)(eTokenType token, byte* data)
