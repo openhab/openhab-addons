@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.F6_10;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.function.Function;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
