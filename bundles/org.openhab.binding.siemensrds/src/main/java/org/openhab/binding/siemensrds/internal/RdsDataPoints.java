@@ -38,7 +38,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +52,11 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * 
+ *
  * Interface to the Data Points of a particular Plant
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 class RdsDataPoints {
 
@@ -132,7 +131,7 @@ class RdsDataPoints {
 
             return GSON.fromJson(json, RdsDataPoints.class);
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("point list creation error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
+            LOGGER.warn("point list creation error \"{}\"", e.getMessage(), e);
             return null;
         }
     }
@@ -301,7 +300,7 @@ class RdsDataPoints {
             try {
                 httpSetPointValueJson(apiKey, token, pointId, json);
             } catch (RdsCloudException | IOException e) {
-                LOGGER.warn("setValue: error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
+                LOGGER.warn("setValue: error \"{}\"", e.getMessage(), e);
                 return;
             }
         } else {
@@ -372,7 +371,7 @@ class RdsDataPoints {
 
             return true;
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("refresh: error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
+            LOGGER.warn("refresh: error \"{}\"", e.getMessage());
             return false;
         }
     }
@@ -382,7 +381,7 @@ class RdsDataPoints {
  * private class: a generic data point
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 abstract class BasePoint {
     @SerializedName("rep")
@@ -481,7 +480,7 @@ abstract class BasePoint {
  * private class a data point where "value" is a JSON text element
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 class TextPoint extends BasePoint {
     @SerializedName("value")
@@ -510,7 +509,7 @@ class TextPoint extends BasePoint {
  * private class a data point where "value" is a JSON boolean element
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 class BooleanPoint extends BasePoint {
     @SerializedName("value")
@@ -531,7 +530,7 @@ class BooleanPoint extends BasePoint {
  * private class inner (helper) class for an embedded JSON numeric element
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 class NestedValue {
     @SerializedName("value")
@@ -544,7 +543,7 @@ class NestedValue {
  * private class a data point where "value" is a nested JSON numeric element
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 class InnerValuePoint extends BasePoint {
     @SerializedName("value")
@@ -580,7 +579,7 @@ class InnerValuePoint extends BasePoint {
  * private class a data point where "value" is a JSON numeric element
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 class NumericPoint extends BasePoint {
     @SerializedName("value")
@@ -605,7 +604,7 @@ class NumericPoint extends BasePoint {
  * private class a JSON de-serializer for the Data Point classes above
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 class PointDeserializer implements JsonDeserializer<BasePoint> {
 
@@ -634,9 +633,9 @@ class PointDeserializer implements JsonDeserializer<BasePoint> {
                     } else {
                         if (rep.isJsonPrimitive() && rep.getAsJsonPrimitive().isNumber()) {
                             switch (rep.getAsInt()) {
-                            case 1:
-                            case 3:
-                                return ctxt.deserialize(obj, InnerValuePoint.class);
+                                case 1:
+                                case 3:
+                                    return ctxt.deserialize(obj, InnerValuePoint.class);
                             }
                         }
                     }
