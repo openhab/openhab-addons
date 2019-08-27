@@ -31,7 +31,6 @@ import java.util.Date;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.eclipse.jdt.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +40,9 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Interface to the Access Token for a particular User
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 class RdsAccessToken {
 
@@ -115,7 +114,7 @@ class RdsAccessToken {
             String json = httpGetTokenJson(apiKey, user, password);
             return GSON.fromJson(json, RdsAccessToken.class);
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("token creation error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
+            LOGGER.warn("token creation error \"{}\"", e.getMessage(), e);
             return null;
         }
     }
