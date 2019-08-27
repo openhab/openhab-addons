@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
-import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
+import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.URL_PLANTS;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +26,11 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * 
+ *
  * Interface to the Plants List of a particular User
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 class RdsPlants {
 
@@ -67,7 +66,7 @@ class RdsPlants {
             String json = RdsDataPoints.httpGenericGetJson(apiKey, token, URL_PLANTS);
             return GSON.fromJson(json, RdsPlants.class);
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("plant list creation error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
+            LOGGER.warn("plant list creation error \"{}\"", e.getMessage(), e);
             return null;
         }
     }
