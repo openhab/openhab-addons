@@ -92,7 +92,8 @@ binding.chromecast:callbackUrl=http://192.168.30.58:8080
 demo.things:
 
 ```java
-chromecast:audio:myCC [ ipAddress="192.168.xxx.xxx"]
+Thing chromecast:audio:myCC "Lounge Chromecast Audio" [ipAddress="192.168.xxx.xxx", port=xxxx]
+Thing chromecast:chromecast:KitchenHomeHub "Kitchen Home Hub" [ipAddress="192.168.xxx.xxx", port=8009]
 ```
 
 demo.items:
