@@ -68,12 +68,11 @@ public class KM200ThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(KM200ThingHandler.class);
     private static URI configDescriptionUriChannel;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream
-                    .of(THING_TYPE_DHW_CIRCUIT, THING_TYPE_HEATING_CIRCUIT, THING_TYPE_SOLAR_CIRCUIT,
-                            THING_TYPE_HEAT_SOURCE, THING_TYPE_SYSTEM_APPLIANCE, THING_TYPE_SYSTEM_HOLIDAYMODES,
-                            THING_TYPE_SYSTEM_SENSOR, THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION, THING_TYPE_SYSTEM)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(THING_TYPE_DHW_CIRCUIT, THING_TYPE_HEATING_CIRCUIT, THING_TYPE_SOLAR_CIRCUIT, THING_TYPE_HEAT_SOURCE,
+                    THING_TYPE_SYSTEM_APPLIANCE, THING_TYPE_SYSTEM_HOLIDAYMODES, THING_TYPE_SYSTEM_SENSOR,
+                    THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION, THING_TYPE_SYSTEM, THING_TYPE_SYSTEMSTATES)
+            .collect(Collectors.toSet()));
 
     private KM200ChannelTypeProvider channelTypeProvider;
 
