@@ -70,6 +70,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
     private static final RotelModel DEFAULT_MODEL = RotelModel.RSP1066;
     private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(60);
+    private static final boolean USE_SIMULATED_DEVICE = false;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> powerOnJob;
@@ -82,8 +83,6 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private SerialPortManager serialPortManager;
 
     private RotelConnector connector = new RotelSimuConnector(DEFAULT_MODEL, RotelProtocol.HEX);
-
-    private boolean simu;
 
     private int minVolume;
     private int maxVolume;
@@ -137,89 +136,132 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     public void initialize() {
         logger.debug("Start initializing handler for thing {}", getThing().getUID());
 
-        RotelModel rotelModel = DEFAULT_MODEL;
-        if (getThing().getThingTypeUID().equals(THING_TYPE_RSP1066)) {
-            rotelModel = RotelModel.RSP1066;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSP1068)) {
-            rotelModel = RotelModel.RSP1068;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSP1069)) {
-            rotelModel = RotelModel.RSP1069;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSP1098)) {
-            rotelModel = RotelModel.RSP1098;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSP1570)) {
-            rotelModel = RotelModel.RSP1570;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSP1572)) {
-            rotelModel = RotelModel.RSP1572;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSX1055)) {
-            rotelModel = RotelModel.RSX1055;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSX1056)) {
-            rotelModel = RotelModel.RSX1056;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSX1057)) {
-            rotelModel = RotelModel.RSX1057;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSX1058)) {
-            rotelModel = RotelModel.RSX1058;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSX1065)) {
-            rotelModel = RotelModel.RSX1065;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSX1067)) {
-            rotelModel = RotelModel.RSX1067;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSX1550)) {
-            rotelModel = RotelModel.RSX1550;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSX1560)) {
-            rotelModel = RotelModel.RSX1560;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSX1562)) {
-            rotelModel = RotelModel.RSX1562;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_A11)) {
-            rotelModel = RotelModel.A11;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_A12)) {
-            rotelModel = RotelModel.A12;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_A14)) {
-            rotelModel = RotelModel.A14;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_CD11)) {
-            rotelModel = RotelModel.CD11;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_CD14)) {
-            rotelModel = RotelModel.CD14;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RA11)) {
-            rotelModel = RotelModel.RA11;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RA12)) {
-            rotelModel = RotelModel.RA12;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RA1570)) {
-            rotelModel = RotelModel.RA1570;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RA1572)) {
-            rotelModel = RotelModel.RA1572;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RA1592)) {
-            rotelModel = RotelModel.RA1592;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RAP1580)) {
-            rotelModel = RotelModel.RAP1580;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RC1570)) {
-            rotelModel = RotelModel.RC1570;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RC1572)) {
-            rotelModel = RotelModel.RC1572;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RC1590)) {
-            rotelModel = RotelModel.RC1590;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RCD1570)) {
-            rotelModel = RotelModel.RCD1570;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RCD1572)) {
-            rotelModel = RotelModel.RCD1572;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RCX1500)) {
-            rotelModel = RotelModel.RCX1500;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RDD1580)) {
-            rotelModel = RotelModel.RDD1580;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RDG1520)) {
-            rotelModel = RotelModel.RDG1520;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSP1576)) {
-            rotelModel = RotelModel.RSP1576;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RSP1582)) {
-            rotelModel = RotelModel.RSP1582;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RT09)) {
-            rotelModel = RotelModel.RDG1520;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RT11)) {
-            rotelModel = RotelModel.RT11;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_RT1570)) {
-            rotelModel = RotelModel.RT1570;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_T11)) {
-            rotelModel = RotelModel.T11;
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_T14)) {
-            rotelModel = RotelModel.T14;
+        RotelModel rotelModel;
+        switch (getThing().getThingTypeUID().getId()) {
+            case THING_TYPE_ID_RSP1066:
+                rotelModel = RotelModel.RSP1066;
+                break;
+            case THING_TYPE_ID_RSP1068:
+                rotelModel = RotelModel.RSP1068;
+                break;
+            case THING_TYPE_ID_RSP1069:
+                rotelModel = RotelModel.RSP1069;
+                break;
+            case THING_TYPE_ID_RSP1098:
+                rotelModel = RotelModel.RSP1098;
+                break;
+            case THING_TYPE_ID_RSP1570:
+                rotelModel = RotelModel.RSP1570;
+                break;
+            case THING_TYPE_ID_RSP1572:
+                rotelModel = RotelModel.RSP1572;
+                break;
+            case THING_TYPE_ID_RSX1055:
+                rotelModel = RotelModel.RSX1055;
+                break;
+            case THING_TYPE_ID_RSX1056:
+                rotelModel = RotelModel.RSX1056;
+                break;
+            case THING_TYPE_ID_RSX1057:
+                rotelModel = RotelModel.RSX1057;
+                break;
+            case THING_TYPE_ID_RSX1058:
+                rotelModel = RotelModel.RSX1058;
+                break;
+            case THING_TYPE_ID_RSX1065:
+                rotelModel = RotelModel.RSX1065;
+                break;
+            case THING_TYPE_ID_RSX1067:
+                rotelModel = RotelModel.RSX1067;
+                break;
+            case THING_TYPE_ID_RSX1550:
+                rotelModel = RotelModel.RSX1550;
+                break;
+            case THING_TYPE_ID_RSX1560:
+                rotelModel = RotelModel.RSX1560;
+                break;
+            case THING_TYPE_ID_RSX1562:
+                rotelModel = RotelModel.RSX1562;
+                break;
+            case THING_TYPE_ID_A11:
+                rotelModel = RotelModel.A11;
+                break;
+            case THING_TYPE_ID_A12:
+                rotelModel = RotelModel.A12;
+                break;
+            case THING_TYPE_ID_A14:
+                rotelModel = RotelModel.A14;
+                break;
+            case THING_TYPE_ID_CD11:
+                rotelModel = RotelModel.CD11;
+                break;
+            case THING_TYPE_ID_CD14:
+                rotelModel = RotelModel.CD14;
+                break;
+            case THING_TYPE_ID_RA11:
+                rotelModel = RotelModel.RA11;
+                break;
+            case THING_TYPE_ID_RA12:
+                rotelModel = RotelModel.RA12;
+                break;
+            case THING_TYPE_ID_RA1570:
+                rotelModel = RotelModel.RA1570;
+                break;
+            case THING_TYPE_ID_RA1572:
+                rotelModel = RotelModel.RA1572;
+                break;
+            case THING_TYPE_ID_RA1592:
+                rotelModel = RotelModel.RA1592;
+                break;
+            case THING_TYPE_ID_RAP1580:
+                rotelModel = RotelModel.RAP1580;
+                break;
+            case THING_TYPE_ID_RC1570:
+                rotelModel = RotelModel.RC1570;
+                break;
+            case THING_TYPE_ID_RC1572:
+                rotelModel = RotelModel.RC1572;
+                break;
+            case THING_TYPE_ID_RC1590:
+                rotelModel = RotelModel.RC1590;
+                break;
+            case THING_TYPE_ID_RCD1570:
+                rotelModel = RotelModel.RCD1570;
+                break;
+            case THING_TYPE_ID_RCD1572:
+                rotelModel = RotelModel.RCD1572;
+                break;
+            case THING_TYPE_ID_RCX1500:
+                rotelModel = RotelModel.RCX1500;
+                break;
+            case THING_TYPE_ID_RDD1580:
+                rotelModel = RotelModel.RDD1580;
+                break;
+            case THING_TYPE_ID_RDG1520:
+            case THING_TYPE_ID_RT09:
+                rotelModel = RotelModel.RDG1520;
+                break;
+            case THING_TYPE_ID_RSP1576:
+                rotelModel = RotelModel.RSP1576;
+                break;
+            case THING_TYPE_ID_RSP1582:
+                rotelModel = RotelModel.RSP1582;
+                break;
+            case THING_TYPE_ID_RT11:
+                rotelModel = RotelModel.RT11;
+                break;
+            case THING_TYPE_ID_RT1570:
+                rotelModel = RotelModel.RT1570;
+                break;
+            case THING_TYPE_ID_T11:
+                rotelModel = RotelModel.T11;
+                break;
+            case THING_TYPE_ID_T14:
+                rotelModel = RotelModel.T14;
+                break;
+            default:
+                rotelModel = DEFAULT_MODEL;
+                break;
         }
 
         RotelThingConfiguration config = getConfigAs(RotelThingConfiguration.class);
@@ -318,9 +360,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 logger.debug("Set input labels failed: {}", e.getMessage());
             }
 
-            if (!simu && config.serialPort != null) {
+            if (!USE_SIMULATED_DEVICE && config.serialPort != null) {
                 connector = new RotelSerialConnector(serialPortManager, config.serialPort, rotelModel, rotelProtocol);
-            } else if (!simu) {
+            } else if (!USE_SIMULATED_DEVICE) {
                 connector = new RotelIpConnector(config.host, config.port, rotelModel, rotelProtocol);
             }
 
