@@ -38,20 +38,20 @@ public class IAqualinkBindingConstants {
 
     public static final ThingTypeUID IAQUALINK_DEVICE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "controller");
 
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_ONETOUCH = new ChannelTypeUID(
-            BINDING_ID + ":" + CHANNEL_TYPE_ONETOUCH);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_SWITCH = new ChannelTypeUID(
-            BINDING_ID + ":" + CHANNEL_TYPE_AUX_SWITCH);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_DIMMER = new ChannelTypeUID(
-            BINDING_ID + ":" + CHANNEL_TYPE_AUX_DIMMER);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_JANDYCOLOR = new ChannelTypeUID(
-            BINDING_ID + ":" + CHANNEL_TYPE_AUX_JANDYCOLOR);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_PENTAIRSAM = new ChannelTypeUID(
-            BINDING_ID + ":" + CHANNEL_TYPE_AUX_PENTAIRSAM);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_JANDYLED = new ChannelTypeUID(
-            BINDING_ID + ":" + CHANNEL_TYPE_AUX_JANDYLED);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_PENTAIRIB = new ChannelTypeUID(
-            BINDING_ID + ":" + CHANNEL_TYPE_AUX_PENTAIRIB);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_HAYWARD = new ChannelTypeUID(
-            BINDING_ID + ":" + CHANNEL_TYPE_AUX_HAYWARD);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_ONETOUCH = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_TYPE_ONETOUCH);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_SWITCH = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_TYPE_AUX_SWITCH);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_DIMMER = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_TYPE_AUX_DIMMER);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_JANDYCOLOR = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_TYPE_AUX_JANDYCOLOR);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_PENTAIRSAM = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_TYPE_AUX_PENTAIRSAM);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_JANDYLED = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_TYPE_AUX_JANDYLED);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_PENTAIRIB = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_TYPE_AUX_PENTAIRIB);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_HAYWARD = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_TYPE_AUX_HAYWARD);
 }

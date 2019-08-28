@@ -433,16 +433,23 @@ public class IAqualinkHandler extends BaseThingHandler {
             // @nullable checker does not recognize isBlank as checking null here, so must use == null to make happy
             if (value == null || StringUtils.isBlank(value)) {
                 return UnDefType.UNDEF;
-            } else if ("Number:Temperature".equals(type)) {
-                return new QuantityType<Temperature>(Float.parseFloat(value), temperatureUnit);
-            } else if ("Number".equals(type)) {
-                return new DecimalType(value);
-            } else if ("Dimmer".equals(type)) {
-                return new PercentType(value);
-            } else if ("Switch".equals(type)) {
-                return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
-            } else {
+            }
+
+            if (type == null) {
                 return StringType.valueOf(value);
+            }
+
+            switch (type) {
+                case "Number:Temperature":
+                    return new QuantityType<Temperature>(Float.parseFloat(value), temperatureUnit);
+                case "Number":
+                    return new DecimalType(value);
+                case "Dimmer":
+                    return new PercentType(value);
+                case "Switch":
+                    return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+                default:
+                    return StringType.valueOf(value);
             }
         } catch (NumberFormatException e) {
             return UnDefType.UNDEF;
@@ -456,6 +463,8 @@ public class IAqualinkHandler extends BaseThingHandler {
         List<Channel> channels = new ArrayList<Channel>(getThing().getChannels());
         for (Auxiliary aux : auxes) {
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), aux.getName());
+            logger.debug("Add channel Aux Name: {} Label: {} Type: {} Subtype: {}", aux.getName(), aux.getLabel(),
+                    aux.getType(), aux.getSubtype());
             switch (aux.getType()) {
                 case "1":
                     addNewChannelToList(channels, channelUID, "Dimmer",

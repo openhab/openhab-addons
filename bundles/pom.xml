@@ -93,6 +93,7 @@
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.hue</module>
     <module>org.openhab.binding.hyperion</module>
+    <module>org.openhab.binding.iaqualink</module>
     <module>org.openhab.binding.icloud</module>
     <module>org.openhab.binding.ihc</module>
     <module>org.openhab.binding.innogysmarthome</module>
