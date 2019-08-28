@@ -156,8 +156,8 @@ The following channels are available:
 | track          | Current Track                  | Number    | The current CD track number                              |                                    |
 | mainZone#line1 | Front Panel Line 1             | String    | The first line displayed on the device front panel       |                                    |
 | mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
-| frequency      | Current Frequency              | Number    | The current frequency for digital source input           |                                    |
-| brightness     | Front Panel Display Brightness | Dimmer    | The backlight brightness level of the device front panel |                                    |
+| frequency      | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
+| brightness     | Front Panel Display Brightness | Dimmer    | The backlight brightness level (in %) of the device front panel |                             |
 
 Here are the list of channels available for each thing type:
 

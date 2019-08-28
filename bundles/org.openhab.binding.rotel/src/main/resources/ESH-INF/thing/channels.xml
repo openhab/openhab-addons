@@ -159,7 +159,7 @@
 	<channel-type id="frequency" advanced="true">
 		<item-type>Number</item-type>
 		<label>Current Frequency</label>
-		<description>The current frequency for digital source input</description>
+		<description>The current frequency (in kHz) for digital source input</description>
 		<state readOnly="true" />
 	</channel-type>
 
@@ -172,7 +172,7 @@
 	<channel-type id="brightness" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Front Panel Display Brightness</label>
-		<description>The backlight brightness level of the device front panel</description>
+		<description>The backlight brightness level (in %) of the device front panel</description>
 	</channel-type>
 
 </thing:thing-descriptions>
