@@ -327,44 +327,48 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         } else {
             for (RotelSource src : rotelModel.getSources()) {
                 // Consider custom input labels
-                if (src.getName().equals("CD") && config.inputLabelCd != null && !config.inputLabelCd.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelCd);
-                } else if (src.getName().equals("TUNER") && config.inputLabelTuner != null
-                        && !config.inputLabelTuner.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelTuner);
-                } else if (src.getName().equals("TAPE") && config.inputLabelTape != null
-                        && !config.inputLabelTape.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelTape);
-                } else if (src.getName().equals("PHONO") && config.inputLabelPhono != null
-                        && !config.inputLabelPhono.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelPhono);
-                } else if (src.getName().equals("VIDEO1") && config.inputLabelVideo1 != null
-                        && !config.inputLabelVideo1.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelVideo1);
-                } else if (src.getName().equals("VIDEO2") && config.inputLabelVideo2 != null
-                        && !config.inputLabelVideo2.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelVideo2);
-                } else if (src.getName().equals("VIDEO3") && config.inputLabelVideo3 != null
-                        && !config.inputLabelVideo3.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelVideo3);
-                } else if (src.getName().equals("VIDEO4") && config.inputLabelVideo4 != null
-                        && !config.inputLabelVideo4.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelVideo4);
-                } else if (src.getName().equals("VIDEO5") && config.inputLabelVideo5 != null
-                        && !config.inputLabelVideo5.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelVideo5);
-                } else if (src.getName().equals("VIDEO6") && config.inputLabelVideo6 != null
-                        && !config.inputLabelVideo6.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelVideo6);
-                } else if (src.getName().equals("USB") && config.inputLabelUsb != null
-                        && !config.inputLabelUsb.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelUsb);
-                } else if (src.getName().equals("MULTI") && config.inputLabelMulti != null
-                        && !config.inputLabelMulti.isEmpty()) {
-                    sourcesLabels.put(src, config.inputLabelMulti);
-                } else {
-                    sourcesLabels.put(src, src.getLabel());
+                String label = null;
+                switch (src.getName()) {
+                    case "CD":
+                        label = config.inputLabelCd;
+                        break;
+                    case "TUNER":
+                        label = config.inputLabelTuner;
+                        break;
+                    case "TAPE":
+                        label = config.inputLabelTape;
+                        break;
+                    case "PHONO":
+                        label = config.inputLabelPhono;
+                        break;
+                    case "VIDEO1":
+                        label = config.inputLabelVideo1;
+                        break;
+                    case "VIDEO2":
+                        label = config.inputLabelVideo2;
+                        break;
+                    case "VIDEO3":
+                        label = config.inputLabelVideo3;
+                        break;
+                    case "VIDEO4":
+                        label = config.inputLabelVideo4;
+                        break;
+                    case "VIDEO5":
+                        label = config.inputLabelVideo5;
+                        break;
+                    case "VIDEO6":
+                        label = config.inputLabelVideo6;
+                        break;
+                    case "USB":
+                        label = config.inputLabelUsb;
+                        break;
+                    case "MULTI":
+                        label = config.inputLabelMulti;
+                        break;
+                    default:
+                        break;
                 }
+                sourcesLabels.put(src, (label == null || label.isEmpty()) ? src.getLabel() : label);
             }
 
             if (USE_SIMULATED_DEVICE) {
