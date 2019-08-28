@@ -44,6 +44,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -219,12 +220,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_SHOWNOTIFICATION:
-                if (command instanceof StringType) {
-                    connection.showNotification(command.toString());
-                    updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
-                } else if (RefreshType.REFRESH == command) {
-                    updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
-                }
+                showNotification(channelUID, command);
                 break;
             case CHANNEL_INPUT:
                 if (command instanceof StringType) {
@@ -299,8 +295,31 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             default:
+                Channel channel = getThing().getChannel(channelUID);
+                if (channel != null) {
+                    ChannelTypeUID ctuid = channel.getChannelTypeUID();
+                    if (ctuid != null) {
+                        if (ctuid.getId().equals(CHANNEL_TYPE_SHOWNOTIFICATION)) {
+                            showNotification(channelUID, command);
+                            break;
+                        }
+                    }
+                }
                 logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
                 break;
+        }
+    }
+
+    private void showNotification(ChannelUID channelUID, Command command) {
+        if (command instanceof StringType) {
+            Channel channel = getThing().getChannel(channelUID);
+            if (channel != null) {
+                String title = (String) channel.getConfiguration().get(CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_TITLE);
+                connection.showNotification(title, command.toString());
+            }
+            updateState(channelUID, UnDefType.UNDEF);
+        } else if (RefreshType.REFRESH == command) {
+            updateState(channelUID, UnDefType.UNDEF);
         }
     }
 

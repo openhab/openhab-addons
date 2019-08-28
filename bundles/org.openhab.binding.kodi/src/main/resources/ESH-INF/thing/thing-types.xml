@@ -3,12 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-		
+
 	<!-- Kodi Thing Type -->
-	<thing-type id="kodi">
+	<thing-type id="kodi" extensible="shownotification">
 		<label>Kodi Mediacenter</label>
 		<description>Kodi Mediacenter Binding</description>
-		
+
 		<channels>
 			<channel id="volume" typeId="system.volume" />
 			<channel id="mute" typeId="system.mute" />
@@ -82,7 +82,7 @@
 			<channel id="uniqueid-douban" typeId="uniqueid">
 				<label>Douban ID</label>
 				<description>example usage - http://www.douban.com/subject/3036644/</description>
-				</channel>
+			</channel>
 			<channel id="uniqueid-imdb" typeId="uniqueid">
 				<label>IMDB ID</label>
 				<description>example usage - http://www.imdb.com/title/tt7207268/</description>
@@ -153,6 +153,12 @@
 		<item-type>String</item-type>
 		<label>Show Notification</label>
 		<description>Shows a notification on the UI</description>
+		<config-description>
+			<parameter name="title" type="text">
+				<label>Notification Title</label>
+				<default>openHAB</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 	<channel-type id="playnotification" advanced="true">
 		<item-type>String</item-type>
