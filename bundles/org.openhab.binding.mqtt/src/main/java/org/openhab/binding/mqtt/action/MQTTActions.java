@@ -50,37 +50,14 @@ public class MQTTActions implements ThingActions {
     public void publishMQTT(
             @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String topic,
             @ActionInput(name = "value", label = "@text/actionInputValueLabel", description = "@text/actionInputValueDesc") @Nullable String value) {
-        AbstractBrokerHandler brokerHandler = handler;
-        if (brokerHandler == null) {
-            logger.warn("MQTT Action service ThingHandler is null!");
-            return;
-        }
-        MqttBrokerConnection connection = brokerHandler.getConnection();
-        if (connection == null) {
-            logger.warn("MQTT Action service ThingHandler connection is null!");
-            return;
-        }
-        if (value == null) {
-            logger.debug("skipping MQTT publishing to topic '{}' due to null value.", topic);
-            return;
-        }
-        if (topic == null) {
-            logger.debug("skipping MQTT publishing of value '{}' as topic is null.", value);
-            return;
-        }
-        connection.publish(topic, value.getBytes()).thenRun(() -> {
-            logger.debug("MQTT publish to {} performed", topic);
-        }).exceptionally(e -> {
-            logger.warn("MQTT publish to {} failed!", topic);
-            return null;
-        });
+        publishMQTT(topic, value, null);
     }
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void publishMQTT(
             @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String topic,
             @ActionInput(name = "value", label = "@text/actionInputValueLabel", description = "@text/actionInputValueDesc") @Nullable String value,
-            @ActionInput(name = "retain", label = "@text/actionInputRetainlabel", description = "@text/actionInputRetainDesc") @Nullable boolean retain) {
+            @ActionInput(name = "retain", label = "@text/actionInputRetainlabel", description = "@text/actionInputRetainDesc") @Nullable Boolean retain) {
         AbstractBrokerHandler brokerHandler = handler;
         if (brokerHandler == null) {
             logger.warn("MQTT Action service ThingHandler is null!");
@@ -98,6 +75,9 @@ public class MQTTActions implements ThingActions {
         if (topic == null) {
             logger.debug("skipping MQTT publishing of value '{}' as topic is null.", value);
             return;
+        }
+        if (retain == null) {
+            retain = connection.isRetain();
         }
         connection.publish(topic, value.getBytes(), connection.getQos(), retain).thenRun(() -> {
             logger.debug("MQTT publish to {} performed", topic);
