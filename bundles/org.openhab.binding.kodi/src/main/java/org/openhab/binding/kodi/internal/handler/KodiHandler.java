@@ -296,6 +296,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_CURRENTTIME:
+                if (command instanceof QuantityType) {
+                    connection.setTime(((QuantityType) command).intValue());
+                }
+                break;
             case CHANNEL_CURRENTTIMEPERCENTAGE:
             case CHANNEL_DURATION:
                 if (RefreshType.REFRESH == command) {

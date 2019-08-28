@@ -1341,4 +1341,28 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
         return profiles;
     }
+
+    public void setTime(int time) {
+        int seconds = time;
+        JsonObject params = new JsonObject();
+        params.addProperty("playerid", 1);
+        JsonObject value = new JsonObject();
+        JsonObject timeValue = new JsonObject();
+
+        if (seconds >= 3600) {
+            int hours = seconds / 3600;
+            timeValue.addProperty("hours", hours);
+            seconds = seconds % 3600;
+        }
+        if (seconds >= 60) {
+            int minutes = seconds / 60;
+            timeValue.addProperty("minutes", minutes);
+            seconds = seconds % 60;
+        }
+        timeValue.addProperty("seconds", seconds);
+
+        value.add("time", timeValue);
+        params.add("value", value);
+        socket.callMethod("Player.Seek", params);
+    }
 }
