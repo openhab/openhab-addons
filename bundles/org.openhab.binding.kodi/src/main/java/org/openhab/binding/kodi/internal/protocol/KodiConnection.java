@@ -14,6 +14,7 @@ package org.openhab.binding.kodi.internal.protocol;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -38,6 +39,7 @@ import org.openhab.binding.kodi.internal.model.KodiDuration;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannelGroup;
+import org.openhab.binding.kodi.internal.model.KodiProfile;
 import org.openhab.binding.kodi.internal.model.KodiSubtitle;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.model.KodiUniqueID;
@@ -108,10 +110,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private final KodiEventListener listener;
     private final WebSocketClient webSocketClient;
+    private final String callbackUrl;
 
-    public KodiConnection(KodiEventListener listener, WebSocketClient webSocketClient) {
+    public KodiConnection(KodiEventListener listener, WebSocketClient webSocketClient, String callbackUrl) {
         this.listener = listener;
         this.webSocketClient = webSocketClient;
+        this.callbackUrl = callbackUrl;
     }
 
     @Override
@@ -679,7 +683,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private void requestPlayerPropertiesUpdate(int activePlayer) {
         final String[] properties = { PROPERTY_SUBTITLEENABLED, PROPERTY_CURRENTSUBTITLE, PROPERTY_CURRENTAUDIOSTREAM,
                 PROPERTY_CURRENTVIDEOSTREAM, PROPERTY_PERCENTAGE, PROPERTY_TIME, PROPERTY_TOTALTIME,
-                PROPERTY_AUDIOSTREAMS, PROPERTY_SUBTITLES};
+                PROPERTY_AUDIOSTREAMS, PROPERTY_SUBTITLES };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -689,8 +693,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
 
-            if (result.has(PROPERTY_AUDIOSTREAMS)) {                        
-                try { 
+            if (result.has(PROPERTY_AUDIOSTREAMS)) {
+                try {
                     JsonElement audioGroup = result.get(PROPERTY_AUDIOSTREAMS);
                     if (audioGroup instanceof JsonArray) {
                         List<KodiAudioStream> audioStreamList = new ArrayList<>();
@@ -701,12 +705,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
                         listener.updateAudioStreamOptions(audioStreamList);
                     }
                 } catch (JsonSyntaxException e) {
-                     // do nothing
+                    // do nothing
                 }
             }
-            
+
             if (result.has(PROPERTY_SUBTITLES)) {
-                try {  
+                try {
                     JsonElement subtitleGroup = result.get(PROPERTY_SUBTITLES);
                     if (subtitleGroup instanceof JsonArray) {
                         List<KodiSubtitle> subtitleList = new ArrayList<>();
@@ -718,9 +722,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     }
                 } catch (JsonSyntaxException e) {
                     // do nothing
-                }    
+                }
             }
-            
+
             boolean subtitleEnabled = false;
             if (result.has(PROPERTY_SUBTITLEENABLED)) {
                 subtitleEnabled = result.get(PROPERTY_SUBTITLEENABLED).getAsBoolean();
@@ -934,8 +938,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
             listener.updateUniqueIDImdbtvshow("");
             listener.updateUniqueIDTmdbtvshow("");
             listener.updateUniqueIDTmdbepisode("");
-            listener.updateAudioStreamOptions(new ArrayList<>());    
-            listener.updateSubtitleOptions(new ArrayList<>());    
+            listener.updateAudioStreamOptions(new ArrayList<>());
+            listener.updateSubtitleOptions(new ArrayList<>());
             listener.updateAudioCodec(null);
             listener.updateVideoCodec(null);
             listener.updateAudioIndex(-1);
@@ -1105,6 +1109,18 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
+    public void updateCurrentProfile() {
+        if (socket.isConnected()) {
+            JsonElement response = socket.callMethod("Profiles.GetCurrentProfile");
+
+            try {
+                listener.updateCurrentProfile(gson.fromJson(response, KodiProfile.class).getLabel());
+            } catch (JsonSyntaxException e) {
+                logger.error("Json syntax exception occurred: {}", e.getMessage(), e);
+            }
+        }
+    }
+
     public synchronized void playURI(String uri) {
         JsonObject item = new JsonObject();
         item.addProperty("file", uri);
@@ -1203,10 +1219,18 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Player.Open", params);
     }
 
-    public synchronized void showNotification(String message) {
+    public synchronized void showNotification(String title, BigDecimal displayTime, String icon, String message) {
         JsonObject params = new JsonObject();
-        params.addProperty("title", "openHAB");
         params.addProperty("message", message);
+        if (title != null) {
+            params.addProperty("title", title);
+        }
+        if (displayTime != null) {
+            params.addProperty("displaytime", displayTime.longValue());
+        }
+        if (icon != null) {
+            params.addProperty("image", callbackUrl + "/icon/" + icon.toLowerCase() + ".png");
+        }
         socket.callMethod("GUI.ShowNotification", params);
     }
 
@@ -1295,5 +1319,50 @@ public class KodiConnection implements KodiClientSocketEventListener {
     public void sendSystemCommand(String command) {
         String method = "System." + command;
         socket.callMethod(method);
+    }
+
+    public void profile(String profile) {
+        JsonObject params = new JsonObject();
+        params.addProperty("profile", profile);
+        socket.callMethod("Profiles.LoadProfile", params);
+    }
+
+    public KodiProfile[] getProfiles() {
+        KodiProfile[] profiles = new KodiProfile[0];
+        if (socket.isConnected()) {
+            JsonElement response = socket.callMethod("Profiles.GetProfiles");
+
+            try {
+                JsonObject profilesJson = response.getAsJsonObject();
+                profiles = gson.fromJson(profilesJson.get("profiles"), KodiProfile[].class);
+            } catch (JsonSyntaxException e) {
+                logger.error("Json syntax exception occurred: {}", e.getMessage(), e);
+            }
+        }
+        return profiles;
+    }
+
+    public void setTime(int time) {
+        int seconds = time;
+        JsonObject params = new JsonObject();
+        params.addProperty("playerid", 1);
+        JsonObject value = new JsonObject();
+        JsonObject timeValue = new JsonObject();
+
+        if (seconds >= 3600) {
+            int hours = seconds / 3600;
+            timeValue.addProperty("hours", hours);
+            seconds = seconds % 3600;
+        }
+        if (seconds >= 60) {
+            int minutes = seconds / 60;
+            timeValue.addProperty("minutes", minutes);
+            seconds = seconds % 60;
+        }
+        timeValue.addProperty("seconds", seconds);
+
+        value.add("time", timeValue);
+        params.add("value", value);
+        socket.callMethod("Player.Seek", params);
     }
 }
