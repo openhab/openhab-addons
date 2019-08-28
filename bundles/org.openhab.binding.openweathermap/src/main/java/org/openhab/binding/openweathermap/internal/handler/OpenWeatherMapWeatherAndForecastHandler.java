@@ -301,6 +301,11 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     break;
                 case CHANNEL_VISIBILITY:
                     state = new QuantityType<>(weatherData.getVisibility(), METRE).toUnit(KILO(METRE));
+                    if (state == null) {
+                        logger.debug("State conversion failed, cannot update state.");
+                        return;
+                    }
+
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
