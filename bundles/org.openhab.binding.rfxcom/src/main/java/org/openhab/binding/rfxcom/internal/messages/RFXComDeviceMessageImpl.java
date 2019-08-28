@@ -16,6 +16,7 @@ import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.CHANNEL
 
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -41,6 +42,11 @@ abstract class RFXComDeviceMessageImpl<T> extends RFXComBaseMessage implements R
     public void setConfig(RFXComDeviceConfiguration config) throws RFXComException {
         this.setSubType(convertSubType(config.subType));
         this.setDeviceId(config.deviceId);
+    }
+
+    @Override
+    public Command convertToCommand(String channelId) throws RFXComUnsupportedChannelException {
+        return (Command) convertToState(channelId);
     }
 
     @Override
