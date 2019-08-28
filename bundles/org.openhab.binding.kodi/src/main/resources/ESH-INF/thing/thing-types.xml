@@ -3,12 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-		
+
 	<!-- Kodi Thing Type -->
-	<thing-type id="kodi">
+	<thing-type id="kodi" extensible="shownotification">
 		<label>Kodi Mediacenter</label>
 		<description>Kodi Mediacenter Binding</description>
-		
+
 		<channels>
 			<channel id="volume" typeId="system.volume" />
 			<channel id="mute" typeId="system.mute" />
@@ -34,6 +34,7 @@
 			<channel id="fanart" typeId="fanart" />
 			<channel id="playfavorite" typeId="playfavorite" />
 			<channel id="playnotification" typeId="playnotification" />
+            <channel id="profile" typeId="profile" />
 			<channel id="audio-name" typeId="name">
 				<label>Audio Name</label>
 			</channel>
@@ -82,7 +83,7 @@
 			<channel id="uniqueid-douban" typeId="uniqueid">
 				<label>Douban ID</label>
 				<description>example usage - http://www.douban.com/subject/3036644/</description>
-				</channel>
+			</channel>
 			<channel id="uniqueid-imdb" typeId="uniqueid">
 				<label>IMDB ID</label>
 				<description>example usage - http://www.imdb.com/title/tt7207268/</description>
@@ -153,6 +154,23 @@
 		<item-type>String</item-type>
 		<label>Show Notification</label>
 		<description>Shows a notification on the UI</description>
+		<config-description>
+			<parameter name="title" type="text" required="false">
+				<label>Notification Title</label>
+				<description>Title to show for the notification</description>
+				<default>openHAB</default>
+			</parameter>
+			<parameter name="displayTime" type="integer" required="false" min="100">
+				<label>Display Time</label>
+				<description>Time the notification is displayed in milliseconds.</description>
+				<default>5000</default>
+				<unitLabel>ms</unitLabel>
+			</parameter>
+			<parameter name="icon" type="text" required="false">
+				<label>Icon</label>
+				<description>Icon name to show with the notification</description>
+			</parameter>
+		</config-description>
 	</channel-type>
 	<channel-type id="playnotification" advanced="true">
 		<item-type>String</item-type>
@@ -461,7 +479,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state pattern="%d %unit%" />
 	</channel-type>
 	<channel-type id="currenttimepercentage" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
@@ -545,5 +563,11 @@
 		<label>MPAA Rating</label>
 		<description>MPAA Rating</description>
 		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="profile" advanced="true">
+		<item-type>String</item-type>
+		<label>Profile</label>
+		<description>Profile of Kodi</description>
+		<state pattern="%s" />
 	</channel-type>
 </thing:thing-descriptions>

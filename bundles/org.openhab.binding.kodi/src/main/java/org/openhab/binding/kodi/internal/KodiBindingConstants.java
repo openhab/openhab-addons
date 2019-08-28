@@ -55,6 +55,7 @@ public class KodiBindingConstants {
     public static final String CHANNEL_PVR_OPEN_RADIO = "pvr-open-radio";
     public static final String CHANNEL_SHOWNOTIFICATION = "shownotification";
     public static final String CHANNEL_PLAYNOTIFICATION = "playnotification";
+    public static final String CHANNEL_PROFILE = "profile";
 
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_INPUTTEXT = "inputtext";
@@ -103,6 +104,11 @@ public class KodiBindingConstants {
 
     public static final String CHANNEL_SEASON = "season";
     public static final String CHANNEL_EPISODE = "episode";
+
+    public static final String CHANNEL_TYPE_SHOWNOTIFICATION = "shownotification";
+    public static final String CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_TITLE = "title";
+    public static final String CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_DISPLAYTIME = "displayTime";
+    public static final String CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_ICON = "icon";
 
     // Module Properties
     public static final String PROPERTY_VERSION = "version";
