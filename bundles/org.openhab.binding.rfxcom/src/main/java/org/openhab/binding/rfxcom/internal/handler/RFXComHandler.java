@@ -149,15 +149,15 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                                 case CHANNEL_COMMAND:
                                 case CHANNEL_CHIME_SOUND:
                                 case CHANNEL_MOOD:
-                                    postCommand(uid, message.convertToCommand(channelId));
+                                    postNullableCommand(uid, message.convertToCommand(channelId));
                                     break;
 
                                 case CHANNEL_LOW_BATTERY:
-                                    updateState(uid, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
+                                    updateNullableState(uid, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
                                     break;
 
                                 default:
-                                    updateState(uid, message.convertToState(channelId));
+                                    updateNullableState(uid, message.convertToState(channelId));
                                     break;
                             }
                         } catch (RFXComException e) {
@@ -169,6 +169,22 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
         } catch (Exception e) {
             logger.error("Error occurred during message receiving", e);
         }
+    }
+
+    private void updateNullableState(ChannelUID uid, State state) {
+        if (state == null) {
+            return;
+        }
+
+        updateState(uid, state);
+    }
+
+    private void postNullableCommand(ChannelUID uid, Command command) {
+        if (command == null) {
+            return;
+        }
+
+        postCommand(uid, command);
     }
 
     /**
