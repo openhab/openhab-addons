@@ -32,7 +32,7 @@ No autodiscovery available
 ### demo.things
 
 ```
-Thing omnikinverter:omnik:70ecb4f0 "Solar Inverter" [ omnikHostname="igen-wifi.lan",omnikSerial=604455290]
+Thing omnikinverter:omnik:70ecb4f0 "Solar Inverter" [ hostname="igen-wifi.lan",serial=604455290]
 ```
 
 ### demo.items
