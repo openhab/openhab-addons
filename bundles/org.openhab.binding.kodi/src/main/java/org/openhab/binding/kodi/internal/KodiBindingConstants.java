@@ -106,6 +106,8 @@ public class KodiBindingConstants {
 
     public static final String CHANNEL_TYPE_SHOWNOTIFICATION = "shownotification";
     public static final String CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_TITLE = "title";
+    public static final String CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_DISPLAYTIME = "displayTime";
+    public static final String CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_ICON = "icon";
 
     // Module Properties
     public static final String PROPERTY_VERSION = "version";

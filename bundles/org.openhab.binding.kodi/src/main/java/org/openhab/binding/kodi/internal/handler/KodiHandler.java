@@ -14,6 +14,7 @@ package org.openhab.binding.kodi.internal.handler;
 
 import static org.openhab.binding.kodi.internal.KodiBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -91,9 +92,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     private ScheduledFuture<?> statusUpdaterFuture;
 
     public KodiHandler(Thing thing, KodiDynamicStateDescriptionProvider stateDescriptionProvider,
-            WebSocketClient webSocketClient) {
+            WebSocketClient webSocketClient, String callbackUrl) {
         super(thing);
-        connection = new KodiConnection(this, webSocketClient);
+        connection = new KodiConnection(this, webSocketClient, callbackUrl);
 
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
@@ -315,7 +316,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             Channel channel = getThing().getChannel(channelUID);
             if (channel != null) {
                 String title = (String) channel.getConfiguration().get(CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_TITLE);
-                connection.showNotification(title, command.toString());
+                BigDecimal displayTime = (BigDecimal) channel.getConfiguration()
+                        .get(CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_DISPLAYTIME);
+                String icon = (String) channel.getConfiguration().get(CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_ICON);
+                connection.showNotification(title, displayTime, icon, command.toString());
             }
             updateState(channelUID, UnDefType.UNDEF);
         } else if (RefreshType.REFRESH == command) {

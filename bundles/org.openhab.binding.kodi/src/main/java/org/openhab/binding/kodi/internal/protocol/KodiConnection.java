@@ -14,6 +14,7 @@ package org.openhab.binding.kodi.internal.protocol;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -108,10 +109,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private final KodiEventListener listener;
     private final WebSocketClient webSocketClient;
+    private final String callbackUrl;
 
-    public KodiConnection(KodiEventListener listener, WebSocketClient webSocketClient) {
+    public KodiConnection(KodiEventListener listener, WebSocketClient webSocketClient, String callbackUrl) {
         this.listener = listener;
         this.webSocketClient = webSocketClient;
+        this.callbackUrl = callbackUrl;
     }
 
     @Override
@@ -1203,10 +1206,18 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Player.Open", params);
     }
 
-    public synchronized void showNotification(String title, String message) {
+    public synchronized void showNotification(String title, BigDecimal displayTime, String icon, String message) {
         JsonObject params = new JsonObject();
-        params.addProperty("title", title);
         params.addProperty("message", message);
+        if (title != null) {
+            params.addProperty("title", title);
+        }
+        if (displayTime != null) {
+            params.addProperty("displaytime", displayTime.longValue());
+        }
+        if (icon != null) {
+            params.addProperty("image", callbackUrl + "/icon/" + icon.toLowerCase() + ".png");
+        }
         socket.callMethod("GUI.ShowNotification", params);
     }
 

@@ -154,10 +154,21 @@
 		<label>Show Notification</label>
 		<description>Shows a notification on the UI</description>
 		<config-description>
-			<parameter name="title" type="text">
+			<parameter name="title" type="text" required="false">
 				<label>Notification Title</label>
+				<description>Title to show for the notification</description>
 				<default>openHAB</default>
 			</parameter>
+            <parameter name="displayTime" type="integer" required="false" min="100">
+                <label>Display Time</label>
+                <description>Time the notification is displayed in milliseconds.</description>
+                <default>5000</default>
+                <unitLabel>ms</unitLabel>
+            </parameter>
+            <parameter name="icon" type="text" required="false">
+                <label>Icon</label>
+                <description>Icon name to show with the notification</description>
+            </parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="playnotification" advanced="true">
