@@ -7,34 +7,28 @@
 		<parameter name="doorbirdId" type="text" required="true">
 			<label>ID</label>
 			<description>Doorbird Identifier (e.g. 1)</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="doorbirdHost" type="text" required="true">
 			<label>Host</label>
 			<description>Hostname or IP address of Doorbird</description>
-			<required>true</required>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="true">
 			<label>User ID</label>
-			<description>User ID</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="userPassword" type="text" required="true">
 			<label>Password</label>
-			<description>Password</description>
-			<required>true</required>
 			<context>password</context>
 		</parameter>
-		<parameter name="imageRefreshRate" type="integer" min="2" max="600" required="false">
+		<parameter name="imageRefreshRate" type="integer" min="2" max="600">
 			<label>Image Refresh Rate</label>
 			<description>Image refresh rate in seconds (blank to disable)</description>
 		</parameter>
-		<parameter name="doorbellOffDelay" type="integer" min="1" required="false">
+		<parameter name="doorbellOffDelay" type="integer" min="1">
 			<label>Doorbell Off Delay</label>
 			<description>Delay to set doorbell channel OFF after doorbell event (blank to disable)</description>
 		</parameter>
-		<parameter name="motionOffDelay" type="integer" min="1" required="false">
+		<parameter name="motionOffDelay" type="integer" min="1">
 			<label>Motion Off Delay</label>
 			<description>Delay to set motion channel OFF after motion event (blank to disable)</description>
 		</parameter>

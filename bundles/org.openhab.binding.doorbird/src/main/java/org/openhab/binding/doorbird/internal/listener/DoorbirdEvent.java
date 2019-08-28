@@ -76,7 +76,7 @@ public class DoorbirdEvent {
 
         static final @Nullable LazySodiumJava LAZY_SODIUM_JAVA_INSTANCE = loadLazySodiumJava();
 
-        static @Nullable LazySodiumJava loadLazySodiumJava() {
+        private static @Nullable LazySodiumJava loadLazySodiumJava() {
             LOGGER.debug("LazySodium has not been loaded yet. Try to load it now.");
             LazySodiumJava lazySodiumJava = null;
             try {

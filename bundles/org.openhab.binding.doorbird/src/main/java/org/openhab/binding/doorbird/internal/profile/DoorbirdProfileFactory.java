@@ -13,6 +13,7 @@
 package org.openhab.binding.doorbird.internal.profile;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,8 +39,8 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = { ProfileFactory.class, ProfileTypeProvider.class })
 public class DoorbirdProfileFactory implements ProfileFactory, ProfileTypeProvider {
-    private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Stream.of(DoorbirdProfiles.DOORBELL_COMMAND_TYPE)
-            .collect(Collectors.toSet());
+    private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Collections
+            .singleton(DoorbirdProfiles.DOORBELL_COMMAND_TYPE);
 
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Stream
             .of(DoorbirdProfiles.DOORBELL_SWITCH_UID).collect(Collectors.toSet());

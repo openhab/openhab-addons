@@ -24,11 +24,12 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link DoorbirdHandlerFactory} is responsible for creating things and thing
+ * The {@link DoorbirdHandlerFactory} is responsible for creating Doorbird thing
  * handlers.
  *
  * @author Mark Hilbush - Initial contribution
@@ -36,8 +37,15 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.doorbird", service = ThingHandlerFactory.class)
 public class DoorbirdHandlerFactory extends BaseThingHandlerFactory {
-    private @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private final TimeZoneProvider timeZoneProvider;
+    private final HttpClient httpClient;
+
+    @Activate
+    public DoorbirdHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
+            @Reference HttpClientFactory httpClientFactory) {
+        this.timeZoneProvider = timeZoneProvider;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -51,23 +59,5 @@ public class DoorbirdHandlerFactory extends BaseThingHandlerFactory {
             return new DoorbirdHandler(thing, timeZoneProvider, httpClient);
         }
         return null;
-    }
-
-    @Reference
-    protected void setTimeZoneProvider(TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-    }
-
-    protected void unsetTimeZoneProvider(TimeZoneProvider timeZone) {
-        this.timeZoneProvider = null;
-    }
-
-    @Reference
-    public void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    public void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
     }
 }

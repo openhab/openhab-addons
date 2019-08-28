@@ -16,23 +16,17 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.goterl.lazycode</groupId>
-      <artifactId>lazysodium-java</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.goterl.lazycode.lazysodium-java</artifactId>
       <version>4.0.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>5.4.0</version>
+      <version>5.3.0</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
-  <properties>
-    <bnd.importpackage>
-      com.goterl.lazycode.lazysodium.*
-    </bnd.importpackage>
-  </properties>
 
 </project>

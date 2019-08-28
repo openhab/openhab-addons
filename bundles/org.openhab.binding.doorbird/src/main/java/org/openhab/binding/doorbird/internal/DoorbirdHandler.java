@@ -78,7 +78,7 @@ public class DoorbirdHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DoorbirdHandler.class);
 
-    // Get a dedicated threadpool for the listener thread
+    // Get a dedicated threadpool for the long-running listener thread
     private final ScheduledExecutorService doorbirdScheduler = ThreadPoolManager.getScheduledPool("doorbirdHandler");
     private @Nullable ScheduledFuture<?> listenerJob;
     private DoorbirdUdpListener udpListener;
@@ -87,10 +87,8 @@ public class DoorbirdHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> doorbellOffJob;
     private @Nullable ScheduledFuture<?> motionOffJob;
 
-    private @Nullable String doorbirdId;
-    private @Nullable String doorbirdHost;
-    private @Nullable String userId;
-    private @Nullable String userPassword;
+    private @NonNullByDefault({}) DoorbirdConfiguration config;
+
     private @Nullable String authorization;
 
     private TimeZoneProvider timeZoneProvider;
@@ -101,37 +99,31 @@ public class DoorbirdHandler extends BaseThingHandler {
         this.timeZoneProvider = timeZoneProvider;
         this.httpClient = httpClient;
         udpListener = new DoorbirdUdpListener(this);
-        logger.debug("Handler created for {}", thing.getUID());
     }
 
     @Override
     public void initialize() {
-        logger.debug("Handler initializing for {}", getThing().getUID());
         updateStatus(ThingStatus.UNKNOWN);
 
-        DoorbirdConfiguration config = getConfigAs(DoorbirdConfiguration.class);
-        doorbirdId = config.doorbirdId;
-        if (StringUtils.isEmpty(doorbirdId)) {
+        config = getConfigAs(DoorbirdConfiguration.class);
+        if (StringUtils.isEmpty(config.doorbirdId)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Doorbird id not provided");
             return;
         }
-        doorbirdHost = config.doorbirdHost;
-        if (StringUtils.isEmpty(doorbirdHost)) {
+        if (StringUtils.isEmpty(config.doorbirdHost)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Doorbird host not provided");
             return;
         }
-        userId = config.userId;
-        if (StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(config.userId)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User ID not provided");
             return;
         }
-        userPassword = config.userPassword;
-        if (StringUtils.isEmpty(userPassword)) {
+        if (StringUtils.isEmpty(config.userPassword)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User password not provided");
             return;
         }
         // Create the basic authorization string for the HTTP requests
-        authorization = new String(Base64.getEncoder().encode((userId + ":" + userPassword).getBytes()),
+        authorization = new String(Base64.getEncoder().encode((config.userId + ":" + config.userPassword).getBytes()),
                 StandardCharsets.UTF_8);
 
         startImageRefreshJob();
@@ -140,7 +132,6 @@ public class DoorbirdHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Handler disposing for {}", getThing().getUID());
         stopUDPListenerJob();
         stopImageRefreshJob();
         stopDoorbellOffJob();
@@ -149,26 +140,26 @@ public class DoorbirdHandler extends BaseThingHandler {
 
     // Callback used by listener to get Doorbird ID
     public @Nullable String getDoorbirdId() {
-        return doorbirdId;
+        return config.doorbirdId;
     }
 
     // Callback used by listener to get Doorbird host name
     public @Nullable String getDoorbirdHost() {
-        return doorbirdHost;
+        return config.doorbirdHost;
     }
 
     // Callback used by listener to get Doorbird password
     public @Nullable String getUserId() {
-        return userId;
+        return config.userId;
     }
 
     // Callback used by listener to get Doorbird password
     public @Nullable String getUserPassword() {
-        return userPassword;
+        return config.userPassword;
     }
 
     // Callback used by listener to update doorbell channel
-    public synchronized void updateDoorbellChannel(long timestamp) {
+    public void updateDoorbellChannel(long timestamp) {
         logger.debug("Handler: Update DOORBELL channels for thing {}", getThing().getUID());
         DoorbirdImage dbImage = downloadImage(buildUrl("/bha-api/image.cgi"));
         if (dbImage != null) {
@@ -182,7 +173,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     // Callback used by listener to update motion channel
-    public synchronized void updateMotionChannel(long timestamp) {
+    public void updateMotionChannel(long timestamp) {
         logger.debug("Handler: Update MOTION channels for thing {}", getThing().getUID());
         DoorbirdImage dbImage = downloadImage(buildUrl("/bha-api/image.cgi"));
         if (dbImage != null) {
@@ -249,7 +240,7 @@ public class DoorbirdHandler extends BaseThingHandler {
 
     private void refreshDoorbellImageFromHistory() {
         logger.debug("Handler: REFRESH doorbell image channel using most recent doorbell history image");
-        scheduler.schedule(() -> {
+        scheduler.execute(() -> {
             String url = buildUrl("/bha-api/history.cgi", "?event=doorbell&index=1");
             DoorbirdImage dbImage = downloadImage(url);
             if (dbImage != null) {
@@ -258,12 +249,12 @@ public class DoorbirdHandler extends BaseThingHandler {
                 updateState(CHANNEL_DOORBELL_TIMESTAMP, getLocalDateTimeType(dbImage.getTimestamp()));
             }
             updateState(CHANNEL_DOORBELL, OnOffType.OFF);
-        }, 0, TimeUnit.SECONDS);
+        });
     }
 
     private void refreshMotionImageFromHistory() {
         logger.debug("Handler: REFRESH motion image channel using most recent motion history image");
-        scheduler.schedule(() -> {
+        scheduler.execute(() -> {
             String url = buildUrl("/bha-api/history.cgi", "?event=motionsensor&index=1");
             DoorbirdImage dbImage = downloadImage(url);
             if (dbImage != null) {
@@ -272,7 +263,7 @@ public class DoorbirdHandler extends BaseThingHandler {
                 updateState(CHANNEL_MOTION_TIMESTAMP, getLocalDateTimeType(dbImage.getTimestamp()));
             }
             updateState(CHANNEL_MOTION, OnOffType.OFF);
-        }, 0, TimeUnit.SECONDS);
+        });
     }
 
     private void handleLight(Command command) {
@@ -316,9 +307,9 @@ public class DoorbirdHandler extends BaseThingHandler {
 
     private void handleGetImage(Command command) {
         if (command instanceof OnOffType && command.equals(OnOffType.ON)) {
-            scheduler.schedule(() -> {
+            scheduler.execute(() -> {
                 updateImageAndTimestamp();
-            }, 0, TimeUnit.SECONDS);
+            });
         }
     }
 
@@ -360,7 +351,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     private void startImageRefreshJob() {
-        Integer imageRefreshRate = getConfigAs(DoorbirdConfiguration.class).imageRefreshRate;
+        Integer imageRefreshRate = config.imageRefreshRate;
         if (imageRefreshRate != null) {
             imageRefreshJob = scheduler.scheduleWithFixedDelay(() -> {
                 try {
@@ -396,7 +387,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     private void startDoorbellOffJob() {
-        Integer offDelay = getConfigAs(DoorbirdConfiguration.class).doorbellOffDelay;
+        Integer offDelay = config.doorbellOffDelay;
         if (offDelay == null) {
             return;
         }
@@ -418,7 +409,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     private void startMotionOffJob() {
-        Integer offDelay = getConfigAs(DoorbirdConfiguration.class).motionOffDelay;
+        Integer offDelay = config.motionOffDelay;
         if (offDelay == null) {
             return;
         }
@@ -440,7 +431,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     private void updateDoorbellMontage() {
-        if (getConfigAs(DoorbirdConfiguration.class).montageNumImages == 0) {
+        if (config.montageNumImages == 0) {
             return;
         }
         logger.debug("Scheduling DOORBELL montage update to run in {} seconds", MONTAGE_UPDATE_DELAY);
@@ -450,7 +441,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     private void updateMotionMontage() {
-        if (getConfigAs(DoorbirdConfiguration.class).montageNumImages == 0) {
+        if (config.montageNumImages == 0) {
             return;
         }
         logger.debug("Scheduling MOTION montage update to run in {} seconds", MONTAGE_UPDATE_DELAY);
@@ -477,7 +468,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     // Get an array list of history images
     private ArrayList<BufferedImage> getImages(String event) {
         ArrayList<BufferedImage> images = new ArrayList<>();
-        int numberOfImages = getConfigAs(DoorbirdConfiguration.class).montageNumImages;
+        int numberOfImages = config.montageNumImages;
         String url = buildUrl("/bha-api/history.cgi", "?event=" + event + "&index=");
         for (int imageNumber = 1; imageNumber <= numberOfImages; imageNumber++) {
             String imageUrl = url + String.valueOf(imageNumber);
@@ -503,10 +494,8 @@ public class DoorbirdHandler extends BaseThingHandler {
 
     // Assemble the array of images into a single scaled image
     private @Nullable State createMontage(ArrayList<BufferedImage> images) {
-        int height = (int) (images.get(0).getHeight()
-                * (getConfigAs(DoorbirdConfiguration.class).montageScaleFactor / 100.0));
-        int width = (int) (images.get(0).getWidth()
-                * (getConfigAs(DoorbirdConfiguration.class).montageScaleFactor / 100.0));
+        int height = (int) (images.get(0).getHeight() * (config.montageScaleFactor / 100.0));
+        int width = (int) (images.get(0).getWidth() * (config.montageScaleFactor / 100.0));
         int widthTotal = width * images.size();
         logger.debug("Dimensions of final montage image: w={}, h={}", widthTotal, height);
 
