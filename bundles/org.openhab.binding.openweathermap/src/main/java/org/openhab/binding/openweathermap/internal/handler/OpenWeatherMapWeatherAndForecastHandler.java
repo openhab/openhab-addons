@@ -43,6 +43,8 @@ import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConn
 import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonDailyForecastData;
 import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonHourlyForecastData;
 import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonWeatherData;
+import org.openhab.binding.openweathermap.internal.model.base.Rain;
+import org.openhab.binding.openweathermap.internal.model.base.Snow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -234,73 +236,80 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     private void updateCurrentChannel(ChannelUID channelUID) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (weatherData != null) {
+        OpenWeatherMapJsonWeatherData localWeatherData = weatherData;
+        if (localWeatherData != null) {
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case CHANNEL_STATION_ID:
-                    state = getStringTypeState(weatherData.getId().toString());
+                    state = getStringTypeState(localWeatherData.getId().toString());
                     break;
                 case CHANNEL_STATION_NAME:
-                    state = getStringTypeState(weatherData.getName());
+                    state = getStringTypeState(localWeatherData.getName());
                     break;
                 case CHANNEL_STATION_LOCATION:
-                    state = getPointTypeState(weatherData.getCoord().getLat(), weatherData.getCoord().getLon());
+                    state = getPointTypeState(localWeatherData.getCoord().getLat(),
+                            localWeatherData.getCoord().getLon());
                     break;
                 case CHANNEL_TIME_STAMP:
-                    state = getDateTimeTypeState(weatherData.getDt());
+                    state = getDateTimeTypeState(localWeatherData.getDt());
                     break;
                 case CHANNEL_CONDITION:
-                    if (!weatherData.getWeather().isEmpty()) {
-                        state = getStringTypeState(weatherData.getWeather().get(0).getDescription());
+                    if (!localWeatherData.getWeather().isEmpty()) {
+                        state = getStringTypeState(localWeatherData.getWeather().get(0).getDescription());
                     }
                     break;
                 case CHANNEL_CONDITION_ID:
-                    if (!weatherData.getWeather().isEmpty()) {
-                        state = getStringTypeState(weatherData.getWeather().get(0).getId().toString());
+                    if (!localWeatherData.getWeather().isEmpty()) {
+                        state = getStringTypeState(localWeatherData.getWeather().get(0).getId().toString());
                     }
                     break;
                 case CHANNEL_CONDITION_ICON:
-                    if (!weatherData.getWeather().isEmpty()) {
-                        state = getRawTypeState(
-                                OpenWeatherMapConnection.getWeatherIcon(weatherData.getWeather().get(0).getIcon()));
+                    if (!localWeatherData.getWeather().isEmpty()) {
+                        state = getRawTypeState(OpenWeatherMapConnection
+                                .getWeatherIcon(localWeatherData.getWeather().get(0).getIcon()));
                     }
                     break;
                 case CHANNEL_CONDITION_ICON_ID:
-                    if (!weatherData.getWeather().isEmpty()) {
-                        state = getStringTypeState(weatherData.getWeather().get(0).getIcon());
+                    if (!localWeatherData.getWeather().isEmpty()) {
+                        state = getStringTypeState(localWeatherData.getWeather().get(0).getIcon());
                     }
                     break;
                 case CHANNEL_TEMPERATURE:
-                    state = getQuantityTypeState(weatherData.getMain().getTemp(), CELSIUS);
+                    state = getQuantityTypeState(localWeatherData.getMain().getTemp(), CELSIUS);
                     break;
                 case CHANNEL_PRESSURE:
-                    state = getQuantityTypeState(weatherData.getMain().getPressure(), HECTO(PASCAL));
+                    state = getQuantityTypeState(localWeatherData.getMain().getPressure(), HECTO(PASCAL));
                     break;
                 case CHANNEL_HUMIDITY:
-                    state = getQuantityTypeState(weatherData.getMain().getHumidity(), PERCENT);
+                    state = getQuantityTypeState(localWeatherData.getMain().getHumidity(), PERCENT);
                     break;
                 case CHANNEL_WIND_SPEED:
-                    state = getQuantityTypeState(weatherData.getWind().getSpeed(), METRE_PER_SECOND);
+                    state = getQuantityTypeState(localWeatherData.getWind().getSpeed(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_WIND_DIRECTION:
-                    state = getQuantityTypeState(weatherData.getWind().getDeg(), DEGREE_ANGLE);
+                    state = getQuantityTypeState(localWeatherData.getWind().getDeg(), DEGREE_ANGLE);
                     break;
                 case CHANNEL_GUST_SPEED:
-                    state = getQuantityTypeState(weatherData.getWind().getGust(), METRE_PER_SECOND);
+                    state = getQuantityTypeState(localWeatherData.getWind().getGust(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_CLOUDINESS:
-                    state = getQuantityTypeState(weatherData.getClouds().getAll(), PERCENT);
+                    state = getQuantityTypeState(localWeatherData.getClouds().getAll(), PERCENT);
                     break;
                 case CHANNEL_RAIN:
-                    state = getQuantityTypeState(weatherData.getRain() == null ? 0 : weatherData.getRain().getVolume(),
-                            MILLI(METRE));
+                    Rain rain = localWeatherData.getRain();
+                    state = getQuantityTypeState(rain == null ? 0 : rain.getVolume(), MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    state = getQuantityTypeState(weatherData.getSnow() == null ? 0 : weatherData.getSnow().getVolume(),
-                            MILLI(METRE));
+                    Snow snow = localWeatherData.getSnow();
+                    state = getQuantityTypeState(snow == null ? 0 : snow.getVolume(), MILLI(METRE));
                     break;
                 case CHANNEL_VISIBILITY:
-                    state = new QuantityType<>(weatherData.getVisibility(), METRE).toUnit(KILO(METRE));
+                    state = new QuantityType<>(localWeatherData.getVisibility(), METRE).toUnit(KILO(METRE));
+                    if (state == null) {
+                        logger.debug("State conversion failed, cannot update state.");
+                        return;
+                    }
+
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -376,12 +385,12 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(forecastData.getClouds().getAll(), PERCENT);
                     break;
                 case CHANNEL_RAIN:
-                    state = getQuantityTypeState(
-                            forecastData.getRain() == null ? 0 : forecastData.getRain().getVolume(), MILLI(METRE));
+                    Rain rain = forecastData.getRain();
+                    state = getQuantityTypeState(rain == null ? 0 : rain.getVolume(), MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    state = getQuantityTypeState(
-                            forecastData.getSnow() == null ? 0 : forecastData.getSnow().getVolume(), MILLI(METRE));
+                    Snow snow = forecastData.getSnow();
+                    state = getQuantityTypeState(snow == null ? 0 : snow.getVolume(), MILLI(METRE));
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -454,12 +463,12 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(forecastData.getClouds(), PERCENT);
                     break;
                 case CHANNEL_RAIN:
-                    state = getQuantityTypeState(forecastData.getRain() == null ? 0 : forecastData.getRain(),
-                            MILLI(METRE));
+                    Double rain = forecastData.getRain();
+                    state = getQuantityTypeState(rain == null ? 0 : rain, MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    state = getQuantityTypeState(forecastData.getSnow() == null ? 0 : forecastData.getSnow(),
-                            MILLI(METRE));
+                    Double snow = forecastData.getSnow();
+                    state = getQuantityTypeState(snow == null ? 0 : snow, MILLI(METRE));
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
