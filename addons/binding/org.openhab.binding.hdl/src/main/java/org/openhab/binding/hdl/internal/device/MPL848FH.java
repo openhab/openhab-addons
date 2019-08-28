@@ -65,13 +65,12 @@ public class MPL848FH extends Device {
     public void treatHDLPacketForDevice(HdlPacket p) {
         switch (p.commandType) {
             case Broadcast_Temperature:
-                if (p.data[1] >= 0) {
-                    setTemperatureValue(p.data[1]);
-                } else {
-                    LOGGER.debug(
-                            "Temperatur is below 0, not possible?, existing value is: {}, data 1 is: {}, data 2 is: {} , data 3 is: {} , data 4 is: {}",
-                            getTemperatureValue(), p.data[1], p.data[2], p.data[3], p.data[4]);
-                }
+                String InToHex = String.format("%02X", p.data[5]) + String.format("%02X", p.data[4])
+                        + String.format("%02X", p.data[3]) + String.format("%02X", p.data[2]);
+
+                Long i = Long.valueOf(InToHex, 16);
+                Float tempfloat = Float.intBitsToFloat(i.intValue());
+                setTemperatureValue(tempfloat);
                 break;
             case Response_Panel_Control:
                 switch (p.data[0]) {
@@ -292,7 +291,7 @@ public class MPL848FH extends Device {
     }
 
     /**
-     * Sets the actual temperature for this 12in1 sensor.
+     * Sets the actual temperature for this DLP panel.
      *
      * @param value the actual temperature value as provided
      */
