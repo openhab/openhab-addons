@@ -39,6 +39,7 @@ import org.openhab.binding.kodi.internal.model.KodiDuration;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannelGroup;
+import org.openhab.binding.kodi.internal.model.KodiProfile;
 import org.openhab.binding.kodi.internal.model.KodiSubtitle;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.model.KodiUniqueID;
@@ -1108,6 +1109,18 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
+    public void updateCurrentProfile() {
+        if (socket.isConnected()) {
+            JsonElement response = socket.callMethod("Profiles.GetCurrentProfile");
+
+            try {
+                listener.updateCurrentProfile(gson.fromJson(response, KodiProfile.class).getLabel());
+            } catch (JsonSyntaxException e) {
+                logger.error("Json syntax exception occurred: {}", e.getMessage(), e);
+            }
+        }
+    }
+
     public synchronized void playURI(String uri) {
         JsonObject item = new JsonObject();
         item.addProperty("file", uri);
@@ -1306,5 +1319,26 @@ public class KodiConnection implements KodiClientSocketEventListener {
     public void sendSystemCommand(String command) {
         String method = "System." + command;
         socket.callMethod(method);
+    }
+
+    public void profile(String profile) {
+        JsonObject params = new JsonObject();
+        params.addProperty("profile", profile);
+        socket.callMethod("Profiles.LoadProfile", params);
+    }
+
+    public KodiProfile[] getProfiles() {
+        KodiProfile[] profiles = new KodiProfile[0];
+        if (socket.isConnected()) {
+            JsonElement response = socket.callMethod("Profiles.GetProfiles");
+
+            try {
+                JsonObject profilesJson = response.getAsJsonObject();
+                profiles = gson.fromJson(profilesJson.get("profiles"), KodiProfile[].class);
+            } catch (JsonSyntaxException e) {
+                logger.error("Json syntax exception occurred: {}", e.getMessage(), e);
+            }
+        }
+        return profiles;
     }
 }

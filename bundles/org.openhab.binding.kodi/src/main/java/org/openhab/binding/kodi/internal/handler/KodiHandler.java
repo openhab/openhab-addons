@@ -59,6 +59,7 @@ import org.openhab.binding.kodi.internal.config.KodiConfig;
 import org.openhab.binding.kodi.internal.model.KodiAudioStream;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
+import org.openhab.binding.kodi.internal.model.KodiProfile;
 import org.openhab.binding.kodi.internal.model.KodiSubtitle;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
@@ -255,6 +256,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
                 }
                 break;
+            case CHANNEL_PROFILE:
+                if (command instanceof StringType) {
+                    connection.profile(command.toString());
+                }
+                break;
             case CHANNEL_ARTIST:
             case CHANNEL_ALBUM:
             case CHANNEL_TITLE:
@@ -265,6 +271,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_THUMBNAIL:
             case CHANNEL_FANART:
             case CHANNEL_AUDIO_CODEC:
+                break;
             case CHANNEL_AUDIO_INDEX:
                 if (command instanceof DecimalType) {
                     connection.setAudioStream(((DecimalType) command).intValue());
@@ -604,6 +611,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                         updateFavoriteChannelStateDescription();
                         updatePVRChannelStateDescription(PVR_TV, CHANNEL_PVR_OPEN_TV);
                         updatePVRChannelStateDescription(PVR_RADIO, CHANNEL_PVR_OPEN_RADIO);
+                        updateProfileStateDescription(CHANNEL_PROFILE);
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "No connection established");
@@ -644,6 +652,16 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         }
     }
 
+    private void updateProfileStateDescription(final String channelId) {
+        if (isLinked(channelId)) {
+            List<StateOption> options = new ArrayList<>();
+            for (KodiProfile profile : connection.getProfiles()) {
+                options.add(new StateOption(profile.getLabel(), profile.getLabel()));
+            }
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
+        }
+    }
+
     @Override
     public void updateAudioStreamOptions(List<KodiAudioStream> audios) {
         if (isLinked(CHANNEL_AUDIO_INDEX)) {
@@ -677,6 +695,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             updateStatus(ThingStatus.ONLINE);
             scheduler.schedule(() -> connection.getSystemProperties(), 1, TimeUnit.SECONDS);
             scheduler.schedule(() -> connection.updateVolume(), 1, TimeUnit.SECONDS);
+            scheduler.schedule(() -> connection.updateCurrentProfile(), 1, TimeUnit.SECONDS);
             try {
                 String version = connection.getVersion();
                 thing.setProperty(PROPERTY_VERSION, version);
@@ -934,6 +953,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateDuration(long duration) {
         updateState(CHANNEL_DURATION, createQuantityState(duration, SmartHomeUnits.SECOND));
+    }
+
+    @Override
+    public void updateCurrentProfile(String profile) {
+        updateState(CHANNEL_PROFILE, new StringType(profile));
     }
 
     @Override
