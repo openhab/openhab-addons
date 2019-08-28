@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 
 /**
  * Window/Door-Sensor with States Open/Closed/Tilt, Supply voltage monitor
@@ -52,15 +53,15 @@ public class A5_14_09 extends A5_14 {
         return UnDefType.UNDEF;
     }
 
-    private State getContact() {
+    private State getContact(boolean inverted) {
         byte ct = (byte) ((getDB_0() & 0x06) >> 1);
 
         switch (ct) {
             case CLOSED:
-                return OpenClosedType.CLOSED;
+                return inverted? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             case OPEN:
             case TILTED:
-                return OpenClosedType.OPEN;
+                return inverted? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         }
 
         return UnDefType.UNDEF;
@@ -73,7 +74,8 @@ public class A5_14_09 extends A5_14 {
             case CHANNEL_WINDOWHANDLESTATE:
                 return getWindowhandleState();
             case CHANNEL_CONTACT:
-                return getContact();
+                EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
+                return getContact(c.inverted);
         }
 
         return super.convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);
