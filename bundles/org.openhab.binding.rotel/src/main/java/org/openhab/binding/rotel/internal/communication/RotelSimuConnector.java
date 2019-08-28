@@ -15,6 +15,7 @@ package org.openhab.binding.rotel.internal.communication;
 import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -79,8 +80,8 @@ public class RotelSimuConnector extends RotelConnector {
      * @param model the projector model in use
      * @param protocol the protocol to be used
      */
-    public RotelSimuConnector(RotelModel model, RotelProtocol protocol) {
-        super(model, protocol, true);
+    public RotelSimuConnector(RotelModel model, RotelProtocol protocol, Map<RotelSource, String> sourcesLabels) {
+        super(model, protocol, sourcesLabels, true);
         this.minVolume = 0;
         this.maxVolume = model.hasVolumeControl() ? model.getVolumeMax() : 0;
         this.maxToneLevel = model.hasToneControl() ? model.getToneLevelMax() : 0;
@@ -1000,7 +1001,7 @@ public class RotelSimuConnector extends RotelConnector {
         } else if (mute) {
             text = "MUTE ON";
         } else {
-            text = source.getLabel() + " " + getSourceLabel(recordSource);
+            text = getSourceLabel(source, false) + " " + getSourceLabel(recordSource, true);
         }
         return text;
     }
@@ -1010,7 +1011,7 @@ public class RotelSimuConnector extends RotelConnector {
         if (!power) {
             text = "";
         } else {
-            text = source.getLabel();
+            text = getSourceLabel(source, false);
         }
         return text;
     }
@@ -1020,13 +1021,13 @@ public class RotelSimuConnector extends RotelConnector {
         if (!power) {
             text = "";
         } else {
-            text = "REC " + getSourceLabel(recordSource);
+            text = "REC " + getSourceLabel(recordSource, true);
         }
         return text;
     }
 
     private String buildZonePowerResponse(String zone, boolean powerZone, RotelSource sourceZone) {
-        String state = powerZone ? getSourceLabel(sourceZone) : "OFF";
+        String state = powerZone ? getSourceLabel(sourceZone, true) : "OFF";
         return zone + " " + state;
     }
 
@@ -1136,7 +1137,15 @@ public class RotelSimuConnector extends RotelConnector {
         return text;
     }
 
-    private String getSourceLabel(RotelSource source) {
-        return source.getName().equals(RotelSource.CAT1_FOLLOW_MAIN.getName()) ? "SOURCE" : source.getLabel();
+    private String getSourceLabel(RotelSource source, boolean considerFollowMain) {
+        String label;
+        if (considerFollowMain && source.getName().equals(RotelSource.CAT1_FOLLOW_MAIN.getName())) {
+            label = "SOURCE";
+        } else if (sourcesLabels.get(source) != null) {
+            label = sourcesLabels.get(source);
+        } else {
+            label = source.getLabel();
+        }
+        return label;
     }
 }

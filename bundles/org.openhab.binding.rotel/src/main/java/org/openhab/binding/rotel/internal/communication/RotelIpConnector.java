@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,8 +51,9 @@ public class RotelIpConnector extends RotelConnector {
      * @param model the projector model in use
      * @param protocol the protocol to be used
      */
-    public RotelIpConnector(String address, Integer port, RotelModel model, RotelProtocol protocol) {
-        super(model, protocol, false);
+    public RotelIpConnector(String address, Integer port, RotelModel model, RotelProtocol protocol,
+            Map<RotelSource, String> sourcesLabels) {
+        super(model, protocol, sourcesLabels, false);
 
         this.address = address;
         this.port = port;

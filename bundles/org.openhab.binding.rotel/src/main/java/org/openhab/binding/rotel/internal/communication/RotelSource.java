@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.rotel.internal.RotelException;
 
 /**
@@ -337,15 +336,6 @@ public enum RotelSource {
     }
 
     /**
-     * Set the label of the source
-     *
-     * @param label the new label
-     */
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    /**
      * Get the command to select the source
      *
      * @return the command
@@ -400,27 +390,26 @@ public enum RotelSource {
     }
 
     /**
-     * Get the list of {@link StateOption} associated to the available sources for a particular category of models
+     * Get the list of {@link RotelSource} available for a particular category of models
      *
      * @param category a category of models
      * @param type a source type (0 for global source, 1 for main zone, 2 for zone 2, 3 for zone 3, 4 for zone 4 and 5
      *            for record source)
      *
-     * @return the list of {@link StateOption} associated to the available sources in a zone for a provided category of
-     *         models
+     * @return the list of {@link RotelSource} available in a zone for a provided category of models
      */
-    public static List<StateOption> getStateOptions(int category, int type) {
-        List<StateOption> options = new ArrayList<>();
+    public static List<RotelSource> getSources(int category, int type) {
+        List<RotelSource> sources = new ArrayList<>();
         for (RotelSource value : RotelSource.values()) {
             if (value.getCategory() == category && ((type == 0 && value.getCommand() != null)
                     || (type == 1 && value.getMainZoneCommand() != null)
                     || (type == 2 && value.getZone2Command() != null) || (type == 3 && value.getZone3Command() != null)
                     || (type == 4 && value.getZone4Command() != null)
                     || (type == 5 && value.getRecordCommand() != null))) {
-                options.add(new StateOption(value.getName(), value.getLabel()));
+                sources.add(value);
             }
         }
-        return options;
+        return sources;
     }
 
     /**
@@ -440,32 +429,6 @@ public enum RotelSource {
             }
         }
         throw new RotelException("Invalid name for a source: " + name);
-    }
-
-    /**
-     * Get the source associated to a label displayed on the Rotel front panel for a particular category of models
-     * Search for the source with the longest matching label
-     *
-     * @param category a category of models
-     * @param label the label used to identify the source
-     *
-     * @return the source associated to the searched label for the provided category of models
-     *
-     * @throws RotelException - If no source is associated to the searched label for the provided category
-     */
-    public static RotelSource getFromLabel(int category, String label) throws RotelException {
-        RotelSource result = null;
-        for (RotelSource value : RotelSource.values()) {
-            if (value.getCategory() == category && label.startsWith(value.getLabel())) {
-                if (result == null || result.getLabel().length() < value.getLabel().length()) {
-                    result = value;
-                }
-            }
-        }
-        if (result != null) {
-            return result;
-        }
-        throw new RotelException("Invalid label for a source: " + label);
     }
 
     /**

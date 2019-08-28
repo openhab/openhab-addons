@@ -506,69 +506,58 @@ public enum RotelModel {
     }
 
     /**
-     * Set a source label
+     * Get the list of available {@link RotelSource}
      *
-     * @param name the source name
-     * @param label the source label
-     *
-     * @throws RotelException - If no source with this name exists
+     * @return the list of available {@link RotelSource}
      */
-    public void setSourceLabel(String name, String label) throws RotelException {
-        RotelSource.getFromName(sourceCategory, name).setLabel(label);
+    public List<RotelSource> getSources() {
+        return hasSourceControl() ? RotelSource.getSources(sourceCategory, 0) : new ArrayList<>();
     }
 
     /**
-     * Get the list of {@link StateOption} associated to the available sources
+     * Get the list of available {@link RotelSource} in the main zone
      *
-     * @return the list of {@link StateOption} associated to the available sources
+     * @return the list of available {@link RotelSource} in the main zone
      */
-    public List<StateOption> getSourceStateOptions() {
-        return hasSourceControl() ? RotelSource.getStateOptions(sourceCategory, 0) : new ArrayList<>();
+    public List<RotelSource> getMainZoneSources() {
+        return (hasSourceControl() && hasOtherThanPrimaryCommands()) ? RotelSource.getSources(sourceCategory, 1)
+                : new ArrayList<>();
     }
 
     /**
-     * Get the list of {@link StateOption} associated to the available sources in the main zone
+     * Get the list of available {@link RotelSource} in the zone 2
      *
-     * @return the list of {@link StateOption} associated to the available sources
+     * @return the list of available {@link RotelSource} in the zone 2
      */
-    public List<StateOption> getMainZoneSourceStateOptions() {
-        return hasZone2SourceControl() ? RotelSource.getStateOptions(sourceCategory, 1) : new ArrayList<>();
+    public List<RotelSource> getZone2Sources() {
+        return hasZone2SourceControl() ? RotelSource.getSources(sourceCategory, 2) : new ArrayList<>();
     }
 
     /**
-     * Get the list of {@link StateOption} associated to the available sources in the zone 2
+     * Get the list of available {@link RotelSource} in the zone 3
      *
-     * @return the list of {@link StateOption} associated to the available sources
+     * @return the list of available {@link RotelSource} in the zone 3
      */
-    public List<StateOption> getZone2SourceStateOptions() {
-        return hasZone2SourceControl() ? RotelSource.getStateOptions(sourceCategory, 2) : new ArrayList<>();
+    public List<RotelSource> getZone3Sources() {
+        return hasZone3SourceControl() ? RotelSource.getSources(sourceCategory, 3) : new ArrayList<>();
     }
 
     /**
-     * Get the list of {@link StateOption} associated to the available sources in the zone 3
+     * Get the list of available {@link RotelSource} in the zone 4
      *
-     * @return the list of {@link StateOption} associated to the available sources
+     * @return the list of available {@link RotelSource} in the zone 4
      */
-    public List<StateOption> getZone3SourceStateOptions() {
-        return hasZone3SourceControl() ? RotelSource.getStateOptions(sourceCategory, 3) : new ArrayList<>();
+    public List<RotelSource> getZone4Sources() {
+        return hasZone4SourceControl() ? RotelSource.getSources(sourceCategory, 4) : new ArrayList<>();
     }
 
     /**
-     * Get the list of {@link StateOption} associated to the available sources in the zone 4
+     * Get the list of available {@link RotelSource} for recording
      *
-     * @return the list of {@link StateOption} associated to the available sources
+     * @return the list of available {@link RotelSource} for recording
      */
-    public List<StateOption> getZone4SourceStateOptions() {
-        return hasZone4SourceControl() ? RotelSource.getStateOptions(sourceCategory, 4) : new ArrayList<>();
-    }
-
-    /**
-     * Get the list of {@link StateOption} associated to the available sources for recording
-     *
-     * @return the list of {@link StateOption} associated to the available sources
-     */
-    public List<StateOption> getRecordSourceStateOptions() {
-        return hasSourceControl() ? RotelSource.getStateOptions(sourceCategory, 5) : new ArrayList<>();
+    public List<RotelSource> getRecordSources() {
+        return hasSourceControl() ? RotelSource.getSources(sourceCategory, 5) : new ArrayList<>();
     }
 
     /**
@@ -660,19 +649,6 @@ public enum RotelModel {
      */
     public RotelSource getRecordSourceFromCommand(RotelCommand command) throws RotelException {
         return RotelSource.getFromCommand(sourceCategory, command, 5);
-    }
-
-    /**
-     * Get the source associated to a label displayed on the Rotel front panel
-     *
-     * @param label the label used to identify the source
-     *
-     * @return the source associated to the searched label
-     *
-     * @throws RotelException - If no source is associated to the searched label
-     */
-    public RotelSource getSourceFromLabel(String label) throws RotelException {
-        return RotelSource.getFromLabel(sourceCategory, label);
     }
 
     /**

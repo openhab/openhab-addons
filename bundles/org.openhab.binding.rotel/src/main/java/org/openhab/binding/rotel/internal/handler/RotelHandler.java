@@ -15,7 +15,10 @@ package org.openhab.binding.rotel.internal.handler;
 import static org.openhab.binding.rotel.internal.RotelBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +40,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.rotel.internal.RotelBindingConstants;
@@ -82,7 +86,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private RotelStateDescriptionOptionProvider stateDescriptionProvider;
     private SerialPortManager serialPortManager;
 
-    private RotelConnector connector = new RotelSimuConnector(DEFAULT_MODEL, RotelProtocol.HEX);
+    private RotelConnector connector = new RotelSimuConnector(DEFAULT_MODEL, RotelProtocol.HEX,
+            new HashMap<RotelSource, String>());
 
     private int minVolume;
     private int maxVolume;
@@ -284,7 +289,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         }
         logger.debug("rotelProtocol {}", rotelProtocol.getName());
 
-        connector = new RotelSimuConnector(rotelModel, rotelProtocol);
+        Map<RotelSource, String> sourcesLabels = new HashMap<>();
+
+        connector = new RotelSimuConnector(rotelModel, rotelProtocol, sourcesLabels);
 
         if (rotelModel.hasVolumeControl()) {
             maxVolume = rotelModel.getVolumeMax();
@@ -318,74 +325,77 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         if (configError != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
         } else {
-            // Set custom input labels
-            try {
-                if (config.inputLabelCd != null && !config.inputLabelCd.isEmpty()) {
-                    rotelModel.setSourceLabel("CD", config.inputLabelCd);
+            for (RotelSource src : rotelModel.getSources()) {
+                // Consider custom input labels
+                if (src.getName().equals("CD") && config.inputLabelCd != null && !config.inputLabelCd.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelCd);
+                } else if (src.getName().equals("TUNER") && config.inputLabelTuner != null
+                        && !config.inputLabelTuner.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelTuner);
+                } else if (src.getName().equals("TAPE") && config.inputLabelTape != null
+                        && !config.inputLabelTape.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelTape);
+                } else if (src.getName().equals("PHONO") && config.inputLabelPhono != null
+                        && !config.inputLabelPhono.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelPhono);
+                } else if (src.getName().equals("VIDEO1") && config.inputLabelVideo1 != null
+                        && !config.inputLabelVideo1.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelVideo1);
+                } else if (src.getName().equals("VIDEO2") && config.inputLabelVideo2 != null
+                        && !config.inputLabelVideo2.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelVideo2);
+                } else if (src.getName().equals("VIDEO3") && config.inputLabelVideo3 != null
+                        && !config.inputLabelVideo3.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelVideo3);
+                } else if (src.getName().equals("VIDEO4") && config.inputLabelVideo4 != null
+                        && !config.inputLabelVideo4.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelVideo4);
+                } else if (src.getName().equals("VIDEO5") && config.inputLabelVideo5 != null
+                        && !config.inputLabelVideo5.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelVideo5);
+                } else if (src.getName().equals("VIDEO6") && config.inputLabelVideo6 != null
+                        && !config.inputLabelVideo6.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelVideo6);
+                } else if (src.getName().equals("USB") && config.inputLabelUsb != null
+                        && !config.inputLabelUsb.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelUsb);
+                } else if (src.getName().equals("MULTI") && config.inputLabelMulti != null
+                        && !config.inputLabelMulti.isEmpty()) {
+                    sourcesLabels.put(src, config.inputLabelMulti);
+                } else {
+                    sourcesLabels.put(src, src.getLabel());
                 }
-                if (config.inputLabelTuner != null && !config.inputLabelTuner.isEmpty()) {
-                    rotelModel.setSourceLabel("TUNER", config.inputLabelTuner);
-                }
-                if (config.inputLabelTape != null && !config.inputLabelTape.isEmpty()) {
-                    rotelModel.setSourceLabel("TAPE", config.inputLabelTape);
-                }
-                if (config.inputLabelPhono != null && !config.inputLabelPhono.isEmpty()) {
-                    rotelModel.setSourceLabel("PHONO", config.inputLabelPhono);
-                }
-                if (config.inputLabelVideo1 != null && !config.inputLabelVideo1.isEmpty()) {
-                    rotelModel.setSourceLabel("VIDEO1", config.inputLabelVideo1);
-                }
-                if (config.inputLabelVideo2 != null && !config.inputLabelVideo2.isEmpty()) {
-                    rotelModel.setSourceLabel("VIDEO2", config.inputLabelVideo2);
-                }
-                if (config.inputLabelVideo3 != null && !config.inputLabelVideo3.isEmpty()) {
-                    rotelModel.setSourceLabel("VIDEO3", config.inputLabelVideo3);
-                }
-                if (config.inputLabelVideo4 != null && !config.inputLabelVideo4.isEmpty()) {
-                    rotelModel.setSourceLabel("VIDEO4", config.inputLabelVideo4);
-                }
-                if (config.inputLabelVideo5 != null && !config.inputLabelVideo5.isEmpty()) {
-                    rotelModel.setSourceLabel("VIDEO5", config.inputLabelVideo5);
-                }
-                if (config.inputLabelVideo6 != null && !config.inputLabelVideo6.isEmpty()) {
-                    rotelModel.setSourceLabel("VIDEO6", config.inputLabelVideo6);
-                }
-                if (config.inputLabelUsb != null && !config.inputLabelUsb.isEmpty()) {
-                    rotelModel.setSourceLabel("USB", config.inputLabelUsb);
-                }
-                if (config.inputLabelMulti != null && !config.inputLabelMulti.isEmpty()) {
-                    rotelModel.setSourceLabel("MULTI", config.inputLabelMulti);
-                }
-            } catch (RotelException e) {
-                logger.debug("Set input labels failed: {}", e.getMessage());
             }
 
-            if (!USE_SIMULATED_DEVICE && config.serialPort != null) {
-                connector = new RotelSerialConnector(serialPortManager, config.serialPort, rotelModel, rotelProtocol);
-            } else if (!USE_SIMULATED_DEVICE) {
-                connector = new RotelIpConnector(config.host, config.port, rotelModel, rotelProtocol);
+            if (USE_SIMULATED_DEVICE) {
+                connector = new RotelSimuConnector(rotelModel, rotelProtocol, sourcesLabels);
+            } else if (config.serialPort != null) {
+                connector = new RotelSerialConnector(serialPortManager, config.serialPort, rotelModel, rotelProtocol,
+                        sourcesLabels);
+            } else {
+                connector = new RotelIpConnector(config.host, config.port, rotelModel, rotelProtocol, sourcesLabels);
             }
 
             if (rotelModel.hasSourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SOURCE),
-                        rotelModel.getSourceStateOptions());
+                        getStateOptions(rotelModel.getSources(), sourcesLabels));
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_MAIN_SOURCE),
-                        rotelModel.getSourceStateOptions());
+                        getStateOptions(rotelModel.getSources(), sourcesLabels));
                 stateDescriptionProvider.setStateOptions(
                         new ChannelUID(getThing().getUID(), CHANNEL_MAIN_RECORD_SOURCE),
-                        rotelModel.getRecordSourceStateOptions());
+                        getStateOptions(rotelModel.getRecordSources(), sourcesLabels));
             }
             if (rotelModel.hasZone2SourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE2_SOURCE),
-                        rotelModel.getZone2SourceStateOptions());
+                        getStateOptions(rotelModel.getZone2Sources(), sourcesLabels));
             }
             if (rotelModel.hasZone3SourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE3_SOURCE),
-                        rotelModel.getZone3SourceStateOptions());
+                        getStateOptions(rotelModel.getZone3Sources(), sourcesLabels));
             }
             if (rotelModel.hasZone4SourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE4_SOURCE),
-                        rotelModel.getZone4SourceStateOptions());
+                        getStateOptions(rotelModel.getZone4Sources(), sourcesLabels));
             }
             if (rotelModel.hasDspControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_DSP),
@@ -413,6 +423,15 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         cancelReconnectJob();
         closeConnection();
         super.dispose();
+    }
+
+    public List<StateOption> getStateOptions(List<RotelSource> list, Map<RotelSource, String> sourcesLabels) {
+        List<StateOption> options = new ArrayList<>();
+        for (RotelSource item : list) {
+            String label = sourcesLabels.get(item);
+            options.add(new StateOption(item.getName(), label == null ? item.getLabel() : label));
+        }
+        return options;
     }
 
     @Override

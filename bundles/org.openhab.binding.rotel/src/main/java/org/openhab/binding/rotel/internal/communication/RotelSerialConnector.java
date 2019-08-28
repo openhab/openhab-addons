@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,8 +54,8 @@ public class RotelSerialConnector extends RotelConnector {
      * @param protocol the protocol to be used
      */
     public RotelSerialConnector(SerialPortManager serialPortManager, String serialPortName, RotelModel model,
-            RotelProtocol protocol) {
-        super(model, protocol, false);
+            RotelProtocol protocol, Map<RotelSource, String> sourcesLabels) {
+        super(model, protocol, sourcesLabels, false);
 
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;

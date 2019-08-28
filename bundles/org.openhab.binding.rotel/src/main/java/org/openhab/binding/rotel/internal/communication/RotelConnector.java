@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -173,6 +174,7 @@ public abstract class RotelConnector {
 
     private RotelModel model;
     private RotelProtocol protocol;
+    protected Map<RotelSource, String> sourcesLabels;
     private boolean simu;
 
     /** The output stream */
@@ -220,9 +222,11 @@ public abstract class RotelConnector {
      * @param protocol the protocol to be used
      * @param simu whether the communication is simulated or real
      */
-    public RotelConnector(RotelModel model, RotelProtocol protocol, boolean simu) {
+    public RotelConnector(RotelModel model, RotelProtocol protocol, Map<RotelSource, String> sourcesLabels,
+            boolean simu) {
         this.model = model;
         this.protocol = protocol;
+        this.sourcesLabels = sourcesLabels;
         this.simu = simu;
     }
 
@@ -969,13 +973,20 @@ public abstract class RotelConnector {
         String value = text.trim();
         RotelSource source = null;
         if (!value.isEmpty()) {
-            try {
-                if (acceptFollowMain && SOURCE.equalsIgnoreCase(value)) {
+            if (acceptFollowMain && SOURCE.equalsIgnoreCase(value)) {
+                try {
                     source = model.getSourceFromName(RotelSource.CAT1_FOLLOW_MAIN.getName());
-                } else {
-                    source = model.getSourceFromLabel(value);
+                } catch (RotelException e) {
                 }
-            } catch (RotelException e) {
+            } else {
+                for (RotelSource src : sourcesLabels.keySet()) {
+                    String label = sourcesLabels.get(src);
+                    if (value.startsWith(label)) {
+                        if (source == null || sourcesLabels.get(source).length() < label.length()) {
+                            source = src;
+                        }
+                    }
+                }
             }
         }
         return source;
@@ -999,7 +1010,7 @@ public abstract class RotelConnector {
             }
 
             if (searchRecordAfterSource) {
-                String value = text.substring(source.getLabel().length()).trim();
+                String value = text.substring(getSourceLabel(source).length()).trim();
                 source = parseSource(value, true);
                 if (source != null) {
                     RotelCommand cmd = source.getRecordCommand();
@@ -1012,6 +1023,11 @@ public abstract class RotelConnector {
                 }
             }
         }
+    }
+
+    private String getSourceLabel(RotelSource source) {
+        String label = sourcesLabels.get(source);
+        return (label == null) ? source.getLabel() : label;
     }
 
     private void parseRecord(String text) {
