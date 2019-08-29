@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 		<label>Parameter</label>
-		<description>Parameter</description>
+		<description>Represents a single parameter available at the BSB-LAN device and identified by a numeric id.</description>
 
 		<channels>
 			<channel id="name" typeId="parameter_name" />
@@ -27,13 +27,13 @@
 				<description>Specific parameter identifier</description>
 			</parameter>
 			<parameter name="setId" type="integer" required="false" groupName="Change Requests">
-				<label>Parameter ID</label>
-				<description>Parameter identifier used for change requests</description>
+				<label>Parameter Set-ID</label>
+				<description>Parameter identifier used for change requests. Defaults to the value of Parameter ID</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="setType" type="text" required="false" groupName="Change Requests">
 				<label>Message Type</label>
-				<description>Message type used for change requests</description>
+				<description>Message type used for change requests. Defaults to SET.</description>
 				<default>SET</default>
 				<advanced>true</advanced>
 				<options>

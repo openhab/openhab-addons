@@ -96,8 +96,8 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
         }
 
         BsbLanApiParameter parameter = data.getOrDefault(parameterConfig.id, null);
-        if (parameter == null){
-            logger.warn("parameter {} not part of response data", parameterConfig.id);
+        if (parameter == null) {
+            logger.debug("parameter {} is not part of response data while updating channel '{}' ", parameterConfig.id, channelId);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 String.format("No data received for parameter %s", parameterConfig.id));
             return;
