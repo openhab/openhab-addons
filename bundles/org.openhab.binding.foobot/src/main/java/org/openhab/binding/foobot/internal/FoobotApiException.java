@@ -10,19 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.foobot.internal.config;
+package org.openhab.binding.foobot.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link FoobotAccountConfiguration} class contains fields mapping bridge configuration parameters.
+ * Exception thrown when problems occur with obtaining data for the foobot api.
  *
- * @author George Katsis - Initial contribution
+ * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class FoobotAccountConfiguration {
+public class FoobotApiException extends Exception {
 
-    public String apiKey = "";
-    public String username = "";
-    public int refreshInterval;
+    private static final long serialVersionUID = 1L;
+
+    public FoobotApiException(final int status, final String message) {
+        super(String.format("%s (code: %s)", message, status));
+    }
 }

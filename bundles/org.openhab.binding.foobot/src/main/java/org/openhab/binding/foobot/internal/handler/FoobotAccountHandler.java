@@ -1,121 +1,137 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.foobot.internal.handler;
 
 import static org.openhab.binding.foobot.internal.FoobotBindingConstants.DEFAULT_REFRESH_PERIOD_MINUTES;
 
-import java.lang.reflect.Type;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.foobot.internal.FoobotApiConnector;
+import org.openhab.binding.foobot.internal.FoobotApiException;
+import org.openhab.binding.foobot.internal.FoobotBindingConstants;
 import org.openhab.binding.foobot.internal.config.FoobotAccountConfiguration;
 import org.openhab.binding.foobot.internal.discovery.FoobotAccountDiscoveryService;
 import org.openhab.binding.foobot.internal.json.FoobotDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 /**
  * Bridge handler to manage Foobot Account
  *
  * @author George Katsis - Initial contribution
+ * @author Hilbrand Bouwkamp - Completed implementation
  */
-
 @NonNullByDefault
 public class FoobotAccountHandler extends BaseBridgeHandler {
 
+    /*
+     * Set the exact interval a little lower to compensate for the time it takes to get the new data.
+     */
+    private static final long DEVICES_INTERVAL_MINUTES = Duration.ofDays(1).minus(Duration.ofMinutes(1)).toMinutes();
+    private static final Duration SENSOR_INTERVAL_OFFSET_SECONDS = Duration.ofSeconds(15);
+
     private final Logger logger = LoggerFactory.getLogger(FoobotAccountHandler.class);
 
-    private @Nullable String username;
-    private @Nullable String apiKey;
-    private @Nullable Integer refreshIntervalInMinutes;
-    private FoobotAccountDiscoveryService discoveryService;
-    private static final String URL_TO_FETCH_DEVICES = "https://api.foobot.io/v2/owner/%username%/device/";
-    private static final Gson GSON = new Gson();
-    private final HttpClient httpClient;
-    private @Nullable List<FoobotDevice> foobotDevices = new ArrayList<>();
+    private final FoobotApiConnector connector;
+
+    private String username = "";
+    private int refreshInterval;
     private @Nullable ScheduledFuture<?> refreshDeviceListJob;
+    private @Nullable ScheduledFuture<?> refreshSensorsJob;
+    private @NonNullByDefault({}) ExpiringCache<List<FoobotDeviceHandler>> dataCache;
 
-    public FoobotAccountHandler(Bridge bridge, HttpClient httpClient) {
+    public FoobotAccountHandler(Bridge bridge, FoobotApiConnector connector) {
         super(bridge);
-        this.httpClient = httpClient;
-        this.discoveryService = new FoobotAccountDiscoveryService(this);
+        this.connector = connector;
     }
 
-    public String getApiKey() {
-        return this.apiKey != null ? this.apiKey : "";
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(FoobotAccountDiscoveryService.class);
     }
 
-    @Nullable
-    public Integer getRefreshIntervalInMinutes() {
-        return this.refreshIntervalInMinutes;
+    public List<FoobotDevice> getDeviceList() throws FoobotApiException {
+        return connector.getAssociatedDevices(username);
+    }
+
+    public int getRefreshInterval() {
+        return refreshInterval;
     }
 
     @Override
     public void initialize() {
-        logger.debug("Foobot Account bridge starting...");
+        final FoobotAccountConfiguration accountConfig = getConfigAs(FoobotAccountConfiguration.class);
+        final List<String> missingParams = new ArrayList<>();
 
-        FoobotAccountConfiguration accountConfig = getConfigAs(FoobotAccountConfiguration.class);
-        logger.debug("accountConfig username = {}", accountConfig.username);
-        logger.debug("accountConfig refreshIntervalInMinutes = {}", accountConfig.refreshIntervalInMinutes);
-
-        List<String> missingParams = new ArrayList<>();
-        String errorMsg = "";
-
-        this.apiKey = accountConfig.apiKey;
-        if (StringUtils.trimToNull(this.apiKey) == null) {
+        if (StringUtils.trimToNull(accountConfig.apiKey) == null) {
             missingParams.add("'apikey'");
         }
-
-        this.username = accountConfig.username;
-        if (StringUtils.trimToNull(this.username) == null) {
+        if (StringUtils.trimToNull(accountConfig.username) == null) {
             missingParams.add("'username'");
         }
 
-        if (missingParams.size() > 0) {
-            errorMsg = "Parameter" + (missingParams.size() == 1 ? " [" : "s [") + StringUtils.join(missingParams, ",")
-                    + (missingParams.size() == 1 ? "] is " : "] are ") + "mandatory and must be configured";
+        if (!missingParams.isEmpty()) {
+            final boolean oneParam = missingParams.size() == 1;
+            final String errorMsg = String.format(
+                    "Parameter%s [%s] %s mandatory and must be configured and not be empty", oneParam ? "" : "s",
+                    StringUtils.join(missingParams, ", "), oneParam ? "is" : "are");
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
             return;
         }
-
-        this.refreshIntervalInMinutes = accountConfig.refreshIntervalInMinutes;
-        if (this.refreshIntervalInMinutes == null || this.refreshIntervalInMinutes < 5) {
+        username = accountConfig.username;
+        connector.setApiKey(accountConfig.apiKey);
+        refreshInterval = accountConfig.refreshInterval;
+        if (this.refreshInterval < 5) {
             logger.warn(
-                    "Refresh interval time [{}] is not valid. Refresh interval time must be at least 5 minutes.  Setting to 7 sec",
-                    accountConfig.refreshIntervalInMinutes);
-            this.refreshIntervalInMinutes = DEFAULT_REFRESH_PERIOD_MINUTES;
+                    "Refresh interval time [{}] is not valid. Refresh interval time must be at least 5 minutes. Setting to 7 minutes",
+                    accountConfig.refreshInterval);
+            refreshInterval = DEFAULT_REFRESH_PERIOD_MINUTES;
         }
+        logger.debug("Foobot Account bridge starting... user: {}, refreshInterval: {}", accountConfig.username,
+                refreshInterval);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait to get associated devices");
 
-        this.refreshDeviceListJob = scheduler.scheduleWithFixedDelay(this::refreshDeviceList, 0, 1, TimeUnit.DAYS);
+        dataCache = new ExpiringCache<>(Duration.ofMinutes(refreshInterval), this::retrieveDeviceList);
+        this.refreshDeviceListJob = scheduler.scheduleWithFixedDelay(this::refreshDeviceList, 0,
+                DEVICES_INTERVAL_MINUTES, TimeUnit.MINUTES);
+        this.refreshSensorsJob = scheduler.scheduleWithFixedDelay(this::refreshSensors, 0,
+                Duration.ofMinutes(refreshInterval).minus(SENSOR_INTERVAL_OFFSET_SECONDS).getSeconds(),
+                TimeUnit.SECONDS);
 
         logger.debug("Foobot account bridge handler started.");
     }
@@ -129,101 +145,97 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void handleRemoval() {
-        cleanup();
-        super.handleRemoval();
-    }
+    public void dispose() {
+        logger.debug("Dispose {}", getThing().getUID());
 
-    private void cleanup() {
-        logger.debug("cleanup {}", getThing().getUID().getAsString());
-
-        @Nullable
-        ScheduledFuture<?> refreshDeviceListJob = this.refreshDeviceListJob;
+        final ScheduledFuture<?> refreshDeviceListJob = this.refreshDeviceListJob;
         if (refreshDeviceListJob != null) {
             refreshDeviceListJob.cancel(true);
             this.refreshDeviceListJob = null;
         }
+        final ScheduledFuture<?> refreshSensorsJob = this.refreshSensorsJob;
+        if (refreshSensorsJob != null) {
+            refreshSensorsJob.cancel(true);
+            this.refreshSensorsJob = null;
+        }
+    }
+
+    /**
+     * Retrieves the list of devices and updates the properties of the devices. This method is called by the cache to
+     * update the cache data.
+     *
+     * @return List of retrieved devices
+     */
+    private List<FoobotDeviceHandler> retrieveDeviceList() {
+        logger.debug("Refreshing sensors for {}", getThing().getUID());
+        final List<FoobotDeviceHandler> footbotHandlers = getFootbotHandlers();
+
+        try {
+            getDeviceList().stream().forEach(d -> {
+                footbotHandlers.stream().filter(h -> h.getUuid().equals(d.getUuid())).findAny()
+                        .ifPresent(fh -> fh.handleUpdateProperties(d));
+            });
+        } catch (FoobotApiException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+        return footbotHandlers;
+    }
+
+    /**
+     * Refreshes the devices list
+     */
+    private void refreshDeviceList() {
+        // This getValue() return value not used here. But if the cache is expired it refreshes the cache.
+        dataCache.getValue();
+        updateRemainingLimitStatus();
     }
 
     @Override
-    public void dispose() {
-        logger.debug("Dispose {}", getThing().getUID().getAsString());
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        if (childHandler instanceof FoobotDeviceHandler) {
+            final String uuid = ((FoobotDeviceHandler) childHandler).getUuid();
 
-        cleanup();
-        super.dispose();
+            try {
+                getDeviceList().stream().filter(d -> d.getUuid().equals(uuid)).findAny()
+                        .ifPresent(fd -> ((FoobotDeviceHandler) childHandler).handleUpdateProperties(fd));
+            } catch (FoobotApiException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
     }
 
-    public List<FoobotDevice> getAssociatedDevices() {
+    /**
+     * @return Returns the list of associated footbot devices with this bridge.
+     */
+    public List<FoobotDeviceHandler> getFootbotHandlers() {
+        return getThing().getThings().stream().map(Thing::getHandler).filter(FoobotDeviceHandler.class::isInstance)
+                .map(FoobotDeviceHandler.class::cast).collect(Collectors.toList());
+    }
 
-        String urlStr = URL_TO_FETCH_DEVICES.replace("%username%", StringUtils.trimToEmpty(this.username));
-        logger.debug("URL = {}", urlStr);
-        ContentResponse response;
-        String errorMsg;
-
-        // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
-        Request request = this.httpClient.newRequest(urlStr).timeout(3, TimeUnit.SECONDS);
-        request.header("accept", "application/json");
-        request.header("X-API-KEY-TOKEN", this.apiKey);
-
-        List<FoobotDevice> devices;
-
+    private void refreshSensors() {
+        logger.debug("Refreshing sensors for {}", getThing().getUID());
+        logger.debug("handlers: {}", getFootbotHandlers().size());
         try {
-            response = request.send();
-            logger.debug("foobotDeviceListResponse = {}", response);
-
-            if (response.getStatus() != 200) {
-                errorMsg = response.getContentAsString();
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
-                return new ArrayList<FoobotDevice>();
+            for (FoobotDeviceHandler handler : getFootbotHandlers()) {
+                logger.debug("handler: {}", handler.getUuid());
+                handler.refreshSensors();
             }
-
-            // Map the JSON response to list of objects
-            Type listType = new TypeToken<ArrayList<FoobotDevice>>() {
-            }.getType();
-            String userDevices = response.getContentAsString();
-            devices = GSON.fromJson(userDevices, listType);
-
-            if (devices != null && devices.size() > 0) {
+            if (connector.getApiKeyLimitRemaining() == FoobotApiConnector.API_RATE_LIMIT_EXCEEDED) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        FoobotApiConnector.API_RATE_LIMIT_EXCEEDED_MESSAGE);
+            } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
-                this.foobotDevices = devices;
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-                devices = new ArrayList<>();
             }
-
-        } catch (ExecutionException | TimeoutException | InterruptedException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
-            devices = new ArrayList<>();
-        }
-        return devices;
-    }
-
-    public List<FoobotDevice> getDeviceList() {
-        if (this.foobotDevices != null) {
-            return this.foobotDevices;
-        } else {
-            return new ArrayList<FoobotDevice>();
+        } catch (RuntimeException e) {
+            logger.debug("Error updating sensor data ", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
     }
 
-    private void refreshDeviceList() {
-        try {
-            logger.debug("Refreshing device list {}", getThing().getUID());
+    public void updateRemainingLimitStatus() {
+        final int remaining = connector.getApiKeyLimitRemaining();
 
-            // get all devices associated with the account
-            this.foobotDevices = getAssociatedDevices();
-
-            // update account state
-            if (this.foobotDevices.size() > 0) {
-                this.discoveryService.startScan(null);
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-            logger.debug("Refresh device list {} finished", getThing().getUID());
-
-        } catch (Exception e) {
-            logger.error("Refresh device list fails with unexpected error");
-        }
+        updateState(FoobotBindingConstants.CHANNEL_APIKEY_LIMIT_REMAINING,
+                remaining < 0 ? UnDefType.UNDEF : new DecimalType(remaining));
     }
 }
