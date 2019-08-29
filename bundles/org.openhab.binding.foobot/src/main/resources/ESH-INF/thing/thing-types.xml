@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="foobot"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Foobot Account -->
+	<bridge-type id="account">
+		<label>Foobot Account</label>
+		<description>Retrieves your Foobot account and all the devices associated with.</description>
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+				<description>You can request your API Key from https://api.foobot.io/apidoc/index.html </description>
+			</parameter>
+
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>The Username you use to login to your Foobot account.</description>
+			</parameter>
+
+			<parameter name="refreshIntervalInMinutes" type="integer" min="5" required="false">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in minutes.</description>
+				<default>7</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Foobot Device -->
+	<thing-type id="device">
+		<label>Foobot</label>
+		<description>Shows the air quality data from the Foobot device.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="voc" typeId="voc" />
+			<channel id="co2" typeId="co2" />
+			<channel id="pm" typeId="pm" />
+			<channel id="gpi" typeId="gpi" />
+		</channels>
+
+	</thing-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Humidity Level</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %%"></state>
+	</channel-type>
+	<channel-type id="voc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>VOC</label>
+		<description>Volatile Organic Compounds Level</description>
+		<category>Sensor</category>
+		<state readOnly="true" pattern="%.1f ppb"></state>
+	</channel-type>
+	<channel-type id="co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO2</label>
+		<description>Carbon dioxide Level</description>
+		<category>CarbonDioxide</category>
+		<state readOnly="true" pattern="%.1f ppm"></state>
+	</channel-type>
+	<channel-type id="pm">
+		<item-type>Number:Density</item-type>
+		<label>PM</label>
+		<description>Particulate Matter Level</description>
+		<category>Sensor</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="gpi">
+		<item-type>Number:Dimensionless</item-type>
+		<label>GPI</label>
+		<description>Global Pollution Index Level</description>
+		<category></category>
+		<state readOnly="true" />
+	</channel-type>
+</thing:thing-descriptions>
