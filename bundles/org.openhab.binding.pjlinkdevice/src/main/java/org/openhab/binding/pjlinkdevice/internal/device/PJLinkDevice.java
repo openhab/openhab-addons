@@ -208,7 +208,6 @@ public class PJLinkDevice {
         break;
       } catch (java.net.SocketException e) {
         closeSocket(socket);
-        socket = null;
         if (numberOfTries >= 2) {
           // do not retry endlessly
           throw e;
