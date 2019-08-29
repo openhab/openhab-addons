@@ -48,7 +48,7 @@ public class HydrawiseCloudApiClient {
     private static final String SET_CONTROLLER_URL = BASE_URL
             + "setcontroller.php?api_key=%s&controller_id=%d&json=true";
     private static final String SET_ZONE_URL = BASE_URL + "setzone.php?period_id=999";
-    private static final int TIMEOUT = 30;
+    private static final int TIMEOUT_SECONDS = 30;
     private String apiKey;
     private HttpClient httpClient;
 
@@ -284,7 +284,8 @@ public class HydrawiseCloudApiClient {
         logger.trace("Getting {}", url);
         ContentResponse response;
         try {
-            response = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT, TimeUnit.SECONDS).send();
+            response = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .send();
         } catch (Exception e) {
             throw new HydrawiseConnectionException(e);
         }

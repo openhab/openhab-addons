@@ -208,9 +208,9 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
         Matcher matcher = TEMPERATURE_PATTERN.matcher(tempString);
         if (matcher.matches()) {
             try {
-                updateGroupState(group, channel, new QuantityType<Temperature>(Float.parseFloat(matcher.group(1)),
+                updateGroupState(group, channel, new QuantityType<Temperature>(Double.valueOf(matcher.group(1)),
                         "C".equals(matcher.group(2)) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT));
-            } catch (NumberFormatException e) {
+            } catch (RuntimeException e) {
                 logger.debug("Could not parse temperature string {} ", tempString);
             }
         }
@@ -222,7 +222,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
             try {
                 updateGroupState(group, channel, new QuantityType<Speed>(Integer.parseInt(matcher.group(1)),
                         "kph".equals(matcher.group(2)) ? SIUnits.KILOMETRE_PER_HOUR : ImperialUnits.MILES_PER_HOUR));
-            } catch (NumberFormatException e) {
+            } catch (RuntimeException e) {
                 logger.debug("Could not parse wind string {} ", windString);
             }
         }

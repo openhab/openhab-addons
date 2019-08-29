@@ -44,7 +44,7 @@ public class HydrawiseLocalApiClient {
     private static final String GET_LOCAL_DATA_URL = "%s/get_sched_json.php?hours=720";
     private static final String SET_LOCAL_DATA_URL = "%s/set_manual_data.php?period_id=998";
 
-    private static final int TIMEOUT = 30;
+    private static final int TIMEOUT_SECONDS = 30;
     private HttpClient httpClient;
     private String localSetURL = "";
     private String localGetURL = "";
@@ -188,7 +188,8 @@ public class HydrawiseLocalApiClient {
         logger.trace("Getting {}", url);
         ContentResponse response;
         try {
-            response = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT, TimeUnit.SECONDS).send();
+            response = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .send();
         } catch (Exception e) {
             throw new HydrawiseConnectionException(e);
         }

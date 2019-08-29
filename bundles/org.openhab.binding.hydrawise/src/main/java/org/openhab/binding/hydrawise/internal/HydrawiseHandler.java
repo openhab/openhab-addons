@@ -62,7 +62,11 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
     private Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
     private Map<String, Relay> relayMap = Collections.synchronizedMap(new HashMap<>());
 
+    /**
+     * value observed being used by the Hydrawise clients as a max time value,
+     */
     private static long MAX_RUN_TIME = 157680000;
+
     /**
      * Minimum amount of time we can poll for updates
      */
@@ -314,7 +318,6 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
         } catch (HydrawiseAuthenticationException e) {
             // if are creds are not valid, we need to try re authorizing again
             logger.debug("Authorization exception during polling", e);
-            clearPolling();
             configureInternal();
         }
     }
