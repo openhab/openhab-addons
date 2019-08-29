@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.util.UIDUtils;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
@@ -83,8 +84,8 @@ public class Property implements AttributeChanged {
         this.topic = topic + "/" + propertyID;
         this.parentNode = node;
         this.propertyID = propertyID;
-        channelUID = new ChannelUID(node.uid(), propertyID);
-        channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID, this.topic.replace('/', '_'));
+        channelUID = new ChannelUID(node.uid(), UIDUtils.encode(propertyID));
+        channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID, UIDUtils.encode(this.topic));
         type = ChannelTypeBuilder.trigger(channelTypeUID, "dummy").build(); // Dummy value
         channel = ChannelBuilder.create(channelUID, "dummy").build();// Dummy value
     }
@@ -303,19 +304,22 @@ public class Property implements AttributeChanged {
 
     /**
      * Creates a list of retained topics related to the property
+     *
      * @return Returns a list of relative topics
      */
     public ArrayList<String> getRetainedTopics() {
         ArrayList<String> topics = new ArrayList<String>();
 
-        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(
-            f -> {return String.format("%s/$%s", this.propertyID, f.getName());}).collect(Collectors.toList()));
+        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
+            return String.format("%s/$%s", this.propertyID, f.getName());
+        }).collect(Collectors.toList()));
 
         // All exceptions can be ignored because the 'retained' attribute of the PropertyAttributes class
         // is public, is a boolean variable and has a default value (true)
         try {
-            if(attributes.getClass().getDeclaredField("retained").getBoolean(attributes))
+            if (attributes.getClass().getDeclaredField("retained").getBoolean(attributes)) {
                 topics.add(this.propertyID);
+            }
         } catch (NoSuchFieldException ignored) {
         } catch (SecurityException ignored) {
         } catch (IllegalArgumentException ignored) {
