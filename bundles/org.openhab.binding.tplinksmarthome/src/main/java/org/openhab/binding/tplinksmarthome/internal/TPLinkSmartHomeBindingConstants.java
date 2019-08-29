@@ -85,6 +85,9 @@ public final class TPLinkSmartHomeBindingConstants {
     public static final String PROPERTY_PROTOCOL_NAME = "protocol name";
     public static final String PROPERTY_PROTOCOL_VERSION = "protocol version";
 
+    public static final int FORCED_REFRESH_BOUNDERY_SECONDS = 60;
+    public static final int FORCED_REFRESH_BOUNDERY_SWITCHED_SECONDS = 5;
+
     private TPLinkSmartHomeBindingConstants() {
         // Constants class
     }

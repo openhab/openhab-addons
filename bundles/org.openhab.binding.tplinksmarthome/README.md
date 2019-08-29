@@ -241,12 +241,12 @@ Manually starting a discovery can also be used to set the ip address directly in
 
 The thing has the following configuration parameters:
 
-| Parameter          | Description                                                                 |
-|--------------------|-----------------------------------------------------------------------------|
-| deviceId           | The id of the device.                                                       |
-| ipAddress          | IP Address of the device.                                                   |
-| refresh            | Refresh interval in seconds. Optional, the default value is 30 seconds.     |
-| transitionPeriod   | Duration of state changes in milliseconds, only for light bulbs, default 0. |
+| Parameter          | Description                                                                                  |
+|--------------------|----------------------------------------------------------------------------------------------|
+| deviceId           | The id of the device.                                                                        |
+| ipAddress          | IP Address of the device.                                                                    |
+| refresh            | Refresh interval in seconds. Optional. The default is 30 seconds, and 1 second for switches. |
+| transitionPeriod   | Duration of state changes in milliseconds, only for light bulbs, default 0.                  |
 
 Either `deviceId` or `ipAddress` must be set.
 
@@ -275,6 +275,15 @@ The following group ids are available:
 |-------------------|-------------------------------------------------------------------------------------------------------|
 | groupSwitch       | General channels. e.g. `groupSwitch#switch`                                                           |
 | outlet&lt;number> | The outlet to control. &lt;number> is the number of the outlet (starts with 1). e.g. `outlet1#switch` |
+
+### Channel Refresh
+
+When the thing receives a `RefreshType` command the channel state is updated from an internal cache.
+This cache is updated per refresh interval as configured in the thing.
+However for some use cases it's preferable to set the refresh interval higher than the default.
+For example for switches the 1 second refresh interval may cause a burden to the network traffic.
+Therefore if the refresh interval for switches is set to a value higher than 5 seconds, and for the other devices higher than 1 minute.
+Than the a `RefreshType` command will fetch the device state and update the internal cache.
 
 ## Full Example
 

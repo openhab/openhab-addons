@@ -14,7 +14,9 @@ package org.openhab.binding.tplinksmarthome.internal;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -69,7 +71,7 @@ public enum TPLinkSmartHomeThingType {
     /**
      * All supported Smart Home devices in a list.
      */
-    private static final List<TPLinkSmartHomeThingType> SUPPORTED_THING_TYPES_LIST = Arrays
+    public static final List<TPLinkSmartHomeThingType> SUPPORTED_THING_TYPES_LIST = Arrays
             .asList(TPLinkSmartHomeThingType.values());
 
     /**
@@ -78,12 +80,25 @@ public enum TPLinkSmartHomeThingType {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = SUPPORTED_THING_TYPES_LIST.stream()
             .map(TPLinkSmartHomeThingType::thingTypeUID).collect(Collectors.toSet());
 
+    /**
+     * A map of all {@link TPLinkSmartHomeThingType} mapped to {@link ThingTypeUID}.
+     */
+    public static final Map<ThingTypeUID, TPLinkSmartHomeThingType> THING_TYPE_MAP = SUPPORTED_THING_TYPES_LIST.stream()
+            .collect(Collectors.toMap(TPLinkSmartHomeThingType::thingTypeUID, Function.identity()));
+
     private ThingTypeUID thingTypeUID;
     private DeviceType type;
 
-    TPLinkSmartHomeThingType(String name, DeviceType type) {
+    TPLinkSmartHomeThingType(final String name, final DeviceType type) {
         thingTypeUID = new ThingTypeUID(TPLinkSmartHomeBindingConstants.BINDING_ID, name);
         this.type = type;
+    }
+
+    /**
+     * @return Returns the type of the device.
+     */
+    public DeviceType getDeviceType() {
+        return type;
     }
 
     /**
@@ -91,52 +106,6 @@ public enum TPLinkSmartHomeThingType {
      */
     public ThingTypeUID thingTypeUID() {
         return thingTypeUID;
-    }
-
-    /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that is a bulb.
-     *
-     * @param thingTypeUID if the check
-     * @return true if it's a bulb device
-     */
-    public static boolean isBulbDevice(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type == DeviceType.BULB);
-    }
-
-    /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that is a range extender.
-     *
-     * @param thingTypeUID if the check
-     * @return true if it's a range extender
-     */
-    public static boolean isRangeExtenderDevice(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type == DeviceType.RANGE_EXTENDER);
-    }
-
-    /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that supports the power strip communication
-     * protocol.
-     *
-     * @param thingTypeUID if the check
-     * @return true if it's a power strip supporting device
-     */
-    public static boolean isStripDevice(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type == DeviceType.STRIP);
-    }
-
-    /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that supports the switching communication
-     * protocol.
-     *
-     * @param thingTypeUID if the check
-     * @return true if it's a switching supporting device
-     */
-    public static boolean isSwitchingDevice(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type == DeviceType.PLUG || t.type == DeviceType.SWITCH);
     }
 
     /**
@@ -150,9 +119,9 @@ public enum TPLinkSmartHomeThingType {
     }
 
     /**
-     * Internal enum indicating the type of the device.
+     * Enum indicating the type of the device.
      */
-    private enum DeviceType {
+    public enum DeviceType {
         /**
          * Light Bulb device.
          */
