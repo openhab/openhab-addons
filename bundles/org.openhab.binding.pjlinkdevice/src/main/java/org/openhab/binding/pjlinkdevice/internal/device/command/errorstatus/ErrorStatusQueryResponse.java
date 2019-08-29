@@ -97,7 +97,7 @@ public class ErrorStatusQueryResponse extends
     }
   }
 
-  private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<ErrorCode>(
+  private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
       Arrays.asList(ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
 
   public ErrorStatusQueryResponse(String response) throws ResponseException {
@@ -107,7 +107,7 @@ public class ErrorStatusQueryResponse extends
   @Override
   protected Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> parseResponseWithoutPrefix(
       String responseWithoutPrefix) throws ResponseException {
-    Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> result = new HashMap<ErrorStatusDevicePart, ErrorStatusQueryResponseState>();
+    Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> result = new HashMap<>();
     for (int i = 0; i < ErrorStatusDevicePart.values().length; i++) {
       result.put(ErrorStatusDevicePart.getDevicePartByResponsePosition(i),
           ErrorStatusQueryResponseState.parseString(responseWithoutPrefix.substring(i, i + 1)));

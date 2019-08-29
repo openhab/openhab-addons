@@ -184,7 +184,7 @@ public class PJLinkDevice {
   }
 
   private void authenticate(String challenge) throws ResponseException, IOException, AuthenticationException {
-    new AuthenticationCommand<PowerQueryResponse>(this, challenge, new PowerQueryCommand(this)).execute();
+    new AuthenticationCommand<>(this, challenge, new PowerQueryCommand(this)).execute();
   }
 
   public PowerQueryResponse getPowerStatus() throws ResponseException, IOException, AuthenticationException {

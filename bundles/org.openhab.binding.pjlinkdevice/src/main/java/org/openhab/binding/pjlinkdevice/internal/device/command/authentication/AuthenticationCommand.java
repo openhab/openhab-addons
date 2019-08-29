@@ -52,7 +52,7 @@ public class AuthenticationCommand<ResponseType extends Response<?>> implements 
   }
 
   protected AuthenticationRequest<ResponseType> createRequest() {
-    return new AuthenticationRequest<ResponseType>(this);
+    return new AuthenticationRequest<>(this);
   }
 
   public String getChallenge() {

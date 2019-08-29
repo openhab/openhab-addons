@@ -70,7 +70,7 @@ public class MuteQueryResponse extends PrefixedResponse<MuteQueryResponse.MuteQu
     }
   }
 
-  private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<ErrorCode>(
+  private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
       Arrays.asList(ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
 
   public MuteQueryResponse(String response) throws ResponseException {

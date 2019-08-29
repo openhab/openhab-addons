@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class InputListQueryResponse extends PrefixedResponse<Set<Input>> {
-  private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<ErrorCode>(
+  private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
       Arrays.asList(ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
 
   public InputListQueryResponse(String response) throws ResponseException {
@@ -38,7 +38,7 @@ public class InputListQueryResponse extends PrefixedResponse<Set<Input>> {
 
   @Override
   protected Set<Input> parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
-    Set<Input> result = new HashSet<Input>();
+    Set<Input> result = new HashSet<>();
     int pos = 0;
     while (pos < responseWithoutPrefix.length()) {
       result.add(new Input(responseWithoutPrefix.substring(pos, pos + 2)));

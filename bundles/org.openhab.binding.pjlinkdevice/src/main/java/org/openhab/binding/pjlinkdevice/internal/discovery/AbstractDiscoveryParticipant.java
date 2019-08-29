@@ -111,7 +111,7 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
 
   private Set<InetAddress> generateAddressesToScan() {
     try {
-      Set<InetAddress> addressesToScan = new HashSet<InetAddress>();
+      Set<InetAddress> addressesToScan = new HashSet<>();
       ArrayList<NetworkInterface> interfaces = java.util.Collections.list(NetworkInterface.getNetworkInterfaces());
       for (NetworkInterface networkInterface : interfaces) {
         if (networkInterface.isLoopback() || !networkInterface.isUp()) {
@@ -125,7 +125,7 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
     } catch (SocketException e) {
       logger.debug("Could not enumerate network interfaces", e);
     }
-    return new HashSet<InetAddress>();
+    return new HashSet<>();
   }
 
   protected abstract void collectAddressesToScan(Set<InetAddress> addressesToScan, InterfaceAddress i);
