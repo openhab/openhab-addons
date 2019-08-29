@@ -181,9 +181,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
       updateStatus(ThingStatus.ONLINE);
       logger.trace("Successfully handled command {} on channel {}", command, channelUID.getId());
-    } catch (IOException e) {
-      updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-    } catch (ResponseException e) {
+    } catch (IOException | ResponseException e) {
       updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
     } catch (ConfigurationException e) {
       updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
