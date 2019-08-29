@@ -151,6 +151,10 @@ public class SomfyTahomaBindingConstants {
     // Smoke sensor, Occupancy sensor, Contact sensor
     public static final String CONTACT = "contact";
 
+    // Smoke sensor
+    public static final String SHORT_CHECK = "short_check";
+    public static final String LONG_CHECK = "long_check";
+
     // Light sensor
     public static final String LUMINANCE = "luminance";
 
@@ -218,13 +222,13 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_SET_CLOSURESPEED = "setClosureAndLinearSpeed";
     public static final String COMMAND_SET_HEATINGLEVEL = "setHeatingLevel";
     public static final String COMMAND_SET_PEDESTRIANPOSITION = "setPedestrianPosition";
-    public static final String COMMAND_REFRESH_HEATINGLEVEL = "refreshHeatingLevel";
     public static final String COMMAND_UP = "up";
     public static final String COMMAND_DOWN = "down";
     public static final String COMMAND_OPEN = "open";
     public static final String COMMAND_CLOSE = "close";
     public static final String COMMAND_STOP = "stop";
     public static final String COMMAND_OFF = "off";
+    public static final String COMMAND_CHECK_TRIGGER = "checkEventTrigger";
     public static final String STATUS_STATE = "core:StatusState";
     public static final String ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState";
     public static final String CYCLIC_BUTTON_STATE = "core:CyclicButtonState";

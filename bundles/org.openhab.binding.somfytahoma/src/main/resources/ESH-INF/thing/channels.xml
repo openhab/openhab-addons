@@ -238,4 +238,16 @@
 		<label>Dock Long Beep Test</label>
 		<description>A channel for testing the dock's long beeping</description>
 	</channel-type>
+
+    <channel-type id="short_check">
+		<item-type>Switch</item-type>
+		<label>Smoke Sensor Short Check Trigger</label>
+		<description>A channel for triggering the smoke sensor's short check</description>
+	</channel-type>
+
+	<channel-type id="long_check">
+		<item-type>Switch</item-type>
+		<label>Smoke Sensor Long Check Trigger</label>
+		<description>A channel for triggering the smoke sensor's long check</description>
+	</channel-type>
 </thing:thing-descriptions>
