@@ -52,8 +52,8 @@ public class BsbLanApiParameterSetRequest implements BsbLanApiContent {
         }
     }
 
-    // Although setting specifying the parameter as int also seems to work,
-    // we use a String here as this is the it is noted in the documentation.
+    // Although specifying the parameter as int (which would be nicer) also seems to work,
+    // we use a String here as this is the way it is noted in the documentation.
     @SerializedName("Parameter")
     public String parameter;
 

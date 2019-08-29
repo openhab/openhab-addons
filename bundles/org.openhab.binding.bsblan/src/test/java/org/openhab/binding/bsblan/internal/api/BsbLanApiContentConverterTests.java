@@ -13,11 +13,17 @@
 package org.openhab.binding.bsblan.internal.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
+import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
+import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest.Type;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameter;
+
+import com.google.gson.JsonParser;
+import com.google.gson.JsonObject;
 
 /**
  * The {@link BsbLanApiContentConverterTests} class implements tests 
@@ -41,13 +47,39 @@ public class BsbLanApiContentConverterTests {
             "}";
 
         BsbLanApiParameterQueryResponse r = BsbLanApiContentConverter.fromJson(content, BsbLanApiParameterQueryResponse.class);
+        assertNotNull(r);
         assertTrue(r.containsKey(700));
-        
+
         BsbLanApiParameter p = r.get(700);
         assertEquals("Betriebsart", p.name);
         assertEquals("0", p.value);
         assertEquals("", p.unit);
         assertEquals("Schutzbetrieb", p.description);
         assertEquals(BsbLanApiParameter .DataType.DT_ENUM, p.dataType);
+    }
+
+    @Test
+    public void serializeBsbLanApiParameterSetRequest() {
+        BsbLanApiParameterSetRequest request = new BsbLanApiParameterSetRequest();
+        request.parameter = "1234";
+        request.value = "Hello World";
+        request.type = Type.SET;
+
+        String serialzedRequest = BsbLanApiContentConverter.toJson(request);
+
+        // verify serialized content
+        JsonParser parser = new JsonParser();
+        JsonObject json = parser.parse(serialzedRequest).getAsJsonObject();
+
+        // Although specifying the parameter as int (which would be nicer) also seems to work,
+        // we use a String here as this is the way it is noted in the documentation.
+        // So ensure there is a 'Parameter' and it is serialzed as string.
+        assertEquals("1234", json.get("Parameter").getAsString());
+
+        // ensure there is a 'Value' and it is serialized as string
+        assertEquals("Hello World", json.get("Value").getAsString());
+
+        // ensure there is a 'Type' and it is serialized as number
+        assertEquals(1, json.get("Type").getAsInt());
     }
 }
