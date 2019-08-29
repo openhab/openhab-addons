@@ -34,7 +34,6 @@
 			<channel id="playqueue" typeId="playqueue" />
 			<channel id="playtrack" typeId="playtrack" />
 			<channel id="playuri" typeId="playuri" />
-			<channel id="publicaddress" typeId="publicaddress" />
 			<channel id="radio" typeId="radio" />
 			<channel id="remove" typeId="remove" />
 			<channel id="restore" typeId="restore" />
