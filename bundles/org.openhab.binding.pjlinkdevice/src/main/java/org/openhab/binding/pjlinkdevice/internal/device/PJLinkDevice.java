@@ -102,9 +102,14 @@ public class PJLinkDevice {
     return reader;
   }
 
-  protected void closeSocket(@Nullable Socket socket) throws IOException {
+  protected void closeSocket(@Nullable Socket socket)  {
     if (socket != null) {
-      socket.close();
+      try {
+        socket.close();
+      } catch (IOException e) {
+        // okay then, at least we tried
+        logger.trace("closing of socket failed, cause {}", e);
+      }
     }
     this.socket = null;
     this.reader = null;
@@ -335,13 +340,9 @@ public class PJLinkDevice {
   }
 
   public void dispose() {
-    try {
-      final Socket socket = this.socket;
-      if (socket != null) {
-        closeSocket(socket);
-      }
-    } catch (IOException e) {
-      // okay then, at least we tried
+    final Socket socket = this.socket;
+    if (socket != null) {
+      closeSocket(socket);
     }
   }
 }
