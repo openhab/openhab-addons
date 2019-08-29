@@ -39,8 +39,6 @@ import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AuthenticationException;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-import org.openhab.binding.pjlinkdevice.internal.device.command.errorstatus.ErrorStatusQueryResponse.ErrorStatusDevicePart;
-import org.openhab.binding.pjlinkdevice.internal.device.command.errorstatus.ErrorStatusQueryResponse.ErrorStatusQueryResponseState;
 import org.openhab.binding.pjlinkdevice.internal.device.command.input.Input;
 import org.openhab.binding.pjlinkdevice.internal.device.command.mute.MuteInstructionCommand.MuteInstructionChannel;
 import org.openhab.binding.pjlinkdevice.internal.device.command.mute.MuteQueryResponse.MuteQueryResponseValue;
@@ -291,12 +289,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
       logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_CLASS, e);
     }
     try {
-      Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> errorStatus = device.getErrorStatus();
-      for (Map.Entry<ErrorStatusDevicePart, ErrorStatusQueryResponseState> entry : errorStatus.entrySet()) {
-        String key = entry.getKey().getCamelCaseText();
-        String value = entry.getValue().getText();
-        properties.put(PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS + key, value);
-      }
+      device.getErrorStatus()
+        .forEach((k,v) -> properties.put(PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS + k.getCamelCaseText(), v.getText()));
     } catch (ResponseException e) {
       logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS, e);
     }
