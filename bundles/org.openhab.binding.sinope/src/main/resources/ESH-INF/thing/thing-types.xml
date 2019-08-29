@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="gateway">
 		<label>Sinopé Gateway</label>
-		<description>Sinopé Gateway Configuration</description>
+		<description>A Sinopé Gateway</description>
 
 		<config-description>
 			<parameter name="hostname" type="text">
