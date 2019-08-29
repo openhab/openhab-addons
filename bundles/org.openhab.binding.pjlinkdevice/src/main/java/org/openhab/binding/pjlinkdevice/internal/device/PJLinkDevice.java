@@ -337,7 +337,7 @@ public class PJLinkDevice {
 
   public void dispose() {
     try {
-      Socket socket = this.socket;
+      final Socket socket = this.socket;
       if (socket != null) {
         closeSocket(socket);
       }

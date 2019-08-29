@@ -83,7 +83,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     clearRefreshInterval();
 
-    PJLinkDevice device = this.device;
+    final PJLinkDevice device = this.device;
     if (device != null) {
       device.dispose();
     }
@@ -226,7 +226,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   }
 
   private void clearSetupJob() {
-    ScheduledFuture<?> setupJob = this.setupJob;
+    final ScheduledFuture<?> setupJob = this.setupJob;
     if (setupJob != null) {
       setupJob.cancel(true);
       this.setupJob = null;
@@ -234,7 +234,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   }
 
   private void clearRefreshInterval() {
-    ScheduledFuture<?> refreshJob = this.refreshJob;
+    final ScheduledFuture<?> refreshJob = this.refreshJob;
     if (refreshJob != null) {
       refreshJob.cancel(true);
       this.refreshJob = null;
