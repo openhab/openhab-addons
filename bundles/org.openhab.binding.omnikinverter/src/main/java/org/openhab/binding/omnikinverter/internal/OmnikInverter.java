@@ -20,8 +20,6 @@ import java.nio.ByteBuffer;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OmnikInverter {
-    private final Logger logger = LoggerFactory.getLogger(OmnikInverter.class);
 
     private int serialNumber;
     private String host;

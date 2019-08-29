@@ -15,19 +15,16 @@ package org.openhab.binding.omnikinverter.internal.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.omnikinverter.internal.OmnikInverterMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OmnikInverterMessageTest {
-    private final Logger logger = LoggerFactory.getLogger(OmnikInverterMessageTest.class);
 
-    OmnikInverterMessage message;
+    private OmnikInverterMessage message;
 
     @Before
     public void setUp() throws IOException {
