@@ -223,7 +223,7 @@ public class PJLinkDevice {
     String response = null;
     while ((response = getReader().readLine()) != null && response.isEmpty()) {
       logger.debug("Got empty string response for request '{}' from {}, waiting for another line", response,
-          fullCommand.replaceAll("\r", "\\\\r"), ipAddress.toString());
+          fullCommand.replaceAll("\r", "\\\\r"));
     }
     logger.debug("Got response '{}' for request '{}' from {}", response, fullCommand.replaceAll("\r", "\\\\r"),
         ipAddress.toString());

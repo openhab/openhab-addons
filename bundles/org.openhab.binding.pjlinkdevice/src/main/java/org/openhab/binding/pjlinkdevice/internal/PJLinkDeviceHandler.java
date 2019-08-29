@@ -94,7 +94,6 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     // Do not poll if configuration is incomplete
     if (PJLinkDeviceHandler.this.getThing().getStatusInfo()
         .getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
-
       PJLinkDeviceHandler.this.logger.debug("Polling device status...");
       if (config.refreshPower) {
         PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER), RefreshType.REFRESH);
@@ -269,38 +268,38 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     try {
       properties.put(PJLinkDeviceBindingConstants.PROPERTY_NAME, device.getName());
     } catch (ResponseException e) {
-      logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_NAME, e);
+      logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_NAME, e);
     }
     try {
       properties.put(Thing.PROPERTY_VENDOR, device.getManufacturer());
     } catch (ResponseException e) {
-      logger.debug("Error retrieving property {}, cause: {}", Thing.PROPERTY_VENDOR, e);
+      logger.debug("Error retrieving property {}", Thing.PROPERTY_VENDOR, e);
     }
     try {
       properties.put(Thing.PROPERTY_MODEL_ID, device.getModel());
     } catch (ResponseException e) {
-      logger.debug("Error retrieving property {}, cause: {}", Thing.PROPERTY_MODEL_ID, e);
+      logger.debug("Error retrieving property {}", Thing.PROPERTY_MODEL_ID, e);
     }
     try {
       properties.put(PJLinkDeviceBindingConstants.PROPERTY_CLASS, device.getPJLinkClass());
     } catch (ResponseException e) {
-      logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_CLASS, e);
+      logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_CLASS, e);
     }
     try {
       device.getErrorStatus()
         .forEach((k,v) -> properties.put(PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS + k.getCamelCaseText(), v.getText()));
     } catch (ResponseException e) {
-      logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS, e);
+      logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS, e);
     }
     try {
       properties.put(PJLinkDeviceBindingConstants.PROPERTY_LAMP_HOURS, device.getLampHours());
     } catch (ResponseException e) {
-      logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_LAMP_HOURS, e);
+      logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_LAMP_HOURS, e);
     }
     try {
       properties.put(PJLinkDeviceBindingConstants.PROPERTY_OTHER_INFORMATION, device.getOtherInformation());
     } catch (ResponseException e) {
-      logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_OTHER_INFORMATION,
+      logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_OTHER_INFORMATION,
           e);
     }
 

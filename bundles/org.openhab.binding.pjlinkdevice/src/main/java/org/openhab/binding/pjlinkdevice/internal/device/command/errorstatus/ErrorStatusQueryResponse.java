@@ -97,8 +97,8 @@ public class ErrorStatusQueryResponse extends
     }
   }
 
-  private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
-      Arrays.asList(ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
+  private static final HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
+    Arrays.asList(ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
 
   public ErrorStatusQueryResponse(String response) throws ResponseException {
     super("ERST=", SPECIFIED_ERRORCODES, response);

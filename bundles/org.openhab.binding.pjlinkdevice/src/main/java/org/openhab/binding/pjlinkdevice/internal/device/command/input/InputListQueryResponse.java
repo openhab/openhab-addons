@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class InputListQueryResponse extends PrefixedResponse<Set<Input>> {
-  private final static HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
+  private static final HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
       Arrays.asList(ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
 
   public InputListQueryResponse(String response) throws ResponseException {
