@@ -127,7 +127,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
       PJLinkDevice device = getDevice();
       switch (channelUID.getId()) {
         case CHANNEL_POWER:
-          logger.trace("Received power command" + command);
+          logger.trace("Received power command {}", command);
           if (command == OnOffType.ON) {
             device.powerOn();
           } else if (command == OnOffType.OFF) {
@@ -137,7 +137,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                 PowerQueryResponseValue.POWER_ON.equals(device.getPowerStatus().getResult()) ? OnOffType.ON
                     : OnOffType.OFF);
           } else {
-            logger.debug("Received unknown power command" + command);
+            logger.debug("Received unknown power command {}", command);
           }
           break;
         case CHANNEL_INPUT:
@@ -145,11 +145,11 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
             StringType input = new StringType(device.getInputStatus().getResult().getValue());
             updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT, input);
           } else if (command instanceof StringType) {
-            logger.trace("Received input command" + command);
+            logger.trace("Received input command {}", command);
             Input input = new Input(((StringType) command).toString());
             device.setInput(input);
           } else {
-            logger.debug("Received unknown channel command" + command);
+            logger.debug("Received unknown channel command {}", command);
           }
           break;
         case CHANNEL_AUDIO_MUTE:
@@ -166,12 +166,12 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                   muteStatus.isVideoMuted() ? OnOffType.ON : OnOffType.OFF);
             } else {
               if (isAudioMute) {
-                logger.trace("Received audio mute command" + command);
+                logger.trace("Received audio mute command {}", command);
                 boolean muteOn = command == OnOffType.ON;
                 device.setMute(MuteInstructionChannel.AUDIO, muteOn);
               }
               if (isVideoMute) {
-                logger.trace("Received video mute command" + command);
+                logger.trace("Received video mute command {}", command);
                 boolean muteOn = command == OnOffType.ON;
                 device.setMute(MuteInstructionChannel.VIDEO, muteOn);
               }
