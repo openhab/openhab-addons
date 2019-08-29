@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -37,9 +38,17 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.weathercompany", service = ThingHandlerFactory.class)
 public class WeatherCompanyHandlerFactory extends BaseThingHandlerFactory {
-    private @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
-    private @NonNullByDefault({}) HttpClient httpClient;
-    private @NonNullByDefault({}) UnitProvider unitProvider;
+    private TimeZoneProvider timeZoneProvider;
+    private UnitProvider unitProvider;
+    private HttpClient httpClient;
+
+    @Activate
+    public WeatherCompanyHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
+            @Reference UnitProvider unitProvider, @Reference HttpClientFactory httpClientFactory) {
+        this.timeZoneProvider = timeZoneProvider;
+        this.unitProvider = unitProvider;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -54,32 +63,5 @@ public class WeatherCompanyHandlerFactory extends BaseThingHandlerFactory {
             return new WeatherCompanyHandler(thing, timeZoneProvider, httpClient, unitProvider);
         }
         return null;
-    }
-
-    @Reference
-    protected void setTimeZoneProvider(TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-    }
-
-    protected void unsetTimeZoneProvider(TimeZoneProvider timeZone) {
-        this.timeZoneProvider = null;
-    }
-
-    @Reference
-    public void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    public void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
-    @Reference
-    protected void setUnitProvider(UnitProvider unitProvider) {
-        this.unitProvider = unitProvider;
-    }
-
-    protected void unsetUnitProvider(UnitProvider unitProvider) {
-        this.unitProvider = null;
     }
 }

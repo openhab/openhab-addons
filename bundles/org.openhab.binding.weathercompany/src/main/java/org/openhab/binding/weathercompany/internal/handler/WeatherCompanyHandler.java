@@ -426,7 +426,7 @@ public class WeatherCompanyHandler extends BaseThingHandler {
             return;
         }
         try {
-            logger.trace("Handler: Parsing PWS observations response: {}", response);
+            logger.debug("Handler: Parsing PWS observations response: {}", response);
             PwsObservations pwsObservations = gson.fromJson(response, PwsObservations.class);
             logger.debug("Handler: Successfully parsed PWS observations response object");
             updatePwsObservations(pwsObservations);
