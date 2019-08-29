@@ -32,6 +32,7 @@ import org.openhab.binding.teslapowerwall.internal.TeslaPowerwallWebTargets;
 import org.openhab.binding.teslapowerwall.internal.api.MeterAggregates;
 import org.openhab.binding.teslapowerwall.internal.api.BatterySOE;
 import org.openhab.binding.teslapowerwall.internal.api.GridStatus;
+import org.openhab.binding.teslapowerwall.internal.api.Operations;
 import org.openhab.binding.teslapowerwall.internal.TeslaPowerwallConfiguration;
 
 import java.io.IOException;
@@ -117,11 +118,16 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
         TeslaPowerwallConfiguration config = getConfigAs(TeslaPowerwallConfiguration.class);
         BatterySOE batterySOE = webTargets.getBatterySOE();
         GridStatus gridStatus = webTargets.getGridStatus();
-        String token = webTargets.getToken(config.email, config.password);
         MeterAggregates meterAggregates = webTargets.getMeterAggregates();
+        String token = webTargets.getToken(config.email, config.password);
+        Operations operations = webTargets.getOperations(token);
         updateStatus(ThingStatus.ONLINE);
         if (batterySOE != null) {
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERYSOE, new QuantityType<>(batterySOE.soe, SmartHomeUnits.PERCENT));
+        }
+        if (operations != null) {
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_MODE, new StringType(operations.mode));
+            updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_RESERVE, new QuantityType<>(operations.reserve, SmartHomeUnits.PERCENT));
         }
         if (gridStatus != null) {
             updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRIDSTATUS, new StringType(gridStatus.grid_status));

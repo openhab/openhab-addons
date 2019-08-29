@@ -18,6 +18,7 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.teslapowerwall.internal.api.BatterySOE;
 import org.openhab.binding.teslapowerwall.internal.api.GridStatus;
 import org.openhab.binding.teslapowerwall.internal.api.MeterAggregates;
+import org.openhab.binding.teslapowerwall.internal.api.Operations;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.slf4j.Logger;
@@ -80,6 +81,30 @@ public class TeslaPowerwallWebTargets {
         String token = jsonResponse.get("token").getAsString();
         logger.debug("Token: {}", token);
         return token;
+    }
+
+    public Operations getOperations(String token) throws TeslaPowerwallCommunicationException {
+        String response;
+        Properties headers = new Properties();
+        headers.setProperty("Content-Type", token);
+
+        synchronized (this) {
+            try {
+                response = HttpUtil.executeUrl("GET", getOperationUri, headers, null, null, TIMEOUT_MS);
+            } catch (IOException ex) {
+                logger.debug("{}", ex.getLocalizedMessage(), ex);
+                // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
+                // error check below consistent.
+                response = null;
+            }
+        }
+
+        if (response == null) {
+            throw new TeslaPowerwallCommunicationException(
+                    String.format("Tesla Powerwall returned error while invoking %s", getOperationUri));
+        }
+        logger.debug("getOperations response = {}", response);
+        return Operations.parse(response);
     }
 
     private String invoke(String uri) throws TeslaPowerwallCommunicationException {
