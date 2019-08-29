@@ -50,7 +50,7 @@ Getting API Key  - PRESS WEB Button
 Your api Key is: 0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33
 
 ```
-### Thing or device discovery
+### Thing Discovery
 
 You can use the same procedure to discover each device you want to use. 
 You will need to provide the api key from the previous step. 
