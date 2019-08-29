@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Player SYMFONISK Thing Type -->
+	<!-- SYMFONISK Thing Type -->
 	<thing-type id="SYMFONISK">
 		<label>SYMFONISK</label>
 		<description>Represents IKEA SYMFONISK speaker</description>
@@ -56,7 +56,7 @@
 		</channels>
 
 		<properties>
-			<property name="vendor">SONOS</property>
+			<property name="vendor">IKEA</property>
 			<property name="modelId">SYMFONISK</property>
 		</properties>
 
