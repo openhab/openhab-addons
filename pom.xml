@@ -74,7 +74,7 @@
 
     <bnd.importpackage></bnd.importpackage>
     <bnd.exportpackage></bnd.exportpackage>
-    <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
+    <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, -${.}/target/dep;filter:=*.jar;lib:=true</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
   </properties>
@@ -499,6 +499,7 @@ Import-Package: \\
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.openhab.tools.sat</groupId>
           <artifactId>sat-plugin</artifactId>
@@ -545,6 +546,7 @@ Import-Package: \\
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -560,6 +562,28 @@ Import-Package: \\
                   <version>[1.8.0-40,1.9),[9.0,12.0)</version>
                 </requireJavaVersion>
               </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- embed compile time dependencies by copying -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>dependencies</id>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeScope>runtime</includeScope>
+              <includeTypes>jar</includeTypes>
+              <excludeGroupIds>javax.activation,org.apache.karaf.features</excludeGroupIds>
+              <outputDirectory>${project.build.directory}/dep</outputDirectory>
+              <overWriteReleases>true</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
             </configuration>
           </execution>
         </executions>
@@ -620,7 +644,7 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/;filter:=*.jar;lib:=true, -${.}/target/dep;filter:=*.jar;lib:=true</bnd.includeresource>
         <feature.directory>../../src/main/feature/feature.xml</feature.directory>
       </properties>
       <build>
@@ -663,7 +687,7 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/;filter:=*.jar;lib:=true, -${.}/target/dep;filter:=*.jar;lib:=true</bnd.includeresource>
       </properties>
     </profile>
 
