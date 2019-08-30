@@ -4,10 +4,47 @@
 		xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 		xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:gpstracker:life360">
+		<parameter-group name="life360Auth">
+			<label>Life360 Authentication</label>
+			<description>Life360 admin account</description>
+			<advanced>false</advanced>
+		</parameter-group>
+		
+		<parameter name="userName" type="text" required="true" groupName="life360Auth">
+			<context>email</context>
+			<label>Username</label>
+			<description>Username of Life360 account</description>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="password" type="text" required="true" groupName="life360Auth">
+			<context>password</context>
+			<label>Password</label>
+			<description>Password of Life360 account</description>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="refreshPeriod" type="integer" required="true" groupName="life360Auth">
+			<label>Refresh Period</label>
+			<description>Life360 polling refreshPeriod in seconds.</description>
+			<default>10</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="authToken" type="text" required="true" groupName="life360Auth">
+			<label>Authorization Token</label>
+			<description>This is a googleable value. Life360 might changes this sometimes.</description>
+			<default>cFJFcXVnYWJSZXRyZTRFc3RldGhlcnVmcmVQdW1hbUV4dWNyRUh1YzptM2ZydXBSZXRSZXN3ZXJFQ2hBUHJFOTZxYWtFZHI0Vg==</default>
+			<advanced>false</advanced>
+		</parameter>
+	</config-description>
 	<config-description uri="thing-type:gpstracker:tracker">
 		<parameter name="trackerId" type="text" required="true">
 			<label>Tracker Id</label>
 			<description>Id configured in tracker application.</description>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="loginEmail" type="text" required="false">
+			<label>Login Email</label>
+			<description>Life360 login email</description>
 			<advanced>false</advanced>
 		</parameter>
 	</config-description>

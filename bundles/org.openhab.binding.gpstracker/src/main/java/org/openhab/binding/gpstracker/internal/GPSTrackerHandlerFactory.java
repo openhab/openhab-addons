@@ -12,21 +12,26 @@
  */
 package org.openhab.binding.gpstracker.internal;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.gpstracker.internal.config.ConfigHelper;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
+import org.openhab.binding.gpstracker.internal.handler.Life360BridgeHandler;
 import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
 import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
 import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
 import org.openhab.binding.gpstracker.internal.provider.gpslogger.GPSLoggerCallbackServlet;
+import org.openhab.binding.gpstracker.internal.provider.life360.Life360CallbackServlet;
 import org.openhab.binding.gpstracker.internal.provider.owntracks.OwnTracksCallbackServlet;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
@@ -40,6 +45,7 @@ import javax.servlet.ServletException;
 import java.net.URI;
 import java.util.*;
 
+import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.BRIDGE_TYPE_LIFE360;
 import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_PID;
 
 /**
@@ -90,6 +96,11 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     private GPSLoggerCallbackServlet glHTTPEndpoint;
 
     /**
+     * Endpoint called by tracker applications
+     */
+    private Life360CallbackServlet l360HTTPEndpoint;
+
+    /**
      * Notification broker
      */
     private NotificationBroker notificationBroker = new NotificationBroker();
@@ -103,6 +114,11 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
      * All regions.
      */
     private Set<String> regions = new HashSet<>();
+
+    /**
+     * Common HTTP client
+     */
+    private HttpClient httpClient;
 
     /**
      * Called by the framework to find out if thing type is supported by the handler factory.
@@ -124,12 +140,18 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)
+        if (BRIDGE_TYPE_LIFE360.equals(thingTypeUID)) {
+            return new Life360BridgeHandler((Bridge) thing, httpClient, discoveryService, trackerHandlers);
+        } else if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)
                 && ConfigHelper.getTrackerId(thing.getConfiguration()) != null) {
             TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions,
                     locationProvider != null ? locationProvider.getLocation(): null, unitProvider);
             discoveryService.removeTracker(trackerHandler.getTrackerId());
             trackerHandlers.put(trackerHandler.getTrackerId(), trackerHandler);
+            //map the handler based on the login email as well for Life360 messages
+            if (trackerHandler.getLoginEmail() != null) {
+                trackerHandlers.put(trackerHandler.getLoginEmail(), trackerHandler);
+            }
             return trackerHandler;
         } else {
             return null;
@@ -138,8 +160,14 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        String trackerId = ConfigHelper.getTrackerId(thingHandler.getThing().getConfiguration());
-        trackerHandlers.remove(trackerId);
+        if (thingHandler instanceof TrackerHandler) {
+            String trackerId = ConfigHelper.getTrackerId(thingHandler.getThing().getConfiguration());
+            trackerHandlers.remove(trackerId);
+        } else {
+            Life360BridgeHandler bridgeHandler = (Life360BridgeHandler) thingHandler;
+            bridgeHandler.stop();
+            discoveryService.clearLife360Results();
+        }
     }
 
     /**
@@ -162,8 +190,13 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
             this.httpService.registerServlet(glHTTPEndpoint.getPath(), glHTTPEndpoint, null,
                     this.httpService.createDefaultHttpContext());
             logger.debug("Started GPSTracker Callback servlet on {}", glHTTPEndpoint.getPath());
+
+            l360HTTPEndpoint = new Life360CallbackServlet(discoveryService, this);
+            this.httpService.registerServlet(l360HTTPEndpoint.getPath(), l360HTTPEndpoint, null,
+                    this.httpService.createDefaultHttpContext());
+            logger.debug("Started Life360 Callback servlet on {}", l360HTTPEndpoint.getPath());
         } catch (NamespaceException | ServletException e) {
-            logger.error("Could not start GPSTracker Callback servlet: {}", e.getMessage(), e);
+            logger.error("Failed to start Callback servlet: {}", e.getMessage(), e);
         }
     }
 
@@ -181,6 +214,9 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
 
         this.httpService.unregister(glHTTPEndpoint.getPath());
         logger.debug("GPSTracker callback servlet stopped on {}", glHTTPEndpoint.getPath());
+
+        this.httpService.unregister(l360HTTPEndpoint.getPath());
+        logger.debug("Life360 callback servlet stopped on {}", l360HTTPEndpoint.getPath());
 
         super.deactivate(componentContext);
     }
@@ -234,5 +270,26 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     public TrackerHandler getTrackerHandler(String trackerId) {
         return trackerHandlers.get(trackerId);
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        try {
+            logger.debug("setHttpClientFactory this: {}", this.toString());
+            httpClient = httpClientFactory.getCommonHttpClient();
+            httpClient.start();
+        } catch (Exception e) {
+            logger.error("Error setting up http client", e);
+        }
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        try {
+            logger.debug("unsetHttpClientFactory this: {}", this.toString());
+            httpClient.stop();
+            httpClient = null;
+        } catch (Exception e) {
+            logger.error("Error stopping http client", e);
+        }
     }
 }

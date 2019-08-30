@@ -28,7 +28,9 @@ import java.util.stream.Stream;
 public abstract class GPSTrackerBindingConstants {
     public static final String BINDING_ID = "gpstracker";
     static final String CONFIG_PID = "binding." + BINDING_ID;
+    private static final String BRIDGE_TYPE = "life360";
     private static final String THING_TYPE = "tracker";
+    public static final ThingTypeUID BRIDGE_TYPE_LIFE360 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE);
     public static final ThingTypeUID THING_TYPE_TRACKER = new ThingTypeUID(BINDING_ID, THING_TYPE);
 
     //channels
@@ -47,5 +49,5 @@ public abstract class GPSTrackerBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_DISTANCE = new ChannelTypeUID(BINDING_ID, CHANNEL_REGION_DISTANCE);
     public static final ChannelTypeUID CHANNEL_TYPE_REGION = new ChannelTypeUID(BINDING_ID, CHANNEL_REGION_TRIGGER);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_TRACKER).collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(BRIDGE_TYPE_LIFE360, THING_TYPE_TRACKER).collect(Collectors.toSet());
 }

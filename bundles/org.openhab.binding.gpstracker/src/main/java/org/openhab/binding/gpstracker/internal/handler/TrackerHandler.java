@@ -88,6 +88,11 @@ public class TrackerHandler extends BaseThingHandler {
     private String trackerId;
 
     /**
+     * Life360 login email
+     */
+    private String loginEmail;
+
+    /**
      * Map of regionName/distance channels
      */
     private Map<String, Channel> distanceChannelMap = new HashMap<>();
@@ -137,6 +142,7 @@ public class TrackerHandler extends BaseThingHandler {
         this.unitProvider = unitProvider;
 
         trackerId = ConfigHelper.getTrackerId(thing.getConfiguration());
+        loginEmail = ConfigHelper.getLoginEmail(thing.getConfiguration());
         notificationBroker.registerHandler(trackerId, notificationHandler);
 
         logger.debug("Tracker handler created: {}", trackerId);
@@ -151,6 +157,15 @@ public class TrackerHandler extends BaseThingHandler {
         return trackerId;
     }
 
+    /**
+     * Returns login email configuration of the thing.
+     *
+     * @return Login email for life 360
+     */
+    public String getLoginEmail() {
+        return loginEmail;
+    }
+
     @Override
     public void initialize() {
         if (sysLocation != null) {
@@ -160,11 +175,14 @@ public class TrackerHandler extends BaseThingHandler {
         }
 
         mapDistanceChannels();
-        updateStatus(ThingStatus.ONLINE);
+        if (getBridge() == null) {
+            //setting the tracker online only if there is no life360 bridge
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     /**
-     * Create distance channel for measuring the distance between the tracker and the szstem.
+     * Create distance channel for measuring the distance between the tracker and the openHAB system.
      */
     private void createBasicDistanceChannel() {
         @Nullable

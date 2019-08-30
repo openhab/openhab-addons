@@ -3,8 +3,21 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	
+	<!-- Life360 Bridge -->
+	<bridge-type id="life360">
+		<label>Life360 Bridge</label>
+		<description>Life360 Integration</description>
+		
+		<config-description-ref uri="thing-type:gpstracker:life360"/>
+	</bridge-type>
+	
 	<!-- Thing Types -->
 	<thing-type id="tracker" extensible="regionDistance">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="life360"/>
+		</supported-bridge-type-refs>
+		
 		<label>Tracker Device</label>
 		<description>Device running tracker application</description>
 

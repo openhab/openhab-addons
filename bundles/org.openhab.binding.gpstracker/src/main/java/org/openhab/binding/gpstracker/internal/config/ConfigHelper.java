@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 public class ConfigHelper {
     //configuration constants
     public static final String CONFIG_TRACKER_ID = "trackerId";
+    public static final String CONFIG_LOGIN_EMAIL = "loginEmail";
     public static final String CONFIG_REGION_NAME = "regionName";
     public static final String CONFIG_REGION_RADIUS = "regionRadius";
     public static final String CONFIG_REGION_CENTER_LOCATION = "regionCenterLocation";
@@ -50,6 +51,10 @@ public class ConfigHelper {
 
     public static String getTrackerId(Configuration config) {
         return (String) config.get(CONFIG_TRACKER_ID);
+    }
+
+    public static String getLoginEmail(Configuration config) {
+        return (String) config.get(CONFIG_LOGIN_EMAIL);
     }
 
     public static PointType getRegionCenterLocation(Configuration config) {

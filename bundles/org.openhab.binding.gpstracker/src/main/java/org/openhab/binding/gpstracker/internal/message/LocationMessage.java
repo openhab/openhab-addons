@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.gpstracker.internal.message;
 
-import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
-
+import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -26,23 +22,20 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.gpstracker.internal.message.life360.Location;
 
-import com.google.gson.annotations.SerializedName;
+import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 /**
- * The {@link LocationMessage} is a POJO for location messages sent bz trackers.
+ * The {@link LocationMessage} is a POJO for location messages sent by trackers.
  *
  * @author Gabor Bicskei - Initial contribution
  */
 @NonNullByDefault
 public class LocationMessage {
-
-    /**
-     * Message type
-     */
-    @SerializedName("_type")
-    private String type = "";
-
     /**
      * Tracker ID used to display the initials of a user (iOS,Android/string/optional) required for http mode
      */
@@ -78,6 +71,18 @@ public class LocationMessage {
      */
     @SerializedName("tst")
     private Long timestampMillis = Long.MIN_VALUE;
+
+    public LocationMessage() {
+    }
+
+    public LocationMessage(String trackerId, Location life360Location) {
+        this.trackerId = trackerId;
+        this.latitude = life360Location.getLatitude();
+        this.longitude = life360Location.getLongitude();
+        this.batteryLevel = life360Location.getBattery();
+        this.gpsAccuracy = life360Location.getAccuracy();
+        this.timestampMillis = life360Location.getTimestamp();
+    }
 
     public String getTrackerId() {
         return trackerId.replaceAll("[^a-zA-Z0-9_]", "");
@@ -130,7 +135,7 @@ public class LocationMessage {
 
     @Override
     public String toString() {
-        return "LocationMessage [" + ("type=" + type + ", ") + ("trackerId=" + trackerId + ", ")
+        return "LocationMessage [" + ("trackerId=" + trackerId + ", ")
                 + ("latitude=" + latitude + ", ") + ("longitude=" + longitude + ", ")
                 + (gpsAccuracy != null ? "gpsAccuracy=" + gpsAccuracy + ", " : "")
                 + ("batteryLevel=" + batteryLevel + ", ") + ("timestampMillis=" + timestampMillis) + "]";
