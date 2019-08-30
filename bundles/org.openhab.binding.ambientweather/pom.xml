@@ -15,44 +15,40 @@
   <name>openHAB Add-ons :: Bundles :: Ambient Weather Binding</name>
 
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/io.socket/socket.io-client -->
     <dependency>
-      <groupId>io.socket</groupId>
-      <artifactId>socket.io-client</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>io.socket.socket.io-client</artifactId>
       <version>1.0.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/io.socket/engine.io-client -->
     <dependency>
-      <groupId>io.socket</groupId>
-      <artifactId>engine.io-client</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>io.socket.engine.io-client</artifactId>
       <version>1.0.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
     <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp</artifactId>
-      <version>3.12.1</version>
-      <scope>provided</scope>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.okhttp</artifactId>
+      <version>3.8.1_1</version>
+      <scope>compile</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.squareup.okio/okio -->
     <dependency>
-      <groupId>com.squareup.okio</groupId>
-      <artifactId>okio</artifactId>
-      <version>1.15.0</version>
-      <scope>provided</scope>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.okio</artifactId>
+      <version>1.13.0_1</version>
+      <scope>compile</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.json/json -->
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
       <version>20180813</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
   <properties>
     <bnd.importpackage>android.*;resolution:=optional,com.android.org.*;resolution:=optional,dalvik.*;resolution:=optional,javax.annotation.meta.*;resolution:=optional,org.apache.harmony.*;resolution:=optional,org.conscrypt.*;resolution:=optional,sun.security.*;resolution:=optional</bnd.importpackage>
   </properties>
+
 </project>

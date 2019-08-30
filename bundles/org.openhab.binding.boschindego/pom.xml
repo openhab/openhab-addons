@@ -15,10 +15,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>de.zazaz.iot.bosch.indego.bosch-indego-controller-lib</artifactId>
+      <groupId>de.zazaz.iot.bosch.indego</groupId>
+      <artifactId>bosch-indego-controller-lib</artifactId>
       <version>0.8</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

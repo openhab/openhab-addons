@@ -23,7 +23,7 @@
         <groupId>com.github.jnr</groupId>
         <artifactId>jffi</artifactId>
         <version>1.2.18</version>
-        <scope>provided</scope>
+        <scope>compile</scope>
       </dependency>
       <!-- we need this for RPi hardfloat abi -->
       <dependency>
@@ -31,7 +31,7 @@
         <artifactId>jffi</artifactId>
         <version>1.2.18</version>
         <classifier>native</classifier>
-        <scope>provided</scope>
+        <scope>compile</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -41,13 +41,13 @@
       <groupId>com.github.jnr</groupId>
       <artifactId>jnr-enxio</artifactId>
       <version>0.19</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.github.jnr</groupId>
       <artifactId>jnr-posix</artifactId>
       <version>3.0.47</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
