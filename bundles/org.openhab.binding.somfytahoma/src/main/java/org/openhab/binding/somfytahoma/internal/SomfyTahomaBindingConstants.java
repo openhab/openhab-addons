@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.somfytahoma.internal;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -284,4 +282,44 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA,
             THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_CURTAIN,
             THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN));
+
+    //somfy gateways
+    public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {
+        {
+            put(0, "VIRTUAL_KIZBOX");
+            put(2, "KIZBOX_V1");
+            put(15, "TAHOMA");
+            put(20, "VERISURE_ALARM_SYSTEM");
+            put(21, "KIZBOX_MINI");
+            put(24, "KIZBOX_V2");
+            put(25, "MYFOX_ALARM_SYSTEM");
+            put(27, "KIZBOX_MINI_VMBUS");
+            put(28, "KIZBOX_MINI_IO");
+            put(29, "TAHOMA_V2");
+            put(30, "KIZBOX_V2_3H");
+            put(31, "KIZBOX_V2_2H");
+            put(34, "CONNEXOON");
+            put(35, "JSW_CAMERA");
+            put(37, "KIZBOX_MINI_DAUGHTERBOARD");
+            put(38, "KIZBOX_MINI_DAUGHTERBOARD_ZWAVE");
+            put(39, "KIZBOX_MINI_DAUGHTERBOARD_ENOCEAN");
+            put(40, "KIZBOX_MINI_RAILDIN");
+            put(41, "TAHOMA_V2_RTS");
+            put(42, "KIZBOX_MINI_MODBUS");
+            put(43, "KIZBOX_MINI_OVP");
+            put(53, "CONNEXOON_RTS");
+            put(54, "OPENDOORS_LOCK_SYSTEM");
+            put(56, "CONNEXOON_RTS_JAPAN");
+            put(58, "HOME_PROTECT_SYSTEM");
+            put(62, "CONNEXOON_RTS_AUSTRALIA");
+            put(63, "THERMOSTAT_SOMFY_SYSTEM");
+            put(64, "BOX_ULTRA_LOW_COST_RTS");
+            put(65, "SMARTLY_MINI_DAUGHTERBOARD_ZWAVE");
+            put(66, "SMARTLY_MINIBOX_RAILDIN");
+            put(67, "TAHOMA_BEE");
+            put(72, "TAHOMA_RAIL_DIN");
+            put(77, "ELIOT");
+            put(88, "WISER");
+        }
+    };
 }

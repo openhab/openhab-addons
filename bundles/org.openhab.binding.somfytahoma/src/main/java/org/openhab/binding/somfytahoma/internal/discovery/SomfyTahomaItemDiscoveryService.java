@@ -126,7 +126,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 discoverDevice(device);
             }
             for (SomfyTahomaGateway gw : devices.getGateways()) {
-                gatewayDiscovered(gw.getGatewayId());
+                gatewayDiscovered(gw);
             }
 
             List<SomfyTahomaActionGroup> actions = bridge.listActionGroups();
@@ -318,17 +318,18 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         deviceDiscovered(label, deviceURL, oid, THING_TYPE_ACTIONGROUP);
     }
 
-    private void gatewayDiscovered(String id) {
+    private void gatewayDiscovered(SomfyTahomaGateway gw) {
         Map<String, Object> properties = new HashMap<>(1);
+        String type = gatewayTypes.getOrDefault(gw.getType(), "UNKNOWN");
+        String id = gw.getGatewayId();
         properties.put("id", id);
+        properties.put("type", type);
 
         ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, bridge.getThing().getUID(), id);
 
-        if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
-            logger.debug("Detected a gateway with id: {}", id);
-            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GATEWAY)
-                    .withProperties(properties).withRepresentationProperty("id").withLabel("Somfy Tahoma Gateway")
-                    .withBridge(bridge.getThing().getUID()).build());
-        }
+        logger.debug("Detected a gateway with id: {} and type: {}", id, type);
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GATEWAY)
+                .withProperties(properties).withRepresentationProperty("id").withLabel("Somfy Gateway (" + type + ")")
+                .withBridge(bridge.getThing().getUID()).build());
     }
 }
