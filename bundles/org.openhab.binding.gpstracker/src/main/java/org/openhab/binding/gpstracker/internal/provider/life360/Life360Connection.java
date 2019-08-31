@@ -107,13 +107,21 @@ public class Life360Connection {
         return Collections.emptySet();
     }
 
+    public boolean isStopped() {
+        return "stopped".equalsIgnoreCase(httpClient.getState());
+    }
+
+    public boolean isOnline() {
+        return "started".equalsIgnoreCase(httpClient.getState()) && accessToken != null;
+    }
+
     public CircleDetailResponse loadCircleDetails(String cId) throws InterruptedException, TimeoutException, ExecutionException {
         Request circleDetailRequest = httpClient.newRequest(String.format(URI_CIRCLE, cId)).header("Authorization", "Bearer " + accessToken).method(HttpMethod.GET);
         ContentResponse circleDetailResponse = circleDetailRequest.send();
         return gson.fromJson(circleDetailResponse.getContentAsString(), CircleDetailResponse.class);
     }
 
-    private List<PlacesItem> loadPlaces(String cId) throws InterruptedException, TimeoutException, ExecutionException {
+    public List<PlacesItem> loadPlaces(String cId) throws InterruptedException, TimeoutException, ExecutionException {
         Request placesRequest = httpClient.newRequest(String.format(URI_PLACES, cId)).header("Authorization", "Bearer " + accessToken).method(HttpMethod.GET);
         ContentResponse placesResponse = placesRequest.send();
         PlaceListResponse places = gson.fromJson(placesResponse.getContentAsString(), PlaceListResponse.class);

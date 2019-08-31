@@ -56,6 +56,11 @@ public class MembersItem {
         this.loginEmail = loginEmail;
     }
 
+    public String getTrackerId() {
+        String id = loginEmail.substring(0, loginEmail.indexOf("@"));
+        return id.replaceAll("[^a-zA-Z0-9_]", "");
+    }
+
     public String getLoginEmail() {
         return loginEmail;
     }
@@ -90,6 +95,10 @@ public class MembersItem {
 
     public String getId() {
         return id;
+    }
+
+    public String getFullName() {
+        return new StringBuilder(getFirstName()).append(" ").append(getLastName()).toString();
     }
 
     @Override

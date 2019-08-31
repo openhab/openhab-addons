@@ -25,9 +25,15 @@
 		</parameter>
 		<parameter name="refreshPeriod" type="integer" required="true" groupName="life360Auth">
 			<label>Refresh Period</label>
-			<description>Life360 polling refreshPeriod in seconds.</description>
+			<description>Life360 polling refresh period in seconds.</description>
 			<default>10</default>
 			<advanced>false</advanced>
+		</parameter>
+		<parameter name="configPeriod" type="integer" required="true" groupName="life360Auth">
+			<label>Configuration Update Period</label>
+			<description>Life360 polling configuration update in seconds.</description>
+			<default>120</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="authToken" type="text" required="true" groupName="life360Auth">
 			<label>Authorization Token</label>

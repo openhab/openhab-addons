@@ -31,7 +31,6 @@ import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
 import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
 import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
 import org.openhab.binding.gpstracker.internal.provider.gpslogger.GPSLoggerCallbackServlet;
-import org.openhab.binding.gpstracker.internal.provider.life360.Life360CallbackServlet;
 import org.openhab.binding.gpstracker.internal.provider.owntracks.OwnTracksCallbackServlet;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
@@ -98,7 +97,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     /**
      * Endpoint called by tracker applications
      */
-    private Life360CallbackServlet l360HTTPEndpoint;
+    //private Life360CallbackServlet l360HTTPEndpoint;
 
     /**
      * Notification broker
@@ -165,8 +164,8 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
             trackerHandlers.remove(trackerId);
         } else {
             Life360BridgeHandler bridgeHandler = (Life360BridgeHandler) thingHandler;
-            bridgeHandler.stop();
             discoveryService.clearLife360Results();
+            bridgeHandler.stop();
         }
     }
 
@@ -191,10 +190,10 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
                     this.httpService.createDefaultHttpContext());
             logger.debug("Started GPSTracker Callback servlet on {}", glHTTPEndpoint.getPath());
 
-            l360HTTPEndpoint = new Life360CallbackServlet(discoveryService, this);
-            this.httpService.registerServlet(l360HTTPEndpoint.getPath(), l360HTTPEndpoint, null,
-                    this.httpService.createDefaultHttpContext());
-            logger.debug("Started Life360 Callback servlet on {}", l360HTTPEndpoint.getPath());
+            //l360HTTPEndpoint = new Life360CallbackServlet(discoveryService, this);
+            //this.httpService.registerServlet(l360HTTPEndpoint.getPath(), l360HTTPEndpoint, null,
+            //        this.httpService.createDefaultHttpContext());
+            //logger.debug("Started Life360 Callback servlet on {}", l360HTTPEndpoint.getPath());
         } catch (NamespaceException | ServletException e) {
             logger.error("Failed to start Callback servlet: {}", e.getMessage(), e);
         }
@@ -215,8 +214,8 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
         this.httpService.unregister(glHTTPEndpoint.getPath());
         logger.debug("GPSTracker callback servlet stopped on {}", glHTTPEndpoint.getPath());
 
-        this.httpService.unregister(l360HTTPEndpoint.getPath());
-        logger.debug("Life360 callback servlet stopped on {}", l360HTTPEndpoint.getPath());
+        //this.httpService.unregister(l360HTTPEndpoint.getPath());
+        //logger.debug("Life360 callback servlet stopped on {}", l360HTTPEndpoint.getPath());
 
         super.deactivate(componentContext);
     }

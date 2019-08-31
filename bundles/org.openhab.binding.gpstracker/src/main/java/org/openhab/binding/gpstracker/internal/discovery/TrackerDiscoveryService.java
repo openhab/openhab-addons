@@ -20,6 +20,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants;
 import org.openhab.binding.gpstracker.internal.config.ConfigHelper;
+import org.openhab.binding.gpstracker.internal.provider.ProviderType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -27,10 +28,7 @@ import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The {@link TrackerDiscoveryService} class provides discovery service for the binding to discover trackers. Discovery
@@ -55,7 +53,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
     /**
      * Registry of tracker to discover next time
      */
-    private Set<String> trackersToDiscover = new HashSet<>();
+    private Map<String, TrackerDescription> trackersToDiscover = new HashMap<>();
 
     /**
      * Bridge UID
@@ -80,14 +78,14 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
      * Called when the source tracker is not registered as a thing. These undiscovered trackers will be registered by
      * the discovery service.
      *
-     * @param trackerId Tracker id.
+     * @param descriptor Tracker descriptor.
      */
-    public void addTracker(String trackerId) {
-        if (!trackersToDiscover.contains(trackerId)) {
-            logger.debug("Tracker discovered: {}", trackerId);
-            trackersToDiscover.add(trackerId);
+    public void addTracker(TrackerDescription descriptor) {
+        if (!trackersToDiscover.containsKey(descriptor.getId())) {
+            logger.debug("Tracker discovered: {}", descriptor.getId());
+            trackersToDiscover.put(descriptor.getId(), descriptor);
             if (isBackgroundDiscoveryEnabled()) {
-                createDiscoveryResult(trackerId);
+                createDiscoveryResult(descriptor);
             }
         }
     }
@@ -103,36 +101,31 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        trackersToDiscover.forEach(this::createDiscoveryResult);
+        trackersToDiscover.values().forEach(this::createDiscoveryResult);
     }
 
     /**
      * Create discovery result form the tracker id.
      *
-     * @param trackerId Tracker id.
+     * @param trackerDescriptor Tracker descriptor.
      */
-    private void createDiscoveryResult(String trackerId) {
-        int idx = trackerId.indexOf("@");
-        boolean isLife360Tracker = idx > -1 && life360BridgeUID != null;
-
-        String id = isLife360Tracker ? trackerId.substring(0, idx).replaceAll("[^A-Za-z0-9 ]", "_"): trackerId;
-
+    private void createDiscoveryResult(TrackerDescription trackerDescriptor) {
         DiscoveryResultBuilder discoveryResult;
 
-        if (isLife360Tracker) {
+        String trackerId = trackerDescriptor.getId();
+        if (life360BridgeUID != null) {
             discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, life360BridgeUID, id))
-                    .withProperty(ConfigHelper.CONFIG_LOGIN_EMAIL, trackerId)
+                    .create(new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, life360BridgeUID, trackerId))
                     .withBridge(life360BridgeUID);
         } else {
             discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, id));
+                    .create(new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, trackerId));
         }
 
         discoveryResult
-                .withProperty(ConfigHelper.CONFIG_TRACKER_ID, id)
+                .withProperty(ConfigHelper.CONFIG_TRACKER_ID, trackerId)
                 .withThingType(GPSTrackerBindingConstants.THING_TYPE_TRACKER)
-                .withLabel("GPS Tracker " + trackerId);
+                .withLabel("GPS Tracker - " + trackerDescriptor.getName() + " ("+ trackerDescriptor.getType() +")");
 
         this.thingDiscovered(discoveryResult.build());
     }
@@ -156,14 +149,17 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
         super.deactivate();
     }
 
-    public void clearLife360Results() {
-        Set<String> tmp = new HashSet<>(trackersToDiscover);
-        tmp.stream().filter(o->o.indexOf("@")>0).forEach(o->trackersToDiscover.remove(o));
-    }
-
     @Override
     protected void stopScan() {
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
     }
+
+    public void clearLife360Results() {
+        Set<TrackerDescription> values = new HashSet<>(trackersToDiscover.values());
+        values.stream().filter(t->t.getType() == ProviderType.Life360).forEach(t->trackersToDiscover.remove(t.getId()));
+        removeOlderResults(getTimestampOfLastScan());
+    }
+
+
 }

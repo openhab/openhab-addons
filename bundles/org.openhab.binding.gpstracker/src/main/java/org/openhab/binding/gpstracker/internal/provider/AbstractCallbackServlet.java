@@ -12,14 +12,7 @@
  */
 package org.openhab.binding.gpstracker.internal.provider;
 
-import java.io.BufferedReader;
-import java.util.Collections;
-import java.util.List;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import org.openhab.binding.gpstracker.internal.discovery.TrackerDescription;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
 import org.openhab.binding.gpstracker.internal.message.LocationMessage;
@@ -27,6 +20,13 @@ import org.openhab.binding.gpstracker.internal.message.MessageUtil;
 import org.openhab.binding.gpstracker.internal.message.TransitionMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Abstract callback servlet used by the trackers.
@@ -144,7 +144,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
             TrackerHandler handler = trackerRegistry.getTrackerHandler(trackerId);
             if (handler == null) {
                 // handler was not found - adding the tracker to discovery service.
-                discoveryService.addTracker(trackerId);
+                discoveryService.addTracker(new TrackerDescription(trackerId, trackerId, getProvider()));
             } else {
                 return handler;
             }
@@ -152,5 +152,5 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
         return null;
     }
 
-    protected abstract String getProvider();
+    protected abstract ProviderType getProvider();
 }

@@ -22,6 +22,7 @@ public class Life360Config {
     private String password;
     private String authToken;
     private Integer refreshPeriod;
+    private Integer configPeriod;
 
     public String getUserName() {
         return userName;
@@ -49,6 +50,14 @@ public class Life360Config {
 
     public Integer getRefreshPeriod() {
         return refreshPeriod;
+    }
+
+    public void setConfigPeriod(Integer configPeriod) {
+        this.configPeriod = configPeriod;
+    }
+
+    public Integer getConfigPeriod() {
+        return configPeriod;
     }
 
     public void setRefreshPeriod(Integer refreshPeriod) {

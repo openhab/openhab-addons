@@ -13,6 +13,9 @@
 package org.openhab.binding.gpstracker.internal.message.life360;
 
 import com.google.gson.annotations.SerializedName;
+import org.eclipse.smarthome.core.library.types.PointType;
+
+import java.math.BigDecimal;
 
 /**
  * The {@link PlacesItem} is a Life360 message POJO
@@ -64,6 +67,10 @@ public class PlacesItem {
         return name;
     }
 
+    public PointType getLocation() {
+        return new PointType(getLatitude() + "," + getLongitude());
+    }
+
     public void setTypeLabel(String typeLabel) {
         this.typeLabel = typeLabel;
     }
@@ -100,8 +107,8 @@ public class PlacesItem {
         this.radius = radius;
     }
 
-    public String getRadius() {
-        return radius;
+    public BigDecimal getRadius() {
+        return new BigDecimal(radius);
     }
 
     public void setType(int type) {
@@ -134,5 +141,9 @@ public class PlacesItem {
                         ",type = '" + type + '\'' +
                         ",longitude = '" + longitude + '\'' +
                         "}";
+    }
+
+    public boolean isChanged(String name, String location, BigDecimal radius) {
+        return this.name == null || this.latitude == null || this.longitude == null || this.radius == null || !this.name.equals(name) || !(this.latitude + "," + this.longitude).equals(location) || !this.radius.equals(radius.toString());
     }
 }

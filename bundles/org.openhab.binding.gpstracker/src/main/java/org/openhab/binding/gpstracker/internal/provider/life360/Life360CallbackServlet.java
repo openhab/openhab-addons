@@ -14,6 +14,7 @@ package org.openhab.binding.gpstracker.internal.provider.life360;
 
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.provider.AbstractCallbackServlet;
+import org.openhab.binding.gpstracker.internal.provider.ProviderType;
 import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
 
 /**
@@ -31,15 +32,10 @@ public class Life360CallbackServlet extends AbstractCallbackServlet {
     private static final String CALLBACK_PATH = "/gpstracker/life360";
 
     /**
-     * Provider name
-     */
-    private static final String PROVIDER = "Life360";
-
-    /**
      * Constructor called at binding startup.
      *
      * @param discoveryService Discovery service for new trackers.
-     * @param trackerRegistry  Tracker registry
+     * @param trackerRegistry Tracker registry
      */
     public Life360CallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistry) {
         super(discoveryService, trackerRegistry);
@@ -51,7 +47,7 @@ public class Life360CallbackServlet extends AbstractCallbackServlet {
     }
 
     @Override
-    protected String getProvider() {
-        return PROVIDER;
+    protected ProviderType getProvider() {
+        return ProviderType.Life360;
     }
 }

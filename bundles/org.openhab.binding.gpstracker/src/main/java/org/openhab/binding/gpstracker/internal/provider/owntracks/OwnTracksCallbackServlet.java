@@ -14,6 +14,7 @@ package org.openhab.binding.gpstracker.internal.provider.owntracks;
 
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.provider.AbstractCallbackServlet;
+import org.openhab.binding.gpstracker.internal.provider.ProviderType;
 import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
 
 /**
@@ -31,11 +32,6 @@ public class OwnTracksCallbackServlet extends AbstractCallbackServlet {
     private static final String CALLBACK_PATH = "/gpstracker/owntracks";
 
     /**
-     * Provider name
-     */
-    private static final String PROVIDER = "OwnTracks";
-
-    /**
      * Constructor called at binding startup.
      *
      * @param discoveryService Discovery service for new trackers.
@@ -51,7 +47,7 @@ public class OwnTracksCallbackServlet extends AbstractCallbackServlet {
     }
 
     @Override
-    protected String getProvider() {
-        return PROVIDER;
+    protected ProviderType getProvider() {
+        return ProviderType.OwnTracks;
     }
 }
