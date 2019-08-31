@@ -18,20 +18,23 @@ package org.openhab.binding.etherrain.internal.api;
  * @author Joe Inkenbrandt - Initial contribution
  */
 public enum EtherRainCommandResult {
-  RESULT_OK("OK"), RESULT_INTERRUPTED_RAIN("RN"), RESULT_INTERUPPTED_SHORT("SH"), RESULT_INCOMPLETE("NC");
+    RESULT_OK("OK"),
+    RESULT_INTERRUPTED_RAIN("RN"),
+    RESULT_INTERUPPTED_SHORT("SH"),
+    RESULT_INCOMPLETE("NC");
 
-  protected String result;
+    protected String result;
 
-  EtherRainCommandResult(String result) {
-    this.result = result;
-  }
-
-  public static EtherRainCommandResult fromString(String text) {
-    for (EtherRainCommandResult b : EtherRainCommandResult.values()) {
-      if (b.result.equalsIgnoreCase(text)) {
-        return b;
-      }
+    EtherRainCommandResult(String result) {
+        this.result = result;
     }
-    return null;
-  }
+
+    public static EtherRainCommandResult fromString(String text) {
+        for (EtherRainCommandResult b : EtherRainCommandResult.values()) {
+            if (b.result.equalsIgnoreCase(text)) {
+                return b;
+            }
+        }
+        return null;
+    }
 }

@@ -101,16 +101,16 @@ public class EtherRainStatusResponse {
     public void printDebug() {
         logger.debug("EtherRain Status Update");
 
-        logger.debug("Unique Name: " + uniqueName);
-        logger.debug("Mac Address: " + macAddress);
+        logger.debug("Unique Name: {}", uniqueName);
+        logger.debug("Mac Address: {}", macAddress);
         logger.debug("Service Account: " + serviceAccount);
 
-        logger.debug("Operating Status: " + operatingStatus.toString());
-        logger.debug("Last Command Status: " + lastCommandStatus.toString());
-        logger.debug("Last Command Result: " + lastCommandResult.toString());
+        logger.debug("Operating Status: {}", operatingStatus);
+        logger.debug("Last Command Status: {}", lastCommandStatus);
+        logger.debug("Last Command Result: {}", lastCommandResult);
 
-        logger.debug("Last Active Valve: " + lastActiveValue);
-        logger.debug("Rain Sensor: " + rainSensor);
+        logger.debug("Last Active Valve: {}", lastActiveValue);
+        logger.debug("Rain Sensor: {}", rainSensor);
     }
 
 }

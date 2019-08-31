@@ -33,7 +33,7 @@ public class EtherRainConfiguration {
     /**
      * Hostname of the EtherRain API.
      */
-    public String host = null;
+    public String host;
 
     /**
      * The port the EtherRain API is listening on.
