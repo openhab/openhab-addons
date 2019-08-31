@@ -49,8 +49,8 @@ public class HydrawiseCloudApiClient {
             + "setcontroller.php?api_key=%s&controller_id=%d&json=true";
     private static final String SET_ZONE_URL = BASE_URL + "setzone.php?period_id=999";
     private static final int TIMEOUT_SECONDS = 30;
+    private final HttpClient httpClient;
     private String apiKey;
-    private HttpClient httpClient;
 
     /**
      * Initializes the API client with a HydraWise API key from a user's account and the HTTPClient to use
@@ -66,8 +66,7 @@ public class HydrawiseCloudApiClient {
      *
      */
     public HydrawiseCloudApiClient(HttpClient httpClient) {
-        this.apiKey = "";
-        this.httpClient = httpClient;
+        this("", httpClient);
     }
 
     /**
@@ -302,7 +301,7 @@ public class HydrawiseCloudApiClient {
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
         String error = response.getErrorMsg();
         if (error != null) {
-            if (error.equalsIgnoreCase("unauthorised")) {
+            if (error.equalsIgnoreCase("unauthorized")) {
                 throw new HydrawiseAuthenticationException();
             } else {
                 throw new HydrawiseConnectionException(response.getErrorMsg());
