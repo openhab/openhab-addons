@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:sonyprojector:serial">
+	<config-description uri="thing-type:rotel:serial">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<label>Serial Port</label>
@@ -22,7 +22,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:sonyprojector:serialandip">
+	<config-description uri="thing-type:rotel:serialandip">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<label>Serial Port</label>
@@ -40,7 +40,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:sonyprojector:serialandip2">
+	<config-description uri="thing-type:rotel:serialandip2">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<label>Serial Port</label>
@@ -58,7 +58,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:sonyprojector:serialandipandprotocol">
+	<config-description uri="thing-type:rotel:serialandipandprotocol">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<label>Serial Port</label>
@@ -87,7 +87,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:sonyprojector:serialandprotocol">
+	<config-description uri="thing-type:rotel:serialandprotocol">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<label>Serial Port</label>
@@ -115,7 +115,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:sonyprojector:serial2">
+	<config-description uri="thing-type:rotel:serial2">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<label>Serial Port</label>
@@ -152,7 +152,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:sonyprojector:serial3">
+	<config-description uri="thing-type:rotel:serial3">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<label>Serial Port</label>
@@ -201,7 +201,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:sonyprojector:serial4">
+	<config-description uri="thing-type:rotel:serial4">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<label>Serial Port</label>
@@ -254,7 +254,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:sonyprojector:serial5">
+	<config-description uri="thing-type:rotel:serial5">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<label>Serial Port</label>

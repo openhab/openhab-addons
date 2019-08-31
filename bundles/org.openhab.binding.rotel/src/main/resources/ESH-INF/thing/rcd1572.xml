@@ -16,7 +16,7 @@
 			<channel id="brightness" typeId="brightness" />
 		</channels>
 
-		<config-description-ref uri="thing-type:sonyprojector:serialandprotocol" />
+		<config-description-ref uri="thing-type:rotel:serialandprotocol" />
 	</thing-type>
 
 </thing:thing-descriptions>

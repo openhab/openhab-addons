@@ -20,7 +20,7 @@
 			<property name="protocol">HEX</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:sonyprojector:serial5" />
+		<config-description-ref uri="thing-type:rotel:serial5" />
 	</thing-type>
 
 </thing:thing-descriptions>

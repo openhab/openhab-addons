@@ -18,7 +18,7 @@
 			<property name="protocol">HEX</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:sonyprojector:serial2" />
+		<config-description-ref uri="thing-type:rotel:serial2" />
 	</thing-type>
 
 </thing:thing-descriptions>

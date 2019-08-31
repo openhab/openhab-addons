@@ -24,7 +24,7 @@
 			<property name="protocol">ASCII_V2</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:sonyprojector:serialandip" />
+		<config-description-ref uri="thing-type:rotel:serialandip" />
 	</thing-type>
 
 </thing:thing-descriptions>
