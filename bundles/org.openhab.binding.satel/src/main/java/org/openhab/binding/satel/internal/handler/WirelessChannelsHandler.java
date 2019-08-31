@@ -1,0 +1,125 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.satel.internal.handler;
+
+import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
+
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.openhab.binding.satel.internal.types.StateType;
+import org.openhab.binding.satel.internal.types.TroubleState;
+
+/**
+ * The {@link WirelessChannelsHandler} is base thing handler class for things that can be wireless devices.
+ * It adds support for two additional channels:
+ * <ul>
+ * <li><i>device_lobatt</i> - low battery indication</li>
+ * <li><i>device_nocomm</i> - communication problems indication</li>
+ * </ul>
+ * adding them if the device is configured as a wireless device.
+ *
+ * @author Krzysztof Goworek - Initial contribution
+ */
+public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
+
+    public WirelessChannelsHandler(Thing thing) {
+        super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        // add/remove channels depending on whether or not the device is wireless
+        final int wirelessDeviceId = thingConfig.getId() - bridgeHandler.getIntegraType().getOnMainboard();
+        ThingBuilder thingBuilder = editThing();
+        if (isWirelessDevice() && wirelessDeviceId > 0) {
+            // if a wireless device, remove channels for wireless devices
+            if (getChannel(TroubleState.DEVICE_LOBATT) == null) {
+                thingBuilder.withChannel(ChannelBuilder.create(getChannelUID(TroubleState.DEVICE_LOBATT), "Switch")
+                        .withType(CHANNEL_TYPE_LOBATT).build());
+            }
+            if (getChannel(TroubleState.DEVICE_NOCOMM) == null) {
+                thingBuilder.withChannel(ChannelBuilder.create(getChannelUID(TroubleState.DEVICE_NOCOMM), "Switch")
+                        .withType(CHANNEL_TYPE_NOCOMM).build());
+            }
+        } else {
+            // if not a wireless device, remove channels for wireless devices
+            thingBuilder.withoutChannel(getChannelUID(TroubleState.DEVICE_LOBATT))
+                    .withoutChannel(getChannelUID(TroubleState.DEVICE_NOCOMM));
+        }
+        updateThing(thingBuilder.build());
+    }
+
+    /**
+     * Defines the thing as a wireless or wired device.
+     *
+     * @return <code>true</code> if the thing is, or is configured as a wireless device
+     */
+    protected boolean isWirelessDevice() {
+        return thingConfig.isWireless();
+    }
+
+    @Override
+    protected int getStateBitNbr(StateType stateType) {
+        int bitNbr = thingConfig.getId() - 1;
+        if (stateType instanceof TroubleState) {
+            // for wireless devices we need to correct bit number
+            switch ((TroubleState) stateType) {
+                case DEVICE_LOBATT1:
+                case DEVICE_NOCOMM1:
+                case OUTPUT_NOCOMM1:
+                    bitNbr -= 120;
+                    // pass through
+                case DEVICE_LOBATT:
+                case DEVICE_NOCOMM:
+                case OUTPUT_NOCOMM:
+                    bitNbr -= bridgeHandler.getIntegraType().getOnMainboard();
+                    break;
+                default:
+                    // other states are either not supported or don't need correction
+                    break;
+            }
+        }
+        return bitNbr;
+    }
+
+    @Override
+    protected StateType getStateType(String channelId) {
+        String stateName = channelId.toUpperCase();
+        if (TroubleState.DEVICE_LOBATT.name().equals(stateName)
+                || TroubleState.DEVICE_NOCOMM.name().equals(stateName)) {
+            if (thingConfig.getId() - bridgeHandler.getIntegraType().getOnMainboard() > 120) {
+                // last 120 ACU-100 devices in INTEGRA 256 PLUS
+                stateName += "1";
+            }
+            return TroubleState.valueOf(stateName);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns channel UID for given state type.
+     *
+     * @param stateType state type to get channel UID for
+     * @return channel UID object
+     */
+    private ChannelUID getChannelUID(StateType stateType) {
+        String channelId = stateType.toString().toLowerCase();
+        return new ChannelUID(getThing().getUID(), channelId);
+    }
+
+}
