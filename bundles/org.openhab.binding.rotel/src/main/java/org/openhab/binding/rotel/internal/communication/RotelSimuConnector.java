@@ -72,6 +72,7 @@ public class RotelSimuConnector extends RotelConnector {
 
     private int minVolume;
     private int maxVolume;
+    private int minToneLevel;
     private int maxToneLevel;
 
     /**
@@ -85,6 +86,7 @@ public class RotelSimuConnector extends RotelConnector {
         this.minVolume = 0;
         this.maxVolume = model.hasVolumeControl() ? model.getVolumeMax() : 0;
         this.maxToneLevel = model.hasToneControl() ? model.getToneLevelMax() : 0;
+        this.minToneLevel = -this.maxToneLevel;
     }
 
     @Override
@@ -567,7 +569,7 @@ public class RotelSimuConnector extends RotelConnector {
                     textAscii = buildBassAsciiResponse();
                     break;
                 case BASS_DOWN:
-                    if (bass > -maxToneLevel) {
+                    if (bass > minToneLevel) {
                         bass -= STEP_TONE_LEVEL;
                     }
                     text = buildBassLine1Response();
@@ -594,7 +596,7 @@ public class RotelSimuConnector extends RotelConnector {
                     textAscii = buildTrebleAsciiResponse();
                     break;
                 case TREBLE_DOWN:
-                    if (treble > -maxToneLevel) {
+                    if (treble > minToneLevel) {
                         treble -= STEP_TONE_LEVEL;
                     }
                     text = buildTrebleLine1Response();
@@ -1075,7 +1077,7 @@ public class RotelSimuConnector extends RotelConnector {
 
     private String buildBassLine1Response() {
         String text;
-        if (bass == -maxToneLevel) {
+        if (bass == minToneLevel) {
             text = "   BASS  MIN ";
         } else if (bass == maxToneLevel) {
             text = "   BASS  MAX ";
@@ -1091,7 +1093,7 @@ public class RotelSimuConnector extends RotelConnector {
 
     private String buildBassLine1RightResponse() {
         String text;
-        if (bass == -maxToneLevel) {
+        if (bass == minToneLevel) {
             text = "LF  MIN";
         } else if (bass == maxToneLevel) {
             text = "LF  MAX";
@@ -1107,7 +1109,7 @@ public class RotelSimuConnector extends RotelConnector {
 
     private String buildTrebleLine1Response() {
         String text;
-        if (treble == -maxToneLevel) {
+        if (treble == minToneLevel) {
             text = " TREBLE  MIN ";
         } else if (treble == maxToneLevel) {
             text = " TREBLE  MAX ";
@@ -1123,7 +1125,7 @@ public class RotelSimuConnector extends RotelConnector {
 
     private String buildTrebleLine1RightResponse() {
         String text;
-        if (treble == -maxToneLevel) {
+        if (treble == minToneLevel) {
             text = "HF  MIN";
         } else if (treble == maxToneLevel) {
             text = "HF  MAX";

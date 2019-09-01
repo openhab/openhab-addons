@@ -150,7 +150,8 @@ The following channels are available:
 | source, mainZone#source, zone2#source, zone3#source, zone4#source | Source Input        | String    | Select the source input               | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, VIDEO7, VIDEO8, USB, PCUSB, MULTI, PHONO, BLUETOOTH, AUX, AUX1, AUX2, AUX1_COAX, AUX1_OPTICAL, COAX1, COAX2, COAX3, OPTICAL1, OPTICAL2, OPTICAL3, XLR, RCD, FM, DAB, PLAYFI, IRADIO, NETWORK |
 | mainZone#recordSource | Record Source       | String    | Select the source to be recorded      | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, USB, MAIN |
 | dsp, mainZone#dsp | DSP Mode            | String    | Select the DSP mode                   | NONE, STEREO3, STEREO5, STEREO7, STEREO9, STEREO11, MUSIC1, MUSIC2, MUSIC3, MUSIC4, PROLOGIC, PLIICINEMA, PLIIMUSIC, PLIIGAME, PLIIZ, NEO6MUSIC, NEO6CINEMA, ATMOS, NEURALX, BYPASS |
-| volume, mainZone#volume, zone2#volume, zone3#volume, zone4#volume | Volume              | Number    | Adjust the volume                     | INCREASE, DECREASE, value          |
+| mainZone#volumeUpDown, zone2#volumeUpDown | Volume              | Number    | Increase or decrease the volume       | INCREASE, DECREASE, value |
+| volume, mainZone#volume, zone2#volume, zone3#volume, zone4#volume | Volume              | Dimmer    | Adjust the volume                     | value between 0 and 100 |
 | mute, mainZone#mute, zone2#mute, zone3#mute, zone4#mute | Mute                | Switch    | Mute/unmute the sound                 | ON, OFF                            |
 | bass, mainZone#bass | Bass Adjustment           | Number    | Adjust the bass                                          | INCREASE, DECREASE, value          |
 | treble, mainZone#treble | Treble Adjustment     | Number    | Adjust the treble                                        | INCREASE, DECREASE, value          |
@@ -184,7 +185,7 @@ Here are the list of channels available for each thing type:
 | rcx1500    | power, source, volume, mute, playControl                                              |
 | rdd1580    | power, source, playControl, frequency                                                 |
 | rdg1520    | power, source, playControl                                                            |
-| rsp1066    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume |
+| rsp1066    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volumeUpDown, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volumeUpDown |
 | rsp1068    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1069    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1098    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
@@ -192,11 +193,11 @@ Here are the list of channels available for each thing type:
 | rsp1572    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1576    | power, source, dsp, volume, mute, brightness                                          |
 | rsp1582    | power, source, dsp, volume, mute, brightness                                          |
-| rsx1055    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume |
+| rsx1055    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volumeUpDown, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volumeUpDown |
 | rsx1056    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
 | rsx1057    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute |
 | rsx1058    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
-| rsx1065    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume |
+| rsx1065    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volumeUpDown, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volumeUpDown |
 | rsx1067    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute |
 | rsx1550    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsx1560    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
@@ -240,20 +241,20 @@ Switch preamp_power "Power" { channel="rotel:rsp1066:preamp:mainZone#power" }
 String preamp_source "Source Input [%s]" { channel="rotel:rsp1066:preamp:mainZone#source" }
 String preamp_rec "Record Source [%s]" { channel="rotel:rsp1066:preamp:mainZone#recordSource" }
 String preamp_dsp "DSP [%s]" { channel="rotel:rsp1066:preamp:mainZone#dsp" }
-Number preamp_volume "Volume [%d]" { channel="rotel:rsp1066:preamp:mainZone#volume" }
+Number preamp_volume "Volume [%d]" { channel="rotel:rsp1066:preamp:mainZone#volumeUpDown" }
 Switch preamp_mute "Mute" { channel="rotel:rsp1066:preamp:mainZone#mute" }
 Number preamp_bass "Bass Adjustment [%d]" { channel="rotel:rsp1066:preamp:mainZone#bass" }
 Number preamp_treble "Treble Adjustment [%d]" { channel="rotel:rsp1066:preamp:mainZone#treble" }
 String preamp_panel_display "Display [%s]" { channel="rotel:rsp1066:preamp:mainZone#line1" }
 Switch preamp_power_zone2 "Zone 2 Power" { channel="rotel:rsp1066:preamp:zone2#power" }
 String preamp_source_zone2 "Zone 2 Source Input [%s]" { channel="rotel:rsp1066:preamp:zone2#source" }
-Number preamp_volume_zone2 "Zone 2 Volume [%d]" { channel="rotel:rsp1066:preamp:zone2#volume" }
+Number preamp_volume_zone2 "Zone 2 Volume [%d]" { channel="rotel:rsp1066:preamp:zone2#volumeUpDown" }
 
 Switch preamp2_power "Power" { channel="rotel:rsp1570:preamp:mainZone#power" }
 String preamp2_source "Source Input [%s]" { channel="rotel:rsp1570:preamp:mainZone#source" }
 String preamp2_rec "Record Source [%s]" { channel="rotel:rsp1570:preamp:mainZone#recordSource" }
 String preamp2_dsp "DSP [%s]" { channel="rotel:rsp1570:preamp:mainZone#dsp" }
-Number preamp2_volume "Volume [%d]" { channel="rotel:rsp1570:preamp:mainZone#volume" }
+Dimmer preamp2_volume "Volume [%d %%]" { channel="rotel:rsp1570:preamp:mainZone#volume" }
 Switch preamp2_mute "Mute" { channel="rotel:rsp1570:preamp:mainZone#mute" }
 Number preamp2_bass "Bass Adjustment [%d]" { channel="rotel:rsp1570:preamp:mainZone#bass" }
 Number preamp2_treble "Treble Adjustment [%d]" { channel="rotel:rsp1570:preamp:mainZone#treble" }
@@ -261,20 +262,20 @@ String preamp2_panel_line1 "Display Line1 [%s]" { channel="rotel:rsp1570:preamp:
 String preamp2_panel_line2 "Display Line2 [%s]" { channel="rotel:rsp1570:preamp:mainZone#line2" }
 Switch preamp2_power_zone2 "Zone 2 Power" { channel="rotel:rsp1570:preamp:zone2#power" }
 String preamp2_source_zone2 "Zone 2 Source Input [%s]" { channel="rotel:rsp1570:preamp:zone2#source" }
-Number preamp2_volume_zone2 "Zone 2 Volume [%d]" { channel="rotel:rsp1570:preamp:zone2#volume" }
+Dimmer preamp2_volume_zone2 "Zone 2 Volume [%d %%]" { channel="rotel:rsp1570:preamp:zone2#volume" }
 Switch preamp2_mute_zone2 "Zone 2 Mute" { channel="rotel:rsp1570:preamp:zone2#mute" }
 Switch preamp2_power_zone3 "Zone 3 Power" { channel="rotel:rsp1570:preamp:zone3#power" }
 String preamp2_source_zone3 "Zone 3 Source Input [%s]" { channel="rotel:rsp1570:preamp:zone3#source" }
-Number preamp2_volume_zone3 "Zone 3 Volume [%d]" { channel="rotel:rsp1570:preamp:zone3#volume" }
+Dimmer preamp2_volume_zone3 "Zone 3 Volume [%d %%]" { channel="rotel:rsp1570:preamp:zone3#volume" }
 Switch preamp2_mute_zone3 "Zone 3 Mute" { channel="rotel:rsp1570:preamp:zone3#mute" }
 Switch preamp2_power_zone4 "Zone 4 Power" { channel="rotel:rsp1570:preamp:zone4#power" }
 String preamp2_source_zone4 "Zone 4 Source Input [%s]" { channel="rotel:rsp1570:preamp:zone4#source" }
-Number preamp2_volume_zone4 "Zone 4 Volume [%d]" { channel="rotel:rsp1570:preamp:zone4#volume" }
+Dimmer preamp2_volume_zone4 "Zone 4 Volume [%d %%]" { channel="rotel:rsp1570:preamp:zone4#volume" }
 Switch preamp2_mute_zone4 "Zone 4 Mute" { channel="rotel:rsp1570:preamp:zone4#mute" }
 
 Switch amp_power "Power" { channel="rotel:ra1592:preamp:power" }
 String amp_source "Source Input [%s]" { channel="rotel:ra1592:preamp:source" }
-Number amp_volume "Volume [%d]" { channel="rotel:ra1592:preamp:volume" }
+Dimmer amp_volume "Volume [%d %%]" { channel="rotel:ra1592:preamp:volume" }
 Switch amp_mute "Mute" { channel="rotel:ra1592:preamp:mute" }
 Number amp_bass "Bass Adjustment [%d]" { channel="rotel:ra1592:preamp:bass" }
 Number amp_treble "Treble Adjustment [%d]" { channel="rotel:ra1592:preamp:treble" }
@@ -305,7 +306,7 @@ Switch item=preamp2_power
 Selection item=preamp2_source
 Selection item=preamp2_rec
 Selection item=preamp2_dsp
-Slider item=preamp2_volume minValue=0 maxValue=96
+Slider item=preamp2_volume
 Switch item=preamp2_mute
 Setpoint item=preamp2_bass minValue=-6 maxValue=6
 Setpoint item=preamp2_treble minValue=-6 maxValue=6
@@ -313,20 +314,20 @@ Text item=preamp2_panel_line1
 Text item=preamp2_panel_line2
 Switch item=preamp2_power_zone2
 Selection item=preamp2_source_zone2
-Slider item=preamp2_volume_zone2 minValue=0 maxValue=96
+Slider item=preamp2_volume_zone2
 Switch item=preamp2_mute_zone2
 Switch item=preamp2_power_zone3
 Selection item=preamp2_source_zone3
-Slider item=preamp2_volume_zone3 minValue=0 maxValue=96
+Slider item=preamp2_volume_zone3
 Switch item=preamp2_mute_zone3
 Switch item=preamp2_power_zone4
 Selection item=preamp2_source_zone4
-Slider item=preamp2_volume_zone4 minValue=0 maxValue=96
+Slider item=preamp2_volume_zone4
 Switch item=preamp2_mute_zone4
 
 Switch item=amp_power
 Selection item=amp_source
-Slider item=amp_volume minValue=0 maxValue=96
+Slider item=amp_volume
 Switch item=amp_mute
 Slider item=amp_bass minValue=-10 maxValue=10
 Slider item=amp_treble minValue=-10 maxValue=10

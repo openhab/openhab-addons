@@ -12,7 +12,7 @@
 			<channel id="source" typeId="source" />
 			<channel id="recordSource" typeId="recordSource" />
 			<channel id="dsp" typeId="dsp" />
-			<channel id="volume" typeId="volume" />
+			<channel id="volume" typeId="system.volume" />
 			<channel id="mute" typeId="system.mute" />
 			<channel id="bass" typeId="bass" />
 			<channel id="treble" typeId="treble" />
@@ -29,7 +29,7 @@
 			<channel id="source" typeId="source" />
 			<channel id="recordSource" typeId="recordSource" />
 			<channel id="dsp" typeId="dsp" />
-			<channel id="volume" typeId="volume" />
+			<channel id="volume" typeId="system.volume" />
 			<channel id="mute" typeId="system.mute" />
 			<channel id="line1" typeId="frontPanelLine" />
 			<channel id="line2" typeId="frontPanelLine" />
@@ -44,7 +44,40 @@
 			<channel id="source" typeId="source" />
 			<channel id="recordSource" typeId="recordSource" />
 			<channel id="dsp" typeId="dsp" />
-			<channel id="volume" typeId="volume" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="bass" typeId="bass" />
+			<channel id="treble" typeId="treble" />
+			<channel id="line1" typeId="frontPanelLine" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mainZoneType4">
+		<label>Main Zone</label>
+		<description>The controls of the main zone</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="recordSource" typeId="recordSource" />
+			<channel id="dsp" typeId="dsp" />
+			<channel id="volumeUpDown" typeId="volumeUpDown" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="bass" typeId="bass" />
+			<channel id="treble" typeId="treble" />
+			<channel id="line1" typeId="frontPanelLine" />
+			<channel id="line2" typeId="frontPanelLine" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mainZoneType5">
+		<label>Main Zone</label>
+		<description>The controls of the main zone</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="recordSource" typeId="recordSource" />
+			<channel id="dsp" typeId="dsp" />
+			<channel id="volumeUpDown" typeId="volumeUpDown" />
 			<channel id="mute" typeId="system.mute" />
 			<channel id="bass" typeId="bass" />
 			<channel id="treble" typeId="treble" />
@@ -69,7 +102,7 @@
 		<channels>
 			<channel id="power" typeId="zonePower" />
 			<channel id="source" typeId="zoneSource" />
-			<channel id="volume" typeId="zoneVolume" />
+			<channel id="volumeUpDown" typeId="zoneVolumeUpDown" />
 		</channels>
 	</channel-group-type>
 
@@ -125,19 +158,27 @@
 		<description>Select the DSP mode</description>
 	</channel-type>
 
-	<channel-type id="volume">
+	<channel-type id="volumeUpDown">
 		<item-type>Number</item-type>
 		<label>Volume</label>
-		<description>Adjust the volume</description>
+		<description>Increase or decrease the volume</description>
 		<category>SoundVolume</category>
 		<state pattern="%d" readOnly="false" />
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="zoneVolume">
-		<item-type>Number</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Zone Volume</label>
 		<description>Adjust the volume in the zone</description>
+		<category>SoundVolume</category>
+		<state pattern="%d %%" readOnly="false" />
+	</channel-type>
+
+	<channel-type id="zoneVolumeUpDown">
+		<item-type>Number</item-type>
+		<label>Zone Volume</label>
+		<description>Increase or decrease the volume in the zone</description>
 		<category>SoundVolume</category>
 		<state pattern="%d" readOnly="false" />
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

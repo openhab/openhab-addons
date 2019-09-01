@@ -12,7 +12,7 @@
 		<channels>
 			<channel id="power" typeId="system.power" />
 			<channel id="source" typeId="source" />
-			<channel id="volume" typeId="volume" />
+			<channel id="volume" typeId="system.volume" />
 			<channel id="mute" typeId="system.mute" />
 			<channel id="playControl" typeId="system.media-control" />
 		</channels>

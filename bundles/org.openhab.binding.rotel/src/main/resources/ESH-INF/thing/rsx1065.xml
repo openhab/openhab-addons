@@ -10,7 +10,7 @@
 		<description>Connection to the Rotel RSX-1065 surround receiver</description>
 
 		<channel-groups>
-			<channel-group id="mainZone" typeId="mainZoneType1" />
+			<channel-group id="mainZone" typeId="mainZoneType4" />
 			<channel-group id="zone2" typeId="zone2type2" />
 		</channel-groups>
 

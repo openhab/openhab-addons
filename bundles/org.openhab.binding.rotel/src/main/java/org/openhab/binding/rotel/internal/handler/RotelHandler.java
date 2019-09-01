@@ -91,6 +91,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
     private int minVolume;
     private int maxVolume;
+    private int minToneLevel;
     private int maxToneLevel;
 
     private int currentZone = 1;
@@ -295,14 +296,18 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
         if (rotelModel.hasVolumeControl()) {
             maxVolume = rotelModel.getVolumeMax();
-            logger.info("Set minValue to {} and maxValue to {} for your sitemap widget attached to your volume item.",
-                    minVolume, maxVolume);
+            if (!rotelModel.hasDirectVolumeControl()) {
+                logger.info(
+                        "Set minValue to {} and maxValue to {} for your sitemap widget attached to your volume item.",
+                        minVolume, maxVolume);
+            }
         }
         if (rotelModel.hasToneControl()) {
             maxToneLevel = rotelModel.getToneLevelMax();
+            minToneLevel = -maxToneLevel;
             logger.info(
                     "Set minValue to {} and maxValue to {} for your sitemap widget attached to your bass or treble item.",
-                    -maxToneLevel, maxToneLevel);
+                    minToneLevel, maxToneLevel);
         }
 
         // Check configuration settings
@@ -625,8 +630,20 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
                         } else if (connector.getModel().hasVolumeControl()) {
-                            handleVolumeCmd(volume, minVolume, maxVolume, channel, command, getVolumeUpCommand(),
-                                    getVolumeDownCommand(), RotelCommand.VOLUME_SET);
+                            handleVolumeCmd(volume, channel, command, getVolumeUpCommand(), getVolumeDownCommand(),
+                                    RotelCommand.VOLUME_SET);
+                        } else {
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
+                        }
+                        break;
+                    case CHANNEL_MAIN_VOLUME_UP_DOWN:
+                        if (!isPowerOn()) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
+                        } else if (connector.getModel().hasVolumeControl()) {
+                            handleVolumeCmd(volume, channel, command, getVolumeUpCommand(), getVolumeDownCommand(),
+                                    null);
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
@@ -643,13 +660,35 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         } else if (connector.getModel().hasVolumeControl()
                                 && connector.getModel().getNbAdditionalZones() >= 1) {
                             if (connector.getModel().hasZone2Commands()) {
-                                handleVolumeCmd(volumeZone2, minVolume, maxVolume, channel, command,
-                                        RotelCommand.ZONE2_VOLUME_UP, RotelCommand.ZONE2_VOLUME_DOWN,
-                                        RotelCommand.ZONE2_VOLUME_SET);
+                                handleVolumeCmd(volumeZone2, channel, command, RotelCommand.ZONE2_VOLUME_UP,
+                                        RotelCommand.ZONE2_VOLUME_DOWN, RotelCommand.ZONE2_VOLUME_SET);
                             } else {
                                 selectZone(2, connector.getModel().getZoneSelectCmd());
-                                handleVolumeCmd(volumeZone2, minVolume, maxVolume, channel, command,
-                                        RotelCommand.VOLUME_UP, RotelCommand.VOLUME_DOWN, RotelCommand.VOLUME_SET);
+                                handleVolumeCmd(volumeZone2, channel, command, RotelCommand.VOLUME_UP,
+                                        RotelCommand.VOLUME_DOWN, RotelCommand.VOLUME_SET);
+                            }
+                        } else {
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
+                        }
+                        break;
+                    case CHANNEL_ZONE2_VOLUME_UP_DOWN:
+                        if (!powerZone2) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: zone 2 in standby", command, channel);
+                        } else if (fixedVolumeZone2) {
+                            success = false;
+                            logger.debug("Command {} from channel {} ignored: fixed volume in zone 2", command,
+                                    channel);
+                        } else if (connector.getModel().hasVolumeControl()
+                                && connector.getModel().getNbAdditionalZones() >= 1) {
+                            if (connector.getModel().hasZone2Commands()) {
+                                handleVolumeCmd(volumeZone2, channel, command, RotelCommand.ZONE2_VOLUME_UP,
+                                        RotelCommand.ZONE2_VOLUME_DOWN, null);
+                            } else {
+                                selectZone(2, connector.getModel().getZoneSelectCmd());
+                                handleVolumeCmd(volumeZone2, channel, command, RotelCommand.VOLUME_UP,
+                                        RotelCommand.VOLUME_DOWN, null);
                             }
                         } else {
                             success = false;
@@ -665,9 +704,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             logger.debug("Command {} from channel {} ignored: fixed volume in zone 3", command,
                                     channel);
                         } else if (connector.getModel().hasVolumeControl() && connector.getModel().hasZone3Commands()) {
-                            handleVolumeCmd(volumeZone3, minVolume, maxVolume, channel, command,
-                                    RotelCommand.ZONE3_VOLUME_UP, RotelCommand.ZONE3_VOLUME_DOWN,
-                                    RotelCommand.ZONE3_VOLUME_SET);
+                            handleVolumeCmd(volumeZone3, channel, command, RotelCommand.ZONE3_VOLUME_UP,
+                                    RotelCommand.ZONE3_VOLUME_DOWN, RotelCommand.ZONE3_VOLUME_SET);
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
@@ -682,9 +720,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             logger.debug("Command {} from channel {} ignored: fixed volume in zone 4", command,
                                     channel);
                         } else if (connector.getModel().hasVolumeControl() && connector.getModel().hasZone4Commands()) {
-                            handleVolumeCmd(volumeZone4, minVolume, maxVolume, channel, command,
-                                    RotelCommand.ZONE4_VOLUME_UP, RotelCommand.ZONE4_VOLUME_DOWN,
-                                    RotelCommand.ZONE4_VOLUME_SET);
+                            handleVolumeCmd(volumeZone4, channel, command, RotelCommand.ZONE4_VOLUME_UP,
+                                    RotelCommand.ZONE4_VOLUME_DOWN, RotelCommand.ZONE4_VOLUME_SET);
                         } else {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
@@ -745,8 +782,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
                         } else {
-                            handleToneCmd(bass, -maxToneLevel, maxToneLevel, channel, command, 2, RotelCommand.BASS_UP,
-                                    RotelCommand.BASS_DOWN, RotelCommand.BASS_SET);
+                            handleToneCmd(bass, channel, command, 2, RotelCommand.BASS_UP, RotelCommand.BASS_DOWN,
+                                    RotelCommand.BASS_SET);
                         }
                         break;
                     case CHANNEL_TREBLE:
@@ -755,8 +792,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
                         } else {
-                            handleToneCmd(treble, -maxToneLevel, maxToneLevel, channel, command, 1,
-                                    RotelCommand.TREBLE_UP, RotelCommand.TREBLE_DOWN, RotelCommand.TREBLE_SET);
+                            handleToneCmd(treble, channel, command, 1, RotelCommand.TREBLE_UP, RotelCommand.TREBLE_DOWN,
+                                    RotelCommand.TREBLE_SET);
                         }
                         break;
                     case CHANNEL_PLAY_CONTROL:
@@ -847,8 +884,6 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Handle a volume command
      *
      * @param current the current volume
-     * @param min the minimum volume
-     * @param max the maximum volume
      * @param channel the channel
      * @param command the received channel command (IncreaseDecreaseType or DecimalType)
      * @param upCmd the command to be sent to the device to increase the volume
@@ -857,23 +892,25 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      *
      * @throws RotelException in case of communication error with the device
      */
-    private void handleVolumeCmd(int current, int min, int max, String channel, Command command, RotelCommand upCmd,
-            RotelCommand downCmd, RotelCommand setCmd) throws RotelException {
+    private void handleVolumeCmd(int current, String channel, Command command, RotelCommand upCmd, RotelCommand downCmd,
+            @Nullable RotelCommand setCmd) throws RotelException {
         if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
             connector.sendCommand(upCmd);
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
             connector.sendCommand(downCmd);
-        } else if (command instanceof DecimalType) {
+        } else if (command instanceof DecimalType && setCmd == null) {
             int value = ((DecimalType) command).intValue();
-            if (value >= min && value <= max) {
-                if (connector.getModel().hasDirectVolumeControl()) {
-                    connector.sendCommand(setCmd, value);
-                } else if (value > current) {
+            if (value >= minVolume && value <= maxVolume) {
+                if (value > current) {
                     connector.sendCommand(upCmd);
                 } else if (value < current) {
                     connector.sendCommand(downCmd);
                 }
             }
+        } else if (command instanceof PercentType && setCmd != null) {
+            int value = (int) Math.round(((PercentType) command).doubleValue() / 100.0 * (maxVolume - minVolume))
+                    + minVolume;
+            connector.sendCommand(setCmd, value);
         } else {
             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
         }
@@ -910,8 +947,6 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Handle a tone level adjustment command (bass or treble)
      *
      * @param current the current tone level
-     * @param min the minimum tone level
-     * @param max the maximum tone level
      * @param channel the channel
      * @param command the received channel command (IncreaseDecreaseType or DecimalType)
      * @param nbSelect the number of TONE_CONTROL_SELECT commands to be run to display the right tone (bass or treble)
@@ -922,8 +957,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * @throws RotelException in case of communication error with the device
      * @throws InterruptedException in case of interruption during a thread sleep
      */
-    private void handleToneCmd(int current, int min, int max, String channel, Command command, int nbSelect,
-            RotelCommand upCmd, RotelCommand downCmd, RotelCommand setCmd) throws RotelException, InterruptedException {
+    private void handleToneCmd(int current, String channel, Command command, int nbSelect, RotelCommand upCmd,
+            RotelCommand downCmd, RotelCommand setCmd) throws RotelException, InterruptedException {
         if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
             selectToneControl(nbSelect);
             connector.sendCommand(upCmd);
@@ -932,7 +967,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             connector.sendCommand(downCmd);
         } else if (command instanceof DecimalType) {
             int value = ((DecimalType) command).intValue();
-            if (value >= min && value <= max) {
+            if (value >= minToneLevel && value <= maxToneLevel) {
                 if (connector.getProtocol() != RotelProtocol.HEX) {
                     connector.sendCommand(setCmd, value);
                 } else if (value > current) {
@@ -1115,11 +1150,17 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     break;
                 case RotelConnector.KEY_VOLUME_MIN:
                     minVolume = Integer.parseInt(value);
-                    logger.info("Set minValue to {} for your sitemap widget attached to your volume item.", minVolume);
+                    if (!connector.getModel().hasDirectVolumeControl()) {
+                        logger.info("Set minValue to {} for your sitemap widget attached to your volume item.",
+                                minVolume);
+                    }
                     break;
                 case RotelConnector.KEY_VOLUME_MAX:
                     maxVolume = Integer.parseInt(value);
-                    logger.info("Set maxValue to {} for your sitemap widget attached to your volume item.", maxVolume);
+                    if (!connector.getModel().hasDirectVolumeControl()) {
+                        logger.info("Set maxValue to {} for your sitemap widget attached to your volume item.",
+                                maxVolume);
+                    }
                     break;
                 case RotelConnector.KEY_VOLUME:
                     if (RotelConnector.MSG_VALUE_MIN.equalsIgnoreCase(value)) {
@@ -1131,6 +1172,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     }
                     updateChannelState(CHANNEL_VOLUME);
                     updateChannelState(CHANNEL_MAIN_VOLUME);
+                    updateChannelState(CHANNEL_MAIN_VOLUME_UP_DOWN);
                     break;
                 case RotelConnector.KEY_MUTE:
                     if (RotelConnector.MSG_VALUE_ON.equalsIgnoreCase(value)) {
@@ -1157,6 +1199,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         volumeZone2 = Integer.parseInt(value);
                     }
                     updateChannelState(CHANNEL_ZONE2_VOLUME);
+                    updateChannelState(CHANNEL_ZONE2_VOLUME_UP_DOWN);
                     break;
                 case RotelConnector.KEY_VOLUME_ZONE3:
                     fixedVolumeZone3 = false;
@@ -1219,13 +1262,14 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     break;
                 case RotelConnector.KEY_TONE_MAX:
                     maxToneLevel = Integer.parseInt(value);
+                    minToneLevel = -maxToneLevel;
                     logger.info(
                             "Set minValue to {} and maxValue to {} for your sitemap widget attached to your bass or treble item.",
-                            -maxToneLevel, maxToneLevel);
+                            minToneLevel, maxToneLevel);
                     break;
                 case RotelConnector.KEY_BASS:
                     if (RotelConnector.MSG_VALUE_MIN.equalsIgnoreCase(value)) {
-                        bass = -maxToneLevel;
+                        bass = minToneLevel;
                     } else if (RotelConnector.MSG_VALUE_MAX.equalsIgnoreCase(value)) {
                         bass = maxToneLevel;
                     } else {
@@ -1236,7 +1280,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     break;
                 case RotelConnector.KEY_TREBLE:
                     if (RotelConnector.MSG_VALUE_MIN.equalsIgnoreCase(value)) {
-                        treble = -maxToneLevel;
+                        treble = minToneLevel;
                     } else if (RotelConnector.MSG_VALUE_MAX.equalsIgnoreCase(value)) {
                         treble = maxToneLevel;
                     } else {
@@ -1356,6 +1400,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateChannelState(CHANNEL_MAIN_DSP);
         updateChannelState(CHANNEL_VOLUME);
         updateChannelState(CHANNEL_MAIN_VOLUME);
+        updateChannelState(CHANNEL_MAIN_VOLUME_UP_DOWN);
         updateChannelState(CHANNEL_MUTE);
         updateChannelState(CHANNEL_MAIN_MUTE);
         updateChannelState(CHANNEL_BASS);
@@ -1389,6 +1434,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateChannelState(CHANNEL_ZONE2_POWER);
         updateChannelState(CHANNEL_ZONE2_SOURCE);
         updateChannelState(CHANNEL_ZONE2_VOLUME);
+        updateChannelState(CHANNEL_ZONE2_VOLUME_UP_DOWN);
         updateChannelState(CHANNEL_ZONE2_MUTE);
     }
 
@@ -1894,22 +1940,40 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case CHANNEL_VOLUME:
             case CHANNEL_MAIN_VOLUME:
                 if (isPowerOn()) {
+                    long volumePct = Math
+                            .round((double) (volume - minVolume) / (double) (maxVolume - minVolume) * 100.0);
+                    state = new PercentType(BigDecimal.valueOf(volumePct));
+                }
+                break;
+            case CHANNEL_MAIN_VOLUME_UP_DOWN:
+                if (isPowerOn()) {
                     state = new DecimalType(volume);
                 }
                 break;
             case CHANNEL_ZONE2_VOLUME:
+                if (powerZone2 && !fixedVolumeZone2) {
+                    long volumePct = Math
+                            .round((double) (volumeZone2 - minVolume) / (double) (maxVolume - minVolume) * 100.0);
+                    state = new PercentType(BigDecimal.valueOf(volumePct));
+                }
+                break;
+            case CHANNEL_ZONE2_VOLUME_UP_DOWN:
                 if (powerZone2 && !fixedVolumeZone2) {
                     state = new DecimalType(volumeZone2);
                 }
                 break;
             case CHANNEL_ZONE3_VOLUME:
                 if (powerZone3 && !fixedVolumeZone3) {
-                    state = new DecimalType(volumeZone3);
+                    long volumePct = Math
+                            .round((double) (volumeZone3 - minVolume) / (double) (maxVolume - minVolume) * 100.0);
+                    state = new PercentType(BigDecimal.valueOf(volumePct));
                 }
                 break;
             case CHANNEL_ZONE4_VOLUME:
                 if (powerZone4 && !fixedVolumeZone4) {
-                    state = new DecimalType(volumeZone4);
+                    long volumePct = Math
+                            .round((double) (volumeZone4 - minVolume) / (double) (maxVolume - minVolume) * 100.0);
+                    state = new PercentType(BigDecimal.valueOf(volumePct));
                 }
                 break;
             case CHANNEL_MUTE:

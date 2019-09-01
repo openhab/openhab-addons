@@ -10,7 +10,7 @@
 		<description>Connection to the Rotel RSP-1066 surround processor</description>
 
 		<channel-groups>
-			<channel-group id="mainZone" typeId="mainZoneType3" />
+			<channel-group id="mainZone" typeId="mainZoneType5" />
 			<channel-group id="zone2" typeId="zone2type2" />
 		</channel-groups>
 
