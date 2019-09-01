@@ -10,7 +10,7 @@
 		<description>Connection to the Rotel RDG-1520 tuner</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
+			<channel id="power" typeId="system.power" />
 			<channel id="source" typeId="source" />
 			<channel id="playControl" typeId="system.media-control" />
 		</channels>

@@ -10,11 +10,11 @@
 		<description>Connection to the Rotel RSP-1576 surround processor</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
+			<channel id="power" typeId="system.power" />
 			<channel id="source" typeId="source" />
 			<channel id="dsp" typeId="dsp" />
 			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
+			<channel id="mute" typeId="system.mute" />
 			<channel id="brightness" typeId="brightness" />
 		</channels>
 

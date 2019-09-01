@@ -10,7 +10,7 @@
 		<description>Connection to the Rotel T11 tuner</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
+			<channel id="power" typeId="system.power" />
 			<channel id="source" typeId="source" />
 			<channel id="brightness" typeId="brightness" />
 		</channels>

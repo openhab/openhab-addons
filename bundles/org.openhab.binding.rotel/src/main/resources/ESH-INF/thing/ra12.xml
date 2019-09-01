@@ -10,10 +10,10 @@
 		<description>Connection to the Rotel RA-12 integrated amplifier</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
+			<channel id="power" typeId="system.power" />
 			<channel id="source" typeId="source" />
 			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
+			<channel id="mute" typeId="system.mute" />
 			<channel id="bass" typeId="bass" />
 			<channel id="treble" typeId="treble" />
 			<channel id="playControl" typeId="system.media-control" />

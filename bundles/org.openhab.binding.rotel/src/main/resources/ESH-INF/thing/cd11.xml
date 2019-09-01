@@ -10,7 +10,7 @@
 		<description>Connection to the Rotel CD11 CD player</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
+			<channel id="power" typeId="system.power" />
 			<channel id="playControl" typeId="system.media-control" />
 			<channel id="track" typeId="track" />
 			<channel id="brightness" typeId="brightness" />

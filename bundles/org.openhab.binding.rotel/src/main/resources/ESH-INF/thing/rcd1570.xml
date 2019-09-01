@@ -10,7 +10,7 @@
 		<description>Connection to the Rotel RCD-1570 CD player</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
+			<channel id="power" typeId="system.power" />
 			<channel id="playControl" typeId="system.media-control" />
 			<channel id="brightness" typeId="brightness" />
 		</channels>
