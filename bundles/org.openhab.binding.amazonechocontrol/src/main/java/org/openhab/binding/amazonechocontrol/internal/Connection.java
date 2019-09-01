@@ -13,8 +13,8 @@
 package org.openhab.binding.amazonechocontrol.internal;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_APPLIANCE_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT_GROUP;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_BRIGHTNESS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_POWER;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -1031,22 +1031,18 @@ public class Connection {
         String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
 
         String color = null;
-        if (device.getThingTypeUID().equals(THING_TYPE_LIGHT)) {
-            JsonArray capabilities = this.getBulbCapabilities(applianceId);
+        JsonArray capabilities = this.getBulbCapabilities(applianceId);
 
-            for (JsonElement capability : capabilities) {
-                JsonObject capabilityObject = capability.getAsJsonObject();
-                if (capabilityObject.get("namespace").getAsString().equals("Alexa.ColorPropertiesController")) {
-                    try {
-                        color = capabilityObject.getAsJsonObject().get("value").getAsJsonObject().get("name")
-                                .getAsString();
-                    } catch (Exception e) {
-                        logger.debug("getting bulb color failed {}", e);
-                    }
+        for (JsonElement capability : capabilities) {
+            JsonObject capabilityObject = capability.getAsJsonObject();
+            if (capabilityObject.get("namespace").getAsString().equals("Alexa.ColorPropertiesController")) {
+                try {
+                    color = capabilityObject.getAsJsonObject().get("value").getAsJsonObject().get("name").getAsString();
+                } catch (Exception e) {
+                    logger.debug("getting bulb color failed {}", e);
                 }
             }
         }
-
         if (color != null) {
             return color;
         } else {
@@ -1060,22 +1056,16 @@ public class Connection {
         JsonArray capabilities = this.getBulbCapabilities(applianceId);
 
         int brightness = -1;
-        if (device.getThingTypeUID().equals(THING_TYPE_LIGHT)
-                || device.getThingTypeUID().equals(THING_TYPE_LIGHT_GROUP)) {
-            for (JsonElement capability : capabilities) {
-                JsonObject capabilityObject = capability.getAsJsonObject();
-                if (capabilityObject.get("namespace").getAsString().equals("Alexa.BrightnessController")) {
-                    brightness = capabilityObject.get("value").getAsInt();
-                }
+        for (JsonElement capability : capabilities) {
+            JsonObject capabilityObject = capability.getAsJsonObject();
+            if (INTERFACE_BRIGHTNESS.equals(capabilityObject.get("namespace").getAsString())) {
+                brightness = capabilityObject.get("value").getAsInt();
             }
-
-            if (brightness == -1) {
-                return 100;
-            }
-
-            return brightness;
         }
-        return -1;
+        if (brightness == -1) {
+            return 100;
+        }
+        return brightness;
     }
 
     public String getLightGroupState(Thing device) throws IOException, URISyntaxException {
@@ -1089,7 +1079,7 @@ public class Connection {
                     String state = null;
                     for (JsonElement capability : capabilities) {
                         JsonObject capabilityObject = capability.getAsJsonObject();
-                        if (capabilityObject.get("namespace").getAsString().equals("Alexa.PowerController")) {
+                        if (INTERFACE_POWER.equals(capabilityObject.get("namespace").getAsString())) {
                             state = capabilityObject.get("value").getAsString();
                             states.add(state);
                         }
@@ -1103,7 +1093,6 @@ public class Connection {
                 return "OFF";
             }
         }
-
         throw new IOException();
     }
 
@@ -1112,27 +1101,21 @@ public class Connection {
         String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
 
         String state = null;
-        if (device.getThingTypeUID().equals(THING_TYPE_LIGHT)
-                || device.getThingTypeUID().equals(THING_TYPE_LIGHT_GROUP)) {
+        JsonArray capabilities = this.getBulbCapabilities(applianceId);
 
-            JsonArray capabilities = this.getBulbCapabilities(applianceId);
-
-            for (JsonElement capability : capabilities) {
-                JsonObject capabilityObject = capability.getAsJsonObject();
-                if (capabilityObject.get("namespace").getAsString().equals("Alexa.PowerController")) {
-                    try {
-                        state = capabilityObject.get("value").getAsString();
-                    } catch (Exception e) {
-                        logger.error("getting bulb state failed {}", e);
-                    }
+        for (JsonElement capability : capabilities) {
+            JsonObject capabilityObject = capability.getAsJsonObject();
+            if (capabilityObject.get("namespace").getAsString().equals(INTERFACE_POWER)) {
+                try {
+                    state = capabilityObject.get("value").getAsString();
+                } catch (Exception e) {
+                    logger.error("getting bulb state failed {}", e);
                 }
             }
         }
-
         if (state == null) {
             throw new IOException();
         }
-
         return state;
     }
 

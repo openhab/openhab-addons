@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="amazonechocontrol"
+<thing:thing-descriptions
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	bindingId="amazonechocontrol"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="account">
 		<label>Amazon Account</label>
 		<description>Amazon Account where the amazon echo devices are registered.</description>
 		<config-description>
-            <parameter name="pollingIntervalSmartHome" type="integer">
-                <default>20</default>
-                <description>Defines the time in seconds for openHAB to pull the state of the bulbs.</description></parameter>
-            <parameter name="discoverSmartHome" type="boolean">
-                <default>true</default>
-                <description>Defines if openHAB should discover bulbs connected to the Amazon Echo.</description></parameter>
-            <parameter name="discoverOpenHabSmartHomeDevices" type="boolean">
-                <default>false</default>
-                <advanced>true</advanced>
-                <description>Defines, if openHAB smart home devices should be discovered. This option is for development and testing purpose only.</description></parameter>
-        </config-description>
+			<parameter name="discoverSmartHome" type="integer">
+				<default>0</default>
+				<description>Defines if openHAB should discover devices connected to the Amazon Echo.</description>
+				<options>
+					<option value="0">No Discover</option>
+					<option value="1">Direct connected</option>
+					<option value="2">Direct and over Alexa skill</option>
+				</options>
+			</parameter>
+			<parameter name="pollingIntervalSmartHome" type="integer">
+				<default>20</default>
+				<description>Defines the time in seconds for openHAB to pull the state of the connected devices.</description>
+			</parameter>
+			<parameter name="discoverOpenHabSmartHomeDevices"
+				type="boolean">
+				<default>false</default>
+				<advanced>true</advanced>
+				<description>Defines, if smart home devices of the openHAB skill should be discovered. This option is for development and testing purpose only.</description>
+			</parameter>
+		</config-description>
 	</bridge-type>
 	<thing-type id="echo">
 		<supported-bridge-type-refs>
@@ -237,19 +248,12 @@
 			<channel id="playOnDevice" typeId="playOnDevice" />
 		</channels>
 	</thing-type>
-	<thing-type id="light">
+	<thing-type id="smartHomeDevice">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
-		<label>Amazon Echo Light</label>
-		<description>Represents a light in your amazon account</description>
-	</thing-type>
-	<thing-type id="lightGroup">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
-		</supported-bridge-type-refs>
-		<label>Amazon Echo Light Group</label>
-		<description>Group of light bulbs in your amazon account</description>
+		<label>Smart Home Device</label>
+		<description>Smart home device connected to Alexa</description>
 	</thing-type>
 	<channel-type id="save">
 		<item-type>Switch</item-type>
@@ -498,7 +502,7 @@
 		<description>Next timer</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="lightColor" advanced="false">
+	<channel-type id="colorController" advanced="false">
 		<item-type>String</item-type>
 		<label>Color of your bulb</label>
 		<description>The color of a smart bulb</description>
@@ -522,7 +526,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="whiteTemperature" advanced="false">
+	<channel-type id="colorTemperatureController" advanced="false">
 		<item-type>String</item-type>
 		<label>White temperature</label>
 		<description>The temperature of white</description>
@@ -536,19 +540,12 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="lightBrightness" advanced="false">
+	<channel-type id="brightnessController" advanced="false">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>The brightness of the light</description>
 	</channel-type>
-	<thing-type id="smartPlug">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
-		</supported-bridge-type-refs>
-		<label>Amazon Echo Smart Plug</label>
-		<description>Smart plug in your amazon account</description>
-	</thing-type>
-	<channel-type id="state" advanced="false">
+	<channel-type id="powerController" advanced="false">
 		<item-type>Switch</item-type>
 		<label>State</label>
 		<description>State (ON/OFF)</description>

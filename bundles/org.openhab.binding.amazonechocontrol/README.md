@@ -81,9 +81,7 @@ The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazo
 | echoshow             | Amazon Echo Show Device               |
 | wha                  | Amazon Echo Whole House Audio Control |
 | flashbriefingprofile | Flash briefing profile                |
-| light                | Smart bulbs connected to the Echo     |
-| lightGroup           | Groups of lights                      |
-| smartPlug            | Smart Plug (e. g. Osram)              |
+| smartHomeDevice      | Smart Home Device                     |
 
 ## First Steps
 
@@ -111,9 +109,11 @@ The Amazon Account does not need any configuration.
 
 All Amazon devices (echo, echospot, echoshow, wha) needs the following configurations:
 
-| Configuration name       | Description                                        |
-|--------------------------|----------------------------------------------------|
-| serialNumber             | Serial number of the amazon echo in the Alexa app  |
+| Configuration name       | Description                                                               |
+|--------------------------|---------------------------------------------------------------------------|
+| serialNumber             | Serial number of the amazon echo in the Alexa app                         |
+| discoverSmartHome        | 0...No discover, 1...direct connected, 2...direct and over skill connected|
+| pollingIntervalSmartHome | Polling interval for the state of the connected devices                   |
 
 You will find the serial number in the alexa app or on the webpage YOUR_OPENHAB/amazonechocontrol/YOUR_ACCOUNT (e.g. http://openhab:8080/amazonechocontrol/account1).
 
@@ -166,11 +166,10 @@ It will be configured at runtime by using the save channel to store the current 
 | save                  | Switch      | W         | flashbriefingprofile     | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W       | flashbriefingprofile     | Active the profile
 | playOnDevice          | String      | W         | flashbriefingprofile     | Specify the echo serial number or name to start the flash briefing. 
-| lightState            | Switch      | R/W       | light, lightGroup             | Shows and changes the state (ON/OFF) of your light or lightgroup
-| lightBrightness       | Dimmer      | R/W       | light, lightGroup             | Shows and changes the brightness of your light or lightgroup
-| lightColor            | String      | R/W       | light, lightGroup             | Shows and changes the color of your light (groups are not able to show their color!)
-| whiteTemperature      | String      | R/W       | light, lightGroup             | White temperatures of your lights
-| plugState             | Switch      | R/W       | smartPlug                     | State of your smart plug
+| powerController       | Switch      | R/W       | smartHomeDevice             | Shows and changes the state (ON/OFF) of your device
+| brightnessController  | Dimmer      | R/W       | smartHomeDevice             | Shows and changes the brightness of your lamp
+| colorController       | String      | R/W       | smartHomeDevice             | Shows and changes the color of your light (groups are not able to show their color!)
+| colorTemperatureController | String      | R/W       | smartHomeDevice             | White temperatures of your lights
 
 ## Advanced Feature Technically Experienced Users
 
@@ -186,7 +185,7 @@ http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&s
 ### amazonechocontrol.things
 
 ```
-Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" 
+Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2 pollingIntervalSmartHome=20]
 {
     Thing echo                 echo1          "Alexa" @ "Living Room" [serialNumber="SERIAL_NUMBER"]
     Thing echoshow             echoshow1      "Alexa" @ "Kitchen" [serialNumber="SERIAL_NUMBER"]
@@ -274,13 +273,13 @@ String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechoc
 
 
 // Lights and lightgroups - you will find the applianceId in the properties of your light or lightgroup!
-Switch Light_State "On/Off" { channel="amazonechocontrol:lightGroup:account1:applianceId:lightState" }
-Dimmer Light_Brightness "Brightness" { channel="amazonechocontrol:lightGroup:account1:applianceId:lightBrightness" }
-String Light_Color "Color" { channel="amazonechocontrol:lightGroup:account1:applianceId:lightColor" }
-String Light_White "White temperature" { channel="amazonechocontrol:lightGroup:account1:applianceId:whiteTemperature" }
+Switch Light_State "On/Off" { channel="amazonechocontrol:lightGroup:account1:applianceId:powerController" }
+Dimmer Light_Brightness "Brightness" { channel="amazonechocontrol:lightGroup:account1:applianceId:brightnessController" }
+String Light_Color "Color" { channel="amazonechocontrol:lightGroup:account1:applianceId:colorController" }
+String Light_White "White temperature" { channel="amazonechocontrol:lightGroup:account1:applianceId:colorTemperatureController" }
 
 // Smart plugs
-Switch Plug_State "On/Off" { channel="amazonechocontrol:lightGroup:account1:applianceId:plugState" }
+Switch Plug_State "On/Off" { channel="amazonechocontrol:lightGroup:account1:applianceId:powerController" }
 ```
 
 ### amazonechocontrol.sitemap:

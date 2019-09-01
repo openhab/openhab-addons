@@ -13,6 +13,7 @@
 package org.openhab.binding.amazonechocontrol.internal.handler;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
@@ -29,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.storage.Storage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -577,6 +579,22 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             return new ArrayList<Object>();
         }
 
+        Configuration config = getThing().getConfiguration();
+        Object discoverSmartHomeConfig = config.getProperties().get("discoverSmartHome");
+        int discoverSmartHome = 0;
+        if (discoverSmartHomeConfig instanceof Boolean) {
+            discoverSmartHome = ((boolean) discoverSmartHomeConfig) ? 2 : 0;
+        }
+        if (discoverSmartHomeConfig instanceof BigDecimal) {
+            discoverSmartHome = ((BigDecimal) discoverSmartHomeConfig).intValue();
+        }
+        if (discoverSmartHome == 0) {
+            return new ArrayList<Object>();
+        }
+
+        Boolean discoverOpenHabSmartHomeDevices = (Boolean) config.getProperties()
+                .get("discoverOpenHabSmartHomeDevices");
+
         List<Object> smartHomeDevices = null;
         try {
             if (currentConnection.getIsLoggedIn()) {
@@ -586,6 +604,23 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
         if (smartHomeDevices != null) {
+            // remove not applicable devices
+            for (int i = smartHomeDevices.size() - 1; i >= 0; i--) {
+                Object smartHomeDevice = smartHomeDevices.get(i);
+                if (smartHomeDevice instanceof SmartHomeDevice) {
+                    SmartHomeDevice shd = (SmartHomeDevice) smartHomeDevice;
+                    if (discoverOpenHabSmartHomeDevices == null || discoverOpenHabSmartHomeDevices == false) {
+                        if ("OpenHab".equalsIgnoreCase(shd.manufacturerName)) {
+                            smartHomeDevices.remove(i);
+                            continue;
+                        }
+                    }
+                    if (discoverSmartHome == 1 && /* check here if the shd is not directly connected */ false) {
+                        smartHomeDevices.remove(i);
+                        continue;
+                    }
+                }
+            }
             Map<String, SmartHomeDevice> newJsonSerialDeviceMapping = new HashMap<>();
             for (Object smartDevice : smartHomeDevices) {
                 if (smartDevice instanceof SmartHomeDevice) {

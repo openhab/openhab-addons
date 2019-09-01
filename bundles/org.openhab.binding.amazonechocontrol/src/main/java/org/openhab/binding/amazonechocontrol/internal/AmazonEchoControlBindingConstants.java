@@ -42,13 +42,11 @@ public class AmazonEchoControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_FLASH_BRIEFING_PROFILE = new ThingTypeUID(BINDING_ID,
             "flashbriefingprofile");
 
-    public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
-    public static final ThingTypeUID THING_TYPE_LIGHT_GROUP = new ThingTypeUID(BINDING_ID, "lightGroup");
-    public static final ThingTypeUID THING_TYPE_SMART_PLUG = new ThingTypeUID(BINDING_ID, "smartPlug");
+    public static final ThingTypeUID THING_TYPE_SMART_HOME_DEVICE = new ThingTypeUID(BINDING_ID, "smartHomeDevice");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_ACCOUNT,
-            THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW, THING_TYPE_ECHO_WHA,
-            THING_TYPE_FLASH_BRIEFING_PROFILE, THING_TYPE_LIGHT, THING_TYPE_LIGHT_GROUP, THING_TYPE_SMART_PLUG));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
+            Arrays.asList(THING_TYPE_ACCOUNT, THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW,
+                    THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE, THING_TYPE_SMART_HOME_DEVICE));
 
     // List of all Channel ids
     public static final String CHANNEL_PLAYER = "player";
@@ -86,14 +84,10 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_MEDIA_PROGRESS_TIME = "mediaProgressTime";
     public static final String CHANNEL_ASCENDING_ALARM = "ascendingAlarm";
     public static final String CHANNEL_NOTIFICATION_VOLUME = "notificationVolume";
-    public static final String CHANNEL_LIGHT_COLOR = "lightColor";
-    public static final String CHANNEL_LIGHT_WHITE_TEMPERATURE = "whiteTemperature";
-    public static final String CHANNEL_LIGHT_BRIGHTNESS = "lightBrightness";
     public static final String CHANNEL_NEXT_REMINDER = "nextReminder";
     public static final String CHANNEL_NEXT_ALARM = "nextAlarm";
     public static final String CHANNEL_NEXT_MUSIC_ALARM = "nextMusicAlarm";
     public static final String CHANNEL_NEXT_TIMER = "nextTimer";
-    public static final String CHANNEL_STATE = "state";
 
     public static final String CHANNEL_SAVE = "save";
     public static final String CHANNEL_ACTIVE = "active";
@@ -131,6 +125,15 @@ public class AmazonEchoControlBindingConstants {
     public static final String INTERFACE_COLOR_TEMPERATURE = "Alexa.ColorTemperatureController";
     public static final String INTERFACE_COLOR = "Alexa.ColorController";
     public static final String INTERFACE_POWER = "Alexa.PowerController";
+
+    public static final Set<String> SUPPORTED_INTERFACES = new HashSet<>(
+            Arrays.asList(INTERFACE_BRIGHTNESS, INTERFACE_COLOR_TEMPERATURE, INTERFACE_COLOR, INTERFACE_POWER));
+
+    // List of dynamic channels
+    public static final String CHANNEL_CONTROLLER_BRIGHTNESS = "brightnessController";
+    public static final String CHANNEL_CONTROLLER_COLOR_TEMPERATURE = "colorTemperatureController";
+    public static final String CHANNEL_CONTROLLER_COLOR = "colorController";
+    public static final String CHANNEL_CONTROLLER_POWER = "powerController";
 
     // List of Item types
     public static final String ITEM_TYPE_SWITCH = "Switch";

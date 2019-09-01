@@ -12,7 +12,22 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.handler;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.BINDING_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_CONTROLLER_BRIGHTNESS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_CONTROLLER_COLOR;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_CONTROLLER_COLOR_TEMPERATURE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_CONTROLLER_POWER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_LIGHT_ENTITY_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_LIGHT_SUBDEVICE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_TURN_OFF;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_TURN_ON;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_BRIGHTNESS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR_TEMPERATURE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_POWER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_DIMMER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_STRING;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_SWITCH;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -89,33 +104,30 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
 
-            List<Thing> things = account.getThing().getThings();
-            for (Thing thing : things) {
-                for (String key : thing.getProperties().values()) {
-                    try {
-                        if (key.contains(INTERFACE_POWER)) {
-                            addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_STATE), ITEM_TYPE_SWITCH,
-                                    new ChannelTypeUID(BINDING_ID, CHANNEL_STATE));
-                        }
-
-                        if (key.contains(INTERFACE_BRIGHTNESS)) {
-                            addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_BRIGHTNESS),
-                                    ITEM_TYPE_DIMMER, new ChannelTypeUID(BINDING_ID, CHANNEL_LIGHT_BRIGHTNESS));
-                        }
-
-                        if (key.contains(INTERFACE_COLOR_TEMPERATURE)) {
-                            addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_WHITE_TEMPERATURE),
-                                    ITEM_TYPE_STRING, new ChannelTypeUID(BINDING_ID, CHANNEL_LIGHT_WHITE_TEMPERATURE));
-                        }
-
-                        if (key.contains(INTERFACE_COLOR)) {
-                            addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_COLOR), ITEM_TYPE_STRING,
-                                    new ChannelTypeUID(BINDING_ID, CHANNEL_LIGHT_COLOR));
-                        }
-                    } catch (IllegalArgumentException e) {
-                        logger.debug("Exception while adding channel {}.", e);
-                    }
+            Thing thing = this.getThing();
+            Map<String, String> properties = thing.getProperties();
+            try {
+                if (properties.containsKey(INTERFACE_POWER)) {
+                    addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_POWER), ITEM_TYPE_SWITCH,
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_POWER));
                 }
+
+                if (properties.containsKey(INTERFACE_BRIGHTNESS)) {
+                    addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_BRIGHTNESS), ITEM_TYPE_DIMMER,
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_BRIGHTNESS));
+                }
+
+                if (properties.containsKey(INTERFACE_COLOR_TEMPERATURE)) {
+                    addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_COLOR_TEMPERATURE),
+                            ITEM_TYPE_STRING, new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_COLOR_TEMPERATURE));
+                }
+
+                if (properties.containsKey(INTERFACE_COLOR)) {
+                    addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_COLOR), ITEM_TYPE_STRING,
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_COLOR));
+                }
+            } catch (IllegalArgumentException e) {
+                logger.debug("Exception while adding channel {}.", e);
             }
 
             Runnable runnable = new Runnable() {
@@ -138,13 +150,14 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                                     color = connection.getBulbColor(thing);
                                 }
                                 if (state != null) {
-                                    updateBulbState(thing.getChannel(CHANNEL_STATE).getUID(), state);
+                                    updateBulbState(thing.getChannel(CHANNEL_CONTROLLER_POWER).getUID(), state);
                                 }
                                 if (brightness != -1) {
-                                    updateBrightness(thing.getChannel(CHANNEL_LIGHT_BRIGHTNESS).getUID(), brightness);
+                                    updateBrightness(thing.getChannel(CHANNEL_CONTROLLER_BRIGHTNESS).getUID(),
+                                            brightness);
                                 }
                                 if (color != null) {
-                                    updateColor(thing.getChannel(CHANNEL_LIGHT_COLOR).getUID(), color);
+                                    updateColor(thing.getChannel(CHANNEL_CONTROLLER_COLOR).getUID(), color);
                                 }
                             } catch (IOException | URISyntaxException e) {
                                 logger.error(e.getMessage());
@@ -188,7 +201,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             Map<String, String> props = this.thing.getProperties();
             String entityId = props.get(DEVICE_PROPERTY_LIGHT_ENTITY_ID);
             String channelId = channelUID.getId();
-            if (channelId.equals(CHANNEL_STATE)) {
+            if (channelId.equals(CHANNEL_CONTROLLER_POWER)) {
                 if (command instanceof OnOffType) {
                     connection = accountHandler.findConnection();
                     for (Map.Entry<String, String> entry : props.entrySet()) {
@@ -209,7 +222,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     }
                 }
             }
-            if (channelId.equals(CHANNEL_LIGHT_COLOR)) {
+            if (channelId.equals(CHANNEL_CONTROLLER_COLOR)) {
                 if (command instanceof StringType) {
                     String commandText = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(commandText)) {
@@ -225,7 +238,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     }
                 }
             }
-            if (channelId.equals(CHANNEL_LIGHT_WHITE_TEMPERATURE)) {
+            if (channelId.equals(CHANNEL_CONTROLLER_COLOR_TEMPERATURE)) {
                 if (command instanceof StringType) {
                     String commandText = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(commandText)) {
@@ -241,7 +254,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     }
                 }
             }
-            if (channelId.equals(CHANNEL_LIGHT_BRIGHTNESS)) {
+            if (channelId.equals(CHANNEL_CONTROLLER_BRIGHTNESS)) {
                 if (command instanceof PercentType) {
                     connection = accountHandler.findConnection();
                     for (Map.Entry<String, String> entry : props.entrySet()) {
@@ -256,7 +269,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     }
                 }
             }
-            if (channelId.equals(CHANNEL_STATE)) {
+            if (channelId.equals(CHANNEL_CONTROLLER_POWER)) {
                 if (command instanceof OnOffType) {
                     connection = accountHandler.findConnection();
 
@@ -308,7 +321,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
     }
 
     public boolean initialize(AccountHandler handler) {
-        updateState(CHANNEL_STATE, OnOffType.OFF);
+        updateState(CHANNEL_CONTROLLER_POWER, OnOffType.OFF);
         if (this.accountHandler != handler) {
             this.accountHandler = handler;
         }

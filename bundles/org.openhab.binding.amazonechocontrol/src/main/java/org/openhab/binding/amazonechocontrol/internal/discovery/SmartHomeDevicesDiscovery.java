@@ -15,14 +15,9 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_APPLIANCE_ID;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_LIGHT_ENTITY_ID;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_LIGHT_SUBDEVICE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_BRIGHTNESS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR_TEMPERATURE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_POWER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_INTERFACES;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT_GROUP;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_PLUG;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,13 +31,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
@@ -91,7 +84,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
     @Override
     protected void startScan() {
         stopScanJob();
-        removeOlderResults(activateTimeStamp);
+        // removeOlderResults(activateTimeStamp);
 
         setSmartHomeDevices(accountHandler.updateSmartHomeDeviceList());
     }
@@ -154,44 +147,22 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
         if (discoveryServiceCallback == null) {
             return;
         }
-
-        Configuration config = accountHandler.getThing().getConfiguration();
-        boolean discoverSmartHome = (boolean) config.getProperties().get("discoverSmartHome");
-
-        if (discoverSmartHome == false) {
-            return;
-        }
-
-        Boolean discoverOpenHabSmartHomeDevices = (Boolean) config.getProperties()
-                .get("discoverOpenHabSmartHomeDevices");
-
         for (Object smartHomeDevice : deviceList) {
             ThingUID bridgeThingUID = this.accountHandler.getThing().getUID();
-            ThingTypeUID thingTypeId = null;
             ThingUID thingUID = null;
-            String lightName = null;
+            String deviceName = null;
             Map<String, Object> props = new HashMap<String, Object>();
+            boolean supportedDevice = false;
 
             if (smartHomeDevice instanceof SmartHomeDevice) {
                 SmartHomeDevice shd = (SmartHomeDevice) smartHomeDevice;
-                if (discoverOpenHabSmartHomeDevices == null || discoverOpenHabSmartHomeDevices == false) {
-                    if ("OpenHab".equalsIgnoreCase(shd.manufacturerName)) {
-                        continue;
-                    }
-                }
 
-                if (!Arrays.asList(shd.applianceTypes).contains("SMARTPLUG")) {
-                    thingTypeId = THING_TYPE_LIGHT;
-                    thingUID = new ThingUID(thingTypeId, bridgeThingUID, shd.entityId);
-                } else if (Arrays.asList(shd.applianceTypes).contains("SMARTPLUG")) {
-                    thingTypeId = THING_TYPE_SMART_PLUG;
-                    thingUID = new ThingUID(thingTypeId, bridgeThingUID, shd.entityId);
-                }
+                thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, shd.entityId);
 
                 if (shd.aliases != null && shd.aliases.length > 0 && shd.aliases[0].friendlyName != null) {
-                    lightName = shd.aliases[0].friendlyName;
+                    deviceName = shd.aliases[0].friendlyName;
                 } else {
-                    lightName = shd.friendlyName;
+                    deviceName = shd.friendlyName;
                 }
 
                 if (shd != null && shd.entityId != null) {
@@ -201,40 +172,32 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                 if (shd != null && shd.applianceId != null) {
                     props.put(DEVICE_PROPERTY_APPLIANCE_ID, shd.applianceId);
                 }
-
-                if (((SmartHomeDevice) smartHomeDevice).brightness == true) {
-                    props.put(INTERFACE_BRIGHTNESS, "true");
-                } else if (((SmartHomeDevice) smartHomeDevice).colorTemperature == true) {
-                    props.put(INTERFACE_COLOR_TEMPERATURE, "true");
-                } else if (((SmartHomeDevice) smartHomeDevice).color == true) {
-                    props.put(INTERFACE_COLOR, "true");
-                }
+                /*
+                 * if (((SmartHomeDevice) smartHomeDevice).brightness == true) {
+                 * props.put(INTERFACE_BRIGHTNESS, "true");
+                 * supportedDevice = true;
+                 * } else if (((SmartHomeDevice) smartHomeDevice).colorTemperature == true) {
+                 * props.put(INTERFACE_COLOR_TEMPERATURE, "true");
+                 * supportedDevice = true;
+                 * } else if (((SmartHomeDevice) smartHomeDevice).color == true) {
+                 * props.put(INTERFACE_COLOR, "true");
+                 * supportedDevice = true;
+                 * }
+                 */
 
                 for (SmartHomeCapability capability : shd.capabilities) {
-                    if (capability.interfaceName.equals(INTERFACE_POWER)) {
-                        props.put("power", INTERFACE_POWER);
-                    }
-
-                    if (capability.interfaceName.equals(INTERFACE_BRIGHTNESS)) {
-                        props.put("brightness", INTERFACE_BRIGHTNESS);
-                    }
-
-                    if (capability.interfaceName.equals(INTERFACE_COLOR_TEMPERATURE)) {
-                        props.put("colorTemperature", INTERFACE_COLOR_TEMPERATURE);
-                    }
-
-                    if (capability.interfaceName.equals(INTERFACE_COLOR)) {
-                        props.put("color", INTERFACE_COLOR);
+                    if (SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
+                        props.put(capability.interfaceName, true);
+                        supportedDevice = true;
                     }
                 }
             }
 
             if (smartHomeDevice instanceof SmartHomeGroup) {
                 SmartHomeGroup shg = (SmartHomeGroup) smartHomeDevice;
-                thingTypeId = THING_TYPE_LIGHT_GROUP;
-                lightName = shg.applianceGroupName;
+                deviceName = "Group " + shg.applianceGroupName;
                 String groupIdentifier = shg.applianceGroupIdentifier.value.replace(".", "_");
-                thingUID = new ThingUID(thingTypeId, bridgeThingUID, groupIdentifier);
+                thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, groupIdentifier);
 
                 int subDeviceCounter = 0;
                 for (Object smartDevice : deviceList) {
@@ -247,7 +210,6 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                             if (shd.entityId != null) {
                                 props.put(DEVICE_PROPERTY_LIGHT_SUBDEVICE + subDeviceCounter, shd.entityId);
                             }
-
                             if (shd.applianceId != null) {
                                 props.put(DEVICE_PROPERTY_APPLIANCE_ID + subDeviceCounter, shd.applianceId);
                             }
@@ -255,29 +217,17 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                         }
 
                         for (SmartHomeCapability capability : shd.capabilities) {
-                            if (capability.interfaceName.equals(INTERFACE_POWER) && !props.containsKey("power")) {
-                                props.put("power", INTERFACE_POWER);
-                            }
-
-                            if (capability.interfaceName.equals(INTERFACE_BRIGHTNESS)
-                                    && !props.containsKey("brightness")) {
-                                props.put("brightness", INTERFACE_BRIGHTNESS);
-                            }
-
-                            if (capability.interfaceName.equals(INTERFACE_COLOR_TEMPERATURE)
-                                    && !props.containsKey("colorTemperature")) {
-                                props.put("colorTemperature", INTERFACE_COLOR_TEMPERATURE);
-                            }
-
-                            if (capability.interfaceName.equals(INTERFACE_COLOR) && !props.containsKey("color")) {
-                                props.put("color", INTERFACE_COLOR);
+                            if (SUPPORTED_INTERFACES.contains(capability.interfaceName)
+                                    && !props.containsKey(capability.interfaceName)) {
+                                props.put(capability.interfaceName, true);
+                                supportedDevice = true;
                             }
                         }
                     }
                 }
             }
 
-            if (thingUID != null) {
+            if (thingUID != null && supportedDevice) {
                 if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
                     continue;
                 }
@@ -286,10 +236,10 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                     continue;
                 }
 
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(lightName)
+                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(deviceName)
                         .withProperties(props).withBridge(bridgeThingUID).build();
 
-                logger.debug("Device[{]: {}] found. Mapped to thing type {}", lightName, thingTypeId.getAsString());
+                logger.debug("Device [{}] found.", deviceName);
 
                 thingDiscovered(result);
             }
