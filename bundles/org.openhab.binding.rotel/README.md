@@ -74,11 +74,13 @@ This binding supports the following thing types:
 
 ## Discovery
 
-Discovery is not supported. You have to add all things manually.
+Discovery is not supported.
+You have to add all things manually.
 
 ## Binding Configuration
 
-There are no overall binding configuration settings that need to be set. All settings are through thing configuration parameters.
+There are no overall binding configuration settings that need to be set.
+All settings are through thing configuration parameters.
 
 ## Thing Configuration
 
