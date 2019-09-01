@@ -72,6 +72,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
      */
     private @Nullable ScheduledFuture<?> statusFuture;
 
+    /**
+     * List of executions
+     */
+    private Map<String, String> executions = new HashMap<>();
+
     // Too many request flag
     private boolean tooManyRequests = false;
 
@@ -233,6 +238,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (Exception e) {
             logger.error("Cannot stop http client", e);
         }
+        executions.clear();
+        super.dispose();
     }
 
     /**
@@ -341,6 +348,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     private void processEvent(SomfyTahomaEvent event) {
         logger.debug("Got event: {}", event.getName());
         switch (event.getName()) {
+            case "ExecutionStateChangedEvent":
+                processExecutionChangedEvent(event);
+                break;
             case "DeviceStateChangedEvent":
                 processStateChangedEvent(event);
                 break;
@@ -352,6 +362,29 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 break;
             default:
                 //ignore other states
+        }
+    }
+
+    private void processExecutionChangedEvent(SomfyTahomaEvent event) {
+        if ("4".equals(event.getNewState()) || "5".equals(event.getNewState())) {
+            logger.debug("Removing execution id: {}", event.getExecId());
+            unregisterExecution(event.getExecId());
+        }
+    }
+
+    private void registerExecution(String url, String execId) {
+        if (executions.containsKey(url)) {
+            executions.remove(url);
+            logger.debug("Previous execution exists for url: {}", url);
+        }
+        executions.put(url, execId);
+    }
+
+    private void unregisterExecution(String execId) {
+        if( executions.containsValue(execId)) {
+            executions.values().remove(execId);
+        } else {
+            logger.debug("Cannot remove execution id: {}, because it is not registered", execId);
         }
     }
 
@@ -529,6 +562,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
             if (!StringUtils.isEmpty(data.getExecId())) {
                 logger.debug("Exec id: {}", data.getExecId());
+                registerExecution(io, data.getExecId());
             } else {
                 logger.warn("Apply command response: {}", line);
                 throw new SomfyTahomaException(line);
@@ -568,52 +602,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         return "null";
     }
 
-    public @Nullable String getCurrentExecutions(String type) {
-        String execId = getCurrentExecutionsInternal(type);
-        if (StringUtils.equals(execId, UNAUTHORIZED)) {
-            execId = getCurrentExecutionsInternal(type);
-        }
-        return StringUtils.equals(execId, UNAUTHORIZED) ? null : execId;
-    }
-
-    private @Nullable String getCurrentExecutionsInternal(String type) {
-        String url;
-        String line = "";
-
-        try {
-            url = TAHOMA_URL + "getCurrentExecutions";
-            String urlParameters = "";
-
-            line = sendDataToTahomaWithCookie(url, urlParameters);
-
-            SomfyTahomaExecutionsResponse data = gson.fromJson(line, SomfyTahomaExecutionsResponse.class);
-            for (SomfyTahomaExecution execution : data.getExecutions()) {
-                String execId = execution.getId();
-                SomfyTahomaActionGroup group = execution.getActionGroup();
-                for (SomfyTahomaAction action : group.getActions()) {
-                    if (action.getDeviceURL().equals(type)) {
-                        return execId;
-                    }
-                }
-            }
-            return null;
-        } catch (JsonSyntaxException e) {
-            logger.debug("Received data: {} is not JSON", line, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
-        } catch (SomfyTahomaException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
-            return UNAUTHORIZED;
-        } catch (ExecutionException e) {
-            if (isAuthenticationChallenge(e)) {
-                login();
-                return UNAUTHORIZED;
-            } else {
-                logger.debug("Cannot send getCurrentExecutions command!", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-        } catch (InterruptedException | TimeoutException e) {
-            logger.debug("Cannot send getCurrentExecutions command!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+    public @Nullable String getCurrentExecutions(String io) {
+        if (executions.containsKey(io)) {
+            return executions.get(io);
         }
         return null;
     }
@@ -686,8 +677,12 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         }
         String execId = executeActionGroupInternal(id);
         if (UNAUTHORIZED.equals(execId)) {
-            executeActionGroupInternal(id);
+            execId = executeActionGroupInternal(id);
         }
+        if (!UNAUTHORIZED.equals(execId) && execId != null) {
+            registerExecution(id, execId);
+        }
+
     }
 
     private boolean reLogin() {
