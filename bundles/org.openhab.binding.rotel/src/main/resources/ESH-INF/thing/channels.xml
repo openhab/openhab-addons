@@ -89,10 +89,10 @@
 		<label>Zone 2</label>
 		<description>The controls of the zone 2</description>
 		<channels>
-			<channel id="power" typeId="zonePower" />
-			<channel id="source" typeId="zoneSource" />
-			<channel id="volume" typeId="zoneVolume" />
-			<channel id="mute" typeId="zoneMute" />
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
 		</channels>
 	</channel-group-type>
 
@@ -100,9 +100,9 @@
 		<label>Zone 2</label>
 		<description>The controls of the zone 2</description>
 		<channels>
-			<channel id="power" typeId="zonePower" />
-			<channel id="source" typeId="zoneSource" />
-			<channel id="volumeUpDown" typeId="zoneVolumeUpDown" />
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="volumeUpDown" typeId="volumeUpDown" />
 		</channels>
 	</channel-group-type>
 
@@ -110,10 +110,10 @@
 		<label>Zone 3</label>
 		<description>The controls of the zone 3</description>
 		<channels>
-			<channel id="power" typeId="zonePower" />
-			<channel id="source" typeId="zoneSource" />
-			<channel id="volume" typeId="zoneVolume" />
-			<channel id="mute" typeId="zoneMute" />
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
 		</channels>
 	</channel-group-type>
 
@@ -121,29 +121,17 @@
 		<label>Zone 4</label>
 		<description>The controls of the zone 4</description>
 		<channels>
-			<channel id="power" typeId="zonePower" />
-			<channel id="source" typeId="zoneSource" />
-			<channel id="volume" typeId="zoneVolume" />
-			<channel id="mute" typeId="zoneMute" />
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
 		</channels>
 	</channel-group-type>
-
-	<channel-type id="zonePower">
-		<item-type>Switch</item-type>
-		<label>Zone Power</label>
-		<description>Power ON/OFF the zone</description>
-	</channel-type>
 
 	<channel-type id="source">
 		<item-type>String</item-type>
 		<label>Source Input</label>
 		<description>Select the source input</description>
-	</channel-type>
-
-	<channel-type id="zoneSource">
-		<item-type>String</item-type>
-		<label>Zone Source Input</label>
-		<description>Select the source input in the zone</description>
 	</channel-type>
 
 	<channel-type id="recordSource" advanced="true">
@@ -165,30 +153,6 @@
 		<category>SoundVolume</category>
 		<state pattern="%d" readOnly="false" />
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-
-	<channel-type id="zoneVolume">
-		<item-type>Dimmer</item-type>
-		<label>Zone Volume</label>
-		<description>Adjust the volume in the zone</description>
-		<category>SoundVolume</category>
-		<state pattern="%d %%" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="zoneVolumeUpDown">
-		<item-type>Number</item-type>
-		<label>Zone Volume</label>
-		<description>Increase or decrease the volume in the zone</description>
-		<category>SoundVolume</category>
-		<state pattern="%d" readOnly="false" />
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-
-	<channel-type id="zoneMute">
-		<item-type>Switch</item-type>
-		<label>Zone Mute</label>
-		<description>Mute/unmute the sound in the zone</description>
-		<category>SoundVolume</category>
 	</channel-type>
 
 	<channel-type id="bass" advanced="true">
