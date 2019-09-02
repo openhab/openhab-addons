@@ -57,7 +57,6 @@ import org.openhab.binding.kodi.internal.config.KodiConfig;
 import org.openhab.binding.kodi.internal.model.KodiAudioStream;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
-import org.openhab.binding.kodi.internal.model.KodiProfile;
 import org.openhab.binding.kodi.internal.model.KodiSubtitle;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
@@ -617,17 +616,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             List<StateOption> options = new ArrayList<>();
             for (KodiPVRChannel pvrChannel : connection.getPVRChannels(pvrChannelGroupId)) {
                 options.add(new StateOption(pvrChannel.getLabel(), pvrChannel.getLabel()));
-            }
-            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
-        }
-    }
-
-    @Override
-    private void updateProfileStateDescription(final String channelId) {
-        if (isLinked(channelId)) {
-            List<StateOption> options = new ArrayList<>();
-            for (KodiProfile profile : connection.getProfiles()) {
-                options.add(new StateOption(profile.getLabel(), profile.getLabel()));
             }
             stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
         }

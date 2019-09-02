@@ -78,11 +78,10 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_KODI)) {
-            String callbackUrl = createCallbackUrl();
-            KodiHandler handler = new KodiHandler(thing, stateDescriptionProvider, webSocketClient, callbackUrl);
+            KodiHandler handler = new KodiHandler(thing, stateDescriptionProvider, webSocketClient);
 
             // register the Kodi as an audio sink
-            KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, callbackUrl);
+            KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, createCallbackUrl());
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
                     .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
