@@ -14,17 +14,21 @@ package org.openhab.binding.etherrain.internal.api;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.etherrain.internal.EtherRainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +46,7 @@ public class EtherRainCommunication {
 
     private static final String ETHERRAIN_USERNAME = "admin";
 
-    private static final int HTTP_TIMEOUT = 1000;
+    private static final int HTTP_TIMEOUT = 3;
 
     private static final int BROADCAST_TIMEOUT = 80;
 
@@ -53,14 +57,15 @@ public class EtherRainCommunication {
     private static final String RESPONSE_STATUS_PATTERN = "^\\s*(un|ma|ac|os|cs|rz|ri|rn):\\s*([a-zA-Z0-9\\.]*)(\\s*<br>)?";
     private static final String BROADCAST_RESPONSE_DISCOVER_PATTERN = "eviro t=(\\S*) n=(\\S*) p=(\\S*) a=(\\S*)";
 
-    private static final String USER_AGENT = "Mozilla/5.0";
-
     private final Logger logger = LoggerFactory.getLogger(EtherRainCommunication.class);
 
-    public EtherRainCommunication(String address, int port, String password) {
+    private HttpClient httpClient;
+
+    public EtherRainCommunication(String address, int port, String password, HttpClient httpClient) {
         this.address = address;
         this.port = port;
         this.password = password;
+        this.httpClient = httpClient;
     }
 
     public static EtherRainUdpResponse autoDiscover() {
@@ -172,28 +177,28 @@ public class EtherRainCommunication {
     }
 
     private List<String> sendGet(String command) throws IOException {
+
         String url = "http://" + address + ":" + port + "/" + command;
 
-        List<String> rVal = null;
+        ContentResponse response;
 
-        URL obj = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-        // optional default is GET
-        con.setRequestMethod("GET");
-        con.setReadTimeout(HTTP_TIMEOUT);
-        con.setConnectTimeout(HTTP_TIMEOUT);
-
-        // add request header
-        con.setRequestProperty("User-Agent", USER_AGENT);
-
-        if (con.getResponseCode() != 200) {
+        try {
+            response = httpClient.newRequest(url).timeout(HTTP_TIMEOUT, TimeUnit.SECONDS).send();
+            if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+                logger.warn("Etherrain return status other than HTTP_OK : {}", response.getStatus());
+                return null;
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Could not connect to Etherrain with exception: {}", e.getMessage());
             return null;
         }
 
+        BufferedReader in = new BufferedReader(new StringReader(response.getContentAsString()));
+
+        List<String> rVal = null;
+
         rVal = new LinkedList<String>();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
 
         while ((inputLine = in.readLine()) != null) {

@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -48,14 +48,16 @@ public class EtherRainHandler extends BaseThingHandler {
     private boolean connected = false;
     EtherRainConfiguration config;
 
-    @Nullable
     private ScheduledFuture<?> updateJob;
+
+    private HttpClient httpClient;
 
     /*
      * Constructor class. Only call the parent constructor
      */
-    public EtherRainHandler(Thing thing) {
+    public EtherRainHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -83,7 +85,7 @@ public class EtherRainHandler extends BaseThingHandler {
                 "Attempting to connect to Etherrain with config = (Host: {}, Port: {}, Password: {}, Refresh: {}).",
                 config.host, config.port, config.password, config.refresh);
 
-        device = new EtherRainCommunication(config.host, config.port, config.password);
+        device = new EtherRainCommunication(config.host, config.port, config.password, httpClient);
 
         EtherRainStatusResponse response;
         try {
