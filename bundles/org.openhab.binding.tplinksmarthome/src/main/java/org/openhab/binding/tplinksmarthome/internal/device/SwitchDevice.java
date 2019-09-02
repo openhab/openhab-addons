@@ -19,12 +19,11 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tplinksmarthome.internal.Commands;
-import org.openhab.binding.tplinksmarthome.internal.Connection;
-import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
 import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 
 /**
@@ -41,9 +40,8 @@ public class SwitchDevice extends SmartHomeDevice {
     }
 
     @Override
-    public boolean handleCommand(String channelID, Connection connection, Command command,
-            TPLinkSmartHomeConfiguration configuration) throws IOException {
-        return command instanceof OnOffType && handleOnOffType(channelID, connection, (OnOffType) command);
+    public boolean handleCommand(ChannelUID channelUid, Command command) throws IOException {
+        return command instanceof OnOffType && handleOnOffType(channelUid, (OnOffType) command);
     }
 
     /**
@@ -56,13 +54,17 @@ public class SwitchDevice extends SmartHomeDevice {
         return deviceState.getSysinfo().getRelayState();
     }
 
-    private boolean handleOnOffType(String channelID, Connection connection, OnOffType onOff) throws IOException {
-        HasErrorResponse response = null;
+    private boolean handleOnOffType(ChannelUID channelUid, OnOffType onOff) throws IOException {
+        final HasErrorResponse response;
+        final String baseChannelId = getBaseChannel(channelUid);
 
-        if (CHANNEL_SWITCH.equals(channelID)) {
-            response = setOnOffState(connection, onOff);
-        } else if (CHANNEL_LED.equals(channelID)) {
-            response = commands.setLedOnResponse(connection.sendCommand(commands.setLedOn(onOff)));
+        if (CHANNEL_SWITCH.contentEquals(baseChannelId)) {
+            response = setOnOffState(channelUid, onOff);
+        } else if (CHANNEL_LED.contentEquals(baseChannelId)) {
+            response = commands
+                    .setLedOnResponse(connection.sendCommand(commands.setLedOn(onOff, getChildId(channelUid))));
+        } else {
+            response = null;
         }
         checkErrors(response);
         return response != null;
@@ -71,21 +73,40 @@ public class SwitchDevice extends SmartHomeDevice {
     /**
      * Sends the {@link OnOffType} command to the device and returns the returned answer.
      *
-     * @param connection Connection to use
+     * @param channelUid channel Id to use to determine child id
      * @param onOff command to the send
      * @return state returned by the device
+     * @throws IOException exception in case device not reachable
      */
-    protected @Nullable HasErrorResponse setOnOffState(Connection connection, OnOffType onOff) throws IOException {
-        return commands.setRelayStateResponse(connection.sendCommand(commands.setRelayState(onOff)));
+    protected @Nullable HasErrorResponse setOnOffState(ChannelUID channelUid, OnOffType onOff) throws IOException {
+        return commands
+                .setRelayStateResponse(connection.sendCommand(commands.setRelayState(onOff, getChildId(channelUid))));
     }
 
     @Override
-    public State updateChannel(String channelId, DeviceState deviceState) {
-        if (CHANNEL_SWITCH.equals(channelId)) {
+    public State updateChannel(ChannelUID channelUid, DeviceState deviceState) {
+        final String baseChannelId = getBaseChannel(channelUid);
+
+        if (CHANNEL_SWITCH.equals(baseChannelId)) {
             return getOnOffState(deviceState);
-        } else if (CHANNEL_LED.equals(channelId)) {
+        } else if (CHANNEL_LED.equals(baseChannelId)) {
             return deviceState.getSysinfo().getLedOff();
         }
         return UnDefType.UNDEF;
+    }
+
+    /**
+     * Returns the child Id for the given channel if the device supports children and it's a channel for a specific
+     * child.
+     *
+     * @param channelUid channel Id to get the child id for
+     * @return null or child id
+     */
+    protected @Nullable String getChildId(ChannelUID channelUid) {
+        return null;
+    }
+
+    private String getBaseChannel(ChannelUID channelUid) {
+        return channelUid.isInGroup() ? channelUid.getIdWithoutGroup() : channelUid.getId();
     }
 }

@@ -24,6 +24,7 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -118,7 +119,7 @@ public class SonyAudioClientSocket {
         try {
             remote.sendPing(payload);
         } catch (IOException e) {
-            logger.error("Connection to {} lost {}", uri, e);
+            logger.warn("Connection to {} lost: {}", uri, e.getMessage());
             connected = false;
         }
 
@@ -190,6 +191,11 @@ public class SonyAudioClientSocket {
                     logger.error("Error handling onConnectionClosed()", e);
                 }
             });
+        }
+
+        @OnWebSocketError
+        public void onError(Throwable error) {
+            onClose(0, error.getMessage());
         }
     }
 

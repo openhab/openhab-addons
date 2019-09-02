@@ -141,13 +141,24 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                     updateStatus(ThingStatus.ONLINE);
 
                     for (Channel channel : getThing().getChannels()) {
-                        String channelId = channel.getUID().getId();
+                        ChannelUID uid = channel.getUID();
+                        String channelId = uid.getId();
 
                         try {
-                            if (channelId.equals(CHANNEL_LOW_BATTERY)) {
-                                updateState(channelId, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
-                            } else {
-                                updateState(channelId, message.convertToState(channelId));
+                            switch (channelId) {
+                                case CHANNEL_COMMAND:
+                                case CHANNEL_CHIME_SOUND:
+                                case CHANNEL_MOOD:
+                                    postNullableCommand(uid, message.convertToCommand(channelId));
+                                    break;
+
+                                case CHANNEL_LOW_BATTERY:
+                                    updateNullableState(uid, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
+                                    break;
+
+                                default:
+                                    updateNullableState(uid, message.convertToState(channelId));
+                                    break;
                             }
                         } catch (RFXComException e) {
                             logger.trace("{} does not handle {}", channelId, message);
@@ -158,6 +169,22 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
         } catch (Exception e) {
             logger.error("Error occurred during message receiving", e);
         }
+    }
+
+    private void updateNullableState(ChannelUID uid, State state) {
+        if (state == null) {
+            return;
+        }
+
+        updateState(uid, state);
+    }
+
+    private void postNullableCommand(ChannelUID uid, Command command) {
+        if (command == null) {
+            return;
+        }
+
+        postCommand(uid, command);
     }
 
     /**

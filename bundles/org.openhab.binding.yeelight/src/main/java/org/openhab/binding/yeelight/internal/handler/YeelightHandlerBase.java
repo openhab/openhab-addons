@@ -136,7 +136,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     }
 
     public void handleCommandHelper(ChannelUID channelUID, Command command, String logInfo) {
-        logger.debug(logInfo, command);
+        logger.debug("{}: {}", logInfo, command);
 
         // If device is disconnected, start discovery to reconnect.
         if (mDevice.isAutoConnect() && mDevice.getConnectionState() != ConnectState.CONNECTED) {
@@ -202,7 +202,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
                     if (tokens.length > 1) {
                         methodParams = tokens[1];
                     }
-                    logger.debug(logInfo, methodAction + " " + methodParams);
+                    logger.debug("{}: {} {}", logInfo, methodAction, methodParams);
                     handleCustomCommand(methodAction, methodParams);
                     updateState(channelUID, new StringType(""));
                 }

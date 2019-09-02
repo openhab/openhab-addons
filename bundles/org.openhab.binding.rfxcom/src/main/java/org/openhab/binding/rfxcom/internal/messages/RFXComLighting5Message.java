@@ -25,8 +25,10 @@ import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -73,10 +75,10 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
     /**
      * Note: for the lighting5 commands, some command are only supported for certain sub types and
      * command-bytes might even have a different meaning for another sub type.
-     * <p>
+     *
      * If no sub types are specified for a command, its supported by all sub types.
      * An example is the command OFF which is represented by the byte 0x00 for all subtypes.
-     * <p>
+     *
      * Otherwise the list of sub types after the command-bytes indicates the sub types
      * which support this command with this byte.
      * Example byte value 0x03 means GROUP_ON for IT and some others while it means MOOD1 for LIGHTWAVERF
@@ -206,7 +208,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
      * Convert a 0-31 scale value to a percent type.
      *
      * @param pt
-     *            percent type to convert
+     *               percent type to convert
      * @return converted value 0-31
      */
     public static int getDimLevelFromPercentType(PercentType pt) {
@@ -218,7 +220,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
      * Convert a 0-31 scale value to a percent type.
      *
      * @param value
-     *            percent type to convert
+     *                  percent type to convert
      * @return converted value 0-31
      */
     public static PercentType getPercentTypeFromDimLevel(int value) {
@@ -269,6 +271,9 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
                         throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
 
+            case CHANNEL_COMMAND_STRING:
+                return command == null ? UnDefType.UNDEF : StringType.valueOf(command.toString());
+
             case CHANNEL_CONTACT:
                 switch (command) {
                     case OFF:
@@ -317,6 +322,10 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
                 } else {
                     throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
+                break;
+
+            case CHANNEL_COMMAND_STRING:
+                command = Commands.valueOf(type.toString().toUpperCase());
                 break;
 
             case CHANNEL_DIMMING_LEVEL:

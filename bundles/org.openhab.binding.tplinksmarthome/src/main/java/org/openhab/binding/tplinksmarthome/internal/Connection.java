@@ -67,7 +67,7 @@ public class Connection {
         logger.trace("Executing command: {}", command);
         try (Socket socket = createSocket(); final OutputStream outputStream = socket.getOutputStream()) {
             outputStream.write(CryptUtil.encryptWithLength(command));
-            String response = readReturnValue(socket);
+            final String response = readReturnValue(socket);
 
             logger.trace("Command response: {}", response);
             return response;

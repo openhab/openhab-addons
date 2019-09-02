@@ -15,8 +15,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.github.calimero</groupId>
-      <artifactId>calimero-core</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.github.calimero.calimero-core</artifactId>
       <version>2.4</version>
       <scope>provided</scope>
       <exclusions>
@@ -27,8 +27,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.github.calimero</groupId>
-      <artifactId>calimero-device</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.github.calimero.calimero-device</artifactId>
       <version>2.4</version>
       <scope>provided</scope>
       <exclusions>
@@ -39,8 +39,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.github.calimero</groupId>
-      <artifactId>calimero-rxtx</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.github.calimero.calimero-rxtx</artifactId>
       <version>2.4</version>
       <scope>provided</scope>
       <exclusions>
@@ -51,5 +51,5 @@
       </exclusions>
     </dependency>
   </dependencies>
-  
+
 </project>

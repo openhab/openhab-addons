@@ -11,12 +11,12 @@
 
   <artifactId>org.openhab.io.javasound</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Java Sound Support</name>
+  <name>openHAB Add-ons :: Bundles :: IO :: Java Sound Support</name>
 
   <dependencies>
     <dependency>
-      <groupId>javazoom</groupId>
-      <artifactId>jlayer</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>javazoom.jlayer</artifactId>
       <version>1.0.1</version>
       <scope>provided</scope>
     </dependency>

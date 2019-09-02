@@ -26,8 +26,6 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.eclipse.smarthome.io.transport.mqtt.MqttService;
 import org.eclipse.smarthome.io.transport.mqtt.MqttServiceObserver;
 import org.openhab.io.mqttembeddedbroker.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homeassistant MQTT discovery device
@@ -37,7 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EmbeddedBrokerTools {
-    final Logger logger = LoggerFactory.getLogger(EmbeddedBrokerTools.class);
     public @Nullable MqttBrokerConnection embeddedConnection = null;
 
     /**
@@ -73,7 +70,6 @@ public class EmbeddedBrokerTools {
             throw new IllegalStateException();
         }
 
-        logger.warn("waitForConnection {}", embeddedConnection.connectionState());
         Semaphore semaphore = new Semaphore(1);
         semaphore.acquire();
         MqttConnectionObserver mqttConnectionObserver = (state, error) -> {

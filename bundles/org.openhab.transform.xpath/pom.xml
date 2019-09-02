@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.transform.xpath</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: XPath Transformation Service</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: XPath</name>
 
 </project>

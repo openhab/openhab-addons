@@ -13,6 +13,7 @@
 package org.openhab.transform.jsonpath.internal;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -80,11 +81,23 @@ public class JSonPathTransformationService implements TransformationService {
             return list.get(0).toString();
         }
         if (list.size() > 1) {
+            if (list.get(0) instanceof Number || list.get(0) instanceof Boolean) {
+                return createNumberList(list);
+            } else if (list.get(0) instanceof String) {
+                return createStringList(list);
+            }
             logger.warn(
-                    "JsonPath expressions with more than one result are not allowed, please adapt your selector. Result: {}",
+                    "JsonPath expressions with more than one result are only supported for Boolean, Number and String data types, please adapt your selector. Result: {}",
                     list);
         }
         return UnDefType.NULL.toFullString();
     }
 
+    private String createNumberList(List<?> list) {
+        return list.stream().map(n -> String.valueOf(n)).collect(Collectors.joining(", ", "[", "]"));
+    }
+
+    private String createStringList(List<?> list) {
+        return list.stream().map(n -> "\"" + String.valueOf(n) + "\"").collect(Collectors.joining(", ", "[", "]"));
+    }
 }

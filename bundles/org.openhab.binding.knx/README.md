@@ -183,22 +183,50 @@ Each configuration parameter has a `mainGA` where commands are written to and op
 
 The `dpt` element is optional. If ommitted, the corresponding default value will be used (see the channel descriptions above).
 
+
 ## Examples
-
-### Full Example
-
+The following two templates are sufficient for almost all purposes. Only add parameters to the Bridge and Thing configuration if you know exactly what functionality it is needed for.
+### Type ROUTER mode configuration Template
 knx.things:
-
 ```xtend
 Bridge knx:ip:bridge [ 
+    type="ROUTER",
+    autoReconnectPeriod=60 //optional, do not set <30 sec.
+] {
+    Thing device knx_device "knx_device_name" @ "knx_device_group_in_paperui" [ 
+        //readInterval=3600 //optional, only used if reading values are present
+    ] {
+        //Items configurations
+    }
+}
+```
+### Type TUNNEL mode configuration Template
+knx.things:
+```xtend
+Bridge knx:ip:bridge [ 
+    type="TUNNEL",
+    ipAddress="192.168.0.111",
+    autoReconnectPeriod=60 //optional, do not set <30 sec.
+] {
+    Thing device knx_device "knx_device_name" @ "knx_device_group_in_paperui" [ 
+        //readInterval=3600 //optional, only used if reading values are present
+    ] {
+        //Items configurations
+    }
+}
+```
+### Full Example
+```xtend
+//TUNNEL
+Bridge knx:ip:bridge [  
+    type="TUNNEL", 
     ipAddress="192.168.0.10", 
     portNumber=3671, 
-    localIp="192.168.0.11", 
-    type="TUNNEL", 
+    localIp="192.168.0.11",
     readingPause=50, 
     responseTimeout=10, 
     readRetriesLimit=3, 
-    autoReconnectPeriod=1,
+    autoReconnectPeriod=60,
     localSourceAddr="0.0.0"
 ] {
     Thing device generic [
@@ -216,6 +244,19 @@ Bridge knx:ip:bridge [
         Type datetime      : demoDatetime      "Alarm"       [ ga="5/5/42" ]
     }
 }
+
+//ROUTER
+Bridge knx:ip:bridge [  
+    type="ROUTER", 
+    ipAddress="224.0.23.12", 
+    portNumber=3671, 
+    localIp="192.168.0.11",
+    readingPause=50, 
+    responseTimeout=10, 
+    readRetriesLimit=3, 
+    autoReconnectPeriod=60,
+    localSourceAddr="0.0.0"
+] {}
 ```
 
 knx.items:
@@ -258,7 +299,7 @@ Bridge knx:serial:bridge [
     readingPause=50, 
     responseTimeout=10, 
     readRetriesLimit=3, 
-    autoReconnectPeriod=1
+    autoReconnectPeriod=60
 ] {
     Thing device generic {
         Type switch-control        : controlSwitch        "Control Switch"        [ ga="3/3/10+<3/3/11" ]   // '<'  signs are allowed but will be ignored for control Channels

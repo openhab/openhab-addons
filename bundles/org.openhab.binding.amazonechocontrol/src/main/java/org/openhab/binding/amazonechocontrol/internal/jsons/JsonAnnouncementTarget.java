@@ -26,7 +26,7 @@ public class JsonAnnouncementTarget {
     public @Nullable String customerId;
     public @Nullable TargetDevice @Nullable [] devices;
 
-    public class TargetDevice {
+    public static class TargetDevice {
         public @Nullable String deviceSerialNumber;
         public @Nullable String deviceTypeId;
     }

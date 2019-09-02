@@ -3,19 +3,23 @@
 The OneWire binding integrates OneWire (also spelled 1-Wire) devices. 
 OneWire is a serial bus developed by Dallas Semiconductor.
 It provides cheap sensors for temperature, humidity, digital I/O and more.
-  
+
+## Getting Started
+
+The OneWire File System (OWFS, http://owfs.org) provides an abstraction layer between the OneWire bus and this binding. 
+It is assumed that you already have a working OWFS installation.
+Besides your sensors, you need a busmaster device (e.g. DS9490R). 
+
 ## Supported Things
 
 ### Bridges
 
 Currently only one bridge is supported. 
-
-The OneWire File System (OWFS, http://owfs.org) provides an abstraction layer between the OneWire bus and this binding. 
 The `owserver` is the bridge that connects to an existing OWFS installation. 
 
 ### Things
 
-There are different types of things: the simple one (`basic`), multisensors built around the DS1923/DS2438 chip (`ms-tx`) and more advanced sensors from Elaborated Networks (www.wiregate.de) (`ams`, `bms`) and Embedded Data System (`edsenv`). 
+There are different types of things: the simple one (`basic`), multisensors built around the DS1923/DS2438 chip (`ms-tx`) and more advanced sensors from Elaborated Networks (www.wiregate.de) (`ams`, `bms`), Embedded Data System (www.embeddeddatasystems.com)(`edsenv`) and Brain4Home (www.brain4home.eu) (`bae091x`). 
 
 ** Important: Breaking Change with next release **
  
@@ -74,18 +78,19 @@ It always provides a `temperature` channel.
 Depnding on the actual sensor, additional channels (`current`, `humidity`, `light`, `voltage`, `supplyvoltage`) are added.
 If the voltage input of the DS2438 is connected to a humidity sensor, several common types are supported (see below).
 
-It has two parameters: sensor id `id` and refresh time `refresh`.
+It has three parameters: sensor id `id`, refresh time `refresh` and `manualsensor` (advanced option).
 
 Known DS2438-base sensors are iButtonLink (https://www.ibuttonlink.com/) MS-T (recognized as generic DS2438), MS-TH, MS-TC, MS-TL, MS-TV.
 Unknown multisensors are added as generic DS2438 and have `temperature`, `current`, `voltage` and `supplyvoltage` channels.
 
-In case the sensor is not properly detected (e.g. because it is a self-made sensor), check if it is compatible with one of the sensors listed above. If so, the first byte of page 3 of the DS2438 needs to be set to the correct identification (0x00 = generic/MS-T, 0x19 = MS-TH, 0x1A = MS-TV, 0x1B = MS-TL, 0x1C = MS-TC). **Note: Updating the pages of a sensor can break other software. This is fully your own risk.** 
+In case the sensor is not properly detected (e.g. because it is a self-made sensor), check if it is compatible with one of the sensors listed above. 
+You can use `manualsensor` to override the auto-detected sensortype by setting `DS2438`, `MS_TH`, `MS_TV`, `MS_TL` or `MS_TC`.
 
 ### Elaborated Networks Multisensors (`ams`, `bms`)
 
 These things are complex devices from Elaborated networks. 
 They consist of a DS2438 and a DS18B20 with additional circuitry on one PCB.
-The AMS additionally has a second DS242438 and a DS2413 for digital I/O on-board.
+The AMS additionally has a second DS2438 and a DS2413 for digital I/O on-board.
 Analog light sensors can optionally be attached to both sensors.
 
 These sensors provide `temperature`, `humidity` and `supplyvoltage` channels.
@@ -116,6 +121,21 @@ It has two parameters: sensor id `id` and refresh time `refresh`.
 All things have a `temperature` channel.
 Additional channels (`light`, `pressure`, `humidity`, `dewpoint`, `abshumidity`) will be added if available from the sensor automatically.
 
+### Brain4Home BAE091x (`bae091x`)
+
+Currently this thing only supports BAE0910 sensors.
+All functional pins of this sensor have multiple functions which can be configured individually.
+For detailed information of each mode, please see the official documentation.
+Each pin has the can be configured as `disabled`.
+The necessary channels are automatically added.
+
+Pin 1 (`pin1`) has only one function `counter` (channel `counter`). 
+Pin 2 (`pin2`) can be configured as digital output (`output`, channel `digital2`) or pulse width modulated output (`pwm`, software PWM 4, channels `freq2`, `duty4`).
+Pin 6 (`pin6`) can be configured as digital in-/output (`pio`, channel `digital6`) or pulse width modulated output (`pwm`, software PWM 3, channels `freq1`, `duty3`).
+Pin 7 (`pin7`) can be configured as analog input (`analog`), digital output (`output`, channel `digital7`) or pulse width modulated output (`pwm`, hardware PWM 2, channels `freq2`, `duty2`).
+Pin 8 (`pin8`) can be configured as digital input (`input`, channel `digital8`), digital output (`output`, channel `digital8`) or pulse width modulated output (`pwm`, hardware PWM 1, channels `freq1`, `duty1`).
+
+Please note: support for this sensor is considered experimental.
 
 ## Channels
 
@@ -138,6 +158,13 @@ Additional channels (`light`, `pressure`, `humidity`, `dewpoint`, `abshumidity`)
 | temperature-por     | temperature                | Number:Temperature       | yes        | environmental temperature                          |
 | temperature-por-res | temperature, ams, bms      | Number:Temperature       | yes        | environmental temperature                          |
 | voltage             | ms-tx, ams                 | Number:ElectricPotential | yes        | voltage input                                      |
+| bae-pwm-frequency   | bae091x                    | Number:Frequency         | no         | frequency for PWM output                           |
+| bae-pwm-duty        | bae091x                    | Number:Dimensionless     | no         | duty cycle (0-100%) for PWM output                 |
+| bae-di              | bae091x                    | Switch                   | yes        | digital input                                      |
+| bae-do              | bae091x                    | Switch                   | no         | digital output                                     |
+| bae-pio             | bae091x                    | Switch                   | yes        | digital in-/output                                 |
+| bae-analog          | bae091x                    | Number:ElectricPotential | yes        | analog input                                       |
+| bae-counter         | bae091x                    | Number                   | yes        | countervalue                                       |
 
 ### Digital I/O (`dio`)
 
@@ -186,6 +213,34 @@ This corresponds to 0.5 °C, 0.25 °C, 0.125 °C, 0.0625 °C respectively.
 The conversion time is inverse to that and ranges from 95 ms to 750 ms.
 For best performance it is recommended to set the resolution only as high as needed. 
  
+ 
+### BAE PWM (`bae-pwm-frequency`, `bae-pwm-duty`)
+
+PWM output 1 and 3 (2 and 4) share a frequency channel `pwmfreq1` (`pwmfreq2`).
+Each PWM output has its own duty cycle (`pwmduty1` to `pwmduty4`).
+
+The frequency channel has two configuration options (`prescaler`, `reversePolarity`).
+The `prescaler` sets the frequency range which can be used.
+Valid values are `0`to `7` (`0` => 245 Hz - 8 MHz, `1`=> 123 Hz - 4 MHz, `2` => 62 Hz - 2 MHz, `3` => 31 Hz - 1 MHz, `4` => 16 Hz - 500 kHz, `5` => 8 Hz - 250 kHz, `6` => 4 Hz - 125 kHz, `7` => 2 Hz - 62.5 kHz).
+The default value is `0`.
+The `reversePolarity` option is used to invert the output.
+It can be `true` or `false`.
+The default value is `false`.
+
+The duty cycle can be set from 0-100%.
+
+### BAE PIO (`bae-pio`)
+
+
+The PIO channel (programmable I/O channel) has two configuration options: `mode` and `pulldevice`.
+The `mode`can be set to `input`or `output`.
+The default is `input`.
+
+The `pulldevice` is only relevant for  `input` mode.
+It can be configured as `disabled`, `pullup`, `pulldown`.
+The default is disabled.
+ 
+
 ## Full Example
 
 ** Attention: Adding channels with UIDs different from the ones mentioned in the thing description will not work and may cause problems.

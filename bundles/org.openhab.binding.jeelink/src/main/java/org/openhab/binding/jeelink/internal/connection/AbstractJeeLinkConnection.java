@@ -77,15 +77,14 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
 
     @Override
     public void sendCommands(String commands) {
-        try {
-            if (commands != null && !commands.trim().isEmpty()) {
-                initCommands = commands.split(";");
+        if (commands != null && !commands.trim().isEmpty()) {
+            initCommands = commands.split(";");
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Writing to device on port {}: {} ", port, Arrays.toString(initCommands));
-                }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Writing to device on port {}: {} ", port, Arrays.toString(initCommands));
+            }
 
-                OutputStream initStream = getInitStream();
+            try (OutputStream initStream = getInitStream()) {
                 if (initStream == null) {
                     throw new IOException(
                             "Connection on port " + port + " did not provide an init stream for writing init commands");
@@ -98,11 +97,11 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
                     w.write(cmd);
                 }
                 w.flush();
+            } catch (IOException ex) {
+                logger.debug("Error writing to output stream!", ex);
+                closeConnection();
+                notifyAbort("propagate: " + ex.getMessage());
             }
-        } catch (IOException ex) {
-            logger.debug("Error writing to output stream!", ex);
-            closeConnection();
-            notifyAbort("propagate: " + ex.getMessage());
         }
     }
 

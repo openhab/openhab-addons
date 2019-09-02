@@ -13,15 +13,17 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.LIGHTING5;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.Commands.ON;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.Commands.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.IT;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 
 /**
  * Test for RFXCom-binding
@@ -56,4 +58,31 @@ public class RFXComLighting5MessageTest {
     }
 
     // TODO please add more tests for different messages
+
+    @Test
+    public void testStringCommandOpenRelay() throws RFXComUnsupportedChannelException {
+        RFXComLighting5Message msg = new RFXComLighting5Message();
+
+        msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("OPEN_RELAY"));
+        assertEquals(StringType.valueOf("OPEN_RELAY"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(OPEN_RELAY, msg.command);
+    }
+
+    @Test
+    public void testStringCommandCloseRelay() throws RFXComUnsupportedChannelException {
+        RFXComLighting5Message msg = new RFXComLighting5Message();
+
+        msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("CLOSE_RELAY"));
+        assertEquals(StringType.valueOf("CLOSE_RELAY"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(CLOSE_RELAY, msg.command);
+    }
+
+    @Test
+    public void testStringCommandStopRelay() throws RFXComUnsupportedChannelException {
+        RFXComLighting5Message msg = new RFXComLighting5Message();
+
+        msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("STOP_RELAY"));
+        assertEquals(StringType.valueOf("STOP_RELAY"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(STOP_RELAY, msg.command);
+    }
 }

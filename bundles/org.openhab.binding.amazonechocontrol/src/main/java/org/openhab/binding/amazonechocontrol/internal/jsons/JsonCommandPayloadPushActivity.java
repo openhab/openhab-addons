@@ -28,7 +28,7 @@ public class JsonCommandPayloadPushActivity {
 
     public @Nullable Key key;
 
-    public class Key {
+    public static class Key {
         public @Nullable String entryId;
         public @Nullable String registeredUserId;
     }

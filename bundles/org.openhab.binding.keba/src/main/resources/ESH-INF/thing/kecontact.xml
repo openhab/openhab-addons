@@ -1,46 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="keba" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="keba"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="kecontact">
 		<label>KeContact EV Charging Station</label>
-		<description>This Thing supports the KeContact EV Charging station</description>
+		<description>A KeContact EV Charging Station</description>
 
 		<channels>
+			<channel id="enabled" typeId="enabled" />
 			<channel id="state" typeId="state" />
-			<channel id="error1" typeId="error1" />
-			<channel id="error2" typeId="error2" />
-			<channel id="wallbox" typeId="plug" />
-			<channel id="vehicle" typeId="plug" />
-			<channel id="locked" typeId="locked" />
-			<channel id="enabled" typeId="switch" />
-			<channel id="maxpilotcurrent" typeId="current" />
-			<channel id="pwmpilotcurrent" typeId="pilotrange" />
-			<channel id="maxsystemcurrent" typeId="current" />
-			<channel id="maxpresetcurrentrange" typeId="range" />
 			<channel id="maxpresetcurrent" typeId="current_settable" />
-			<channel id="failsafecurrent" typeId="current" />
-			<channel id="output" typeId="switch" />
-			<channel id="input" typeId="switch" />
-			<channel id="uptime" typeId="uptime" />
-			<channel id="I1" typeId="current" />
-			<channel id="I2" typeId="current" />
-			<channel id="I3" typeId="current" />
-			<channel id="U1" typeId="voltage" />
-			<channel id="U2" typeId="voltage" />
-			<channel id="U3" typeId="voltage" />
+			<channel id="maxpresetcurrentrange" typeId="range" />
 			<channel id="power" typeId="power" />
 			<channel id="powerfactor" typeId="powerfactor" />
+			<channel id="error1" typeId="error1" />
+			<channel id="error2" typeId="error2" />
+			<channel id="wallbox" typeId="plugwallbox" />
+			<channel id="vehicle" typeId="plugvehicle" />
+			<channel id="locked" typeId="locked" />
+			<channel id="maxpilotcurrent" typeId="pilotcurrent" />
+			<channel id="pwmpilotcurrent" typeId="pilotrange" />
+			<channel id="maxsystemcurrent" typeId="maxcurrent" />
+			<channel id="failsafecurrent" typeId="failsafecurrent" />
+			<channel id="output" typeId="x2" />
+			<channel id="input" typeId="x1" />
+			<channel id="uptime" typeId="uptime" />
+			<channel id="I1" typeId="current">
+				<label>Current Phase 1</label>
+			</channel>
+			<channel id="I2" typeId="current">
+				<label>Current Phase 2</label>
+			</channel>
+			<channel id="I3" typeId="current">
+				<label>Current Phase 3</label>
+			</channel>
+			<channel id="U1" typeId="voltage">
+				<label>Voltage Phase 1</label>
+			</channel>
+			<channel id="U2" typeId="voltage">
+				<label>Voltage Phase 2</label>
+			</channel>
+			<channel id="U3" typeId="voltage">
+				<label>Voltage Phase 3</label>
+			</channel>
 			<channel id="sessionconsumption" typeId="energy" />
-			<channel id="totalconsumption" typeId="energy" />
+			<channel id="totalconsumption" typeId="totalenergy" />
 			<channel id="display" typeId="display" />
+			<channel id="authreq" typeId="authreq" />
+			<channel id="authon" typeId="authon" />
+			<channel id="sessionrfidtag" typeId="sessionrfidtag" />
+			<channel id="sessionrfidclass" typeId="sessionrfidclass" />
+			<channel id="sessionid" typeId="sessionid" />
+			<channel id="setenergylimit" typeId="setenergylimit" />
+			<channel id="authenticate" typeId="authenticate" />
 		</channels>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>
-				<description>Network address of the KEBA KeContact P20</description>
+				<description>Network address of the wallbox</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false">
 				<label>Refresh interval</label>
@@ -77,45 +97,81 @@
 		<description>Error code state, if in error. See the KeContact FAQ</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="plug">
+	<channel-type id="plugwallbox" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Plug State</label>
-		<description>State of the plug, e.g. ON if plugged in, OFF if unplugged</description>
+		<label>Wallbox Plugged</label>
+		<description>State of the wallbox plug, e.g. ON if plugged in, OFF if unplugged</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="locked">
+	<channel-type id="plugvehicle">
+		<item-type>Switch</item-type>
+		<label>Vehicle Plugged</label>
+		<description>State of the vehicle plug, e.g. ON if plugged in, OFF if unplugged</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="locked" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Plug Lock</label>
 		<description>Indicator if the plug is locked by the electrical vehicle</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="switch">
+	<channel-type id="enabled">
 		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch state indicator</description>
+		<label>Enabled</label>
+		<description>Activation state of the wallbox</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="x1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>X1</label>
+		<description>State of the X1 input</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="x2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>X2</label>
+		<description>State of the X2 output</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="current_settable">
 		<item-type>Number</item-type>
-		<label>Current</label>
-		<description>Current in mA</description>
+		<label>Preset Current</label>
+		<description>Preset Current in mA</description>
 		<state pattern="%d mA" readOnly="false"></state>
 	</channel-type>
-	<channel-type id="current">
+	<channel-type id="current" advanced="true">
 		<item-type>Number</item-type>
 		<label>Current</label>
 		<description>Current in mA</description>
 		<state pattern="%d mA" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="range">
-		<item-type>Dimmer</item-type>
-		<label>Current</label>
-		<description>Current in % of the 6000-63000 mA range accepted by the wallbox</description>
-		<state pattern="%d %" readOnly="false"></state>
-	</channel-type>
-	<channel-type id="pilotrange">
+	<channel-type id="maxcurrent" advanced="true">
 		<item-type>Number</item-type>
-		<label>Current</label>
+		<label>Max. System Current</label>
+		<description>Maximal System Current in mA</description>
+		<state pattern="%d mA" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="failsafecurrent" advanced="true">
+		<item-type>Number</item-type>
+		<label>Failsafe Current</label>
+		<description>Failsafe Current in mA (if network is lost)</description>
+		<state pattern="%d mA" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="range" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Rel. Current</label>
+		<description>Current in % of the 6000-63000 mA range accepted by the wallbox</description>
+		<state pattern="%d %%" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="pilotcurrent" advanced="true">
+		<item-type>Number</item-type>
+		<label>Pilot Current</label>
+		<description>Current preset value via Control pilot in mA</description>
+		<state pattern="%d mA" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pilotrange" advanced="true">
+		<item-type>Number</item-type>
+		<label>Pilot Range</label>
 		<description>Current preset value via Control pilot in 0,1% of the PWM value</description>
 		<state pattern="%d" readOnly="true"></state>
 	</channel-type>
@@ -146,7 +202,13 @@
 	<channel-type id="energy" advanced="true">
 		<item-type>Number</item-type>
 		<label>Energy</label>
-		<description>Power consumption in Wh. Total energy consumption is added up after each completed charging session</description>
+		<description>Power consumption in Wh.</description>
+		<state pattern="%d Wh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="totalenergy" advanced="true">
+		<item-type>Number</item-type>
+		<label>Energy</label>
+		<description>Total energy consumption is added up after each completed charging session</description>
 		<state pattern="%d Wh" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="display" advanced="true">
@@ -155,5 +217,46 @@
 		<description>Text to show on the P30 Series C or X display</description>
 		<state readOnly="false"></state>
 	</channel-type>
-
+	<channel-type id="authreq" advanced="true">
+		<item-type>Number</item-type>
+		<label>Authentication Required</label>
+		<description>Authentication required</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="authon" advanced="true">
+		<item-type>Number</item-type>
+		<label>Authentication Enabled</label>
+		<description>Authentication enabled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="sessionrfidtag" advanced="true">
+		<item-type>String</item-type>
+		<label>RFID Tag</label>
+		<description>RFID Tag used for the last charging session</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="sessionrfidclass" advanced="true">
+		<item-type>String</item-type>
+		<label>RFID Tag class</label>
+		<description>RFID Tag class used for the last charging session</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="sessionid" advanced="true">
+		<item-type>Number</item-type>
+		<label>Session ID</label>
+		<description>Session ID of the last charging session</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="setenergylimit">
+		<item-type>Number</item-type>
+		<label>Energy limit</label>
+		<description>An energy limit for an already running or the next charging session.</description>
+		<state pattern="%d Wh" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="authenticate">
+		<item-type>String</item-type>
+		<label>Authenticate</label>
+		<description>Authenticate and start a charging session</description>
+		<state readOnly="false"></state>
+	</channel-type>	
 </thing:thing-descriptions>

@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -187,6 +188,11 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         synchronized (asyncInitLock) {
             logger.debug("Async init thread staring for keypad handler {}", integrationId);
 
+            buttonList.clear(); // in case we are re-initializing
+            ledList.clear();
+            cciList.clear();
+            componentChannelMap.clear();
+
             configureComponents(model);
 
             // load the channel-id map
@@ -268,8 +274,8 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             return;
         }
 
-        // For buttons and CCIs, handle OnOffType commands
-        if (isButton(componentID) || isCCI(componentID)) {
+        // For buttons, handle OnOffType commands
+        if (isButton(componentID)) {
             if (command instanceof OnOffType) {
                 if (command == OnOffType.ON) {
                     device(componentID, ACTION_PRESS);
@@ -283,6 +289,13 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                 logger.warn("Invalid command type {} received for channel {} device {}", command, channelUID,
                         getThing().getUID());
             }
+            return;
+        }
+
+        // Contact channels for CCIs are read-only, so ignore commands
+        if (isCCI(componentID)) {
+            logger.debug("Invalid command type {} received for channel {} device {}", command, channelUID,
+                    getThing().getUID());
             return;
         }
     }
@@ -335,12 +348,20 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                         updateState(channelUID, OnOffType.OFF);
                     }
                 } else if (ACTION_PRESS.toString().equals(parameters[1])) {
-                    updateState(channelUID, OnOffType.ON);
-                    if (autoRelease) {
-                        updateState(channelUID, OnOffType.OFF);
+                    if (isButton(component)) {
+                        updateState(channelUID, OnOffType.ON);
+                        if (autoRelease) {
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+                    } else { // component is CCI
+                        updateState(channelUID, OpenClosedType.CLOSED);
                     }
                 } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
-                    updateState(channelUID, OnOffType.OFF);
+                    if (isButton(component)) {
+                        updateState(channelUID, OnOffType.OFF);
+                    } else { // component is CCI
+                        updateState(channelUID, OpenClosedType.OPEN);
+                    }
                 } else if (ACTION_HOLD.toString().equals(parameters[1])) {
                     updateState(channelUID, OnOffType.OFF); // Signal a release if we receive a hold code as we will not
                                                             // get a subsequent release.

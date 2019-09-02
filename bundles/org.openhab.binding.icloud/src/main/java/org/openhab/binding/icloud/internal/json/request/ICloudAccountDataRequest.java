@@ -15,7 +15,7 @@ package org.openhab.binding.icloud.internal.json.request;
 /**
  * Serializable request for icloud device data.
  *
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial Contribution
  *
  */
 public class ICloudAccountDataRequest {

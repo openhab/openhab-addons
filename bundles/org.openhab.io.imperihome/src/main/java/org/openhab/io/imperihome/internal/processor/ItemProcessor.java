@@ -13,6 +13,7 @@
 package org.openhab.io.imperihome.internal.processor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -85,7 +86,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
         this.actionRegistry = actionRegistry;
         this.config = config;
 
-        allItemsChanged(null);
+        allItemsChanged(Collections.emptyList());
         itemRegistry.addRegistryChangeListener(this);
     }
 
@@ -256,7 +257,8 @@ public class ItemProcessor implements ItemRegistryChangeListener {
             // Check required links
             for (String requiredLink : device.getType().getRequiredLinks()) {
                 if (!device.getLinks().containsKey(requiredLink)) {
-                    logger.error("Item doesn't contain required link {} for {}: {}", requiredLink, device.getType().getApiString(), item);
+                    logger.error("Item doesn't contain required link {} for {}: {}", requiredLink,
+                            device.getType().getApiString(), item);
                 }
             }
         }
@@ -392,6 +394,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
 
     /**
      * Generates an unique device ID for the given item.
+     * 
      * @param item Item to get device ID for.
      * @return Device ID.
      */
@@ -401,6 +404,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
 
     /**
      * Generates an unique device ID for the given item name.
+     * 
      * @param itemName Item name.
      * @return Device ID.
      */
@@ -432,10 +436,8 @@ public class ItemProcessor implements ItemRegistryChangeListener {
         synchronized (deviceRegistry) {
             logger.debug("Processing allItemsChanged event");
 
-            if (oldItems != null) {
-                for (String oldItem : oldItems) {
-                    removeItem(oldItem);
-                }
+            for (String oldItem : oldItems) {
+                removeItem(oldItem);
             }
 
             if (deviceRegistry.hasDevices()) {

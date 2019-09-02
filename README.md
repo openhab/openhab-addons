@@ -1,10 +1,16 @@
 # openHAB 2 Add-ons
 
+<img align="right" width="220" src="./logo.png" />
+
+[![Build Status](https://travis-ci.org/openhab/openhab2-addons.svg)](https://travis-ci.org/openhab/openhab2-addons)
+[![EPL-2.0](https://img.shields.io/badge/license-EPL%202-green.svg)](https://opensource.org/licenses/EPL-2.0)
+[![Bountysource](https://www.bountysource.com/badge/tracker?tracker_id=2164344)](https://www.bountysource.com/teams/openhab/issues?tracker_ids=2164344)
+
 This repository contains the official set of add-ons that are implemented on top of openHAB 2 Core APIs.
 Add-ons that got accepted in here will be maintained (e.g. adapted to new core APIs)
 by the [openHAB 2 maintainers](https://github.com/orgs/openhab/teams/2-x-add-ons-maintainers).
 
-To get started with binding development, follow our guidelines and tutorials over at https://www.openhab.org/docs/developer/.
+To get started with binding development, follow our guidelines and tutorials over at https://www.openhab.org/docs/developer.
 
 If you are interested in openHAB 2 Core development, we invite you to come by on https://github.com/openhab/openhab-core.
 
@@ -17,44 +23,38 @@ An incomplete list of other repositories follows below:
 * https://github.com/openhab/org.openhab.binding.zigbee
 * https://github.com/openhab/openhab-webui
 
-## Development / Repository Organisation
+## Development / Repository Organization
 
 openHAB 2 add-ons are [Java](https://en.wikipedia.org/wiki/Java_(programming_language)) `.jar` files.
 
-The openHAB 2 build system is based on [maven](https://maven.apache.org/what-is-maven.html).
+The openHAB 2 build system is based on [Maven](https://maven.apache.org/what-is-maven.html).
 The official IDE (Integrated development environment) is Eclipse.
 
 You find the following repository structure:
 
 ```
 .
-+-- addons/  Legacy addons that are currently ported to the new buildsystem
-|
-+-- bom      Maven buildsystem: Bill of materials
++-- bom       Maven buildsystem: Bill of materials
 |   +-- openhab-addons  Lists all extensions for other repos to reference them
 |   +-- ...             Other boms
 |
-+-- bundles  Official openHAB extensions
++-- bundles   Official openHAB extensions
 |   +-- org.openhab.binding.airquality
 |   +-- org.openhab.binding.astro
 |   +-- ...
 |
-+-- features/karaf  An extension usually has dependencies (at least openHAB core).
-|            |      In those feature files are the dependencies for the OSGi container declared.
-|            +-- openhab-addons-external/src/main/feature/feature.xml
-|            +-- openhab-addons/src/main/feature/feature.xml
++-- features  Part of the runtime dependency resolver ("Karaf features")
 |
-+-- itests   Integration tests. Those tests require parts of the framework to run.
++-- itests    Integration tests. Those tests require parts of the framework to run.
 |   +-- org.openhab.binding.astro.tests
 |   +-- org.openhab.binding.avmfritz.tests
 |   +-- ...
 |
-+-- poms     Maven buildsystem files
-+-- src/etc  Auxilary buildsystem files: The license header for automatic checks for example
-+-- tools    Static code analyser instructions
++-- src/etc   Auxilary buildsystem files: The license header for automatic checks for example
++-- tools     Static code analyser instructions
 |
 +-- CODEOWNERS  This file assigns people to directories so that they are informed if a pull-request
-                would modify that directory/binding.
+                would modify their addons.
 ```
 
 ### Command line build
@@ -67,37 +67,14 @@ Optionally you can skip tests (`-DskipTests`) or skip some static analysis (`-Ds
 
 Subsequent calls can include the `-o` for offline as in: `mvn clean install -DskipChecks -o` which will be a bit faster.
 
-For integration tests you might need to run: `mvn clean install -DwithResolver -DskipChecks`.
+For integration tests you might need to run: `mvn clean install -DwithResolver -DskipChecks`
 
-### How to develop in the Eclipse IDE
+You find a generated `.jar` file per bundle in the respective bundle `/target` directory.
 
-1. Install Bndtools in your Eclipse IDE. (Is automatically installed if you have used the Eclipse Installer for openHAB development as described here: https://www.openhab.org/docs/developer/development/ide.html)
-2. Checkout the bnd based openHAB demo application: `git clone --depth=1 https://github.com/maggu2810/openhab-demo`.
-3. Open the directory in Eclipse. Wait for the download and build to finish (about 3-5 minutes).
-4. Checkout this repository: `git clone --depth=1 https://github.com/openhab/openhab2-addons`
-5. In Eclipse File->Import->"Existing maven projects": Add the binding that you want to develop on to the workspace.
-6. In Eclipse Package Explorer: Search for `pom.xml` in the demo-app project.
-    ![Bildschirmfoto vom 2019-03-19 13-46-48](https://user-images.githubusercontent.com/66436/54607049-a9031700-4a4d-11e9-9b9d-64a620270d28.png)
-    Add your addon as maven dependency like so (replace `astro`!):
-   ```xml
-   <project ...>
-     ...
-     <dependencies>
-        <dependency>
-            <groupId>org.openhab.addons.bundles</groupId>
-            <artifactId>org.openhab.binding.astro</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-     </dependencies>
-   </project>
-   ```
-7. In Eclipse Package Explorer: Search for `app.bndrun` in the "demo-app" project.
-   Double click (takes a few seconds).
-8. Add your project to "Run requirements" via drag&drop from the Package Explorer.
-    ![Bildschirmfoto vom 2019-03-18 12-26-03](https://user-images.githubusercontent.com/66436/54527103-2c066d80-4979-11e9-8852-c06a41f4d50b.png)
-9. Execute with "Run OSGi"
+### How to develop via an Integrated Development Environment (IDE)
 
-The demo application runs a slim set of openHAB core bundles including automations (next gen rules) and PaperUI. The startup should only take about 5 seconds and you are greeted by the openHAB console where you can type in console commands.
+We have assembled some step-by-step guides for different IDEs on our developer documentation website:
+
+https://www.openhab.org/docs/developer/#setup-the-development-environment
 
 Happy coding!

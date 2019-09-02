@@ -17,18 +17,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
-import javax.naming.ConfigurationException;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * Represents Satel INT-RS module. Implements methods required to connect and
@@ -36,28 +35,31 @@ import gnu.io.UnsupportedCommOperationException;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class IntRSModule extends SatelModule {
 
     private final Logger logger = LoggerFactory.getLogger(IntRSModule.class);
 
-    private String port;
+    private final String port;
+
+    private final SerialPortManager serialPortManager;
 
     /**
      * Creates new instance with port and timeout set to specified values.
      *
      * @param port
-     *            serial port the module is connected to
+     *                              serial port the module is connected to
+     * @param serialPortManager
+     *                              serial port manager object
      * @param timeout
-     *            timeout value in milliseconds for connect/read/write
-     *            operations
-     * @throws ConfigurationException
-     *             unconditionally throws this exception as it is not
-     *             implemented yet
+     *                              timeout value in milliseconds for connect/read/write
+     *                              operations
      */
-    public IntRSModule(String port, int timeout) {
+    public IntRSModule(String port, SerialPortManager serialPortManager, int timeout) {
         super(timeout);
 
         this.port = port;
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -65,7 +67,10 @@ public class IntRSModule extends SatelModule {
         logger.info("Connecting to INT-RS module at {}", this.port);
 
         try {
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(this.port);
+            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(this.port);
+            if (portIdentifier == null) {
+                throw new ConnectionFailureException(String.format("Port %s does not exist", this.port));
+            }
             SerialPort serialPort = portIdentifier.open("org.openhab.binding.satel", 2000);
             serialPort.setSerialPortParams(19200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             serialPort.enableReceiveTimeout(this.getTimeout());
@@ -86,8 +91,6 @@ public class IntRSModule extends SatelModule {
 
             logger.info("INT-RS module connected successfuly");
             return new SerialCommunicationChannel(serialPort);
-        } catch (NoSuchPortException e) {
-            throw new ConnectionFailureException(String.format("Port %s does not exist", this.port), e);
         } catch (PortInUseException e) {
             throw new ConnectionFailureException(String.format("Port %s in use", this.port), e);
         } catch (UnsupportedCommOperationException e) {
@@ -106,11 +109,13 @@ public class IntRSModule extends SatelModule {
         }
 
         @Override
+        @Nullable
         public InputStream getInputStream() throws IOException {
             return this.serialPort.getInputStream();
         }
 
         @Override
+        @Nullable
         public OutputStream getOutputStream() throws IOException {
             return this.serialPort.getOutputStream();
         }

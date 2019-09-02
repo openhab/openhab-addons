@@ -52,8 +52,6 @@ public class OpenUVBindingConstants {
     public static final String UVTIME = "UVTime";
     public static final String SAFEEXPOSURE = "SafeExposure";
 
-    public static final String PROPERTY_INDEX = "Index";
-
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(APIBRIDGE_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(LOCATION_REPORT_THING_TYPE));

@@ -51,13 +51,13 @@ The following configuration options are available on the Spotify Bridge player:
 |---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | clientId      | This is the Client ID provided by Spotify when you add a new Application for openHAB to your Spotify Account. Go to https://developer.spotify.com/ (Required) |
 | clientSecret  | This is the Client Secret provided by Spotify when you add a new Application for openHAB to your Spotify Account.   (Required)                                |
-| refreshPeriod | This is the frequency of the polling requests to the Spotify Connect Web API in seconds.                                                                       |
+| refreshPeriod | This is the frequency of the polling requests to the Spotify Connect Web API in seconds.                                                                      |
 
 The following configuration option is available on the Spotify device:
 
-| Parameter | Description                                           |
-|-----------|-------------------------------------------------------|
-| id        | This is the device ID provided by Spotify (Required). |
+| Parameter  | Description                                             |
+|------------|---------------------------------------------------------|
+| deviceName | This is the device name provided by Spotify (Required). |
 
 
 ## Supported Things
@@ -65,8 +65,13 @@ The following configuration option is available on the Spotify device:
 All Spotify Connect capable devices should be discoverable through this binding.
 If you can control them from Spotify Player app on your PC/Mac/iPhone/Android/xxx you should be able to add it as a thing.
 Some devices can be restricted and not available for playing. The bridge will make these available in the discovery of devices, but they will never be ONLINE.
-A Spotify web player in a browser is only available as long as the page is open. It will get a unique id for that session. If you close the page it will be gone. Opening a new web player will result in a new id.
-Some devices will not be visible (i.e. Chrome casts) when they are not active. They go into a sleep mode and are not visible through the Spotify Web API. The binding will them show as _GONE_.
+A Spotify web player in a browser is only available as long as the page is open.
+It will get a unique id for that session.
+If you close the page it will be gone.
+Opening a new web player will result in a new id.
+Some devices will not be visible (i.e. Chrome casts) when they are not active.
+Some devices will not be visible (i.e. Chrome casts) when they are not active (they go into a sleep mode and are not visible through the Spotify Web API).
+The binding will show them as _GONE_.
 
 ## Discovery
 
@@ -75,7 +80,8 @@ As long as Spotify Connect devices are available in the context of the user acco
 If no devices are showing up, try to connect to the device(s) from your smartphone or computer to make sure the device(s) are in use by your user account.
 
 The discovery of devices in the Spotify Web API is based on what is known by Spotify.
-There is difference from e.g. smartphones and computers which can discover devices on the local network - the Web API cannot do that. It only knows about a device if your account is currently associated with the device.
+There is difference between e.g. smartphones and computers which can discover devices on the local network and the Web API which is not able to do so.
+It only knows about a device if your account is currently associated with the device.
 
 ## Channels
 
@@ -87,7 +93,8 @@ __Common Channels:__
 
 | Channel Type ID | Item Type | Read/Write | Description                                                                                      |
 |-----------------|-----------|------------|--------------------------------------------------------------------------------------------------|
-| deviceName      | Selection | Read-only  | Name of the currently active Connect Device, set the device ID to transfer play to that device.  |
+| deviceName      | String    | Read-write | Name of the currently active Connect Device,                                                     |
+| devices         | Selection | Read-write | List of currently active Connect Devices, Set the device ID to transfer play to that device.     |
 | deviceVolume    | Dimmer    | Read-write | Get or set the active Connect Device volume.                                                     |
 | deviceShuffle   | Switch    | Read-write | Turn on/off shuffle play on the active device.                                                   |
 | trackPlay       | String    | Read-write | Set which music  to play on the active device. This channel accepts Spotify URIs and URLs.       |
@@ -98,7 +105,8 @@ __Common Channels:__
 | trackDurationMs | Number    | Read-only  | The duration of the currently playing track in milliseconds.                                     |
 | trackProgress   | String    | Read-only  | The progress (m:ss) of the currently playing track. This is updated every second.                |
 | trackProgressMs | Number    | Read-only  | The progress of the currently playing track in milliseconds.                                     |
-| playlist        | Selection | Read-only  | This channel will be populated with the users playlists. Set the playlist ID to start.           |
+| playlists       | Selection | Read-write | This channel will be populated with the users playlists. Set the playlist ID to start.           |
+| playlistName    | String    | Read-write | The currently playing playlist. Or empty if no playing list is playing.                          |
 | albumName       | String    | Read-only  | Album Name of the currently playing track.                                                       |
 | albumImage      | RawType   | Read-only  | Album Image of the currently playing track.                                                      |
 | artistName      | String    | Read-only  | Artist Name of the currently playing track.                                                      |
@@ -108,24 +116,25 @@ They are dynamically populated by the binding with the user specific devices and
 
 __Advanced Channels:__
 
-| Channel Type ID | Item Type | Read/Write | Description                                                                                                                                                                 |
-|-----------------|-----------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| accessToken     | String    | Read-only  | The current accessToken used in communication with Web API. This can be used in client-side scripting towards the Web API if you would like to maintain your playlists etc. |
-| trackId         | String    | Read-only  | Track Id of the currently playing track.                                                                                                                                    |
-| trackHref       | String    | Read-only  | Track URL of the currently playing track.                                                                                                                                   |
-| trackUri        | String    | Read-only  | Track URI of the currently playing track.                                                                                                                                   |
-| trackType       | String    | Read-only  | Type of the currently playing track.                                                                                                                                        |
-| trackNumber     | String    | Read-only  | Number of the track on the album/record.                                                                                                                                    |
-| trackDiscNumber | String    | Read-only  | Disc Number of the track on the album/record.                                                                                                                               |
-| trackPopularity | Number    | Read-only  | Currently playing track popularity.                                                                                                                                         |
-| albumId         | String    | Read-only  | Album Id of the currently playing track.                                                                                                                                    |
-| albumUri        | String    | Read-only  | Album URI of the currently playing track.                                                                                                                                   |
-| albumHref       | String    | Read-only  | Album URL of the currently playing track.                                                                                                                                   |
-| albumType       | String    | Read-only  | Album Type of the currently playing track.                                                                                                                                  |
-| artistId        | String    | Read-only  | Artist Id of the currently playing track.                                                                                                                                   |
-| artistUri       | String    | Read-only  | Artist URI of the currently playing track.                                                                                                                                  |
-| artistHref      | String    | Read-only  | Artist URL of the currently playing track.                                                                                                                                  |
-| artistType      | String    | Read-only  | Artist Type of the currently playing track.                                                                                                                                 |
+| Channel Type ID | Item Type | Read/Write | Description                                                 |
+|-----------------|-----------|------------|-------------------------------------------------------------|
+| accessToken     | String    | Read-only  | The current accessToken used in communication with Web API. |
+| deviceId        | String    | Read-write | The Spotify Connect device Id.                              |
+| trackId         | String    | Read-only  | Track Id of the currently playing track.                    |
+| trackHref       | String    | Read-only  | Track URL of the currently playing track.                   |
+| trackUri        | String    | Read-only  | Track URI of the currently playing track.                   |
+| trackType       | String    | Read-only  | Type of the currently playing track.                        |
+| trackNumber     | String    | Read-only  | Number of the track on the album/record.                    |
+| trackDiscNumber | String    | Read-only  | Disc Number of the track on the album/record.               |
+| trackPopularity | Number    | Read-only  | Currently playing track popularity.                         |
+| albumId         | String    | Read-only  | Album Id of the currently playing track.                    |
+| albumUri        | String    | Read-only  | Album URI of the currently playing track.                   |
+| albumHref       | String    | Read-only  | Album URL of the currently playing track.                   |
+| albumType       | String    | Read-only  | Album Type of the currently playing track.                  |
+| artistId        | String    | Read-only  | Artist Id of the currently playing track.                   |
+| artistUri       | String    | Read-only  | Artist URI of the currently playing track.                  |
+| artistHref      | String    | Read-only  | Artist URL of the currently playing track.                  |
+| artistType      | String    | Read-only  | Artist Type of the currently playing track.                 |
 
 ### Devices
 
@@ -136,19 +145,19 @@ Assigning a playlist to the _trackPlay_ channel of the bridge will start playing
 
 __Common Channels:__
 
-| Channel Type ID | Item Type | Read/Write | Description                                                                                                                             |
-|-----------------|-----------|------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| trackPlay       | String    | Read-write | Track to play on the device. Assigning a track, playlist, artist etc will activate the device and make it the currently playing device. |
-| deviceName      | String    | Read-only  | Name of the device.                                                                                                                     |
-| deviceVolume    | Dimmer    | Read-write | Volume setting for the device.                                                                                                          |
-| devicePlayer    | Player    | Read-write | Player Control of the device.                                                                                                           |
-| deviceShuffle   | Switch    | Read-write | Turn on/off shuffle play.                                                                                                               |
+| Channel Type ID | Item Type | Read/Write | Description                                                     |
+|-----------------|-----------|------------|-----------------------------------------------------------------|
+| trackPlay       | String    | Write-only | Update to play a track, playlist, artist. Activates the device. |
+| deviceName      | String    | Read-only  | Name of the device.                                             |
+| deviceVolume    | Dimmer    | Read-write | Volume setting for the device.                                  |
+| devicePlayer    | Player    | Read-write | Player Control of the device.                                   |
+| deviceShuffle   | Switch    | Read-write | Turn on/off shuffle play.                                       |
 
 __Advanced Channels:__
 
 | Channel Type ID  | Item Type | Read/Write | Description                                                                                                |
 |------------------|-----------|------------|------------------------------------------------------------------------------------------------------------|
-| deviceId         | String    | Read-only  | The Spotify Connect device Id.                                                                             |
+| deviceId         | String    | Read-write | The Spotify Connect device Id.                                                                             |
 | deviceType       | String    | Read-only  | The type of device e.g. Speaker, Smartphone.                                                               |
 | deviceActive     | Switch    | Read-only  | Indicates if the device is active or not. Should be the same as Thing status ONLINE/OFFLINE.               |
 | deviceRestricted | Switch    | Read-only  | Indicates if this device allows to be controlled by the API or not. If restricted it cannot be controlled. |
@@ -162,16 +171,36 @@ spotify.things:
 ```
 Bridge spotify:player:user1 "Me" [clientId="<your client id>", clientSecret="<your client secret>"] {
   Things:
-    device device1 "Device 1" [id="<spotify device id>"]
-    device device2 "Device 2" [id="<spotify device id>"]
+    device device1 "Device 1" [deviceName="<spotify device name>"]
+    device device2 "Device 2" [deviceName="<spotify device name>"]
 }
 ```
 
 spotify.items:
 
 ```
-Player device1Player  {channel="spotify:device:user1:device1:devicePlayer"}
-Player device2Player  {channel="spotify:device:user1:device2:devicePlayer"}
+Player spotifyTrackPlayer   label="Player"               {channel="spotify:player:user1:trackPlayer"}
+String spotifyDevices       label="Active device [%s]"   {channel="spotify:player:user1:devices"}
+Switch spotifyDeviceShuffle label="Shuffle mode"         {channel="spotify:player:user1:deviceShuffle"}
+String spotifyTrackRepeat   label="Repeat mode: [%s]"    {channel="spotify:player:user1:trackRepeat"}
+String spotifyTrackProgress label="Track progress: [%s]" {channel="spotify:player:user1:trackProgress"}
+String spotifyTrackDuration label="Track duration: [%s]" {channel="spotify:player:user1:tackDuration"}
+String spotifyTrackName     label="Track Name: [%s]"     {channel="spotify:player:user1:trackName"}
+String spotifyAlbumName     label="Album Name: [%s]"     {channel="spotify:player:user1:albumName"}
+String spotifyArtistName    label="Artist Name: [%s]"    {channel="spotify:player:user1:artistName"}
+Image  spotifyAlbumImage    label="Album Art"            {channel="spotify:player:user1:albumImage"}
+String spotifyPlaylists     label="Playlists [%s]"       {channel="spotify:player:user1:playlists"}
+String spotifyPlayName      label="Playlist [%s]"        {channel="spotify:player:user1:playlistName"}
+
+String device1DeviceName    {channel="spotify:device:user1:device1:deviceName"}
+Player device1Player        {channel="spotify:device:user1:device1:devicePlayer"}
+Dimmer device1DeviceVolume  {channel="spotify:device:user1:device1:deviceVolume"}
+Switch device1DeviceShuffle {channel="spotify:device:user1:device1:deviceShuffle"}
+
+String device2DeviceName    {channel="spotify:device:user1:device2:deviceName"}
+Player device2Player        {channel="spotify:device:user1:device2:devicePlayer"}
+Dimmer device2DeviceVolume  {channel="spotify:device:user1:device2:deviceVolume"}
+Switch device2DeviceShuffle {channel="spotify:device:user1:device2:deviceShuffle"}
 ```
 
 spotify.sitemap:
@@ -180,30 +209,31 @@ spotify.sitemap:
 sitemap spotify label="Spotify Sitemap" {
 
   Frame label="Spotify Player Info" {
-    Selection item=spotify_player_user1_deviceName label="Active device [%]"
-    Player item="spotify_player_user1_trackPlayer
-    Text item=spotify_player_user1_deviceShuffle label="Currently Player shuffle mode: [%s]"
-    Text item=spotify_player_user1_trackRepeat label="Currently Player repeat mode: [%s]"
-    Text item=spotify_player_user1_trackProgress label="Currently Played track progress: [%s]"
-    Text item=spotify_player_user1_trackDuration label="Currently Played track duration: [%s]"
-    Text item=spotify_player_user1_trackName label="Currently Played Track Name: [%s]"
-    Text item=spotify_player_user1_albumName label="Currently Played Album Name: [%s]"
-    Text item=spotify_player_user1_artistName label="Currently Played Artist Name: [%s]"
-    Selection item=spotify_player_user1_trackPlay label="Playlist" icon="music"
+    Selection item=spotifyDevices       label="Active device [%s]"
+    Default   item=spotifyTrackPlayer   label="Player"
+    Switch    item=spotifyDeviceShuffle label="Shuffle mode:"
+    Text      item=spotifyTrackRepeat   label="Repeat mode: [%s]"
+    Text      item=spotifyTrackProgress label="Track progress: [%s]"
+    Text      item=spotifyTrackDuration label="Track duration: [%s]"
+    Text      item=spotifyTrackName     label="Track Name: [%s]"
+    Image     item=spotifyAlbumImage    label="Album Art"
+    Text      item=spotifyAlbumName     label="Currently Played Album Name: [%s]"
+    Text      item=spotifyTrtistName    label="Currently Played Artist Name: [%s]"
+    Selection item=spotifyTrackPlay     label="Playlist" icon="music"
   }
 
   Frame label="My Spotify Device 1" {
-    Text item=spotify_device_user1_device1_deviceName label="Device Name [%s]"
-    Player item=device1Player
-    Slider item=spotify_device_user1_device1_deviceVolume
-    Switch item=spotify_device_user1_device1_deviceShuffle
+    Text    item=device1DeviceName label="Device Name [%s]"
+    Default item=device1Player
+    Slider  item=device1DeviceVolume
+    Switch  item=device1DeviceShuffle
   }
 
    Frame label="My Spotify Device 2" {
-    Text item=spotify_device_user1_device2_deviceName label="Device Name [%s]"
-    Player item=device2Player
-    Slider item=spotify_device_user1_device2_deviceVolume
-    Switch item=spotify_device_user1_device2_deviceShuffle
+    Text    item=device2DeviceName label="Device Name [%s]"
+    Default item=device2Player
+    Slider  item=device2DeviceVolume
+    Switch  item=device2DeviceShuffle
   }
 }
 ```

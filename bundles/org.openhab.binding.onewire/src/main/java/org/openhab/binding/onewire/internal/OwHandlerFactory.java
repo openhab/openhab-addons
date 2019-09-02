@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.onewire.internal.discovery.OwDiscoveryService;
 import org.openhab.binding.onewire.internal.handler.AdvancedMultisensorThingHandler;
+import org.openhab.binding.onewire.internal.handler.BAE091xSensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BasicThingHandler;
 import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
@@ -38,6 +39,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OwHandlerFactory} is responsible for creating things and thing
@@ -46,10 +49,10 @@ import org.osgi.service.component.annotations.Reference;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewire", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewire")
 public class OwHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    Logger logger = LoggerFactory.getLogger(OwHandlerFactory.class);
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @NonNullByDefault({})
     private OwDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
@@ -75,9 +78,17 @@ public class OwHandlerFactory extends BaseThingHandlerFactory {
             return new BasicThingHandler(thing, dynamicStateDescriptionProvider);
         } else if (EDSSensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new EDSSensorThingHandler(thing, dynamicStateDescriptionProvider);
+        } else if (BAE091xSensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new BAE091xSensorThingHandler(thing, dynamicStateDescriptionProvider);
         }
 
         return null;
+    }
+
+    @Override
+    public void unregisterHandler(Thing thing) {
+        super.unregisterHandler(thing);
+        logger.error("factory {} deleting thing {}", this, thing);
     }
 
     private synchronized void registerDiscoveryService(OwserverBridgeHandler owserverBridgeHandler) {

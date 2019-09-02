@@ -231,6 +231,9 @@ public class NetworkUtils {
     public boolean nativePing(@Nullable IpPingMethodEnum method, String hostname, int timeoutInMS)
             throws IOException, InterruptedException {
         Process proc;
+        if (method == null) {
+            return false;
+        }
         // Yes, all supported operating systems have their own ping utility with a different command line
         switch (method) {
             case IPUTILS_LINUX_PING:
@@ -314,10 +317,9 @@ public class NetworkUtils {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-C", "1", "-i",
                     interfaceName, ipV4address).start();
         } else if (arpingTool == ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
-            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS), 
-                                      "-x", ipV4address).start();
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS), "-x", ipV4address).start();
         } else {
-            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-C", "1", "-I",
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
                     interfaceName, ipV4address).start();
         }
 

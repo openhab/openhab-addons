@@ -31,7 +31,7 @@ public class YeelightStripeHandler extends YeelightHandlerBase {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        handleCommandHelper(channelUID, command, "Handle Stripe Command {}");
+        handleCommandHelper(channelUID, command, "Handle Stripe Command");
     }
 
     @Override

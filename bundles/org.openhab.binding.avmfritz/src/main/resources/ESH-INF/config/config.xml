@@ -78,6 +78,11 @@
 			<label>Connection</label>
 			<description>Connection settings.</description>
 		</parameter-group>
+		<parameter name="ain" type="text">
+			<label>AIN</label>
+			<description>The AHA id (AIN) that identifies one specific FRITZ! device.</description>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="ipAddress" type="text" required="true" groupName="network">
 			<context>network-address</context>
 			<label>IP address</label>

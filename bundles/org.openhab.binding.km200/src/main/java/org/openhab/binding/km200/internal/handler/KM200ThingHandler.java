@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -67,12 +68,11 @@ public class KM200ThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(KM200ThingHandler.class);
     private static URI configDescriptionUriChannel;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream
-                    .of(THING_TYPE_DHW_CIRCUIT, THING_TYPE_HEATING_CIRCUIT, THING_TYPE_SOLAR_CIRCUIT,
-                            THING_TYPE_HEAT_SOURCE, THING_TYPE_SYSTEM_APPLIANCE, THING_TYPE_SYSTEM_HOLIDAYMODES,
-                            THING_TYPE_SYSTEM_SENSOR, THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION, THING_TYPE_SYSTEM)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(THING_TYPE_DHW_CIRCUIT, THING_TYPE_HEATING_CIRCUIT, THING_TYPE_SOLAR_CIRCUIT, THING_TYPE_HEAT_SOURCE,
+                    THING_TYPE_SYSTEM_APPLIANCE, THING_TYPE_SYSTEM_HOLIDAYMODES, THING_TYPE_SYSTEM_SENSOR,
+                    THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION, THING_TYPE_SYSTEM, THING_TYPE_SYSTEMSTATES)
+            .collect(Collectors.toSet()));
 
     private KM200ChannelTypeProvider channelTypeProvider;
 
@@ -324,7 +324,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             switch (subKeyType) {
                 case "stringValue":
                     /* Creating an new channel type with capabilities from service */
-                    List<StateOption> options = null;
+                    List<@NonNull StateOption> options = null;
                     if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
                         options = new ArrayList<StateOption>();
                         // The type is definitely correct here

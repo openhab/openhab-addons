@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
@@ -101,7 +102,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         }
         ThingRegistry thingRegistry = this.thingRegistry;
         if (thingRegistry == null) {
-            return originalStateDescription;
+            return null;
         }
         if (CHANNEL_TYPE_BLUETHOOTH_MAC.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
@@ -123,13 +124,13 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 if (device == null) {
                     continue;
                 }
-                if (device.address != null && device.friendlyName != null) {
-                    options.add(new StateOption(device.address, device.friendlyName));
+                final String value = device.address;
+                if (value != null && device.friendlyName != null) {
+                    options.add(new StateOption(value, device.friendlyName));
                 }
             }
-            StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
-                    originalStateDescription.getMaximum(), originalStateDescription.getStep(),
-                    originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
+            StateDescription result = StateDescriptionFragmentBuilder.create(originalStateDescription)
+                    .withOptions(options).build().toStateDescription();
             return result;
 
         } else if (CHANNEL_TYPE_AMAZON_MUSIC_PLAY_LIST_ID.equals(channel.getChannelTypeUID())) {
@@ -151,16 +152,16 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 for (PlayList[] innerLists : playlistMap.values()) {
                     if (innerLists != null && innerLists.length > 0) {
                         PlayList playList = innerLists[0];
-                        if (playList.playlistId != null && playList.title != null) {
-                            options.add(new StateOption(playList.playlistId,
+                        final String value = playList.playlistId;
+                        if (value != null && playList.title != null) {
+                            options.add(new StateOption(value,
                                     String.format("%s (%d)", playList.title, playList.trackCount)));
                         }
                     }
                 }
             }
-            StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
-                    originalStateDescription.getMaximum(), originalStateDescription.getStep(),
-                    originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
+            StateDescription result = StateDescriptionFragmentBuilder.create(originalStateDescription)
+                    .withOptions(options).build().toStateDescription();
             return result;
         } else if (CHANNEL_TYPE_PLAY_ALARM_SOUND.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
@@ -184,9 +185,8 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     options.add(new StateOption(providerSoundId, notificationSound.displayName));
                 }
             }
-            StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
-                    originalStateDescription.getMaximum(), originalStateDescription.getStep(),
-                    originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
+            StateDescription result = StateDescriptionFragmentBuilder.create(originalStateDescription)
+                    .withOptions(options).build().toStateDescription();
             return result;
         } else if (CHANNEL_TYPE_CHANNEL_PLAY_ON_DEVICE.equals(channel.getChannelTypeUID())) {
             FlashBriefingProfileHandler handler = (FlashBriefingProfileHandler) findHandler(channel);
@@ -205,13 +205,14 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             ArrayList<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
             for (Device device : devices) {
-                if (device.capabilities != null && Arrays.asList(device.capabilities).contains("FLASH_BRIEFING")) {
-                    options.add(new StateOption(device.serialNumber, device.accountName));
+                final String value = device.serialNumber;
+                if (value != null && device.capabilities != null
+                        && Arrays.asList(device.capabilities).contains("FLASH_BRIEFING")) {
+                    options.add(new StateOption(value, device.accountName));
                 }
             }
-            StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
-                    originalStateDescription.getMaximum(), originalStateDescription.getStep(),
-                    originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
+            StateDescription result = StateDescriptionFragmentBuilder.create(originalStateDescription)
+                    .withOptions(options).build().toStateDescription();
             return result;
         } else if (CHANNEL_TYPE_MUSIC_PROVIDER_ID.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
@@ -232,13 +233,12 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 if (properties != null && properties.contains("Alexa.Music.PlaySearchPhrase")
                         && StringUtils.isNotEmpty(providerId)
                         && StringUtils.equals(musicProvider.availability, "AVAILABLE")
-                        && StringUtils.isNotEmpty(displayName)) {
+                        && StringUtils.isNotEmpty(displayName) && providerId != null) {
                     options.add(new StateOption(providerId, displayName));
                 }
             }
-            StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
-                    originalStateDescription.getMaximum(), originalStateDescription.getStep(),
-                    originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
+            StateDescription result = StateDescriptionFragmentBuilder.create(originalStateDescription)
+                    .withOptions(options).build().toStateDescription();
             return result;
         } else if (CHANNEL_TYPE_START_COMMAND.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
@@ -262,11 +262,10 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 String displayName = flashBriefing.getThing().getLabel();
                 options.add(new StateOption(value, displayName));
             }
-            StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
-                    originalStateDescription.getMaximum(), originalStateDescription.getStep(),
-                    originalStateDescription.getPattern(), originalStateDescription.isReadOnly(), options);
+            StateDescription result = StateDescriptionFragmentBuilder.create(originalStateDescription)
+                    .withOptions(options).build().toStateDescription();
             return result;
         }
-        return originalStateDescription;
+        return null;
     }
 }

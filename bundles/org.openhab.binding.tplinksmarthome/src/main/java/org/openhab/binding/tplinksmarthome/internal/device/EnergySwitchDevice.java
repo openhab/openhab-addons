@@ -16,6 +16,7 @@ import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindin
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tplinksmarthome.internal.Commands;
 import org.openhab.binding.tplinksmarthome.internal.model.Realtime;
@@ -34,18 +35,26 @@ public class EnergySwitchDevice extends SwitchDevice {
     }
 
     @Override
-    public State updateChannel(String channelId, DeviceState deviceState) {
+    public State updateChannel(ChannelUID channelUid, DeviceState deviceState) {
         final State state;
+        final String matchChannelId = channelUid.isInGroup() ? channelUid.getIdWithoutGroup() : channelUid.getId();
 
-        if (CHANNELS_ENERGY.contains(channelId)) {
-            state = updateEnergyChannel(channelId, deviceState.getRealtime());
+        if (CHANNELS_ENERGY.contains(matchChannelId)) {
+            state = updateEnergyChannel(matchChannelId, deviceState.getRealtime());
         } else {
-            state = super.updateChannel(channelId, deviceState);
+            state = super.updateChannel(channelUid, deviceState);
         }
         return state;
     }
 
-    private State updateEnergyChannel(String channelId, Realtime realtime) {
+    /**
+     * Gets the state for an energy channel.
+     *
+     * @param channelId Id of the energy channel to get the state
+     * @param realtime data object containing the data from the device
+     * @return state object for the given channel
+     */
+    protected State updateEnergyChannel(String channelId, Realtime realtime) {
         final double value;
 
         switch (channelId) {

@@ -38,12 +38,11 @@ public class RFXComRfyMessageTest {
         RFXComTestHelper.basicBoundaryCheck(RFY, message);
     }
 
-    private void testMessage(SubType subType, Commands command, String deviceId, String data)
-            throws RFXComException {
+    private void testMessage(SubType subType, Commands command, String deviceId, String data) throws RFXComException {
 
         RFXComRfyMessage message = (RFXComRfyMessage) RFXComMessageFactory.createMessage(RFY);
         message.setSubType(subType);
-	message.command = command;
+        message.command = command;
         message.setDeviceId(deviceId);
 
         assertArrayEquals(HexUtils.hexToBytes(data), message.decodeMessage());

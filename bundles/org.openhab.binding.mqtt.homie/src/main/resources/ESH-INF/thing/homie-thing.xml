@@ -24,6 +24,11 @@
 				<description>MQTT base prefix</description>
 				<default>homie</default>
 			</parameter>
+			<parameter name="removetopics" type="boolean">
+				<label>Remove retained topics</label>
+				<description>Remove retained topics when thing is deleted</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 </thing:thing-descriptions>

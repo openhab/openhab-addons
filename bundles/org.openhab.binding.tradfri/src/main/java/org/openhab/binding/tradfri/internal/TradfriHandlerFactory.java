@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -45,6 +47,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tradfri")
+@NonNullByDefault
 public class TradfriHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
@@ -60,7 +63,7 @@ public class TradfriHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (GATEWAY_TYPE_UID.equals(thingTypeUID)) {
@@ -93,6 +96,7 @@ public class TradfriHandlerFactory extends BaseThingHandlerFactory {
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
+    @SuppressWarnings("null")
     private synchronized void unregisterDiscoveryService(TradfriGatewayHandler bridgeHandler) {
         ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
         if (serviceReg != null) {

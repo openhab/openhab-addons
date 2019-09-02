@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -16,16 +15,6 @@
   <name>openHAB Add-ons :: BOM :: openHAB Add-ons</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.astro</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.avmfritz</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.airquality</artifactId>
@@ -53,6 +42,16 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.ambientweather</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.astro</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.atlona</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -63,36 +62,41 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.avmfritz</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.bigassfan</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.bluetooth</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.bluetooth.bluegiga</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.bluetooth.bluez</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.bluetooth.blukii</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.bluetooth.ruuvitag</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.boschindego</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -102,7 +106,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.buienradar</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.chromecast</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -142,7 +151,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.digitalstrom</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -162,7 +171,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.dsmr</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -177,7 +186,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.enocean</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -187,12 +196,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.exec</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.feed</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -222,7 +231,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.ftpupload</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -273,6 +282,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.hpprinter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.hue</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -287,12 +301,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.ihc</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.innogysmarthome</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -357,7 +371,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.lgwebos</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -373,17 +387,27 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.linuxinput</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.logreader</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.loxone</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.lutron</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.mail</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -432,18 +456,28 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.modbus</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mqtt</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mqtt.generic</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.mqtt.homeassistant</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.mqtt.homie</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -463,11 +497,16 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.neohub</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.nest</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.netatmo</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -487,7 +526,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.nikohomecontrol</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -508,7 +547,17 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.omnikinverter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.onebusaway</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.onewiregpio</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -517,13 +566,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
-      <artifactId>org.openhab.binding.onewiregpio</artifactId>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.onkyo</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
-      <artifactId>org.openhab.binding.onkyo</artifactId>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.opengarage</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -542,8 +591,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.orvibo</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.paradoxalarm</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -583,6 +637,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.pushbullet</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.regoheatpump</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -612,7 +671,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.samsungtv</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -638,6 +697,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.siemensrds</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.silvercrestwifisocket</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -652,8 +716,13 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.smartmeter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.snmp</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -683,6 +752,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.sonyprojector</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.spotify</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -697,7 +771,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.systeminfo</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -753,6 +827,16 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.vektiva</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.volvooncall</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.velbus</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -782,7 +866,17 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.xmltv</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.xmppclient</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.yamahareceiver</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -792,12 +886,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.zoneminder</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.zway</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -811,18 +905,19 @@
       <artifactId>org.openhab.extensionservice.marketplace.automation</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- temporarily disabled due to malfunction -->
+    <!--dependency-->
+      <!--groupId>org.openhab.addons.bundles</groupId-->
+      <!--artifactId>org.openhab.io.azureiothub</artifactId-->
+      <!--version>${project.version}</version-->
+    <!--/dependency-->
     <dependency>
-      <groupId>org.openhab.io</groupId>
-      <artifactId>org.openhab.io.azureiothub</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.io</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.io.homekit</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.io</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.io.hueemulation</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -838,27 +933,22 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.io.mqttembeddedbroker</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.io.neeo</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.io</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.io.openhabcloud</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.io</groupId>
-      <artifactId>org.openhab.io.transport.feed</artifactId>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.io.transport.modbus</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.io</groupId>
-      <artifactId>org.openhab.io.transport.modbus</artifactId>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.io.mqttembeddedbroker</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -869,6 +959,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.persistence.mapdb</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.transform.bin2json</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -937,7 +1032,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.voice</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.voice.pollytts</artifactId>
       <version>${project.version}</version>
     </dependency>

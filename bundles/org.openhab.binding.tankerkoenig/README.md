@@ -1,7 +1,7 @@
 # Tankerkönig Binding
 
-The binding uses the Tankerkönig API <https://www.tankerkoenig.de> for collecting gas price data of german gas stations.
-Special thanks to the creators of Tankerkönig for providing an easy way to get data from  the &lsqb;MTS-K&rsqb; (Markttransparenzstelle für Kraftstoffe).
+The binding uses the Tankerkönig API <https://www.tankerkoenig.de> for collecting gas price data of German gas stations.
+Special thanks to the creators of Tankerkönig for providing an easy way to get data from the &lsqb;MTS-K&rsqb; (Markttransparenzstelle für Kraftstoffe).
 
 Tankerkönig is providing this service for free, however they request to prevent overloading of their server by reducing the number of web-requests.
 This binding handles those requests (minimum Refresh Interval is 10 minutes, a webserver does handle a maximum of 10 stations).
@@ -16,18 +16,19 @@ While using the mode Opening-Times the channel "station_open" will NOT show "clo
 
 In order to use this binding one needs to prepare:
 
--minimal Java Varsion is 1.8.0_101-b13 (otherwise the https request will not produce a usable return)
+- minimal Java Version is 1.8.0_101-b13 (otherwise the https request will not produce a usable return)
 
--a personal API-Key
+- a personal API-Key
 
-Request a free Tankerkönig API key from: <https://creativecommons.tankerkoenig.de/>  Select the tab "API-Key".
+Request a free Tankerkönig API key from: <https://creativecommons.tankerkoenig.de/> (Select the tab "API-Key").
 
--LocationIDs of the selected gas stations
+- LocationIDs of the selected gas stations
 
-Search for the gas station IDs here: <https://creativecommons.tankerkoenig.de/configurator/index.html>
+Search for the gas station IDs via the [finder tool](https://creativecommons.tankerkoenig.de/TankstellenFinder/index.html) (Select tab "Tools" -> "Tankstellenfinder").
 Drag the red marker on the map to the rough location of desired gas stations.
 Select the gas stations and click "Tankstellen übernehmen" on the right.
-This will download a file holding the location IDs. For example: a7cdd9cf-b467-4aac-8eab-d662f082511e
+This will download a file holding the location IDs.
+For example: `a7cdd9cf-b467-4aac-8eab-d662f082511e`
 
 ## Supported Things
 
@@ -55,7 +56,7 @@ Each Station needs to be configured with a LocationID and the Webservice to whic
 
 ## Channels
 
-The binding introduces the channel holiday for the Webservice and the channels e10, e5 ,diesel and station_open for the Stations:
+The binding introduces the channel `holiday` for the Webservice and the channels `e10`, `e5`, `diesel` and `station_open` for the Stations:
 
 | Channel ID   | Channel Description                   | Supported item type | Advanced |
 |--------------|---------------------------------------|---------------------|----------|
@@ -82,12 +83,15 @@ Bridge tankerkoenig:webservice:WebserviceName "MyWebserviceName" [ apikey="xxxxx
 tankerkoenig.items:
 
 ```
+Switch Station_Holidays "Today is holiday: [%s]" { channel="tankerkoenig:webservice:WebserviceName:holiday"}
 Number E10_1 "E10 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName1:e10" }
 Number E5_1 "E5 [%.3f €]"  { channel="tankerkoenig:station:WebserviceName:StationName1:e5" }
 Number Diesel_1 "Diesel [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName1:diesel"}
+Contact Station_Open_1 "Station is [%s]" { channel="tankerkoenig:station:WebserviceName:StationName1:station_open"}
 Number E10_2 "E10 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:e10"}
 Number E5_2 "E5 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:e5"}
 Number Diesel_2 "Diesel [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:diesel"}
+Contact Station_Open_2 "Station is [%s]" { channel="tankerkoenig:station:WebserviceName:StationName2:station_open"}
 ```
 
 ## FAQ
@@ -160,10 +164,9 @@ The required password is "changeit".
 
 Restart your server
 
-
 -The Station(s) and Webservice go to OFFLINE after being ONLINE
 
-Either the web-request to Tankerköng returned a failure or no valid response was received (this could be caused by a banned API-key).
+Either the web-request to Tankerkönig returned a failure or no valid response was received (this could be caused by a banned API-key).
 In both cases the Webservice and the Station(s) go OFFLINE.
 If the Tankerkönig return indicates an error a descriptive message (in German) is added next to the OFFLINE which will be displayed on the Webservice and Station(s) pages on PaperUI.
 On the next receipt of a valid message Webservice and Station(s) will go ONLINE again.

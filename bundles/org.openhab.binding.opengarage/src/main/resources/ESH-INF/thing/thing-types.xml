@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="opengarage"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="opengarage">
+		<label>OpenGarage</label>
+		<description>OpenGarage Controller</description>
+
+		<channels>
+			<channel id="distance" typeId="opengarage-distance" />
+			<channel id="status" typeId="opengarage-status" />
+			<channel id="vehicle" typeId="opengarage-vehicle" />
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname/IP Address</label>
+				<description>The host name or IP address of the OpenGarage Web API interface.</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65335">
+				<label>Port</label>
+				<description>Port of the OpenGarage Web API interface.</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>The admin password used to access the Web API interface.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="opengarage-distance">
+		<item-type>Number:Length</item-type>
+		<label>Distance</label>
+		<description>Distance Reading from the OG unit</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+	<channel-type id="opengarage-status">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<description>Status of the OG unit</description>
+	</channel-type>
+	<channel-type id="opengarage-vehicle">
+		<item-type>String</item-type>
+		<label>Vehicle Presence</label>
+		<description>Is a vehicle present or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

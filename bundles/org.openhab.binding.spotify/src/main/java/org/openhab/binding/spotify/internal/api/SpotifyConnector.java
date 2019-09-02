@@ -48,9 +48,8 @@ class SpotifyConnector {
     private static final String RETRY_AFTER_HEADER = "Retry-After";
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 30;
+    private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 10;
     private static final int HTTP_CLIENT_RETRY_COUNT = 5;
-    private static final int DEFAULT_RETRY_DELAY_SECONDS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyConnector.class);
 
@@ -185,8 +184,9 @@ class SpotifyConnector {
                     break;
                 case ACCEPTED_202:
                     logger.debug(
-                            "Spotify Web API returned code 202 - The request has been accepted for processing, but the processing has not been completed. Retrying...");
-                    delaySeconds = DEFAULT_RETRY_DELAY_SECONDS;
+                            "Spotify Web API returned code 202 - The request has been accepted for processing, but the processing has not been completed.");
+                    future.complete(response);
+                    success = true;
                     break;
                 case BAD_REQUEST_400:
                     throw new SpotifyException(processErrorState(response));

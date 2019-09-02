@@ -18,11 +18,13 @@ register a bridge for each account. Go to http://your openHAB address::8080/conn
 
 			<channel id="deviceId" typeId="activeDeviceId" />
 			<channel id="deviceName" typeId="activeDeviceName" />
+			<channel id="devices" typeId="activeDevices" />
 			<channel id="deviceType" typeId="activeDeviceType" />
 			<channel id="deviceVolume" typeId="system.volume" />
 			<channel id="deviceShuffle" typeId="activeDeviceShuffle" />
 
-			<channel typeId="playlist" id="playlist"></channel>
+			<channel typeId="playlists" id="playlists"></channel>
+			<channel typeId="playlistName" id="playlistName"></channel>
 
 			<channel id="trackPlay" typeId="trackPlay" />
 			<channel id="trackPlayer" typeId="system.media-control" />
@@ -74,7 +76,7 @@ Account. Go to https://developer.spotify.com/</description>
 			</parameter>
 			<parameter name="refreshPeriod" type="integer" min="1" max="60">
 				<required>true</required>
-				<default>5</default>
+				<default>10</default>
 				<label>Connect refresh period (seconds)</label>
 				<description>This is the frequency of the polling requests to the Spotify Connect Web API. There are limits to the number of requests
 that can be sent to the Web API. The more often you poll, the better status updates - at the risk of running out of your request quota.</description>
@@ -96,6 +98,7 @@ bridge you have configured.</description>
 
 		<channels>
 			<channel id="trackPlay" typeId="trackPlay" />
+			<channel id="deviceId" typeId="deviceId" />
 			<channel id="deviceName" typeId="deviceName" />
 			<channel id="deviceType" typeId="deviceType" />
 			<channel id="devicePlayer" typeId="system.media-control" />
@@ -105,13 +108,13 @@ bridge you have configured.</description>
 			<channel id="deviceShuffle" typeId="deviceShuffle" />
 		</channels>
 
-		<representation-property>id</representation-property>
+		<representation-property>deviceName</representation-property>
 
 		<config-description>
-			<parameter name="id" type="text">
+			<parameter name="deviceName" type="text">
 				<required>true</required>
-				<label>Spotify Device ID</label>
-				<description>This is the device ID provided by Spotify.</description>
+				<label>Spotify Device Name</label>
+				<description>This is the device name provided by Spotify.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -121,18 +124,22 @@ bridge you have configured.</description>
 		<item-type>String</item-type>
 		<label>Access Token</label>
 		<description>The access token used to authorize calls to the Spotify Web API. It can be used from rules or client-side scripting make call to Web API.</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="activeDeviceId" advanced="true">
 		<item-type>String</item-type>
 		<label>Active Device Id</label>
 		<description>The Spotify ID of active device</description>
-		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="activeDeviceName">
 		<item-type>String</item-type>
 		<label>Active Device Name</label>
 		<description>The name of the currently active device</description>
-		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="activeDevices">
+		<item-type>String</item-type>
+		<label>Active Devices</label>
+		<description>List of active devices.</description>
 	</channel-type>
 	<channel-type id="activeDeviceType" advanced="true">
 		<item-type>String</item-type>
@@ -146,11 +153,16 @@ bridge you have configured.</description>
 		<description>If shuffle is on or off on the active device</description>
 	</channel-type>
 
-	<channel-type id="playlist">
+	<channel-type id="playlists">
 		<item-type>String</item-type>
-		<label>Playlist</label>
+		<label>Playlists</label>
 		<description>List of the users playlists</description>
-		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="playlistName">
+		<item-type>String</item-type>
+		<label>Playlist Name</label>
+		<description>Name of the active playlist</description>
 	</channel-type>
 
 	<channel-type id="trackPlay" advanced="true">
@@ -299,6 +311,11 @@ bridge you have configured.</description>
 		<state readOnly="true" />
 	</channel-type>
 
+	<channel-type id="deviceId" advanced="true">
+		<item-type>String</item-type>
+		<label>Device Id</label>
+		<description>The Spotify ID of the device</description>
+	</channel-type>
 	<channel-type id="deviceName">
 		<item-type>String</item-type>
 		<label>Device Name</label>

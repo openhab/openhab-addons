@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="slave_electricity_v4" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="dsmrBridge" />
+		</supported-bridge-type-refs>
+
+		<label>Slave Electricity Meter (DSMR V4.x)</label>
+		<description>This is the slave electricity meter that complies to the DSMR 4.x specification.</description>
+
+		<channels>
+			<channel id="meter_device_type" typeId="deviceType" />
+			<channel id="meter_equipment_identifier" typeId="equipmentIdType" />
+			<channel id="emeter_value" typeId="deliveryType" />
+			<channel id="emeter_value_timestamp" typeId="p1TimestampType" />
+			<channel id="emeter_switch_position" typeId="switchPositionType" />
+		</channels>
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
+	</thing-type>
+</thing:thing-descriptions>

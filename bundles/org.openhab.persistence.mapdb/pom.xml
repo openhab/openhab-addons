@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.persistence.mapdb</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: MapDB Persistence</name>
+  <name>openHAB Add-ons :: Bundles :: Persistence Service :: MapDB</name>
 
 </project>

@@ -43,13 +43,13 @@ public class BindingServlet extends HttpServlet {
 
     private static final long serialVersionUID = -1453738923337413163L;
 
-    private final Logger logger = LoggerFactory.getLogger(AccountServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(BindingServlet.class);
 
     String servletUrlWithoutRoot;
     String servletUrl;
     HttpService httpService;
 
-    List<Thing> accountHandlers = new ArrayList<Thing>();
+    List<Thing> accountHandlers = new ArrayList<>();
 
     public BindingServlet(HttpService httpService) {
         this.httpService = httpService;
@@ -126,5 +126,4 @@ public class BindingServlet extends HttpServlet {
             logger.warn("return html failed with uri syntax error {}", e);
         }
     }
-
 }

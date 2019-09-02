@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="genericThing" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Generic Thing</label>
+		<description>Thing whose EEP is unsupported. Use a TRANSFORM to convert things messages.</description>
+
+		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="senderIdOffset" type="integer">
+				<label>Sender Id</label>
+				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be determined by bridge</description>
+			</parameter>
+			<parameter name="sendingEEPId" type="text">
+				<label>EEP for sending commands</label>
+				<options>
+					<option value="F6_FF_FF">Generic RPS (F6)</option>
+					<option value="A5_FF_FF">Generic 4BS (A5)</option>
+					<option value="D2_FF_FF">Generic VLD (D2)</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<required>true</required>
+			</parameter>
+			<parameter name="receivingEEPId" type="text">
+				<label>EEP for receiving states</label>
+				<options>
+					<option value="F6_FF_FF">Generic RPS (F6)</option>
+					<option value="A5_FF_FF">Generic 4BS (A5)</option>
+					<option value="D2_FF_FF">Generic VLD (D2)</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<required>true</required>
+			</parameter>
+			<parameter name="broadcastMessages" type="boolean">
+				<label>Send broadcast messages</label>
+				<default>true</default>
+			</parameter>
+			<parameter name="suppressRepeating" type="boolean">
+				<label>Suppress repeating of messages</label>
+				<default>false</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -15,7 +15,6 @@ package org.openhab.binding.spotify.internal.handler;
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
@@ -48,7 +47,8 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
     private @NonNullByDefault({}) SpotifyHandleCommands commandHandler;
     private @NonNullByDefault({}) SpotifyApi spotifyApi;
-    private @NonNullByDefault({}) String deviceId;
+    private String deviceName = "";
+    private String deviceId = "";
 
     private boolean active;
 
@@ -64,7 +64,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (commandHandler != null) {
+            if (commandHandler != null && !deviceId.isEmpty()) {
                 commandHandler.handleCommand(channelUID, command, active, deviceId);
             }
         } catch (SpotifyException e) {
@@ -77,17 +77,28 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
         final SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
         spotifyApi = bridgeHandler.getSpotifyApi();
 
-        final Configuration config = thing.getConfiguration();
-        deviceId = (String) config.get(PROPERTY_SPOTIFY_DEVICE_ID);
-        commandHandler = new SpotifyHandleCommands(spotifyApi);
-        updateStatus(ThingStatus.UNKNOWN);
+        if (spotifyApi == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                    "Missing configuration from the Spotify Bridge (UID:%s). Fix configuration or report if this problem remains.",
+                    getBridge().getBridgeUID()));
+            return;
+        }
+        deviceName = (String) getConfig().get(PROPERTY_SPOTIFY_DEVICE_NAME);
+        if (deviceName == null || deviceName.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The deviceName property is not set or empty. If you have an older thing please recreate this thing.");
+            deviceName = "";
+        } else {
+            commandHandler = new SpotifyHandleCommands(spotifyApi);
+            updateStatus(ThingStatus.UNKNOWN);
+        }
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Spotify Bridge Offline");
-            logger.debug("SpotifyDevice {}: SpotifyBridge is not online.", getThing().getThingTypeUID(),
+            logger.debug("SpotifyDevice {}: SpotifyBridge is not online: {}", getThing().getThingTypeUID(),
                     bridgeStatusInfo.getStatus());
         }
     }
@@ -100,10 +111,12 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      * @return returns true if given device matches with this handler
      */
     public boolean updateDeviceStatus(Device device, boolean playing) {
-        if (deviceId.equals(device.getId())) {
-            logger.debug("Updating status of Thing: {} Device [ {} {}, {} ]", thing.getUID(), device.getId(),
+        if (deviceName.equals(device.getName())) {
+            deviceId = device.getId() == null ? "" : device.getId();
+            logger.debug("Updating status of Thing: {} Device [ {} {}, {} ]", thing.getUID(), deviceId,
                     device.getName(), device.getType());
-            boolean online = setOnlineStatus(device.isRestricted());
+            final boolean online = setOnlineStatus(device.isRestricted());
+            updateChannelState(CHANNEL_DEVICEID, new StringType(deviceId));
             updateChannelState(CHANNEL_DEVICENAME, new StringType(device.getName()));
             updateChannelState(CHANNEL_DEVICETYPE, new StringType(device.getType()));
             updateChannelState(CHANNEL_DEVICEVOLUME,
@@ -122,12 +135,15 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      * Updates the device as showing status is gone and reset all device status to default.
      */
     public void setStatusGone() {
-        logger.debug("Device is gone: {}", thing.getUID());
-        getThing().setStatusInfo(
-                new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not available on Spotify"));
-        updateChannelState(CHANNEL_DEVICERESTRICTED, OnOffType.ON);
-        updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.OFF);
-        updateChannelState(CHANNEL_DEVICEPLAYER, PlayPauseType.PAUSE);
+        if (getThing().getStatus() != ThingStatus.OFFLINE
+                && getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.GONE) {
+            logger.debug("Device is gone: {}", thing.getUID());
+            getThing().setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                    "Device not available on Spotify"));
+            updateChannelState(CHANNEL_DEVICERESTRICTED, OnOffType.ON);
+            updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.OFF);
+            updateChannelState(CHANNEL_DEVICEPLAYER, PlayPauseType.PAUSE);
+        }
     }
 
     /**

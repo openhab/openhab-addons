@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Robert Michalak - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.digiplex")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.digiplex")
 @NonNullByDefault
 public class DigiplexHandlerFactory extends BaseThingHandlerFactory {
 
@@ -51,10 +51,8 @@ public class DigiplexHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_AREA)) {
             return new DigiplexAreaHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            DigiplexBridgeHandler bridge = new DigiplexBridgeHandler((Bridge) thing);
-            return bridge;
+            return new DigiplexBridgeHandler((Bridge) thing);
         }
-
         return null;
     }
 
