@@ -4,9 +4,7 @@
 
     <feature name="openhab-binding-groheondus" description="GROHE ONDUS Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.6</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.6</bundle>
+        <feature dependency="true">openhab.tp-jackson</feature>
         <bundle dependency="true">mvn:org.apache.commons/commons-text/1.6</bundle>
         <bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.8.1</bundle>
         <bundle dependency="true">mvn:org.grohe/ondus-api/0.0.11</bundle>

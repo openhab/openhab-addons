@@ -86,20 +86,55 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
             }
             for (Channel channel : getThing().getChannels()) {
                 ChannelUID channelUID = channel.getUID();
-                StateType stateType = getStateType(channelUID.getId());
-                if (stateType != null && stateEvent.hasDataForState(stateType)) {
-                    int bitNbr = thingConfig.getId() - 1;
-                    boolean invertState = thingConfig.isStateInverted();
-                    updateSwitch(channelUID, stateEvent.isSet(stateType, bitNbr) ^ invertState);
+                if (isLinked(channel.getUID())) {
+                    StateType stateType = getStateType(channelUID.getId());
+                    if (stateType != null && stateEvent.hasDataForState(stateType)) {
+                        int bitNbr = getStateBitNbr(stateType);
+                        boolean invertState = thingConfig.isStateInverted();
+                        updateSwitch(channelUID, stateEvent.isSet(stateType, bitNbr) ^ invertState);
+                    }
                 }
             }
         }
     }
 
+    /**
+     * Returns bit number of given state type for this thing.
+     * This number addresses the bit in bit set sent to or received from alarm system.
+     * Usually this number is the device identifier.
+     *
+     * @param stateType state type
+     * @return bit number in state bit set
+     */
+    protected int getStateBitNbr(StateType stateType) {
+        return thingConfig.getId() - 1;
+    }
+
+    /**
+     * Converts openHAB command sent to a channel into Satel message.
+     *
+     * @param channel channel the command was sent to
+     * @param command sent command
+     * @return Satel message that reflects sent command
+     */
     protected abstract SatelCommand convertCommand(ChannelUID channel, Command command);
 
+    /**
+     * Derived handlers must return appropriate state type for channels they support.
+     *
+     * @param channelId channel identifier to get state type for
+     * @return object that represents state type
+     * @see #getChannel(StateType)
+     */
     protected abstract StateType getStateType(String channelId);
 
+    /**
+     * Returns channel for given state type. Usually channels have the same ID as state type name they represent.
+     *
+     * @param stateType state type to get channel for
+     * @return channel object
+     * @see #getStateType(String)
+     */
     protected Channel getChannel(StateType stateType) {
         String channelId = stateType.toString().toLowerCase();
         Channel channel = getThing().getChannel(channelId);
@@ -109,12 +144,18 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
         return channel;
     }
 
+    /**
+     * Returns list of commands required to update thing state basing on event describing changes since last refresh.
+     *
+     * @param event list of state changes since last refresh
+     * @return collection of {@link IntegraStateCommand}
+     */
     protected Collection<SatelCommand> getRefreshCommands(NewStatesEvent event) {
         Collection<SatelCommand> result = new LinkedList<>();
         boolean forceRefresh = requiresRefresh();
         for (Channel channel : getThing().getChannels()) {
-            if (isLinked(channel.getUID().getId())) {
-                StateType stateType = getStateType(channel.getUID().getId());
+            StateType stateType = getStateType(channel.getUID().getId());
+            if (stateType != null && isLinked(channel.getUID())) {
                 if (forceRefresh || event.isNew(stateType.getRefreshCommand())) {
                     result.add(new IntegraStateCommand(stateType, bridgeHandler.getIntegraType().hasExtPayload()));
                 }
@@ -123,6 +164,12 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
         return result;
     }
 
+    /**
+     * Checks if this thing requires unconditional refresh of all its channels.
+     * Clears the flag afterwards.
+     *
+     * @return if <code>true</code> this thing requires full refresh
+     */
     protected boolean requiresRefresh() {
         return requiresRefresh.getAndSet(false);
     }

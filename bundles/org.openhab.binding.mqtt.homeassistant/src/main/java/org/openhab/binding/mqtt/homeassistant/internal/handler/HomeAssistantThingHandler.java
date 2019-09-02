@@ -154,8 +154,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         delayedProcessing.join();
 
         haComponents.values().forEach(c -> c.removeChannelTypes(channelTypeProvider));
-
-        super.dispose();
     }
 
     @Override

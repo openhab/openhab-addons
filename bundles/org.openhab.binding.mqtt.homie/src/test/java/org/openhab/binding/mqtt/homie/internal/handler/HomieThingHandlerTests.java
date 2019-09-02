@@ -40,6 +40,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
+import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.TypeParser;
@@ -50,25 +51,23 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.homie.ChannelStateHelper;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.homie.ThingHandlerHelper;
-import org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.SubscribeFieldToMQTTtopic;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.generic.tools.DelayedBatchProcessing;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
+import org.openhab.binding.mqtt.homie.ChannelStateHelper;
+import org.openhab.binding.mqtt.homie.ThingHandlerHelper;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
-import org.openhab.binding.mqtt.homie.internal.handler.HomieThingHandler;
 import org.openhab.binding.mqtt.homie.internal.homie300.Device;
 import org.openhab.binding.mqtt.homie.internal.homie300.DeviceAttributes;
+import org.openhab.binding.mqtt.homie.internal.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.homie.internal.homie300.Node;
 import org.openhab.binding.mqtt.homie.internal.homie300.NodeAttributes;
 import org.openhab.binding.mqtt.homie.internal.homie300.Property;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes;
-import org.openhab.binding.mqtt.homie.internal.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes.DataTypeEnum;
 
 /**
@@ -94,9 +93,12 @@ public class HomieThingHandlerTests {
     @Mock
     private ScheduledFuture<?> scheduledFuture;
 
+    @Mock
+    private ThingTypeRegistry thingTypeRegistry;
+
     private HomieThingHandler thingHandler;
 
-    private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider();
+    private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistry);
 
     private final String deviceID = ThingChannelConstants.testHomieThing.getId();
     private final String deviceTopic = "homie/" + deviceID;

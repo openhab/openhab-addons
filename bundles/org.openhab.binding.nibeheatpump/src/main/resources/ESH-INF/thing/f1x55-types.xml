@@ -3451,9 +3451,6 @@
 				<option value="1">Normal</option>
 				<option value="2">Luxury</option>
 				<option value="4">Smart Control</option>
-				<option value="0">Economy</option>
-				<option value="1">Normal</option>
-				<option value="2">Luxury</option>
 			</options>
 		</state>
 	</channel-type>

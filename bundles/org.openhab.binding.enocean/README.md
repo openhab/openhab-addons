@@ -37,6 +37,7 @@ This binding is developed on and tested with the following devices
     * FSSA-230V (smart plug)
     * FWZ12-65A (energy meter)
     * FTKE (window / door contact)
+    * FPE-1 & FPE-2 (window / door contact)
     * TF-FGB (window handle)
     * TF-FKB (window contact)
     * TF-AHDSB (outdoor brightness sensor)
@@ -245,10 +246,11 @@ Some channels can be configured with parameters.
 | rollershutter | shutTime       | Time (in seconds) to completely close the rollershutter              |                                                                                                                                     |
 | dimmer        | rampingTime    | Duration of dimming                                                  | A5-38-08: Ramping Time (in seconds), 0 = default ramping, 1..255 = seconds to 100%; D2-01-01: 0 = switch, 1-3 = timer 1-3, 4 = stop |
 |               | eltakoDimmer   | Flag for Eltako dimmers, because Eltako does interpret this EEP differently | True for Eltako dimmer, false otherwise. Defaults to true for compatibility purpose.                                         |
-|               | storeValue     | Store final value. For Eltako devices, block dimming value.          | True or false. Defaults to false.                                         |
+|               | storeValue     | Store final value. For Eltako devices, block dimming value.          | True or false. Defaults to false.                                                                                                   |
 | teachInCMD    | manufacturerId | Id is used for 4BS teach in with EEP                                 | HEX                                                                                                                                 |
 |               | teachInMSG     | Use this message if teach in type and/or manufacturer id are unknown | HEX                                                                                                                                 |
-|  totalusage   | validateValue  | Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh | true / false                                                                                                                        |
+|  totalusage   | validateValue  | Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh | true / false                                                                                                                     |
+|  contact      | inverted       | Swap OPEN / CLOSED. Set True for Eltako FPE-2.                    | true / false. Defaults to false.                                                                                                    |
 
 Possible declaration in Thing DSL:
 
