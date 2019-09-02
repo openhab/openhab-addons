@@ -170,6 +170,7 @@
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
+    <module>org.openhab.binding.rotel</module>
     <module>org.openhab.binding.rotelra1x</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.samsungtv</module>
