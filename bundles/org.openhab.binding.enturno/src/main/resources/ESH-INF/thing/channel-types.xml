@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="enturno"
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+                          xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
     <!-- Channel groups for EnturTimeTable Binding -->
     <channel-group-type id="stopPlace">
@@ -45,21 +45,21 @@
 
     <channel-type id="line-code">
         <item-type>String</item-type>
-        <label>Line code</label>
+        <label>Line Code</label>
         <description>Code (usually number) of the public transport line.</description>
         <state readOnly="true" />
     </channel-type>
 
     <channel-type id="is-real">
         <item-type>String</item-type>
-        <label>Estimated flag</label>
+        <label>Estimated Flag</label>
         <description>Whether departure time is calculated/estimated or as in printed timetable (true/false).</description>
         <state readOnly="true" />
     </channel-type>
 
     <channel-type id="front-display">
         <item-type>String</item-type>
-        <label>Text of front display of the public transport line.</label>
+        <label>Front Display</label>
         <description>Front display usually shows direction of the line.</description>
         <state readOnly="true" />
     </channel-type>
