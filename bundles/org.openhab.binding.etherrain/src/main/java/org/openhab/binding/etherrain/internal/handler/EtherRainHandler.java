@@ -46,6 +46,7 @@ public class EtherRainHandler extends BaseThingHandler {
 
     private EtherRainCommunication device = null;
     private boolean connected = false;
+    EtherRainConfiguration config;
 
     @Nullable
     private ScheduledFuture<?> updateJob;
@@ -76,7 +77,7 @@ public class EtherRainHandler extends BaseThingHandler {
     }
 
     private boolean connectBridge() {
-        EtherRainConfiguration config = getConfigAs(EtherRainConfiguration.class);
+        config = getConfigAs(EtherRainConfiguration.class);
 
         logger.debug(
                 "Attempting to connect to Etherrain with config = (Host: {}, Port: {}, Password: {}, Refresh: {}).",
@@ -109,12 +110,9 @@ public class EtherRainHandler extends BaseThingHandler {
 
     private void startUpdateJob() {
         logger.debug("Starting Etherrain Update Job");
-        updateJob = scheduler.scheduleWithFixedDelay(this::updateBridge, 0,
-                getConfigAs(EtherRainConfiguration.class).refresh, TimeUnit.SECONDS);
+        updateJob = scheduler.scheduleWithFixedDelay(this::updateBridge, 0, config.refresh, TimeUnit.SECONDS);
 
-        logger.debug("EtherRain sucessfully initialized. Starting status poll at: "
-                + getConfigAs(EtherRainConfiguration.class).refresh);
-
+        logger.debug("EtherRain sucessfully initialized. Starting status poll at: {}", config.refresh);
     }
 
     private void stopUpdateJob() {

@@ -103,7 +103,7 @@ public class EtherRainStatusResponse {
 
         logger.debug("Unique Name: {}", uniqueName);
         logger.debug("Mac Address: {}", macAddress);
-        logger.debug("Service Account: " + serviceAccount);
+        logger.debug("Service Account: {}", serviceAccount);
 
         logger.debug("Operating Status: {}", operatingStatus);
         logger.debug("Last Command Status: {}", lastCommandStatus);
