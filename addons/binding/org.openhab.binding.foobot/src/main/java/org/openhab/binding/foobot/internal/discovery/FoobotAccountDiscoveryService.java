@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -31,11 +32,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author George Katsis - Initial contribution
  */
+@NonNullByDefault
 public class FoobotAccountDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(FoobotAccountDiscoveryService.class);
 
-    private static final int TIMEOUT = 5;
+    private static final int TIMEOUT_SECONDS = 5;
 
     private FoobotAccountHandler handler;
     private ThingUID bridgeUID;
@@ -43,7 +45,7 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService {
     private ScheduledFuture<?> scanJob;
 
     public FoobotAccountDiscoveryService(FoobotAccountHandler handler) {
-        super(FoobotHandlerFactory.DISCOVERABLE_THING_TYPE_UIDS, TIMEOUT);
+        super(FoobotHandlerFactory.DISCOVERABLE_THING_TYPE_UIDS, TIMEOUT_SECONDS);
         this.handler = handler;
     }
 
@@ -55,7 +57,7 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService {
         for (FoobotDevice foobot : foobots) {
 
             if (thingList.stream().filter(t -> t.getBridgeUID().getId().equals(foobot.getUuid())).findAny()
-                    .orElse(null) == null) {
+                    .isPresent()) {
                 logger.debug(
                         "retrieveFoobots(): New Foobot found, with uuid {}. It will be added to the Account handler",
                         foobot.getUuid());
@@ -75,22 +77,7 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService {
         if (this.scanJob != null) {
             scanJob.cancel(true);
         }
-        this.scanJob = scheduler.schedule(() -> retrieveFoobots(), 0, TimeUnit.SECONDS);
-    }
-
-    @Override
-    protected void stopScan() {
-        super.stopScan();
-
-        if (this.scanJob != null) {
-            this.scanJob.cancel(true);
-            this.scanJob = null;
-        }
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        this.scanJob = scheduler.schedule(this::retrieveFoobots, 0, TimeUnit.SECONDS);
     }
 
     private void addThing(FoobotDevice foobot) {
@@ -98,7 +85,6 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService {
 
         Map<String, Object> properties = new HashMap<>();
         ThingUID thingUID = new ThingUID(FoobotBindingConstants.THING_TYPE_FOOBOT, foobot.getUuid());
-        // properties.put(FoobotBindingConstants.CONFIG_APIKEY, handler.getApiKey());
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, foobot.getUuid());
         properties.put(FoobotBindingConstants.CONFIG_UUID, foobot.getUuid());
         properties.put(Thing.PROPERTY_MAC_ADDRESS, foobot.getMac());

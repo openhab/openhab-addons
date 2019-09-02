@@ -12,6 +12,7 @@ import static org.openhab.binding.foobot.internal.FoobotBindingConstants.DEFAULT
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -23,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.omg.CORBA.Request;
 import org.openhab.binding.foobot.internal.config.FoobotAccountConfiguration;
 import org.openhab.binding.foobot.internal.discovery.FoobotAccountDiscoveryService;
 import org.openhab.binding.foobot.internal.json.FoobotDevice;
@@ -45,7 +46,6 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author George Katsis - Initial contribution
  */
-
 @NonNullByDefault
 public class FoobotAccountHandler extends BaseBridgeHandler {
 
@@ -97,7 +97,7 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
             missingParams.add("'username'");
         }
 
-        if (missingParams.size() > 0) {
+        if (!missingParams.isEmpty()) {
             errorMsg = "Parameter" + (missingParams.size() == 1 ? " [" : "s [") + StringUtils.join(missingParams, ",")
                     + (missingParams.size() == 1 ? "] is " : "] are ") + "mandatory and must be configured";
 
@@ -154,7 +154,6 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
     }
 
     public List<FoobotDevice> getAssociatedDevices() {
-
         String urlStr = URL_TO_FETCH_DEVICES.replace("%username%", StringUtils.trimToEmpty(this.username));
         logger.debug("URL = {}", urlStr);
         ContentResponse response;
@@ -183,17 +182,19 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
             String userDevices = response.getContentAsString();
             devices = GSON.fromJson(userDevices, listType);
 
-            if (devices != null && devices.size() > 0) {
+            if (devices != null && !devices.isEmpty()) {
                 updateStatus(ThingStatus.ONLINE);
                 this.foobotDevices = devices;
             } else {
                 updateStatus(ThingStatus.OFFLINE);
-                devices = new ArrayList<>();
+                devices = Collections.emptyList();
             }
 
-        } catch (ExecutionException | TimeoutException | InterruptedException ex) {
+        } catch (ExecutionException | TimeoutException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
-            devices = new ArrayList<>();
+            devices = Collections.emptyList();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
         return devices;
     }
@@ -202,28 +203,23 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
         if (this.foobotDevices != null) {
             return this.foobotDevices;
         } else {
-            return new ArrayList<FoobotDevice>();
+            return Collections.emptyList();
         }
     }
 
     private void refreshDeviceList() {
-        try {
-            logger.debug("Refreshing device list {}", getThing().getUID());
+        logger.debug("Refreshing device list {}", getThing().getUID());
 
-            // get all devices associated with the account
-            this.foobotDevices = getAssociatedDevices();
+        // get all devices associated with the account
+        this.foobotDevices = getAssociatedDevices();
 
-            // update account state
-            if (this.foobotDevices.size() > 0) {
-                this.discoveryService.startScan(null);
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-            logger.debug("Refresh device list {} finished", getThing().getUID());
-
-        } catch (Exception e) {
-            logger.error("Refresh device list fails with unexpected error");
+        // update account state
+        if (this.foobotDevices.size() > 0) {
+            this.discoveryService.startScan(null);
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
         }
+        logger.debug("Refresh device list {} finished", getThing().getUID());
     }
 }

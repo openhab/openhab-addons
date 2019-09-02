@@ -19,8 +19,6 @@ public class FoobotDevice {
 
     private String uuid;
 
-    // private int userId;
-
     private String mac;
 
     private String name;

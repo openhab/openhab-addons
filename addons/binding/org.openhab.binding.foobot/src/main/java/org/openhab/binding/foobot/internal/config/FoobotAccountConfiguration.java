@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.foobot.internal.config;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -16,13 +15,11 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author George Katsis - Initial contribution
  */
-@NonNullByDefault
 public class FoobotAccountConfiguration {
 
-    @Nullable
-    public String apiKey;
-    @Nullable
-    public String username;
-    @Nullable
-    public Integer refreshIntervalInMinutes;
+    public @Nullable String apiKey;
+
+    public @Nullable String username;
+
+    public @Nullable Integer refreshIntervalInMinutes;
 }

@@ -26,8 +26,6 @@ public class FoobotJsonData {
     private List<String> units;
     private List<List<String>> datapoints;
 
-    // private List<String> datapointsList;
-
     public String getUuid() {
         return uuid;
     }

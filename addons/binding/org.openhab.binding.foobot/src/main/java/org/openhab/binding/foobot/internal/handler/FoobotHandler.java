@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -34,6 +33,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.omg.CORBA.Request;
 import org.openhab.binding.foobot.internal.FoobotBindingConstants;
 import org.openhab.binding.foobot.internal.json.FoobotDevice;
 import org.openhab.binding.foobot.internal.json.FoobotJsonData;
@@ -95,7 +95,7 @@ public class FoobotHandler extends BaseThingHandler {
         if (StringUtils.trimToNull(this.device.getUuid()) == null) {
             missingParams.add("'uuid'");
         }
-        if (missingParams.size() > 0) {
+        if (!missingParams.isEmpty()) {
             errorMsg = "Parameter" + (missingParams.size() == 1 ? " [" : "s [") + StringUtils.join(missingParams, ",")
                     + (missingParams.size() == 1 ? "] is " : "] are ") + "mandatory and must be configured";
 
@@ -164,7 +164,7 @@ public class FoobotHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(@NonNullByDefault ChannelUID channelUID, @NonNullByDefault Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             return;
         } else {
@@ -173,7 +173,6 @@ public class FoobotHandler extends BaseThingHandler {
     }
 
     private Request createNewRquest(String url) {
-
         Request request = httpClient.newRequest(url).timeout(3, TimeUnit.SECONDS);
         request.header("accept", "application/json");
         request.header("X-API-KEY-TOKEN", this.account.getApiKey());
@@ -210,7 +209,7 @@ public class FoobotHandler extends BaseThingHandler {
         FoobotJsonData result = null;
 
         String urlStr = URL_TO_FETCH_SENSOR_DATA.replace("%uuid%", StringUtils.trimToEmpty(this.device.getUuid()));
-        urlStr = urlStr.replace("%sensors%", StringUtils.trimToEmpty(""));
+        urlStr = urlStr.replace("%sensors%", "");
         logger.debug("URL = {}", urlStr);
 
         ContentResponse response;
@@ -232,8 +231,10 @@ public class FoobotHandler extends BaseThingHandler {
                 result = GSON.fromJson(responseData, FoobotJsonData.class);
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
-        } catch (ExecutionException | TimeoutException | InterruptedException ex) {
+        } catch (ExecutionException | TimeoutException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
 
         return result;
