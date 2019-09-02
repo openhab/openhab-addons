@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Class SinopeRequest.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public abstract class SinopeRequest extends SinopeFrame {
@@ -80,7 +80,7 @@ public abstract class SinopeRequest extends SinopeFrame {
      */
     @Override
     protected void setInternal_payload(byte[] internal_payload) {
-        logger.debug("Request Frame: " + ByteUtil.toString(internal_payload));
+        logger.debug("Request Frame: {}", ByteUtil.toString(internal_payload));
         super.setInternal_payload(internal_payload);
     }
 }

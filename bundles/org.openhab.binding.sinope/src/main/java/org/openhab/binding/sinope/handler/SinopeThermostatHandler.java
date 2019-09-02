@@ -56,8 +56,6 @@ public class SinopeThermostatHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(SinopeThermostatHandler.class);
 
-    // private @Nullable SinopeGatewayHandler gatewayHandler;
-
     private byte[] deviceId = new byte[0];
 
     public SinopeThermostatHandler(Thing thing) {

@@ -114,7 +114,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             pollFuture.cancel(false);
         }
         logger.debug("Scheduling poll for {} s out, then every {} s", FIRST_POLL_INTERVAL, refreshInterval);
-        pollFuture = scheduler.scheduleAtFixedRate(() -> poll(), FIRST_POLL_INTERVAL, refreshInterval,
+        pollFuture = scheduler.scheduleWithFixedDelay(() -> poll(), FIRST_POLL_INTERVAL, refreshInterval,
                 TimeUnit.SECONDS);
     }
 

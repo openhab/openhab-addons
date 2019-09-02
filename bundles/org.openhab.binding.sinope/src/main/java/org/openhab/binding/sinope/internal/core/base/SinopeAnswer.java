@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Class SinopeAnswer.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public abstract class SinopeAnswer extends SinopeRequest {
@@ -113,7 +113,7 @@ public abstract class SinopeAnswer extends SinopeRequest {
      */
     @Override
     protected void setInternal_payload(byte[] internal_payload) {
-        logger.debug("Answer  Frame: " + ByteUtil.toString(internal_payload));
+        logger.debug("Answer  Frame: {}", ByteUtil.toString(internal_payload));
         super.setInternal_payload(internal_payload);
     }
 
