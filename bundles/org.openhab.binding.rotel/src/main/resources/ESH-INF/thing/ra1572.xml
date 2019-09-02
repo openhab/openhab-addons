@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rotel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Rotel RA-1572 Connection Thing Type -->
+	<thing-type id="ra1572">
+		<label>RA-1572 Integrated Amplifier</label>
+		<description>Connection to the Rotel RA-1572 integrated amplifier</description>
+
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="bass" typeId="bass" />
+			<channel id="treble" typeId="treble" />
+			<channel id="frequency" typeId="frequency" />
+			<channel id="brightness" typeId="brightness" />
+		</channels>
+
+		<config-description-ref uri="thing-type:rotel:serialandipandprotocol" />
+	</thing-type>
+
+</thing:thing-descriptions>
