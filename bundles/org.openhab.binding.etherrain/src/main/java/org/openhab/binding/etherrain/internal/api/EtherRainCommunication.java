@@ -59,7 +59,7 @@ public class EtherRainCommunication {
 
     private final Logger logger = LoggerFactory.getLogger(EtherRainCommunication.class);
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     public EtherRainCommunication(String address, int port, String password, HttpClient httpClient) {
         this.address = address;
