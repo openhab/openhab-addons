@@ -19,9 +19,9 @@ package org.openhab.binding.etherrain.internal;
  * @author Joe Inkenbrandt - Initial contribution
  */
 public class EtherRainException extends Exception {
-  private static final long serialVersionUID = 1348095602193770716L;
+    private static final long serialVersionUID = 1348095602193770716L;
 
-  public EtherRainException(String message) {
-    super(message);
-  }
+    public EtherRainException(String message) {
+        super(message);
+    }
 }

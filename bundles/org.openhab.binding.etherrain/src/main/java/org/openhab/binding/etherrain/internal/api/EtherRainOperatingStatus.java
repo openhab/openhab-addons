@@ -18,20 +18,22 @@ package org.openhab.binding.etherrain.internal.api;
  * @author Joe Inkenbrandt - Initial contribution
  */
 public enum EtherRainOperatingStatus {
-  STATUS_READY("RD"), STATUS_WAITING("WT"), STATUS_BUSY("BZ");
+    STATUS_READY("RD"),
+    STATUS_WAITING("WT"),
+    STATUS_BUSY("BZ");
 
-  protected String status;
+    protected String status;
 
-  EtherRainOperatingStatus(String status) {
-    this.status = status;
-  }
-
-  public static EtherRainOperatingStatus fromString(String text) {
-    for (EtherRainOperatingStatus b : EtherRainOperatingStatus.values()) {
-      if (b.status.equalsIgnoreCase(text)) {
-        return b;
-      }
+    EtherRainOperatingStatus(String status) {
+        this.status = status;
     }
-    return null;
-  }
+
+    public static EtherRainOperatingStatus fromString(String text) {
+        for (EtherRainOperatingStatus b : EtherRainOperatingStatus.values()) {
+            if (b.status.equalsIgnoreCase(text)) {
+                return b;
+            }
+        }
+        return null;
+    }
 }

@@ -18,20 +18,22 @@ package org.openhab.binding.etherrain.internal.api;
  * @author Joe Inkenbrandt - Initial contribution
  */
 public enum EtherRainCommandStatus {
-  STATUS_OK("OK"), STATUS_ERROR("ER"), STATUS_UNATHORIZED("NA");
+    STATUS_OK("OK"),
+    STATUS_ERROR("ER"),
+    STATUS_UNATHORIZED("NA");
 
-  protected String status;
+    protected String status;
 
-  EtherRainCommandStatus(String status) {
-    this.status = status;
-  }
-
-  public static EtherRainCommandStatus fromString(String text) {
-    for (EtherRainCommandStatus b : EtherRainCommandStatus.values()) {
-      if (b.status.equalsIgnoreCase(text)) {
-        return b;
-      }
+    EtherRainCommandStatus(String status) {
+        this.status = status;
     }
-    return null;
-  }
+
+    public static EtherRainCommandStatus fromString(String text) {
+        for (EtherRainCommandStatus b : EtherRainCommandStatus.values()) {
+            if (b.status.equalsIgnoreCase(text)) {
+                return b;
+            }
+        }
+        return null;
+    }
 }
