@@ -19,7 +19,6 @@ import org.openhab.binding.enturno.internal.model.stopplace.StopPlace;
  *
  * @author Michal Kloc - Initial contribution
  */
-public class Data
-{
+public class Data {
     public StopPlace stopPlace;
 }

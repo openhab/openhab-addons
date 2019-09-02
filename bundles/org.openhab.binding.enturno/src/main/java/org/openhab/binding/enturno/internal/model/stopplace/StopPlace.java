@@ -19,8 +19,7 @@ import org.openhab.binding.enturno.internal.model.estimated.EstimatedCalls;
  *
  * @author Michal Kloc - Initial contribution
  */
-public class StopPlace
-{
+public class StopPlace {
     public java.util.List<EstimatedCalls> estimatedCalls;
 
     public String name;

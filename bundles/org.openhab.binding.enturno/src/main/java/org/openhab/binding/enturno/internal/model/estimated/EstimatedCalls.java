@@ -17,8 +17,7 @@ package org.openhab.binding.enturno.internal.model.estimated;
  *
  * @author Michal Kloc - Initial contribution
  */
-public class EstimatedCalls
-{
+public class EstimatedCalls {
     public String aimedArrivalTime;
 
     public String date;

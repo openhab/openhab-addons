@@ -17,8 +17,7 @@ package org.openhab.binding.enturno.internal.model.estimated;
  *
  * @author Michal Kloc - Initial contribution
  */
-public class Quay
-{
+public class Quay {
     public String publicCode;
 
     public String id;

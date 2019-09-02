@@ -17,7 +17,6 @@ package org.openhab.binding.enturno.internal.model.estimated;
  *
  * @author Michal Kloc - Initial contribution
  */
-public class ServiceJourney
-{
+public class ServiceJourney {
     public JourneyPattern journeyPattern;
 }

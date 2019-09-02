@@ -17,7 +17,6 @@ package org.openhab.binding.enturno.internal.model;
  *
  * @author Michal Kloc - Initial contribution
  */
-public class EnturData
-{
+public class EnturData {
     public Data data;
 }
