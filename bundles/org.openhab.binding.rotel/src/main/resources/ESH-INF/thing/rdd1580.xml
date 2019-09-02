@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rotel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Rotel RDD-1580 Connection Thing Type -->
+	<thing-type id="rdd1580">
+		<label>RDD-1580 Stereo DAC</label>
+		<description>Connection to the Rotel RDD-1580 stereo DAC</description>
+
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="playControl" typeId="system.media-control" />
+			<channel id="frequency" typeId="frequency" />
+		</channels>
+
+		<properties>
+			<property name="protocol">ASCII_V1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:rotel:serial" />
+	</thing-type>
+
+</thing:thing-descriptions>
