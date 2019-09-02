@@ -34,7 +34,12 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class EtherRainHandlerFactory extends BaseThingHandlerFactory {
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
+    
+    @Activate
+    public EtherRainHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
