@@ -4,16 +4,17 @@ This binding is meant to get Norwegian public transport real-time (estimated) da
                                                         
 ## Supported Things
 
-As for now, binding supports only one thing. It can change in the future as entur.no exposes API for access of different type 
-public transport data for example: journey planing, stop information etc.
+As for now, binding supports only one thing. 
+It can change in the future as entur.no exposes API for access of different type public transport data for example: journey planing, stop information etc.
 
 ### Entur Timetable
 
-Entur timetable provides information about departures for chosen line/service of public transport in Norway and chosen stop place. It contains information
-about stop place (id, name, transport mode) and real-time departures from that place. **It is worth noting that binding is thought to be primarily used for bus
-departures (can work for other supported by entur.no transport types). Two Direction channel groups are consequence of that assumption. That will say that usually 
-for stop place of a given name there are two bus stops for same line going in opposite directions.** Each **Direction** channel group contains information about direction,
-line code, 5 coming departures, and whether given departure time is real-time (estimated) or not. 
+Entur timetable provides information about departures for chosen line/service of public transport in Norway and chosen stop place. 
+It contains informationabout stop place (id, name, transport mode) and real-time departures from that place. 
+**It is worth noting that binding is thought to be primarily used for busdepartures (can work for other supported by entur.no transport types). 
+Two Direction channel groups are consequence of that assumption. 
+That will say that usually for stop place of a given name there are two bus stops for same line going in opposite directions.** 
+Each **Direction** channel group contains information about direction,line code, 5 coming departures, and whether given departure time is real-time (estimated) or not. 
 
 ## Discovery
 
