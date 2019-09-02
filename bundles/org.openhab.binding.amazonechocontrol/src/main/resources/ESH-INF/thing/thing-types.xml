@@ -254,6 +254,13 @@
 		</supported-bridge-type-refs>
 		<label>Smart Home Device</label>
 		<description>Smart home device connected to Alexa</description>
+		<representation-property>applianceId</representation-property>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Id</label>
+				<description>The id of the device (please use the discover function to get a configured device)</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 	<channel-type id="save">
 		<item-type>Switch</item-type>

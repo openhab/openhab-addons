@@ -12,20 +12,18 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.discovery;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_APPLIANCE_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_LIGHT_ENTITY_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_LIGHT_SUBDEVICE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_ID;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_INTERFACES;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -39,9 +37,11 @@ import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
+import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
 import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +86,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
         stopScanJob();
         // removeOlderResults(activateTimeStamp);
 
-        setSmartHomeDevices(accountHandler.updateSmartHomeDeviceList());
+        setSmartHomeDevices(accountHandler.updateSmartHomeDeviceList(false));
     }
 
     protected void startAutomaticScan() {
@@ -141,93 +141,88 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
         activateTimeStamp = new Date().getTime();
     };
 
-    synchronized void setSmartHomeDevices(List<Object> deviceList) {
+    synchronized void setSmartHomeDevices(List<SmartHomeBaseDevice> deviceList) {
         DiscoveryServiceCallback discoveryServiceCallback = this.discoveryServiceCallback;
 
         if (discoveryServiceCallback == null) {
             return;
         }
+        int shouldDiscoverSmartHomeDevice = accountHandler.shouldDiscoverSmartHomeDevices();
+        if (shouldDiscoverSmartHomeDevice == 0) {
+            return;
+        }
+        boolean shouldDiscoverOpenHabDevices = accountHandler.shouldDiscoverOpenHABSmartHomeDevices();
+
         for (Object smartHomeDevice : deviceList) {
             ThingUID bridgeThingUID = this.accountHandler.getThing().getUID();
             ThingUID thingUID = null;
             String deviceName = null;
             Map<String, Object> props = new HashMap<String, Object>();
-            boolean supportedDevice = false;
 
             if (smartHomeDevice instanceof SmartHomeDevice) {
                 SmartHomeDevice shd = (SmartHomeDevice) smartHomeDevice;
 
-                thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, shd.entityId);
+                String entityId = shd.entityId;
+                if (entityId == null) {
+                    // No entity id
+                    continue;
+                }
+                String id = shd.findId();
+                if (id == null) {
+                    // No id
+                    continue;
+                }
+
+                if (shouldDiscoverSmartHomeDevice == 1 && false /* check here for not direct connected */) {
+                    // No direct connected device
+                    continue;
+                }
+                if (!shouldDiscoverOpenHabDevices && "openHAB".equalsIgnoreCase(shd.manufacturerName)) {
+                    // OpenHAB device
+                    continue;
+                }
+
+                boolean supportedDevice = false;
+                for (SmartHomeCapability capability : shd.capabilities) {
+                    if (SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
+                        supportedDevice = true;
+                        break;
+                    }
+                }
+                if (!supportedDevice) {
+                    // No supported interface found
+                    continue;
+                }
+
+                thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, entityId.replace(".", "-"));
 
                 if (shd.aliases != null && shd.aliases.length > 0 && shd.aliases[0].friendlyName != null) {
                     deviceName = shd.aliases[0].friendlyName;
                 } else {
                     deviceName = shd.friendlyName;
                 }
-
-                if (shd != null && shd.entityId != null) {
-                    props.put(DEVICE_PROPERTY_LIGHT_ENTITY_ID, shd.entityId);
-                }
-
-                if (shd != null && shd.applianceId != null) {
-                    props.put(DEVICE_PROPERTY_APPLIANCE_ID, shd.applianceId);
-                }
-                /*
-                 * if (((SmartHomeDevice) smartHomeDevice).brightness == true) {
-                 * props.put(INTERFACE_BRIGHTNESS, "true");
-                 * supportedDevice = true;
-                 * } else if (((SmartHomeDevice) smartHomeDevice).colorTemperature == true) {
-                 * props.put(INTERFACE_COLOR_TEMPERATURE, "true");
-                 * supportedDevice = true;
-                 * } else if (((SmartHomeDevice) smartHomeDevice).color == true) {
-                 * props.put(INTERFACE_COLOR, "true");
-                 * supportedDevice = true;
-                 * }
-                 */
-
-                for (SmartHomeCapability capability : shd.capabilities) {
-                    if (SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
-                        props.put(capability.interfaceName, true);
-                        supportedDevice = true;
-                    }
-                }
+                props.put(DEVICE_PROPERTY_ID, id);
             }
 
             if (smartHomeDevice instanceof SmartHomeGroup) {
                 SmartHomeGroup shg = (SmartHomeGroup) smartHomeDevice;
-                deviceName = "Group " + shg.applianceGroupName;
-                String groupIdentifier = shg.applianceGroupIdentifier.value.replace(".", "_");
-                thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, groupIdentifier);
-
-                int subDeviceCounter = 0;
-                for (Object smartDevice : deviceList) {
-                    if (smartDevice instanceof SmartHomeDevice) {
-                        SmartHomeDevice shd = (SmartHomeDevice) smartDevice;
-                        if (shd.tags != null && shd.tags.tagNameToValueSetMap != null
-                                && shd.tags.tagNameToValueSetMap.groupIdentity != null
-                                && Arrays.asList(shd.tags.tagNameToValueSetMap.groupIdentity)
-                                        .contains(shg.applianceGroupIdentifier.value)) {
-                            if (shd.entityId != null) {
-                                props.put(DEVICE_PROPERTY_LIGHT_SUBDEVICE + subDeviceCounter, shd.entityId);
-                            }
-                            if (shd.applianceId != null) {
-                                props.put(DEVICE_PROPERTY_APPLIANCE_ID + subDeviceCounter, shd.applianceId);
-                            }
-                            ++subDeviceCounter;
-                        }
-
-                        for (SmartHomeCapability capability : shd.capabilities) {
-                            if (SUPPORTED_INTERFACES.contains(capability.interfaceName)
-                                    && !props.containsKey(capability.interfaceName)) {
-                                props.put(capability.interfaceName, true);
-                                supportedDevice = true;
-                            }
-                        }
-                    }
+                String id = shg.findId();
+                if (id == null) {
+                    // No id
+                    continue;
                 }
+                Set<SmartHomeDevice> supportedChildren = SmartHomeDeviceHandler.GetSupportedSmartHomeDevices(shg,
+                        deviceList);
+                if (supportedChildren.size() == 0) {
+                    // No children with an supported interface
+                    continue;
+                }
+                thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, id.replace(".", "-"));
+                deviceName = "*" + shg.applianceGroupName + "*";
+                props.put(DEVICE_PROPERTY_ID, id);
             }
 
-            if (thingUID != null && supportedDevice) {
+            if (thingUID != null) {
                 if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
                     continue;
                 }
@@ -244,5 +239,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                 thingDiscovered(result);
             }
         }
+
     }
+
 }

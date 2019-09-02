@@ -24,8 +24,16 @@ public class JsonSmartHomeCapabilities {
         public @Nullable String type;
         public @Nullable String version;
         public @Nullable String interfaceName;
+        public @Nullable Properties properties;
+    }
+
+    public static class Properties {
+        public @Nullable Property @Nullable [] supported;
+    }
+
+    public static class Property {
+        public @Nullable String name;
     }
 
     public @Nullable SmartHomeCapability @Nullable [] capabilites;
-
 }

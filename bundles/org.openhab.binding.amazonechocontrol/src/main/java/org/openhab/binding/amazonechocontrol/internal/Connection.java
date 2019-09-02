@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_APPLIANCE_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_BRIGHTNESS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_POWER;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -53,7 +48,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
@@ -107,6 +101,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonUsersMeResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWord;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWebSiteCookie;
+import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -920,14 +915,14 @@ public class Connection {
         return new WakeWord[0];
     }
 
-    public List<Object> getSmarthomeDeviceList() throws IOException, URISyntaxException {
+    public List<SmartHomeBaseDevice> getSmarthomeDeviceList() throws IOException, URISyntaxException {
         try {
             String json = makeRequestAndReturnString(alexaServer + "/api/phoenix");
             logger.debug("getSmartHomeDevices result: {}", json);
 
             JsonNetworkDetails networkDetails = parseJson(json, JsonNetworkDetails.class);
             Object jsonObject = gson.fromJson(networkDetails.networkDetail, Object.class);
-            List<Object> result = new ArrayList<>();
+            List<SmartHomeBaseDevice> result = new ArrayList<>();
             searchSmartHomeDevicesRecursive(jsonObject, result);
 
             return result;
@@ -937,7 +932,7 @@ public class Connection {
         }
     }
 
-    private void searchSmartHomeDevicesRecursive(@Nullable Object jsonNode, List<Object> devices) {
+    private void searchSmartHomeDevicesRecursive(@Nullable Object jsonNode, List<SmartHomeBaseDevice> devices) {
         if (jsonNode instanceof Map) {
             @SuppressWarnings("rawtypes")
             Map map = (Map) jsonNode;
@@ -997,127 +992,127 @@ public class Connection {
         return json;
     }
 
-    public int getLightGroupBrightness(Thing device) throws IOException, URISyntaxException {
-        Map<String, String> props = device.getProperties();
-        List<Float> states = new ArrayList<>();
-        if (props.containsKey(DEVICE_PROPERTY_APPLIANCE_ID + "0")) {
-            int counter = 0;
-            for (String key : props.keySet()) {
-                if (key.contains(DEVICE_PROPERTY_APPLIANCE_ID + counter)) {
-                    JsonArray capabilities = this.getBulbCapabilities(props.get(key));
+    // public int getLightGroupBrightness(Thing device) throws IOException, URISyntaxException {
+    // Map<String, String> props = device.getProperties();
+    // List<Float> states = new ArrayList<>();
+    // if (props.containsKey(DEVICE_PROPERTY_APPLIANCE_ID + "0")) {
+    // int counter = 0;
+    // for (String key : props.keySet()) {
+    // if (key.contains(DEVICE_PROPERTY_APPLIANCE_ID + counter)) {
+    // JsonArray capabilities = this.getBulbCapabilities(props.get(key));
+    //
+    // Float state = null;
+    // for (JsonElement capability : capabilities) {
+    // JsonObject capabilityObject = capability.getAsJsonObject();
+    // if (capabilityObject.get("namespace").getAsString().equals("Alexa.BrightnessController")) {
+    // state = capabilityObject.get("value").getAsFloat();
+    // states.add(state);
+    // }
+    // }
+    // ++counter;
+    // }
+    // }
+    //
+    // if (states.size() > 0) {
+    // return Collections.max(states).intValue();
+    // }
+    // }
+    //
+    // return -1;
+    // }
 
-                    Float state = null;
-                    for (JsonElement capability : capabilities) {
-                        JsonObject capabilityObject = capability.getAsJsonObject();
-                        if (capabilityObject.get("namespace").getAsString().equals("Alexa.BrightnessController")) {
-                            state = capabilityObject.get("value").getAsFloat();
-                            states.add(state);
-                        }
-                    }
-                    ++counter;
-                }
-            }
+    // public String getBulbColor(Thing device) throws IOException, URISyntaxException {
+    // Map<String, String> props = device.getProperties();
+    // String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
+    //
+    // String color = null;
+    // JsonArray capabilities = this.getBulbCapabilities(applianceId);
+    //
+    // for (JsonElement capability : capabilities) {
+    // JsonObject capabilityObject = capability.getAsJsonObject();
+    // if (capabilityObject.get("namespace").getAsString().equals("Alexa.ColorPropertiesController")) {
+    // try {
+    // color = capabilityObject.getAsJsonObject().get("value").getAsJsonObject().get("name").getAsString();
+    // } catch (Exception e) {
+    // logger.debug("getting bulb color failed {}", e);
+    // }
+    // }
+    // }
+    // if (color != null) {
+    // return color;
+    // } else {
+    // throw new IOException();
+    // }
+    // }
 
-            if (states.size() > 0) {
-                return Collections.max(states).intValue();
-            }
-        }
+    // public int getBulbBrightness(Thing device) throws IOException, URISyntaxException {
+    // Map<String, String> props = device.getProperties();
+    // String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
+    // JsonArray capabilities = this.getBulbCapabilities(applianceId);
+    //
+    // int brightness = -1;
+    // for (JsonElement capability : capabilities) {
+    // JsonObject capabilityObject = capability.getAsJsonObject();
+    // if (INTERFACE_BRIGHTNESS.equals(capabilityObject.get("namespace").getAsString())) {
+    // brightness = capabilityObject.get("value").getAsInt();
+    // }
+    // }
+    // if (brightness == -1) {
+    // return 100;
+    // }
+    // return brightness;
+    // }
 
-        return -1;
-    }
-
-    public String getBulbColor(Thing device) throws IOException, URISyntaxException {
-        Map<String, String> props = device.getProperties();
-        String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
-
-        String color = null;
-        JsonArray capabilities = this.getBulbCapabilities(applianceId);
-
-        for (JsonElement capability : capabilities) {
-            JsonObject capabilityObject = capability.getAsJsonObject();
-            if (capabilityObject.get("namespace").getAsString().equals("Alexa.ColorPropertiesController")) {
-                try {
-                    color = capabilityObject.getAsJsonObject().get("value").getAsJsonObject().get("name").getAsString();
-                } catch (Exception e) {
-                    logger.debug("getting bulb color failed {}", e);
-                }
-            }
-        }
-        if (color != null) {
-            return color;
-        } else {
-            throw new IOException();
-        }
-    }
-
-    public int getBulbBrightness(Thing device) throws IOException, URISyntaxException {
-        Map<String, String> props = device.getProperties();
-        String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
-        JsonArray capabilities = this.getBulbCapabilities(applianceId);
-
-        int brightness = -1;
-        for (JsonElement capability : capabilities) {
-            JsonObject capabilityObject = capability.getAsJsonObject();
-            if (INTERFACE_BRIGHTNESS.equals(capabilityObject.get("namespace").getAsString())) {
-                brightness = capabilityObject.get("value").getAsInt();
-            }
-        }
-        if (brightness == -1) {
-            return 100;
-        }
-        return brightness;
-    }
-
-    public String getLightGroupState(Thing device) throws IOException, URISyntaxException {
-        Map<String, String> props = device.getProperties();
-        List<String> states = new ArrayList<>();
-        if (props.containsKey(DEVICE_PROPERTY_APPLIANCE_ID + "0")) {
-            int counter = 0;
-            for (String key : props.keySet()) {
-                if (key.contains(DEVICE_PROPERTY_APPLIANCE_ID + counter)) {
-                    JsonArray capabilities = this.getBulbCapabilities(props.get(key));
-                    String state = null;
-                    for (JsonElement capability : capabilities) {
-                        JsonObject capabilityObject = capability.getAsJsonObject();
-                        if (INTERFACE_POWER.equals(capabilityObject.get("namespace").getAsString())) {
-                            state = capabilityObject.get("value").getAsString();
-                            states.add(state);
-                        }
-                    }
-                    ++counter;
-                }
-            }
-            if (states.contains("ON")) {
-                return "ON";
-            } else {
-                return "OFF";
-            }
-        }
-        throw new IOException();
-    }
-
-    public String getBulbState(Thing device) throws IOException, URISyntaxException {
-        Map<String, String> props = device.getProperties();
-        String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
-
-        String state = null;
-        JsonArray capabilities = this.getBulbCapabilities(applianceId);
-
-        for (JsonElement capability : capabilities) {
-            JsonObject capabilityObject = capability.getAsJsonObject();
-            if (capabilityObject.get("namespace").getAsString().equals(INTERFACE_POWER)) {
-                try {
-                    state = capabilityObject.get("value").getAsString();
-                } catch (Exception e) {
-                    logger.error("getting bulb state failed {}", e);
-                }
-            }
-        }
-        if (state == null) {
-            throw new IOException();
-        }
-        return state;
-    }
+    // public String getLightGroupState(Thing device) throws IOException, URISyntaxException {
+    // Map<String, String> props = device.getProperties();
+    // List<String> states = new ArrayList<>();
+    // if (props.containsKey(DEVICE_PROPERTY_APPLIANCE_ID + "0")) {
+    // int counter = 0;
+    // for (String key : props.keySet()) {
+    // if (key.contains(DEVICE_PROPERTY_APPLIANCE_ID + counter)) {
+    // JsonArray capabilities = this.getBulbCapabilities(props.get(key));
+    // String state = null;
+    // for (JsonElement capability : capabilities) {
+    // JsonObject capabilityObject = capability.getAsJsonObject();
+    // if (INTERFACE_POWER.equals(capabilityObject.get("namespace").getAsString())) {
+    // state = capabilityObject.get("value").getAsString();
+    // states.add(state);
+    // }
+    // }
+    // ++counter;
+    // }
+    // }
+    // if (states.contains("ON")) {
+    // return "ON";
+    // } else {
+    // return "OFF";
+    // }
+    // }
+    // throw new IOException();
+    // }
+    //
+    // public String getBulbState(Thing device) throws IOException, URISyntaxException {
+    // Map<String, String> props = device.getProperties();
+    // String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
+    //
+    // String state = null;
+    // JsonArray capabilities = this.getBulbCapabilities(applianceId);
+    //
+    // for (JsonElement capability : capabilities) {
+    // JsonObject capabilityObject = capability.getAsJsonObject();
+    // if (capabilityObject.get("namespace").getAsString().equals(INTERFACE_POWER)) {
+    // try {
+    // state = capabilityObject.get("value").getAsString();
+    // } catch (Exception e) {
+    // logger.error("getting bulb state failed {}", e);
+    // }
+    // }
+    // }
+    // if (state == null) {
+    // throw new IOException();
+    // }
+    // return state;
+    // }
 
     public JsonArray getBulbCapabilities(String applianceId) throws IOException, URISyntaxException {
         String json = this.getBulbStateJson(applianceId);
@@ -1208,27 +1203,37 @@ public class Connection {
         makeRequest("POST", url, command, true, true, null, 0);
     }
 
-    public void smartHomeCommand(String entityId, String action, @Nullable String color, double brightness)
+    public void smartHomeCommand(String entityId, String action) throws IOException, URISyntaxException {
+        smartHomeCommand(entityId, action, null, null);
+    }
+
+    public void smartHomeCommand(String entityId, String action, String property, Object value)
             throws IOException, URISyntaxException {
         String url = alexaServer + "/api/phoenix/state";
-        String requestBody = null;
-        if (action == "turnOn" || action == "turnOff") {
-            requestBody = "{\"controlRequests\": [{\"entityId\": " + "\"" + entityId + "\""
-                    + ", \"entityType\": \"APPLIANCE\", \"parameters\": { \"action\": " + "\"" + action + "\""
-                    + " }}]}";
-        } else if (action == "setColorTemperature") {
-            requestBody = "{\"controlRequests\": [{\"entityId\": " + "\"" + entityId + "\""
-                    + ", \"entityType\": \"APPLIANCE\", \"parameters\": { \"action\": " + "\"" + action + "\""
-                    + ", \"colorTemperatureName\": \"" + color + "\" }}]}";
-        } else if (action == "setColor") {
-            requestBody = "{\"controlRequests\": [{\"entityId\": " + "\"" + entityId + "\""
-                    + ", \"entityType\": \"APPLIANCE\", \"parameters\": { \"action\": " + "\"" + action + "\""
-                    + ", \"colorName\": \"" + color + "\" }}]}";
-        } else if (action == "setBrightness") {
-            requestBody = "{\"controlRequests\": [{\"entityId\": " + "\"" + entityId + "\""
-                    + ", \"entityType\": \"APPLIANCE\", \"parameters\": { \"action\": " + "\"" + action + "\""
-                    + ", \"brightness\": \"" + brightness + "\" }}]}";
+
+        JsonObject json = new JsonObject();
+        JsonArray controlRequests = new JsonArray();
+        JsonObject controlRequest = new JsonObject();
+        controlRequest.addProperty("entityId", entityId);
+        controlRequest.addProperty("entityType", "APPLIANCE");
+        JsonObject parameters = new JsonObject();
+        parameters.addProperty("action", action);
+        if (property != null) {
+            if (value instanceof Boolean) {
+                parameters.addProperty(property, (boolean) value);
+            } else if (value instanceof String) {
+                parameters.addProperty(property, (String) value);
+            } else if (value instanceof Number) {
+                parameters.addProperty(property, (Number) value);
+            } else if (value instanceof Character) {
+                parameters.addProperty(property, (Character) value);
+            }
         }
+        controlRequest.add("parameters", parameters);
+        controlRequests.add(controlRequest);
+        json.add("controlRequests", controlRequests);
+
+        String requestBody = json.toString();
         makeRequest("PUT", url, requestBody, true, true, null, 0);
     }
 

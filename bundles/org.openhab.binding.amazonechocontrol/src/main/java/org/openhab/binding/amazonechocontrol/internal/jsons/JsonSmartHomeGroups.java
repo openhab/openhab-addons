@@ -22,15 +22,27 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroupId
 @NonNullByDefault
 public class JsonSmartHomeGroups {
 
-    public static class SmartHomeGroup {
+    public static class SmartHomeGroup implements SmartHomeBaseDevice {
+
+        @Override
+        public @Nullable String findId() {
+            SmartHomeGroupIdentifier applianceGroupIdentifier = this.applianceGroupIdentifier;
+            if (applianceGroupIdentifier == null) {
+                return null;
+            }
+            String value = applianceGroupIdentifier.value;
+            if (value == null) {
+                return null;
+            }
+            return value;
+        }
+
         public @Nullable String applianceGroupName;
         public @Nullable Boolean isSpace;
         public @Nullable Boolean space;
         public @Nullable SmartHomeGroupIdentifier applianceGroupIdentifier;
-        public @Nullable Boolean brightness = false;
-        public boolean color = false;
-        public boolean colorTemperature = false;
     }
 
     public @Nullable SmartHomeGroup @Nullable [] groups;
+
 }

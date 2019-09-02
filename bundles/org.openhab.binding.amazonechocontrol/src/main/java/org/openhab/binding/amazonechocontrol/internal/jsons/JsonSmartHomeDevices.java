@@ -24,7 +24,13 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeTags.Js
 @NonNullByDefault
 public class JsonSmartHomeDevices {
 
-    public static class SmartHomeDevice {
+    public static class SmartHomeDevice implements SmartHomeBaseDevice {
+
+        @Override
+        public @Nullable String findId() {
+            return applianceId;
+        }
+
         public @Nullable String applianceId;
         public @Nullable String manufacturerName;
         public @Nullable String friendlyDescription;
@@ -39,25 +45,6 @@ public class JsonSmartHomeDevices {
         public @Nullable JsonSmartHomeDeviceAlias @Nullable [] aliases;
         public @Nullable SmartHomeDevice @Nullable [] groupDevices;
         public @Nullable String connectedVia;
-        public boolean brightness = false;
-        public boolean color = false;
-        public boolean colorTemperature = false;
-
-        public SmartHomeDevice(String applianceId, String manufacturerName, String friendlyDescription,
-                @Nullable String friendlyName, String reachability, String entityId, JsonSmartHomeDeviceAlias[] aliases,
-                SmartHomeDevice[] groupDevices) {
-            this.applianceId = applianceId;
-            this.manufacturerName = manufacturerName;
-            this.friendlyDescription = friendlyDescription;
-            this.friendlyName = friendlyName;
-            this.reachability = reachability;
-            this.entityId = entityId;
-            this.aliases = aliases;
-            this.groupDevices = groupDevices;
-        }
-
-        public SmartHomeDevice() {
-        }
     }
 
     public @Nullable SmartHomeDevice @Nullable [] smarthomeDevices;
