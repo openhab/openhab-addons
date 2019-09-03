@@ -13,14 +13,15 @@ This binding supports following thing types:
 
 | Thing type | Description                                                                                                                              |
 |------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| ethm-1     | Ethernet bridge, supports [ETHM-1](https://www.satel.pl/pl/product/115/) and [ETHM-1 Plus](https://www.satel.pl/pl/product/698/) modules |
-| int-rs     | RS-232 bridge, supports [INT-RS](https://www.satel.pl/pl/product/123/) and [INT-RS Plus](https://www.satel.pl/pl/product/664/) modules   |
+| ethm-1     | Ethernet bridge, supports [ETHM-1](https://www.satel.pl/en/product/115/) and [ETHM-1 Plus](https://www.satel.pl/en/product/698/) modules |
+| int-rs     | RS-232 bridge, supports [INT-RS](https://www.satel.pl/en/product/123/) and [INT-RS Plus](https://www.satel.pl/en/product/664/) modules   |
 | partition  | Set of zones representing some physical area or logical relation                                                                         |
 | zone       | A physical device: reed switch, motion sensor or a virtual zone                                                                          |
 | output     | An output defined in the system                                                                                                          |
 | shutter    | Two outputs that control a roller shutter, one for "up" direction, another one for "down"                                                |
 | system     | A virtual thing describing general status of the alarm system                                                                            |
 | event-log  | A virtual thing that allows reading records from the alarm system event log                                                              |
+| atd-100    | Wireless temperature detector [ATD-100](https://www.satel.pl/en/produktid/503)                                                           |
 
 
 ## Discovery
@@ -151,6 +152,21 @@ Example:
 Thing event-log EventLog [ ]
 ```
 
+### atd-100
+
+You can configure the following settings for this thing:
+
+| Name    | Required | Description                                                |
+|---------|----------|------------------------------------------------------------|
+| id      | yes      | Zone number in the alarm system monitored by this detector |
+| refresh | no       | Polling interval in minutes, defaults to 15                |
+
+Example:
+
+```
+Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
+```
+
 ## Channels
 
 ### partition
@@ -232,6 +248,14 @@ Thing event-log EventLog [ ]
 | description | String   | Textual description of the event.                                                      |
 | details     | String   | Details about the event, usually list of objects related to the event.                 |
 
+### atd-100
+
+| Name          | Type               | Description                                               |
+|---------------|--------------------|-----------------------------------------------------------|
+| temperature   | Number:Temperature | Current temperature in the zone                           |
+| device_lobatt | Switch             | Indicates low battery level in the wireless device        |
+| device_nocomm | Switch             | Indicates communication troubles with the wireless device |
+
 ## Full Example
 
 ### satel.things
@@ -246,6 +270,7 @@ Bridge satel:ethm-1:home [ host="192.168.0.2", refresh=1000, userCode="1234", en
     Thing system System [ ]
     Thing event-log EventLog [ ]
     Thing output Siren [ id=17, wireless=true ]
+    Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
 }
 ```
 
@@ -272,6 +297,9 @@ String EVENT_LOG_DESCR "Event log - description [%s]" (Satel) { channel="satel:e
 String EVENT_LOG_DET "Event log - details [%s]" (Satel) { channel="satel:event-log:home:EventLog:details" }
 Switch SIREN_LOBATT "Siren: low battery level" (Satel) { channel="satel:output:home:Siren:device_lobatt" }
 Switch SIREN_NOCOMM "Siren: no communication" (Satel) { channel="satel:output:home:Siren:device_nocomm" }
+Number:Temperature KITCHEN_TEMP "Kitchen temperature [%.1f °C]" <temperature> (Satel) { channel="satel:atd-100:home:KitchenTemp:temperature" }
+Switch KITCHEN_TEMP_LOBATT "Kitchen sensor: low battery" (Satel) { channel="satel:atd-100:home:KitchenTemp:device_lobatt" }
+Switch KITCHEN_TEMP_NOCOMM "Kitchen sensor: no communication" (Satel) { channel="satel:atd-100:home:KitchenTemp:device_nocomm" }
 ```
 
 ### satel.sitemap
@@ -292,6 +320,9 @@ Frame label="Alarm system" {
     Frame label="Kitchen" {
         Switch item=KITCHEN_LAMP
         Rollershutter item=KITCHEN_BLIND
+        Text item=KITCHEN_TEMP
+        Switch item=KITCHEN_TEMP_LOBATT
+        Switch item=KITCHEN_TEMP_NOCOMM
     }
     Text label="Keypad" icon="settings" {
         Switch item=KEYPAD_CHAR mappings=[ "1"="1", "2"="2", "3"="3" ]
