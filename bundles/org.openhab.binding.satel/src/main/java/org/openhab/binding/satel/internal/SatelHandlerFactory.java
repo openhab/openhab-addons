@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.satel.internal.config.SatelThingConfig;
 import org.openhab.binding.satel.internal.discovery.SatelDeviceDiscoveryService;
+import org.openhab.binding.satel.internal.handler.Atd100Handler;
 import org.openhab.binding.satel.internal.handler.Ethm1BridgeHandler;
 import org.openhab.binding.satel.internal.handler.IntRSBridgeHandler;
 import org.openhab.binding.satel.internal.handler.SatelBridgeHandler;
@@ -106,6 +107,8 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
             return new SatelSystemHandler(thing);
         } else if (SatelEventLogHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SatelEventLogHandler(thing);
+        } else if (Atd100Handler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new Atd100Handler(thing);
         }
 
         return null;
