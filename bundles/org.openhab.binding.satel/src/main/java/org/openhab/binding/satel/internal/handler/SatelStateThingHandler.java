@@ -51,7 +51,7 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("New command for {}: {}", channelUID, command.toFullString());
+        logger.debug("New command for {}: {}", channelUID, command);
 
         if (command == RefreshType.REFRESH) {
             this.requiresRefresh.set(true);

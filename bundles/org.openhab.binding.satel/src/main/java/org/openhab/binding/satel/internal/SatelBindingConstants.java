@@ -40,13 +40,14 @@ public class SatelBindingConstants {
     public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
     public static final ThingTypeUID THING_TYPE_SYSTEM = new ThingTypeUID(BINDING_ID, "system");
     public static final ThingTypeUID THING_TYPE_EVENTLOG = new ThingTypeUID(BINDING_ID, "event-log");
+    public static final ThingTypeUID THING_TYPE_ATD100 = new ThingTypeUID(BINDING_ID, "atd-100");
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Stream.of(THING_TYPE_ETHM1, THING_TYPE_INTRS)
             .collect(Collectors.toSet());
 
     // Physical devices
     public static final Set<ThingTypeUID> DEVICE_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_OUTPUT, THING_TYPE_PARTITION, THING_TYPE_SHUTTER, THING_TYPE_ZONE)
+            .of(THING_TYPE_OUTPUT, THING_TYPE_PARTITION, THING_TYPE_SHUTTER, THING_TYPE_ZONE, THING_TYPE_ATD100)
             .collect(Collectors.toSet());
 
     // Virtual devices
@@ -72,5 +73,6 @@ public class SatelBindingConstants {
     public static final String CHANNEL_TIMESTAMP = "timestamp";
     public static final String CHANNEL_DESCRIPTION = "description";
     public static final String CHANNEL_DETAILS = "details";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
 
 }
