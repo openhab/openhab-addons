@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -348,6 +349,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     private void processEvent(SomfyTahomaEvent event) {
         logger.debug("Got event: {}", event.getName());
         switch (event.getName()) {
+            case "ExecutionRegisteredEvent":
+                processExecutionRegisteredEvent(event);
+                break;
             case "ExecutionStateChangedEvent":
                 processExecutionChangedEvent(event);
                 break;
@@ -362,6 +366,19 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 break;
             default:
                 //ignore other states
+        }
+    }
+
+    private void processExecutionRegisteredEvent(SomfyTahomaEvent event) {
+        JsonElement el = event.getAction();
+        if (el.isJsonArray()) {
+            SomfyTahomaAction[] actions = gson.fromJson(el, SomfyTahomaAction[].class);
+            for (SomfyTahomaAction action : actions) {
+                registerExecution(action.getDeviceURL(), event.getExecId());
+            }
+        } else {
+            SomfyTahomaAction action = gson.fromJson(el, SomfyTahomaAction.class);
+            registerExecution(action.getDeviceURL(), event.getExecId());
         }
     }
 
@@ -382,7 +399,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void unregisterExecution(String execId) {
         if( executions.containsValue(execId)) {
-            executions.values().remove(execId);
+            executions.values().removeAll(Collections.singleton(execId));
         } else {
             logger.debug("Cannot remove execution id: {}, because it is not registered", execId);
         }

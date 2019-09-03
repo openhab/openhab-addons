@@ -255,14 +255,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
-    private @Nullable Channel getChannelByChannelUID(ChannelUID channelUID) {
-        if (thing.getChannel(channelUID.getId()) != null) {
-            return thing.getChannel(channelUID.getId());
-        }
-        logger.debug("Cannot find channel for UID: {}", channelUID.getId());
-        return null;
-    }
-
     public void updateThingChannels(List<SomfyTahomaState> states) {
         // update channel values
         for (Channel channel : thing.getChannels()) {
@@ -272,7 +264,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                     logger.trace("Updating channel: {} with state: {}", channel.getUID(), channelState);
                     updateState(channel.getUID(), channelState);
                 } else {
-                    logger.debug("Cannot find state for channel {}", channel.getUID());
+                    logger.trace("Cannot find state for channel {}", channel.getUID());
                 }
             }
         }
