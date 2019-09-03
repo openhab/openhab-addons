@@ -96,6 +96,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private Map<String, SmartHomeBaseDevice> jsonIdSmartHomeDeviceMapping = new HashMap<>();
     private @Nullable ScheduledFuture<?> checkDataJob;
     private @Nullable ScheduledFuture<?> checkLoginJob;
+    private @Nullable ScheduledFuture<?> updateSmartHomeStateJob;
     private @Nullable ScheduledFuture<?> refreshAfterCommandJob;
     private @Nullable ScheduledFuture<?> foceCheckDataJob;
     private String currentFlashBriefingJson = "";
@@ -130,6 +131,10 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         checkLoginJob = scheduler.scheduleWithFixedDelay(this::checkLogin, 0, 60, TimeUnit.SECONDS);
         checkDataJob = scheduler.scheduleWithFixedDelay(this::checkData, 4, 60, TimeUnit.SECONDS);
 
+        Configuration config = getThing().getConfiguration();
+        long pollingInterval = ((BigDecimal) config.getProperties().get("pollingIntervalSmartHome")).longValue();
+        updateSmartHomeStateJob = scheduler.scheduleWithFixedDelay(this::updateSmartHomeState, pollingInterval,
+                pollingInterval, TimeUnit.SECONDS);
         logger.debug("amazon account bridge handler started.");
     }
 
@@ -263,6 +268,12 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     private void cleanup() {
         logger.debug("cleanup {}", getThing().getUID().getAsString());
+        @Nullable
+        ScheduledFuture<?> updateSmartHomeStateJob = this.updateSmartHomeStateJob;
+        if (updateSmartHomeStateJob != null) {
+            updateSmartHomeStateJob.cancel(true);
+            this.updateSmartHomeStateJob = null;
+        }
         @Nullable
         ScheduledFuture<?> refreshJob = this.checkDataJob;
         if (refreshJob != null) {
@@ -769,6 +780,22 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         }
         updateFlashBriefingProfiles(currentConnection);
         return this.currentFlashBriefingJson;
+    }
+
+    private void updateSmartHomeState() {
+        try {
+            synchronized (this.smartHomeDeviceHandlers) {
+                {
+                    if (this.smartHomeDeviceHandlers.size() == 0) {
+                        return;
+                    }
+                }
+            }
+        } catch (HttpException | JsonSyntaxException | ConnectionException e) {
+            logger.debug("updateSmartHomeState fails {}", e);
+        } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
+            logger.error("updateSmartHomeState fails with unexpected error {}", e);
+        }
     }
 
     private void updateFlashBriefingProfiles(Connection currentConnection) {

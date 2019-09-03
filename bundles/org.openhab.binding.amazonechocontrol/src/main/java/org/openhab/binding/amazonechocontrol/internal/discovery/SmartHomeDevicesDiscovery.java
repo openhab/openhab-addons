@@ -84,8 +84,6 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
     @Override
     protected void startScan() {
         stopScanJob();
-        // removeOlderResults(activateTimeStamp);
-
         setSmartHomeDevices(accountHandler.updateSmartHomeDeviceList(false));
     }
 
