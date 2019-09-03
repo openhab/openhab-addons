@@ -29,17 +29,13 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_SWITCH;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_INTERFACES;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -69,7 +65,6 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SmartHomeDeviceHandler.class);
 
-    private @Nullable ScheduledFuture<?> updateStateJob;
     private @Nullable Connection connection;
     private @Nullable SmartHomeBaseDevice smartHomeBaseDevice;
 
@@ -87,15 +82,8 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
     public boolean setDeviceAndUpdateThingState(AccountHandler accountHandler,
             @Nullable SmartHomeBaseDevice smartHomeBaseDevice) {
-        boolean startPolling = false;
         if (this.accountHandler != accountHandler) {
             this.accountHandler = accountHandler;
-            ScheduledFuture<?> updateStateJob = this.updateStateJob;
-            this.updateStateJob = null;
-            if (updateStateJob != null) {
-                updateStateJob.cancel(false);
-            }
-            startPolling = true;
         }
         if (smartHomeBaseDevice == null) {
             updateStatus(ThingStatus.UNKNOWN);
@@ -128,51 +116,34 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         } catch (IllegalArgumentException e) {
             logger.debug("Exception while adding channel {}.", e);
         }
-        if (startPolling) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (accountHandler != null) {
-                        List<Thing> things = accountHandler.getThing().getThings();
-                        for (Thing thing : things) {
-                            // try {
-                            // String state = null;
-                            // int brightness = -1;
-                            // String color = null;
-                            // connection = accountHandler.findConnection();
-                            // if (thing.getProperties().keySet().contains(DEVICE_PROPERTY_LIGHT_SUBDEVICE + 0)) {
-                            // state = connection.getLightGroupState(thing);
-                            // brightness = connection.getLightGroupBrightness(thing);
-                            // } else {
-                            // state = connection.getBulbState(thing);
-                            // brightness = connection.getBulbBrightness(thing);
-                            // color = connection.getBulbColor(thing);
-                            // }
-                            // if (state != null) {
-                            // updateBulbState(thing.getChannel(CHANNEL_CONTROLLER_POWER).getUID(), state);
-                            // }
-                            // if (brightness != -1) {
-                            // updateBrightness(thing.getChannel(CHANNEL_CONTROLLER_BRIGHTNESS).getUID(),
-                            // brightness);
-                            // }
-                            // if (color != null) {
-                            // updateColor(thing.getChannel(CHANNEL_CONTROLLER_COLOR).getUID(), color);
-                            // }
-                            // } catch (IOException | URISyntaxException e) {
-                            // logger.error(e.getMessage());
-                            // }
-                        }
-                    }
-                }
-            };
-            Configuration config = accountHandler.getThing().getConfiguration();
 
-            updateStateJob = scheduler.scheduleWithFixedDelay(runnable, 0,
-                    ((BigDecimal) config.getProperties().get("pollingIntervalSmartHome")).longValue(),
-                    TimeUnit.SECONDS);
-        }
+        // try {
+        // String state = null;
+        // int brightness = -1;
+        // String color = null;
+        // connection = accountHandler.findConnection();
+        // if (thing.getProperties().keySet().contains(DEVICE_PROPERTY_LIGHT_SUBDEVICE + 0)) {
+        // state = connection.getLightGroupState(thing);
+        // brightness = connection.getLightGroupBrightness(thing);
+        // } else {
+        // state = connection.getBulbState(thing);
+        // brightness = connection.getBulbBrightness(thing);
+        // color = connection.getBulbColor(thing);
+        // }
+        // if (state != null) {
+        // updateBulbState(thing.getChannel(CHANNEL_CONTROLLER_POWER).getUID(), state);
+        // }
+        // if (brightness != -1) {
+        // updateBrightness(thing.getChannel(CHANNEL_CONTROLLER_BRIGHTNESS).getUID(),
+        // brightness);
+        // }
+        // if (color != null) {
+        // updateColor(thing.getChannel(CHANNEL_CONTROLLER_COLOR).getUID(), color);
+        // }
+        // } catch (IOException | URISyntaxException e) {
+        // logger.error(e.getMessage());
+        // }
         return true;
-
     }
 
     public @Nullable AccountHandler findAccountHandler() {
@@ -212,16 +183,6 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             this.logger.debug("Handle updateState {} aborted: Not online", this.getThing().getUID());
             return;
         }
-    }
-
-    @Override
-    public void dispose() {
-        ScheduledFuture<?> updateStateJob = this.updateStateJob;
-        this.updateStateJob = null;
-        if (updateStateJob != null) {
-            updateStateJob.cancel(false);
-        }
-        super.dispose();
     }
 
     @Override
