@@ -21,11 +21,11 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -50,16 +50,15 @@ public class EtherRainCommunication {
 
     private static final int BROADCAST_TIMEOUT = 80;
 
-    private String address;
-    private int port;
-    private String password;
-
     private static final String RESPONSE_STATUS_PATTERN = "^\\s*(un|ma|ac|os|cs|rz|ri|rn):\\s*([a-zA-Z0-9\\.]*)(\\s*<br>)?";
     private static final String BROADCAST_RESPONSE_DISCOVER_PATTERN = "eviro t=(\\S*) n=(\\S*) p=(\\S*) a=(\\S*)";
 
     private final Logger logger = LoggerFactory.getLogger(EtherRainCommunication.class);
-
     private final HttpClient httpClient;
+
+    private final String address;
+    private final int port;
+    private final String password;
 
     public EtherRainCommunication(String address, int port, String password, HttpClient httpClient) {
         this.address = address;
@@ -73,10 +72,6 @@ public class EtherRainCommunication {
     }
 
     public EtherRainStatusResponse commandStatus() throws EtherRainException, IOException {
-        if (address == null || port == 0) {
-            throw new EtherRainException("address and port not set");
-        }
-
         if (!commandLogin()) {
             throw new EtherRainException("could not login");
         }
@@ -141,7 +136,8 @@ public class EtherRainCommunication {
                     + ":" + zone6 + ":" + zone7 + ":" + zone8) == null) {
                 return false;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
+            logger.warn("Could not send irrigate command to etherrain: {}", e.getMessage());
             return false;
         }
 
@@ -153,7 +149,8 @@ public class EtherRainCommunication {
             if (sendGet("/result.cgi?xr") == null) {
                 return false;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
+            logger.warn("Could not send clear command to etherrain: {}", e.getMessage());
             return false;
         }
 
@@ -169,7 +166,8 @@ public class EtherRainCommunication {
             if (sendGet("/ergetcfg.cgi?m=o") == null) {
                 return false;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
+            logger.warn("Could not send logout command to etherrain: {}", e.getMessage());
             return false;
         }
 
@@ -177,7 +175,6 @@ public class EtherRainCommunication {
     }
 
     private List<String> sendGet(String command) throws IOException {
-
         String url = "http://" + address + ":" + port + "/" + command;
 
         ContentResponse response;
@@ -193,18 +190,8 @@ public class EtherRainCommunication {
             return null;
         }
 
-        BufferedReader in = new BufferedReader(new StringReader(response.getContentAsString()));
-
-        List<String> rVal = null;
-
-        rVal = new LinkedList<String>();
-
-        String inputLine;
-
-        while ((inputLine = in.readLine()) != null) {
-            rVal.add(inputLine);
-        }
-        in.close();
+        List<String> rVal = new BufferedReader(new StringReader(response.getContentAsString())).lines()
+                .collect(Collectors.toList());
 
         return rVal;
     }

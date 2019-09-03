@@ -18,11 +18,11 @@ package org.openhab.binding.etherrain.internal.api;
  * @author Joe Inkenbrandt - Initial contribution
  */
 public class EtherRainUdpResponse {
-    private String type;
-    private String address;
-    private int port;
-    private String uniqueName;
-    private String additionalParameters; // Note: version 3.77 of spec says this is unused
+    private final String type;
+    private final String address;
+    private final int port;
+    private final String uniqueName;
+    private final String additionalParameters; // Note: version 3.77 of spec says this is unused
 
     public EtherRainUdpResponse(String type, String address, int port, String uniqueName, String additionalParameters) {
         this.type = type;

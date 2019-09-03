@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -40,17 +42,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
+@NonNullByDefault
 public class EtherRainHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EtherRainHandler.class);
 
-    private EtherRainCommunication device = null;
+    private @Nullable EtherRainCommunication device = null;
     private boolean connected = false;
-    EtherRainConfiguration config;
+    private @NonNullByDefault({}) EtherRainConfiguration config = null;
 
-    private ScheduledFuture<?> updateJob;
+    private @Nullable ScheduledFuture<?> updateJob = null;
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     /*
      * Constructor class. Only call the parent constructor
@@ -58,6 +61,7 @@ public class EtherRainHandler extends BaseThingHandler {
     public EtherRainHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
+        this.updateJob = null;
     }
 
     @Override
@@ -65,25 +69,18 @@ public class EtherRainHandler extends BaseThingHandler {
         if (command.toString().equals("REFRESH")) {
             updateBridge();
             return;
-        }
-
-        else if (channelUID.getId().equals(EtherRainBindingConstants.CHANNEL_ID_EXECUTE)) {
+        } else if (channelUID.getId().equals(EtherRainBindingConstants.CHANNEL_ID_EXECUTE)) {
             execute();
             updateState(EtherRainBindingConstants.CHANNEL_ID_EXECUTE, OnOffType.OFF);
-        }
-
-        else if (channelUID.getId().equals(EtherRainBindingConstants.CHANNEL_ID_CLEAR)) {
+        } else if (channelUID.getId().equals(EtherRainBindingConstants.CHANNEL_ID_CLEAR)) {
             clear();
             updateState(EtherRainBindingConstants.CHANNEL_ID_CLEAR, OnOffType.OFF);
         }
     }
 
     private boolean connectBridge() {
-        config = getConfigAs(EtherRainConfiguration.class);
-
-        logger.debug(
-                "Attempting to connect to Etherrain with config = (Host: {}, Port: {}, Password: {}, Refresh: {}).",
-                config.host, config.port, config.password, config.refresh);
+        logger.debug("Attempting to connect to Etherrain with config = (Host: {}, Port: {}, Refresh: {}).", config.host,
+                config.port, config.refresh);
 
         device = new EtherRainCommunication(config.host, config.port, config.password, httpClient);
 
@@ -112,18 +109,20 @@ public class EtherRainHandler extends BaseThingHandler {
 
     private void startUpdateJob() {
         logger.debug("Starting Etherrain Update Job");
-        updateJob = scheduler.scheduleWithFixedDelay(this::updateBridge, 0, config.refresh, TimeUnit.SECONDS);
+        this.updateJob = scheduler.scheduleWithFixedDelay(this::updateBridge, 0, config.refresh, TimeUnit.SECONDS);
 
         logger.debug("EtherRain sucessfully initialized. Starting status poll at: {}", config.refresh);
     }
 
     private void stopUpdateJob() {
         logger.debug("Stopping Etherrain Update Job");
+
+        final ScheduledFuture<?> updateJob = this.updateJob;
         if (updateJob != null && !updateJob.isDone()) {
             updateJob.cancel(false);
         }
 
-        updateJob = null;
+        this.updateJob = null;
     }
 
     private boolean updateBridge() {
@@ -206,7 +205,6 @@ public class EtherRainHandler extends BaseThingHandler {
 
     private boolean execute() {
         if (device != null) {
-            EtherRainConfiguration config = getConfigAs(EtherRainConfiguration.class);
             device.commandIrrigate(config.programDelay, EtherRainConfiguration.zoneOnTime1,
                     EtherRainConfiguration.zoneOnTime2, EtherRainConfiguration.zoneOnTime3,
                     EtherRainConfiguration.zoneOnTime4, EtherRainConfiguration.zoneOnTime5,
@@ -229,6 +227,7 @@ public class EtherRainHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        config = getConfigAs(EtherRainConfiguration.class);
         startUpdateJob();
     }
 

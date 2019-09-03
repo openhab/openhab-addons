@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.etherrain.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.etherrain.internal.handler.EtherRainHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -35,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 public class EtherRainHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
-    
+
     @Activate
     public EtherRainHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         httpClient = httpClientFactory.getCommonHttpClient();
@@ -55,14 +57,5 @@ public class EtherRainHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
     }
 }
