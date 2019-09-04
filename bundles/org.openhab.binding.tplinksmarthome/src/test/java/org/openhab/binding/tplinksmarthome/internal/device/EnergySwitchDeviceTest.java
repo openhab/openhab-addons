@@ -20,7 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
@@ -55,27 +56,27 @@ public class EnergySwitchDeviceTest {
 
     @Test
     public void testUpdateChannelEnergyCurrent() {
-        assertEquals("Energy current should have valid state value", 1,
-                ((DecimalType) device.updateChannel(CHANNEL_UID_ENERGY_CURRENT, deviceState)).intValue());
+        assertEquals("Energy current should have valid state value", new QuantityType<>(1 + " A"),
+                device.updateChannel(CHANNEL_UID_ENERGY_CURRENT, deviceState));
     }
 
     @Test
     public void testUpdateChannelEnergyTotal() {
-        assertEquals("Energy total should have valid state value", 10,
-                ((DecimalType) device.updateChannel(CHANNEL_UID_ENERGY_TOTAL, deviceState)).intValue());
+        assertEquals("Energy total should have valid state value", new QuantityType<>(10 + " kWh"),
+                device.updateChannel(CHANNEL_UID_ENERGY_TOTAL, deviceState));
     }
 
     @Test
     public void testUpdateChannelEnergyVoltage() {
         State state = device.updateChannel(CHANNEL_UID_ENERGY_VOLTAGE, deviceState);
-        assertEquals("Energy voltage should have valid state value", 230, ((DecimalType) state).intValue());
-        assertEquals("Channel patten to display as int", "230 V", state.format("%.0f V"));
+        assertEquals("Energy voltage should have valid state value", 230, ((QuantityType<?>) state).intValue());
+        assertEquals("Channel patten to format voltage correctly", "230 V", state.format("%.0f %unit%"));
     }
 
     @Test
-    public void testUpdateChanneEnergyPowerl() {
-        assertEquals("Energy power should have valid state value", 20,
-                ((DecimalType) device.updateChannel(CHANNEL_UID_ENERGY_POWER, deviceState)).intValue());
+    public void testUpdateChanneEnergyPower() {
+        assertEquals("Energy power should have valid state value", new QuantityType<>(20 + " W"),
+                device.updateChannel(CHANNEL_UID_ENERGY_POWER, deviceState));
     }
 
     @Test
