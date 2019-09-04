@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
  */
 @NonNullByDefault
 public class HeliosVentilationDataPoint {
-    public enum type {
+    public enum DataType {
         TEMPERATURE,
         HYSTERESIS,
         FANSPEED,
@@ -42,7 +42,7 @@ public class HeliosVentilationDataPoint {
     /**
      * mapping from temperature byte values to °C
      */
-    private static final int tempMap[] = { -74, -70, -66, -62, -59, -56, -54, -52, -50, -48, -47, -46, -44, -43, -42,
+    private static final int Temp_Map[] = { -74, -70, -66, -62, -59, -56, -54, -52, -50, -48, -47, -46, -44, -43, -42,
             -41, -40, -39, -38, -37, -36, -35, -34, -33, -33, -32, -31, -30, -30, -29, -28, -28, -27, -27, -26, -25,
             -25, -24, -24, -23, -23, -22, -22, -21, -21, -20, -20, -19, -19, -19, -18, -18, -17, -17, -16, -16, -16,
             -15, -15, -14, -14, -14, -13, -13, -12, -12, -12, -11, -11, -11, -10, -10, -9, -9, -9, -8, -8, -8, -7, -7,
@@ -57,14 +57,24 @@ public class HeliosVentilationDataPoint {
     /**
      * mapping from human readable fanspeed to raw value
      */
-    private static final int fanspeedMap[] = { 0, 1, 3, 7, 15, 31, 63, 127, 255 };
+    private static final int Fanspeed_Map[] = { 0, 1, 3, 7, 15, 31, 63, 127, 255 };
 
     private static final int BYTE_PERCENT_OFFSET = 52;
+
+    private String name;
+    private boolean writable;
+    private DataType datatype;
+    private byte address;
+    private int bitStart;
+    private int bitLength;
+
+    private @Nullable HeliosVentilationDataPoint link;
 
     /**
      * parse fullSpec in the properties format to declare a datapoint
      *
-     * @param fullSpec
+     * @param name the name of the datapoint
+     * @param fullSpec datapoint specification, see format in datapoints.properties
      * @throws HeliosPropertiesFormatException in case fullSpec is not parsable
      */
     public HeliosVentilationDataPoint(String name, String fullSpec) throws HeliosPropertiesFormatException {
@@ -107,28 +117,18 @@ public class HeliosVentilationDataPoint {
 
         this.writable = Boolean.parseBoolean(tokens[1]);
         try {
-            this.datatype = type.valueOf(tokens[2].replaceAll("\\s+", ""));
+            this.datatype = DataType.valueOf(tokens[2].replaceAll("\\s+", ""));
         } catch (IllegalArgumentException e) {
             throw new HeliosPropertiesFormatException("invalid type spec", name, fullSpec);
         }
     }
 
-    public HeliosVentilationDataPoint(String name, byte address, boolean writable, type datatype) {
+    public HeliosVentilationDataPoint(String name, byte address, boolean writable, DataType datatype) {
         this.datatype = datatype;
         this.writable = writable;
         this.name = name;
         this.address = address;
     }
-
-    private String name;
-    private boolean writable;
-    private type datatype;
-    private byte address;
-    private int bitStart;
-    private int bitLength;
-
-    @Nullable
-    private HeliosVentilationDataPoint link;
 
     public boolean isWritable() {
         return writable;
@@ -160,7 +160,7 @@ public class HeliosVentilationDataPoint {
      */
     public byte bitMask() {
         byte mask = (byte) 0xff;
-        if (datatype == type.NUMBER || datatype == type.SWITCH) {
+        if (datatype == DataType.NUMBER || datatype == DataType.SWITCH) {
             mask = (byte) (((1 << bitLength) - 1) << bitStart);
         }
         return mask;
@@ -174,29 +174,29 @@ public class HeliosVentilationDataPoint {
      */
     public State asState(byte b) {
         int val = b & 0xff;
-        if (datatype == type.TEMPERATURE) {
-            return new QuantityType<>(tempMap[val], SIUnits.CELSIUS);
-        } else if (datatype == type.BYTE_PERCENT) {
+        if (datatype == DataType.TEMPERATURE) {
+            return new QuantityType<>(Temp_Map[val], SIUnits.CELSIUS);
+        } else if (datatype == DataType.BYTE_PERCENT) {
             return new QuantityType<>((int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET)),
                     SmartHomeUnits.PERCENT);
-        } else if (datatype == type.SWITCH && bitLength == 1) {
+        } else if (datatype == DataType.SWITCH && bitLength == 1) {
             if ((b & (1 << bitStart)) != 0) {
                 return OnOffType.ON;
             } else {
                 return OnOffType.OFF;
             }
-        } else if (datatype == type.NUMBER) {
+        } else if (datatype == DataType.NUMBER) {
             int value = (b & bitMask()) >> bitStart;
             return new DecimalType(value);
-        } else if (datatype == type.PERCENT) {
+        } else if (datatype == DataType.PERCENT) {
             return new QuantityType<>(val, SmartHomeUnits.PERCENT);
-        } else if (datatype == type.FANSPEED) {
+        } else if (datatype == DataType.FANSPEED) {
             int i = 1;
-            while (i < fanspeedMap.length && fanspeedMap[i] < val) {
+            while (i < Fanspeed_Map.length && Fanspeed_Map[i] < val) {
                 i++;
             }
             return new DecimalType(i);
-        } else if (datatype == type.HYSTERESIS) {
+        } else if (datatype == DataType.HYSTERESIS) {
             return new QuantityType<>(val / 3, SIUnits.CELSIUS);
         }
 
@@ -229,25 +229,29 @@ public class HeliosVentilationDataPoint {
     public byte getTransmitDataFor(State val) {
         byte result = 0;
         DecimalType value = val.as(DecimalType.class);
-
-        if (datatype == type.TEMPERATURE) {
+        if (value == null) {
+            /*
+             * if value is not convertible to a numeric type we cannot do anything reasonable with it, let's use the
+             * initial value for it
+             */
+        } else if (datatype == DataType.TEMPERATURE) {
             int temp = (int) Math.round(value.doubleValue());
             int i = 0;
-            while (i < tempMap.length && tempMap[i] < temp) {
+            while (i < Temp_Map.length && Temp_Map[i] < temp) {
                 i++;
             }
             result = (byte) i;
-        } else if (datatype == type.FANSPEED) {
+        } else if (datatype == DataType.FANSPEED) {
             int i = value.intValue();
             if (i < 0) {
                 i = 0;
             } else if (i > 8) {
                 i = 8;
             }
-            result = (byte) fanspeedMap[i];
-        } else if (datatype == type.BYTE_PERCENT) {
+            result = (byte) Fanspeed_Map[i];
+        } else if (datatype == DataType.BYTE_PERCENT) {
             result = (byte) ((value.doubleValue() / 100.0) * (255 - BYTE_PERCENT_OFFSET) + BYTE_PERCENT_OFFSET);
-        } else if (datatype == type.PERCENT) {
+        } else if (datatype == DataType.PERCENT) {
             double d = (Math.round(value.doubleValue()));
             if (d < 0.0) {
                 d = 0.0;
@@ -255,9 +259,9 @@ public class HeliosVentilationDataPoint {
                 d = 100.0;
             }
             result = (byte) d;
-        } else if (datatype == type.HYSTERESIS) {
+        } else if (datatype == DataType.HYSTERESIS) {
             result = (byte) (value.intValue() * 3);
-        } else if (datatype == type.SWITCH || datatype == type.NUMBER) {
+        } else if (datatype == DataType.SWITCH || datatype == DataType.NUMBER) {
             // those are the types supporting bit level specification
             // output only the relevant bits
             result = (byte) (value.intValue() << bitStart);
@@ -271,8 +275,7 @@ public class HeliosVentilationDataPoint {
      *
      * @return sister datapoint
      */
-    @Nullable
-    public HeliosVentilationDataPoint link() {
+    public @Nullable HeliosVentilationDataPoint link() {
         return link;
     }
 
@@ -281,6 +284,7 @@ public class HeliosVentilationDataPoint {
      *
      * @param link is the sister datapoint
      */
+    @SuppressWarnings("null")
     public void append(HeliosVentilationDataPoint link) {
         if (this.link == null) {
             this.link = link;

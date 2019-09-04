@@ -1,14 +1,17 @@
 # HeliosVentilation Binding
 
-This is the binding for Helios Ventilation Systems KWL EC 200/300/500 Pro. It requires a connection to the RS485 bus used by the original remote controls KWL-FB (9417) and does not use the Modbus/TCP interface of the newer EasyControl devices.
+This is the binding for Helios Ventilation Systems KWL EC 200/300/500 Pro.
+It requires a connection to the RS485 bus used by the original remote controls KWL-FB (9417) and does not use the Modbus/TCP interface of the newer EasyControl devices.
 
-For electrical connection it is recommended to use an USB-RS485 interface, but any RS485 interface that shows up as a serial port will do.Setup the device as described in https://www.openhab.org/docs/administration/serial.html.
+For electrical connection it is recommended to use an USB-RS485 interface, but any RS485 interface that shows up as a serial port will do.
+Setup the device as described in https://www.openhab.org/docs/administration/serial.html.
 
 The binding will use the remote control address 15 for communication, so make sure that this is not assigned to a physically present remote control.
 
 ## Supported Things
 
-There is only one thing type supported by this binding: a Helios Ventilation System KWL EC 200/300/500 Pro from Helios. The binding was developed and test on a KWL EC 200 Pro device.
+There is only one thing type supported by this binding: a Helios Ventilation System KWL EC 200/300/500 Pro from Helios.
+The binding was developed and test on a KWL EC 200 Pro device.
 
 
 ## Discovery

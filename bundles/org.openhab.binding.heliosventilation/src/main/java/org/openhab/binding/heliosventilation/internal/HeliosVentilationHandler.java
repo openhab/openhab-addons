@@ -63,6 +63,14 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     private static final int BUSMEMBER_ME = 0x2F; // used as sender when communicating with the helios system
     private static final int POLL_OFFLINE_THRESHOLD = 3;
 
+    private static final HashMap<Byte, HeliosVentilationDataPoint> Datapoints;
+    private static final Logger Logger;
+    static {
+        /* logger is used by readChannelProperties() so we need to initialize logger first. */
+        Logger = LoggerFactory.getLogger(HeliosVentilationHandler.class);
+        Datapoints = readChannelProperties();
+    }
+
     private @NonNullByDefault({}) HeliosVentilationConfiguration config;
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
@@ -74,14 +82,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
 
     private @Nullable ScheduledFuture<?> pollingTask;
     private int pollCounter;
-
-    private static final HashMap<Byte, HeliosVentilationDataPoint> datapoints;
-    private static final Logger logger;
-    static {
-        /* logger is used by readChannelProperties() so we need to initialize logger first. */
-        logger = LoggerFactory.getLogger(HeliosVentilationHandler.class);
-        datapoints = readChannelProperties();
-    }
 
     /**
      * store received data for read-modify-write operations on bitlevel
@@ -110,7 +110,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             Enumeration<Object> keys = properties.keys();
             while (keys.hasMoreElements()) {
                 String channel = (String) keys.nextElement();
-                logger.error("reading channel {} = {}", channel, properties.getProperty(channel));
+                Logger.error("reading channel {} = {}", channel, properties.getProperty(channel));
                 HeliosVentilationDataPoint dp;
                 try {
                     dp = new HeliosVentilationDataPoint(channel, properties.getProperty(channel));
@@ -120,13 +120,12 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                         result.put(dp.address(), dp);
                     }
                 } catch (HeliosPropertiesFormatException e) {
-                    logger.error("could not read resource file, binding will probably fail: {}",
+                    Logger.error("could not read resource file {}, binding will probably fail: {}",
                             HeliosVentilationBindingConstants.DATAPOINT_FILE, e.getMessage());
                 }
             }
-
         } catch (Exception e) {
-            logger.error("could not read resource file {}, binding will probably fail: {}",
+            Logger.error("could not read resource file {}, binding will probably fail: {}",
                     HeliosVentilationBindingConstants.DATAPOINT_FILE, e.getMessage());
         }
 
@@ -137,9 +136,9 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     public void initialize() {
         config = getConfigAs(HeliosVentilationConfiguration.class);
 
-        logger.debug("   Serial Port: {},", config.serialPort);
-        logger.debug("   Baud:        {},", 9600);
-        logger.debug("   PollPeriod:  {},", config.pollPeriod);
+        Logger.debug("   Serial Port: {},", config.serialPort);
+        Logger.debug("   Baud:        {},", 9600);
+        Logger.debug("   PollPeriod:  {},", config.pollPeriod);
 
         if (config.serialPort.length() < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
@@ -154,12 +153,11 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
         scheduler.execute(() -> {
             connect();
         });
-
     }
 
     @SuppressWarnings("null")
-    private void connect() {
-        logger.debug("HeliosVentilation: connecting...");
+    private synchronized void connect() {
+        Logger.debug("HeliosVentilation: connecting...");
         // parse ports and if the port is found, initialize the reader
         portId = serialPortManager.getIdentifier(config.serialPort);
         if (portId == null) {
@@ -184,7 +182,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                 // activate the DATA_AVAILABLE notifier
                 serialPort.notifyOnDataAvailable(true);
                 updateStatus(ThingStatus.UNKNOWN);
-
             } catch (final IOException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
             } catch (PortInUseException e) {
@@ -210,7 +207,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
      * Start the polling task.
      */
     @SuppressWarnings("null")
-    public void startPolling() {
+    public synchronized void startPolling() {
         if (pollingTask != null && pollingTask.isCancelled()) {
             pollingTask.cancel(true);
         }
@@ -224,7 +221,8 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     /**
      * Stop the polling task.
      */
-    public void stopPolling() {
+    @SuppressWarnings("null")
+    public synchronized void stopPolling() {
         if (pollingTask != null && !pollingTask.isCancelled()) {
             pollingTask.cancel(true);
             pollingTask = null;
@@ -235,7 +233,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
      * Method for polling the RS485 Helios RemoteContol bus
      */
     public synchronized void polling() {
-        logger.trace("HeliosVentilation Polling data for '{}'", getThing().getUID());
+        Logger.trace("HeliosVentilation Polling data for '{}'", getThing().getUID());
         pollCounter++;
         if (pollCounter > POLL_OFFLINE_THRESHOLD) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE, "No data received!");
@@ -246,7 +244,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             connect(); // let's try to reconnect if the connection failed or was never established before
         }
 
-        datapoints.values().forEach((v) -> {
+        Datapoints.values().forEach((v) -> {
             if (isLinked(v.getName())) {
                 poll(v);
             }
@@ -257,8 +255,10 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
         if (thing.getStatus() != ThingStatus.REMOVING) {
             updateStatus(ThingStatus.OFFLINE);
         }
-        if (serialPort != null) {
-            serialPort.close();
+        synchronized (this) {
+            if (serialPort != null) {
+                serialPort.close();
+            }
         }
         IOUtils.closeQuietly(inputStream);
         IOUtils.closeQuietly(outputStream);
@@ -279,11 +279,12 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
      */
     private void tx(byte[] txFrame) {
         try {
-            if (outputStream != null) {
-                logger.trace("HeliosVentilation: Write to serial port: {}",
+            OutputStream out = outputStream;
+            if (out != null) {
+                Logger.trace("HeliosVentilation: Write to serial port: {}",
                         String.format("%02x %02x %02x %02x", txFrame[1], txFrame[2], txFrame[3], txFrame[4]));
 
-                outputStream.write(txFrame);
+                out.write(txFrame);
                 // after each frame we have to wait.
                 // 30 ms is taken from what we roughly see the original remote control is doing
                 Thread.sleep(30);
@@ -321,57 +322,52 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                         // ignore interruption
                     }
                     byte frame[] = { 0, 0, 0, 0, 0, 0 };
-                    do {
-                        int cnt = 0;
-                        int c;
-
+                    InputStream in = inputStream;
+                    if (in != null) {
                         do {
-                            c = inputStream.read();
-                            if (cnt > 0 || c == 0x01) {
-                                frame[cnt] = (byte) c;
-                                cnt++;
-                            }
-
-                            if (cnt < 6 && inputStream.available() < 1) {
-                                // frame not yet complete but no input available, let's wait a little to merge
-                                // interrupted transmissions
-                                try {
-                                    Thread.sleep(10);
-                                } catch (InterruptedException e) {
-                                    // ignore interruption
+                            int cnt = 0;
+                            int c;
+                            do {
+                                c = in.read();
+                                if (cnt > 0 || c == 0x01) {
+                                    frame[cnt] = (byte) c;
+                                    cnt++;
                                 }
+
+                                if (cnt < 6 && in.available() < 1) {
+                                    // frame not yet complete but no input available, let's wait a little to merge
+                                    // interrupted transmissions
+                                    try {
+                                        Thread.sleep(10);
+                                    } catch (InterruptedException e) {
+                                        // ignore interruption
+                                    }
+                                }
+                            } while (in.available() > 0 && (c != -1) && cnt < 6);
+                            int sum = checksum(frame);
+                            if (sum == (frame[5] & 0xff)) {
+                                Logger.trace("HeliosVentilation: Read from serial port: {}",
+                                        String.format("%02x %02x %02x %02x", frame[1], frame[2], frame[3], frame[4]));
+                                interpretFrame(frame);
+
+                            } else {
+                                Logger.trace(
+                                        "HeliosVentilation: Read frame with not matching checksum from serial port: {}",
+                                        String.format("%02x %02x %02x %02x %02x %02x (expected %02x)", frame[0],
+                                                frame[1], frame[2], frame[3], frame[4], frame[5], sum));
+
                             }
-                        } while (inputStream.available() > 0 && (c != -1) && cnt < 6);
 
-                        int sum = checksum(frame);
-                        if (sum == (frame[5] & 0xff)) {
-                            logger.trace("HeliosVentilation: Read from serial port: {}",
-                                    String.format("%02x %02x %02x %02x", frame[1], frame[2], frame[3], frame[4]));
-                            interpretFrame(frame);
-
-                        } else {
-                            logger.trace(
-                                    "HeliosVentilation: Read frame with not matching checksum from serial port: {}",
-                                    String.format("%02x %02x %02x %02x %02x %02x (expected %02x)", frame[0], frame[1],
-                                            frame[2], frame[3], frame[4], frame[5], sum));
-
-                        }
-
-                    } while (inputStream.available() > 0);
+                        } while (in.available() > 0);
+                    }
 
                 } catch (IOException e1) {
-                    logger.debug("Error reading from serial port: {}", e1.getMessage(), e1);
+                    Logger.debug("Error reading from serial port: {}", e1.getMessage(), e1);
                 }
                 break;
             default:
                 break;
         }
-    }
-
-    @Override
-    public void handleRemoval() {
-        disconnect();
-        super.handleRemoval();
     }
 
     @Override
@@ -381,14 +377,14 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
         }
 
         if (command instanceof RefreshType) {
-            logger.debug("Refreshing HeliosVentilation data for {}", channelUID);
-            datapoints.values().forEach((v) -> {
+            Logger.debug("Refreshing HeliosVentilation data for {}", channelUID);
+            Datapoints.values().forEach((v) -> {
                 if (channelUID.getThingUID().equals(thing.getUID()) && v.getName().equals(channelUID.getId())) {
                     poll(v);
                 }
             });
         } else if (command instanceof DecimalType || command instanceof QuantityType || command instanceof OnOffType) {
-            datapoints.values().forEach((outer) -> {
+            Datapoints.values().forEach((outer) -> {
                 HeliosVentilationDataPoint v = outer;
                 do {
                     if (channelUID.getThingUID().equals(thing.getUID()) && v.getName().equals(channelUID.getId())) {
@@ -443,14 +439,14 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             // something to read for us
             byte var = frame[3];
             byte val = frame[4];
-            if (datapoints.containsKey(var)) {
-                HeliosVentilationDataPoint datapoint = datapoints.get(var);
+            if (Datapoints.containsKey(var)) {
+                HeliosVentilationDataPoint datapoint = Datapoints.get(var);
                 if (datapoint.requiresReadModifyWrite()) {
                     memory.put(var, val);
                 }
                 do {
                     String t = datapoint.asString(val);
-                    logger.trace("Received {} = {}", datapoint, t);
+                    Logger.trace("Received {} = {}", datapoint, t);
                     if (thing.getStatus() != ThingStatus.REMOVING) {
                         // plausible data received, so the thing is online
                         updateStatus(ThingStatus.ONLINE);
@@ -462,7 +458,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                 } while (datapoint != null);
 
             } else {
-                logger.trace("Received unkown data @{} = {}", String.format("%02X ", var), String.format("%02X ", val));
+                Logger.trace("Received unkown data @{} = {}", String.format("%02X ", var), String.format("%02X ", val));
             }
         }
     }
