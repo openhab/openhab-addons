@@ -96,7 +96,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService {
         @Override
         public void onMissingData(String nestId) {
         }
-    };
+    }
 
     public NestDiscoveryService(NestBridgeHandler bridge) {
         super(SUPPORTED_THING_TYPES, 60, true);

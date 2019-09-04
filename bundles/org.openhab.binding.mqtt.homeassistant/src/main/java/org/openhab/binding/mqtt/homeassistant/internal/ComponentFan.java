@@ -39,7 +39,7 @@ public class ComponentFan extends AbstractComponent<ComponentFan.ChannelConfigur
         protected String command_topic = "";
         protected String payload_on = "ON";
         protected String payload_off = "OFF";
-    };
+    }
 
     public ComponentFan(CFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);

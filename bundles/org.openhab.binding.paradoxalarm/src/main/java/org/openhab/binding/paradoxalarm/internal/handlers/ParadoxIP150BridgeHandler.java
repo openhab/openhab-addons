@@ -233,7 +233,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
 
         if (communicator != null && communicator.isOnline()) {
             logger.debug("Communicator is online");
-            communicator.refreshMemoryMap();;
+            communicator.refreshMemoryMap();
             updateStatus(ThingStatus.ONLINE);
         } else {
             logger.debug("Communicator is null or not online");

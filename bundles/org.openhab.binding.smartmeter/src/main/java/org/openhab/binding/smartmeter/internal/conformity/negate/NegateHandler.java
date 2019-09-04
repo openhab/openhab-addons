@@ -43,7 +43,6 @@ public class NegateHandler {
         if (value != null) {
             String status = value.getStatus();
             String stringValue;
-            ;
             if (isStatus && status != null) {
                 stringValue = status;
             } else {

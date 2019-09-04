@@ -43,7 +43,7 @@ class WebSocketV2 extends WebSocketBase {
             String id;
             String name;
             String visible;
-        };
+        }
 
         @NonNullByDefault({})
         static class Data {
@@ -57,7 +57,7 @@ class WebSocketV2 extends WebSocketBase {
             String details;
             String message;
             String status;
-        };
+        }
 
         Result result;
         Data data;
