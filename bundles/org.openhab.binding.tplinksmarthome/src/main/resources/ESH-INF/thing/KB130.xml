@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="color" typeId="system.color" />
 			<channel id="colorTemperature" typeId="system.color-temperature" />
+			<channel id="colorTemperatureAbs" typeId="colorTemperatureAbs2" />
 			<channel id="rssi" typeId="rssi" />
 		</channels>
 
