@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -82,15 +83,14 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
         FT1211R_POWER(1, 0, FT1211R),
         FT1211R_LIGHT(2, FT1211R),
         FT1211R_SPEED_1(3, 1, FT1211R),
-        FT1211R_SPEED_2(4, 1, FT1211R),
-        FT1211R_SPEED_3(5, 1, FT1211R),
-        FT1211R_SPEED_4(6, 1, FT1211R),
-        FT1211R_SPEED_5(7, 1, FT1211R),
+        FT1211R_SPEED_2(4, 2, FT1211R),
+        FT1211R_SPEED_3(5, 3, FT1211R),
+        FT1211R_SPEED_4(6, 4, FT1211R),
+        FT1211R_SPEED_5(7, 5, FT1211R),
         FT1211R_FORWARD_REVERSE(8, FT1211R),
         FT1211R_TIMER_1H(9, FT1211R),
         FT1211R_TIMER_4H(10, FT1211R),
-        FT1211R_TIMER_8H(11, FT1211R),
-        ;
+        FT1211R_TIMER_8H(11, FT1211R);
 
         private final int command;
         private final Integer speed;
@@ -104,6 +104,16 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
             this.command = command;
             this.speed = speed;
             this.supportedBySubTypes = Arrays.asList(supportedSubType);
+        }
+
+        @Nullable
+        public static Commands bySpeed(SubType subType, int speed) {
+            for (Commands value : values()) {
+                if (value.supportedBySubTypes.contains(subType) && value.speed == speed) {
+                    return value;
+                }
+            }
+            return null;
         }
 
         @Override
@@ -139,6 +149,31 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
 
     public RFXComFanMessage(byte[] data) throws RFXComException {
         encodeMessage(data);
+    }
+
+    @Override
+    public PacketType getPacketType() {
+        switch (subType) {
+            case LUCCI_AIR_FAN:
+            case CASAFAN:
+            case WESTINGHOUSE_7226640:
+                return PacketType.FAN;
+            case SF01:
+                return PacketType.FAN_SF01;
+            case CVE_RFT:
+                return PacketType.FAN_ITHO;
+            case SEAV_TXS4:
+                return PacketType.FAN_SEAV;
+            case LUCCI_AIR_DC:
+                return PacketType.FAN_LUCCI_DC;
+            case FT1211R:
+                return PacketType.FAN_FT1211R;
+            case FALMEC:
+                return PacketType.FAN_FALMEC;
+            case LUCCI_AIR_DCII:
+                return PacketType.FAN_LUCCI_DCII;
+        }
+        return super.getPacketType();
     }
 
     @Override
@@ -232,6 +267,12 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
             case FALMEC_SPEED_2:
             case FALMEC_SPEED_3:
             case FALMEC_SPEED_4:
+            case FT1211R_POWER:
+            case FT1211R_SPEED_1:
+            case FT1211R_SPEED_2:
+            case FT1211R_SPEED_3:
+            case FT1211R_SPEED_4:
+            case FT1211R_SPEED_5:
                 return new DecimalType(command.getSpeed());
 
             default:
@@ -291,17 +332,9 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                     return Commands.valueOf(stringCommand);
             }
         } else if (type instanceof DecimalType) {
-            switch (((DecimalType) type).intValue()) {
-                case 0:
-                    return Commands.FALMEC_POWER_OFF;
-                case 1:
-                    return Commands.FALMEC_SPEED_1;
-                case 2:
-                    return Commands.FALMEC_SPEED_2;
-                case 3:
-                    return Commands.FALMEC_SPEED_3;
-                case 4:
-                    return Commands.FALMEC_SPEED_4;
+            Commands speedCommand = Commands.bySpeed(subType, ((DecimalType) type).intValue());
+            if (speedCommand != null) {
+                return speedCommand;
             }
         }
         throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);

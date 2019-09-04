@@ -18,7 +18,6 @@
 			<channel id="command" typeId="command" />
 			<channel id="fanSpeed" typeId="fanspeed" />
 			<channel id="fanLight" typeId="command" />
-			<!-- TODO timers?? -->
 			<channel id="signalLevel" typeId="system.signal-strength" />
 		</channels>
 
