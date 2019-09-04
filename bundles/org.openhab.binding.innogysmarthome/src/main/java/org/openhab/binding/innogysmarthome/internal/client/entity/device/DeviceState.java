@@ -17,8 +17,6 @@ import java.util.HashMap;
 import org.openhab.binding.innogysmarthome.internal.client.Util;
 import org.openhab.binding.innogysmarthome.internal.client.entity.Property;
 
-import com.google.api.client.util.Key;
-
 /**
  * Defines the {@link DeviceState}, e.g. if the device is reachable.
  *
@@ -34,10 +32,8 @@ public class DeviceState {
     protected static final String PROTOCOL_ID_VIRTUAL = "Virtual";
     protected static final String PROTOCOL_ID_COSIP = "Cosip";
 
-    @Key("id")
     private String id;
 
-    @Key("state")
     private State state;
 
     private HashMap<String, Property> stateMap;

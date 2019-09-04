@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Holds necessary constants for the innogy API.
@@ -28,8 +29,8 @@ import com.google.common.collect.ImmutableSet;
 public class Constants {
 
     // devices
-    public static final Set<String> BATTERY_POWERED_DEVICES = ImmutableSet.of("RST", "WRT", "WDS", "WSD", "WSD2", "WMD",
-            "WMDO", "WSC2", "BRC8");
+    public static final Set<String> BATTERY_POWERED_DEVICES = Collections.unmodifiableSet(
+            Stream.of("RST", "WRT", "WDS", "WSD", "WSD2", "WMD", "WMDO", "WSC2", "BRC8").collect(Collectors.toSet()));
 
     // API URLs
     public static final String API_HOST = "api.services-smarthome.de";

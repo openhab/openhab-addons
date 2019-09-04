@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.action;
 
-import com.google.api.client.util.Key;
-
 /**
  * Defines the {@link ActionParams} data structure needed to pass parameters within an {@link Action} to the innogy
  * SmartHome backend.
@@ -22,22 +20,16 @@ import com.google.api.client.util.Key;
  */
 public class ActionParams {
 
-    @Key("onState")
     private BooleanActionParam onState;
 
-    @Key("value")
     private BooleanActionParam value;
 
-    @Key("pointTemperature")
     private DoubleActionParam pointTemperature;
 
-    @Key("dimLevel")
     private IntegerActionParam dimLevel;
 
-    @Key("shutterLevel")
     private IntegerActionParam shutterLevel;
 
-    @Key("operationMode")
     private StringActionParam operationMode;
 
     /**

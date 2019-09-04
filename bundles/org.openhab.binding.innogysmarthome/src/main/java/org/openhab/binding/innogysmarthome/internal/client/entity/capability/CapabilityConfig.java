@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.capability;
 
-import com.google.api.client.util.Key;
-
 /**
  * Holds the Capability configuration.
  *
@@ -25,69 +23,58 @@ public class CapabilityConfig {
     /**
      * Name of the capability
      */
-    @Key("name")
     private String name;
 
     /**
      * Specifies if the activity logging is enabled
      */
-    @Key("activityLogActive")
     private Boolean activityLogActive;
 
     /**
      * Specifies if the activity logging is enabled
      */
-    @Key("pushButtons")
     private Integer pushButtons;
 
     /**
      * The valve index
      */
-    @Key("valveIndex")
     private Integer valveIndex;
 
     /**
      * The valve type
      */
-    @Key("valveType")
     private String valveType;
 
     /**
      * The valve control mode: Heating or Cooling
      */
-    @Key("controlMode")
     private String controlMode;
 
     /**
      * Dimmer: Programmed on the device as maximum/minimum and not used for UI representation
      */
-    @Key("technicalMaxValue")
     private Integer technicalMaxValue;
 
     /**
      * Dimmer: Programmed on the device as maximum/minimum and not used for UI representation
      */
-    @Key("technicalMinValue")
     private Integer technicalMinValue;
 
     /**
      * Rollershutter: How long it takes for the shutter to open completely when it's completely closed (in tenth of
      * second)
      */
-    @Key("timeFullUp")
     private Integer timeFullUp;
 
     /**
      * Rollershutter: How long it takes for the shutter to close completely when it's completely open (in tenth of
      * second)
      */
-    @Key("timeFullDown")
     private Integer timeFullDown;
 
     /**
      * Rollershutter: Flag indicating the ISR is in the calibration mode or not.
      */
-    @Key("isCalibrating")
     private Boolean isCalibrating;
 
     /**
@@ -97,110 +84,92 @@ public class CapabilityConfig {
      * DisabledNormal - Current sensing disabled, uses output 1;
      * DisabledReversed - Current sensing disabled, uses output 2"
      */
-    @Key("sensingBehavior")
     private String sensingBehavior;
 
     /**
      * Thermostatactuator: The max temperature
      */
-    @Key("maxTemperature")
     private Double maxTemperature;
 
     /**
      * Thermostatactuator: The min temperature
      */
-    @Key("minTemperature")
     private Double minTemperature;
 
     /**
      * Thermostatactuator: Indicating whether the device is locked
      */
-    @Key("childLock")
     private Boolean childLock;
 
     /**
      * Thermostatactuator: The window open temperature
      */
-    @Key("windowOpenTemperature")
     private Double windowOpenTemperature;
 
     /**
      * Thermostatactuator: default PointTemperature
      */
-    @Key("vRCCSetPoint")
     private String vRCCSetPoint;
 
     /**
      * Temperaturesensor: Indicating whether the device has freeze protection activated
      */
-    @Key("isFreezeProtectionActivated")
     private Boolean isFreezeProtectionActivated;
 
     /**
      * Temperaturesensor: The freeze protection temperature, default 6 °C
      */
-    @Key("freezeProtection")
     private Double freezeProtection;
 
     /**
      * Temperaturesensor: default Temperature
      */
-    @Key("vRCCTemperature")
     private String vRCCTemperature;
 
     /**
      * HumiditySensor: Indicating whether the device has mold protection activated
      */
-    @Key("isMoldProtectionActivated")
     private Boolean isMoldProtectionActivated;
 
     /**
      * HumiditySensor: The humidity mold protection
      */
-    @Key("humidityMoldProtection")
     private Double humidityMoldProtection;
 
     /**
      * HumiditySensor: default Humidity
      */
-    @Key("vRCCHumidity")
     private String vRCCHumidity;
 
     /**
      * SirenActuator: Alarm Sound Id
      */
-    @Key("alarmSoundId")
     private String alarmSoundId;
 
     /**
      * SirenActuator: Notification Sound Id
      */
-    @Key("notificationSoundId")
     private String notificationSoundId;
 
     /**
      * SirenActuator: Feedback Sound Id
      */
-    @Key("feedbackSoundId")
     private String feedbackSoundId;
 
     /**
      * RoomSetPoint/RoomTemperature/RoomHumidity: List of capability ids, which are linked to the VRCC
      */
-    @Key("underlyingCapabilityIds")
     private String underlyingCapabilityIds;
 
     /**
      * WindowsDoorSensor: Time before the changed status is sent after the window/door is opened (in seconds)
      */
-    @Key("eventFilterTime")
     private Integer eventFilterTime;
 
     /**
      * Medion ThermostatActuator: Specifies the temperature threshold that will denote a window open event. 0 = window
      * reduction disabled 1-12 = 1/12 °C, 2/12 °C,…, 12/12 °C
      */
-    @Key("windowOpenThreshold")
     private Integer windowOpenThreshold;
 
     /**
@@ -208,19 +177,16 @@ public class CapabilityConfig {
      * closed (target temperature = OFF). After the set time, the temperature will jump back to the previous set target
      * temperature.
      */
-    @Key("windowOpenTimer")
     private Integer windowOpenTimer;
 
     /**
      * Medion MotionDetectionSensor sensitivityControl
      */
-    @Key("sensitivityControl")
     private Integer sensitivityControl;
 
     /**
      * Medion WindowDoorShockSensor: shockDetectorThreshold
      */
-    @Key("shockDetectorThreshold")
     private Integer shockDetectorThreshold;
 
     /**

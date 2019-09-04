@@ -12,116 +12,80 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.event;
 
-import com.google.api.client.util.Key;
-
 /**
  * @author Oliver Kuhl - Initial contribution
  *
  */
 public class EventProperties {
     /** SHC Properties **/
-    @Key("configVersion")
     private Integer configVersion;
 
-    @Key("isConnected")
     private Boolean isConnected;
 
     /** Writable capability properties **/
-    @Key("dimLevel")
     private Integer dimLevel;
 
-    @Key("onState")
     private Boolean onState;
 
-    @Key("operationMode")
     private String operationMode;
 
-    @Key("pointTemperature")
     private Double pointTemperature;
 
-    @Key("shutterLevel")
     private Integer shutterLevel;
 
-    @Key("value")
     private Boolean value;
 
     /** readable capability properties **/
-    @Key("absoluteEnergyConsumption")
     private Double absoluteEnergyConsumption;
 
-    @Key("energyConsumptionDayEuro")
     private Double energyConsumptionDayEuro;
 
-    @Key("energyConsumptionDayKWh")
     private Double energyConsumptionDayKWh;
 
-    @Key("energyConsumptionMonthEuro")
     private Double energyConsumptionMonthEuro;
 
-    @Key("energyConsumptionMonthKWh")
     private Double energyConsumptionMonthKWh;
 
-    @Key("energyPerDayInEuro")
     private Double energyPerDayInEuro;
 
-    @Key("energyPerDayInKWh")
     private Double energyPerDayInKWh;
 
-    @Key("energyPerMonthInEuro")
     private Double energyPerMonthInEuro;
 
-    @Key("energyPerMonthInKWh")
     private Double energyPerMonthInKWh;
 
-    @Key("frostWarning")
     private Boolean frostWarning;
 
-    @Key("humidity")
     private Double humidity;
 
-    @Key("isOpen")
     private Boolean isOpen;
 
-    @Key("isSmokeAlarm")
     private Boolean isSmokeAlarm;
 
-    @Key("lastKeyPressCounter")
     private Integer lastKeyPressCounter;
 
-    @Key("lastPressedButtonIndex")
     private Integer lastPressedButtonIndex;
 
-    @Key("luminance")
     private Integer luminance;
 
-    @Key("moldWarning")
     private Boolean moldWarning;
 
-    @Key("motionDetectedCount")
     private Integer motionDetectedCount;
 
-    @Key("powerConsumptionWatt")
     private Double powerConsumptionWatt;
 
-    @Key("powerInWatt")
     private Double powerInWatt;
 
-    @Key("temperature")
     private Double temperature;
 
-    @Key("totalEnergy")
     private Double totalEnergy;
 
-    @Key("windowReductionActive")
     private Boolean windowReductionActive;
 
-    @Key("cpuUsage")
     private Double cpuUsage;
 
-    @Key("diskUsage")
     private Double diskUsage;
 
-    @Key("memoryUsage")
     private Double memoryUsage;
 
     /**

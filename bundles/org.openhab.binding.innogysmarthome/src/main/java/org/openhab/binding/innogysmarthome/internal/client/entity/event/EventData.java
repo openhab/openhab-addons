@@ -12,17 +12,13 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.event;
 
-import com.google.api.client.util.Key;
-
 /**
  * @author Oliver Kuhl - Initial contribution
  *
  */
 public class EventData {
-    @Key("configVersion")
     private Integer configVersion;
 
-    @Key("id")
     private String id;
 
     /**

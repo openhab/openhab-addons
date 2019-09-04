@@ -18,7 +18,7 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.state.DoubleSt
 import org.openhab.binding.innogysmarthome.internal.client.entity.state.IntegerState;
 import org.openhab.binding.innogysmarthome.internal.client.entity.state.StringState;
 
-import com.google.api.client.util.Key;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Holds the state of the Device.
@@ -28,86 +28,66 @@ import com.google.api.client.util.Key;
  */
 public class State {
     /** Standard device states */
-    @Key("deviceInclusionState")
+    @SerializedName("deviceInclusionState")
     private StringState deviceInclusionState;
 
-    @Key("deviceConfigurationState")
+    @SerializedName("deviceConfigurationState")
     private StringState deviceConfigurationState;
 
-    @Key("isReachable")
     private BooleanState isReachable;
 
-    @Key("updateState")
     private StringState updateState;
 
-    @Key("firmwareVersion")
     private StringState firmwareVersion;
 
-    @Key("WHRating")
+    @SerializedName("WHRating")
     private DoubleState WHRating;
 
     /** SHC device states */
-    @Key("updateAvailable")
     private StringState updateAvailable;
 
-    @Key("lastReboot")
     private DateTimeState lastReboot;
 
-    @Key("memoryLoad")
     private IntegerState memoryLoad;
 
-    @Key("CPULoad")
+    @SerializedName("CPULoad")
     private IntegerState CPULoad;
 
-    @Key("LBDongleAttached")
+    @SerializedName("LBDongleAttached")
     private BooleanState LBDongleAttached;
 
-    @Key("MBusDongleAttached")
+    @SerializedName("MBusDongleAttached")
     private BooleanState MBusDongleAttached;
 
-    @Key("configVersion")
     private IntegerState configVersion;
 
-    @Key("OSState")
+    @SerializedName("OSState")
     private StringState OSState;
 
-    @Key("wifiSignalStrength")
     private IntegerState wifiSignalStrength;
 
-    @Key("ethIpAddress")
     private StringState ethIpAddress;
 
-    @Key("wifiIpAddress")
     private StringState wifiIpAddress;
 
-    @Key("ethMacAddress")
     private StringState ethMacAddress;
 
-    @Key("wifiMacAddress")
     private StringState wifiMacAddress;
 
-    @Key("inUseAdapter")
     private StringState inUseAdapter;
 
-    @Key("innogyLayerAttached")
     private BooleanState innogyLayerAttached;
 
-    @Key("discoveryActive")
     private BooleanState discoveryActive;
 
-    @Key("operationStatus")
     private StringState operationStatus;
 
-    @Key("currentUtcOffset")
     private DoubleState currentUtcOffset;
 
-    @Key("cpuUsage")
     private DoubleState cpuUsage;
 
-    @Key("diskUsage")
     private DoubleState diskUsage;
 
-    @Key("memoryUsage")
     private DoubleState memoryUsage;
 
     /**

@@ -12,18 +12,10 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.event;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.openhab.binding.innogysmarthome.internal.client.entity.Property;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
 import org.openhab.binding.innogysmarthome.internal.client.entity.message.Message;
-
-import com.google.api.client.util.Key;
-//import com.google.gson.annotations.SerializedName;
 
 /**
  * Defines the {@link Event}, which is sent by the innogy websocket to inform the clients about changes.
@@ -38,13 +30,11 @@ public class MessageEvent extends BaseEvent {
     /**
      * Reference to the associated entity (instance or metadata) for the given event. Always available.
      */
-    @Key("source")
     private String source;
 
     /**
      * The product (context) that generated the event.
      */
-    @Key("namespace")
     private String namespace;
 
     /**
@@ -52,8 +42,6 @@ public class MessageEvent extends BaseEvent {
      * the DeviceFound events contains the entire Device entity rather than selected properties.
      * Optional.
      */
-    @Key("data")
-    //@SerializedName("data")
     private Message data;
 
     /**

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.capability;
 
-import com.google.api.client.util.Key;
-
 /**
  * Defines the {@link CapabilityState}, that holds the state of a {@link Capability}, e.g. a temperature.
  *
@@ -74,13 +72,11 @@ public class CapabilityState /* extends EntityState */ {
     /**
      * id of the {@link Capability}
      */
-    @Key("id")
     private String id;
 
     /**
      * class containing all states
      */
-    @Key("state")
     private State state;
 
     /**

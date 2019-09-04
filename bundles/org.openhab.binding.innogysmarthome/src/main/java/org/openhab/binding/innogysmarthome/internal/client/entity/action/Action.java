@@ -14,8 +14,6 @@ package org.openhab.binding.innogysmarthome.internal.client.entity.action;
 
 import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
 
-import com.google.api.client.util.Key;
-
 /**
  * Implements the Action structure needed to send JSON actions to the innogy backend. They are used to e.g. switch the
  * state of a device.
@@ -30,25 +28,21 @@ public class Action {
     /**
      * Specifies the type of the action.
      */
-    @Key("type")
     private String type;
 
     /**
      * Link to the entity supposed to execute the action.
      */
-    @Key("target")
     private String target;
 
     /**
      * The product (context) that should handle (execute) the action. Defaults to {@link Action#NAMESPACE_CORE_RWE}.
      */
-    @Key("namespace")
     private String namespace = NAMESPACE_CORE_RWE;
 
     /**
      * Dictionary of functions required for the intended execution of the action.
      */
-    @Key("params")
     private ActionParams params;
 
     /**

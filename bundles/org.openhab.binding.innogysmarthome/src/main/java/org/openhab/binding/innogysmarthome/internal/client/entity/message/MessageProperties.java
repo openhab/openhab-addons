@@ -14,8 +14,6 @@ package org.openhab.binding.innogysmarthome.internal.client.entity.message;
 
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 
-import com.google.api.client.util.Key;
-
 /**
  * @author Oliver Kuhl - Initial contribution
  *
@@ -24,19 +22,16 @@ public class MessageProperties {
     /**
      * Name of the referenced {@link Device}
      */
-    @Key("deviceName")
     private String deviceName;
 
     /**
      * Serialnumber of the referenced {@link Device}
      */
-    @Key("serialNumber")
     private String serialNumber;
 
     /**
      * Locationname of the referenced {@link Device}
      */
-    @Key("locationName")
     private String locationName;
 
     /**

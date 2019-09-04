@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.innogysmarthome.internal.listener;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
  *
  * @author Oliver Kuhl - Initial contribution
  */
+@NonNullByDefault
 public interface EventListener {
 
     /**

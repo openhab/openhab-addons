@@ -22,7 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -33,7 +32,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -67,10 +72,6 @@ import org.openhab.binding.innogysmarthome.internal.manager.DeviceStructureManag
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.CredentialRefreshListener;
-import com.google.api.client.auth.oauth2.TokenErrorResponse;
-import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.gson.Gson;
 
 /**
@@ -84,22 +85,27 @@ import com.google.gson.Gson;
  * to the innogy SmartHome webservice via the {@link InnogyClient}.
  *
  * @author Oliver Kuhl - Initial contribution
+ * @author Hilbrand Bouwkamp - Refactored to use openHAB http and oauth2 libraries
  */
-public class InnogyBridgeHandler extends BaseBridgeHandler implements CredentialRefreshListener, EventListener, DeviceStatusListener {
+@NonNullByDefault
+public class InnogyBridgeHandler extends BaseBridgeHandler
+        implements AccessTokenRefreshListener, EventListener, DeviceStatusListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+
     private final Logger logger = LoggerFactory.getLogger(InnogyBridgeHandler.class);
-    private InnogyConfig innogyConfig;
-    private InnogyClient client;
-    private InnogyWebSocket webSocket;
-    private DeviceStructureManager deviceStructMan;
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
     private final Object lock = new Object();
-    private String bridgeId;
+    private final Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
+    private final OAuthFactory oAuthFactory;
+    private final HttpClient httpClient;
 
-    private Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
-
-    private ScheduledFuture<?> reinitJob;
+    private @Nullable InnogyConfig innogyConfig;
+    private @Nullable InnogyClient client;
+    private @Nullable InnogyWebSocket webSocket;
+    private @Nullable DeviceStructureManager deviceStructMan;
+    private @Nullable String bridgeId;
+    private @Nullable ScheduledFuture<?> reinitJob;
 
     /**
      * The {@link Initializer} class implements the initialization process of the bridge including starting the
@@ -112,12 +118,12 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
 
         @Override
         public void run() {
-            client = new InnogyClient(innogyConfig);
-            client.setCredentialRefreshListener(InnogyBridgeHandler.this);
+            client = new InnogyClient(innogyConfig, oAuthFactory, httpClient);
+            client.setAccessTokenRefreshListener(InnogyBridgeHandler.this);
             try {
                 logger.debug("Initializing innogy SmartHome client...");
-                client.initialize();
-            } catch (Exception e) {
+                client.initialize(thing.getUID().getAsString());
+            } catch (ApiException | IOException | ConfigurationException e) {
                 if (!handleClientException(e)) {
                     logger.error("Error initializing innogy SmartHome client.", e);
                     return;
@@ -138,7 +144,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
             deviceStructMan = new DeviceStructureManager(client);
             try {
                 deviceStructMan.start();
-            } catch (Exception e) {
+            } catch (IOException | ApiException e) {
                 if (!handleClientException(e)) {
                     logger.error("Error starting device structure manager.", e);
                     return;
@@ -155,27 +161,47 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         }
 
         private void setBridgeProperties(Device bridgeDevice) {
-            logger.debug("Setting Bridge Device Properties for Bridge of type '{}' with ID '{}'", bridgeDevice.getConfig().getName(), bridgeDevice.getId());
+            logger.debug("Setting Bridge Device Properties for Bridge of type '{}' with ID '{}'",
+                    bridgeDevice.getConfig().getName(), bridgeDevice.getId());
 
             Map<String, String> properties = editProperties();
-            Optional.ofNullable(bridgeDevice.getManufacturer()).ifPresent(manufacturer -> properties.put(Thing.PROPERTY_VENDOR, manufacturer));
-            Optional.ofNullable(bridgeDevice.getSerialnumber()).ifPresent(serialNumber -> properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber));
+            Optional.ofNullable(bridgeDevice.getManufacturer())
+                    .ifPresent(manufacturer -> properties.put(Thing.PROPERTY_VENDOR, manufacturer));
+            Optional.ofNullable(bridgeDevice.getSerialnumber())
+                    .ifPresent(serialNumber -> properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber));
             Optional.ofNullable(bridgeDevice.getId()).ifPresent(id -> properties.put(PROPERTY_ID, id));
-            Optional.ofNullable(bridgeDevice.getConfig().getFirmwareVersion()).ifPresent(firmwareVersion -> properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion));
-            Optional.ofNullable(bridgeDevice.getConfig().getHardwareVersion()).ifPresent(hardwareVersion -> properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareVersion));
-            Optional.ofNullable(bridgeDevice.getConfig().getSoftwareVersion()).ifPresent(softwareVersion -> properties.put(PROPERTY_SOFTWARE_VERSION, softwareVersion));
-            Optional.ofNullable(bridgeDevice.getConfig().getIPAddress()).ifPresent(ipAddress -> properties.put(PROPERTY_IP_ADDRESS, ipAddress));
-            Optional.ofNullable(bridgeDevice.getConfig().getMACAddress()).ifPresent(macAddress -> properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress));
-            Optional.ofNullable(bridgeDevice.getConfig().getRegistrationTime()).ifPresent(registrationTime -> properties.put(PROPERTY_REGISTRATION_TIME, registrationTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))));
-            Optional.ofNullable(bridgeDevice.getConfig().getConfigurationState()).ifPresent(configurationState -> properties.put(PROPERTY_CONFIGURATION_STATE, configurationState));
-            Optional.ofNullable(bridgeDevice.getType()).ifPresent(shcType -> properties.put(PROPERTY_SHC_TYPE, shcType));
-            Optional.ofNullable(bridgeDevice.getConfig().getTimeZone()).ifPresent(timeZone -> properties.put(PROPERTY_TIME_ZONE, timeZone));
-            Optional.ofNullable(bridgeDevice.getConfig().getProtocolId()).ifPresent(protocolId -> properties.put(PROPERTY_PROTOCOL_ID, protocolId));
-            Optional.ofNullable(bridgeDevice.getConfig().getGeoLocation()).ifPresent(geoLocation -> properties.put(PROPERTY_GEOLOCATION, geoLocation));
-            Optional.ofNullable(bridgeDevice.getConfig().getCurrentUTCOffset()).ifPresent(currentUTCOffset -> properties.put(PROPERTY_CURRENT_UTC_OFFSET, currentUTCOffset.toString()));
-            Optional.ofNullable(bridgeDevice.getConfig().getBackendConnectionMonitored()).ifPresent(backendConnectionMonitored -> properties.put(PROPERTY_BACKEND_CONNECTION_MONITORED, backendConnectionMonitored.toString()));
-            Optional.ofNullable(bridgeDevice.getConfig().getRFCommFailureNotification()).ifPresent(rfCommFailureNotification -> properties.put(PROPERTY_RFCOM_FAILURE_NOTIFICATION, rfCommFailureNotification.toString()));
-            
+            Optional.ofNullable(bridgeDevice.getConfig().getFirmwareVersion())
+                    .ifPresent(firmwareVersion -> properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion));
+            Optional.ofNullable(bridgeDevice.getConfig().getHardwareVersion())
+                    .ifPresent(hardwareVersion -> properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareVersion));
+            Optional.ofNullable(bridgeDevice.getConfig().getSoftwareVersion())
+                    .ifPresent(softwareVersion -> properties.put(PROPERTY_SOFTWARE_VERSION, softwareVersion));
+            Optional.ofNullable(bridgeDevice.getConfig().getIPAddress())
+                    .ifPresent(ipAddress -> properties.put(PROPERTY_IP_ADDRESS, ipAddress));
+            Optional.ofNullable(bridgeDevice.getConfig().getMACAddress())
+                    .ifPresent(macAddress -> properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress));
+            Optional.ofNullable(bridgeDevice.getConfig().getRegistrationTime())
+                    .ifPresent(registrationTime -> properties.put(PROPERTY_REGISTRATION_TIME,
+                            registrationTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))));
+            Optional.ofNullable(bridgeDevice.getConfig().getConfigurationState())
+                    .ifPresent(configurationState -> properties.put(PROPERTY_CONFIGURATION_STATE, configurationState));
+            Optional.ofNullable(bridgeDevice.getType())
+                    .ifPresent(shcType -> properties.put(PROPERTY_SHC_TYPE, shcType));
+            Optional.ofNullable(bridgeDevice.getConfig().getTimeZone())
+                    .ifPresent(timeZone -> properties.put(PROPERTY_TIME_ZONE, timeZone));
+            Optional.ofNullable(bridgeDevice.getConfig().getProtocolId())
+                    .ifPresent(protocolId -> properties.put(PROPERTY_PROTOCOL_ID, protocolId));
+            Optional.ofNullable(bridgeDevice.getConfig().getGeoLocation())
+                    .ifPresent(geoLocation -> properties.put(PROPERTY_GEOLOCATION, geoLocation));
+            Optional.ofNullable(bridgeDevice.getConfig().getCurrentUTCOffset()).ifPresent(
+                    currentUTCOffset -> properties.put(PROPERTY_CURRENT_UTC_OFFSET, currentUTCOffset.toString()));
+            Optional.ofNullable(bridgeDevice.getConfig().getBackendConnectionMonitored())
+                    .ifPresent(backendConnectionMonitored -> properties.put(PROPERTY_BACKEND_CONNECTION_MONITORED,
+                            backendConnectionMonitored.toString()));
+            Optional.ofNullable(bridgeDevice.getConfig().getRFCommFailureNotification())
+                    .ifPresent(rfCommFailureNotification -> properties.put(PROPERTY_RFCOM_FAILURE_NOTIFICATION,
+                            rfCommFailureNotification.toString()));
+
             updateProperties(properties);
         }
     };
@@ -215,9 +241,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
                 webSocket = new InnogyWebSocket(bridgeHandler, URI.create(webSocketUrl), idleTimeout.intValue() * 1000);
                 logger.debug("Starting innogy websocket.");
                 webSocket.start();
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (Exception e) { // Catch Exception because websocket start throws Exception
                 if (!handleClientException(e)) {
-                    logger.error("Error starting websocket.", e);
+                    logger.warn("Error starting websocket.", e);
                     return;
                 }
             }
@@ -229,8 +257,10 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
      *
      * @param bridge
      */
-    public InnogyBridgeHandler(Bridge bridge) {
+    public InnogyBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
         super(bridge);
+        this.oAuthFactory = oAuthFactory;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -280,11 +310,13 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
      *
      * @return the {@link InnogyConfig} for the {@link InnogyClient}.
      */
-    private InnogyConfig loadAndCheckConfig() {
-        Configuration thingConfig = super.getConfig();
+    private @Nullable InnogyConfig loadAndCheckConfig() {
+        final Configuration thingConfig = super.getConfig();
+        InnogyConfig innogyConfig = this.innogyConfig;
 
         if (innogyConfig == null) {
             innogyConfig = new InnogyConfig();
+            this.innogyConfig = innogyConfig;
         }
 
         // load and check connection and authorization data
@@ -329,11 +361,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#dispose()
-     */
     @Override
     public void dispose() {
         logger.debug("Disposing innogy SmartHome bridge handler '{}'", getThing().getUID().getId());
@@ -350,15 +377,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
             webSocket = null;
         }
 
-        if (client != null) {
-            try {
-                client.dispose();
-            } catch (Exception e) {
-                logger.trace("Error disposing client: {}", e.getMessage());
-            }
-            client = null;
-        }
-
+        client = null;
         deviceStructMan = null;
 
         super.dispose();
@@ -397,13 +416,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
      * @return a Collection of {@link Device}s
      */
     public Collection<Device> loadDevices() {
-        Collection<Device> devices = null;
-        if (deviceStructMan != null) {
-            try {
-                devices = deviceStructMan.getDeviceList();
-            } catch (Exception e) {
-                logger.error("Error loading devices from device structure manager.", e);
-            }
+        final Collection<Device> devices;
+        if (deviceStructMan == null) {
+            devices = Collections.emptyList();
+        } else {
+            devices = deviceStructMan.getDeviceList();
         }
 
         return devices;
@@ -415,7 +432,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
      * @param deviceId
      * @return {@link Device} or null, if it does not exist or no {@link DeviceStructureManager} is available
      */
-    public Device getDeviceById(String deviceId) {
+    public @Nullable Device getDeviceById(String deviceId) {
         if (deviceStructMan != null) {
             return deviceStructMan.getDeviceById(deviceId);
         }
@@ -428,7 +445,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
      * @param deviceId
      * @return the {@link Device} or null, if it does not exist or no {@link DeviceStructureManager} is available
      */
-    public Device refreshDevice(String deviceId) {
+    public @Nullable Device refreshDevice(String deviceId) {
         if (deviceStructMan == null) {
             return null;
         }
@@ -437,7 +454,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         try {
             deviceStructMan.refreshDevice(deviceId);
             device = deviceStructMan.getDeviceById(deviceId);
-        } catch (Exception e) {
+        } catch (IOException | ApiException e) {
             handleClientException(e);
         }
         return device;
@@ -445,15 +462,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
 
     // CredentialRefreshListener implementation
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.google.api.client.auth.oauth2.CredentialRefreshListener#onTokenResponse(com.google.api.client.auth.oauth2.
-     * Credential, com.google.api.client.auth.oauth2.TokenResponse)
-     */
     @Override
-    public void onTokenResponse(Credential credential, TokenResponse tokenResponse) throws IOException {
+    public void onAccessTokenResponse(AccessTokenResponse credential) {
         String accessToken = credential.getAccessToken();
         innogyConfig.setAccessToken(accessToken);
         getThing().getConfiguration().put(CONFIG_ACCESS_TOKEN, accessToken);
@@ -463,24 +473,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
 
         // restart WebSocket
         onEventRunnerStopped();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.google.api.client.auth.oauth2.CredentialRefreshListener#onTokenErrorResponse(com.google.api.client.auth.
-     * oauth2.Credential, com.google.api.client.auth.oauth2.TokenErrorResponse)
-     */
-    @Override
-    public void onTokenErrorResponse(Credential credential, TokenErrorResponse tokenErrorResponse) throws IOException {
-        String accessToken = "";
-        innogyConfig.setAccessToken(accessToken);
-        getThing().getConfiguration().put(CONFIG_ACCESS_TOKEN, accessToken);
-        logger.debug("innogy access token removed (onTokenErrorResponse): {}...{}", accessToken.substring(0, 10),
-                accessToken.substring(accessToken.length() - 10));
-
-        // restart binding
-        scheduleReinitialize();
     }
 
     @Override
@@ -511,7 +503,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
                     logger.debug("-> Memory usage state: {}", memoryUsage);
                     updateState(CHANNEL_MEMORY, new DecimalType(memoryUsage));
                 }
-                
+
             }
 
         }
@@ -528,7 +520,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
             }
 
             logger.trace("DeviceId {} relevant for this handler.", device.getId());
-            
+
             if (event.isLinkedtoDevice() && Device.DEVICE_TYPE_SHCA.equals(device.getType())) {
                 device.getDeviceState().getState().getCpuUsage().setValue(event.getProperties().getCpuUsage());
                 device.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
@@ -590,7 +582,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
                         MessageEvent messageEvent = gson.fromJson(msg, MessageEvent.class);
                         handleNewMessageReceivedEvent(messageEvent);
                         break;
-                    
+
                     case BaseEvent.TYPE_MESSAGE_DELETED:
                         handleMessageDeletedEvent(event);
                         break;
@@ -600,7 +592,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
                         break;
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | ApiException e) {
             logger.debug("Error with Event: {}", e.getMessage(), e);
         }
         logger.trace("=====================================================");
@@ -636,7 +628,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         } else if (event.isLinkedtoDevice()) {
             logger.trace("Event is linked to device");
 
-            if(!event.getSourceId().equals(deviceStructMan.getBridgeDevice().getId())) {
+            if (!event.getSourceId().equals(deviceStructMan.getBridgeDevice().getId())) {
                 deviceStructMan.refreshDevice(event.getSourceId());
             }
             Device device = deviceStructMan.getDeviceById(event.getSourceId());
@@ -758,11 +750,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         onEventRunnerStopped(0);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.innogysmarthome.internal.listener.EventListener#onEventRunnerStoppedAbnormally()
-     */
     @Override
     public void connectionClosed() {
         scheduleReinitialize(REINITIALIZE_DELAY_SECONDS);
@@ -790,7 +777,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
                 String capabilityId = deviceStructMan.getCapabilityId(deviceId, Capability.TYPE_SWITCHACTUATOR);
                 client.setSwitchActuatorState(capabilityId, state);
             }
-        } catch (Exception e) {
+        } catch (IOException | ApiException e) {
             handleClientException(e);
         }
     }
@@ -806,7 +793,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         try {
             String capabilityId = deviceStructMan.getCapabilityId(deviceId, Capability.TYPE_THERMOSTATACTUATOR);
             client.setPointTemperatureState(capabilityId, pointTemperature);
-        } catch (Exception e) {
+        } catch (IOException | ApiException e) {
             handleClientException(e);
         }
     }
@@ -822,7 +809,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         try {
             String capabilityId = deviceStructMan.getCapabilityId(deviceId, Capability.TYPE_ALARMACTUATOR);
             client.setAlarmActuatorState(capabilityId, alarmState);
-        } catch (Exception e) {
+        } catch (IOException | ApiException e) {
             handleClientException(e);
         }
     }
@@ -838,7 +825,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         try {
             String capabilityId = deviceStructMan.getCapabilityId(deviceId, Capability.TYPE_THERMOSTATACTUATOR);
             client.setOperationMode(capabilityId, autoMode);
-        } catch (Exception e) {
+        } catch (IOException | ApiException e) {
             handleClientException(e);
         }
     }
@@ -854,7 +841,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         try {
             String capabilityId = deviceStructMan.getCapabilityId(deviceId, Capability.TYPE_DIMMERACTUATOR);
             client.setDimmerActuatorState(capabilityId, dimLevel);
-        } catch (Exception e) {
+        } catch (IOException | ApiException e) {
             handleClientException(e);
         }
     }
@@ -870,7 +857,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
         try {
             String capabilityId = deviceStructMan.getCapabilityId(deviceId, Capability.TYPE_ROLLERSHUTTERACTUATOR);
             client.setRollerShutterActuatorState(capabilityId, rollerSchutterLevel);
-        } catch (Exception e) {
+        } catch (IOException | ApiException e) {
             handleClientException(e);
         }
     }
@@ -884,7 +871,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
      * @return boolean true, if binding should continue.
      */
     private boolean handleClientException(Exception e) {
-
         // Session exists
         if (e instanceof SessionExistsException) {
             logger.debug("Session already exists. Continuing...");

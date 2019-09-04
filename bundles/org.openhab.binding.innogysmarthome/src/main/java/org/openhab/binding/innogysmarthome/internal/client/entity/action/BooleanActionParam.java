@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.action;
 
-import com.google.api.client.util.Key;
-
 /**
  * Defines the structure of a {@link BooleanActionParam}.
  *
@@ -21,10 +19,8 @@ import com.google.api.client.util.Key;
  */
 public class BooleanActionParam {
 
-    @Key("type")
     private String type;
 
-    @Key("value")
     private boolean value;
 
     /**

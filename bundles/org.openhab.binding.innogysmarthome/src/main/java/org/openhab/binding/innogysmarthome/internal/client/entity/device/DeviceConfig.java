@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 
 import org.openhab.binding.innogysmarthome.internal.client.Util;
 
-import com.google.api.client.util.Key;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Holds the configuration of the Device.
@@ -25,74 +25,54 @@ import com.google.api.client.util.Key;
  *
  */
 public class DeviceConfig {
-    @Key("name")
     private String name;
 
-    @Key("protocolId")
     private String protocolId;
 
-    @Key("timeOfAcceptance")
     private String timeOfAcceptance;
 
-    @Key("timeOfDiscovery")
     private String timeOfDiscovery;
 
-    @Key("hardwareVersion")
     private String hardwareVersion;
 
-    @Key("softwareVersion")
     private String softwareVersion;
 
-    @Key("firmwareVersion")
     private String firmwareVersion;
 
-    @Key("hostName")
     private String hostName;
 
-    @Key("activityLogEnabled")
     private boolean activityLogEnabled;
 
-    @Key("configurationState")
     private String configurationState;
 
-    @Key("IPAddress")
+    @SerializedName("IPAddress")
     private String IPAddress;
 
-    @Key("MACAddress")
+    @SerializedName("MACAddress")
     private String MACAddress;
 
-    @Key("registrationTime")
     private String registrationTime;
 
-    @Key("timeZone")
     private String timeZone;
 
-    @Key("shcType")
     private String shcType;
 
-    @Key("geoLocation")
     private String geoLocation;
 
-    @Key("currentUTCOffset")
     private Double currentUTCOffset;
 
-    @Key("backendConnectionMonitored")
     private Boolean backendConnectionMonitored;
 
-    @Key("RFCommFailureNotification")
+    @SerializedName("RFCommFailureNotification")
     private Boolean RFCommFailureNotification;
 
-    @Key("displayCurrentTemperature")
     private String displayCurrentTemperature;
 
     // TODO VRCC
-    @Key("underlyingDeviceIds")
     private String underlyingDeviceIds;
 
-    @Key("meterId")
     private String meterId;
 
-    @Key("meterFirmwareVersion")
     private String meterFirmwareVersion;
 
     /**

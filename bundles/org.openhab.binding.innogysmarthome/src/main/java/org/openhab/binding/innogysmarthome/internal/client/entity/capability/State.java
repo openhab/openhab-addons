@@ -18,7 +18,7 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.state.DoubleSt
 import org.openhab.binding.innogysmarthome.internal.client.entity.state.IntegerState;
 import org.openhab.binding.innogysmarthome.internal.client.entity.state.StringState;
 
-import com.google.api.client.util.Key;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Holds the Capability state.
@@ -28,130 +28,130 @@ import com.google.api.client.util.Key;
  */
 public class State {
 
-    @Key("absoluteEnergyConsumption")
+    @SerializedName("absoluteEnergyConsumption")
     private DoubleState absoluteEnergyConsumptionState;
 
-    @Key("activeChannel")
+    @SerializedName("activeChannel")
     private StringState activeChannelState;
 
-    @Key("dimLevel")
+    @SerializedName("dimLevel")
     private IntegerState dimLevelState;
 
-    @Key("energyConsumptionDayEuro")
+    @SerializedName("energyConsumptionDayEuro")
     private DoubleState energyConsumptionDayEuroState;
 
-    @Key("energyConsumptionDayKWh")
+    @SerializedName("energyConsumptionDayKWh")
     private DoubleState energyConsumptionDayKWhState;
 
-    @Key("energyConsumptionMonthEuro")
+    @SerializedName("energyConsumptionMonthEuro")
     private DoubleState energyConsumptionMonthEuroState;
 
-    @Key("energyConsumptionMonthKWh")
+    @SerializedName("energyConsumptionMonthKWh")
     private DoubleState energyConsumptionMonthKWhState;
 
-    @Key("energyPerDayInEuro")
+    @SerializedName("energyPerDayInEuro")
     private DoubleState energyPerDayInEuroState;
 
-    @Key("energyPerDayInKWh")
+    @SerializedName("energyPerDayInKWh")
     private DoubleState energyPerDayInKWhState;
 
-    @Key("energyPerMonthInEuro")
+    @SerializedName("energyPerMonthInEuro")
     private DoubleState energyPerMonthInEuroState;
 
-    @Key("energyPerMonthInKWh")
+    @SerializedName("energyPerMonthInKWh")
     private DoubleState energyPerMonthInKWhState;
 
-    @Key("frostWarning")
+    @SerializedName("frostWarning")
     private BooleanState frostWarningState;
 
-    @Key("humidity")
+    @SerializedName("humidity")
     private DoubleState humidityState;
 
-    @Key("isDay")
+    @SerializedName("isDay")
     private BooleanState isDayState;
 
-    @Key("isOn")
+    @SerializedName("isOn")
     private BooleanState isOnState;
 
-    @Key("isOpen")
+    @SerializedName("isOpen")
     private BooleanState isOpenState;
 
-    @Key("isSmokeAlarm")
+    @SerializedName("isSmokeAlarm")
     private BooleanState isSmokeAlarmState;
 
-    @Key("lastKeyPressCounter")
+    @SerializedName("lastKeyPressCounter")
     private IntegerState lastKeyPressCounterState;
 
-    @Key("lastPressedButtonIndex")
+    @SerializedName("lastPressedButtonIndex")
     private IntegerState lastPressedButtonIndex;
 
-    @Key("luminance")
+    @SerializedName("luminance")
     private DoubleState luminanceState;
 
-    @Key("moldWarning")
+    @SerializedName("moldWarning")
     private BooleanState moldWarningState;
 
-    @Key("motionDetectedCount")
+    @SerializedName("motionDetectedCount")
     private IntegerState motionDetectedCountState;
 
-    @Key("nextSunrise")
+    @SerializedName("nextSunrise")
     private DateTimeState nextSunrise;
 
-    @Key("nextSunset")
+    @SerializedName("nextSunset")
     private DateTimeState nextSunsetState;
 
-    @Key("nextTimeEvent")
+    @SerializedName("nextTimeEvent")
     private DateTimeState nextTimeEventState;
 
-    @Key("onState")
+    @SerializedName("onState")
     private BooleanState onState;
 
-    @Key("operationMode")
+    @SerializedName("operationMode")
     private StringState operationModeState;
 
-    @Key("pointTemperature")
+    @SerializedName("pointTemperature")
     private DoubleState pointTemperatureState;
 
-    @Key("powerConsumptionWatt")
+    @SerializedName("powerConsumptionWatt")
     private DoubleState powerConsumptionWattState;
 
-    @Key("powerInWatt")
+    @SerializedName("powerInWatt")
     private DoubleState powerInWattState;
 
-    @Key("shutterLevel")
+    @SerializedName("shutterLevel")
     private IntegerState shutterLevelState;
 
-    @Key("supplyValueInCubicMetterPerDay")
+    @SerializedName("supplyValueInCubicMetterPerDay")
     private DoubleState supplyValueInCubicMetterPerDayState;
 
-    @Key("supplyValueInCubicMetterPerMonth")
+    @SerializedName("supplyValueInCubicMetterPerMonth")
     private DoubleState supplyValueInCubicMetterPerMonthState;
 
-    @Key("supplyValueInCurrencyPerDay")
+    @SerializedName("supplyValueInCurrencyPerDay")
     private DoubleState supplyValueInCurrencyPerDayState;
 
-    @Key("supplyValueInCurrencyPerMonth")
+    @SerializedName("supplyValueInCurrencyPerMonth")
     private DoubleState supplyValueInCurrencyPerMonthState;
 
-    @Key("supplyValueInLitrePerDay")
+    @SerializedName("supplyValueInLitrePerDay")
     private DoubleState supplyValueInLitrePerDayState;
 
-    @Key("supplyValueInLitrePerMonth")
+    @SerializedName("supplyValueInLitrePerMonth")
     private DoubleState supplyValueInLitrePerMonthState;
 
-    @Key("temperature")
+    @SerializedName("temperature")
     private DoubleState temperatureState;
 
-    @Key("totalEnergy")
+    @SerializedName("totalEnergy")
     private DoubleState totalEnergyState;
 
-    @Key("value")
+    @SerializedName("value")
     private BooleanState valueState;
 
-    @Key("valvePosition")
+    @SerializedName("valvePosition")
     private BooleanState valvePositionState;
 
-    @Key("windowReductionActive")
+    @SerializedName("windowReductionActive")
     private BooleanState windowReductionActiveState;
 
     private String name;

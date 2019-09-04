@@ -12,15 +12,10 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client;
 
-import java.io.IOException;
-
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.CredentialRefreshListener;
-import com.google.api.client.auth.oauth2.TokenErrorResponse;
-import com.google.api.client.auth.oauth2.TokenResponse;
 
 /**
  * The {@link InnogyCredentialRefreshListener} is injected in the google oauth library and called, when the access
@@ -29,7 +24,7 @@ import com.google.api.client.auth.oauth2.TokenResponse;
  * @author Oliver Kuhl - Initial contribution
  *
  */
-public class InnogyCredentialRefreshListener implements CredentialRefreshListener {
+public class InnogyCredentialRefreshListener implements AccessTokenRefreshListener {
 
     private final Logger logger = LoggerFactory.getLogger(InnogyCredentialRefreshListener.class);
     private InnogyConfig config;
@@ -39,15 +34,8 @@ public class InnogyCredentialRefreshListener implements CredentialRefreshListene
     }
 
     @Override
-    public void onTokenResponse(Credential credential, TokenResponse tokenResponse) throws IOException {
-        config.setAccessToken(credential.getAccessToken());
-        logger.debug("innogy access token saved (onTokenResponse): {}", credential.getAccessToken());
+    public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
+        config.setAccessToken(tokenResponse.getAccessToken());
+        logger.debug("innogy access token saved (onTokenResponse): {}", tokenResponse.getAccessToken());
     }
-
-    @Override
-    public void onTokenErrorResponse(Credential credential, TokenErrorResponse tokenErrorResponse) throws IOException {
-        config.setAccessToken(credential.getAccessToken());
-        logger.debug("innogy access token saved (onTokenErrorResponse): {}", credential.getAccessToken());
-    }
-
 }

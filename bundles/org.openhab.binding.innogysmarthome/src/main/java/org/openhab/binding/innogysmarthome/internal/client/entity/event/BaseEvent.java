@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.event;
 
+import java.util.Collections;
 import java.util.Set;
-
-import com.google.api.client.util.Key;
-import com.google.common.collect.ImmutableSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Oliver Kuhl - Initial contribution
@@ -32,28 +32,26 @@ public class BaseEvent {
     public static final String TYPE_CONTROLLER_CONNECTIVITY_CHANGED = "/event/ControllerConnectivityChanged"; // "device/SHC.RWE/1.0/event/ControllerConnectivityChanged";
     public static final String TYPE_BUTTON_PRESSED = "ButtonPressed";
 
-    public static final Set<String> SUPPORTED_EVENT_TYPES = ImmutableSet.of(TYPE_STATE_CHANGED,
-            TYPE_NEW_MESSAGE_RECEIVED, TYPE_MESSAGE_CREATED, TYPE_MESSAGE_DELETED, TYPE_DISCONNECT, TYPE_CONFIGURATION_CHANGED,
-            TYPE_CONTROLLER_CONNECTIVITY_CHANGED, TYPE_BUTTON_PRESSED);
+    public static final Set<String> SUPPORTED_EVENT_TYPES = Collections
+            .unmodifiableSet(Stream.of(TYPE_STATE_CHANGED, TYPE_NEW_MESSAGE_RECEIVED, TYPE_MESSAGE_CREATED,
+                    TYPE_MESSAGE_DELETED, TYPE_DISCONNECT, TYPE_CONFIGURATION_CHANGED,
+                    TYPE_CONTROLLER_CONNECTIVITY_CHANGED, TYPE_BUTTON_PRESSED).collect(Collectors.toSet()));
 
     /**
      * The event sequence number – the gateway keeps track and adds a sequence number to each event for the client to
      * identify order and missing events
      */
-    @Key("sequenceNumber")
     private Integer sequenceNumber;
 
     /**
      * Specifies the type of the event. The type must be the full path to uniquely reference the event definition.
      * Always available.
      */
-    @Key("type")
     private String type;
 
     /**
      * Date and time when the event occurred in the system. Always available.
      */
-    @Key("timestamp")
     private String timestamp;
 
     /**

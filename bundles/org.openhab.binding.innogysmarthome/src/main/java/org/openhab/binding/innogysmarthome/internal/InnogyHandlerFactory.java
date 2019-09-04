@@ -16,8 +16,12 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -25,30 +29,43 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.innogysmarthome.internal.discovery.InnogyDeviceDiscoveryService;
 import org.openhab.binding.innogysmarthome.internal.handler.InnogyBridgeHandler;
 import org.openhab.binding.innogysmarthome.internal.handler.InnogyDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link InnogyHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Oliver Kuhl - Initial contribution
+ * @author Hilbrand Bouwkamp - Refactored to use openHAB http and oauth2 libraries
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.innogysmarthome")
 public class InnogyHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(InnogyBridgeHandler.SUPPORTED_THING_TYPES,
-            InnogyDeviceHandler.SUPPORTED_THING_TYPES);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
+            .concat(InnogyBridgeHandler.SUPPORTED_THING_TYPES.stream(),
+                    InnogyDeviceHandler.SUPPORTED_THING_TYPES.stream())
+            .collect(Collectors.toSet());
 
     private final Logger logger = LoggerFactory.getLogger(InnogyHandlerFactory.class);
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
+    private final OAuthFactory oAuthFactory;
+    private final HttpClient httpClient;
+
+    @Activate
+    public InnogyHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory) {
+        this.oAuthFactory = oAuthFactory;
+        httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -58,7 +75,7 @@ public class InnogyHandlerFactory extends BaseThingHandlerFactory implements Thi
     @Override
     protected ThingHandler createHandler(Thing thing) {
         if (InnogyBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            InnogyBridgeHandler handler = new InnogyBridgeHandler((Bridge) thing);
+            InnogyBridgeHandler handler = new InnogyBridgeHandler((Bridge) thing, oAuthFactory, httpClient);
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (InnogyDeviceHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {

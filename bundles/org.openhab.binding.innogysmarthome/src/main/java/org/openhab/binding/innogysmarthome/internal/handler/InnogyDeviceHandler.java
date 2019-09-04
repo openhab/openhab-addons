@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -54,14 +56,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Oliver Kuhl - Initial contribution
  */
+@NonNullByDefault
 public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatusListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = SUPPORTED_DEVICE_THING_TYPES;
     private final Logger logger = LoggerFactory.getLogger(InnogyDeviceHandler.class);
-
-    private String deviceId;
-    private InnogyBridgeHandler bridgeHandler;
     private final Object lock = new Object();
+
+    private String deviceId = "";
+    private @Nullable InnogyBridgeHandler bridgeHandler;
 
     /**
      * Constructs a new {@link InnogyDeviceHandler} for the given {@link Thing}.
@@ -100,12 +103,14 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             // DEBUGGING HELPER
             // ----------------
             Device device = innogyBridgeHandler.getDeviceById(deviceId);
-            if(device.getConfig().getName().equals("DEBUG")) {
+            if (device.getConfig().getName().equals("DEBUG")) {
                 logger.debug("DEBUG SWITCH ACTIVATED!");
-                if(OnOffType.ON.equals(command)) {
-                    innogyBridgeHandler.onEvent("{\"sequenceNumber\": -1,\"type\": \"MessageCreated\",\"desc\": \"/desc/event/MessageCreated\",\"namespace\": \"core.RWE\",\"timestamp\": \"2019-07-07T18:41:47.2970000Z\",\"source\": \"/desc/device/SHC.RWE/1.0\",\"data\": {\"id\": \"6e5ce2290cd247208f95a5b53736958b\",\"type\": \"DeviceLowBattery\",\"read\": false,\"class\": \"Alert\",\"timestamp\": \"2019-07-07T18:41:47.232Z\",\"devices\": [\"/device/fe51785319854f36a621d0b4f8ea0e25\"],\"properties\": {\"deviceName\": \"Heizkörperthermostat\",\"serialNumber\": \"914110165056\",\"locationName\": \"Bad\"},\"namespace\": \"core.RWE\"}}");
+                if (OnOffType.ON.equals(command)) {
+                    innogyBridgeHandler.onEvent(
+                            "{\"sequenceNumber\": -1,\"type\": \"MessageCreated\",\"desc\": \"/desc/event/MessageCreated\",\"namespace\": \"core.RWE\",\"timestamp\": \"2019-07-07T18:41:47.2970000Z\",\"source\": \"/desc/device/SHC.RWE/1.0\",\"data\": {\"id\": \"6e5ce2290cd247208f95a5b53736958b\",\"type\": \"DeviceLowBattery\",\"read\": false,\"class\": \"Alert\",\"timestamp\": \"2019-07-07T18:41:47.232Z\",\"devices\": [\"/device/fe51785319854f36a621d0b4f8ea0e25\"],\"properties\": {\"deviceName\": \"Heizkörperthermostat\",\"serialNumber\": \"914110165056\",\"locationName\": \"Bad\"},\"namespace\": \"core.RWE\"}}");
                 } else {
-                    innogyBridgeHandler.onEvent("{\"sequenceNumber\": -1,\"type\": \"MessageDeleted\",\"desc\": \"/desc/event/MessageDeleted\",\"namespace\": \"core.RWE\",\"timestamp\": \"2019-07-07T19:15:39.2100000Z\",\"data\": { \"id\": \"6e5ce2290cd247208f95a5b53736958b\" }}");
+                    innogyBridgeHandler.onEvent(
+                            "{\"sequenceNumber\": -1,\"type\": \"MessageDeleted\",\"desc\": \"/desc/event/MessageDeleted\",\"namespace\": \"core.RWE\",\"timestamp\": \"2019-07-07T19:15:39.2100000Z\",\"data\": { \"id\": \"6e5ce2290cd247208f95a5b53736958b\" }}");
                 }
                 return;
             }
@@ -187,7 +192,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
     @Override
     public void initialize() {
         logger.debug("Initializing innogy SmartHome device handler.");
-        initializeThing((getBridge() == null) ? null : getBridge().getStatus());
+        initializeThing(getBridge() == null ? null : getBridge().getStatus());
     }
 
     @Override
@@ -201,7 +206,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
      *
      * @param bridgeStatus
      */
-    private void initializeThing(ThingStatus bridgeStatus) {
+    private void initializeThing(@Nullable ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing {} bridge status {}", getThing().getUID(), bridgeStatus);
         final String configDeviceId = (String) getConfig().get(PROPERTY_ID);
         if (configDeviceId != null) {
@@ -275,15 +280,15 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                     properties.put(PROPERTY_METER_FIRMWARE_VERSION, device.getConfig().getMeterFirmwareVersion());
                 }
 
-                if(device.getConfig().getTimeOfAcceptance() != null) {
+                if (device.getConfig().getTimeOfAcceptance() != null) {
                     properties.put(PROPERTY_TIME_OF_ACCEPTANCE, device.getConfig().getTimeOfAcceptance()
-                        .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+                            .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
                 }
-                if(device.getConfig().getTimeOfDiscovery() != null) {
+                if (device.getConfig().getTimeOfDiscovery() != null) {
                     properties.put(PROPERTY_TIME_OF_DISCOVERY, device.getConfig().getTimeOfDiscovery()
-                    .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+                            .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
                 }
-    
+
                 updateProperties(properties);
 
                 // TODO: check device state first! E.g. there is no state, when device is still in configuration state.
@@ -302,7 +307,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
      *
      * @return the {@link Device} or null, if not found or no {@link InnogyBridgeHandler} is available
      */
-    private Device getDevice() {
+    private @Nullable Device getDevice() {
         if (getInnogyBridgeHandler() != null) {
             return getInnogyBridgeHandler().getDeviceById(deviceId);
         }
@@ -314,7 +319,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
      *
      * @return the {@link InnogyBridgeHandler} or null
      */
-    private InnogyBridgeHandler getInnogyBridgeHandler() {
+    private @Nullable InnogyBridgeHandler getInnogyBridgeHandler() {
         synchronized (this.lock) {
             if (this.bridgeHandler == null) {
                 Bridge bridge = getBridge();
@@ -680,7 +685,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
      * @param state
      * @param capability
      */
-    private void updateStateForEnergyChannel(String channelId, Double state, Capability capability) {
+    private void updateStateForEnergyChannel(String channelId, @Nullable Double state, Capability capability) {
         if (state != null) {
             DecimalType newValue = new DecimalType(state);
             updateState(channelId, newValue);
@@ -691,8 +696,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     @Override
-    public void onDeviceStateChanged(Device device, Event event) {
+    public void onDeviceStateChanged(Device changedDevice, Event event) {
         synchronized (this.lock) {
+            Device device = changedDevice;
             if (!deviceId.equals(device.getId())) {
                 // logger.trace("DeviceId {} not relevant for this handler (responsible for id {})", device.getId(),
                 // deviceId);
@@ -868,16 +874,21 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                     }
                 } else { // capability.hasState()
                     logger.debug("Capability {} has no state (yet?) - refreshing device.", capability.getName());
-                    device = getInnogyBridgeHandler().refreshDevice(deviceId);
+                    final InnogyBridgeHandler innogyBridgeHandler = getInnogyBridgeHandler();
 
-                    capabilityMap = device.getCapabilityMap();
-                    capability = capabilityMap.get(linkedCapabilityId);
-                    if (capability.hasState()) {
-                        capabilityState = capability.getCapabilityState();
-                        deviceChanged = true;
+                    if (innogyBridgeHandler != null) {
+                        device = innogyBridgeHandler.refreshDevice(deviceId);
+                    }
+                    if (device != null) {
+                        capabilityMap = device.getCapabilityMap();
+                        capability = capabilityMap.get(linkedCapabilityId);
+                        if (capability.hasState()) {
+                            capabilityState = capability.getCapabilityState();
+                            deviceChanged = true;
+                        }
                     }
                 }
-                if (deviceChanged) {
+                if (deviceChanged && device != null) {
                     onDeviceStateChanged(device);
                 }
 

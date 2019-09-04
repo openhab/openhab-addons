@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.state;
 
-import com.google.api.client.util.Key;
-
 /**
  * @author Oliver Kuhl - Initial contribution
  *
  */
 public class DateTimeState extends BaseState {
-    @Key("value")
     private String value;
 
     /**

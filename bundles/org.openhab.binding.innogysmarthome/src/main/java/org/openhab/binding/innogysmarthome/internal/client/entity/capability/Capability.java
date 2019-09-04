@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.capability;
 
-import com.google.api.client.util.Key;
-
 /**
  * Defines the structure of a {@link Capability}. A capability is a specific functionality of a device like a
  * temperature sensor.
@@ -47,25 +45,21 @@ public class Capability {
     /**
      * Unique id for the Capability.
      */
-    @Key("id")
     private String id;
 
     /**
      * Type of the capability – must be unique per device, since the device links to the capability via the type.
      */
-    @Key("type")
     private String type;
 
     /**
      * Contains the link to the parent device, which offers the capability.
      */
-    @Key("device")
     private String device;
 
     /**
      * This represents a container of all configuration properties.
      */
-    @Key("config")
     private CapabilityConfig config;
 
     private CapabilityState capabilityState;

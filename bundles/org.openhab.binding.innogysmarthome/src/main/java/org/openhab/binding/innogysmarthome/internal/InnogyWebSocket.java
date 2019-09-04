@@ -50,8 +50,8 @@ public class InnogyWebSocket {
     /**
      * Constructs the {@link InnogyWebSocket}.
      *
-     * @param bridgeHandler  the responsible {@link InnogyBridgeHandler}
-     * @param webSocketURI   the {@link URI} of the websocket endpoint
+     * @param bridgeHandler the responsible {@link InnogyBridgeHandler}
+     * @param webSocketURI the {@link URI} of the websocket endpoint
      * @param maxIdleTimeout
      */
     public InnogyWebSocket(InnogyBridgeHandler bridgeHandler, URI webSocketURI, int maxIdleTimeout) {

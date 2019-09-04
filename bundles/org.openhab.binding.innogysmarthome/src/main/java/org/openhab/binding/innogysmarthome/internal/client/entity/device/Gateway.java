@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.device;
 
-import com.google.api.client.util.Key;
-
 /**
  * Defines the {@link Gateway} structure.
  *
@@ -24,31 +22,26 @@ public class Gateway {
     /**
      * Serial number of the gateway
      */
-    @Key("serialNumber")
     private String serialNumber;
 
     /**
      * Connected status
      */
-    @Key("connected")
     private Boolean connected;
 
     /**
      * Version of the app
      */
-    @Key("appVersion")
     private String appVersion;
 
     /**
      * Version of the operating system
      */
-    @Key("osVersion")
     private String osVersion;
 
     /**
      * Version of the configuration. Changes each time the configuration was changed via the innogy client app.
      */
-    @Key("configVersion")
     private String configVersion;
 
     /**

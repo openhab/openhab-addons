@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Oliver Kuhl - Initial contribution
  */
+@NonNullByDefault
 public class InnogyDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private static final int SEARCH_TIME = 60;
@@ -75,10 +78,8 @@ public class InnogyDeviceDiscoveryService extends AbstractDiscoveryService {
         logger.debug("SCAN for new innogy devices started...");
 
         Collection<Device> devices = bridgeHandler.loadDevices();
-        if (devices != null) {
-            for (Device d : devices) {
-                onDeviceAdded(d);
-            }
+        for (Device d : devices) {
+            onDeviceAdded(d);
         }
     }
 
@@ -126,7 +127,7 @@ public class InnogyDeviceDiscoveryService extends AbstractDiscoveryService {
      * @param device
      * @return
      */
-    private ThingUID getThingUID(Device device) {
+    private @Nullable ThingUID getThingUID(Device device) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingTypeUID thingTypeUID = getThingTypeUID(device);
 
@@ -143,7 +144,7 @@ public class InnogyDeviceDiscoveryService extends AbstractDiscoveryService {
      * @param device
      * @return
      */
-    private ThingTypeUID getThingTypeUID(Device device) {
+    private @Nullable ThingTypeUID getThingTypeUID(Device device) {
         String thingTypeId = device.getType();
         return thingTypeId != null ? new ThingTypeUID(BINDING_ID, thingTypeId) : null;
     }

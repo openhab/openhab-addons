@@ -14,8 +14,6 @@ package org.openhab.binding.innogysmarthome.internal.client.entity;
 
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Gateway;
 
-import com.google.api.client.util.Key;
-
 /**
  * Defines the structure of the status response
  *
@@ -25,6 +23,5 @@ public class StatusResponse {
     /**
      * The innogy SmartHome gateway. Can be null in case there is no registered for the current logged in user.
      */
-    @Key("gateway")
     public Gateway gateway;
 }

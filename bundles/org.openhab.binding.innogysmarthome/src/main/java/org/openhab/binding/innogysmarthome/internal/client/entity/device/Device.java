@@ -13,7 +13,6 @@
 package org.openhab.binding.innogysmarthome.internal.client.entity.device;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.message.Messag
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.api.client.util.Key;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Defines the structure of a {@link Device}.
@@ -69,13 +68,11 @@ public class Device {
     /**
      * Unique id for the device, always available in model.
      */
-    @Key("id")
     private String id;
 
     /**
      * Identifier of the manufacturer, always available in model
      */
-    @Key("manufacturer")
     private String manufacturer;
 
     /**
@@ -85,7 +82,6 @@ public class Device {
      * be increased to indicate that there are new or changed attributes
      * of the device. Always available in model.
      */
-    @Key("version")
     private String version;
 
     /**
@@ -95,13 +91,11 @@ public class Device {
      * core.RWE, which supports all RWE hardware devices (also referred to as core devices).
      * Always available in model.
      */
-    @Key("product")
     private String product;
 
     /**
      * Device number or id like SGTIN given by the manufacturer. Optional.
      */
-    @Key("serialnumber")
     private String serialnumber;
 
     /**
@@ -109,10 +103,8 @@ public class Device {
      * and the version must be unique.
      * Always available in model.
      */
-    @Key("type")
     private String type;
 
-    @Key("config")
     private DeviceConfig config;
 
     /**
@@ -120,7 +112,7 @@ public class Device {
      *
      * Optional.
      */
-    @Key("capabilities")
+    @SerializedName("capabilities")
     private List<String> capabilityLinkList;
 
     private HashMap<String, Capability> capabilityMap;
@@ -140,8 +132,7 @@ public class Device {
     /**
      * The location contains the link to the location of the device. Optional.
      */
-    @Key("location")
-    // @SerializedName("location")
+    @SerializedName("location")
     private String locationLink;
 
     private Location location;
@@ -149,10 +140,11 @@ public class Device {
     private List<Message> messageList;
 
     private boolean lowBattery;
-    /** 
-     * Stores the message id, that contains the low battery state. This is needed to identify the device, when the message 
+    /**
+     * Stores the message id, that contains the low battery state. This is needed to identify the device, when the
+     * message
      * with that id is deleted (thus low battery state is false again).
-     */ 
+     */
     private String lowBatteryMessageId;
 
     /**
@@ -297,7 +289,7 @@ public class Device {
      * @return the capabilityList
      */
     public List<String> getCapabilityLinkList() {
-        if(capabilityLinkList != null){
+        if (capabilityLinkList != null) {
             return capabilityLinkList;
         } else {
             return EMPTY_CAPABILITY_LINK_LIST;
@@ -486,7 +478,7 @@ public class Device {
      * @return
      */
     public boolean isController() {
-        return DEVICE_TYPE_SHC.equals(type)||DEVICE_TYPE_SHCA.equals(type);
+        return DEVICE_TYPE_SHC.equals(type) || DEVICE_TYPE_SHCA.equals(type);
     }
 
     /**

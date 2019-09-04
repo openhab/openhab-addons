@@ -20,8 +20,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.binding.innogysmarthome.internal.client.entity.StatusResponse;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.Action;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.SetStateAction;
@@ -47,27 +62,6 @@ import org.openhab.binding.innogysmarthome.internal.client.exception.SessionNotF
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
-import com.google.api.client.auth.oauth2.BearerToken;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.Credential.Builder;
-import com.google.api.client.auth.oauth2.CredentialRefreshListener;
-import com.google.api.client.auth.oauth2.RefreshTokenRequest;
-import com.google.api.client.auth.oauth2.TokenResponse;
-import com.google.api.client.auth.oauth2.TokenResponseException;
-import com.google.api.client.http.BasicAuthentication;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpHeaders;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpStatusCodes;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.http.json.JsonHttpContent;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.JsonObjectParser;
-import com.google.api.client.json.gson.GsonFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -76,9 +70,15 @@ import com.google.gson.JsonSyntaxException;
  * The main client that handles the communication with the innogy SmartHome API service.
  *
  * @author Oliver Kuhl - Initial contribution
+ * @author Hilbrand Bouwkamp - Refactored to use openHAB http and oauth2 libraries
  *
  */
 public class InnogyClient {
+    private static final String BEARER = "Bearer ";
+    private static final String CONTENT_TYPE = "application/json";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 10;
+
     private final Logger logger = LoggerFactory.getLogger(InnogyClient.class);
     private InnogyConfig config;
 
@@ -88,17 +88,19 @@ public class InnogyClient {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     private final Gson gson = new GsonBuilder().setDateFormat(DATE_FORMAT).create();
 
-    private HttpTransport httpTransport;
-    private JsonFactory jsonFactory;
-    private Builder credentialBuilder;
-    private HttpRequestFactory requestFactory;
+    private final OAuthFactory oAuthFactory;
+    private final HttpClient httpClient;
     private Gateway bridgeDetails;
     private String configVersion;
-    private CredentialRefreshListener credentialRefreshListener;
+    private long currentConfigurationVersion;
+    private AccessTokenRefreshListener accessTokenRefreshListener;
     private long apiCallCounter = 0;
+    private OAuthClientService oAuthService;
 
-    public InnogyClient(InnogyConfig config) {
+    public InnogyClient(InnogyConfig config, OAuthFactory oAuthFactory, HttpClient httpClient) {
         this.config = config;
+        this.oAuthFactory = oAuthFactory;
+        this.httpClient = httpClient;
     }
 
     /**
@@ -116,12 +118,14 @@ public class InnogyClient {
      * Throws {@link ApiException}s or {@link IOException}s as described in {@link #getOAuth2Tokens()} and
      * {@link #getStatus()}.
      *
+     * @param handle
+     *
      * @throws IOException
      * @throws ApiException
      * @throws ConfigurationException
      */
-    public void initialize() throws IOException, ApiException, ConfigurationException {
-        initializeHttpClient();
+    public void initialize(@NonNull String handle) throws IOException, ApiException, ConfigurationException {
+        initializeHttpClient(handle);
 
         if (!config.checkClientData()) {
             throw new ConfigurationException("Invalid configuration: clientId and clientSecret must not be empty!");
@@ -140,34 +144,17 @@ public class InnogyClient {
 
     /**
      * Initializes the HTTP client
+     *
+     * @param handle
      */
-    private void initializeHttpClient() {
-        httpTransport = new NetHttpTransport();
-        jsonFactory = new GsonFactory();
-
-        if (credentialRefreshListener == null) {
-            credentialRefreshListener = new InnogyCredentialRefreshListener(config);
+    private void initializeHttpClient(@NonNull String handle) {
+        if (accessTokenRefreshListener == null) {
+            accessTokenRefreshListener = new InnogyCredentialRefreshListener(config);
         }
 
-        // prepare credentials & transport for oauth2 access
-        credentialBuilder = new Credential.Builder(BearerToken.authorizationHeaderAccessMethod())
-                .setTransport(httpTransport).setJsonFactory(jsonFactory).addRefreshListener(credentialRefreshListener)
-                .setTokenServerUrl(new GenericUrl(API_URL_TOKEN))
-                .setClientAuthentication(new BasicAuthentication(config.getClientId(), config.getClientSecret()));
-        Credential credential = new Credential(credentialBuilder) {
-            @Override
-            public void initialize(HttpRequest request) {
-                request.setInterceptor(this);
-                request.setUnsuccessfulResponseHandler(this);
-                request.setThrowExceptionOnExecuteError(false);
-                request.setParser(new JsonObjectParser(jsonFactory)); // TODO: maybe better remove this one and use GSON
-                                                                      // manually
-                setAccessToken(config.getAccessToken());
-                setRefreshToken(config.getRefreshToken());
-            }
-        };
-
-        requestFactory = httpTransport.createRequestFactory(credential);
+        oAuthService = oAuthFactory.createOAuthClientService(handle, API_URL_TOKEN, API_URL_TOKEN, config.getClientId(),
+                config.getClientSecret(), null, true);
+        oAuthService.addAccessTokenRefreshListener(accessTokenRefreshListener);
     }
 
     /**
@@ -182,11 +169,11 @@ public class InnogyClient {
      */
     private void getStatus() throws IOException, ApiException {
         logger.debug("Get innogy SmartHome status...");
-        HttpResponse response = executeGet(API_URL_STATUS);
+        ContentResponse response = executeGet(API_URL_STATUS);
 
         handleResponseErrors(response);
 
-        StatusResponse status = response.parseAs(StatusResponse.class);
+        StatusResponse status = gson.fromJson(response.getContentAsString(), StatusResponse.class);
         bridgeDetails = status.gateway;
         configVersion = bridgeDetails.getConfigVersion();
 
@@ -212,20 +199,17 @@ public class InnogyClient {
 
         try {
             logger.debug("Trying to get access and refresh tokens");
-            TokenResponse response = new AuthorizationCodeTokenRequest(httpTransport, jsonFactory,
-                    new GenericUrl(API_URL_TOKEN), config.getAuthCode()).setRedirectUri(config.getRedirectUrl())
-                            .setClientAuthentication(
-                                    new BasicAuthentication(config.getClientId(), config.getClientSecret()))
-                            .execute();
+            final AccessTokenResponse response = oAuthService
+                    .getAccessTokenResponseByAuthorizationCode(config.getAuthCode(), config.getRedirectUrl());
+
             logger.debug("Saving access and refresh tokens.");
             logger.trace("Access token: {}", response.getAccessToken());
             logger.trace("Refresh token: {}", response.getRefreshToken());
             config.setAccessToken(response.getAccessToken());
             config.setRefreshToken(response.getRefreshToken());
-        } catch (TokenResponseException e) {
-            throw new InvalidAuthCodeException("Error fetching access token: " + e.getDetails());
+        } catch (OAuthException | OAuthResponseException e) {
+            throw new InvalidAuthCodeException("Error fetching access token: " + e.getMessage());
         }
-
     }
 
     /**
@@ -246,11 +230,12 @@ public class InnogyClient {
         }
 
         logger.debug("Trying to get access token");
-        TokenResponse response = new RefreshTokenRequest(httpTransport, jsonFactory, new GenericUrl(API_URL_TOKEN),
-                config.getRefreshToken())
-                        .setClientAuthentication(
-                                new BasicAuthentication(config.getClientId(), config.getClientSecret()))
-                        .execute();
+        AccessTokenResponse response;
+        try {
+            response = oAuthService.getAccessTokenResponse();
+        } catch (OAuthException | OAuthResponseException e) {
+            throw new ConfigurationException("No innogy accesstoken. Is this thing authorized: " + e.getMessage());
+        }
         logger.debug("Saving access token.");
         config.setAccessToken(response.getAccessToken());
     }
@@ -262,22 +247,9 @@ public class InnogyClient {
      * @return
      * @throws IOException
      */
-    private HttpResponse executeGet(String url) throws IOException {
+    private ContentResponse executeGet(String url) throws IOException {
         apiCallCounter++;
-        return requestFactory.buildGetRequest(new GenericUrl(url)).execute();
-    }
-
-    /**
-     * Executes a HTTP GET request with custom headers.
-     *
-     * @param url
-     * @param headers
-     * @return
-     * @throws IOException
-     */
-    private HttpResponse executeGet(String url, HttpHeaders headers) throws IOException {
-        apiCallCounter++;
-        return requestFactory.buildGetRequest(new GenericUrl(url)).setHeaders(headers).execute();
+        return request(httpClient.newRequest(url).method(HttpMethod.GET));
     }
 
     /**
@@ -288,9 +260,9 @@ public class InnogyClient {
      * @return
      * @throws IOException
      */
-    private HttpResponse executePost(String url, Action action) throws IOException {
+    private ContentResponse executePost(String url, Action action) throws IOException {
         apiCallCounter++;
-        return executePost(url, new JsonHttpContent(jsonFactory, action));
+        return executePost(url, gson.toJson(action));
     }
 
     /**
@@ -301,14 +273,36 @@ public class InnogyClient {
      * @return
      * @throws IOException
      */
-    private HttpResponse executePost(String url, JsonHttpContent content) throws IOException {
+    private ContentResponse executePost(String url, String content) throws IOException {
         apiCallCounter++;
-        return requestFactory.buildPostRequest(new GenericUrl(url), content)
-                .setHeaders(new HttpHeaders().setAccept("application/json")).execute();
+        return request(httpClient.newRequest(url).method(HttpMethod.POST)
+                .content(new StringContentProvider(content), CONTENT_TYPE).accept("application/json"));
+    }
+
+    private ContentResponse request(Request request) throws IOException {
+        AccessTokenResponse accessTokenResponse;
+        try {
+            accessTokenResponse = oAuthService.getAccessTokenResponse();
+        } catch (OAuthException | OAuthResponseException e) {
+            throw new IOException("Error fetching access token: " + e.getMessage());
+        }
+        final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
+
+        if (accessToken == null || accessToken.isEmpty()) {
+            // throw new ConfigurationException("No innogy accesstoken. Is this thing authorized?");
+            throw new IOException("No innogy accesstoken. Is this thing authorized?");
+        }
+
+        try {
+            return request.header("Accept", CONTENT_TYPE).header(AUTHORIZATION_HEADER, BEARER + accessToken)
+                    .timeout(HTTP_CLIENT_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new IOException(e);
+        }
     }
 
     /**
-     * Handles errors from the {@link HttpResponse} and throws the following errors:
+     * Handles errors from the {@link ContentResponse} and throws the following errors:
      *
      * @param response
      * @throws SessionExistsException
@@ -317,27 +311,27 @@ public class InnogyClient {
      * @throws IOException
      * @throws ApiException
      */
-    private void handleResponseErrors(HttpResponse response) throws IOException, ApiException {
+    private void handleResponseErrors(ContentResponse response) throws IOException, ApiException {
         String content = "";
 
-        switch (response.getStatusCode()) {
-            case HttpStatusCodes.STATUS_CODE_OK:
+        switch (response.getStatus()) {
+            case HttpStatus.OK_200:
                 logger.debug("[{}] Statuscode is OK.", apiCallCounter);
                 return;
-            case HttpStatusCodes.STATUS_CODE_SERVICE_UNAVAILABLE:
+            case HttpStatus.SERVICE_UNAVAILABLE_503:
                 logger.debug("innogy service is unavailabe (503).");
                 throw new ServiceUnavailableException("innogy service is unavailabe (503).");
             default:
-                logger.debug("[{}] Statuscode is NOT OK: {}", apiCallCounter, response.getStatusCode());
+                logger.debug("[{}] Statuscode is NOT OK: {}", apiCallCounter, response.getStatus());
                 try {
-                    content = IOUtils.toString(response.getContent());
+                    content = response.getContentAsString();
                     logger.trace("Response error content: {}", content);
                     ErrorResponse error = gson.fromJson(content, ErrorResponse.class);
 
                     if (error == null) {
-                        logger.debug("Error without JSON message, code: {} / message: {}", response.getStatusCode(),
-                                response.getStatusMessage());
-                        throw new ApiException("Error code: " + response.getStatusCode());
+                        logger.debug("Error without JSON message, code: {} / message: {}", response.getStatus(),
+                                response.getReason());
+                        throw new ApiException("Error code: " + response.getStatus());
                     }
 
                     switch (error.getCode()) {
@@ -365,7 +359,6 @@ public class InnogyClient {
                 } catch (JsonSyntaxException e) {
                     throw new ApiException("Invalid JSON syntax in error response: " + content);
                 }
-
         }
     }
 
@@ -383,7 +376,7 @@ public class InnogyClient {
         String json = gson.toJson(action);
         logger.debug("Action toggle JSON: {}", json);
 
-        HttpResponse response = executePost(API_URL_ACTION, action);
+        ContentResponse response = executePost(API_URL_ACTION, action);
 
         handleResponseErrors(response);
     }
@@ -402,7 +395,7 @@ public class InnogyClient {
         String json = gson.toJson(action);
         logger.debug("Action dimm JSON: {}", json);
 
-        HttpResponse response = executePost(API_URL_ACTION, action);
+        ContentResponse response = executePost(API_URL_ACTION, action);
 
         handleResponseErrors(response);
     }
@@ -422,7 +415,7 @@ public class InnogyClient {
         String json = gson.toJson(action);
         logger.debug("Action rollershutter JSON: {}", json);
 
-        HttpResponse response = executePost(API_URL_ACTION, action);
+        ContentResponse response = executePost(API_URL_ACTION, action);
 
         handleResponseErrors(response);
     }
@@ -441,7 +434,7 @@ public class InnogyClient {
         String json = gson.toJson(action);
         logger.debug("Action toggle JSON: {}", json);
 
-        HttpResponse response = executePost(API_URL_ACTION, action);
+        ContentResponse response = executePost(API_URL_ACTION, action);
 
         handleResponseErrors(response);
     }
@@ -461,7 +454,7 @@ public class InnogyClient {
         String json = gson.toJson(action);
         logger.debug("Action toggle JSON: {}", json);
 
-        HttpResponse response = executePost(API_URL_ACTION, action);
+        ContentResponse response = executePost(API_URL_ACTION, action);
 
         handleResponseErrors(response);
     }
@@ -481,7 +474,7 @@ public class InnogyClient {
         String json = gson.toJson(action);
         logger.debug("Action toggle JSON: {}", json);
 
-        HttpResponse response = executePost(API_URL_ACTION, action);
+        ContentResponse response = executePost(API_URL_ACTION, action);
 
         handleResponseErrors(response);
     }
@@ -500,28 +493,9 @@ public class InnogyClient {
         String json = gson.toJson(action);
         logger.debug("Action toggle JSON: {}", json);
 
-        HttpResponse response = executePost(API_URL_ACTION, action);
+        ContentResponse response = executePost(API_URL_ACTION, action);
 
         handleResponseErrors(response);
-    }
-
-    /**
-     * Disposes the client including disconnecting a maybe remaining session.
-     */
-    public void dispose() {
-        try {
-            if (httpTransport != null) {
-                httpTransport.shutdown();
-                httpTransport = null;
-            }
-            jsonFactory = null;
-            requestFactory = null;
-            credentialBuilder = null;
-        } catch (IOException e) {
-            logger.debug("Error disposing resources: {}", e.getMessage());
-            logger.trace("Trace:", e);
-        }
-
     }
 
     /**
@@ -533,11 +507,11 @@ public class InnogyClient {
      */
     public List<Device> getDevices() throws IOException, ApiException {
         logger.debug("Loading innogy devices...");
-        HttpResponse response = executeGet(API_URL_DEVICE);
+        ContentResponse response = executeGet(API_URL_DEVICE);
 
         handleResponseErrors(response);
 
-        Device[] deviceList = response.parseAs(Device[].class);
+        Device[] deviceList = gson.fromJson(response.getContentAsString(), Device[].class);
         return Arrays.asList(deviceList);
     }
 
@@ -551,11 +525,11 @@ public class InnogyClient {
      */
     public Device getDeviceById(String deviceId) throws IOException, ApiException {
         logger.debug("Loading device with id {}...", deviceId);
-        HttpResponse response = executeGet(API_URL_DEVICE_ID.replace("{id}", deviceId));
+        ContentResponse response = executeGet(API_URL_DEVICE_ID.replace("{id}", deviceId));
 
         handleResponseErrors(response);
 
-        return response.parseAs(Device.class);
+        return gson.fromJson(response.getContentAsString(), Device.class);
     }
 
     /**
@@ -758,11 +732,11 @@ public class InnogyClient {
     public List<DeviceState> getDeviceStates() throws IOException, ApiException {
         logger.debug("Loading device states...");
 
-        HttpResponse response = executeGet(API_URL_DEVICE_STATES);
+        ContentResponse response = executeGet(API_URL_DEVICE_STATES);
 
         handleResponseErrors(response);
 
-        DeviceState[] deviceStateArray = response.parseAs(DeviceState[].class);
+        DeviceState[] deviceStateArray = gson.fromJson(response.getContentAsString(), DeviceState[].class);
         return Arrays.asList(deviceStateArray);
     }
 
@@ -777,11 +751,11 @@ public class InnogyClient {
     public State getDeviceStateByDeviceId(String deviceId) throws IOException, ApiException {
         logger.debug("Loading device states for device id {}...", deviceId);
 
-        HttpResponse response = executeGet(API_URL_DEVICE_ID_STATE.replace("{id}", deviceId));
+        ContentResponse response = executeGet(API_URL_DEVICE_ID_STATE.replace("{id}", deviceId));
 
         handleResponseErrors(response);
 
-        State state = response.parseAs(State.class);
+        State state = gson.fromJson(response.getContentAsString(), State.class);
 
         return state;
     }
@@ -796,11 +770,11 @@ public class InnogyClient {
     public List<Location> getLocations() throws IOException, ApiException {
         logger.debug("Loading locations...");
 
-        HttpResponse response = executeGet(API_URL_LOCATION);
+        ContentResponse response = executeGet(API_URL_LOCATION);
 
         handleResponseErrors(response);
 
-        Location[] locationArray = response.parseAs(Location[].class);
+        Location[] locationArray = gson.fromJson(response.getContentAsString(), Location[].class);
         List<Location> locationList = Arrays.asList(locationArray);
 
         return locationList;
@@ -817,11 +791,11 @@ public class InnogyClient {
     public List<Capability> getCapabilitiesForDevice(String deviceId) throws IOException, ApiException {
         logger.debug("Loading capabilities for device {}...", deviceId);
 
-        HttpResponse response = executeGet(API_URL_DEVICE_CAPABILITIES.replace("{id}", deviceId));
+        ContentResponse response = executeGet(API_URL_DEVICE_CAPABILITIES.replace("{id}", deviceId));
 
         handleResponseErrors(response);
 
-        Capability[] capabilityArray = response.parseAs(Capability[].class);
+        Capability[] capabilityArray = gson.fromJson(response.getContentAsString(), Capability[].class);
         List<Capability> capabilityList = Arrays.asList(capabilityArray);
         return capabilityList;
     }
@@ -836,11 +810,11 @@ public class InnogyClient {
     public List<Capability> getCapabilities() throws IOException, ApiException {
         logger.debug("Loading capabilities...");
 
-        HttpResponse response = executeGet(API_URL_CAPABILITY);
+        ContentResponse response = executeGet(API_URL_CAPABILITY);
 
         handleResponseErrors(response);
 
-        Capability[] capabilityArray = response.parseAs(Capability[].class);
+        Capability[] capabilityArray = gson.fromJson(response.getContentAsString(), Capability[].class);
         List<Capability> capabilityList = Arrays.asList(capabilityArray);
         return capabilityList;
     }
@@ -855,11 +829,11 @@ public class InnogyClient {
     public List<CapabilityState> getCapabilityStates() throws IOException, ApiException {
         logger.debug("Loading capability states...");
 
-        HttpResponse response = executeGet(API_URL_CAPABILITY_STATES);
+        ContentResponse response = executeGet(API_URL_CAPABILITY_STATES);
 
         handleResponseErrors(response);
 
-        CapabilityState[] capabilityStatesArray = response.parseAs(CapabilityState[].class);
+        CapabilityState[] capabilityStatesArray = gson.fromJson(response.getContentAsString(), CapabilityState[].class);
         List<CapabilityState> capabilityStatesList = Arrays.asList(capabilityStatesArray);
         return capabilityStatesList;
     }
@@ -874,11 +848,11 @@ public class InnogyClient {
     public List<Message> getMessages() throws IOException, ApiException {
         logger.debug("Loading messages...");
 
-        HttpResponse response = executeGet(API_URL_MESSAGE);
+        ContentResponse response = executeGet(API_URL_MESSAGE);
 
         handleResponseErrors(response);
 
-        Message[] messageArray = response.parseAs(Message[].class);
+        Message[] messageArray = gson.fromJson(response.getContentAsString(), Message[].class);
         List<Message> messageList = Arrays.asList(messageArray);
         return messageList;
     }
@@ -893,10 +867,10 @@ public class InnogyClient {
     }
 
     /**
-     * @param credentialRefreshListener the credentialRefreshListener to set
+     * @param accessTokenRefreshListener the accessTokenRefreshListener to set
      */
-    public void setCredentialRefreshListener(CredentialRefreshListener credentialRefreshListener) {
-        this.credentialRefreshListener = credentialRefreshListener;
+    public void setAccessTokenRefreshListener(AccessTokenRefreshListener accessTokenRefreshListener) {
+        this.accessTokenRefreshListener = accessTokenRefreshListener;
     }
 
     /**

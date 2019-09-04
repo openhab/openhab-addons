@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.location;
 
-import com.google.api.client.util.Key;
-
 /**
  * Defines the structure of the configuration of a {@link Location}.
  *
@@ -23,13 +21,11 @@ public class LocationConfig {
     /**
      * Name of the {@link Location}
      */
-    @Key("name")
     private String name;
 
     /**
      * Type of the {@link Location}
      */
-    @Key("type")
     private String type;
 
     /**

@@ -14,9 +14,6 @@ package org.openhab.binding.innogysmarthome.internal.client.entity.message;
 
 import java.util.List;
 
-import com.google.api.client.util.Key;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Defines the structure of a {@link Message}. Messages are part of the innogy system and besides other things are used
  * to raise battery warnings.
@@ -78,33 +75,27 @@ public class Message {
     /**
      * Identifier of the message – must be unique.
      */
-    @Key("id")
     private String id;
 
     /**
      * Specifies the type of the message.
      */
-    @Key("type")
     private String type;
 
     /**
      * Defines whether the message has been viewed by a user.
      */
-    @Key("read")
     private boolean isRead;
 
     /**
      * Defines whether it is an alert or a message, default is message.
      */
-    @Key("class")
     private String messageClass;
-
     /**
      * Timestamp when the message was created.
      *
      * Optional.
      */
-    @Key("timestamp")
     private String timestamp;
 
     /**
@@ -112,8 +103,6 @@ public class Message {
      *
      * Optional.
      */
-    @Key("devices")
-    @SerializedName("devices")
     private List<String> deviceLinkList;
 
     /**
@@ -123,7 +112,7 @@ public class Message {
      *
      * TODO: unclear how the structure looks. May be like {@link Message#properties}
      */
-    // @Key("capabilities")
+    // @SerializedName("capabilities")
     // private List<Link> capabilityLinkList;
 
     /**
@@ -131,13 +120,11 @@ public class Message {
      *
      * Optional.
      */
-    @Key("properties")
     private MessageProperties properties;
 
     /**
      * The product (context) that generated the message.
      */
-    @Key("namespace")
     private String namespace;
 
     /**
@@ -263,7 +250,7 @@ public class Message {
 
     /**
      * Returns true, if the message is of type "DeviceLowBattery".
-     * 
+     *
      * @return
      */
     public boolean isTypeDeviceLowBattery() {
