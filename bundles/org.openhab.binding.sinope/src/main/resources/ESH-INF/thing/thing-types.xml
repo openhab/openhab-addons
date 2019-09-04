@@ -59,7 +59,7 @@
 	<channel-type id="insideTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Current inside temperature in degrees celcius</description>
+		<description>Current inside temperature</description>
 		<category>Temperature</category>
 		<!-- As specified by manufacturer -->
 		<state min="-10" max="70" step="0.01" pattern="%.2f %unit%" readOnly="true" />
@@ -68,7 +68,7 @@
 	<channel-type id="outsideTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Current outside temperature in degrees celsius</description>
+		<description>Current outside temperature</description>
 		<category>Temperature</category>
 		<state step="0.01" pattern="%.2f %unit%" readOnly="true" />
 	</channel-type>

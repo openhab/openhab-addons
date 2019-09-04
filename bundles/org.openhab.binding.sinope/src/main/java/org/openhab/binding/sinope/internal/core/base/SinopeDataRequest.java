@@ -21,7 +21,7 @@ import org.openhab.binding.sinope.internal.util.ByteUtil;
 
 /**
  * The Class SinopeDataRequest.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public abstract class SinopeDataRequest extends SinopeRequest {
@@ -192,7 +192,7 @@ public abstract class SinopeDataRequest extends SinopeRequest {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        // sb.append(super.toString());
+
         sb.append(String.format("\nData: %s", ByteUtil.toString(getFrameData())));
         sb.append(String.format("\n\tSeq: %s", ByteUtil.toString(getSeq())));
         sb.append(String.format("\n\tRequest Type: 0x%02X ", getRequestType()));
