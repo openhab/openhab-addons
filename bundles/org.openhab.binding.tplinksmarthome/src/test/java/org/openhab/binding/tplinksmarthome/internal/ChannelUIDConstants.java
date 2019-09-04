@@ -29,6 +29,8 @@ public final class ChannelUIDConstants {
     public static final ChannelUID CHANNEL_UID_BRIGHTNESS = createChannel(LB130, CHANNEL_BRIGHTNESS);
     public static final ChannelUID CHANNEL_UID_COLOR = createChannel(LB130, CHANNEL_COLOR);
     public static final ChannelUID CHANNEL_UID_COLOR_TEMPERATURE = createChannel(LB130, CHANNEL_COLOR_TEMPERATURE);
+    public static final ChannelUID CHANNEL_UID_COLOR_TEMPERATURE_ABS = createChannel(LB130,
+            CHANNEL_COLOR_TEMPERATURE_ABS);
     public static final ChannelUID CHANNEL_UID_ENERGY_CURRENT = createChannel(HS110, CHANNEL_ENERGY_CURRENT);
     public static final ChannelUID CHANNEL_UID_ENERGY_POWER = createChannel(HS110, CHANNEL_ENERGY_POWER);
     public static final ChannelUID CHANNEL_UID_ENERGY_TOTAL = createChannel(HS110, CHANNEL_ENERGY_TOTAL);
