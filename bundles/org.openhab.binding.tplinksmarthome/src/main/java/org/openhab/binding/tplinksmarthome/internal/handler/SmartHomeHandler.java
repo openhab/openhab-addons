@@ -15,6 +15,7 @@ package org.openhab.binding.tplinksmarthome.internal.handler;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,7 +24,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -36,6 +38,8 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkIpAddressService;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
+import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
+import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.DeviceType;
 import org.openhab.binding.tplinksmarthome.internal.device.DeviceState;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.slf4j.Logger;
@@ -50,35 +54,50 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SmartHomeHandler extends BaseThingHandler {
 
+    private static final Duration ONE_SECOND = Duration.ofSeconds(1);
+
     private final Logger logger = LoggerFactory.getLogger(SmartHomeHandler.class);
 
     private final SmartHomeDevice smartHomeDevice;
     private final TPLinkIpAddressService ipAddressService;
+    private final int forceRefreshThreshold;
 
     private @NonNullByDefault({}) TPLinkSmartHomeConfiguration configuration;
     private @NonNullByDefault({}) Connection connection;
     private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) ExpiringCache<@Nullable DeviceState> cache;
+    /**
+     * Cache to avoid refresh is called multiple time in 1 second.
+     */
+    private @NonNullByDefault({}) ExpiringCache<@Nullable DeviceState> fastCache;
 
     /**
      * Constructor.
      *
      * @param thing The thing to handle
      * @param smartHomeDevice Specific Smart Home device handler
+     * @param type The device type
      * @param ipAddressService Cache keeping track of ip addresses of tp link devices
      */
-    public SmartHomeHandler(Thing thing, SmartHomeDevice smartHomeDevice, TPLinkIpAddressService ipAddressService) {
+    public SmartHomeHandler(Thing thing, SmartHomeDevice smartHomeDevice, TPLinkSmartHomeThingType type,
+            TPLinkIpAddressService ipAddressService) {
         super(thing);
         this.smartHomeDevice = smartHomeDevice;
         this.ipAddressService = ipAddressService;
+        this.forceRefreshThreshold = type.getDeviceType() == DeviceType.SWITCH
+                || type.getDeviceType() == DeviceType.DIMMER ? FORCED_REFRESH_BOUNDERY_SWITCHED_SECONDS
+                        : FORCED_REFRESH_BOUNDERY_SECONDS;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUid, Command command) {
         try {
             if (command instanceof RefreshType) {
-                updateChannelState(channelUid, cache.getValue());
-            } else if (!smartHomeDevice.handleCommand(channelUid, command)) {
+                updateChannelState(channelUid, fastCache.getValue());
+            } else if (smartHomeDevice.handleCommand(channelUid, command)) {
+                // After a command always refresh the cache to make sure the cache has the latest data
+                updateChannelState(channelUid, forceCacheUpdate());
+            } else {
                 logger.debug("Command {} is not supported for channel: {}", command, channelUid.getId());
             }
         } catch (IOException e) {
@@ -106,8 +125,11 @@ public class SmartHomeHandler extends BaseThingHandler {
                 configuration.deviceId);
         connection = createConnection(configuration);
         smartHomeDevice.initialize(connection, configuration);
-        cache = new ExpiringCache<@Nullable DeviceState>(TimeUnit.SECONDS.toMillis(configuration.refresh),
-                this::refreshCache);
+        cache = new ExpiringCache<@Nullable DeviceState>(Duration.ofSeconds(configuration.refresh), this::refreshCache);
+        // If refresh > threshold fast cache invalidates after 1 second, else it behaves just as the 'normal' cache
+        fastCache = configuration.refresh > forceRefreshThreshold
+                ? new ExpiringCache<@Nullable DeviceState>(ONE_SECOND, this::forceCacheUpdate)
+                : cache;
         updateStatus(ThingStatus.UNKNOWN);
         // While config.xml defines refresh as min 1, this check is used to run a test that doesn't start refresh.
         if (configuration.refresh > 0) {
@@ -123,6 +145,16 @@ public class SmartHomeHandler extends BaseThingHandler {
      */
     Connection createConnection(TPLinkSmartHomeConfiguration config) {
         return new Connection(config.ipAddress);
+    }
+
+    /**
+     * Invalidates the cache to force an update. It returns the refreshed cached value.
+     *
+     * @return the refreshed value
+     */
+    private @Nullable DeviceState forceCacheUpdate() {
+        cache.invalidateValue();
+        return cache.getValue();
     }
 
     private @Nullable DeviceState refreshCache() {
@@ -219,7 +251,7 @@ public class SmartHomeHandler extends BaseThingHandler {
         if (deviceState == null) {
             state = UnDefType.UNDEF;
         } else if (CHANNEL_RSSI.equals(channelId)) {
-            state = new DecimalType(deviceState.getSysinfo().getRssi());
+            state = new QuantityType<>(deviceState.getSysinfo().getRssi(), SmartHomeUnits.DECIBEL_MILLIWATTS);
         } else {
             state = smartHomeDevice.updateChannel(channelUID, deviceState);
         }

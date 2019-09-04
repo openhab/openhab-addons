@@ -19,43 +19,60 @@
 		<category>Switch</category>
 	</channel-type>
 
+	<!-- Absolute Temperature Channel -->
+	<channel-type id="colorTemperatureAbs1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<description>This channel supports adjusting the color temperature from 2700K to 6500K.</description>
+		<category>ColorLight</category>
+		<state min="2700" max="6500" pattern="%d K" />
+	</channel-type>
+
+	<channel-type id="colorTemperatureAbs2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<description>This channel supports adjusting the color temperature from 2500K to 9000K.</description>
+		<category>ColorLight</category>
+		<state min="2500" max="9000" pattern="%d K" />
+	</channel-type>
+
 	<!-- Energy Channel types -->
 	<channel-type id="power">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Actual power usage.</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f W"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="energy-usage">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Energy Usage</label>
 		<description>Actual energy usage.</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f kWh"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="current" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Actual current usage.</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f A"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="voltage" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Actual voltage usage.</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f V"></state>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 	<!-- Misc Channel types -->
 	<channel-type id="rssi" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Signal</label>
 		<description>Wi-Fi signal strength indicator.</description>
 		<category>QualityOfService</category>
-		<state readOnly="true" pattern="%d dBm"></state>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<!-- Channel Groups types -->
