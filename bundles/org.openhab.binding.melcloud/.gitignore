@@ -1,0 +1,27 @@
+.antlr*
+.idea
+.DS_Store
+*.iml
+npm-debug.log
+
+.metadata/
+bin/
+target/
+src-gen/
+xtend-gen/
+
+*/plugin.xml_gen
+**/.settings/org.eclipse.*
+
+bundles/**/src/main/history
+features/**/src/main/history
+features/**/src/main/feature
+
+<<<<<<< HEAD
+#.vscode
+=======
+.vscode
+>>>>>>> b2ba5afe65f465d4bcac9a664cd559bb5564c399
+.factorypath
+
+dependencies.xml

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="melcloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="acdevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="melcloudaccount" />
+		</supported-bridge-type-refs>
+		<label>A.C. Device</label>
+		<description>Air conditioning device</description>
+
+		<channels>
+			<channel id="hasPendingCommand" typeId="hasPendingCommand-channel" />
+			<channel id="offline" typeId="offline-channel" />
+			<channel id="power" typeId="power-channel" />
+			<channel id="operationMode" typeId="operationMode-channel" />
+			<channel id="setTemperature" typeId="setTemperature-channel" />
+			<channel id="fanSpeed" typeId="fanSpeed-channel" />
+			<channel id="vaneHorizontal" typeId="vaneHorizontal-channel" />
+			<channel id="vaneVertical" typeId="vaneVertical-channel" />
+			<channel id="roomTemperature" typeId="roomTemperature-channel" />
+			<channel id="lastCommunication" typeId="lastCommunication-channel" />
+			<channel id="nextCommunication" typeId="nextCommunication-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceID" type="integer" required="true">
+				<label>Device ID</label>
+				<description>Device ID of the A.C. device</description>
+			</parameter>
+			<parameter name="buildingID" type="integer">
+				<label>Building ID</label>
+				<description>Building ID of the A.C. device.</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="true">
+				<label>Polling Interval</label>
+				<description>Time interval how often poll data from MELCloud</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Channels types -->
+
+	<channel-type id="power-channel">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power status of device</description>
+	</channel-type>
+	<channel-type id="operationMode-channel">
+		<item-type>Number</item-type>
+		<label>Operation Mode</label>
+		<description>Operation mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="1">Heat</option>
+				<option value="2">Dry</option>
+				<option value="3">Cool</option>
+				<option value="7">Fan</option>
+				<option value="8">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="setTemperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Temperature</label>
+		<description>Set temperature</description>
+		<state min="10" max="40" step="0.5" pattern="%.1f %unit%" readOnly="false" />
+	</channel-type>
+	<channel-type id="fanSpeed-channel">
+		<item-type>Number</item-type>
+		<label>Fan Speed</label>
+		<description>Fan speed</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="vaneHorizontal-channel">
+		<item-type>Number</item-type>
+		<label>Vane Horizontal</label>
+		<description>Vane horizontal</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="12">Swing</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="vaneVertical-channel">
+		<item-type>Number</item-type>
+		<label>Vane Vertical</label>
+		<description>Vane vertical</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="7">Swing</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="roomTemperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temperature</label>
+		<description>Room temperature</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="lastCommunication-channel">
+		<item-type>DateTime</item-type>
+		<label>Last Communication</label>
+		<description>Last communication time between device and MELCloud</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nextCommunication-channel">
+		<item-type>DateTime</item-type>
+		<label>Next Communication</label>
+		<description>Next communication time between device and MELCloud</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="offline-channel">
+		<item-type>Switch</item-type>
+		<label>Is Offline </label>
+		<description>Is device in offline state.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="hasPendingCommand-channel">
+		<item-type>Switch</item-type>
+		<label>PendingCommand</label>
+		<description>Device has a pending command(s)</description>
+		<state readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>
