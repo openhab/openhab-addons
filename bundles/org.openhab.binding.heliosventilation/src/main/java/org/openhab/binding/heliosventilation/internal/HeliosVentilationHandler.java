@@ -110,7 +110,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             Enumeration<Object> keys = properties.keys();
             while (keys.hasMoreElements()) {
                 String channel = (String) keys.nextElement();
-                Logger.error("reading channel {} = {}", channel, properties.getProperty(channel));
                 HeliosVentilationDataPoint dp;
                 try {
                     dp = new HeliosVentilationDataPoint(channel, properties.getProperty(channel));
