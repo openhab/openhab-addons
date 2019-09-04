@@ -28,10 +28,6 @@ public class EnturCommunicationException extends RuntimeException {
         super(message);
     }
 
-    public EnturCommunicationException(Throwable cause) {
-        super(cause);
-    }
-
     public EnturCommunicationException(String message, Throwable cause) {
         super(message, cause);
     }

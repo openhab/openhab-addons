@@ -108,8 +108,7 @@ public class EnturNoConnection {
         EnturJsonData enturJsonData = gson.fromJson(getResponse(REALTIME_URL, params), EnturJsonData.class);
 
         if (enturJsonData == null) {
-            throw new EnturCommunicationException("Error when deserializing response to EnturJsonData.class",
-                    new NullPointerException());
+            throw new EnturCommunicationException("Error when deserializing response to EnturJsonData.class");
         }
 
         return processData(enturJsonData.data.stopPlace, lineCode);
