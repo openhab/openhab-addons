@@ -27,8 +27,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HeliosVentilationHandlerFactory} is responsible for creating things and thing
@@ -44,7 +42,6 @@ public class HeliosVentilationHandlerFactory extends BaseThingHandlerFactory {
             .singleton(THING_TYPE_HELIOS_VENTILATION);
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
-    private final Logger logger = LoggerFactory.getLogger(HeliosVentilationHandlerFactory.class);
 
     @Reference
     protected void setSerialPortManager(final SerialPortManager serialPortManager) {
