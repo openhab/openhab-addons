@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -111,7 +112,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -1114,36 +1114,53 @@ public class Connection {
     // return state;
     // }
 
-    public JsonArray getBulbCapabilities(String applianceId) throws IOException, URISyntaxException {
-        String json = this.getBulbStateJson(applianceId);
-        JsonElement jobject = new JsonParser().parse(json);
-        JsonArray capabilities = null;
+    // public JsonArray getBulbCapabilities(String applianceId) throws IOException, URISyntaxException {
+    // String json = this.getSmartHomeDeviceStateJson(applianceId);
+    // JsonElement jobject = new JsonParser().parse(json);
+    // JsonArray capabilities = null;
+    //
+    // try {
+    // capabilities = jobject.getAsJsonObject().get("deviceStates").getAsJsonArray().get(0).getAsJsonObject()
+    // .get("capabilityStates").getAsJsonArray();
+    // } catch (Exception e) {
+    // logger.debug("getting capabilities failed {}", e);
+    // }
+    //
+    // if (capabilities != null) {
+    // return capabilities;
+    // }
+    //
+    // throw new IOException();
+    // }
 
-        try {
-            capabilities = jobject.getAsJsonObject().get("deviceStates").getAsJsonArray().get(0).getAsJsonObject()
-                    .get("capabilityStates").getAsJsonArray();
-        } catch (Exception e) {
-            logger.debug("getting capabilities failed {}", e);
+    public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<String> applianceIds)
+            throws IOException, URISyntaxException {
+
+        JsonObject requestObject = new JsonObject();
+        JsonArray stateRequests = new JsonArray();
+        for (String applianceId : applianceIds) {
+            JsonObject stateRequest = new JsonObject();
+            stateRequest.addProperty("entityId", applianceId);
+            stateRequest.addProperty("entityType", "APPLIANCE");
+            stateRequests.add(stateRequest);
         }
+        requestObject.add("stateRequests", stateRequests);
+        String requestBody = requestObject.toString();
+        String json = makeRequestAndReturnString("POST", alexaServer + "/api/phoenix/state", requestBody, true, null);
 
-        if (capabilities != null) {
-            return capabilities;
+        JsonObject responseObject = this.gson.fromJson(json, JsonObject.class);
+        JsonArray deviceStates = (JsonArray) responseObject.get("deviceStates");
+        Map<String, JsonArray> result = new HashMap<String, JsonArray>();
+        for (JsonElement deviceState : deviceStates) {
+            JsonObject deviceStateObject = deviceState.getAsJsonObject();
+            JsonObject entity = deviceStateObject.get("entity").getAsJsonObject();
+            String applicanceId = entity.get("entityId").getAsString();
+            JsonElement capabilityState = deviceStateObject.get("capabilityStates");
+            if (capabilityState != null && capabilityState.isJsonArray()) {
+                result.put(applicanceId, capabilityState.getAsJsonArray());
+            }
         }
-
-        throw new IOException();
-    }
-
-    public String getBulbStateJson(String applianceId) throws IOException, URISyntaxException {
-        String command = "{ \"stateRequests\": [{ \"entityId\": \"" + applianceId
-                + "\", \"entityType\": \"APPLIANCE\" }] }";
-        String json = makeRequestAndReturnString("POST", alexaServer + "/api/phoenix/state", command, true, null);
-        json = json.replace("\\", "");
-        json = json.replace("\"{", "{");
-        json = json.replace("}\"", "}");
-        if (!json.isEmpty()) {
-            return json;
-        }
-        throw new IOException();
+        return result;
     }
 
     public JsonPlayerState getPlayer(Device device) throws IOException, URISyntaxException {

@@ -32,6 +32,7 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -39,7 +40,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.storage.Storage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -48,7 +48,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
@@ -56,6 +56,10 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * @author Lukas Knoeller
@@ -67,17 +71,16 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
     private @Nullable Connection connection;
     private @Nullable SmartHomeBaseDevice smartHomeBaseDevice;
-
-    Storage<String> stateStorage;
+    private Gson gson;
 
     @Nullable
     AccountHandler accountHandler;
     Thing thing;
 
-    public SmartHomeDeviceHandler(Thing thing, Storage<String> storage) {
+    public SmartHomeDeviceHandler(Thing thing, Gson gson) {
         super(thing);
         this.thing = thing;
-        this.stateStorage = storage;
+        this.gson = gson;
     }
 
     public boolean setDeviceAndUpdateThingState(AccountHandler accountHandler,
@@ -178,10 +181,64 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 .withChannel(ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID).build()).build());
     }
 
-    public void updateState(AccountHandler accountHandler, @Nullable SmartHomeBaseDevice smartHomeBaseDevice) {
-        if (!setDeviceAndUpdateThingState(accountHandler, smartHomeBaseDevice)) {
-            this.logger.debug("Handle updateState {} aborted: Not online", this.getThing().getUID());
-            return;
+    public void updateState(List<SmartHomeBaseDevice> allDevices,
+            Map<String, JsonArray> applianceIdToCapabilityStates) {
+        SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
+        Boolean power = null;
+        Integer brightness = null;
+        String colorName = null;
+        boolean stateFound = false;
+        for (SmartHomeDevice shd : GetSupportedSmartHomeDevices(smartHomeBaseDevice, allDevices)) {
+            JsonArray states = applianceIdToCapabilityStates.get(shd.applianceId);
+            if (states == null) {
+                continue;
+            }
+            stateFound = true;
+            for (int i = 0; i < states.size(); i++) {
+                String stateJson = states.get(i).getAsString();
+                if (stateJson.startsWith("{") && stateJson.endsWith("}")) {
+                    JsonObject state = this.gson.fromJson(stateJson, JsonObject.class);
+                    String interfaceName = state.get("namespace").getAsString();
+                    if (INTERFACE_POWER.equals(interfaceName)) {
+                        String value = state.get("value").getAsString();
+                        // For groups take true if all true
+                        if ("ON".equals(value)) {
+                            power = true;
+                        } else if (power == null) {
+                            power = false;
+                        }
+                    } else if (INTERFACE_BRIGHTNESS.equals(interfaceName)) {
+                        int value = state.get("value").getAsInt();
+                        // For groups take the maximum
+                        if (brightness == null) {
+                            brightness = value;
+                        } else if (value > brightness) {
+                            brightness = value;
+                        }
+
+                    } else if ("Alexa.ColorPropertiesController".equals(interfaceName)) {
+                        if (colorName == null) {
+                            colorName = state.get("value").getAsJsonObject().get("name").getAsString();
+                        }
+                    }
+                }
+            }
+            if (this.isLinked(CHANNEL_CONTROLLER_POWER)) {
+                updateState(CHANNEL_CONTROLLER_POWER,
+                        power == null ? UnDefType.UNDEF : (power ? OnOffType.ON : OnOffType.OFF));
+            }
+            if (this.isLinked(CHANNEL_CONTROLLER_BRIGHTNESS)) {
+                updateState(CHANNEL_CONTROLLER_BRIGHTNESS,
+                        brightness == null ? UnDefType.UNDEF : new PercentType(brightness));
+            }
+            if (this.isLinked(CHANNEL_CONTROLLER_COLOR)) {
+                updateState(CHANNEL_CONTROLLER_COLOR, colorName == null ? UnDefType.UNDEF : new StringType(colorName));
+            }
+            if (stateFound) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
         }
     }
 
@@ -202,14 +259,9 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             if (smartHomeBaseDevice == null) {
                 return;
             }
-            Set<SmartHomeDevice> devices = null;
-            if (smartHomeBaseDevice instanceof SmartHomeDevice) {
-                devices = new HashSet<>();
-                devices.add((SmartHomeDevice) smartHomeBaseDevice);
-            } else if (smartHomeBaseDevice instanceof SmartHomeGroup) {
-                devices = GetSupportedSmartHomeDevices((SmartHomeGroup) smartHomeBaseDevice,
-                        accountHandler.getLastKnownSmartHomeDevice());
-            }
+            Set<SmartHomeDevice> devices = GetSupportedSmartHomeDevices(smartHomeBaseDevice,
+                    accountHandler.getLastKnownSmartHomeDevice());
+
             if (devices == null) {
                 return;
             }
@@ -264,9 +316,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         }
 
         logger.trace("Command {} received from channel '{}'", command, channelUID);
-        if (command instanceof RefreshType) {
-            updateState(this.accountHandler, this.smartHomeBaseDevice);
-        }
+
     }
 
     public void updateBulbState(ChannelUID channelUID, String command) {
@@ -310,7 +360,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             }
         }
         if (device instanceof SmartHomeGroup) {
-            for (SmartHomeDevice shd : GetSupportedSmartHomeDevices((SmartHomeGroup) device,
+            for (SmartHomeDevice shd : GetSupportedSmartHomeDevices(device,
                     accountHandler.getLastKnownSmartHomeDevice())) {
                 for (SmartHomeCapability capability : shd.capabilities) {
                     result.add(capability.interfaceName);
@@ -320,27 +370,45 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         return result;
     }
 
-    public static Set<SmartHomeDevice> GetSupportedSmartHomeDevices(SmartHomeGroup shg,
+    public static Set<SmartHomeDevice> GetSupportedSmartHomeDevices(@Nullable SmartHomeBaseDevice baseDevice,
             List<SmartHomeBaseDevice> allDevices) {
         Set<SmartHomeDevice> result = new HashSet<>();
-        for (SmartHomeBaseDevice device : allDevices) {
-            if (device instanceof SmartHomeDevice) {
-                SmartHomeDevice shd = (SmartHomeDevice) device;
-                if (shd.tags != null && shd.tags.tagNameToValueSetMap != null
-                        && shd.tags.tagNameToValueSetMap.groupIdentity != null
-                        && Arrays.asList(shd.tags.tagNameToValueSetMap.groupIdentity)
-                                .contains(shg.applianceGroupIdentifier.value)) {
+        if (baseDevice == null) {
+            return result;
+        }
+        if (baseDevice instanceof SmartHomeDevice) {
+            SmartHomeDevice shd = (SmartHomeDevice) baseDevice;
+            boolean supportedDevice = false;
+            for (SmartHomeCapability capability : shd.capabilities) {
+                if (SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
+                    supportedDevice = true;
+                    break;
+                }
+            }
+            if (supportedDevice) {
+                result.add(shd);
+            }
+        } else {
+            SmartHomeGroup shg = (SmartHomeGroup) baseDevice;
+            for (SmartHomeBaseDevice device : allDevices) {
+                if (device instanceof SmartHomeDevice) {
+                    SmartHomeDevice shd = (SmartHomeDevice) device;
+                    if (shd.tags != null && shd.tags.tagNameToValueSetMap != null
+                            && shd.tags.tagNameToValueSetMap.groupIdentity != null
+                            && Arrays.asList(shd.tags.tagNameToValueSetMap.groupIdentity)
+                                    .contains(shg.applianceGroupIdentifier.value)) {
 
-                    boolean supportedDevice = false;
-                    for (SmartHomeCapability capability : shd.capabilities) {
-                        if (SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
-                            supportedDevice = true;
-                            break;
+                        boolean supportedDevice = false;
+                        for (SmartHomeCapability capability : shd.capabilities) {
+                            if (SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
+                                supportedDevice = true;
+                                break;
+                            }
                         }
-                    }
-                    if (supportedDevice) {
-                        result.add(shd);
-                        continue;
+                        if (supportedDevice) {
+                            result.add(shd);
+                            continue;
+                        }
                     }
                 }
             }

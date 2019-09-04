@@ -129,9 +129,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
             return new FlashBriefingProfileHandler(thing, storage);
         }
         if (thingTypeUID.equals(THING_TYPE_SMART_HOME_DEVICE)) {
-            Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
-                    String.class.getClassLoader());
-            return new SmartHomeDeviceHandler(thing, storage);
+            return new SmartHomeDeviceHandler(thing, gson);
         }
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new EchoHandler(thing, gson);

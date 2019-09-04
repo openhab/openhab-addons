@@ -74,6 +74,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -784,13 +785,36 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     private void updateSmartHomeState() {
         try {
+            Connection connection = this.connection;
+            if (connection == null || !connection.getIsLoggedIn()) {
+                return;
+            }
+            List<SmartHomeBaseDevice> allDevices = this.getLastKnownSmartHomeDevice();
+            Set<String> applianceIds = new HashSet<>();
             synchronized (this.smartHomeDeviceHandlers) {
-                {
-                    if (this.smartHomeDeviceHandlers.size() == 0) {
-                        return;
+                if (this.smartHomeDeviceHandlers.size() == 0) {
+                    return;
+                }
+                for (SmartHomeDeviceHandler device : smartHomeDeviceHandlers) {
+                    String id = device.findId();
+                    if (id != null) {
+                        SmartHomeBaseDevice baseDevice = jsonIdSmartHomeDeviceMapping.get(id);
+                        for (SmartHomeDevice shd : SmartHomeDeviceHandler.GetSupportedSmartHomeDevices(baseDevice,
+                                allDevices)) {
+                            applianceIds.add(shd.applianceId);
+                        }
                     }
                 }
             }
+
+            Map<String, JsonArray> applianceIdToCapabilityStates = connection
+                    .getSmartHomeDeviceStatesJson(applianceIds);
+            synchronized (this.smartHomeDeviceHandlers) {
+                for (SmartHomeDeviceHandler smartHomeDeviceHandler : smartHomeDeviceHandlers) {
+                    smartHomeDeviceHandler.updateState(allDevices, applianceIdToCapabilityStates);
+                }
+            }
+
         } catch (HttpException | JsonSyntaxException | ConnectionException e) {
             logger.debug("updateSmartHomeState fails {}", e);
         } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
