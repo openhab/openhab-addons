@@ -32,6 +32,7 @@ The binding supports only one thing and requires the configuration of the serial
 ## Channels
 
 Supported operation channels:
+
 | channel            | type               | description                                   |
 |--------------------|--------------------|-----------------------------------------------|
 | outsideTemp        | Number:Temperature | Temperature sensor in the outside air flow    |
@@ -46,6 +47,7 @@ Supported operation channels:
 | winterMode         | Switch             | Switch to set winter mode                     |
 
 Supported configuration channels:
+
 | channel            | type               | description                                   |
 |--------------------|--------------------|-----------------------------------------------|
 | bypassTemp         | Number:Temperature | Temperature to disable the bypass function    |
