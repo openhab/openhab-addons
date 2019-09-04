@@ -509,9 +509,13 @@
 		<description>Next timer</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="colorController" advanced="false">
+	<channel-type id="color" advanced="false">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>The color of a smart bulb</description>
+	</channel-type>	<channel-type id="colorName" advanced="false">
 		<item-type>String</item-type>
-		<label>Color of your bulb</label>
+		<label>Color</label>
 		<description>The color of a smart bulb</description>
 		<state pattern="String" readOnly="false">
 			<options>
@@ -533,7 +537,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="colorTemperatureController" advanced="false">
+	<channel-type id="colorTemperatureName" advanced="false">
 		<item-type>String</item-type>
 		<label>White temperature</label>
 		<description>The temperature of white</description>
@@ -547,12 +551,12 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="brightnessController" advanced="false">
+	<channel-type id="brightness" advanced="false">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>The brightness of the light</description>
 	</channel-type>
-	<channel-type id="powerController" advanced="false">
+	<channel-type id="power" advanced="false">
 		<item-type>Switch</item-type>
 		<label>State</label>
 		<description>State (ON/OFF)</description>

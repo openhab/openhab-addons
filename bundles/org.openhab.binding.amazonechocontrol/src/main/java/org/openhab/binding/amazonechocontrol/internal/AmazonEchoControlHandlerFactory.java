@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_ECHO_THING_TYPES_UIDS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_SMART_HOME_THING_TYPES_UIDS;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_ACCOUNT;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_FLASH_BRIEFING_PROFILE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -72,7 +72,8 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_ECHO_THING_TYPES_UIDS.contains(thingTypeUID)
+                || SUPPORTED_SMART_HOME_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
@@ -128,10 +129,10 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
                     String.class.getClassLoader());
             return new FlashBriefingProfileHandler(thing, storage);
         }
-        if (thingTypeUID.equals(THING_TYPE_SMART_HOME_DEVICE)) {
+        if (SUPPORTED_SMART_HOME_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new SmartHomeDeviceHandler(thing, gson);
         }
-        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        if (SUPPORTED_ECHO_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new EchoHandler(thing, gson);
         }
         return null;

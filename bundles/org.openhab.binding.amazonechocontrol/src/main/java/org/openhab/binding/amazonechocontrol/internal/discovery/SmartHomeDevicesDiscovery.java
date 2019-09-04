@@ -14,7 +14,7 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_ID;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_INTERFACES;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_SMART_HOME_THING_TYPES_UIDS;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE;
 
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
     }
 
     public SmartHomeDevicesDiscovery(AccountHandler accountHandler) {
-        super(SUPPORTED_THING_TYPES_UIDS, 10);
+        super(SUPPORTED_SMART_HOME_THING_TYPES_UIDS, 10);
         this.accountHandler = accountHandler;
     }
 
@@ -84,6 +84,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
     @Override
     protected void startScan() {
         stopScanJob();
+        removeOlderResults(activateTimeStamp);
         setSmartHomeDevices(accountHandler.updateSmartHomeDeviceList(false));
     }
 
@@ -126,7 +127,6 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
             startScanStateJob = null;
         }
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan());
     }
 
     @Override

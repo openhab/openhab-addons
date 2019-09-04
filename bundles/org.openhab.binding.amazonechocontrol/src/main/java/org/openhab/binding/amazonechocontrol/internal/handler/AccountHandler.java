@@ -253,6 +253,12 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 flashBriefingProfileHandlers.remove(childHandler);
             }
         }
+        // check for flash briefing profile handler
+        if (childHandler instanceof SmartHomeDeviceHandler) {
+            synchronized (smartHomeDeviceHandlers) {
+                smartHomeDeviceHandlers.remove(childHandler);
+            }
+        }
         super.childHandlerDisposed(childHandler, childThing);
     }
 

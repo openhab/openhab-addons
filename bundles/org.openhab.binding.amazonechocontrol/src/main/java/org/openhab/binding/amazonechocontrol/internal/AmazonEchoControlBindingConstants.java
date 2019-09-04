@@ -44,9 +44,12 @@ public class AmazonEchoControlBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_SMART_HOME_DEVICE = new ThingTypeUID(BINDING_ID, "smartHomeDevice");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
+    public static final Set<ThingTypeUID> SUPPORTED_ECHO_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_ACCOUNT, THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW,
                     THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE, THING_TYPE_SMART_HOME_DEVICE));
+
+    public static final Set<ThingTypeUID> SUPPORTED_SMART_HOME_THING_TYPES_UIDS = new HashSet<>(
+            Arrays.asList(THING_TYPE_SMART_HOME_DEVICE));
 
     // List of all Channel ids
     public static final String CHANNEL_PLAYER = "player";
@@ -128,13 +131,15 @@ public class AmazonEchoControlBindingConstants {
             Arrays.asList(INTERFACE_BRIGHTNESS, INTERFACE_COLOR_TEMPERATURE, INTERFACE_COLOR, INTERFACE_POWER));
 
     // List of dynamic channels
-    public static final String CHANNEL_CONTROLLER_BRIGHTNESS = "brightnessController";
-    public static final String CHANNEL_CONTROLLER_COLOR_TEMPERATURE = "colorTemperatureController";
-    public static final String CHANNEL_CONTROLLER_COLOR = "colorController";
-    public static final String CHANNEL_CONTROLLER_POWER = "powerController";
+    public static final String CHANNEL_CONTROLLER_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME = "colorTemperatureName";
+    public static final String CHANNEL_CONTROLLER_COLOR_NAME = "colorName";
+    public static final String CHANNEL_CONTROLLER_COLOR = "color";
+    public static final String CHANNEL_CONTROLLER_POWER = "power";
 
     // List of Item types
     public static final String ITEM_TYPE_SWITCH = "Switch";
     public static final String ITEM_TYPE_DIMMER = "Dimmer";
     public static final String ITEM_TYPE_STRING = "String";
+    public static final String ITEM_TYPE_COLOR = "Color";
 }

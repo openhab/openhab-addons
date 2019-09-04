@@ -15,7 +15,8 @@ package org.openhab.binding.amazonechocontrol.internal.handler;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.BINDING_ID;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_CONTROLLER_BRIGHTNESS;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_CONTROLLER_COLOR;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_CONTROLLER_COLOR_TEMPERATURE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_CONTROLLER_COLOR_NAME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_CONTROLLER_POWER;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_ID;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_TURN_OFF;
@@ -24,6 +25,7 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR_TEMPERATURE;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_POWER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_COLOR;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_DIMMER;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_STRING;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_SWITCH;
@@ -37,6 +39,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -108,44 +112,19 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             }
 
             if (capabilities.contains(INTERFACE_COLOR_TEMPERATURE)) {
-                addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_COLOR_TEMPERATURE),
-                        ITEM_TYPE_STRING, new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_COLOR_TEMPERATURE));
+                addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME),
+                        ITEM_TYPE_STRING, new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME));
             }
 
             if (capabilities.contains(INTERFACE_COLOR)) {
-                addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_COLOR), ITEM_TYPE_STRING,
+                addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_COLOR), ITEM_TYPE_COLOR,
                         new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_COLOR));
+                addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_COLOR_NAME), ITEM_TYPE_STRING,
+                        new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_COLOR_NAME));
             }
         } catch (IllegalArgumentException e) {
             logger.debug("Exception while adding channel {}.", e);
         }
-
-        // try {
-        // String state = null;
-        // int brightness = -1;
-        // String color = null;
-        // connection = accountHandler.findConnection();
-        // if (thing.getProperties().keySet().contains(DEVICE_PROPERTY_LIGHT_SUBDEVICE + 0)) {
-        // state = connection.getLightGroupState(thing);
-        // brightness = connection.getLightGroupBrightness(thing);
-        // } else {
-        // state = connection.getBulbState(thing);
-        // brightness = connection.getBulbBrightness(thing);
-        // color = connection.getBulbColor(thing);
-        // }
-        // if (state != null) {
-        // updateBulbState(thing.getChannel(CHANNEL_CONTROLLER_POWER).getUID(), state);
-        // }
-        // if (brightness != -1) {
-        // updateBrightness(thing.getChannel(CHANNEL_CONTROLLER_BRIGHTNESS).getUID(),
-        // brightness);
-        // }
-        // if (color != null) {
-        // updateColor(thing.getChannel(CHANNEL_CONTROLLER_COLOR).getUID(), color);
-        // }
-        // } catch (IOException | URISyntaxException e) {
-        // logger.error(e.getMessage());
-        // }
         return true;
     }
 
@@ -184,8 +163,14 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
     public void updateState(List<SmartHomeBaseDevice> allDevices,
             Map<String, JsonArray> applianceIdToCapabilityStates) {
         SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
+        if (smartHomeBaseDevice == null) {
+            updateStatus(ThingStatus.UNINITIALIZED);
+            return;
+        }
         Boolean power = null;
+        HSBType color = null;
         Integer brightness = null;
+        String colorTemperaturName = null;
         String colorName = null;
         boolean stateFound = false;
         for (SmartHomeDevice shd : GetSupportedSmartHomeDevices(smartHomeBaseDevice, allDevices)) {
@@ -215,10 +200,26 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                         } else if (value > brightness) {
                             brightness = value;
                         }
-
+                    } else if (INTERFACE_COLOR.equals(interfaceName)) {
+                        JsonObject value = state.get("value").getAsJsonObject();
+                        // For groups take the maximum
+                        if (color == null) {
+                            color = new HSBType(new DecimalType(value.get("hue").getAsInt()),
+                                    new PercentType(value.get("saturation").getAsInt() * 100),
+                                    new PercentType(value.get("brightness").getAsInt() * 100));
+                        }
                     } else if ("Alexa.ColorPropertiesController".equals(interfaceName)) {
-                        if (colorName == null) {
-                            colorName = state.get("value").getAsJsonObject().get("name").getAsString();
+                        Set<String> capabilities = GetCapabilities(accountHandler, smartHomeBaseDevice);
+                        if (capabilities.contains(INTERFACE_COLOR_TEMPERATURE)) {
+                            // For groups take the first
+                            if (colorTemperaturName == null) {
+                                colorTemperaturName = state.get("value").getAsJsonObject().get("name").getAsString();
+                            }
+                        } else if (capabilities.contains(INTERFACE_COLOR)) {
+                            // For groups take the first
+                            if (colorName == null) {
+                                colorName = state.get("value").getAsJsonObject().get("name").getAsString();
+                            }
                         }
                     }
                 }
@@ -231,8 +232,16 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 updateState(CHANNEL_CONTROLLER_BRIGHTNESS,
                         brightness == null ? UnDefType.UNDEF : new PercentType(brightness));
             }
+            if (this.isLinked(CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME)) {
+                updateState(CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME,
+                        colorTemperaturName == null ? UnDefType.UNDEF : new StringType(colorTemperaturName));
+            }
             if (this.isLinked(CHANNEL_CONTROLLER_COLOR)) {
-                updateState(CHANNEL_CONTROLLER_COLOR, colorName == null ? UnDefType.UNDEF : new StringType(colorName));
+                updateState(CHANNEL_CONTROLLER_COLOR, color == null ? UnDefType.UNDEF : color);
+            }
+            if (this.isLinked(CHANNEL_CONTROLLER_COLOR_NAME)) {
+                updateState(CHANNEL_CONTROLLER_COLOR_NAME,
+                        colorName == null ? UnDefType.UNDEF : new StringType(colorName));
             }
             if (stateFound) {
                 updateStatus(ThingStatus.ONLINE);
@@ -282,7 +291,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                         }
                     }
                 }
-                if (channelId.equals(CHANNEL_CONTROLLER_COLOR)
+                if (channelId.equals(CHANNEL_CONTROLLER_COLOR_NAME)
                         && GetCapabilities(accountHandler, shd).contains(INTERFACE_COLOR)) {
                     if (command instanceof StringType) {
                         String commandText = ((StringType) command).toFullString();
@@ -291,7 +300,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                         }
                     }
                 }
-                if (channelId.equals(CHANNEL_CONTROLLER_COLOR_TEMPERATURE)
+                if (channelId.equals(CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME)
                         && GetCapabilities(accountHandler, shd).contains(INTERFACE_COLOR_TEMPERATURE)) {
                     if (command instanceof StringType) {
                         String commandText = ((StringType) command).toFullString();
