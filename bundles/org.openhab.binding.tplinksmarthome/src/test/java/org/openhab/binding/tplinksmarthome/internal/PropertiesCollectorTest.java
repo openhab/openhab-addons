@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.junit.Test;
 import org.openhab.binding.tplinksmarthome.internal.model.GetSysinfo;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
@@ -63,8 +62,7 @@ public class PropertiesCollectorTest {
 
     private void assertProperties(String responseFile, TPLinkSmartHomeThingType thingType, int expectedSize)
             throws IOException {
-        ThingTypeUID thingTypeUID = thingType.thingTypeUID();
-        Map<String, Object> props = PropertiesCollector.collectProperties(thingTypeUID, "localhost",
+        final Map<String, Object> props = PropertiesCollector.collectProperties(thingType, "localhost",
                 ModelTestUtil.jsonFromFile(responseFile, GetSysinfo.class).getSysinfo());
 
         assertEquals("Number of properties not as expected for properties: " + props, expectedSize, props.size());

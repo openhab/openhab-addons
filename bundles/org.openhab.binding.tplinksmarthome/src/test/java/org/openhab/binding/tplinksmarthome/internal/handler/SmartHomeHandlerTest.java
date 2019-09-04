@@ -23,8 +23,8 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -43,6 +43,7 @@ import org.openhab.binding.tplinksmarthome.internal.Commands;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeDiscoveryService;
+import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 
@@ -78,7 +79,7 @@ public class SmartHomeHandlerTest {
         when(smartHomeDevice.getUpdateCommand()).thenReturn(Commands.getSysinfo());
         when(connection.sendCommand(Commands.getSysinfo()))
                 .thenReturn(ModelTestUtil.readJson("plug_get_sysinfo_response"));
-        handler = new SmartHomeHandler(thing, smartHomeDevice, discoveryService) {
+        handler = new SmartHomeHandler(thing, smartHomeDevice, TPLinkSmartHomeThingType.HS100, discoveryService) {
             @Override
             Connection createConnection(TPLinkSmartHomeConfiguration config) {
                 return connection;
@@ -124,7 +125,8 @@ public class SmartHomeHandlerTest {
         handler.handleCommand(channelUID, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(channelUID), stateCaptor.capture());
-        assertEquals("State of RSSI channel should be set", new DecimalType(expectedRssi), stateCaptor.getValue());
+        assertEquals("State of RSSI channel should be set", new QuantityType<>(expectedRssi + " dBm"),
+                stateCaptor.getValue());
     }
 
     @Test
