@@ -83,7 +83,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
      * which support this command with this byte.
      * Example byte value 0x03 means GROUP_ON for IT and some others while it means MOOD1 for LIGHTWAVERF
      */
-    public enum Commands implements ByteEnumWrapper {
+    public enum Commands implements ByteEnumWrapperWithSupportedSubTypes<SubType> {
         OFF(0x00),
         ON(0x01),
         GROUP_OFF(0x02, LIGHTWAVERF, BBSB_NEW, CONRAD_RSL2, EURODOMEST, AVANTEK, IT, KANGTAI),
@@ -120,18 +120,13 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
         }
 
         @Override
-        public byte toByte() {
-            return (byte) command;
+        public List<SubType> supportedBySubTypes() {
+            return supportedBySubTypes;
         }
 
-        public static Commands fromByte(int input, SubType subType) throws RFXComUnsupportedValueException {
-            for (Commands c : Commands.values()) {
-                if (c.command == input && c.supportedBySubTypes.contains(subType)) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Commands.class, input);
+        @Override
+        public byte toByte() {
+            return (byte) command;
         }
     }
 
@@ -172,7 +167,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
         sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
         unitCode = data[7];
 
-        command = Commands.fromByte(data[8], subType);
+        command = fromByte(Commands.class, data[8], subType);
 
         dimmingLevel = data[9];
         signalLevel = (byte) ((data[10] & 0xF0) >> 4);

@@ -168,7 +168,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void testStatusOff() throws RFXComUnsupportedChannelException {
+    public void testCommandStringOff() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("OFF"));
@@ -180,7 +180,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void testStatusOn() throws RFXComUnsupportedChannelException {
+    public void testCommandStringOn() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("On"));
@@ -192,7 +192,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void testStatusUp() throws RFXComUnsupportedChannelException {
+    public void testCommandStringUp() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("UP"));
@@ -205,7 +205,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void testStatusDown() throws RFXComUnsupportedChannelException {
+    public void testCommandStringDown() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("down"));
@@ -217,7 +217,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void testStatusRunUp() throws RFXComUnsupportedChannelException {
+    public void testCommandStringRunUp() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("RUN_UP"));
@@ -229,7 +229,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void testStatusRunDown() throws RFXComUnsupportedChannelException {
+    public void testCommandStringRunDown() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("RUN_DOWN"));
@@ -241,7 +241,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void testStatusStop() throws RFXComUnsupportedChannelException {
+    public void testCommandStringStop() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("STOP"));
@@ -254,7 +254,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void testStatusSecondOn() throws RFXComUnsupportedChannelException {
+    public void testCommandStringSecondOn() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("SECOND_ON"));
@@ -267,7 +267,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void testStatusSecondOff() throws RFXComUnsupportedChannelException {
+    public void testCommandStringSecondOff() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("SECOND_OFF"));
