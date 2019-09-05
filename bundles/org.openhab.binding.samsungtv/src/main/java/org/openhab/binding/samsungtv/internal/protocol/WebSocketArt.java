@@ -45,7 +45,7 @@ class WebSocketArt extends WebSocketBase {
             String event;
             String status;
             String value;
-        };
+        }
 
         // data is sometimes a json object, sometimes a string representation of a json object for d2d_service_message
         @Nullable

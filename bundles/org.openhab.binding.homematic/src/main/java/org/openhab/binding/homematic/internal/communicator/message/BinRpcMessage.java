@@ -43,7 +43,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
 
     public enum TYPE {
         REQUEST,
-        RESPONSE;
+        RESPONSE
     }
 
     private Object[] messageData;

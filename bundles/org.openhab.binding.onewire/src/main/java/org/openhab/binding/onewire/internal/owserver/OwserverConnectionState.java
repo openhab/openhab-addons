@@ -22,5 +22,5 @@ public enum OwserverConnectionState {
     STOPPED,
     OPENED,
     CLOSED,
-    FAILED;
+    FAILED
 }

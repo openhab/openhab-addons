@@ -63,7 +63,7 @@ public class NeoHubBindingConstants {
      */
     public static enum NeoHubReturnResult {
         SUCCEEDED, ERR_COMMUNICATION, ERR_INITIALIZATION
-    };
+    }
 
     /*
      * the property IdD for the name of a thing in the NeoHub note: names may differ

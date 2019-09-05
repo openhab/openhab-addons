@@ -103,7 +103,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
             updateStatus(ThingStatus.OFFLINE);
             timerIsRunning = false;
         }
-    };
+    }
 
     synchronized void startTimer() {
         cancelRunningTimer();

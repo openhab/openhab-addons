@@ -210,7 +210,7 @@ public class BridgeHandler extends BaseBridgeHandler
                 updateConfiguration(configuration);
             }
         }
-    };
+    }
 
     /**
      * Creates a new {@link BridgeHandler}.

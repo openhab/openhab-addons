@@ -102,7 +102,7 @@ public class LGWebOSActions implements ThingActions {
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
             throws IOException {
         BufferedImage bi = ImageIO.read(new URL(icon));
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream(); OutputStream b64 = Base64.getEncoder().wrap(os);) {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream(); OutputStream b64 = Base64.getEncoder().wrap(os)) {
             ImageIO.write(bi, "png", b64);
             String string = os.toString(StandardCharsets.UTF_8.name());
             getControl(ToastControl.class)

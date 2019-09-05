@@ -22,5 +22,5 @@ public enum ChannelGroup {
     AGGREGATE_DAY,
     AGGREGATE_WEEK,
     AGGREGATE_MONTH,
-    AGGREGATE_YEAR;
+    AGGREGATE_YEAR
 }
