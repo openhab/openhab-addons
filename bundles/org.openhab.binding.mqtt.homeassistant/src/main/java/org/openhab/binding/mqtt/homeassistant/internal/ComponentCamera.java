@@ -35,7 +35,7 @@ public class ComponentCamera extends AbstractComponent<ComponentCamera.ChannelCo
         }
 
         protected String topic = "";
-    };
+    }
 
     public ComponentCamera(CFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);

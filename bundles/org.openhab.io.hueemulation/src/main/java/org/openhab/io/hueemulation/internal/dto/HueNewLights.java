@@ -22,7 +22,7 @@ public class HueNewLights {
     enum ScanType {
         none,
         active
-    };
+    }
 
     /** Either none, active or a timestamp since the last search */
     public String lastscan = ScanType.none.name();

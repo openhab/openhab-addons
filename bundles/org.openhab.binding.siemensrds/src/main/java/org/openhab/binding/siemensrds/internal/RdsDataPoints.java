@@ -105,7 +105,7 @@ class RdsDataPoints {
 
         try (InputStream inputStream = https.getInputStream();
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-                BufferedReader reader = new BufferedReader(inputStreamReader);) {
+                BufferedReader reader = new BufferedReader(inputStreamReader)) {
             String inputString;
             StringBuffer response = new StringBuffer();
             while ((inputString = reader.readLine()) != null) {
@@ -161,7 +161,7 @@ class RdsDataPoints {
         https.setDoOutput(true);
 
         try (OutputStream outputStream = https.getOutputStream();
-                DataOutputStream writer = new DataOutputStream(outputStream);) {
+                DataOutputStream writer = new DataOutputStream(outputStream)) {
             writer.writeBytes(json);
         }
 

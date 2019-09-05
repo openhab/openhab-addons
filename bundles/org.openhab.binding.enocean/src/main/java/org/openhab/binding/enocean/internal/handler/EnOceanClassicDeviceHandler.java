@@ -262,5 +262,5 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
         releaseFuture = null;
         super.handleRemoval();
-    };
+    }
 }

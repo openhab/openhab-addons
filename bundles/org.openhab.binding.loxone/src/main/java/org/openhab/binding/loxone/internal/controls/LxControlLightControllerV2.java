@@ -148,7 +148,7 @@ class LxControlLightControllerV2 extends LxControl {
             }
         }
         return UnDefType.UNDEF;
-    };
+    }
 
     /**
      * Get configured and active moods from a new state value received from the Miniserver

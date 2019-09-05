@@ -90,7 +90,7 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
 
         protected String payload_on = "ON";
         protected String payload_off = "OFF";
-    };
+    }
 
     protected CChannel colorChannel;
     protected CChannel switchChannel;

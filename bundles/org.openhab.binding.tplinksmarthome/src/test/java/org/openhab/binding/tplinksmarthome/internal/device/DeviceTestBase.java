@@ -70,7 +70,7 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
             @Override
             protected Socket createSocket() throws IOException {
                 return socket;
-            };
+            }
         };
         device.initialize(connection, configuration);
     }

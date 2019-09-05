@@ -141,7 +141,7 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
     protected void closeConnection(ThingStatusDetail statusDetail, String description) {
         updateStatus(ThingStatus.OFFLINE, statusDetail, description);
         closeConnection();
-    };
+    }
 
     /**
      * send the buffer of the current universe

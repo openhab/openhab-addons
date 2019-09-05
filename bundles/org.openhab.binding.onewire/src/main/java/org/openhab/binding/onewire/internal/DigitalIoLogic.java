@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum DigitalIoLogic {
     NORMAL,
-    INVERTED;
+    INVERTED
 }

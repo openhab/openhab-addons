@@ -26,5 +26,5 @@ public enum ChangeableDeviceConfigEnum {
     GROUPS,
     FUNCTIONAL_GROUP,
     OUTPUT_MODE,
-    BINARY_INPUTS;
+    BINARY_INPUTS
 }

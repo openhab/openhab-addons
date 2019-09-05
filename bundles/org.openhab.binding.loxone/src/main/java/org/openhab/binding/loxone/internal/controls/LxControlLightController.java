@@ -132,7 +132,7 @@ class LxControlLightController extends LxControl {
             return new DecimalType(value);
         }
         return null;
-    };
+    }
 
     /**
      * Get scene names from new state value received from the Miniserver

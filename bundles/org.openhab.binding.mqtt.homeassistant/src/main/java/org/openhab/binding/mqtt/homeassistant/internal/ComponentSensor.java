@@ -39,7 +39,7 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
         protected int expire_after = 0;
 
         protected String state_topic = "";
-    };
+    }
 
     public ComponentSensor(CFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);

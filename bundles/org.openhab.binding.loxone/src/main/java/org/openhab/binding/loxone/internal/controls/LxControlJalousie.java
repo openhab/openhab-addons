@@ -144,7 +144,7 @@ class LxControlJalousie extends LxControl {
                 sendAction(CMD_STOP);
             }
         }
-    };
+    }
 
     private PercentType getOperateState() {
         Double value = getStateDoubleValue(STATE_POSITION);
@@ -159,7 +159,7 @@ class LxControlJalousie extends LxControl {
             return new PercentType((int) Math.round(value * 100.0));
         }
         return null;
-    };
+    }
 
     private void handleShadeCommands(Command command) throws IOException {
         if (command instanceof OnOffType) {
@@ -167,7 +167,7 @@ class LxControlJalousie extends LxControl {
                 sendAction(CMD_SHADE);
             }
         }
-    };
+    }
 
     private void handleAutoShadeCommands(Command command) throws IOException {
         if (command instanceof OnOffType) {
@@ -177,7 +177,7 @@ class LxControlJalousie extends LxControl {
                 sendAction(CMD_NO_AUTO);
             }
         }
-    };
+    }
 
     private OnOffType getAutoShadeState() {
         Double value = getStateDoubleValue(STATE_AUTO_ACTIVE);
@@ -185,7 +185,7 @@ class LxControlJalousie extends LxControl {
             return value == 1.0 ? OnOffType.ON : OnOffType.OFF;
         }
         return null;
-    };
+    }
 
     /**
      * Monitor jalousie position against desired target position and stop it if target position is reached.
