@@ -20,5 +20,6 @@ package org.openhab.binding.lutron.internal.discovery.project;
 public enum ComponentType {
     BUTTON,
     CCI,
-    LED
+    LED,
+    SCENE_CONTROLLER
 }

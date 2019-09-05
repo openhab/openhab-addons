@@ -47,11 +47,9 @@ Full discovery is supported for RadioRA 2 and HomeWorks QS systems.
 Both the main repeaters/processors themselves and the devices connected to them can be automatically discovered.
 Discovered repeaters/processors will be accessed using the default integration credentials.
 These can be changed in the bridge thing configuration.
+Discovered keypad devices should now have their model parameters automatically set to the correct value.
 
 Hubs and their connected devices in Caseta and RA2 Select systems need to be configured manually.
-
-**Remember:** Discovered keypads will not have their model parameter automatically set.
-You must manually set the model parameter for each keypad so that the correct channels for your particular keypad model will be created.
 
 ## Binding Configuration
 
@@ -155,9 +153,6 @@ You can monitor button channels for ON and OFF state changes to indicate button 
 Ditto for the indicator LED channels.
 Note, however, that version 11.6 or higher of the RadioRA 2 software may be required in order to drive keypad LED states, and then this may only be done on unbound buttons.
 
-When using auto-discovery, remember to select the correct value for the `model` parameter after accepting the keypad thing from the inbox.
-The correct channels will then be automatically configured.
-
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.104 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
 If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:keypad:radiora2:entrykeypad`) from the openHAB CLI to list the channels.
 
@@ -186,9 +181,6 @@ Tabletop seeTouch keypads use the **ttkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
-When using auto-discovery, remember to select the correct value for the `model` parameter after accepting the **ttkeypad** thing from the inbox.
-The correct channels will then be automatically configured.
-
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.110 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
 If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:ttkeypad:radiora2:bedroomkeypad`) from the openHAB CLI to list the channels.
 
@@ -205,9 +197,6 @@ Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true 
 International seeTouch keypads used in the Homeworks QS system use the **intlkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and led channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
-
-If using auto-discovery, remember to select the correct value for the `model` parameter after accepting the **intlkeypad** thing from the inbox.
-The correct channels will then be automatically configured.
 
 To support this keypad's contact closure inputs, CCI channels named *cci1* and *cci2* are created with item type Contact and category Switch.
 They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
@@ -230,9 +219,6 @@ Pico keypads use the **pico** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** and **ttkeypad** things.
 The only difference is that no LED channels will be created, since Pico keypads have no indicator LEDs.
 See the discussion above for a full discussion of configuration and use.
-
-When using auto-discovery, remember to select the correct value for the `model` parameter after accepting the **pico** thing from the inbox.
-The correct channels will then be automatically configured.
 
 Component numbering: For button layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.113 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
 If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:pico:radiora2:hallpico`) from the openHAB CLI to list the channels.
@@ -261,7 +247,8 @@ To support the GRAFIK Eye's contact closure input, a CCI channel named *cci1* wi
 It is marked as Advanced, so it will not be automatically linked to items in the Paper UI's Simple Mode.
 It presents ON/OFF states the same as a keypad button.
 
-Component numbering: The buttons and LEDs on the GRAFIK Eye are numbered top to bottom, starting with the 5 scene buttons in a column on the right side of the panel, and then proceeding with the columns of buttons (if any) on the left side of the panel, working left to right. If you are having problems determining which channels have been created for a given model setting, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:grafikeyekeypad:radiora2:theaterkeypad`) from the openHAB CLI to list the channels.
+Component numbering: The buttons and LEDs on the GRAFIK Eye are numbered top to bottom, starting with the 5 scene buttons in a column on the right side of the panel, and then proceeding with the columns of buttons (if any) on the left side of the panel, working left to right.
+If you are having problems determining which channels have been created for a given model setting, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:grafikeyekeypad:radiora2:theaterkeypad`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: 0COL, 1COL, 2COL, 3COL (default)
 
