@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- SYMFONISK Thing Type -->
-	<thing-type id="SYMFONISK">
+	<thing-type id="SYMFONISK" listed="false">
 		<label>SYMFONISK</label>
 		<description>Represents IKEA SYMFONISK speaker</description>
 
