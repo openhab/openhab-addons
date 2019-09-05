@@ -122,7 +122,8 @@ public class HomieImplementationTest extends JavaOSGiTest {
         final String testNode = DEVICE_TOPIC + "/testnode";
         futures.add(embeddedConnection.publish(testNode + "/$name", "Testnode".getBytes()));
         futures.add(embeddedConnection.publish(testNode + "/$type", "Type".getBytes()));
-        futures.add(embeddedConnection.publish(testNode + "/$properties", "temperature,doorbell,testRetain".getBytes()));
+        futures.add(
+                embeddedConnection.publish(testNode + "/$properties", "temperature,doorbell,testRetain".getBytes()));
 
         // Add homie property topics
         final String property = testNode + "/temperature";
@@ -134,14 +135,10 @@ public class HomieImplementationTest extends JavaOSGiTest {
         futures.add(embeddedConnection.publish(property + "/$format", "-100:100".getBytes()));
 
         final String propertyBellTopic = testNode + "/doorbell";
-        futures.add(
-                embeddedConnection.publish(propertyBellTopic + "/$name", "Doorbell".getBytes()));
-        futures.add(
-                embeddedConnection.publish(propertyBellTopic + "/$settable", "false".getBytes()));
-        futures.add(
-                embeddedConnection.publish(propertyBellTopic + "/$retained", "false".getBytes()));
-        futures.add(embeddedConnection.publish(propertyBellTopic + "/$datatype",
-                "boolean".getBytes()));
+        futures.add(embeddedConnection.publish(propertyBellTopic + "/$name", "Doorbell".getBytes()));
+        futures.add(embeddedConnection.publish(propertyBellTopic + "/$settable", "false".getBytes()));
+        futures.add(embeddedConnection.publish(propertyBellTopic + "/$retained", "false".getBytes()));
+        futures.add(embeddedConnection.publish(propertyBellTopic + "/$datatype", "boolean".getBytes()));
 
         this.propertyTestTopic = testNode + "/testRetain";
         futures.add(embeddedConnection.publish(propertyTestTopic + "/$name", "Test".getBytes()));
