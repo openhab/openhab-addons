@@ -473,7 +473,7 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
             }
         }
 
-    };
+    }
 
     private void removeSensorJob(Device eshDevice, DeviceStateUpdate deviceStateUpdate) {
         switch (deviceStateUpdate.getType()) {

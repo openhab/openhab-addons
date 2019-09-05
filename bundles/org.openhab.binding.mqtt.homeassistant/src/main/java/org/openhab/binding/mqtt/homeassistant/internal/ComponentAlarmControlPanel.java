@@ -53,7 +53,7 @@ public class ComponentAlarmControlPanel extends AbstractComponent<ComponentAlarm
         protected String payload_disarm = "DISARM";
         protected String payload_arm_home = "ARM_HOME";
         protected String payload_arm_away = "ARM_AWAY";
-    };
+    }
 
     public ComponentAlarmControlPanel(CFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);

@@ -44,7 +44,7 @@ public class ParadoxInformationConstants {
         panelTypes.put("0xA526", PanelType.MG5050);
         panelTypes.put("0xAE53", PanelType.SP4000);
         panelTypes.put("0xAE54", PanelType.SP65);
-    };
+    }
 
     public static PanelType parsePanelType(byte[] infoPacket) {
         if (infoPacket == null || infoPacket.length != 37) {

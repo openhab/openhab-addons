@@ -22,5 +22,5 @@ public enum ManagerStates {
     RUNNING,
     STOPPED,
     INITIALIZING,
-    GENERATING_SCENES;
+    GENERATING_SCENES
 }

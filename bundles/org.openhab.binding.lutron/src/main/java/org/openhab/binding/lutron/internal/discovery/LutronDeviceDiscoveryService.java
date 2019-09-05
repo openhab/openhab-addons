@@ -140,7 +140,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                 try (InputStream responseStream = listener.getInputStream();
                         InputStreamReader xmlStreamReader = new InputStreamReader(responseStream,
                                 StandardCharsets.UTF_8);
-                        BufferedReader xmlBufReader = new BufferedReader(xmlStreamReader);) {
+                        BufferedReader xmlBufReader = new BufferedReader(xmlStreamReader)) {
                     flushPrePrologLines(xmlBufReader);
 
                     project = dbXmlInfoReader.readFromXML(xmlBufReader);
