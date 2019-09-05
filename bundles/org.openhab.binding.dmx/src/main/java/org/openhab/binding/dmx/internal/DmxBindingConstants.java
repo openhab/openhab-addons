@@ -89,6 +89,6 @@ public class DmxBindingConstants {
     // Listener Type for channel updates
     public static enum ListenerType {
         VALUE,
-        ACTION;
+        ACTION
     }
 }

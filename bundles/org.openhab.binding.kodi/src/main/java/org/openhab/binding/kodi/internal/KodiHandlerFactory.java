@@ -66,7 +66,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
         Dictionary<String, Object> properties = componentContext.getProperties();
         callbackUrl = (String) properties.get("callbackUrl");
-    };
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -50,7 +50,7 @@ public class State {
         /**
          * Color temperature in mirek
          */
-        CT;
+        CT
     }
 
     /**

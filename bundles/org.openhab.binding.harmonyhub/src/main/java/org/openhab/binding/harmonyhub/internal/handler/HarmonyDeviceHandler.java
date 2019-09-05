@@ -135,7 +135,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "A harmony device thing must be configured with a device name OR a postive device id");
         }
-    };
+    }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {

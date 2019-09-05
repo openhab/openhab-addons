@@ -176,6 +176,6 @@ public enum TPLinkSmartHomeThingType {
         /**
          * Switch device.
          */
-        SWITCH;
+        SWITCH
     }
 }

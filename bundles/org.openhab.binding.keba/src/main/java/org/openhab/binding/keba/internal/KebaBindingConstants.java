@@ -75,7 +75,7 @@ public class KebaBindingConstants {
     public enum KebaType {
         P20,
         P30
-    };
+    }
 
     public enum KebaSeries {
 
@@ -106,5 +106,5 @@ public class KebaBindingConstants {
 
             throw new IllegalArgumentException("Not a valid series");
         }
-    };
+    }
 }

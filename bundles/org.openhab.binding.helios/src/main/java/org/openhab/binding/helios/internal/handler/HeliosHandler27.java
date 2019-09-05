@@ -187,7 +187,6 @@ public class HeliosHandler27 extends BaseThingHandler implements NotificationCon
             notificationProducer = notificationProducerService.getPort(
                     new W3CEndpointReferenceBuilder().address(heliosAddress).build(), NotificationProducer.class);
             ((BindingProvider) notificationProducer).getBinding().setHandlerChain(handlerChain);
-            ;
         } catch (WebServiceException e1) {
             logger.debug("An exception occurred while setting up the notification webservice client: {}",
                     e1.getMessage(), e1);
