@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,18 +113,19 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
+    /*
     protected @Nullable String getTahomaVersion(String id) {
         if (getBridgeHandler() != null) {
             return getBridgeHandler().getTahomaVersion(id);
         }
         return "N/A";
-    }
+    }*/
 
-    protected @Nullable String getTahomaStatus(String id) {
+    protected SomfyTahomaStatus getTahomaStatus(String id) {
         if (getBridgeHandler() != null) {
             return getBridgeHandler().getTahomaStatus(id);
         }
-        return "N/A";
+        return new SomfyTahomaStatus();
     }
 
     private @Nullable State getChannelState(Channel channel,

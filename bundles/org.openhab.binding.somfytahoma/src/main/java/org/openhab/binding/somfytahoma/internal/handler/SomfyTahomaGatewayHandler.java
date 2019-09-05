@@ -14,7 +14,6 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.STATUS;
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.UNAUTHORIZED;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -23,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
 
 /**
  * The {@link SomfyTahomaGatewayHandler} is responsible for handling commands,
@@ -38,31 +38,29 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
     }
 
     @Override
+    public void initialize() {
+        updateStatus();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
     }
 
-    public void updateStatusChannel() {
+    public void updateStatus() {
+        String id = getGateWayId();
+        SomfyTahomaStatus status = getTahomaStatus(id);
+        String tahomaStatus = status.getStatus();
         Channel ch = thing.getChannel(STATUS);
         if (ch != null) {
-            updateChannelState(ch.getUID());
+            updateState(ch.getUID(), new StringType(tahomaStatus));
         }
-    }
-
-    private void updateChannelState(ChannelUID channelUID) {
-        if (STATUS.equals(channelUID.getId())) {
-            String id = getGateWayId();
-            String tahomaStatus = getTahomaStatus(id);
-            if (tahomaStatus != null && !UNAUTHORIZED.equals(tahomaStatus)) {
-                updateState(channelUID, new StringType(tahomaStatus));
-                //update the firmware property
-                String fw = getTahomaVersion(id);
-                if (fw != null) {
-                    updateProperty(PROPERTY_FIRMWARE_VERSION, fw);
-                }
-                updateStatus("DISCONNECTED".equals(tahomaStatus) ? ThingStatus.OFFLINE : ThingStatus.ONLINE);
-            }
+        //update the firmware property
+        String fw = status.getProtocolVersion();
+        if (fw != null) {
+            updateProperty(PROPERTY_FIRMWARE_VERSION, fw);
         }
+        updateStatus("DISCONNECTED".equals(tahomaStatus) ? ThingStatus.OFFLINE : ThingStatus.ONLINE);
     }
 
     public String getGateWayId() {

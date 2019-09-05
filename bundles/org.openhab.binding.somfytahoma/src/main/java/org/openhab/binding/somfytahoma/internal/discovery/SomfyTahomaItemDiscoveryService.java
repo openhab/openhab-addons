@@ -139,7 +139,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 actionGroupDiscovered(label, oid, oid);
             }
         } else {
-            logger.debug("Cannot start discovery since the bridge is not online!");
+            logger.debug("Cannot start discovery since the bridge is not online! Rescheduling...");
+            scheduler.schedule(this::runDiscovery, 60, TimeUnit.SECONDS);
         }
     }
 
