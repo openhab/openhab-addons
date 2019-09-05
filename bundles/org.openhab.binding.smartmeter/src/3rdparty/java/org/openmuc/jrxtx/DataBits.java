@@ -1,6 +1,6 @@
 package org.openmuc.jrxtx;
 
-import org.eclipse.smarthome.io.transport.serial.SerialPort;;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
 
 /**
  * The data bits.

@@ -42,7 +42,7 @@ class WebSocketRemote extends WebSocketBase {
             String appId;
             String name;
             int app_type;
-        };
+        }
 
         @NonNullByDefault({})
         static class Data {
@@ -51,7 +51,7 @@ class WebSocketRemote extends WebSocketBase {
 
             String id;
             String token;
-        };
+        }
 
         Data data;
 
@@ -62,10 +62,10 @@ class WebSocketRemote extends WebSocketBase {
             @NonNullByDefault({})
             static class Data {
                 String appId;
-            };
+            }
 
             Data data;
-        };
+        }
 
         Params params;
     }

@@ -84,7 +84,7 @@ class RdsAccessToken {
         https.setDoOutput(true);
 
         try (OutputStream outputStream = https.getOutputStream();
-                DataOutputStream dataOutputStream = new DataOutputStream(outputStream);) {
+                DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
             dataOutputStream.writeBytes(String.format(TOKEN_REQUEST, user, password));
             dataOutputStream.flush();
         }
@@ -95,7 +95,7 @@ class RdsAccessToken {
 
         try (InputStream inputStream = https.getInputStream();
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-                BufferedReader reader = new BufferedReader(inputStreamReader);) {
+                BufferedReader reader = new BufferedReader(inputStreamReader)) {
             String inputString;
             StringBuffer response = new StringBuffer();
             while ((inputString = reader.readLine()) != null) {

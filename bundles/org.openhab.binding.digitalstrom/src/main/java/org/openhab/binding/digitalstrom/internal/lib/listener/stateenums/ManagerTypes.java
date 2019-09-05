@@ -22,5 +22,5 @@ package org.openhab.binding.digitalstrom.internal.lib.listener.stateenums;
 public enum ManagerTypes {
     DEVICE_STATUS_MANAGER,
     SCENE_MANAGER,
-    CONNECTION_MANAGER;
+    CONNECTION_MANAGER
 }

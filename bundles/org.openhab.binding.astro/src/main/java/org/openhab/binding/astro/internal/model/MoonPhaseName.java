@@ -25,5 +25,5 @@ public enum MoonPhaseName {
     FULL,
     WANING_GIBBOUS,
     THIRD_QUARTER,
-    WANING_CRESCENT;
+    WANING_CRESCENT
 }

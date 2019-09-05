@@ -40,7 +40,7 @@ public class OnkyoAlbumArt {
         NOTSTARTED,
         STARTED,
         NEXT,
-        READY;
+        READY
     }
 
     private enum ImageType {
@@ -48,7 +48,7 @@ public class OnkyoAlbumArt {
         JPEG,
         URL,
         NONE,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private StringBuilder albumArtStringBuilder = new StringBuilder();

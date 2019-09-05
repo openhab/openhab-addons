@@ -66,7 +66,7 @@ public class NeoHubSocket {
             socket.connect(new InetSocketAddress(hostname, port), TCP_SOCKET_IMEOUT * 1000);
 
             try (InputStreamReader reader = new InputStreamReader(socket.getInputStream(), US_ASCII);
-                    OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), US_ASCII);) {
+                    OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), US_ASCII)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("sending {} characters..", request.length());
                     logger.debug(">> {}", request);

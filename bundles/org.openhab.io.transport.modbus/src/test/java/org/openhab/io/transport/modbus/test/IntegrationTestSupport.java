@@ -141,7 +141,7 @@ public class IntegrationTestSupport extends JavaTest {
         @Override
         public void run() {
             serialListener = new ModbusSerialListener(SERIAL_PARAMETERS_SERVER);
-        };
+        }
     };
 
     protected static InetAddress localAddress() throws UnknownHostException {

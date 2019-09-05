@@ -77,7 +77,7 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
         WAIT_SOC,
         CMD_PENTAIR,
         CMD_INTELLICHLOR
-    };
+    }
 
     /**
      * Constructor
@@ -233,7 +233,7 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
                 }
             }
         }
-    };
+    }
 
     /**
      * Implements the thread to read and parse the input stream. Once a packet can be indentified, it locates the

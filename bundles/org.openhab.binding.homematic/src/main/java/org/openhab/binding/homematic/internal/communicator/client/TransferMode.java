@@ -19,5 +19,5 @@ package org.openhab.binding.homematic.internal.communicator.client;
  */
 public enum TransferMode {
     XML_RPC,
-    BIN_RPC;
+    BIN_RPC
 }

@@ -129,6 +129,6 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withBridge(bridgeUID).withLabel(displayLabel).build();
         thingDiscovered(discoveryResult);
-    };
+    }
 
 }
