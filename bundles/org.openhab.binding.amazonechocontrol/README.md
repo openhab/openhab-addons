@@ -82,6 +82,7 @@ The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazo
 | wha                  | Amazon Echo Whole House Audio Control |
 | flashbriefingprofile | Flash briefing profile                |
 | smartHomeDevice      | Smart Home Device                     |
+| smartHomeDeviceGroup | Smart Home Device group               |
 
 ## First Steps
 
@@ -107,15 +108,30 @@ The Amazon Account does not need any configuration.
 
 ### Amazon Devices
 
-All Amazon devices (echo, echospot, echoshow, wha) needs the following configurations:
+#### account Thing
+
+| Configuration name              | Default | Description                                                                           |
+|---------------------------------|---------|---------------------------------------------------------------------------------------|
+| discoverSmartHome               | 0       | 0...No discover, 1...Discover direct connected, 2...Discover direct and skill devices |
+| pollingIntervalSmartHome        | 20      | Polling interval for the state of the connected devices                               |
+| discoverOpenHabSmartHomeDevices | false   | Defines, if smart home devices of the openHAB skill should be discovered. This option is for development and testing purpose only. ||
+
+#### echo, echospot, echoshow, wha Things
 
 | Configuration name       | Description                                                               |
 |--------------------------|---------------------------------------------------------------------------|
 | serialNumber             | Serial number of the amazon echo in the Alexa app                         |
 | discoverSmartHome        | 0...No discover, 1...direct connected, 2...direct and over skill connected|
-| pollingIntervalSmartHome | Polling interval for the state of the connected devices                   |
 
 You will find the serial number in the alexa app or on the webpage YOUR_OPENHAB/amazonechocontrol/YOUR_ACCOUNT (e.g. http://openhab:8080/amazonechocontrol/account1).
+
+#### smartHomeDevice, smartHomeDeviceGroup
+
+| Configuration name       | Description                                                               |
+|--------------------------|---------------------------------------------------------------------------|
+| id                       | The id of the device or device group                                      |
+
+The only possibility to find out the id is by using the discover function in the PaperUI. You can use then the id, if you want define the Thing in a file.
 
 ### Flash Briefing Profile
 
@@ -124,8 +140,8 @@ It will be configured at runtime by using the save channel to store the current 
 
 ## Channels
 
-| Channel Type ID       | Item Type | Access Mode | Thing Type | Description                                                                                                                                                                
-|-----------------------|-------------|-------------|------------|------------------------------------------------------------------------------------------
+| Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description                                                                                                                                                                
+|-----------------------|-------------|-------------|-------------------------------|------------------------------------------------------------------------------------------
 | player                | Player      | R/W         | echo, echoshow, echospot, wha | Control the music player  (Supported commands: PLAY or ON, PAUSE or OFF, NEXT, PREVIOUS, REWIND, FASTFORWARD)                                                                                               
 | volume                | Dimmer      | R/W         | echo, echoshow, echospot      | Control the volume                                                                                            
 | equalizerTreble       | Number      | R/W         | echo, echoshow, echospot      | Control the treble (value from -6 to 6)                                                                                            
@@ -143,7 +159,7 @@ It will be configured at runtime by using the save channel to store the current 
 | radioStationId        | String      | R/W         | echo, echoshow, echospot, wha | Start playing of a TuneIn radio station by specifying it's id or stops playing if a empty string was provided
 | radio                 | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used TuneIn radio station (works after the radio station started after the openhab start)
 | amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of a Amazon Music track by it's id od stops playing if a empty string was provided
-| amazonMusicPlayListId | String      | W         | echo, echoshow, echospot, wha | Write Only! Start playing of a Amazon Music playlist by specifying it's id od stops playing if a empty string was provided. Selection will only work in PaperUI
+| amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of a Amazon Music playlist by specifying it's id od stops playing if a empty string was provided. Selection will only work in PaperUI
 | amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openhab start)
 | remind                | String      | R/W         | echo, echoshow, echospot      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the amazon software)
 | nextReminder          | DateTime    | R           | echo, echoshow, echospot      | Next reminder on the device
@@ -153,23 +169,26 @@ It will be configured at runtime by using the save channel to store the current 
 | nextTimer             | DateTime    | R           | echo, echoshow, echospot      | Next timer on the device
 | startRoutine          | String      | W           | echo, echoshow, echospot      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider
-| playMusicVoiceCommand | String      | W         | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
-| startCommand          | String      | W         | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
-| textToSpeech          | String      | W         | echo, echoshow, echospot      | Write Only! Write some text to this channel and alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
-| textToSpeechVolume    | Dimmer      | R/W       | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
+| playMusicVoiceCommand | String      | W           | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
+| startCommand          | String      | W           | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
+| textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
+| textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
 | mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | Media progress in percent 
 | mediaProgressTime     | Number:Time | R/W         | echo, echoshow, echospot      | Media play time 
 | mediaLength           | Number:Time | R           | echo, echoshow, echospot      | Media length
 | notificationVolume    | Dimmer      | R           | echo, echoshow, echospot      | Notification volume
 | ascendingAlarm        | Switch      | R/W         | echo, echoshow, echospot      | Ascending alarm up to the configured volume
-| save                  | Switch      | W         | flashbriefingprofile     | Write Only! Stores the current configuration of flash briefings within the thing
-| active                | Switch      | R/W       | flashbriefingprofile     | Active the profile
-| playOnDevice          | String      | W         | flashbriefingprofile     | Specify the echo serial number or name to start the flash briefing. 
-| powerController       | Switch      | R/W       | smartHomeDevice             | Shows and changes the state (ON/OFF) of your device
-| brightnessController  | Dimmer      | R/W       | smartHomeDevice             | Shows and changes the brightness of your lamp
-| colorController       | String      | R/W       | smartHomeDevice             | Shows and changes the color of your light (groups are not able to show their color!)
-| colorTemperatureController | String      | R/W       | smartHomeDevice             | White temperatures of your lights
+| save                  | Switch      | W           | flashbriefingprofile          | Write Only! Stores the current configuration of flash briefings within the thing
+| active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
+| playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
+| power                 | Switch      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the state (ON/OFF) of your device
+| brightness[^1]        | Dimmer      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the brightness of your lamp
+| color[^1]             | String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the color of your light (groups are not able to show their color!)
+| colorName[^1]         | String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the color name of your light (groups are not able to show their color!)
+| colorTemperatureName[^1]| String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | White temperatures name of your lights
+
+[^1]: The availability is depending on the device capabilities.
 
 ## Advanced Feature Technically Experienced Users
 
@@ -193,6 +212,10 @@ Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discove
     Thing wha                  wha1           "Ground Floor Music Group" @ "Music Groups" [serialNumber="SERIAL_NUMBER"]
     Thing flashbriefingprofile flashbriefing1 "Flash Briefing Technical" @ "Flash Briefings" 
     Thing flashbriefingprofile flashbriefing2 "Flash Briefing Life Style" @ "Flash Briefings" 
+    
+    Thing smartHomeDevice      smartHomeDevice1 "Smart Home Device 1" @ "Living Room" [id="ID"]
+    Thing smartHomeDevice      smartHomeDevice2 "Smart Home Device 2" @ "Living Room" [id="ID"]
+    Thing smartHomeDeviceGroup smartHomeDeviceGroup1 "Living Room Group" @   "Living Room" [id="ID"]
 }
 ```
 
@@ -272,15 +295,21 @@ Switch FlashBriefing_LifeStyle_Active "Active" { channel="amazonechocontrol:flas
 String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
 
 
-// Lights and lightgroups - you will find the applianceId in the properties of your light or lightgroup!
-Switch Light_State "On/Off" { channel="amazonechocontrol:lightGroup:account1:applianceId:powerController" }
-Dimmer Light_Brightness "Brightness" { channel="amazonechocontrol:lightGroup:account1:applianceId:brightnessController" }
-String Light_Color "Color" { channel="amazonechocontrol:lightGroup:account1:applianceId:colorController" }
-String Light_White "White temperature" { channel="amazonechocontrol:lightGroup:account1:applianceId:colorTemperatureController" }
+// Lights and lightgroups
+Switch Light_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:power" }
+Dimmer Light_Brightness "Brightness" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:brightness" }
+Color  Light_Color "Color" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorName" }
+String Light_Color_Name "Color Name" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorName" }
+String Light_White "White temperature" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorTemperatureName" }
 
 // Smart plugs
-Switch Plug_State "On/Off" { channel="amazonechocontrol:lightGroup:account1:applianceId:powerController" }
+Switch Plug_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice2:power" }
+
+// Smart Home device group
+Switch Group_State "On/Off" { channel="amazonechocontrol:smartHomeDeviceGroup:account1:smartHomeDeviceGroup1:power" }
 ```
+
+The only possibility to find out the id for the smartHomeDevice and smartHomeDeviceGroup Things is by using the discover function in the PaperUI.
 
 ### amazonechocontrol.sitemap:
 
@@ -347,8 +376,11 @@ sitemap amazonechocontrol label="Echo Devices"
         Frame label="Lights and light groups" {
             Switch item=Light_State
             Slider item=Light_Brightness
-            Selection item=Light_Color mappings=[ ''='', 'red'='Red', 'crimson'='Crimson', 'salmon'='Salmon', 'orange'='Orange', 'gold'='Gold', 'yellow'='Yellow', 'green'='Green', 'turquoise'='Turquoise', 'cyan'='Cyan', 'sky_blue'='Sky Blue', 'blue'='Blue', 'purple'='Purple', 'magenta'='Magenta', 'pink'='Pink', 'lavender'='Lavender' ]
+            Default item=Light_Color
+            Selection item=Light_Color_Name mappings=[ ''='', 'red'='Red', 'crimson'='Crimson', 'salmon'='Salmon', 'orange'='Orange', 'gold'='Gold', 'yellow'='Yellow', 'green'='Green', 'turquoise'='Turquoise', 'cyan'='Cyan', 'sky_blue'='Sky Blue', 'blue'='Blue', 'purple'='Purple', 'magenta'='Magenta', 'pink'='Pink', 'lavender'='Lavender' ]
             Selection item=Light_White mappings=[ ''='', 'warm_white'='Warm white', 'soft_white'='Soft white', 'white'='White', 'daylight_white'='Daylight white', 'cool_white'='Cool white' ]
+            Switch item=Light_State
+            Switch item=Group_State
         }
 }
 ```

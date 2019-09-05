@@ -254,11 +254,25 @@
 		</supported-bridge-type-refs>
 		<label>Smart Home Device</label>
 		<description>Smart home device connected to Alexa</description>
-		<representation-property>applianceId</representation-property>
+		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text" required="true">
-				<label>Id</label>
-				<description>The id of the device (please use the discover function to get a configured device)</description>
+				<label>Device Id</label>
+				<description>The id of the device (Please use the discover function to get a configured Thing)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="smartHomeDeviceGroup">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+		<label>Smart Home Device Group</label>
+		<description>Group of smart home devices in your amazon account</description>
+		<representation-property>id</representation-property>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Group Id</label>
+				<description>The id of the device group (Please use the discover function to get a configured Thing)</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -513,7 +527,8 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<description>The color of a smart bulb</description>
-	</channel-type>	<channel-type id="colorName" advanced="false">
+	</channel-type>
+	<channel-type id="colorName" advanced="false">
 		<item-type>String</item-type>
 		<label>Color</label>
 		<description>The color of a smart bulb</description>

@@ -43,13 +43,15 @@ public class AmazonEchoControlBindingConstants {
             "flashbriefingprofile");
 
     public static final ThingTypeUID THING_TYPE_SMART_HOME_DEVICE = new ThingTypeUID(BINDING_ID, "smartHomeDevice");
+    public static final ThingTypeUID THING_TYPE_SMART_HOME_DEVICE_GROUP = new ThingTypeUID(BINDING_ID,
+            "smartHomeDeviceGroup");
 
     public static final Set<ThingTypeUID> SUPPORTED_ECHO_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_ACCOUNT, THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW,
                     THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE, THING_TYPE_SMART_HOME_DEVICE));
 
     public static final Set<ThingTypeUID> SUPPORTED_SMART_HOME_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_TYPE_SMART_HOME_DEVICE));
+            Arrays.asList(THING_TYPE_SMART_HOME_DEVICE, THING_TYPE_SMART_HOME_DEVICE_GROUP));
 
     // List of all Channel ids
     public static final String CHANNEL_PLAYER = "player";
@@ -126,11 +128,12 @@ public class AmazonEchoControlBindingConstants {
     public static final String INTERFACE_COLOR_TEMPERATURE = "Alexa.ColorTemperatureController";
     public static final String INTERFACE_COLOR = "Alexa.ColorController";
     public static final String INTERFACE_POWER = "Alexa.PowerController";
+    public static final String INTERFACE_SECURITY_PANEL = "Alexa.SecurityPanelController";
 
     public static final Set<String> SUPPORTED_INTERFACES = new HashSet<>(
             Arrays.asList(INTERFACE_BRIGHTNESS, INTERFACE_COLOR_TEMPERATURE, INTERFACE_COLOR, INTERFACE_POWER));
 
-    // List of dynamic channels
+    // List of dynamic channels for smart home devices
     public static final String CHANNEL_CONTROLLER_BRIGHTNESS = "brightness";
     public static final String CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME = "colorTemperatureName";
     public static final String CHANNEL_CONTROLLER_COLOR_NAME = "colorName";

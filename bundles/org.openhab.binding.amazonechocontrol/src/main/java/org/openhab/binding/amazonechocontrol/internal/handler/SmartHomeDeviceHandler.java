@@ -25,6 +25,7 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR_TEMPERATURE;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_POWER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_SECURITY_PANEL;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_COLOR;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_DIMMER;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.ITEM_TYPE_STRING;
@@ -52,6 +53,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
@@ -121,6 +123,11 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                         new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_COLOR));
                 addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_COLOR_NAME), ITEM_TYPE_STRING,
                         new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_COLOR_NAME));
+            }
+
+            if (capabilities.contains(INTERFACE_SECURITY_PANEL)) {
+                addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_POWER), ITEM_TYPE_SWITCH,
+                        new ChannelTypeUID(BINDING_ID, CHANNEL_CONTROLLER_POWER));
             }
         } catch (IllegalArgumentException e) {
             logger.debug("Exception while adding channel {}.", e);
@@ -263,7 +270,10 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         }
 
         try {
-
+            if (command instanceof RefreshType) {
+                accountHandler.forceDelayedSmartHomeStateUpdate();
+                return;
+            }
             SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
             if (smartHomeBaseDevice == null) {
                 return;
@@ -283,7 +293,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 if (channelId.equals(CHANNEL_CONTROLLER_POWER)
                         && GetCapabilities(accountHandler, shd).contains(INTERFACE_POWER)) {
                     if (command instanceof OnOffType) {
-
+                        accountHandler.forceDelayedSmartHomeStateUpdate();
                         if (command.equals(OnOffType.ON)) {
                             connection.smartHomeCommand(entityId, DEVICE_TURN_ON);
                         } else {
@@ -291,33 +301,48 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                         }
                     }
                 }
+                if (channelId.equals(CHANNEL_CONTROLLER_COLOR)
+                        && GetCapabilities(accountHandler, shd).contains(INTERFACE_COLOR)) {
+                    if (command instanceof HSBType) {
+                        accountHandler.forceDelayedSmartHomeStateUpdate();
+                        HSBType color = ((HSBType) command);
+                        JsonObject colorObject = new JsonObject();
+                        colorObject.addProperty("hue", color.getHue());
+                        colorObject.addProperty("saturation", color.getSaturation().floatValue() / 100);
+                        colorObject.addProperty("brightness", color.getBrightness().floatValue() / 100);
+                        String colorJson = colorObject.toString();
+                        connection.smartHomeCommand(entityId, "setColor", "color", colorObject);
+                    }
+                }
                 if (channelId.equals(CHANNEL_CONTROLLER_COLOR_NAME)
                         && GetCapabilities(accountHandler, shd).contains(INTERFACE_COLOR)) {
                     if (command instanceof StringType) {
-                        String commandText = ((StringType) command).toFullString();
-                        if (StringUtils.isNotEmpty(commandText)) {
-                            connection.smartHomeCommand(entityId, "setColor", "color", commandText);
+                        String colorName = ((StringType) command).toFullString();
+                        if (StringUtils.isNotEmpty(colorName)) {
+                            accountHandler.forceDelayedSmartHomeStateUpdate();
+                            connection.smartHomeCommand(entityId, "setColor", "colorName", colorName);
                         }
                     }
                 }
                 if (channelId.equals(CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME)
                         && GetCapabilities(accountHandler, shd).contains(INTERFACE_COLOR_TEMPERATURE)) {
                     if (command instanceof StringType) {
-                        String commandText = ((StringType) command).toFullString();
-                        if (StringUtils.isNotEmpty(commandText)) {
+                        String colorTemperatureName = ((StringType) command).toFullString();
+                        if (StringUtils.isNotEmpty(colorTemperatureName)) {
+                            accountHandler.forceDelayedSmartHomeStateUpdate();
                             connection.smartHomeCommand(entityId, "setColorTemperature", "colorTemperatureName",
-                                    commandText);
+                                    colorTemperatureName);
                         }
                     }
                 }
                 if (channelId.equals(CHANNEL_CONTROLLER_BRIGHTNESS)
                         && GetCapabilities(accountHandler, shd).contains(INTERFACE_BRIGHTNESS)) {
                     if (command instanceof PercentType) {
+                        accountHandler.forceDelayedSmartHomeStateUpdate();
                         connection.smartHomeCommand(entityId, "setBrightness", "brightness",
                                 ((PercentType) command).floatValue() / 100);
                     }
                 }
-
             }
 
         } catch (Exception e) {

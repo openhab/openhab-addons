@@ -1244,6 +1244,8 @@ public class Connection {
                 parameters.addProperty(property, (Number) value);
             } else if (value instanceof Character) {
                 parameters.addProperty(property, (Character) value);
+            } else if (value instanceof JsonElement) {
+                parameters.add(property, (JsonElement) value);
             }
         }
         controlRequest.add("parameters", parameters);
@@ -1251,7 +1253,8 @@ public class Connection {
         json.add("controlRequests", controlRequests);
 
         String requestBody = json.toString();
-        makeRequest("PUT", url, requestBody, true, true, null, 0);
+        String resultBody = makeRequestAndReturnString("PUT", url, requestBody, true, null);
+        logger.debug(resultBody);
     }
 
     public void notificationVolume(Device device, int volume) throws IOException, URISyntaxException {

@@ -16,6 +16,7 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_INTERFACES;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_SMART_HOME_THING_TYPES_UIDS;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE_GROUP;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,7 +59,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
 
     @Nullable
     ScheduledFuture<?> startScanStateJob;
-    long activateTimeStamp;
+    static Long activateTimeStamp;
 
     private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
@@ -136,7 +137,9 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
         if (config != null) {
             modified(config);
         }
-        activateTimeStamp = new Date().getTime();
+        if (activateTimeStamp == null) {
+            activateTimeStamp = new Date().getTime();
+        }
     };
 
     synchronized void setSmartHomeDevices(List<SmartHomeBaseDevice> deviceList) {
@@ -215,8 +218,8 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                     // No children with an supported interface
                     continue;
                 }
-                thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, id.replace(".", "-"));
-                deviceName = "*" + shg.applianceGroupName + "*";
+                thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE_GROUP, bridgeThingUID, id.replace(".", "-"));
+                deviceName = shg.applianceGroupName;
                 props.put(DEVICE_PROPERTY_ID, id);
             }
 

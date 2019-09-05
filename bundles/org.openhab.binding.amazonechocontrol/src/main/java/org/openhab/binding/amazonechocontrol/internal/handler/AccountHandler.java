@@ -99,6 +99,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private @Nullable ScheduledFuture<?> checkLoginJob;
     private @Nullable ScheduledFuture<?> updateSmartHomeStateJob;
     private @Nullable ScheduledFuture<?> refreshAfterCommandJob;
+    private @Nullable ScheduledFuture<?> refreshSmartHomeAfterCommandJob;
     private @Nullable ScheduledFuture<?> foceCheckDataJob;
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
@@ -300,10 +301,16 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             this.foceCheckDataJob = null;
         }
         @Nullable
-        ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
-        if (refreshDataDelayed != null) {
-            refreshDataDelayed.cancel(true);
+        ScheduledFuture<?> refreshAfterCommandJob = this.refreshAfterCommandJob;
+        if (refreshAfterCommandJob != null) {
+            refreshAfterCommandJob.cancel(true);
             this.refreshAfterCommandJob = null;
+        }
+        @Nullable
+        ScheduledFuture<?> refreshSmartHomeAfterCommandJob = this.refreshSmartHomeAfterCommandJob;
+        if (refreshSmartHomeAfterCommandJob != null) {
+            refreshSmartHomeAfterCommandJob.cancel(true);
+            this.refreshSmartHomeAfterCommandJob = null;
         }
         Connection connection = this.connection;
         if (connection != null) {
@@ -576,15 +583,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         return result;
     }
 
-    public @Nullable SmartHomeBaseDevice findSmartDeviceHomeJson(@Nullable String id) {
-        SmartHomeBaseDevice result = null;
-        if (StringUtils.isNotEmpty(id)) {
-            Map<String, SmartHomeBaseDevice> jsonSerialNumberDeviceMapping = this.jsonIdSmartHomeDeviceMapping;
-            result = jsonSerialNumberDeviceMapping.get(id);
-        }
-        return result;
-    }
-
     public @Nullable Device findDeviceJsonBySerialOrName(@Nullable String serialOrName) {
         if (StringUtils.isNotEmpty(serialOrName)) {
             Map<String, Device> currentJsonSerialNumberDeviceMapping = this.jsonSerialNumberDeviceMapping;
@@ -600,88 +598,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
         }
         return null;
-    }
-
-    public int shouldDiscoverSmartHomeDevices() {
-        Configuration config = getThing().getConfiguration();
-        Object discoverSmartHomeConfig = config.getProperties().get("discoverSmartHome");
-        int discoverSmartHome = 0;
-        if (discoverSmartHomeConfig instanceof Boolean) {
-            discoverSmartHome = ((boolean) discoverSmartHomeConfig) ? 2 : 0;
-        }
-        if (discoverSmartHomeConfig instanceof BigDecimal) {
-            discoverSmartHome = ((BigDecimal) discoverSmartHomeConfig).intValue();
-        }
-        return discoverSmartHome;
-    }
-
-    public boolean shouldDiscoverOpenHABSmartHomeDevices() {
-        Configuration config = getThing().getConfiguration();
-        Boolean discoverOpenHabSmartHomeDevices = (Boolean) config.getProperties()
-                .get("discoverOpenHabSmartHomeDevices");
-        if (discoverOpenHabSmartHomeDevices == null) {
-            return false;
-        }
-        return discoverOpenHabSmartHomeDevices;
-    }
-
-    public List<SmartHomeBaseDevice> updateSmartHomeDeviceList(boolean forceUpdate) {
-
-        Connection currentConnection = connection;
-        if (currentConnection == null) {
-            return new ArrayList<SmartHomeBaseDevice>();
-        }
-
-        if (!forceUpdate && this.smartHomeDeviceHandlers.isEmpty() && shouldDiscoverSmartHomeDevices() == 0) {
-            return new ArrayList<SmartHomeBaseDevice>();
-        }
-
-        List<SmartHomeBaseDevice> smartHomeDevices = null;
-        try {
-            if (currentConnection.getIsLoggedIn()) {
-                smartHomeDevices = currentConnection.getSmarthomeDeviceList();
-            }
-        } catch (IOException | URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        }
-        if (smartHomeDevices != null) {
-            // create new id map
-            Map<String, SmartHomeBaseDevice> newJsonIdSmartHomeDeviceMapping = new HashMap<>();
-            for (Object smartHomeDevice : smartHomeDevices) {
-                if (smartHomeDevice instanceof SmartHomeBaseDevice) {
-                    SmartHomeBaseDevice smartHomeBaseDevice = (SmartHomeBaseDevice) smartHomeDevice;
-                    String id = smartHomeBaseDevice.findId();
-                    if (id != null) {
-                        newJsonIdSmartHomeDeviceMapping.put(id, smartHomeBaseDevice);
-                    }
-                }
-            }
-            jsonIdSmartHomeDeviceMapping = newJsonIdSmartHomeDeviceMapping;
-        }
-        // update handlers
-        synchronized (smartHomeDeviceHandlers) {
-            for (SmartHomeDeviceHandler child : smartHomeDeviceHandlers) {
-                String id = child.findId();
-                child.setDeviceAndUpdateThingState(this, findSmartDeviceHomeJson(id));
-            }
-        }
-        if (smartHomeDevices != null) {
-            Map<String, SmartHomeDevice> newJsonSerialDeviceMapping = new HashMap<>();
-            for (Object smartDevice : smartHomeDevices) {
-                if (smartDevice instanceof SmartHomeDevice) {
-                    SmartHomeDevice shd = (SmartHomeDevice) smartDevice;
-                    String entityId = shd.entityId;
-                    if (entityId != null) {
-                        newJsonSerialDeviceMapping.put(entityId, shd);
-                    }
-                }
-            }
-        }
-        if (smartHomeDevices != null) {
-            return smartHomeDevices;
-        }
-
-        return new ArrayList<SmartHomeBaseDevice>();
     }
 
     public List<Device> updateDeviceList() {
@@ -787,45 +703,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         }
         updateFlashBriefingProfiles(currentConnection);
         return this.currentFlashBriefingJson;
-    }
-
-    private void updateSmartHomeState() {
-        try {
-            Connection connection = this.connection;
-            if (connection == null || !connection.getIsLoggedIn()) {
-                return;
-            }
-            List<SmartHomeBaseDevice> allDevices = this.getLastKnownSmartHomeDevice();
-            Set<String> applianceIds = new HashSet<>();
-            synchronized (this.smartHomeDeviceHandlers) {
-                if (this.smartHomeDeviceHandlers.size() == 0) {
-                    return;
-                }
-                for (SmartHomeDeviceHandler device : smartHomeDeviceHandlers) {
-                    String id = device.findId();
-                    if (id != null) {
-                        SmartHomeBaseDevice baseDevice = jsonIdSmartHomeDeviceMapping.get(id);
-                        for (SmartHomeDevice shd : SmartHomeDeviceHandler.GetSupportedSmartHomeDevices(baseDevice,
-                                allDevices)) {
-                            applianceIds.add(shd.applianceId);
-                        }
-                    }
-                }
-            }
-
-            Map<String, JsonArray> applianceIdToCapabilityStates = connection
-                    .getSmartHomeDeviceStatesJson(applianceIds);
-            synchronized (this.smartHomeDeviceHandlers) {
-                for (SmartHomeDeviceHandler smartHomeDeviceHandler : smartHomeDeviceHandlers) {
-                    smartHomeDeviceHandler.updateState(allDevices, applianceIdToCapabilityStates);
-                }
-            }
-
-        } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-            logger.debug("updateSmartHomeState fails {}", e);
-        } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
-            logger.error("updateSmartHomeState fails with unexpected error {}", e);
-        }
     }
 
     private void updateFlashBriefingProfiles(Connection currentConnection) {
@@ -947,5 +824,156 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     void refreshAfterCommand() {
         refreshData();
+    }
+
+    public @Nullable SmartHomeBaseDevice findSmartDeviceHomeJson(@Nullable String id) {
+        SmartHomeBaseDevice result = null;
+        if (StringUtils.isNotEmpty(id)) {
+            Map<String, SmartHomeBaseDevice> jsonSerialNumberDeviceMapping = this.jsonIdSmartHomeDeviceMapping;
+            result = jsonSerialNumberDeviceMapping.get(id);
+        }
+        return result;
+    }
+
+    public int shouldDiscoverSmartHomeDevices() {
+        Configuration config = getThing().getConfiguration();
+        Object discoverSmartHomeConfig = config.getProperties().get("discoverSmartHome");
+        int discoverSmartHome = 0;
+        if (discoverSmartHomeConfig instanceof Boolean) {
+            discoverSmartHome = ((boolean) discoverSmartHomeConfig) ? 2 : 0;
+        }
+        if (discoverSmartHomeConfig instanceof BigDecimal) {
+            discoverSmartHome = ((BigDecimal) discoverSmartHomeConfig).intValue();
+        }
+        return discoverSmartHome;
+    }
+
+    public boolean shouldDiscoverOpenHABSmartHomeDevices() {
+        Configuration config = getThing().getConfiguration();
+        Boolean discoverOpenHabSmartHomeDevices = (Boolean) config.getProperties()
+                .get("discoverOpenHabSmartHomeDevices");
+        if (discoverOpenHabSmartHomeDevices == null) {
+            return false;
+        }
+        return discoverOpenHabSmartHomeDevices;
+    }
+
+    public List<SmartHomeBaseDevice> updateSmartHomeDeviceList(boolean forceUpdate) {
+
+        Connection currentConnection = connection;
+        if (currentConnection == null) {
+            return new ArrayList<SmartHomeBaseDevice>();
+        }
+
+        if (!forceUpdate && this.smartHomeDeviceHandlers.isEmpty() && shouldDiscoverSmartHomeDevices() == 0) {
+            return new ArrayList<SmartHomeBaseDevice>();
+        }
+
+        List<SmartHomeBaseDevice> smartHomeDevices = null;
+        try {
+            if (currentConnection.getIsLoggedIn()) {
+                smartHomeDevices = currentConnection.getSmarthomeDeviceList();
+            }
+        } catch (IOException | URISyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+        }
+        if (smartHomeDevices != null) {
+            // create new id map
+            Map<String, SmartHomeBaseDevice> newJsonIdSmartHomeDeviceMapping = new HashMap<>();
+            for (Object smartHomeDevice : smartHomeDevices) {
+                if (smartHomeDevice instanceof SmartHomeBaseDevice) {
+                    SmartHomeBaseDevice smartHomeBaseDevice = (SmartHomeBaseDevice) smartHomeDevice;
+                    String id = smartHomeBaseDevice.findId();
+                    if (id != null) {
+                        newJsonIdSmartHomeDeviceMapping.put(id, smartHomeBaseDevice);
+                    }
+                }
+            }
+            jsonIdSmartHomeDeviceMapping = newJsonIdSmartHomeDeviceMapping;
+        }
+        // update handlers
+        synchronized (smartHomeDeviceHandlers) {
+            for (SmartHomeDeviceHandler child : smartHomeDeviceHandlers) {
+                String id = child.findId();
+                child.setDeviceAndUpdateThingState(this, findSmartDeviceHomeJson(id));
+            }
+        }
+        if (smartHomeDevices != null) {
+            Map<String, SmartHomeDevice> newJsonSerialDeviceMapping = new HashMap<>();
+            for (Object smartDevice : smartHomeDevices) {
+                if (smartDevice instanceof SmartHomeDevice) {
+                    SmartHomeDevice shd = (SmartHomeDevice) smartDevice;
+                    String entityId = shd.entityId;
+                    if (entityId != null) {
+                        newJsonSerialDeviceMapping.put(entityId, shd);
+                    }
+                }
+            }
+        }
+        if (smartHomeDevices != null) {
+            return smartHomeDevices;
+        }
+
+        return new ArrayList<SmartHomeBaseDevice>();
+    }
+
+    synchronized public void forceDelayedSmartHomeStateUpdate() {
+
+        ScheduledFuture<?> refreshSmartHomeAfterCommandJob = this.refreshSmartHomeAfterCommandJob;
+        if (refreshSmartHomeAfterCommandJob != null) {
+            refreshSmartHomeAfterCommandJob.cancel(false);
+        }
+        this.refreshSmartHomeAfterCommandJob = scheduler.schedule(this::updateSmartHomeStateJob, 500,
+                TimeUnit.MILLISECONDS);
+    }
+
+    synchronized private void updateSmartHomeStateJob() {
+        this.refreshSmartHomeAfterCommandJob = null;
+        updateSmartHomeState();
+    }
+
+    synchronized private void updateSmartHomeState() {
+        if (refreshSmartHomeAfterCommandJob != null) {
+            logger.debug("updateSmartHomeState suspended");
+            return;
+        }
+        try {
+            logger.debug("updateSmartHomeState started");
+            Connection connection = this.connection;
+            if (connection == null || !connection.getIsLoggedIn()) {
+                return;
+            }
+            List<SmartHomeBaseDevice> allDevices = this.getLastKnownSmartHomeDevice();
+            Set<String> applianceIds = new HashSet<>();
+            synchronized (this.smartHomeDeviceHandlers) {
+                if (this.smartHomeDeviceHandlers.size() == 0) {
+                    return;
+                }
+                for (SmartHomeDeviceHandler device : smartHomeDeviceHandlers) {
+                    String id = device.findId();
+                    if (id != null) {
+                        SmartHomeBaseDevice baseDevice = jsonIdSmartHomeDeviceMapping.get(id);
+                        for (SmartHomeDevice shd : SmartHomeDeviceHandler.GetSupportedSmartHomeDevices(baseDevice,
+                                allDevices)) {
+                            applianceIds.add(shd.applianceId);
+                        }
+                    }
+                }
+            }
+
+            Map<String, JsonArray> applianceIdToCapabilityStates = connection
+                    .getSmartHomeDeviceStatesJson(applianceIds);
+            synchronized (this.smartHomeDeviceHandlers) {
+                for (SmartHomeDeviceHandler smartHomeDeviceHandler : smartHomeDeviceHandlers) {
+                    smartHomeDeviceHandler.updateState(allDevices, applianceIdToCapabilityStates);
+                }
+            }
+            logger.debug("updateSmartHomeState finished");
+
+        } catch (HttpException | JsonSyntaxException | ConnectionException e) {
+            logger.debug("updateSmartHomeState fails {}", e);
+        } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
+            logger.error("updateSmartHomeState fails with unexpected error {}", e);
+        }
     }
 }
