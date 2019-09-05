@@ -130,19 +130,21 @@ public class AmazonEchoControlBindingConstants {
     public static final String INTERFACE_POWER = "Alexa.PowerController";
     public static final String INTERFACE_SECURITY_PANEL = "Alexa.SecurityPanelController";
 
-    public static final Set<String> SUPPORTED_INTERFACES = new HashSet<>(
-            Arrays.asList(INTERFACE_BRIGHTNESS, INTERFACE_COLOR_TEMPERATURE, INTERFACE_COLOR, INTERFACE_POWER));
+    public static final Set<String> SUPPORTED_INTERFACES = new HashSet<>(Arrays.asList(INTERFACE_BRIGHTNESS,
+            INTERFACE_COLOR_TEMPERATURE, INTERFACE_COLOR, INTERFACE_POWER, INTERFACE_SECURITY_PANEL));
 
     // List of dynamic channels for smart home devices
     public static final String CHANNEL_CONTROLLER_BRIGHTNESS = "brightness";
     public static final String CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME = "colorTemperatureName";
     public static final String CHANNEL_CONTROLLER_COLOR_NAME = "colorName";
     public static final String CHANNEL_CONTROLLER_COLOR = "color";
-    public static final String CHANNEL_CONTROLLER_POWER = "power";
+    public static final String CHANNEL_CONTROLLER_POWER_STATE = "powerState";
+    public static final String CHANNEL_CONTROLLER_SECURITY_PANEL_ARM_STATE = "armState";
 
     // List of Item types
     public static final String ITEM_TYPE_SWITCH = "Switch";
     public static final String ITEM_TYPE_DIMMER = "Dimmer";
     public static final String ITEM_TYPE_STRING = "String";
     public static final String ITEM_TYPE_COLOR = "Color";
+
 }

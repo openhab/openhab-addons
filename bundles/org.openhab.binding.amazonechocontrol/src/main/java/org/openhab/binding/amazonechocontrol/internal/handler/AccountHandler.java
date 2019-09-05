@@ -100,6 +100,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private @Nullable ScheduledFuture<?> updateSmartHomeStateJob;
     private @Nullable ScheduledFuture<?> refreshAfterCommandJob;
     private @Nullable ScheduledFuture<?> refreshSmartHomeAfterCommandJob;
+    private final Object synchronizeSmartHomeJobScheduler = new Object();
     private @Nullable ScheduledFuture<?> foceCheckDataJob;
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
@@ -917,18 +918,21 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         return new ArrayList<SmartHomeBaseDevice>();
     }
 
-    synchronized public void forceDelayedSmartHomeStateUpdate() {
-
-        ScheduledFuture<?> refreshSmartHomeAfterCommandJob = this.refreshSmartHomeAfterCommandJob;
-        if (refreshSmartHomeAfterCommandJob != null) {
-            refreshSmartHomeAfterCommandJob.cancel(false);
+    public void forceDelayedSmartHomeStateUpdate() {
+        synchronized (synchronizeSmartHomeJobScheduler) {
+            ScheduledFuture<?> refreshSmartHomeAfterCommandJob = this.refreshSmartHomeAfterCommandJob;
+            if (refreshSmartHomeAfterCommandJob != null) {
+                refreshSmartHomeAfterCommandJob.cancel(false);
+            }
+            this.refreshSmartHomeAfterCommandJob = scheduler.schedule(this::updateSmartHomeStateJob, 500,
+                    TimeUnit.MILLISECONDS);
         }
-        this.refreshSmartHomeAfterCommandJob = scheduler.schedule(this::updateSmartHomeStateJob, 500,
-                TimeUnit.MILLISECONDS);
     }
 
-    synchronized private void updateSmartHomeStateJob() {
-        this.refreshSmartHomeAfterCommandJob = null;
+    private void updateSmartHomeStateJob() {
+        synchronized (synchronizeSmartHomeJobScheduler) {
+            this.refreshSmartHomeAfterCommandJob = null;
+        }
         updateSmartHomeState();
     }
 

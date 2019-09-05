@@ -571,9 +571,22 @@
 		<label>Brightness</label>
 		<description>The brightness of the light</description>
 	</channel-type>
-	<channel-type id="power" advanced="false">
+	<channel-type id="powerState" advanced="false">
 		<item-type>Switch</item-type>
 		<label>State</label>
 		<description>State (ON/OFF)</description>
+	</channel-type>
+	<channel-type id="armState" advanced="false">
+		<item-type>String</item-type>
+		<label>Alarm State</label>
+		<description>State (Active/Stay/Night/Deactivated)</description>
+		<state pattern="String" readOnly="false">
+			<options>
+				<option value="ARMED_AWAY">Active</option>
+				<option value="ARMED_STAY">Present</option>
+				<option value="ARMED_NIGHT">Night</option>
+				<option value="DISARMED">Deactivated</option>
+			</options>
+		</state>
 	</channel-type>
 </thing:thing-descriptions>

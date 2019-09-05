@@ -54,6 +54,7 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - Implement own handling for voice commands in a rule
 - Change the equalizer settings depending on the bluetooth connection
 - Turn on a light on your alexa alarm time
+- Activate or deactive the Alexa Guard with presence detection
 
 With the possibility to control your lights you could do:
 
@@ -182,11 +183,12 @@ It will be configured at runtime by using the save channel to store the current 
 | save                  | Switch      | W           | flashbriefingprofile          | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
 | playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
-| power                 | Switch      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the state (ON/OFF) of your device
+| powerState            | Switch      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the state (ON/OFF) of your device
 | brightness[^1]        | Dimmer      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the brightness of your lamp
-| color[^1]             | String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the color of your light (groups are not able to show their color!)
-| colorName[^1]         | String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the color name of your light (groups are not able to show their color!)
-| colorTemperatureName[^1]| String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | White temperatures name of your lights
+| color[^1]             | Color       | R         | smartHomeDevice, smartHomeDeviceGroup | Shows the color of your light
+| colorName[^1]         | String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the color name of your light (groups are not able to show their color)
+| colorTemperatureName[^1]| String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | White temperatures name of your lights (groups are not able to show their color)
+| armState[^1]          | String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | State of your alarm guard. Options: ARMED_AWAY, ARMED_STAY, ARMED_NIGHT, DISARMED (groups are not able to show their state)
 
 [^1]: The availability is depending on the device capabilities.
 
@@ -215,6 +217,7 @@ Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discove
     
     Thing smartHomeDevice      smartHomeDevice1 "Smart Home Device 1" @ "Living Room" [id="ID"]
     Thing smartHomeDevice      smartHomeDevice2 "Smart Home Device 2" @ "Living Room" [id="ID"]
+    Thing smartHomeDevice      smartHomeDevice3 "Smart Home Device 3" @ "Living Room" [id="ID"]
     Thing smartHomeDeviceGroup smartHomeDeviceGroup1 "Living Room Group" @   "Living Room" [id="ID"]
 }
 ```
@@ -296,17 +299,20 @@ String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechoc
 
 
 // Lights and lightgroups
-Switch Light_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:power" }
+Switch Light_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:powerState" }
 Dimmer Light_Brightness "Brightness" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:brightness" }
 Color  Light_Color "Color" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorName" }
 String Light_Color_Name "Color Name" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorName" }
 String Light_White "White temperature" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorTemperatureName" }
 
 // Smart plugs
-Switch Plug_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice2:power" }
+Switch Plug_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice2:powerState" }
+
+// Alexa Guard
+Switch Arm_State "State" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice3:armState" }
 
 // Smart Home device group
-Switch Group_State "On/Off" { channel="amazonechocontrol:smartHomeDeviceGroup:account1:smartHomeDeviceGroup1:power" }
+Switch Group_State "On/Off" { channel="amazonechocontrol:smartHomeDeviceGroup:account1:smartHomeDeviceGroup1:powerState" }
 ```
 
 The only possibility to find out the id for the smartHomeDevice and smartHomeDeviceGroup Things is by using the discover function in the PaperUI.
@@ -381,6 +387,7 @@ sitemap amazonechocontrol label="Echo Devices"
             Selection item=Light_White mappings=[ ''='', 'warm_white'='Warm white', 'soft_white'='Soft white', 'white'='White', 'daylight_white'='Daylight white', 'cool_white'='Cool white' ]
             Switch item=Light_State
             Switch item=Group_State
+            Selection item=Arm_State mappings=[ 'ARMED_AWAY'='Active', 'ARMED_STAY'='Present', 'ARMED_NIGHT'='Night', 'DISARMED'='Deactivated' ]
         }
 }
 ```
