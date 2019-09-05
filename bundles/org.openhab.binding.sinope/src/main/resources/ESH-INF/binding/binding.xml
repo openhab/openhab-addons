@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="sinope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+	<name>Sinopé Binding</name>
+	<description>This is the binding for Sinopé. Sinopé provides high-quality, energy-efficient products and with innovative technology solutions that will meet customer's current and future needs: 
+	low and high voltage thermostats, light switches, water leak detectors and load controllers.</description>
+	<author>Pascal Larin</author>
+</binding:binding>
