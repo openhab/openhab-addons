@@ -210,7 +210,6 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         } else {
             logger.debug("Nothing to send");
         }
-
     }
 
     private DeviceStatus getDeviceStatusCopy(DeviceStatus deviceStatus) {
