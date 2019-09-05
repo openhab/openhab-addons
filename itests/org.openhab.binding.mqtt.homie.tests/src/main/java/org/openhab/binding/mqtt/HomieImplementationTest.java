@@ -122,12 +122,11 @@ public class HomieImplementationTest extends JavaOSGiTest {
         final String testNode = DEVICE_TOPIC + "/testnode";
         futures.add(embeddedConnection.publish(testNode + "/$name", "Testnode".getBytes()));
         futures.add(embeddedConnection.publish(testNode + "/$type", "Type".getBytes()));
-        futures.add(embeddedConnection.publish(testNode + "/$properties",
-                "temperature,doorbell,testRetain".getBytes()));
+        futures.add(embeddedConnection.publish(testNode + "/$properties", "temperature,doorbell,testRetain".getBytes()));
 
         // Add homie property topics
         final String property = testNode + "/temperature";
-        futures.add(embeddedConnection.publish(property, "10".getBytes(StandardCharsets.UTF_8)));
+        futures.add(embeddedConnection.publish(property, "10".getBytes()));
         futures.add(embeddedConnection.publish(property + "/$name", "Testprop".getBytes()));
         futures.add(embeddedConnection.publish(property + "/$settable", "true".getBytes()));
         futures.add(embeddedConnection.publish(property + "/$unit", "°C".getBytes(StandardCharsets.UTF_8)));
@@ -146,12 +145,9 @@ public class HomieImplementationTest extends JavaOSGiTest {
 
         this.propertyTestTopic = testNode + "/testRetain";
         futures.add(embeddedConnection.publish(propertyTestTopic + "/$name", "Test".getBytes()));
-        futures.add(
-                embeddedConnection.publish(propertyTestTopic + "/$settable", "true".getBytes()));
-        futures.add(
-                embeddedConnection.publish(propertyTestTopic + "/$retained", "false".getBytes()));
-        futures.add(embeddedConnection.publish(propertyTestTopic + "/$datatype",
-                "boolean".getBytes()));
+        futures.add(embeddedConnection.publish(propertyTestTopic + "/$settable", "true".getBytes()));
+        futures.add(embeddedConnection.publish(propertyTestTopic + "/$retained", "false".getBytes()));
+        futures.add(embeddedConnection.publish(propertyTestTopic + "/$datatype", "boolean".getBytes()));
 
         registeredTopics = futures.size();
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
@@ -161,10 +157,6 @@ public class HomieImplementationTest extends JavaOSGiTest {
 
     @After
     public void tearDown() throws InterruptedException, ExecutionException, TimeoutException {
-/*        if (publishConnection != null) {
-            publishConnection.removeConnectionObserver(failIfChange);
-            publishConnection.stop().get(500, TimeUnit.MILLISECONDS);
-        }*/
         if (connection != null) {
             connection.removeConnectionObserver(failIfChange);
             connection.stop().get(500, TimeUnit.MILLISECONDS);
