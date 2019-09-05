@@ -113,45 +113,45 @@ public class HomieImplementationTest extends JavaOSGiTest {
         connection.addConnectionObserver(failIfChange);
 
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
-        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$homie", "3.0".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$name", "Name".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$state", "ready".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$nodes", "testnode".getBytes(StandardCharsets.UTF_8)));
+        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$homie", "3.0".getBytes()));
+        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$name", "Name".getBytes()));
+        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$state", "ready".getBytes()));
+        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$nodes", "testnode".getBytes()));
 
         // Add homie node topics
         final String testNode = DEVICE_TOPIC + "/testnode";
-        futures.add(embeddedConnection.publish(testNode + "/$name", "Testnode".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(testNode + "/$type", "Type".getBytes(StandardCharsets.UTF_8)));
+        futures.add(embeddedConnection.publish(testNode + "/$name", "Testnode".getBytes()));
+        futures.add(embeddedConnection.publish(testNode + "/$type", "Type".getBytes()));
         futures.add(embeddedConnection.publish(testNode + "/$properties",
-                "temperature,doorbell,testRetain".getBytes(StandardCharsets.UTF_8)));
+                "temperature,doorbell,testRetain".getBytes()));
 
         // Add homie property topics
         final String property = testNode + "/temperature";
         futures.add(embeddedConnection.publish(property, "10".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(property + "/$name", "Testprop".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(property + "/$settable", "true".getBytes(StandardCharsets.UTF_8)));
+        futures.add(embeddedConnection.publish(property + "/$name", "Testprop".getBytes()));
+        futures.add(embeddedConnection.publish(property + "/$settable", "true".getBytes()));
         futures.add(embeddedConnection.publish(property + "/$unit", "°C".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(property + "/$datatype", "float".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(property + "/$format", "-100:100".getBytes(StandardCharsets.UTF_8)));
+        futures.add(embeddedConnection.publish(property + "/$datatype", "float".getBytes()));
+        futures.add(embeddedConnection.publish(property + "/$format", "-100:100".getBytes()));
 
         final String propertyBellTopic = testNode + "/doorbell";
         futures.add(
-                embeddedConnection.publish(propertyBellTopic + "/$name", "Doorbell".getBytes(StandardCharsets.UTF_8)));
+                embeddedConnection.publish(propertyBellTopic + "/$name", "Doorbell".getBytes()));
         futures.add(
-                embeddedConnection.publish(propertyBellTopic + "/$settable", "false".getBytes(StandardCharsets.UTF_8)));
+                embeddedConnection.publish(propertyBellTopic + "/$settable", "false".getBytes()));
         futures.add(
-                embeddedConnection.publish(propertyBellTopic + "/$retained", "false".getBytes(StandardCharsets.UTF_8)));
+                embeddedConnection.publish(propertyBellTopic + "/$retained", "false".getBytes()));
         futures.add(embeddedConnection.publish(propertyBellTopic + "/$datatype",
-                "boolean".getBytes(StandardCharsets.UTF_8)));
+                "boolean".getBytes()));
 
         this.propertyTestTopic = testNode + "/testRetain";
-        futures.add(embeddedConnection.publish(propertyTestTopic + "/$name", "Test".getBytes(StandardCharsets.UTF_8)));
+        futures.add(embeddedConnection.publish(propertyTestTopic + "/$name", "Test".getBytes()));
         futures.add(
-                embeddedConnection.publish(propertyTestTopic + "/$settable", "true".getBytes(StandardCharsets.UTF_8)));
+                embeddedConnection.publish(propertyTestTopic + "/$settable", "true".getBytes()));
         futures.add(
-                embeddedConnection.publish(propertyTestTopic + "/$retained", "false".getBytes(StandardCharsets.UTF_8)));
+                embeddedConnection.publish(propertyTestTopic + "/$retained", "false".getBytes()));
         futures.add(embeddedConnection.publish(propertyTestTopic + "/$datatype",
-                "boolean".getBytes(StandardCharsets.UTF_8)));
+                "boolean".getBytes()));
 
         registeredTopics = futures.size();
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
