@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sinope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="gateway">
+		<label>Sinopé Gateway</label>
+		<description>A Sinopé Gateway</description>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<label>Hostname</label>
+				<description>Hostname of the Sinopé Gateway</description>
+				<context>network-address</context>
+				<required>true</required>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>The port that the Sinopé Gateway listens on</description>
+				<default>4550</default>
+			</parameter>
+			<parameter name="gatewayId" type="text">
+				<label>Gateway ID</label>
+				<description>The Sinopé gateway ID (as printed on the back-side, e.g. "xxxx xxxx xxxx xxxx")</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="apiKey" type="text">
+				<label>API Key</label>
+				<description>Use sinope-core application to generate your api key</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>The number of seconds between fetches from the Sinopé Gateway.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway" />
+		</supported-bridge-type-refs>
+		<label>Sinopé Thermostat</label>
+		<description>Sinopé Thermostat control</description>
+		<channels>
+			<channel id="insideTemperature" typeId="insideTemperature" />
+			<channel id="outsideTemperature" typeId="outsideTemperature" />
+			<channel id="setpointTemperature" typeId="setpointTemperature" />
+			<channel id="setpointMode" typeId="setpointMode" />
+			<channel id="heatingLevel" typeId="heatingLevel" />
+		</channels>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Thermostat device ID</label>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="insideTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current inside temperature</description>
+		<category>Temperature</category>
+		<!-- As specified by manufacturer -->
+		<state min="-10" max="70" step="0.01" pattern="%.2f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="outsideTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current outside temperature</description>
+		<category>Temperature</category>
+		<state step="0.01" pattern="%.2f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="setpointTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Setpoint temperature</description>
+		<category>Temperature</category>
+		<state min="5" max="30" step="0.01" pattern="%.2f %unit%" readOnly="false" />
+	</channel-type>
+
+	<channel-type id="setpointMode">
+		<item-type>Number</item-type>
+		<label>Setpoint Mode</label>
+		<description>Thermostat setpoint mode</description>
+		<category>Temperature</category>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Freeze Protect</option>
+				<option value="2">Manual</option>
+				<option value="3">Auto</option>
+				<option value="5">Away</option>
+				<option value="129">Bypass Freeze Protect</option>
+				<option value="131">Bypass Auto</option>
+				<option value="133">Bypass Away</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatingLevel">
+		<item-type>Dimmer</item-type>
+		<label>Heat Level</label>
+		<description>Heating Level</description>
+		<category>Heating</category>
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true" />
+	</channel-type>
+</thing:thing-descriptions>
