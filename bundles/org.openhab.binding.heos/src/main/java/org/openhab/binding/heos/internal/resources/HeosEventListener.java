@@ -16,7 +16,7 @@ import java.util.EventListener;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.heos.internal.api.HeosEventController;
+//import org.openhab.binding.heos.internal.api.HeosEventController;
 
 /**
  * The {@link HeosEventListener } is an Event Listener

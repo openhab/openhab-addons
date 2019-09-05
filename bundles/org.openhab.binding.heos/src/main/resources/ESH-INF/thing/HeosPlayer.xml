@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="heos"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Heos Player Thing Type -->
 	<thing-type id="player">
@@ -14,8 +14,8 @@
 
 		<channels>
 			<channel id="Control" typeId="system.media-control" />
-			<channel id="Volume" typeId="volume" />
-			<channel id="Mute" typeId="mute" />
+			<channel id="Volume" typeId="system.volume" />
+			<channel id="Mute" typeId="system.mute" />
 			<channel id="Inputs" typeId="input" />
 			<channel id="Title" typeId="system.media-title" />
 			<channel id="Artist" typeId="system.media-artist" />

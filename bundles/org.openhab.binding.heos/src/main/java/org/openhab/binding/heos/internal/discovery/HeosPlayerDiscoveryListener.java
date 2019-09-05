@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.heos.internal.discovery;
 
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
+//import org.openhab.binding.heos.handler.HeosBridgeHandler;
 
 /**
  * The {@link HeosPlayerDiscoveryListener } is an Event Listener

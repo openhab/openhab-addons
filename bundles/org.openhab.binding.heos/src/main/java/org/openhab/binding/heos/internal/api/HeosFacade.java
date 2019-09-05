@@ -14,7 +14,7 @@ package org.openhab.binding.heos.internal.api;
 
 import java.net.URL;
 
-import org.openhab.binding.heos.internal.resources.HeosConstants;
+//import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
 
 /**

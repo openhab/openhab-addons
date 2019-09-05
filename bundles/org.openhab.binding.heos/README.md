@@ -1,7 +1,8 @@
 # Denon HEOS Binding
 
-This binding support the HEOS-System from Denon. The binding provides control of the players and groups within the network.
-It also supports selecting favorites and play them on players or groups within the HEOS-Network. 
+This binding support the HEOS-System from Denon.
+The binding provides control of the players and groups within the network.
+It also supports selecting favorites and play them on players or groups within the HEOS-Network.
 The binding first establishes a connection to one of the players of the HEOS-Network and use them as a bridge.
 After a connection is established, the binding searches for all available players and groups via the bridge.
 To keep the network traffic low it is recommended to establish only one connection via one bridge.
@@ -11,7 +12,7 @@ Connection to the bridge is done via a Telnet connection.
 
 Bridge:
 The binding supports a bridge to connect to the HEOS-Network.
-A bridge uses the thing ID "bridge"
+A bridge uses the thing ID "bridge".
 
 
 Player:
@@ -29,13 +30,13 @@ A group uses the thing ID "group"
 This binding supports full automatic discovery of available players to be used as a bridge, players and groups (both after establishing a connection via a bridge).
 Please note that only one bridge is required to establish a connection.
 Adding a second bridge can cause trouble with the connection.
-It is recommended to use the PaperUI or other GUI to setup the system and add all players and groups.
+It is recommended to use the Paper UI or other GUI to setup the system and add all players and groups.
 The bridge is discovered through UPnP in the local network.
 Once it is added the players and groups are discovered via the bridge and placed within the inbox.
 
 ## Binding Configuration
 
-This binding does not require any configuration. 
+This binding does not require any configuration.
 
 ## Thing Configuration
 
@@ -43,18 +44,19 @@ This binding does not require any configuration.
 
 The bridge has the following configuration parameter
 
-| Parameter         | Description                                                | Required  |
-|-----------------  |----------------------------------------------------------- | --------- |
-| ipAddress         | The network address of the bridge                          | yes       |
-| username          | The user name to login to the HEOS account                 | no        |
-| password          | The password for the HEOS account                          | no        |
-| heartbeat         | The time in seconds for the HEOS Heartbeat (default = 60s) | no        |
+| Parameter         | Description                                                 | Required  |
+|-----------------  |------------------------------------------------------------ | --------- |
+| ipAddress         | The network address of the bridge                           | yes       |
+| username          | The user name to login to the HEOS account                  | no        |
+| password          | The password for the HEOS account                           | no        |
+| heartbeat         | The time in seconds for the HEOS Heartbeat (default = 60 s) | no        |
 
-The password and the user name are used to login to the HEOS account. This is required to load the favorites, playlists and so on from personal settings.
-If no login information is provided these features can't be used.  
+The password and the user name are used to login to the HEOS account.
+This is required to load the favorites, playlists and so on from personal settings.
+If no login information is provided these features can't be used.
 
 ````
-Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", unsername="xxx", password="123456"]  
+Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", unsername="xxx", password="123456"]
 ````
 
 ### Player Configuration
@@ -68,14 +70,14 @@ Player have the following configuration parameter
 For manual configuration a player can be defined as followed:
 
 ````
-Thing heos:player:pid "name" [pid="123456789"] 
+Thing heos:player:player1 "name" [pid="123456789"]
 ````
 
-PID behind the heos:player:--- should be changed as required. Every name or value can be used.
+PID behind the heos:player:--- should be changed as required.
 It is recommended to use the player PID.
-If the PID isn't known it can be discovered by establishing a TelNet connection (port 1255) to one player and search for available players (Command: heos://player/get_players) within the network.
-An other way is to use PaperUI to discover the player via the bridge and get the PID.
-For further details refer to the [HEOS CLI](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf) specification.
+If the PID isn't known it can be discovered by establishing a Telnet connection (port 1255) to one player and search for available players (Command: heos://player/get_players) within the network.
+Another way is to use Paper UI to discover the player via the bridge and get the PID.
+For further details refer to the [HEOS CLI](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf) specification.
 
 ### Group Configuration
 
@@ -87,12 +89,13 @@ Player have the following configuration parameter
 
 
 ```
-Thing heos:group:memberHash "name" [members="45345634;35534567"] 
+Thing heos:group:group1 "name" [members="45345634;35534567"]
 ```
 
 ### Defining Bridge and Players together
 
-Defining Player and Bridge together. To ensure that the players and groups are attached to the bridge the definition can be like:
+Defining Player and Bridge together.
+To ensure that the players and groups are attached to the bridge the definition can be like:
 
 ```
 Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", password="123456"] {
@@ -188,7 +191,7 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 | tvaudio       |
 | phono         |
 
-An current list can be found within the HEOS CLI protocol which can be found [here](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
+An current list can be found within the HEOS CLI protocol which can be found [here](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
 
 ### Channels of Thing type 'bridge'
 
@@ -199,7 +202,7 @@ An current list can be found within the HEOS CLI protocol which can be found [he
 
 
 
-For a list of the commands please refer to the [HEOS CLI protocol](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
+For a list of the commands please refer to the [HEOS CLI protocol](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
 
 
 ## *Dynamic Channels*
@@ -215,7 +218,7 @@ The player and group channels are only shown on the bridge.
 | Channel ID    | Item Type     | Description                                                                                               |
 |------------   |-----------    |-------------------------------------------------------------------------------------------------------    |
 | {mid}         | Switch        | A channel which represents the favorite. Please check via UI how the correct Channel Type looks like.     |
- 
+
  Example
 
  ```
@@ -231,7 +234,7 @@ The player and group channels are only shown on the bridge.
 Example
 
  ```
- Switch Player_1 "Player [%s]" {channel="heos:bridge:main:P123456789"}  
+ Switch Player_1 "Player [%s]" {channel="heos:bridge:main:P123456789"}
  ```
 
  The {playerUID} has either a P in front of the number which indicates that this is a player or a G to indicate this is a group.
@@ -289,7 +292,7 @@ If you want to change that for the whole group you have to do it via the group t
 ### Inputs
 
 To play inputs like the Aux_In it can be played at each player or group.
-It is also possible to play an input from an other player at the selected player.
+It is also possible to play an input from another player at the selected player.
 To do so, first select the player channel of the player where the input is located (source) at the bridge.
 Then use the input channel of the player where the source shall be played (destination) to activate the input.
 
@@ -303,7 +306,7 @@ Items:
 ```
 Switch HeosBridge_Play_Living	"Living Room"	(gHeos)	{channel="heos:bridge:ed0ac1ff-0193-65c6-c1b8-506137456a50:P918797451"}
 String HeosKitchen_Input			(gHeos) {channel="heos:player:918797451:Inputs"}
-String HeosKitchen_InputSelect	"Input"		(gHeos)	
+String HeosKitchen_InputSelect	"Input"		(gHeos)
 ```
 
 Rule for kitchen:
@@ -315,7 +318,7 @@ rule "Play AuxIn from Living Room"
 	then
 		if (receivedCommand.toString == "aux_in_1") {
 			sendCommand(HeosKitchen_Input, "aux_in_1")
-			
+
 		} if (receivedCommand.toString == "LivingRoom") {
 			sendCommand(HeosBridge_Play_Living, ON)
 			sendCommand(HeosKitchen_Input, "aux_in_1")
@@ -350,13 +353,13 @@ Then we need a rule which triggers the state if an Item goes Online or Offline.
 Rules:
 
 ```
-rule "Online State Heos Group" 
+rule "Online State Heos Group"
 
 when
-    Thing "heos:group:1747557118" changed 
+    Thing "heos:group:1747557118" changed
 then
     var thingStatus = getThingStatusInfo("heos:group:1747557118")
-    sendCommand(HeosGroup_Status, thingStatus.getStatus.toString)    
+    sendCommand(HeosGroup_Status, thingStatus.getStatus.toString)
 end
 
 ```
@@ -365,20 +368,20 @@ Sitemap:
 
 ```
 Frame label="Heos Group" visibility=[HeosGroup_Status==ONLINE] {
-	
+
 	Default item=HeosGroup1_Player
 	Default item=HeosGroup1_Volume
 	Default item=HeosGroup1_Mute
 	Default item=HeosGroup1_Favorites
 	Default item=HeosGroup1_Playlist
-	
+
 	Text item=HeosGroup1_Song {
 		Default item=HeosGroup1_Song
 		Default item=HeosGroup1_Artist
 		Default item=HeosGroup1_Album
 		Image item=HeosGroup1_Cover url=""
 	}
-	
+
 }
 ```
 

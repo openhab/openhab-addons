@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="heos"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="volume">
-		<item-type>Dimmer</item-type>
-		<label>Volume</label>
-	</channel-type>
-	<channel-type id="mute">
-		<item-type>Switch</item-type>
-		<label>Mute</label>
-	</channel-type>
 	<channel-type id="ungroup">
 		<item-type>Switch</item-type>
 		<label>Group</label>
@@ -28,8 +20,8 @@
 	</channel-type>
 	<channel-type id="buildGroup">
 		<item-type>Switch</item-type>
-		<label>Made Group</label>
-	</channel-type>	
+		<label>Make Group</label>
+	</channel-type>
 	<channel-type id="playlists" advanced="true">
 		<item-type>String</item-type>
 		<label>Playlists</label>

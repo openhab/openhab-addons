@@ -23,6 +23,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+// import org.eclipse.smarthome.core.thing.ThingStatus;
+// import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.heos.internal.resources.HeosCommands;
 import org.openhab.binding.heos.internal.resources.HeosGroup;
 import org.openhab.binding.heos.internal.resources.HeosPlayer;
@@ -35,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HeosSystem} is handling the main commands, which are
- * send and received by the HEOS system.
+ * sent and received by the HEOS system.
  *
  * @author Johannes Einig - Initial contribution
  */
@@ -89,6 +91,7 @@ public class HeosSystem {
                     return true;
                 } else {
                     logger.debug("Could not send message. HEOS bridge is not connected");
+//                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not send message. HEOS bridge is not connected");
                     return false;
                 }
             } catch (ReadException e) {
@@ -101,10 +104,12 @@ public class HeosSystem {
                     logger.debug("Could not send command. Please check the system connection");
                 }
             } catch (IOException e) {
-                logger.warn("IO Exception during send HEOS command with message: {}", e.getMessage());
+                logger.debug("IO Exception during send HEOS command with message: {}", e.getMessage());
+//                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return false;
             }
         }
+//        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not send command. Please check the system connection");
         return false;
     }
 
@@ -152,7 +157,8 @@ public class HeosSystem {
         try {
             commandLineConnected = commandLine.connect(connectionIP, connectionPort);
         } catch (IOException e) {
-            logger.warn("Execption during connection to bridge with message: {}", e.getMessage());
+            logger.debug("Exception during connection to bridge with message: {}", e.getMessage());
+//            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("Could not connect HEOS command line at IP {} @ port {}", connectionIP, connectionPort);
             commandLineConnected = false;
         }
@@ -165,7 +171,8 @@ public class HeosSystem {
         try {
             eventLineConnected = eventLine.connect(connectionIP, connectionPort);
         } catch (IOException e) {
-            logger.warn("Execption during connection to bridge with message: {}", e.getMessage());
+            logger.debug("Exception during connection to bridge with message: {}", e.getMessage());
+//            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("Could not connect HEOS event line at IP {} @ port {}", connectionIP, connectionPort);
             eventLineConnected = false;
         }

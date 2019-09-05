@@ -13,7 +13,7 @@
 package org.openhab.binding.heos.handler;
 
 import static org.openhab.binding.heos.HeosBindingConstants.*;
-import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
+//import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,11 +120,12 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                 String name = thing.getConfiguration().get(USERNAME).toString();
                 String password = thing.getConfiguration().get(PASSWORD).toString();
                 api.logIn(name, password);
+                updateState(CH_ID_REBOOT, OnOffType.OFF);
+                updateStatus(ThingStatus.ONLINE);
             } else {
-                logger.info("Can not log in. Username and Password not set");
+                logger.debug("Can't log in. Username or password not set.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can't log in. Username or password not set.");
             }
-            updateState(CH_ID_REBOOT, OnOffType.OFF);
-            updateStatus(ThingStatus.ONLINE);
         }, 5, TimeUnit.SECONDS);
     }
 

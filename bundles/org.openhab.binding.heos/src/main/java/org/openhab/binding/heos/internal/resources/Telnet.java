@@ -153,8 +153,8 @@ public class Telnet {
      * Read all commands till an End Of Line is detected
      * I more than one line is read every line is an
      * element in the returned {@code ArrayList<>}
-     * Reading timed out after 3000 milliseconds. For an other
-     * timing @see readLine(int timeOut).
+     * Reading timed out after 3000 milliseconds. For another timing
+     * @see readLine(int timeOut).
      *
      * @return A list with all read commands
      * @throws ReadException
@@ -266,7 +266,7 @@ public class Telnet {
             String str = new String(buffer, "UTF-8");
             i = concatReadResult(str);
         } catch (IOException e) {
-            logger.debug("IO Excpetion- Message: {}", e.getMessage());
+            logger.debug("IO Exception- Message: {}", e.getMessage());
         }
     }
 
@@ -298,7 +298,7 @@ public class Telnet {
         try {
             return address.isReachable(IS_ALIVE_TIMEOUT);
         } catch (IOException e) {
-            logger.debug("IO Excpetion- Message: {}", e.getMessage());
+            logger.debug("IO Exception- Message: {}", e.getMessage());
             return false;
         }
     }
@@ -312,6 +312,8 @@ public class Telnet {
     }
 
     public class ReadException extends Exception {
+        private static final long serialVersionUID = 1L;
+
         public ReadException() {
             super("Can not read from client");
         }
