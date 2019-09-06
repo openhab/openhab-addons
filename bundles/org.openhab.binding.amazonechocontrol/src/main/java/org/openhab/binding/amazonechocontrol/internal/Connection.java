@@ -721,16 +721,17 @@ public class Connection {
             throw new ConnectionException("Error: No refresh token received");
         }
         try {
-            exhangeToken();
+            exchangeToken();
+            // Check which is the owner domain
             String usersMeResponseJson = makeRequestAndReturnString("GET",
                     "https://alexa.amazon.com/api/users/me?platform=ios&version=2.2.223830.0", null, false, null);
             JsonUsersMeResponse usersMeResponse = parseJson(usersMeResponseJson, JsonUsersMeResponse.class);
-
             URI uri = new URI(usersMeResponse.marketPlaceDomainName);
             String host = uri.getHost();
-            setAmazonSite(host);
 
-            exhangeToken();
+            // Switch to owner domain
+            setAmazonSite(host);
+            exchangeToken();
             tryGetBootstrap();
         } catch (Exception e) {
             logout();
@@ -751,7 +752,7 @@ public class Connection {
         return deviceName;
     }
 
-    private void exhangeToken() throws IOException, URISyntaxException {
+    private void exchangeToken() throws IOException, URISyntaxException {
 
         this.renewTime = 0;
         String cookiesJson = "{\"cookies\":{\"." + getAmazonSite() + "\":[]}}";
@@ -810,7 +811,7 @@ public class Connection {
                     renewTokenPostData, false, null);
             parseJson(renewTokenRepsonseJson, JsonRenewTokenResponse.class);
 
-            exhangeToken();
+            exchangeToken();
             return true;
         }
         return false;
