@@ -63,7 +63,7 @@ public class EmbeddedBrokerTools {
 
             };
             mqttService.addBrokersListener(observer);
-            assertTrue("Wait for embedded connection client failed", semaphore.tryAcquire(700, TimeUnit.MILLISECONDS));
+            assertTrue("Wait for embedded connection client failed", semaphore.tryAcquire(1000, TimeUnit.MILLISECONDS));
         }
         MqttBrokerConnection embeddedConnection = this.embeddedConnection;
         if (embeddedConnection == null) {
