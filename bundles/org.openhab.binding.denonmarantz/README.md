@@ -2,15 +2,10 @@
 
 This binding integrates Denon & Marantz AV receivers by using either Telnet or a (undocumented) HTTP API.
 
-## Introduction
-
-This binding is an adaptation of the existing Denon 1.x binding.
-It can be fully configured without any configuration files.
-In most cases the AVRs can be discovered and will be added to the Inbox of the Paper UI.
-
 ## Supported Things
 
 This binding supports Denon and Marantz receivers having a Telnet interface or a web based controller at `http://<AVR IP address>/`.
+The thing type for all of them is `avr`.
 
 Tested models: Marantz SR5008, Denon AVR-X2000 / X3000 / X1200W / X2100W / X2200W / X3100W / X3300W
 
@@ -22,13 +17,8 @@ During Discovery this is auto-detected and configured.
 This binding can discover Denon and Marantz receivers using mDNS.
 The serial number (which is the MAC address of the network interface) is used as unique identifier.
 
-It tries to detect the number of zones (when the AVR responds to HTTP). It defaults to 2 zones.
-
-## Binding Configuration
-
-The AVR should be auto-discovered correctly.
-In case it does not work you can add the AVR manually.
-There are no configuration files for this binding.
+It tries to detect the number of zones (when the AVR responds to HTTP).
+It defaults to 2 zones.
 
 ## Thing Configuration
 
@@ -43,14 +33,6 @@ There are more parameters which all have defaults set.
 | telnetPort          | port number, e.g. 23                      | 23      |
 | httpPort            | port number, e.g. 80                      | 80      |
 | httpPollingInterval | polling interval in seconds (minimal 5)   | 5       |
-
-### Static definition in a .things file
-
-Example  `.things` file entry:
-
-```
-Thing denonmarantz:avr:0005cd123456 "Receiver" @ "Living room" [host="192.168.1.100"]
-```
 
 ## Channels
 
@@ -88,24 +70,28 @@ The DenonMarantz AVR supports the following channels (some channels are model sp
 (RW) = read-write
 (W) = write-only (no feedback)
 
-## Item Configuration
+## Full Example
 
-Example of usage in `.items` files.
+`.things` file:
 
 ```
-Switch marantz_power    "Receiver" <switch>         {channel="denonmarantz:avr:0006781d58b1:general#power"}
-Dimmer marantz_volume   "Volume"   <soundvolume>    {channel="denonmarantz:avr:0006781d58b1:mainZone#volume"}
-Number marantz_volumeDB "Volume [%.1f dB]"          {channel="denonmarantz:avr:0006781d58b1:mainzone#volume"}
-Switch marantz_mute     "Mute"     <mute>           {channel="denonmarantz:avr:0006781d58b1:mainZone#mute"}
-Switch marantz_z2power  "Zone 2"                    {channel="denonmarantz:avr:0006781d58b1:zone2#power"}
-String marantz_input    "Input [%s]"                {channel="denonmarantz:avr:0006781d58b1:mainZone#input" }
-String marantz_surround "Surround: [%s]"            {channel="denonmarantz:avr:0006781d58b1:general#surroundProgram"}
-String marantz_command                              {channel="denonmarantz:avr:0006781d58b1:general#command"}
+Thing denonmarantz:avr:1 "Receiver" @ "Living room" [host="192.168.1.100"]
 ```
 
-## Sitemap Configuration
+`.items` file:
 
-Example of displaying the items in a `.sitemap` file.
+```
+Switch marantz_power    "Receiver" <switch>         {channel="denonmarantz:avr:1:general#power"}
+Dimmer marantz_volume   "Volume"   <soundvolume>    {channel="denonmarantz:avr:1:mainZone#volume"}
+Number marantz_volumeDB "Volume [%.1f dB]"          {channel="denonmarantz:avr:1:mainzone#volume"}
+Switch marantz_mute     "Mute"     <mute>           {channel="denonmarantz:avr:1:mainZone#mute"}
+Switch marantz_z2power  "Zone 2"                    {channel="denonmarantz:avr:1:zone2#power"}
+String marantz_input    "Input [%s]"                {channel="denonmarantz:avr:1:mainZone#input" }
+String marantz_surround "Surround: [%s]"            {channel="denonmarantz:avr:1:general#surroundProgram"}
+String marantz_command                              {channel="denonmarantz:avr:1:general#command"}
+```
+
+`.sitemap` file:
 
 ```
 ...
@@ -120,15 +106,7 @@ Group item=marantz_input label="Receiver" icon="receiver" {
 ...
 ```
 
-## Using the command channel
-
-In a `.rules` file you can use the sendCommand function to send a command to the AVR.
-
-```
-marantz_command.sendCommand("MSMCH STEREO")
-```
-
-## Control protocol documentation
+## Control Protocol Reference
 
 These resources can be useful to learn what to send using the `command`channel:
 
@@ -137,4 +115,3 @@ These resources can be useful to learn what to send using the `command`channel:
 - [AVR-3311CI/AVR-3311/AVR-991](http://www.awe-europe.com/documents/Control%20Docs/Denon/Archive/AVR3311CI_AVR3311_991_PROTOCOL_V7.1.0.pdf)
 - [CEOL Piccolo DRA-N5/RCD-N8](http://www.audioproducts.com.au/downloadcenter/products/Denon/CEOLPICCOLOBK/Manuals/DRAN5_RCDN8_PROTOCOL_V.1.0.0.pdf)
 - [Marantz Control Protocol (2014+)](http://m.us.marantz.com/DocumentMaster/US/Marantz%202014%20NR%20Series%20-%20SR%20Series%20RS232%20IP%20Protocol.xls)
-
