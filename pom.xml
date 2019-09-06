@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab</groupId>
     <artifactId>openhab-super-pom</artifactId>
-    <version>[1.0, 2.0)</version>
+    <version>1.0.1</version>
   </parent>
 
   <groupId>org.openhab.addons</groupId>
