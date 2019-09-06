@@ -19,10 +19,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>io.moquette.moquette-broker</artifactId>
-      <version>0.12.1</version>
-      <scope>provided</scope>
+      <groupId>com.github.j-n-k</groupId>
+      <artifactId>moquette-broker</artifactId>
+      <version>0.13.0.OH2</version>
+      <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>

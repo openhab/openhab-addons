@@ -20,6 +20,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 
 /**
  * Single Input Contact (Window/Door), Supply voltage monitor
@@ -32,10 +33,14 @@ public class A5_14_01 extends A5_14 {
         super(packet);
     }
 
-    private State getContact() {
+    private State getContact(boolean inverted) {
         boolean ct = getBit(getDB_0(), 0);
 
-        return ct ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+        if (inverted) {
+            return ct ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        } else {
+            return ct ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+        }
     }
 
     @Override
@@ -43,7 +48,8 @@ public class A5_14_01 extends A5_14 {
             Configuration config) {
         switch (channelId) {
             case CHANNEL_CONTACT:
-                return getContact();
+                EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
+                return getContact(c.inverted);
         }
 
         return super.convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);

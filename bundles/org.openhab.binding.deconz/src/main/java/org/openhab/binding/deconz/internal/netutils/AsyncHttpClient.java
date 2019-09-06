@@ -25,7 +25,7 @@ import org.eclipse.jetty.client.HttpResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
-import org.eclipse.jetty.http.HttpMethod;;
+import org.eclipse.jetty.http.HttpMethod;
 
 /**
  * An asynchronous API for HTTP interactions.

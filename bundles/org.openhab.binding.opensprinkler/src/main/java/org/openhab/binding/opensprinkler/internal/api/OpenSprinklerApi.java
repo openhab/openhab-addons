@@ -14,6 +14,7 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 
 /**
  * The {@link OpenSprinklerApi} interface defines the functions which are
@@ -66,7 +67,16 @@ public interface OpenSprinklerApi {
      * @return True if the station is open, false if it is closed or cannot determine.
      * @throws Exception
      */
-    public abstract boolean isStationOpen(int station) throws Exception;
+    public abstract boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException;
+
+    /**
+     * Returns the current program data of the requested station.
+     *
+     * @param station Index of the station to request data from
+     * @return StationProgram
+     * @throws Exception
+     */
+    public abstract StationProgram retrieveProgram(int station) throws CommunicationApiException;
 
     /**
      * Returns the state of rain detection on the OpenSprinkler device.
@@ -74,7 +84,7 @@ public interface OpenSprinklerApi {
      * @return True if rain is detected, false if not or cannot determine.
      * @throws Exception
      */
-    public abstract boolean isRainDetected() throws GeneralApiException, CommunicationApiException;
+    public abstract boolean isRainDetected() throws CommunicationApiException;
 
     /**
      * Returns the number of total stations that are controllable from the OpenSprinkler
@@ -91,5 +101,5 @@ public interface OpenSprinklerApi {
      * @return The firmware version of the OpenSprinkler device as an int.
      * @throws Exception
      */
-    public abstract int getFirmwareVersion() throws Exception;
+    public abstract int getFirmwareVersion() throws CommunicationApiException;
 }

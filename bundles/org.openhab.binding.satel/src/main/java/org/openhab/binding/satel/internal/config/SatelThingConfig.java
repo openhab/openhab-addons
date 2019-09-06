@@ -29,6 +29,7 @@ public class SatelThingConfig {
     private boolean invertState;
     private boolean forceArming;
     private boolean commandOnly;
+    private boolean wireless;
 
     /**
      * @return device identifier
@@ -70,6 +71,13 @@ public class SatelThingConfig {
      */
     public boolean isCommandOnly() {
         return commandOnly;
+    }
+
+    /**
+     * @return if <code>true</code> the thing is a wireless device
+     */
+    public boolean isWireless() {
+        return wireless;
     }
 
 }

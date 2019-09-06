@@ -48,7 +48,7 @@ public class X10ReceivedData {
         STATUS_OFF,
         STATUS_REQ,
         UNDEF // If no match, which shouldn't happen
-    };
+    }
 
     /**
      * Used to decode the function bits received from the cm11a into an X10 function code

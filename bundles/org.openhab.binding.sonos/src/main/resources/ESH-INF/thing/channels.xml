@@ -163,6 +163,13 @@
 		<item-type>String</item-type>
 		<label>Repeat</label>
 		<description>Repeat track or queue playback</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ONE">Track</option>
+				<option value="ALL">Queue</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="restore" advanced="true">
@@ -226,7 +233,14 @@
 		<item-type>String</item-type>
 		<label>State</label>
 		<description>The State channel contains state of the Zone Player, e.g. PLAYING, STOPPED,...</description>
-		<state readOnly="true" />
+		<state readOnly="true">
+			<options>
+				<option value="STOPPED">Stopped</option>
+				<option value="PLAYING">Playing</option>
+				<option value="PAUSED_PLAYBACK">Paused</option>
+				<option value="TRANSITIONING">Transitioning</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="stop" advanced="true">

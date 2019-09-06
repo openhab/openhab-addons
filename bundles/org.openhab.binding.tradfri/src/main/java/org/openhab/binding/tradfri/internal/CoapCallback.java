@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tradfri.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 
@@ -22,6 +23,7 @@ import com.google.gson.JsonElement;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@NonNullByDefault
 public interface CoapCallback {
 
     /**

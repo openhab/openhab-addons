@@ -43,7 +43,7 @@ public class BindingServlet extends HttpServlet {
 
     private static final long serialVersionUID = -1453738923337413163L;
 
-    private final Logger logger = LoggerFactory.getLogger(AccountServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(BindingServlet.class);
 
     String servletUrlWithoutRoot;
     String servletUrl;

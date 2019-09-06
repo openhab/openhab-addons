@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.opensprinkler.internal.handler;
 
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DEFAULT_REFRESH_RATE;
@@ -24,9 +36,11 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
 
     @Nullable
     private OpenSprinklerHttpInterfaceConfig openSprinklerConfig;
+    private OpenSprinklerApiFactory apiFactory;
 
-    public OpenSprinklerHttpBridgeHandler(Bridge bridge) {
+    public OpenSprinklerHttpBridgeHandler(Bridge bridge, OpenSprinklerApiFactory apiFactory) {
         super(bridge);
+        this.apiFactory = apiFactory;
     }
 
     @Override
@@ -39,8 +53,7 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
 
         OpenSprinklerApi openSprinklerDevice;
         try {
-            openSprinklerDevice = OpenSprinklerApiFactory.getHttpApi(openSprinklerConfig.hostname,
-                    openSprinklerConfig.port, openSprinklerConfig.password);
+            openSprinklerDevice = apiFactory.getHttpApi(openSprinklerConfig);
             this.openSprinklerDevice = openSprinklerDevice;
         } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,

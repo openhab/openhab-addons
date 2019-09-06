@@ -82,7 +82,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      * periodic request executor job
      */
     private AtomicReference<@Nullable Future<?>> requestExecutorJobReference = new AtomicReference<@Nullable Future<?>>(
-            null);;
+            null);
 
     /**
      * this class is responsible for executing periodic web requests. This ensures that only one request is executed at

@@ -25,6 +25,7 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailAttachment;
+import org.apache.commons.mail.EmailConstants;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.MultiPartEmail;
@@ -148,12 +149,14 @@ public class MailBuilder {
         if (attachmentURLs.isEmpty() && attachmentFiles.isEmpty() && html.isEmpty()) {
             // text mail without attachments
             mail = new SimpleEmail();
+            mail.setCharset(EmailConstants.UTF_8);
             if (!text.isEmpty()) {
                 mail.setMsg(text);
             }
         } else if (html.isEmpty()) {
             // text mail with attachments
             MultiPartEmail multipartMail = new MultiPartEmail();
+            multipartMail.setCharset(EmailConstants.UTF_8);
             if (!text.isEmpty()) {
                 multipartMail.setMsg(text);
             }
@@ -170,6 +173,7 @@ public class MailBuilder {
         } else {
             // html email
             HtmlEmail htmlMail = new HtmlEmail();
+            htmlMail.setCharset(EmailConstants.UTF_8);
             if (!text.isEmpty()) {
                 // alternate text supplied
                 htmlMail.setTextMsg(text);

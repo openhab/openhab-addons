@@ -77,7 +77,8 @@ public class AmbientWeatherStationHandler extends BaseThingHandler {
             ProcessorFactory.getProcessor(thing).setChannelGroupId();
             ProcessorFactory.getProcessor(thing).setNumberOfSensors();
         } catch (ProcessorNotFoundException e) {
-            logger.warn("Station {}: Unable to set channel group Id and/or number of sensors: {}", e.getMessage());
+            logger.warn("Station {}: Unable to set channel group Id and/or number of sensors: {}", station,
+                    e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
             return;
         }

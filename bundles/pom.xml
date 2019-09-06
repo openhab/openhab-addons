@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
@@ -17,7 +17,8 @@
 
   <modules>
     <!-- io -->
-    <module>org.openhab.io.azureiothub</module>
+    <!-- temporarily disabled due to malfunction -->
+    <!--module>org.openhab.io.azureiothub</module-->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.imperihome</module>
@@ -74,6 +75,7 @@
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.enocean</module>
+    <module>org.openhab.binding.enturno</module>
     <module>org.openhab.binding.evohome</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
@@ -92,8 +94,10 @@
     <module>org.openhab.binding.hdpowerview</module>
     <module>org.openhab.binding.helios</module>
     <module>org.openhab.binding.homematic</module>
+    <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.hue</module>
     <module>org.openhab.binding.hyperion</module>
+    <module>org.openhab.binding.iaqualink</module>
     <module>org.openhab.binding.icloud</module>
     <module>org.openhab.binding.ihc</module>
     <module>org.openhab.binding.innogysmarthome</module>
@@ -111,6 +115,7 @@
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.lifx</module>
+    <module>org.openhab.binding.linuxinput</module>
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.logreader</module>
     <module>org.openhab.binding.loxone</module>
@@ -133,6 +138,7 @@
     <module>org.openhab.binding.nanoleaf</module>
     <module>org.openhab.binding.neato</module>
     <module>org.openhab.binding.neeo</module>
+    <module>org.openhab.binding.neohub</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
@@ -142,10 +148,12 @@
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
     <module>org.openhab.binding.oceanic</module>
+    <module>org.openhab.binding.omnikinverter</module>
     <module>org.openhab.binding.onebusaway</module>
     <module>org.openhab.binding.onewiregpio</module>
     <module>org.openhab.binding.onewire</module>
     <module>org.openhab.binding.onkyo</module>
+    <module>org.openhab.binding.opengarage</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.openweathermap</module>
@@ -163,6 +171,7 @@
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
+    <module>org.openhab.binding.rotel</module>
     <module>org.openhab.binding.rotelra1x</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.samsungtv</module>
@@ -172,6 +181,7 @@
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.siemensrds</module>
+    <module>org.openhab.binding.sinope</module>
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.smartmeter</module>

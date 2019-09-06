@@ -47,6 +47,8 @@
                     <include name="*/src/main/feature/feature.xml"></include>
                     <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"></exclude>
                     <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"></exclude>
+                    <!-- temporarily disabled due to malfunction -->
+                    <exclude name="**/org.openhab.io.azureiothub/**/feature.xml"></exclude>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>

@@ -14,6 +14,7 @@ package org.openhab.binding.kodi.internal.protocol;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -38,6 +39,7 @@ import org.openhab.binding.kodi.internal.model.KodiDuration;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannelGroup;
+import org.openhab.binding.kodi.internal.model.KodiProfile;
 import org.openhab.binding.kodi.internal.model.KodiSubtitle;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.model.KodiUniqueID;
@@ -63,6 +65,7 @@ import com.google.gson.JsonSyntaxException;
  */
 public class KodiConnection implements KodiClientSocketEventListener {
 
+    private static final String TIMESTAMP_FRAGMENT = "#timestamp=";
     private static final String PROPERTY_FANART = "fanart";
     private static final String PROPERTY_THUMBNAIL = "thumbnail";
     private static final String PROPERTY_VERSION = "version";
@@ -108,10 +111,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private final KodiEventListener listener;
     private final WebSocketClient webSocketClient;
+    private final String callbackUrl;
 
-    public KodiConnection(KodiEventListener listener, WebSocketClient webSocketClient) {
+    public KodiConnection(KodiEventListener listener, WebSocketClient webSocketClient, String callbackUrl) {
         this.listener = listener;
         this.webSocketClient = webSocketClient;
+        this.callbackUrl = callbackUrl;
     }
 
     @Override
@@ -133,7 +138,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             socket = new KodiClientSocket(this, wsUri, scheduler, webSocketClient);
             checkConnection();
         } catch (URISyntaxException e) {
-            logger.error("exception during constructing URI host={}, port={}", hostname, port, e);
+            logger.warn("exception during constructing URI host={}, port={}", hostname, port, e);
         }
     }
 
@@ -317,7 +322,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
         item.addProperty("playlistid", playlistID);
         item.addProperty("position", position);
 
-        playInternal(item);
+        playInternal(item, null);
     }
 
     public synchronized void playlistRemove(int playlistID, int position) {
@@ -679,7 +684,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private void requestPlayerPropertiesUpdate(int activePlayer) {
         final String[] properties = { PROPERTY_SUBTITLEENABLED, PROPERTY_CURRENTSUBTITLE, PROPERTY_CURRENTAUDIOSTREAM,
                 PROPERTY_CURRENTVIDEOSTREAM, PROPERTY_PERCENTAGE, PROPERTY_TIME, PROPERTY_TOTALTIME,
-                PROPERTY_AUDIOSTREAMS, PROPERTY_SUBTITLES};
+                PROPERTY_AUDIOSTREAMS, PROPERTY_SUBTITLES };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -689,8 +694,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
 
-            if (result.has(PROPERTY_AUDIOSTREAMS)) {                        
-                try { 
+            if (result.has(PROPERTY_AUDIOSTREAMS)) {
+                try {
                     JsonElement audioGroup = result.get(PROPERTY_AUDIOSTREAMS);
                     if (audioGroup instanceof JsonArray) {
                         List<KodiAudioStream> audioStreamList = new ArrayList<>();
@@ -701,12 +706,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
                         listener.updateAudioStreamOptions(audioStreamList);
                     }
                 } catch (JsonSyntaxException e) {
-                     // do nothing
+                    // do nothing
                 }
             }
-            
+
             if (result.has(PROPERTY_SUBTITLES)) {
-                try {  
+                try {
                     JsonElement subtitleGroup = result.get(PROPERTY_SUBTITLES);
                     if (subtitleGroup instanceof JsonArray) {
                         List<KodiSubtitle> subtitleList = new ArrayList<>();
@@ -718,9 +723,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     }
                 } catch (JsonSyntaxException e) {
                     // do nothing
-                }    
+                }
             }
-            
+
             boolean subtitleEnabled = false;
             if (result.has(PROPERTY_SUBTITLEENABLED)) {
                 subtitleEnabled = result.get(PROPERTY_SUBTITLEENABLED).getAsBoolean();
@@ -934,8 +939,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
             listener.updateUniqueIDImdbtvshow("");
             listener.updateUniqueIDTmdbtvshow("");
             listener.updateUniqueIDTmdbepisode("");
-            listener.updateAudioStreamOptions(new ArrayList<>());    
-            listener.updateSubtitleOptions(new ArrayList<>());    
+            listener.updateAudioStreamOptions(new ArrayList<>());
+            listener.updateSubtitleOptions(new ArrayList<>());
             listener.updateAudioCodec(null);
             listener.updateVideoCodec(null);
             listener.updateAudioIndex(-1);
@@ -1105,11 +1110,36 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    public synchronized void playURI(String uri) {
-        JsonObject item = new JsonObject();
-        item.addProperty("file", uri);
+    public void updateCurrentProfile() {
+        if (socket.isConnected()) {
+            JsonElement response = socket.callMethod("Profiles.GetCurrentProfile");
 
-        playInternal(item);
+            try {
+                listener.updateCurrentProfile(gson.fromJson(response, KodiProfile.class).getLabel());
+            } catch (JsonSyntaxException e) {
+                logger.debug("Json syntax exception occurred: {}", e.getMessage(), e);
+            }
+        }
+    }
+
+    public synchronized void playURI(String uri) {
+        String fileUri = uri;
+        JsonObject item = new JsonObject();
+        JsonObject options = null;
+
+        if (uri.contains(TIMESTAMP_FRAGMENT)) {
+            fileUri = uri.substring(0, uri.indexOf(TIMESTAMP_FRAGMENT));
+            String timestamp = uri.substring(uri.indexOf(TIMESTAMP_FRAGMENT) + TIMESTAMP_FRAGMENT.length());
+            try {
+                int s = Integer.parseInt(timestamp);
+                options = new JsonObject();
+                options.add("resume", timeValueFromSeconds(s));
+            } catch (NumberFormatException e) {
+                logger.warn("Illegal parameter for timestamp - it must be an integer: {}", timestamp);
+            }
+        }
+        item.addProperty("file", fileUri);
+        playInternal(item, options);
     }
 
     public synchronized List<KodiPVRChannelGroup> getPVRChannelGroups(final String pvrChannelType) {
@@ -1194,19 +1224,30 @@ public class KodiConnection implements KodiClientSocketEventListener {
         JsonObject item = new JsonObject();
         item.addProperty("channelid", pvrChannelId);
 
-        playInternal(item);
+        playInternal(item, null);
     }
 
-    private void playInternal(JsonObject item) {
+    private void playInternal(JsonObject item, JsonObject options) {
         JsonObject params = new JsonObject();
         params.add("item", item);
+        if (options != null) {
+            params.add("options", options);
+        }
         socket.callMethod("Player.Open", params);
     }
 
-    public synchronized void showNotification(String message) {
+    public synchronized void showNotification(String title, BigDecimal displayTime, String icon, String message) {
         JsonObject params = new JsonObject();
-        params.addProperty("title", "openHAB");
         params.addProperty("message", message);
+        if (title != null) {
+            params.addProperty("title", title);
+        }
+        if (displayTime != null) {
+            params.addProperty("displaytime", displayTime.longValue());
+        }
+        if (icon != null) {
+            params.addProperty("image", callbackUrl + "/icon/" + icon.toLowerCase() + ".png");
+        }
         socket.callMethod("GUI.ShowNotification", params);
     }
 
@@ -1217,7 +1258,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 socket.open();
                 return socket.isConnected();
             } catch (IOException e) {
-                logger.error("exception during connect to {}", wsUri, e);
+                logger.debug("exception during connect to {}", wsUri, e);
                 socket.close();
                 return false;
             }
@@ -1295,5 +1336,56 @@ public class KodiConnection implements KodiClientSocketEventListener {
     public void sendSystemCommand(String command) {
         String method = "System." + command;
         socket.callMethod(method);
+    }
+
+    public void profile(String profile) {
+        JsonObject params = new JsonObject();
+        params.addProperty("profile", profile);
+        socket.callMethod("Profiles.LoadProfile", params);
+    }
+
+    public KodiProfile[] getProfiles() {
+        KodiProfile[] profiles = new KodiProfile[0];
+        if (socket.isConnected()) {
+            JsonElement response = socket.callMethod("Profiles.GetProfiles");
+
+            try {
+                JsonObject profilesJson = response.getAsJsonObject();
+                profiles = gson.fromJson(profilesJson.get("profiles"), KodiProfile[].class);
+            } catch (JsonSyntaxException e) {
+                logger.debug("Json syntax exception occurred: {}", e.getMessage(), e);
+            }
+        }
+        return profiles;
+    }
+
+    public void setTime(int time) {
+        int seconds = time;
+        JsonObject params = new JsonObject();
+        params.addProperty("playerid", 1);
+        JsonObject value = new JsonObject();
+        JsonObject timeValue = timeValueFromSeconds(seconds);
+
+        value.add("time", timeValue);
+        params.add("value", value);
+        socket.callMethod("Player.Seek", params);
+    }
+
+    private JsonObject timeValueFromSeconds(int seconds) {
+        JsonObject timeValue = new JsonObject();
+        int s = seconds;
+
+        if (s >= 3600) {
+            int hours = s / 3600;
+            timeValue.addProperty("hours", hours);
+            s = s % 3600;
+        }
+        if (s >= 60) {
+            int minutes = s / 60;
+            timeValue.addProperty("minutes", minutes);
+            s = seconds % 60;
+        }
+        timeValue.addProperty("seconds", s);
+        return timeValue;
     }
 }

@@ -14,8 +14,11 @@ package org.openhab.binding.tplinksmarthome.internal;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -69,7 +72,7 @@ public enum TPLinkSmartHomeThingType {
     /**
      * All supported Smart Home devices in a list.
      */
-    private static final List<TPLinkSmartHomeThingType> SUPPORTED_THING_TYPES_LIST = Arrays
+    public static final List<TPLinkSmartHomeThingType> SUPPORTED_THING_TYPES_LIST = Arrays
             .asList(TPLinkSmartHomeThingType.values());
 
     /**
@@ -78,12 +81,29 @@ public enum TPLinkSmartHomeThingType {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = SUPPORTED_THING_TYPES_LIST.stream()
             .map(TPLinkSmartHomeThingType::thingTypeUID).collect(Collectors.toSet());
 
+    /**
+     * A map of all {@link TPLinkSmartHomeThingType} mapped to {@link ThingTypeUID}.
+     */
+    public static final Map<ThingTypeUID, TPLinkSmartHomeThingType> THING_TYPE_MAP = SUPPORTED_THING_TYPES_LIST.stream()
+            .collect(Collectors.toMap(TPLinkSmartHomeThingType::thingTypeUID, Function.identity()));
+    private static final List<TPLinkSmartHomeThingType> BULB_WITH_TEMPERATURE_COLOR_1 = Stream.of(LB120, KL120)
+            .collect(Collectors.toList());
+    private static final List<TPLinkSmartHomeThingType> BULB_WITH_TEMPERATURE_COLOR_2 = Stream
+            .of(KB130, KL130, LB130, LB230).collect(Collectors.toList());
+
     private ThingTypeUID thingTypeUID;
     private DeviceType type;
 
-    TPLinkSmartHomeThingType(String name, DeviceType type) {
+    TPLinkSmartHomeThingType(final String name, final DeviceType type) {
         thingTypeUID = new ThingTypeUID(TPLinkSmartHomeBindingConstants.BINDING_ID, name);
         this.type = type;
+    }
+
+    /**
+     * @return Returns the type of the device.
+     */
+    public DeviceType getDeviceType() {
+        return type;
     }
 
     /**
@@ -94,49 +114,29 @@ public enum TPLinkSmartHomeThingType {
     }
 
     /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that is a bulb.
+     * Returns true if the given {@link ThingTypeUID} matches a device that is a bulb with color temperature ranges 1
+     * (2700 to 6500k).
      *
      * @param thingTypeUID if the check
-     * @return true if it's a bulb device
+     * @return true if it's a bulb device with color temperature range 1
      */
-    public static boolean isBulbDevice(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type == DeviceType.BULB);
+    public static boolean isBulbDeviceWithTemperatureColor1(ThingTypeUID thingTypeUID) {
+        return isDevice(thingTypeUID, BULB_WITH_TEMPERATURE_COLOR_1);
     }
 
     /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that is a range extender.
+     * Returns true if the given {@link ThingTypeUID} matches a device that is a bulb with color temperature ranges 2
+     * (2500 to 9000k).
      *
      * @param thingTypeUID if the check
-     * @return true if it's a range extender
+     * @return true if it's a bulb device with color temperature range 2
      */
-    public static boolean isRangeExtenderDevice(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type == DeviceType.RANGE_EXTENDER);
+    public static boolean isBulbDeviceWithTemperatureColor2(ThingTypeUID thingTypeUID) {
+        return isDevice(thingTypeUID, BULB_WITH_TEMPERATURE_COLOR_2);
     }
 
-    /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that supports the power strip communication
-     * protocol.
-     *
-     * @param thingTypeUID if the check
-     * @return true if it's a power strip supporting device
-     */
-    public static boolean isStripDevice(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type == DeviceType.STRIP);
-    }
-
-    /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that supports the switching communication
-     * protocol.
-     *
-     * @param thingTypeUID if the check
-     * @return true if it's a switching supporting device
-     */
-    public static boolean isSwitchingDevice(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type == DeviceType.PLUG || t.type == DeviceType.SWITCH);
+    private static boolean isDevice(ThingTypeUID thingTypeUID, List<TPLinkSmartHomeThingType> thingTypes) {
+        return thingTypes.stream().anyMatch(t -> t.is(thingTypeUID));
     }
 
     /**
@@ -150,9 +150,9 @@ public enum TPLinkSmartHomeThingType {
     }
 
     /**
-     * Internal enum indicating the type of the device.
+     * Enum indicating the type of the device.
      */
-    private enum DeviceType {
+    public enum DeviceType {
         /**
          * Light Bulb device.
          */
@@ -176,6 +176,6 @@ public enum TPLinkSmartHomeThingType {
         /**
          * Switch device.
          */
-        SWITCH;
+        SWITCH
     }
 }

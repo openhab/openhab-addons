@@ -36,7 +36,7 @@ Before it can connect to the server, the following Configuration Parameters must
 | pollingInterval         | Time interval in seconds between polling requests to the cloud server; the value must be between 8..60 seconds; the Default value (recommended) is 60 seconds.      |
 | apiKey                  | The key code needed to access the application program interface on the Siemens Climatix IC cloud server; you can request a key code from Siemens on their web-site. |
 
-Note: You must create ONLY ONE Thing of the type Climatix IC Account; duplicate Climatix IC Account things risk causing communication errors with the cloud server.   
+Note: You must create ONLY ONE Thing of the type Climatix IC Account; duplicate Climatix IC Account Things risk causing communication errors with the cloud server.   
 
 ## Thing Configuration for "RDS Smart Thermostat"
 
@@ -79,8 +79,8 @@ The PaperUI automatic Discovery service (see above) discovers the "Plant Id" cod
 
 ```
 Bridge siemensrds:climatixic:mybridgename "Climatix IC Account" [ userEmail="email@example.com", userPassword="secret", apiKey="32-character-code-provided-by-siemens", pollingInterval=60 ] {
-    Thing siemensrds:rds:mybridgename:mydownstairs "Downstairs Thermostat" @ "Hall" [ plantId="Pd0123456-789a-bcde-0123456789abcdef0" ]
-    Thing siemensrds:rds:mybridgename:myupstairs "Upstairs Thermostat" @ "Landing" [ plantId="Pd0123456-789a-bcde-f0123456789abcdef" ]
+    Thing rds mydownstairs "Downstairs Thermostat" @ "Hall" [ plantId="Pd0123456-789a-bcde-0123456789abcdef0" ]
+    Thing rds myupstairs "Upstairs Thermostat" @ "Landing" [ plantId="Pd0123456-789a-bcde-f0123456789abcdef" ]
 }
 ```
 
@@ -105,24 +105,24 @@ Switch Upstairs_HotWaterOutputState "Hotwater Output State" { channel="siemensrd
 ```
 sitemap siemensrds label="Siemens RDS"
 {
-	Frame label="Heating" {
-		Text      item=Upstairs_RoomTemperature
-		Setpoint  item=Upstairs_TargetTemperature minValue=15 maxValue=30 step=1
-		Switch	  item=Upstairs_ThermostatAutoMode
-		Switch    item=Upstairs_OccupancyModePresent
-		Text      item=Upstairs_ThermostatOutputState
-	}
+Frame label="Heating" {
+    Text     item=Upstairs_RoomTemperature
+    Setpoint item=Upstairs_TargetTemperature minValue=5 maxValue=30 step=0.5
+    Switch   item=Upstairs_ThermostatAutoMode
+    Switch   item=Upstairs_OccupancyModePresent
+    Text     item=Upstairs_ThermostatOutputState
+  }
 
-	Frame label="Environment" {
-		Text      item=Upstairs_RoomHumidity
-		Text      item=Upstairs_OutsideTemperature
-		Text      item=Upstairs_RoomAirQuality
-		Text      item=Upstairs_EnergySavingsLevel
-	}
+Frame label="Environment" {
+    Text item=Upstairs_RoomHumidity
+    Text item=Upstairs_OutsideTemperature
+    Text item=Upstairs_RoomAirQuality
+    Text item=Upstairs_EnergySavingsLevel
+  }
 
-	Frame label="Hot Water" {
-		Switch item=Upstairs_HotwaterAutoMode
-		Switch item=Upstairs_HotwaterOutputState
-	}
+Frame label="Hot Water" {
+    Switch item=Upstairs_HotwaterAutoMode
+    Switch item=Upstairs_HotwaterOutputState
+  }
 }
 ```

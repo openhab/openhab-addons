@@ -93,7 +93,7 @@ public class LGWebOSActions implements ThingActions {
     public void showToast(
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
             throws IOException {
-        showToast(LGWebOSActions.class.getResource("/openhab-logo-square.png").toString(), text);
+        getControl(ToastControl.class).ifPresent(control -> control.showToast(text, createResponseListener()));
     }
 
     @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconLabel")
@@ -102,7 +102,7 @@ public class LGWebOSActions implements ThingActions {
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
             throws IOException {
         BufferedImage bi = ImageIO.read(new URL(icon));
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream(); OutputStream b64 = Base64.getEncoder().wrap(os);) {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream(); OutputStream b64 = Base64.getEncoder().wrap(os)) {
             ImageIO.write(bi, "png", b64);
             String string = os.toString(StandardCharsets.UTF_8.name());
             getControl(ToastControl.class)

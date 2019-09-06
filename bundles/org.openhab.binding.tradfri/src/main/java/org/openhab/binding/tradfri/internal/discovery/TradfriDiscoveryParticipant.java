@@ -24,6 +24,8 @@ import java.util.regex.Pattern;
 
 import javax.jmdns.ServiceInfo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution
  */
 @Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@NonNullByDefault
 public class TradfriDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(TradfriDiscoveryParticipant.class);
@@ -64,7 +67,7 @@ public class TradfriDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(ServiceInfo service) {
+    public @Nullable ThingUID getThingUID(@Nullable ServiceInfo service) {
         if (service != null) {
             Matcher m = GATEWAY_NAME_REGEX_PATTERN.matcher(service.getName());
             if (m.find()) {
@@ -75,7 +78,7 @@ public class TradfriDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public DiscoveryResult createResult(ServiceInfo service) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null) {
             if (service.getHostAddresses() != null && service.getHostAddresses().length > 0

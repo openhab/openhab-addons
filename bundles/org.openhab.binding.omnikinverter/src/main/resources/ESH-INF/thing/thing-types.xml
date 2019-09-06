@@ -1,0 +1,54 @@
+<thing:thing-descriptions bindingId="omnikinverter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="omnik">
+		<label>OmnikInverter Binding Thing</label>
+		<description>Thing for OmnikInverter Binding</description>
+
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="energyToday" typeId="energyToday" />
+			<channel id="energyTotal" typeId="energyTotal" />
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>The hostname or IP of the Omnik Inverter</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>The TCP port of the Omnik inverter, usually 8899</description>
+				<default>8899</default>
+			</parameter>
+			<parameter name="serial" type="integer" required="true">
+				<label>Serial</label>
+				<description>The serial of the Omnik inverter's Wifi module. This the number part only.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>Instantaneous Power</label>
+		<description>The instantaneous power generation</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="energyToday">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Today</label>
+		<description>The amount of energy generated today</description>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	<channel-type id="energyTotal">
+		<item-type>Number:Energy</item-type>
+		<label>Total Generated Energy</label>
+		<description>The amount of generated energy in total</description>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -145,7 +145,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 }
             }
         }
-    };
+    }
 
     /**
      * Disposer clean up openHAB Connector configuration
@@ -169,7 +169,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             // status update will finally remove the thing
             updateStatus(ThingStatus.REMOVED);
         }
-    };
+    }
 
     public ZWayBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -284,7 +284,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 logger.debug("Polling not possible, bridge isn't ONLINE");
             }
         }
-    };
+    }
 
     private void updateControllerData() {
         // Add additional information as properties or update channels
@@ -336,7 +336,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 logger.debug("Reset inclusion and exclusion not possible, bridge isn't ONLINE");
             }
         }
-    };
+    }
 
     @Override
     public void handleRemoval() {

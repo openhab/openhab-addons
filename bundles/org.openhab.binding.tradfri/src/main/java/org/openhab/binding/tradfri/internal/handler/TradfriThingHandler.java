@@ -19,7 +19,8 @@ import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.californium.core.CoapObserveRelation;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -39,25 +40,27 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution
  * @author Christoph Weitkamp - Restructuring and refactoring of the binding
  */
+@NonNullByDefault
 public abstract class TradfriThingHandler extends BaseThingHandler implements CoapCallback {
 
     private final Logger logger = LoggerFactory.getLogger(TradfriThingHandler.class);
 
     // the unique instance id of the device
-    protected Integer id;
+    protected @Nullable Integer id;
 
     // used to check whether we have already been disposed when receiving data asynchronously
     protected volatile boolean active;
 
-    protected TradfriCoapClient coapClient;
+    protected @NonNullByDefault({}) TradfriCoapClient coapClient;
 
-    private CoapObserveRelation observeRelation;
+    private @Nullable CoapObserveRelation observeRelation;
 
-    public TradfriThingHandler(@NonNull Thing thing) {
+    public TradfriThingHandler(Thing thing) {
         super(thing);
     }
 
     @Override
+    @SuppressWarnings("null")
     public synchronized void initialize() {
         Bridge tradfriGateway = getBridge();
         this.id = getConfigAs(TradfriDeviceConfig.class).id;
@@ -103,6 +106,7 @@ public abstract class TradfriThingHandler extends BaseThingHandler implements Co
     }
 
     @Override
+    @SuppressWarnings("null")
     public void setStatus(ThingStatus status, ThingStatusDetail statusDetail) {
         if (active && getBridge().getStatus() != ThingStatus.OFFLINE && status != ThingStatus.ONLINE) {
             updateStatus(status, statusDetail);

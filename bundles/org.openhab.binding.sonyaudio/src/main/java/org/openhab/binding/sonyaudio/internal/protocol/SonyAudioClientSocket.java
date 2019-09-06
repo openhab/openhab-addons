@@ -119,7 +119,7 @@ public class SonyAudioClientSocket {
         try {
             remote.sendPing(payload);
         } catch (IOException e) {
-            logger.error("Connection to {} lost {}", uri, e);
+            logger.warn("Connection to {} lost: {}", uri, e.getMessage());
             connected = false;
         }
 

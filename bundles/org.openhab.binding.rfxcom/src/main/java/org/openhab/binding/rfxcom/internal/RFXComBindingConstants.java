@@ -76,6 +76,8 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_SIGNAL_LEVEL = "signalLevel";
     public static final String CHANNEL_DIMMING_LEVEL = "dimmingLevel";
     public static final String CHANNEL_UV = "uv";
+    public static final String CHANNEL_FAN_LIGHT = "fanLight";
+    public static final String CHANNEL_FAN_SPEED = "fanSpeed";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_FOOD_TEMPERATURE = "foodTemperature";
     public static final String CHANNEL_BBQ_TEMPERATURE = "bbqTemperature";
@@ -121,6 +123,13 @@ public class RFXComBindingConstants {
     private static final ThingTypeUID THING_TYPE_DATE_TIME = new ThingTypeUID(BINDING_ID, "datetime");
     private static final ThingTypeUID THING_TYPE_ENERGY = new ThingTypeUID(BINDING_ID, "energy");
     private static final ThingTypeUID THING_TYPE_FAN = new ThingTypeUID(BINDING_ID, "fan");
+    private static final ThingTypeUID THING_TYPE_FAN_SF01 = new ThingTypeUID(BINDING_ID, "fan_sf01");
+    private static final ThingTypeUID THING_TYPE_FAN_ITHO = new ThingTypeUID(BINDING_ID, "fan_itho");
+    private static final ThingTypeUID THING_TYPE_FAN_SEAV = new ThingTypeUID(BINDING_ID, "fan_seav");
+    private static final ThingTypeUID THING_TYPE_FAN_LUCCI_DC = new ThingTypeUID(BINDING_ID, "fan_lucci_dc");
+    private static final ThingTypeUID THING_TYPE_FAN_FT1211R = new ThingTypeUID(BINDING_ID, "fan_ft1211r");
+    private static final ThingTypeUID THING_TYPE_FAN_FALMEC = new ThingTypeUID(BINDING_ID, "fan_falmec");
+    private static final ThingTypeUID THING_TYPE_FAN_LUCCI_DC_II = new ThingTypeUID(BINDING_ID, "fan_lucci_dc2");
     private static final ThingTypeUID THING_TYPE_FS20 = new ThingTypeUID(BINDING_ID, "fs20");
     private static final ThingTypeUID THING_TYPE_GAS_USAGE = new ThingTypeUID(BINDING_ID, "gasusage");
     private static final ThingTypeUID THING_TYPE_HOME_CONFORT = new ThingTypeUID(BINDING_ID, "homeconfort");
@@ -162,14 +171,16 @@ public class RFXComBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream.of(
             THING_TYPE_BAROMETRIC, THING_TYPE_BBQ_TEMPERATURE, THING_TYPE_BLINDS1, THING_TYPE_CAMERA1, THING_TYPE_CHIME,
             THING_TYPE_CURRENT, THING_TYPE_CURRENT_ENERGY, THING_TYPE_CURTAIN1, THING_TYPE_DATE_TIME, THING_TYPE_ENERGY,
-            THING_TYPE_FAN, THING_TYPE_FS20, THING_TYPE_GAS_USAGE, THING_TYPE_HOME_CONFORT, THING_TYPE_HUMIDITY,
-            THING_TYPE_IO_LINES, THING_TYPE_LIGHTNING1, THING_TYPE_LIGHTNING2, THING_TYPE_LIGHTNING3,
-            THING_TYPE_LIGHTNING4, THING_TYPE_LIGHTNING5, THING_TYPE_LIGHTNING6, THING_TYPE_POWER, THING_TYPE_RADIATOR1,
-            THING_TYPE_RAIN, THING_TYPE_REMOTE_CONTROL, THING_TYPE_RFX_METER, THING_TYPE_RFX_SENSOR, THING_TYPE_RFY,
-            THING_TYPE_SECURITY1, THING_TYPE_SECURITY2, THING_TYPE_TEMPERATURE, THING_TYPE_TEMPERATURE_HUMIDITY,
-            THING_TYPE_TEMPERATURE_HUMIDITY_BAROMETRIC, THING_TYPE_TEMPERATURE_RAIN, THING_TYPE_THERMOSTAT1,
-            THING_TYPE_THERMOSTAT2, THING_TYPE_THERMOSTAT3, THING_TYPE_UNDECODED, THING_TYPE_UV, THING_TYPE_WATER_USAGE,
-            THING_TYPE_WEIGHTING_SCALE, THING_TYPE_WIND).collect(Collectors.toSet()));
+            THING_TYPE_FAN, THING_TYPE_FAN_SF01, THING_TYPE_FAN_ITHO, THING_TYPE_FAN_SEAV, THING_TYPE_FAN_LUCCI_DC,
+            THING_TYPE_FAN_FT1211R, THING_TYPE_FAN_FALMEC, THING_TYPE_FAN_LUCCI_DC_II, THING_TYPE_GAS_USAGE,
+            THING_TYPE_HOME_CONFORT, THING_TYPE_HUMIDITY, THING_TYPE_IO_LINES, THING_TYPE_LIGHTNING1,
+            THING_TYPE_LIGHTNING2, THING_TYPE_LIGHTNING3, THING_TYPE_LIGHTNING4, THING_TYPE_LIGHTNING5,
+            THING_TYPE_LIGHTNING6, THING_TYPE_POWER, THING_TYPE_RADIATOR1, THING_TYPE_RAIN, THING_TYPE_REMOTE_CONTROL,
+            THING_TYPE_RFX_METER, THING_TYPE_RFX_SENSOR, THING_TYPE_RFY, THING_TYPE_SECURITY1, THING_TYPE_SECURITY2,
+            THING_TYPE_TEMPERATURE, THING_TYPE_TEMPERATURE_HUMIDITY, THING_TYPE_TEMPERATURE_HUMIDITY_BAROMETRIC,
+            THING_TYPE_TEMPERATURE_RAIN, THING_TYPE_THERMOSTAT1, THING_TYPE_THERMOSTAT2, THING_TYPE_THERMOSTAT3,
+            THING_TYPE_UNDECODED, THING_TYPE_UV, THING_TYPE_WATER_USAGE, THING_TYPE_WEIGHTING_SCALE, THING_TYPE_WIND)
+            .collect(Collectors.toSet()));
 
     /**
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
@@ -188,6 +199,13 @@ public class RFXComBindingConstants {
                     put(PacketType.DATE_TIME, RFXComBindingConstants.THING_TYPE_DATE_TIME);
                     put(PacketType.ENERGY, RFXComBindingConstants.THING_TYPE_ENERGY);
                     put(PacketType.FAN, RFXComBindingConstants.THING_TYPE_FAN);
+                    put(PacketType.FAN_SF01, RFXComBindingConstants.THING_TYPE_FAN_SF01);
+                    put(PacketType.FAN_ITHO, RFXComBindingConstants.THING_TYPE_FAN_ITHO);
+                    put(PacketType.FAN_SEAV, RFXComBindingConstants.THING_TYPE_FAN_SEAV);
+                    put(PacketType.FAN_LUCCI_DC, RFXComBindingConstants.THING_TYPE_FAN_LUCCI_DC);
+                    put(PacketType.FAN_FT1211R, RFXComBindingConstants.THING_TYPE_FAN_FT1211R);
+                    put(PacketType.FAN_FALMEC, RFXComBindingConstants.THING_TYPE_FAN_FALMEC);
+                    put(PacketType.FAN_LUCCI_DCII, RFXComBindingConstants.THING_TYPE_FAN_LUCCI_DC_II);
                     put(PacketType.FS20, RFXComBindingConstants.THING_TYPE_FS20);
                     put(PacketType.GAS, RFXComBindingConstants.THING_TYPE_GAS_USAGE);
                     put(PacketType.HOME_CONFORT, RFXComBindingConstants.THING_TYPE_HOME_CONFORT);

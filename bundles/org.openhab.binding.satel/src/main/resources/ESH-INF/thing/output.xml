@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="satel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -33,6 +34,10 @@
 			<parameter name="commandOnly" type="boolean" required="false">
 				<label>Command only</label>
 				<description>Accepts commands only, does not update state of the thing</description>
+			</parameter>
+			<parameter name="wireless" type="boolean" required="false">
+				<label>Wireless output</label>
+				<description>This output controls a wireless device like ASP-100 R, ASW-100 E, etc.</description>
 			</parameter>
 		</config-description>
 
