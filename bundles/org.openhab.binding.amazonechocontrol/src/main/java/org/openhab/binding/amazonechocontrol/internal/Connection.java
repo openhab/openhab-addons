@@ -720,14 +720,16 @@ public class Connection {
         if (StringUtils.isEmpty(this.refreshToken)) {
             throw new ConnectionException("Error: No refresh token received");
         }
-        String usersMeResponseJson = makeRequestAndReturnString("GET",
-                "https://alexa.amazon.com/api/users/me?platform=ios&version=2.2.223830.0", null, false, null);
-        JsonUsersMeResponse usersMeResponse = parseJson(usersMeResponseJson, JsonUsersMeResponse.class);
-
-        URI uri = new URI(usersMeResponse.marketPlaceDomainName);
-        String host = uri.getHost();
-        setAmazonSite(host);
         try {
+            exhangeToken();
+            String usersMeResponseJson = makeRequestAndReturnString("GET",
+                    "https://alexa.amazon.com/api/users/me?platform=ios&version=2.2.223830.0", null, false, null);
+            JsonUsersMeResponse usersMeResponse = parseJson(usersMeResponseJson, JsonUsersMeResponse.class);
+
+            URI uri = new URI(usersMeResponse.marketPlaceDomainName);
+            String host = uri.getHost();
+            setAmazonSite(host);
+
             exhangeToken();
             tryGetBootstrap();
         } catch (Exception e) {
