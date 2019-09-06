@@ -1,16 +1,8 @@
----
-layout: documentation
----
-
-{% include base.html %}
-
 # Sinopé Binding
 
 The integration happens through the Sinopé (GT150) bridge, which acts as an IP gateway to the Sinopé devices on the 916 Mhz ISM band.
 
 This binding supports multiple gateways with multiple devices.
-
----
 
 ## Supported Things
 
@@ -40,16 +32,16 @@ The addr parameter is the IP given to your gateway.
 SinopeProtocol.exe -addr [YOUR_GATEWAY_IP_OR_HOSTNAME]  -gateway [YOUR_GATEWAY_ID] -login
 Getting API Key  - PRESS WEB Button
 Your api Key is: 0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33
-
 ```
+
  On other operating systems, using only a JVM, you can invoke directly the java command from the latest release of the [sinope-core library](<https://github.com/chaton78/sinope-core/releases>):
- 
+
 ```
 java -jar core-0.0.3-shaded.jar -addr [YOUR_GATEWAY_IP_OR_HOSTNAME]   -gateway [YOUR_GATEWAY_ID] -login
 Getting API Key  - PRESS WEB Button
 Your api Key is: 0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33
-
 ```
+
 ### Thing Discovery
 
 You can use the same procedure to discover each device you want to use. 
@@ -69,6 +61,7 @@ Your device id is: 0x00 0x00 0x35 0x86
 It is now time to push both buttons on your device!
 Press crtl-c to exit!
 ```
+
 On other operating systems, using only a JVM, you can invoke directly the java command:
 
 ```
@@ -80,6 +73,7 @@ Your device id is: 0x00 0x00 0x35 0x86
 It is now time to push both buttons on your device!
 Press crtl-c to exit!
 ```
+
 ## Thing Configuration
 
 The Sinopé bridge requires the address, the gateway id and the API key in order for the binding to know where and how to access it.
@@ -88,11 +82,13 @@ In the thing file, this looks e.g. like
 ```
 Bridge sinope:gateway:home [ hostname="[YOUR_GATEWAY_IP_OR_HOSTNAME]", gatewayId="[YOUR_GATEWAY_ID]", apiKey="0x1F 0x5D 0xC8 0xD5 0xCD 0x3A 0xD7 0x23"]
 ```
+
 The devices are identified by the ids that a Sinopé device returns when you have discovered it.
 
 ```
 thermostat room [ deviceId = "0x00 0x00 0x35 0x86" ]
 ```
+
 ## Channels
 
 Thermostat devices support some of the following channels:
@@ -141,6 +137,7 @@ sitemap demo label="Main Menu"
   }
 }
 ```
+
 ### UI Example
 
 ![Example](doc/openhab.png)
