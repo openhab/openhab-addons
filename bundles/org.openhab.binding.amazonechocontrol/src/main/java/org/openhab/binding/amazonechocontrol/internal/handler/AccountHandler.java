@@ -66,9 +66,10 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResp
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWord;
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.SmartHomeDeviceHandler;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,7 +181,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 return;
             }
         }
-        forceCheckData();
+        forceCheckDataHandler();
     }
 
     public void forceCheckData() {
@@ -969,15 +970,15 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     .getSmartHomeDeviceStatesJson(applianceIds);
             synchronized (this.smartHomeDeviceHandlers) {
                 for (SmartHomeDeviceHandler smartHomeDeviceHandler : smartHomeDeviceHandlers) {
-                    smartHomeDeviceHandler.updateState(allDevices, applianceIdToCapabilityStates);
+                    smartHomeDeviceHandler.updateChannelStates(allDevices, applianceIdToCapabilityStates);
                 }
             }
             logger.debug("updateSmartHomeState finished");
 
         } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-            logger.debug("updateSmartHomeState fails {}", e);
+            logger.debug("updateSmartHomeState fails", e);
         } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
-            logger.error("updateSmartHomeState fails with unexpected error {}", e);
+            logger.error("updateSmartHomeState fails with unexpected error", e);
         }
     }
 }

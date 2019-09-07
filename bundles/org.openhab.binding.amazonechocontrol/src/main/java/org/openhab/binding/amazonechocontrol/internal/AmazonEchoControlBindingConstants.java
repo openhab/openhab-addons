@@ -108,7 +108,6 @@ public class AmazonEchoControlBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_MUSIC_PROVIDER_ID = new ChannelTypeUID(BINDING_ID,
             "musicProviderId");
     public static final ChannelTypeUID CHANNEL_TYPE_START_COMMAND = new ChannelTypeUID(BINDING_ID, "startCommand");
-    public static final ChannelTypeUID CHANNEL_TYPE_LIGHT_COLOR = new ChannelTypeUID(BINDING_ID, "lightColor");
 
     // List of all Properties
     public static final String DEVICE_PROPERTY_SERIAL_NUMBER = "serialNumber";
@@ -118,33 +117,5 @@ public class AmazonEchoControlBindingConstants {
 
     // Other
     public static final String FLASH_BRIEFING_COMMAND_PREFIX = "FlashBriefing.";
-
-    // List of all smart bulb actions
-    public static final String DEVICE_TURN_ON = "turnOn";
-    public static final String DEVICE_TURN_OFF = "turnOff";
-
-    // List of Alexa interfaces
-    public static final String INTERFACE_BRIGHTNESS = "Alexa.BrightnessController";
-    public static final String INTERFACE_COLOR_TEMPERATURE = "Alexa.ColorTemperatureController";
-    public static final String INTERFACE_COLOR = "Alexa.ColorController";
-    public static final String INTERFACE_POWER = "Alexa.PowerController";
-    public static final String INTERFACE_SECURITY_PANEL = "Alexa.SecurityPanelController";
-
-    public static final Set<String> SUPPORTED_INTERFACES = new HashSet<>(Arrays.asList(INTERFACE_BRIGHTNESS,
-            INTERFACE_COLOR_TEMPERATURE, INTERFACE_COLOR, INTERFACE_POWER, INTERFACE_SECURITY_PANEL));
-
-    // List of dynamic channels for smart home devices
-    public static final String CHANNEL_CONTROLLER_BRIGHTNESS = "brightness";
-    public static final String CHANNEL_CONTROLLER_COLOR_TEMPERATURE_NAME = "colorTemperatureName";
-    public static final String CHANNEL_CONTROLLER_COLOR_NAME = "colorName";
-    public static final String CHANNEL_CONTROLLER_COLOR = "color";
-    public static final String CHANNEL_CONTROLLER_POWER_STATE = "powerState";
-    public static final String CHANNEL_CONTROLLER_SECURITY_PANEL_ARM_STATE = "armState";
-
-    // List of Item types
-    public static final String ITEM_TYPE_SWITCH = "Switch";
-    public static final String ITEM_TYPE_DIMMER = "Dimmer";
-    public static final String ITEM_TYPE_STRING = "String";
-    public static final String ITEM_TYPE_COLOR = "Color";
 
 }

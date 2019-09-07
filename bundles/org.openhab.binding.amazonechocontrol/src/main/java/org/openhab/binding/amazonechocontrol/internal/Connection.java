@@ -63,8 +63,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Trigg
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBootstrapResult;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBootstrapResult.Authentication;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonColorTemperature;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonColors;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
@@ -95,14 +93,14 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppRespo
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Success;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Tokens;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRenewTokenResponse;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonStartRoutineRequest;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonUsersMeResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWord;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWebSiteCookie;
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeGroups.SmartHomeGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -957,29 +955,6 @@ public class Connection {
         }
     }
 
-    // Need to cache the light colors here
-    public List<JsonColors> getEchoLightColors() {
-        ArrayList<JsonColors> colors = new ArrayList<>();
-        String[] stringColors = { "red", "crimson", "salmon", "orange", "gold", "yellow", "green", "turquoise", "cyan",
-                "sky_blue", "blue", "purple", "magenta", "pink", "lavender" };
-        for (String color : stringColors) {
-            colors.add(new JsonColors(color));
-        }
-
-        return colors;
-    }
-
-    // Need to cache the light temperature list here
-    public List<JsonColorTemperature> getEchoLightTemperatures() {
-        ArrayList<JsonColorTemperature> temperatures = new ArrayList<>();
-        String[] stringTemperatures = { "warm_white", "soft_white", "white", "daylight_white", "cool_white" };
-        for (String temperature : stringTemperatures) {
-            temperatures.add(new JsonColorTemperature(temperature));
-        }
-
-        return temperatures;
-    }
-
     public List<Device> getDeviceList() throws IOException, URISyntaxException {
         String json = getDeviceListJson();
         JsonDevices devices = parseJson(json, JsonDevices.class);
@@ -1223,12 +1198,11 @@ public class Connection {
         makeRequest("POST", url, command, true, true, null, 0);
     }
 
-    public void smartHomeCommand(String entityId, String action) throws IOException, URISyntaxException {
+    public void smartHomeCommand(String entityId, String action) throws IOException {
         smartHomeCommand(entityId, action, null, null);
     }
 
-    public void smartHomeCommand(String entityId, String action, String property, Object value)
-            throws IOException, URISyntaxException {
+    public void smartHomeCommand(String entityId, String action, String property, Object value) throws IOException {
         String url = alexaServer + "/api/phoenix/state";
 
         JsonObject json = new JsonObject();
@@ -1256,8 +1230,12 @@ public class Connection {
         json.add("controlRequests", controlRequests);
 
         String requestBody = json.toString();
-        String resultBody = makeRequestAndReturnString("PUT", url, requestBody, true, null);
-        logger.debug(resultBody);
+        try {
+            String resultBody = makeRequestAndReturnString("PUT", url, requestBody, true, null);
+            logger.debug(resultBody);
+        } catch (URISyntaxException e) {
+            logger.info("Wrong url {}: {}", url, e);
+        }
     }
 
     public void notificationVolume(Device device, int volume) throws IOException, URISyntaxException {

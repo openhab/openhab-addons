@@ -10,21 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.amazonechocontrol.internal.jsons;
+package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Lukas Knoeller
- *
  */
-public class JsonSmartHomeGroupIdentity {
+@NonNullByDefault
+public class JsonSmartHomeGroupIdentifiers {
 
-    public static class SmartHomeGroupIdentity {
-        public @Nullable String @Nullable [] groupIdentity;
+    public static class SmartHomeGroupIdentifier {
+        public @Nullable String value;
     }
 
-    public @Nullable SmartHomeGroupIdentity @Nullable [] groupIdentity;
-
+    public @Nullable SmartHomeGroupIdentifier identifier;
 }
