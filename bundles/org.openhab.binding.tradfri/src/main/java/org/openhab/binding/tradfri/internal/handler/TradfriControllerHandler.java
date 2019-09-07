@@ -14,6 +14,8 @@ package org.openhab.binding.tradfri.internal.handler;
 
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,12 +34,13 @@ import com.google.gson.JsonElement;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class TradfriControllerHandler extends TradfriThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TradfriControllerHandler.class);
 
     // keeps track of the current state for handling of increase/decrease
-    private TradfriControllerData state;
+    private @Nullable TradfriControllerData state;
 
     public TradfriControllerHandler(Thing thing) {
         super(thing);
@@ -49,6 +52,11 @@ public class TradfriControllerHandler extends TradfriThingHandler {
             state = new TradfriControllerData(data);
             updateStatus(state.getReachabilityStatus() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
+            final TradfriControllerData state = this.state;
+
+            if (state == null) {
+                return;
+            }
             DecimalType batteryLevel = state.getBatteryLevel();
             if (batteryLevel != null) {
                 updateState(CHANNEL_BATTERY_LEVEL, batteryLevel);

@@ -118,6 +118,7 @@ class LxControlLightControllerV2 extends LxControl {
     @Override
     public void initialize(LxControlConfig config) {
         super.initialize(config);
+        tags.add("Scene");
         // add only channel, state description will be added later when a control state update message is received
         channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL),
                 defaultChannelLabel, "Light controller V2", tags, this::handleCommands, this::getChannelState);
@@ -147,7 +148,7 @@ class LxControlLightControllerV2 extends LxControl {
             }
         }
         return UnDefType.UNDEF;
-    };
+    }
 
     /**
      * Get configured and active moods from a new state value received from the Miniserver
@@ -233,7 +234,7 @@ class LxControlLightControllerV2 extends LxControl {
         for (LxControlMood mood : array) {
             Integer id = mood.getId();
             if (id != null && mood.getName() != null) {
-                logger.debug("Adding mood {} (id={}, name={})", id, mood.getName());
+                logger.debug("Adding mood (id={}, name={})", id, mood.getName());
                 // mood-UUID = <controller-UUID>-M<mood-ID>
                 LxUuid moodUuid = new LxUuid(getUuid().toString() + "-M" + id);
                 mood.initialize(getConfig(), this, moodUuid);

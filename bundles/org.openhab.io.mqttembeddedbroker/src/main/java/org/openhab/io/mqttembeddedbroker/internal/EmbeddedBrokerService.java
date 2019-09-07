@@ -14,6 +14,8 @@ package org.openhab.io.mqttembeddedbroker.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -179,8 +181,9 @@ public class EmbeddedBrokerService
         if (!config.persistenceFile.isEmpty()) {
             final String persistenceFilename = config.persistenceFile;
             if (!Paths.get(persistenceFilename).isAbsolute()) {
-                this.persistenceFilename = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath()
-                        .resolve(persistenceFilename).toString();
+                Path path = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath();
+                Files.createDirectories(path);
+                this.persistenceFilename = path.resolve(persistenceFilename).toString();
             }
 
             logger.info("Broker persistence file: {}", persistenceFilename);
@@ -335,6 +338,8 @@ public class EmbeddedBrokerService
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         if (state == MqttConnectionState.CONNECTED) {
             logger.debug("Embedded broker connection connected");
+        } else if (state == MqttConnectionState.CONNECTING) {
+            logger.debug("Embedded broker connection still connecting");
         } else {
             if (error == null) {
                 logger.warn("Embedded broker offline - Reason unknown");
@@ -369,7 +374,6 @@ public class EmbeddedBrokerService
                 connectionStateChanged(MqttConnectionState.DISCONNECTED, new TimeoutException("Timeout"));
             }
         });
-
     }
 
     public @Nullable MqttBrokerConnection getConnection() {

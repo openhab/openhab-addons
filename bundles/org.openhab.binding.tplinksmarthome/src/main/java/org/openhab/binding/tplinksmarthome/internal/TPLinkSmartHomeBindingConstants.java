@@ -39,14 +39,14 @@ public final class TPLinkSmartHomeBindingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_TEMPERATURE = "colorTemperature";
-    public static final int COLOR_TEMPERATURE_LB120_MIN = 2700;
-    public static final int COLOR_TEMPERATURE_LB120_MAX = 6500;
-    public static final int COLOR_TEMPERATURE_LB130_MIN = 2500;
-    public static final int COLOR_TEMPERATURE_LB130_MAX = 9000;
+    public static final String CHANNEL_COLOR_TEMPERATURE_ABS = "colorTemperatureAbs";
+    public static final int COLOR_TEMPERATURE_1_MIN = 2700;
+    public static final int COLOR_TEMPERATURE_1_MAX = 6500;
+    public static final int COLOR_TEMPERATURE_2_MIN = 2500;
+    public static final int COLOR_TEMPERATURE_2_MAX = 9000;
 
-    public static final Set<String> CHANNELS_BULB_SWITCH = Stream
-            .of(CHANNEL_BRIGHTNESS, CHANNEL_COLOR, CHANNEL_COLOR_TEMPERATURE, CHANNEL_SWITCH)
-            .collect(Collectors.toSet());
+    public static final Set<String> CHANNELS_BULB_SWITCH = Stream.of(CHANNEL_BRIGHTNESS, CHANNEL_COLOR,
+            CHANNEL_COLOR_TEMPERATURE, CHANNEL_COLOR_TEMPERATURE_ABS, CHANNEL_SWITCH).collect(Collectors.toSet());
 
     // List of all energy channel ids
     public static final String CHANNEL_ENERGY_POWER = "power";
@@ -84,6 +84,9 @@ public final class TPLinkSmartHomeBindingConstants {
     public static final String PROPERTY_FEATURE = "feature";
     public static final String PROPERTY_PROTOCOL_NAME = "protocol name";
     public static final String PROPERTY_PROTOCOL_VERSION = "protocol version";
+
+    public static final int FORCED_REFRESH_BOUNDERY_SECONDS = 60;
+    public static final int FORCED_REFRESH_BOUNDERY_SWITCHED_SECONDS = 5;
 
     private TPLinkSmartHomeBindingConstants() {
         // Constants class

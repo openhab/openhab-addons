@@ -149,7 +149,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
                 // websocket connect will be done in lifetime handler
                 return;
             } catch (Exception e) {
-                logger.warn("Cannot connect to websocket remote control interface: " + e.getMessage());
+                logger.warn("Cannot connect to websocket remote control interface: {}", e.getMessage(), e);
                 throw new RemoteControllerException(e);
             }
         }

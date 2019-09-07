@@ -81,7 +81,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     public void activate(@Nullable Map<String, @Nullable Object> config) {
         super.activate(config);
         modified(config);
-    };
+    }
 
     @Override
     @Modified

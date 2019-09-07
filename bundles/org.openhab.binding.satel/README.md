@@ -13,14 +13,15 @@ This binding supports following thing types:
 
 | Thing type | Description                                                                                                                              |
 |------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| ethm-1     | Ethernet bridge, supports [ETHM-1](https://www.satel.pl/pl/product/115/) and [ETHM-1 Plus](https://www.satel.pl/pl/product/698/) modules |
-| int-rs     | RS-232 bridge, supports [INT-RS](https://www.satel.pl/pl/product/123/) and [INT-RS Plus](https://www.satel.pl/pl/product/664/) modules   |
+| ethm-1     | Ethernet bridge, supports [ETHM-1](https://www.satel.pl/en/product/115/) and [ETHM-1 Plus](https://www.satel.pl/en/product/698/) modules |
+| int-rs     | RS-232 bridge, supports [INT-RS](https://www.satel.pl/en/product/123/) and [INT-RS Plus](https://www.satel.pl/en/product/664/) modules   |
 | partition  | Set of zones representing some physical area or logical relation                                                                         |
 | zone       | A physical device: reed switch, motion sensor or a virtual zone                                                                          |
 | output     | An output defined in the system                                                                                                          |
 | shutter    | Two outputs that control a roller shutter, one for "up" direction, another one for "down"                                                |
 | system     | A virtual thing describing general status of the alarm system                                                                            |
 | event-log  | A virtual thing that allows reading records from the alarm system event log                                                              |
+| atd-100    | Wireless temperature detector [ATD-100](https://www.satel.pl/en/produktid/503)                                                           |
 
 
 ## Discovery
@@ -86,10 +87,11 @@ Thing partition partition1 [ id=1, forceArming=true ]
 
 You can configure the following settings for a zone:
 
-| Name        | Required | Description                    |
-|-------------|----------|--------------------------------|
-| id          | yes      | Zone number                    |
-| invertState | no       | Changes active (ON) state to 0 |
+| Name        | Required | Description                                                              |
+|-------------|----------|--------------------------------------------------------------------------|
+| id          | yes      | Zone number                                                              |
+| invertState | no       | Changes active (ON) state to 0                                           |
+| wireless    | no       | This zone is monitored by a wireless detector like APD-100, AFD-100, etc |
 
 Example:
 
@@ -101,16 +103,17 @@ Thing zone zone1 [ id=1 ]
 
 You can configure the following settings for an output:
 
-| Name        | Required | Description                                               |
-|-------------|----------|-----------------------------------------------------------|
-| id          | yes      | Output number                                             |
-| invertState | no       | Changes active (ON) state to 0                            |
-| commandOnly | no       | Accepts commands only, does not update state of the thing |
+| Name        | Required | Description                                                           |
+|-------------|----------|-----------------------------------------------------------------------|
+| id          | yes      | Output number                                                         |
+| invertState | no       | Changes active (ON) state to 0                                        |
+| commandOnly | no       | Accepts commands only, does not update state of the thing             |
+| wireless    | no       | This output controls a wireless device like ASP-100 R, ASW-100 E, etc |
 
 Example:
 
 ```
-Thing output output1 [ id=1, invertState=true ]
+Thing output output1 [ id=1, invertState=true, wireless=false ]
 ```
 
 ### shutter
@@ -149,6 +152,21 @@ Example:
 Thing event-log EventLog [ ]
 ```
 
+### atd-100
+
+You can configure the following settings for this thing:
+
+| Name    | Required | Description                                                |
+|---------|----------|------------------------------------------------------------|
+| id      | yes      | Zone number in the alarm system monitored by this detector |
+| refresh | no       | Polling interval in minutes, defaults to 15                |
+
+Example:
+
+```
+Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
+```
+
 ## Channels
 
 ### partition
@@ -176,26 +194,30 @@ Thing event-log EventLog [ ]
 
 ### zone
 
-| Name                   | Type   | Description            |
-|------------------------|--------|------------------------|
-| violation              | Switch | Violation              |
-| tamper                 | Switch | Tamper                 |
-| alarm                  | Switch | Alarm                  |
-| tamper_alarm           | Switch | Tamper alarm           |
-| alarm_memory           | Switch | Alarm memory           |
-| tamper_alarm_memory    | Switch | Tamper alarm memory    |
-| bypass                 | Switch | Bypass                 |
-| no_violation_trouble   | Switch | No violation trouble   |
-| long_violation_trouble | Switch | Long violation trouble |
-| isolate                | Switch | Isolate                |
-| masked                 | Switch | Masked                 |
-| masked_memory          | Switch | Masked memory          |
+| Name                   | Type   | Description                                               |
+|------------------------|--------|-----------------------------------------------------------|
+| violation              | Switch | Violation                                                 |
+| tamper                 | Switch | Tamper                                                    |
+| alarm                  | Switch | Alarm                                                     |
+| tamper_alarm           | Switch | Tamper alarm                                              |
+| alarm_memory           | Switch | Alarm memory                                              |
+| tamper_alarm_memory    | Switch | Tamper alarm memory                                       |
+| bypass                 | Switch | Bypass                                                    |
+| no_violation_trouble   | Switch | No violation trouble                                      |
+| long_violation_trouble | Switch | Long violation trouble                                    |
+| isolate                | Switch | Isolate                                                   |
+| masked                 | Switch | Masked                                                    |
+| masked_memory          | Switch | Masked memory                                             |
+| device_lobatt          | Switch | Indicates low battery level in the wireless device        |
+| device_nocomm          | Switch | Indicates communication troubles with the wireless device |
 
 ### output
 
-| Name  | Type   | Description         |
-|-------|--------|---------------------|
-| state | Switch | State of the output |
+| Name          | Type   | Description                                               |
+|---------------|--------|-----------------------------------------------------------|
+| state         | Switch | State of the output                                       |
+| device_lobatt | Switch | Indicates low battery level in the wireless device        |
+| device_nocomm | Switch | Indicates communication troubles with the wireless device |
 
 ### shutter
 
@@ -226,6 +248,14 @@ Thing event-log EventLog [ ]
 | description | String   | Textual description of the event.                                                      |
 | details     | String   | Details about the event, usually list of objects related to the event.                 |
 
+### atd-100
+
+| Name          | Type               | Description                                               |
+|---------------|--------------------|-----------------------------------------------------------|
+| temperature   | Number:Temperature | Current temperature in the zone                           |
+| device_lobatt | Switch             | Indicates low battery level in the wireless device        |
+| device_nocomm | Switch             | Indicates communication troubles with the wireless device |
+
 ## Full Example
 
 ### satel.things
@@ -239,6 +269,8 @@ Bridge satel:ethm-1:home [ host="192.168.0.2", refresh=1000, userCode="1234", en
     Thing shutter KitchenWindow [ upId=2, downId=3 ]
     Thing system System [ ]
     Thing event-log EventLog [ ]
+    Thing output Siren [ id=17, wireless=true ]
+    Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
 }
 ```
 
@@ -263,6 +295,11 @@ Number EVENT_LOG_PREV "Event log - previous index [%d]" (Satel) { channel="satel
 DateTime EVENT_LOG_TIME "Event log - time [%1$tF %1$tR]" (Satel) { channel="satel:event-log:home:EventLog:timestamp" }
 String EVENT_LOG_DESCR "Event log - description [%s]" (Satel) { channel="satel:event-log:home:EventLog:description" }
 String EVENT_LOG_DET "Event log - details [%s]" (Satel) { channel="satel:event-log:home:EventLog:details" }
+Switch SIREN_LOBATT "Siren: low battery level" (Satel) { channel="satel:output:home:Siren:device_lobatt" }
+Switch SIREN_NOCOMM "Siren: no communication" (Satel) { channel="satel:output:home:Siren:device_nocomm" }
+Number:Temperature KITCHEN_TEMP "Kitchen temperature [%.1f °C]" <temperature> (Satel) { channel="satel:atd-100:home:KitchenTemp:temperature" }
+Switch KITCHEN_TEMP_LOBATT "Kitchen sensor: low battery" (Satel) { channel="satel:atd-100:home:KitchenTemp:device_lobatt" }
+Switch KITCHEN_TEMP_NOCOMM "Kitchen sensor: no communication" (Satel) { channel="satel:atd-100:home:KitchenTemp:device_nocomm" }
 ```
 
 ### satel.sitemap
@@ -277,10 +314,15 @@ Frame label="Alarm system" {
         Switch item=LIVING_ALARM
         Switch item=BEDROOM_TAMPER
         Switch item=BEDROOM_TAMPER_M
+        Switch item=SIREN_LOBATT
+        Switch item=SIREN_NOCOMM
     }
     Frame label="Kitchen" {
         Switch item=KITCHEN_LAMP
         Rollershutter item=KITCHEN_BLIND
+        Text item=KITCHEN_TEMP
+        Switch item=KITCHEN_TEMP_LOBATT
+        Switch item=KITCHEN_TEMP_NOCOMM
     }
     Text label="Keypad" icon="settings" {
         Switch item=KEYPAD_CHAR mappings=[ "1"="1", "2"="2", "3"="3" ]

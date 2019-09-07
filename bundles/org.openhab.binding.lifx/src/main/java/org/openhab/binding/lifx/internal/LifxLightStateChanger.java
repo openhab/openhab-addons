@@ -137,7 +137,7 @@ public class LifxLightStateChanger implements LifxLightStateListener {
         } finally {
             lock.unlock();
         }
-    };
+    }
 
     public void start() {
         try {

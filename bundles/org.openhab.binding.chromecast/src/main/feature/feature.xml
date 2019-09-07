@@ -5,11 +5,9 @@
     <feature name="openhab-binding-chromecast" description="Chromecast Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.8</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.8</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.8</bundle>
+        <feature dependency="true">openhab.tp-jackson</feature>
         <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/2.6.0</bundle>
-        <bundle dependency="true">mvn:su.litvak.chromecast/api-v2/0.11.0</bundle>
+        <bundle dependency="true">mvn:su.litvak.chromecast/api-v2/0.11.1</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.chromecast/${project.version}</bundle>
     </feature>
 </features>

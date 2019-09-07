@@ -31,7 +31,7 @@ Optionally one can specify:
 - `transform` - A [transformation](https://www.openhab.org/docs/configuration/transformations.html) to apply on the execution result,
 - `interval` - An interval, in seconds, the command will be repeatedly executed. Default is 60 seconds, set to 0 to avoid repetition.
 - `timeout` - A time-out, in seconds, the execution of the command will time out, and lastly,
-- `autorun` - A boolean parameter to make the command execute immediately every time the state of the input channel has changed.
+- `autorun` - A boolean parameter to make the command execute immediately every time the input channel is sent a command.
 
 For each command a separate Thing has to be defined.
 
@@ -44,8 +44,9 @@ The `command` itself can be enhanced using the well known syntax of the [Java fo
 The following parameters are automatically added:
 
 -   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
--   the current State of the input channel (see below, example: `%2$s`)
+-   the current (or last) command to the input channel (see below, example: `%2$s`)
 
+note - if you trigger execution using autorun or the run channel, the %2 substitution will use the most recent command sent to the input channel.
 
 ## Channels
 
@@ -73,21 +74,19 @@ Thing exec:command:myscript [command="php ./configurations/scripts/script.php %2
 
 ```java
 String APCRaw "[%s]" (All) {channel="exec:command:apc:output"}
-String APCRunning {channel="exec:command:apc:run"}
-String APCExitValue {channel="exec:command:apc:exit"}
-String APCLastExecution {channel="exec:command:apc:lastexecution"}
+Switch APCRunning {channel="exec:command:apc:run"}
+Number APCExitValue "[%d]" {channel="exec:command:apc:exit"}
+DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 ```
 
 ## Full Example
 
-Following is an example how to set up an exec command thing, debug it with a rule and set the returned string to an Number Item. 
-
-**For this to work also the openHAB RegEx Transformation has to be installed**
+Following is an example how to set up an exec command thing, pass it a parameter, debug it with a rule and set the returned string to an Number Item. 
 
 **demo.things**
 
 ```java
-// "%2$s" will be replace by the input channel, this makes it possible to use one command line with different arguments.
+// "%2$s" will be replace by the input channel command, this makes it possible to use one command line with different arguments.
 // e.g: "ls" as <YOUR COMMAND> and "-a" or "-l" as additional argument set to the input channel in the rule.
 Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, autorun=false ]
 ```
@@ -99,11 +98,11 @@ Switch YourTrigger
 Number YourNumber "Your Number [%.1f °C]"
 
 // state of the execution, is running or finished
-Switch yourcommand {channel="exec:command:yourcommand:run"}
+Switch yourcommand_Run {channel="exec:command:yourcommand:run", autoupdate="false"}
 // Arguments to be placed for '%2$s' in command line
 String yourcommand_Args {channel="exec:command:yourcommand:input"}
 // Output of command line execution 
-String yourcommand_out {channel="exec:command:yourcommand:output"}
+String yourcommand_Out {channel="exec:command:yourcommand:output"}
 ```
 
 **demo.sitemap**
@@ -122,34 +121,34 @@ sitemap demo label="Your Value"
 **demo.rules**
 
 ```java
-rule "Your Execution"
-  when
-     Item YourTrigger changed
-  then
-        if(YourTrigger.state == ON){
-                yourcommand_Args.sendCommand("Additional Argument to command line for ON")
-        }else{
-                yourcommand_Args.sendCommand("Additional Argument to command line for OFF")
-        }
+rule "begin your execution"
+when
+   Item YourTrigger changed
+then
+      // here we can take different actions according to source Item
+   if(YourTrigger.state == ON){
+      yourcommand_Args.sendCommand("Additional Argument to command line for ON")
+   }else{
+      yourcommand_Args.sendCommand("Additional Argument to command line for OFF")
+   }
 
-      // wait for the command to complete
-      // State will be NULL if not used before or ON while command is executed
-      while(yourcommand.state != OFF){
-         Thread::sleep(500)
-      }
-      
-      // Trigger execution
-      yourcommand.sendCommand(ON)
-      
-      // Logging of command line result
-      logInfo("Your command exec", "Result:" + yourcommand_out.state )
-      
+      // Trigger execution (if autorun false)
+   yourcommand_Run.sendCommand(ON)
+      // the Run indicator state will go ON shortly, and return OFF when script finished
+end
+
+
+rule "process your results"
+when
+   Item yourcommand_Run changed from ON to OFF
+then
+      // Logging of raw command line result
+   logInfo("Your command exec", "Result:" + yourcommand_Out.state )
       // If the returned string is just a number it can be parsed
       // If not a regex or another transformation can be used
-      YourNumber.postUpdate(
-            (Integer::parseInt(yourcommand_out.state.toString) as Number )
-      )
+   YourNumber.postUpdate(Integer::parseInt(yourcommand_Out.state.toString) as Number)
 end
+
 ```
 
 ## Source

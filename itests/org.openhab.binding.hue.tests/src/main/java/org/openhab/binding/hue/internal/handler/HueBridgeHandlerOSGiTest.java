@@ -80,7 +80,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
             @Override
             public String link(String deviceType) throws IOException, ApiException {
                 return TEST_USER_NAME;
-            };
+            }
         });
 
         hueBridgeHandler.onNotAuthenticated();
@@ -102,7 +102,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
         injectBridge(hueBridgeHandler, new HueBridge(DUMMY_HOST, 80, HTTP, scheduler) {
             @Override
             public void authenticate(String userName) throws IOException, ApiException {
-            };
+            }
         });
 
         hueBridgeHandler.onNotAuthenticated();
@@ -125,7 +125,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
             @Override
             public void authenticate(String userName) throws IOException, ApiException {
                 throw new UnauthorizedException();
-            };
+            }
         });
 
         hueBridgeHandler.onNotAuthenticated();
@@ -149,7 +149,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
             @Override
             public String link(String deviceType) throws IOException, ApiException {
                 throw new LinkButtonException();
-            };
+            }
         });
 
         hueBridgeHandler.onNotAuthenticated();
@@ -173,7 +173,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
             @Override
             public String link(String deviceType) throws IOException, ApiException {
                 throw new ApiException();
-            };
+            }
         });
 
         hueBridgeHandler.onNotAuthenticated();

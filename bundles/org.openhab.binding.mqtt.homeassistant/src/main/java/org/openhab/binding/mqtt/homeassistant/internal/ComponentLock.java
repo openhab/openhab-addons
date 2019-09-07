@@ -40,7 +40,7 @@ public class ComponentLock extends AbstractComponent<ComponentLock.ChannelConfig
         protected String payload_lock = "LOCK";
         protected String payload_unlock = "UNLOCK";
         protected @Nullable String command_topic;
-    };
+    }
 
     public ComponentLock(CFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);

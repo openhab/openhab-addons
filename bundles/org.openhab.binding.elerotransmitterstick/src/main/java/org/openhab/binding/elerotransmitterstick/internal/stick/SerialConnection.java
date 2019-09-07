@@ -68,7 +68,7 @@ public class SerialConnection {
                                     parseInput();
                                 }
                             } catch (IOException ex) {
-                                logger.error("elerotransmitterstick", "IOException reading from port {}!", portName);
+                                logger.warn("IOException reading from port {}!", portName);
                             }
                         }
                     });

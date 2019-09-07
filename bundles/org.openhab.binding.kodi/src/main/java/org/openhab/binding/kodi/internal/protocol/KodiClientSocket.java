@@ -76,7 +76,7 @@ public class KodiClientSocket {
      */
     public synchronized void open() throws IOException {
         if (isConnected()) {
-            logger.warn("connect: connection is already open");
+            logger.warn("open: connection is already open");
         }
         KodiWebSocketListener socket = new KodiWebSocketListener();
         ClientUpgradeRequest request = new ClientUpgradeRequest();
@@ -107,7 +107,7 @@ public class KodiClientSocket {
 
         @OnWebSocketConnect
         public void onConnect(Session wssession) {
-            logger.debug("Connected to server");
+            logger.trace("Connected to server");
             session = wssession;
             connected = true;
             if (eventHandler != null) {
@@ -123,7 +123,7 @@ public class KodiClientSocket {
 
         @OnWebSocketMessage
         public void onMessage(String message) {
-            logger.debug("Message received from server: {}", message);
+            logger.trace("Message received from server: {}", message);
             final JsonObject json = parser.parse(message).getAsJsonObject();
             if (json.has("id")) {
                 int messageId = json.get("id").getAsInt();
@@ -132,7 +132,7 @@ public class KodiClientSocket {
                     commandLatch.countDown();
                 }
             } else {
-                logger.debug("Event received from server: {}", json);
+                logger.trace("Event received from server: {}", json);
                 if (eventHandler != null) {
                     scheduler.submit(() -> {
                         try {
@@ -148,7 +148,7 @@ public class KodiClientSocket {
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
-            logger.debug("Closing a WebSocket due to {}", reason);
+            logger.trace("Closing a WebSocket due to {}", reason);
             session = null;
             connected = false;
             if (eventHandler != null) {
@@ -164,6 +164,7 @@ public class KodiClientSocket {
 
         @OnWebSocketError
         public void onError(Throwable error) {
+            logger.trace("Error occured: {}", error.getMessage());
             onClose(0, error.getMessage());
         }
 
@@ -171,10 +172,10 @@ public class KodiClientSocket {
 
     private void sendMessage(String str) throws IOException {
         if (isConnected()) {
-            logger.debug("send message: {}", str);
+            logger.trace("send message: {}", str);
             session.getRemote().sendString(str);
         } else {
-            throw new IOException("socket not initialized");
+            throw new IOException("Socket not initialized");
         }
     }
 
@@ -201,7 +202,7 @@ public class KodiClientSocket {
 
             sendMessage(message);
             if (commandLatch.await(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
-                logger.debug("callMethod returns {}", commandResponse);
+                logger.debug("callMethod returns: {}", commandResponse);
                 if (commandResponse.has("result")) {
                     return commandResponse.get("result");
                 } else {
@@ -213,8 +214,8 @@ public class KodiClientSocket {
                 logger.debug("Timeout during callMethod({}, {})", methodName, params);
                 return null;
             }
-        } catch (Exception e) {
-            logger.debug("Error during callMethod({}): {}", methodName, e.getMessage(), e);
+        } catch (IOException | InterruptedException e) {
+            logger.debug("Error during callMethod({}, {}): {}", methodName, params, e.getMessage(), e);
             return null;
         }
     }

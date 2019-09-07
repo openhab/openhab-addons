@@ -172,6 +172,7 @@ It will be configured at runtime by using the save channel to store the current 
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider
 | playMusicVoiceCommand | String      | W           | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W           | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
+| announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
 | textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
@@ -185,9 +186,9 @@ It will be configured at runtime by using the save channel to store the current 
 | playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
 | powerState            | Switch      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the state (ON/OFF) of your device
 | brightness[^1]        | Dimmer      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the brightness of your lamp
-| color[^1]             | Color       | R         | smartHomeDevice, smartHomeDeviceGroup | Shows the color of your light
+| color[^1]             | Color       | R           | smartHomeDevice, smartHomeDeviceGroup | Shows the color of your light
 | colorName[^1]         | String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the color name of your light (groups are not able to show their color)
-| colorTemperatureName[^1]| String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | White temperatures name of your lights (groups are not able to show their color)
+| colorTemperatureName[^1]| String    | R/W         | smartHomeDevice, smartHomeDeviceGroup | White temperatures name of your lights (groups are not able to show their color)
 | armState[^1]          | String      | R/W         | smartHomeDevice, smartHomeDeviceGroup | State of your alarm guard. Options: ARMED_AWAY, ARMED_STAY, ARMED_NIGHT, DISARMED (groups are not able to show their state)
 
 [^1]: The availability is depending on the device capabilities.
@@ -272,6 +273,7 @@ Switch Echo_Living_Room_Bluetooth             "Bluetooth"             <bluetooth
 String Echo_Living_Room_BluetoothDeviceName   "Bluetooth Device"      <bluetooth>     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:bluetoothDeviceName"}
 
 // Commands
+String Echo_Living_Room_Announcement          "Announcement"                          (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:announcement"}
 String Echo_Living_Room_TTS                   "Text to Speech"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeech"}
 Dimmer Echo_Living_Room_TTS_Volume            "Text to Speech Volume"                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeechVolume"}
 String Echo_Living_Room_Remind                "Remind"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:remind"}
@@ -422,6 +424,41 @@ when
     Item Door_Contact changed to OPEN
 then
     Echo_Living_Room_TTS.sendCommand('<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect>.Can you believe it?</speak>')
+end
+```
+
+### Show an announcement on the echo show or echo spot:
+
+1) Create a rule with a trigger of your choice
+
+Simple:
+
+```php
+rule "Say welcome if the door opens"
+when
+    Item Door_Contact changed to OPEN
+then
+    Echo_Living_Room_Announcement.sendCommand('Door opened')
+end
+```
+
+Expert:
+You can use a json formatted string to control the title and the sound:
+
+```php
+{ "sound": true, "speak":"<Speak>" "title": "<Title>", "body": "<Body Text>"}
+```
+
+The combination of sound=true and speak in SSML syntax is not allowed
+
+Note: If you turn off the sound and alexa is playing music, it will anyway turn down the volume for a moment. This behavior can not be changed.
+
+```php
+rule "Say welcome if the door opens"
+when
+    Item Door_Contact changed to OPEN
+then
+    Echo_Living_Room_Announcement.sendCommand('{ "sound": false, "title": "Doorstep", "body": "Door opened"}')
 end
 ```
 

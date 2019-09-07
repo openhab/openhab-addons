@@ -1,6 +1,10 @@
 # Somfy Tahoma Binding
 
-This binding integrates the [Somfy Tahoma](https://www.somfy.fr/produits/domotique/maison-connectee-tahoma) and [Somfy Connexoon](https://www.somfy.fr/produits/domotique/equipements-connectes-connexoon) home automation systems.
+This binding integrates the
+[Somfy Tahoma](https://www.somfy.fr/produits/1811478/)
+and
+[Somfy Connexoon](https://www.somfy.fr/produits/1811429/)
+home automation systems.
 
 ## Supported Things
 
@@ -93,7 +97,7 @@ When roller shutter-like thing receives STOP command two possible behaviours are
 .things file
 
 ```
-Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com", password="MyPassword", refresh=30 ] {
+Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com", password="MyPassword", refresh=10 , statusTimeout=30] {
     Thing gateway 1214-4519-8041 "Tahoma gateway" [ id="1214-4519-8041" ]
     Thing rollershutter 31da8dac-8e09-455a-bc7a-6ed70f740001 "Bedroom" [ url="io://0204-1234-8041/6825356" ]
     Thing rollershutter 87bf0403-a45d-4037-b874-28f4ece30004 "Living room" [ url="io://0204-1234-8041/3832644" ]

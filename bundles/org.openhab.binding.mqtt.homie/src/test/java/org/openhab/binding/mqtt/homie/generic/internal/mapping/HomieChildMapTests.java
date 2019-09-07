@@ -69,7 +69,7 @@ public class HomieChildMapTests {
         public CompletableFuture<Void> apply(Node t) {
             return CompletableFuture.completedFuture(null);
         }
-    };
+    }
 
     @Test
     public void testArrayToSubtopicCreateAndRemove() {

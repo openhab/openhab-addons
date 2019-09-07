@@ -85,7 +85,7 @@ public class SatelEventLogHandler extends SatelThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("New command for {}: {}", channelUID, command.toFullString());
+        logger.debug("New command for {}: {}", channelUID, command);
 
         if (bridgeHandler != null && CHANNEL_INDEX.equals(channelUID.getId()) && command instanceof DecimalType) {
             int eventIndex = ((DecimalType) command).intValue();

@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
-
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * Base class for RFXCOM data classes. All other data classes should extend this class.
@@ -39,7 +38,14 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         LIGHTING5(20),
         LIGHTING6(21),
         CHIME(22),
-        FAN(23),
+        FAN(23, RFXComFanMessage.SubType.LUCCI_AIR_FAN, RFXComFanMessage.SubType.WESTINGHOUSE_7226640, RFXComFanMessage.SubType.CASAFAN),
+        FAN_SF01(23, RFXComFanMessage.SubType.SF01),
+        FAN_ITHO(23, RFXComFanMessage.SubType.CVE_RFT),
+        FAN_LUCCI_DC(23, RFXComFanMessage.SubType.LUCCI_AIR_DC),
+        FAN_LUCCI_DCII(23, RFXComFanMessage.SubType.LUCCI_AIR_DCII),
+        FAN_SEAV(23, RFXComFanMessage.SubType.SEAV_TXS4),
+        FAN_FT1211R(23, RFXComFanMessage.SubType.FT1211R),
+        FAN_FALMEC(23, RFXComFanMessage.SubType.FALMEC),
         CURTAIN1(24),
         BLINDS1(25),
         RFY(26),
@@ -79,9 +85,11 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         IO_LINES(128);
 
         private final int packetType;
+        private final ByteEnumWrapper[] subTypes;
 
-        PacketType(int packetType) {
+        PacketType(int packetType, ByteEnumWrapper ... subTypes) {
             this.packetType = packetType;
+            this.subTypes = subTypes;
         }
 
         @Override
@@ -112,7 +120,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         rawMessage = data;
 
         packetId = data[1];
-        packetType = fromByte(PacketType.class, data[1]);
+        packetType = fromByte(data[1], data[2]);
         subType = data[2];
         seqNbr = data[3];
         id1 = data[4];
@@ -120,6 +128,25 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         if (data.length > 5) {
             id2 = data[5];
         }
+    }
+
+    private PacketType fromByte(byte packetId, byte subType) throws RFXComUnsupportedValueException {
+            for (PacketType enumValue : PacketType.values()) {
+                if (enumValue.toByte() == packetId) {
+                    // if there are no subtypes?
+                    if (enumValue.subTypes.length == 0) {
+                        return enumValue;
+                    }
+                    // otherwise check for the matching subType
+                    for (ByteEnumWrapper e: enumValue.subTypes){
+                        if (e.toByte() == subType) {
+                            return enumValue;
+                        }
+                    }
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(PacketType.class, packetId);
     }
 
     public PacketType getPacketType() {

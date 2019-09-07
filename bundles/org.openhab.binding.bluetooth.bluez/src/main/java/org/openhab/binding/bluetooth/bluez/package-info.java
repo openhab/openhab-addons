@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-@org.osgi.annotation.bundle.Header(name = org.osgi.framework.Constants.BUNDLE_NATIVECODE, value = "lib/armv6hf/libjavatinyb.so;lib/armv6hf/libtinyb.so;processor=arm;osname=linux")
+@org.osgi.annotation.bundle.Header(name = org.osgi.framework.Constants.BUNDLE_NATIVECODE, value = "lib/armv6hf/libjavatinyb.so;lib/armv6hf/libtinyb.so;processor=arm;osname=linux,*")
 package org.openhab.binding.bluetooth.bluez;
 
 /**

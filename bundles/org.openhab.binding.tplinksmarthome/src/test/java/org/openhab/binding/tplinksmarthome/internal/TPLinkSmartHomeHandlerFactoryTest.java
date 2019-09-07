@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.DimmerDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.EnergySwitchDevice;
+import org.openhab.binding.tplinksmarthome.internal.device.PowerStripDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.RangeExtenderDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
 import org.openhab.binding.tplinksmarthome.internal.handler.SmartHomeHandler;
@@ -53,6 +54,7 @@ public class TPLinkSmartHomeHandlerFactoryTest {
             { "hs110", EnergySwitchDevice.class },
             { "hs200", SwitchDevice.class },
             { "hs220", DimmerDevice.class },
+            { "hs300", PowerStripDevice.class },
             { "lb100", BulbDevice.class },
             { "lb120", BulbDevice.class },
             { "lb130", BulbDevice.class },

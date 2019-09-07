@@ -159,5 +159,5 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
 
     private int getType() {
         return this.applianceType;
-    };
+    }
 }
