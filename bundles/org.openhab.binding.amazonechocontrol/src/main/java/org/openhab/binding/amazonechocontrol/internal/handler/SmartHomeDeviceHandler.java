@@ -172,7 +172,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             Map<String, JsonArray> applianceIdToCapabilityStates) {
         SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
         if (smartHomeBaseDevice == null) {
-            updateStatus(ThingStatus.UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             return;
         }
         Boolean power = null;
