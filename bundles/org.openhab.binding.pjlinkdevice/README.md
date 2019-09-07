@@ -30,11 +30,11 @@ The *pjLinkDevice* thing type has the following parameters:
 | ipAddress             | the IPv4 address of the device  **Mandatory**                                                                                                                |
 | tcpPort               | the listening TCP port of the devices. *Optional, the default value is 4352*                                                                                 |
 | adminPassword         | the PJLink password of the device (should be left empty for devices without authentication). *Optional*                                                      |
-| refresh               | the polling interval (in seconds) to update the channel values from the device, can be set to 0 to disable polling. *Optional, the default value is 5*       |
+| refreshInterval       | the polling interval (in seconds) to update the channel values from the device, can be set to 0 to disable polling. *Optional, the default value is 5*       |
 | refreshPower          | enables polling of the power status. *Optional, the default value is false*                                                                                  |
 | refreshMute           | enables polling of the mute status. *Optional, the default value is false*                                                                                   |
 | refreshInputChannel   | enables polling of the selected input channel. *Optional, the default value is false*                                                                        |
-| autoReconnectPeriod   | seconds between connection retries when connection to the PJLink device has been lost, 0 means never retry, minimum 30s *Optional, the default value is 60*  |
+| autoReconnectInterval | seconds between connection retries when connection to the PJLink device has been lost, 0 means never retry, minimum 30s *Optional, the default value is 60*  |
 
 
 ## Channels

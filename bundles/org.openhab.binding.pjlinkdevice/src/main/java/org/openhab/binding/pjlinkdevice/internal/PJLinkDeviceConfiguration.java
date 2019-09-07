@@ -27,10 +27,10 @@ public class PJLinkDeviceConfiguration {
 
   public @Nullable String adminPassword;
 
-  public int refresh;
+  public int refreshInterval;
   public boolean refreshPower;
   public boolean refreshMute;
   public boolean refreshInputChannel;
 
-  public int autoReconnectPeriod;
+  public int autoReconnectInterval;
 }

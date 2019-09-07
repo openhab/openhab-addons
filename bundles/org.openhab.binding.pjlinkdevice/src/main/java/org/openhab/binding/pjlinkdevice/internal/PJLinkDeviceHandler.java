@@ -238,9 +238,9 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     this.config = config = getConfigAs(PJLinkDeviceConfiguration.class);
 
-    int autoReconnectPeriod = config.autoReconnectPeriod;
-    if (autoReconnectPeriod != 0 && autoReconnectPeriod < 30) {
-      validationMessages.put("autoReconnectPeriod", "allowed values are 0 (never) or >30");
+    int autoReconnectInterval = config.autoReconnectInterval;
+    if (autoReconnectInterval != 0 && autoReconnectInterval < 30) {
+      validationMessages.put("autoReconnectInterval", "allowed values are 0 (never) or >30");
     }
 
     if (validationMessages.size() > 0) {
@@ -277,8 +277,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   private void handleCommunicationException(Exception e) {
     this.clearRefreshInterval();
     PJLinkDeviceConfiguration config = this.config;
-    if (config != null && config.autoReconnectPeriod > 0) {
-      this.setup(config.autoReconnectPeriod);
+    if (config != null && config.autoReconnectInterval > 0) {
+      this.setup(config.autoReconnectInterval);
     }
     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
   }
@@ -300,8 +300,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     clearRefreshInterval();
     PJLinkDeviceConfiguration config = PJLinkDeviceHandler.this.getConfiguration();
     boolean atLeastOneChannelToBeRefreshed = config.refreshPower || config.refreshMute || config.refreshInputChannel;
-    if (config.refresh > 0 && atLeastOneChannelToBeRefreshed) {
-      refreshJob = scheduler.scheduleWithFixedDelay(() -> refresh(config), 0, config.refresh, TimeUnit.SECONDS);
+    if (config.refreshInterval > 0 && atLeastOneChannelToBeRefreshed) {
+      refreshJob = scheduler.scheduleWithFixedDelay(() -> refresh(config), 0, config.refreshInterval, TimeUnit.SECONDS);
     }
   }
 

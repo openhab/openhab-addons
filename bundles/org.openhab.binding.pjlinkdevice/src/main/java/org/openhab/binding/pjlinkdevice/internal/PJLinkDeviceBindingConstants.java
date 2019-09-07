@@ -43,8 +43,6 @@ public class PJLinkDeviceBindingConstants {
   // configuration
   public static final String PARAMETER_HOSTNAME = "ipAddress";
   public static final String PARAMETER_PORT = "tcpPort";
-  public static final String PARAMETER_PASSWORD = "adminPassword";
-  public static final String PARAMETER_REFRESH = "refresh";
   public static final long DISCOVERY_RESULT_TTL_SECONDS = TimeUnit.MINUTES.toSeconds(10);
 
   // information disclosed by device
