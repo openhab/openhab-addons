@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pixometer"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="energymeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="apiservice" />
+		</supported-bridge-type-refs>
+		<label>Meter</label>
+		<description>Provides data for one specific meter.</description>
+		<channels>
+			<channel id="last_reading_value" typeId="last_reading_value" />
+			<channel id="last_reading_date" typeId="last_reading_date" />
+			<channel id="last_refresh_date" typeId="last_refresh_date" />
+		</channels>
+		<config-description>
+			<parameter name="resource_id" type="text" required="true">
+				<label>Ressource ID</label>
+				<description>The ID which represents the current meter. You can find it in the pixometer browser app while editing a specific meter. It should look like this: "https://pixometer.io/portal/#/meters/XXXXX/edit"</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="last_reading_value">
+		<item-type>Number:Energy</item-type>
+		<label>Last Reading</label>
+		<description>The last value that has been read for this meter.</description>
+		<state pattern="%.1f  %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="last_reading_date">
+		<item-type>DateTime</item-type>
+		<label>Time Of Last Reading</label>
+		<description>The last time that the current meter has been read.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="last_refresh_date">
+		<item-type>DateTime</item-type>
+		<label>Time Of Last Refresh</label>
+		<description>The last time that the thing has been refreshed.</description>
+		<state readOnly="true" />
+	</channel-type>
+</thing:thing-descriptions>

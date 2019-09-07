@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pixometer"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- API Bridge Type -->
+	<bridge-type id="apiservice">
+		<label>Pixometer Api-Service</label>
+		<description>This Api-Service handles your configured meters.</description>
+		<config-description>
+			<parameter name="user" type="text" required="true">
+				<label>Username</label>
+				<description>Your Pixometer Username.</description>
+				<default></default>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Your Pixometer Password.</description>
+				<default></default>
+			</parameter>
+			<parameter name="refresh" type="integer" required="true" min="2">
+				<label>Refresh Time</label>
+				<description>Sets the refresh time. Minimum is 60 Minutes.</description>
+				<default>240</default>
+			</parameter>
+			<parameter name="scope" type="text">
+				<label>Scope</label>
+				<description>The scope (read or write) you want to grant openHAB for api usage.</description>
+				<options>
+					<option value="read">Read only access</option>
+					<!-- Prepared for later usage: <option value="write">Write Access</option> -->
+				</options>
+				<default>read</default>
+			</parameter>
+			<parameter name="access_token" type="text" readOnly="true">
+				<label>Auth Token</label>
+				<description>The currently used auth token.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
