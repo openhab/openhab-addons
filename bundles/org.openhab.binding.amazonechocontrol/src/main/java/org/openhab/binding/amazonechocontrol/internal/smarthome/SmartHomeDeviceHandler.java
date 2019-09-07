@@ -150,6 +150,15 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
     }
 
     public void addChannelToDevice(String channelId, String itemType, ChannelTypeUID channelTypeUID) {
+        Channel channel = getThing().getChannel(channelId);
+        if (channel != null) {
+            if (channelTypeUID.equals(channel.getChannelTypeUID()) && itemType.equals(channel.getAcceptedItemType())) {
+                // channel exist with the same settings
+                return;
+            }
+            // channel exist with other settings, remove it first
+            removeChannelFromDevice(channelId);
+        }
         updateThing(
                 editThing().withChannel(ChannelBuilder.create(new ChannelUID(getThing().getUID(), channelId), itemType)
                         .withType(channelTypeUID).build()).build());

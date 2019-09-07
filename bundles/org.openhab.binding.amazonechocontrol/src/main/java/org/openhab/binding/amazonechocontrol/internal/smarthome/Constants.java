@@ -11,6 +11,7 @@ import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingCo
 public class Constants {
 
     public static Map<String, Function<String, HandlerBase>> HandlerFactory = new HashMap<String, Function<String, HandlerBase>>() {
+        private static final long serialVersionUID = 1L;
         {
             put(HandlerPowerController.INTERFACE, (s) -> new HandlerPowerController());
             put(HandlerBrightnessController.INTERFACE, (s) -> new HandlerBrightnessController());

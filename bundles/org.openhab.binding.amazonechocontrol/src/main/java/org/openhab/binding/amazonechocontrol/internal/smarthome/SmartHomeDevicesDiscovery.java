@@ -17,7 +17,6 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE_GROUP;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,7 +59,6 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
 
     AccountHandler accountHandler;
     private final Logger logger = LoggerFactory.getLogger(SmartHomeDevicesDiscovery.class);
-    private final ArrayList<SmartHomeDevice> smartHomeDevices = new ArrayList<SmartHomeDevice>();
 
     @Nullable
     ScheduledFuture<?> startScanStateJob;
