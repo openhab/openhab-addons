@@ -100,7 +100,6 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
       return;
     }
 
-
     PJLinkDeviceHandler.this.logger.debug("Polling device status...");
     if (config.refreshPower) {
       PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER), RefreshType.REFRESH);
@@ -210,7 +209,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
       try {
         setupDevice();
         handleCommunicationEstablished();
-        
+
         setupRefreshInterval();
 
         logger.trace("device {} setup up successfully", this.getThing().getUID());
@@ -225,24 +224,26 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   }
 
   protected PJLinkDeviceConfiguration getConfiguration() throws ConfigurationException {
+    PJLinkDeviceConfiguration config = this.config;
+    if (config != null) {
+      return config;
+    }
+
     Map<String, String> validationMessages = new HashMap<>();
     try {
       validateConfigurationParameters(getThing().getConfiguration().getProperties());
     } catch (ConfigValidationException e) {
       validationMessages.putAll(e.getValidationMessages());
     }
-    
-    PJLinkDeviceConfiguration config = this.config;
-    if (config == null) {
-      this.config = config = getConfigAs(PJLinkDeviceConfiguration.class);
-    }
+
+    this.config = config = getConfigAs(PJLinkDeviceConfiguration.class);
 
     int autoReconnectPeriod = config.autoReconnectPeriod;
     if (autoReconnectPeriod != 0 && autoReconnectPeriod < 30) {
       validationMessages.put("autoReconnectPeriod", "allowed values are 0 (never) or >30");
     }
 
-    if(validationMessages.size() > 0) {
+    if (validationMessages.size() > 0) {
       String message = validationMessages.entrySet().stream()
           .map((Map.Entry<String, String> a) -> (a.getKey() + ": " + a.getValue())).collect(Collectors.joining("; "));
       throw new ConfigurationException(message);
@@ -276,7 +277,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   private void handleCommunicationException(Exception e) {
     this.clearRefreshInterval();
     PJLinkDeviceConfiguration config = this.config;
-    if(config != null && config.autoReconnectPeriod > 0) {
+    if (config != null && config.autoReconnectPeriod > 0) {
       this.setup(config.autoReconnectPeriod);
     }
     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -331,8 +332,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
       logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_CLASS, e);
     }
     try {
-      device.getErrorStatus()
-        .forEach((k,v) -> properties.put(PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS + k.getCamelCaseText(), v.getText()));
+      device.getErrorStatus().forEach((k, v) -> properties
+          .put(PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS + k.getCamelCaseText(), v.getText()));
     } catch (ResponseException e) {
       logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS, e);
     }
@@ -344,8 +345,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     try {
       properties.put(PJLinkDeviceBindingConstants.PROPERTY_OTHER_INFORMATION, device.getOtherInformation());
     } catch (ResponseException e) {
-      logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_OTHER_INFORMATION,
-          e);
+      logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_OTHER_INFORMATION, e);
     }
 
     updateProperties(properties);

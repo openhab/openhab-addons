@@ -102,7 +102,7 @@ public class PJLinkDevice {
     return reader;
   }
 
-  protected void closeSocket(@Nullable Socket socket)  {
+  protected void closeSocket(@Nullable Socket socket) {
     if (socket != null) {
       try {
         socket.close();
