@@ -94,8 +94,8 @@ public class HandlerSecurityPanelController extends HandlerBase {
     }
 
     @Override
-    public @Nullable StateDescription findStateDescription(Connection connection, String channelUID,
-            StateDescription originalStateDescription, @Nullable Locale locale) {
+    public @Nullable StateDescription findStateDescription(String channelUID, StateDescription originalStateDescription,
+            @Nullable Locale locale) {
         return null;
     }
 }

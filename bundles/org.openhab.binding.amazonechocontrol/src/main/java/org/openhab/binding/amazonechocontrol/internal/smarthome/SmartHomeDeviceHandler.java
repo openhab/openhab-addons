@@ -350,14 +350,10 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
     public @Nullable StateDescription findStateDescription(Channel channel, StateDescription originalStateDescription,
             @Nullable Locale locale) {
-        Connection connection = this.connection;
-        if (connection == null) {
-            return null;
-        }
         String channelId = channel.getUID().getId();
         for (HandlerBase handler : handlers.values()) {
             if (handler.hasChannel(channelId)) {
-                return handler.findStateDescription(connection, channelId, originalStateDescription, locale);
+                return handler.findStateDescription(channelId, originalStateDescription, locale);
             }
         }
         return null;

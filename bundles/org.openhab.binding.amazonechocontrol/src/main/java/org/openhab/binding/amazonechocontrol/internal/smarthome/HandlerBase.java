@@ -35,7 +35,7 @@ public abstract class HandlerBase {
     protected abstract boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException;
 
-    public abstract @Nullable StateDescription findStateDescription(Connection connection, String channelId,
+    public abstract @Nullable StateDescription findStateDescription(String channelId,
             StateDescription originalStateDescription, @Nullable Locale locale);
 
     public boolean hasChannel(String channelId) {

@@ -567,6 +567,12 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="colorTemperatureInKelvin" advanced="false">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<description>The color temperature of the light</description>
+		<state min="1000" max="10000" step="100" pattern="%.1f K" readOnly="false" />
+	</channel-type>
 	<channel-type id="brightness" advanced="false">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>

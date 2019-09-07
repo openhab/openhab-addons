@@ -98,8 +98,8 @@ public class HandlerPowerController extends HandlerBase {
     }
 
     @Override
-    public @Nullable StateDescription findStateDescription(Connection connection, String channelId,
-            StateDescription originalStateDescription, @Nullable Locale locale) {
+    public @Nullable StateDescription findStateDescription(String channelId, StateDescription originalStateDescription,
+            @Nullable Locale locale) {
         return null;
     }
 }

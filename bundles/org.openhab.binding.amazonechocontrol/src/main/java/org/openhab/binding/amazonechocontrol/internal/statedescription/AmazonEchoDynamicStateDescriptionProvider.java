@@ -12,7 +12,14 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.statedescription;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.BINDING_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_AMAZON_MUSIC_PLAY_LIST_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_BLUETHOOTH_MAC;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_CHANNEL_PLAY_ON_DEVICE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_MUSIC_PROVIDER_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_PLAY_ALARM_SOUND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_START_COMMAND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.FLASH_BRIEFING_COMMAND_PREFIX;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,6 +104,9 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
+        if (!BINDING_ID.equals(channel.getChannelTypeUID().getBindingId())) {
+            return null;
+        }
         if (originalStateDescription == null) {
             return null;
         }
@@ -104,6 +114,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         if (thingRegistry == null) {
             return null;
         }
+
         if (CHANNEL_TYPE_BLUETHOOTH_MAC.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {

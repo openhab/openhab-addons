@@ -27,6 +27,9 @@ public class Constants {
     public static final ChannelTypeUID CHANNEL_TYPE_POWER_STATE = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "powerState");
 
+    public static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureInKelvin");
+
     public static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEMPERATURE_NAME = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureName");
 
@@ -43,6 +46,7 @@ public class Constants {
     public static final String ITEM_TYPE_SWITCH = "Switch";
     public static final String ITEM_TYPE_DIMMER = "Dimmer";
     public static final String ITEM_TYPE_STRING = "String";
+    public static final String ITEM_TYPE_NUMBER = "Number";
     public static final String ITEM_TYPE_COLOR = "Color";
 
 }

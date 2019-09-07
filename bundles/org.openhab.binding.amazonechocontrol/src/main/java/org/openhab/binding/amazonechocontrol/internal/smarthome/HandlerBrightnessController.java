@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -46,6 +48,8 @@ public class HandlerBrightnessController extends HandlerBase {
     static final String ITEM_TYPE = ITEM_TYPE_DIMMER;
     // List of all actions
     static final String ACTION = "setBrightness";
+
+    Integer lastBrightness;
 
     @Override
     protected String[] GetSupportedInterface() {
@@ -74,6 +78,9 @@ public class HandlerBrightnessController extends HandlerBase {
                 }
             }
         }
+        if (brightness != null) {
+            lastBrightness = brightness;
+        }
         updateState(CHANNEL_UID, brightness == null ? UnDefType.UNDEF : new PercentType(brightness));
     }
 
@@ -81,9 +88,37 @@ public class HandlerBrightnessController extends HandlerBase {
     protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
         if (channelId.equals(CHANNEL_UID)) {
-
             if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY)) {
-                if (command instanceof PercentType) {
+                if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                    if (lastBrightness != null) {
+                        int newValue = lastBrightness++;
+                        if (newValue > 100) {
+                            newValue = 100;
+                        }
+                        lastBrightness = newValue;
+                        connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, newValue);
+                        return true;
+                    }
+                } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
+                    if (lastBrightness != null) {
+                        int newValue = lastBrightness--;
+                        if (newValue < 0) {
+                            newValue = 0;
+                        }
+                        lastBrightness = newValue;
+                        connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, newValue);
+                        return true;
+                    }
+                } else if (command.equals(OnOffType.OFF)) {
+                    lastBrightness = 0;
+                    connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, 0);
+                    return true;
+                } else if (command.equals(OnOffType.ON)) {
+                    lastBrightness = 100;
+                    connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, 100);
+                    return true;
+                } else if (command instanceof PercentType) {
+                    lastBrightness = ((PercentType) command).intValue();
                     connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY,
                             ((PercentType) command).floatValue() / 100);
                     return true;
@@ -94,8 +129,8 @@ public class HandlerBrightnessController extends HandlerBase {
     }
 
     @Override
-    public @Nullable StateDescription findStateDescription(Connection connection, String channelId,
-            StateDescription originalStateDescription, @Nullable Locale locale) {
+    public @Nullable StateDescription findStateDescription(String channelId, StateDescription originalStateDescription,
+            @Nullable Locale locale) {
         return null;
     }
 }

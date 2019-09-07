@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.amazonechocontrol.internal.statedescription;
+package org.openhab.binding.amazonechocontrol.internal.smarthome;
+
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.BINDING_ID;
 
 import java.util.Locale;
 
@@ -19,12 +21,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
-import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
-import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.SmartHomeDeviceHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -39,9 +38,9 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  *
  */
 
-@Component(service = { DynamicStateDescriptionProvider.class, AmazonEchoDynamicStateDescriptionSmartHome.class })
+@Component(service = { DynamicStateDescriptionProvider.class, DynamicStateDescriptionSmartHome.class })
 @NonNullByDefault
-public class AmazonEchoDynamicStateDescriptionSmartHome implements DynamicStateDescriptionProvider {
+public class DynamicStateDescriptionSmartHome implements DynamicStateDescriptionProvider {
 
     private @Nullable ThingRegistry thingRegistry;
 
@@ -63,25 +62,21 @@ public class AmazonEchoDynamicStateDescriptionSmartHome implements DynamicStateD
         if (thing == null) {
             return null;
         }
-        ThingUID accountThingId = thing.getBridgeUID();
-        Thing accountThing = thingRegistry.get(accountThingId);
-        if (accountThing == null) {
+        ThingHandler handler = thing.getHandler();
+        if (!(handler instanceof SmartHomeDeviceHandler)) {
             return null;
         }
-        AccountHandler accountHandler = (AccountHandler) accountThing.getHandler();
-        if (accountHandler == null) {
-            return null;
-        }
-        Connection connection = accountHandler.findConnection();
-        if (connection == null || !connection.getIsLoggedIn()) {
-            return null;
-        }
-        return (SmartHomeDeviceHandler) thing.getHandler();
+        SmartHomeDeviceHandler smartHomeHandler = (SmartHomeDeviceHandler) handler;
+        return smartHomeHandler;
     }
 
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
+
+        if (!BINDING_ID.equals(channel.getChannelTypeUID().getBindingId())) {
+            return null;
+        }
         if (originalStateDescription == null) {
             return null;
         }
