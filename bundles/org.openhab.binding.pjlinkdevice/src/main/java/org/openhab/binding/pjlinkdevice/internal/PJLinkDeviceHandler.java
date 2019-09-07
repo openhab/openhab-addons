@@ -15,6 +15,7 @@ package org.openhab.binding.pjlinkdevice.internal;
 import static org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -91,21 +92,26 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   }
 
   public void refresh(PJLinkDeviceConfiguration config) {
-    // Do not poll if configuration is incomplete
-    if (PJLinkDeviceHandler.this.getThing().getStatusInfo()
-        .getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
-      PJLinkDeviceHandler.this.logger.debug("Polling device status...");
-      if (config.refreshPower) {
-        PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER), RefreshType.REFRESH);
-      }
-      if (config.refreshMute) {
-        // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
-        PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
-            RefreshType.REFRESH);
-      }
-      if (config.refreshInputChannel) {
-        PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT), RefreshType.REFRESH);
-      }
+    // Do not poll if device is offline
+    if (PJLinkDeviceHandler.this.getThing().getStatusInfo().getStatus() != ThingStatus.ONLINE) {
+      PJLinkDeviceHandler.this.logger.debug("Not polling device status because device is offline");
+      // setup() will schedule a new refresh interval after successful reconnection, cancel this one
+      this.clearRefreshInterval();
+      return;
+    }
+
+
+    PJLinkDeviceHandler.this.logger.debug("Polling device status...");
+    if (config.refreshPower) {
+      PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER), RefreshType.REFRESH);
+    }
+    if (config.refreshMute) {
+      // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
+      PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
+          RefreshType.REFRESH);
+    }
+    if (config.refreshInputChannel) {
+      PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT), RefreshType.REFRESH);
     }
   }
 
@@ -178,45 +184,70 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
           }
       }
 
-      updateStatus(ThingStatus.ONLINE);
       logger.trace("Successfully handled command {} on channel {}", command, channelUID.getId());
+      handleCommunicationEstablished();
     } catch (IOException | ResponseException e) {
-      updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+      handleCommunicationException(e);
     } catch (ConfigurationException e) {
-      updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+      handleConfigurationException(e);
     } catch (AuthenticationException e) {
       handleAuthenticationException(e);
     }
   }
 
+  private void handleCommunicationEstablished() {
+    updateStatus(ThingStatus.ONLINE);
+  }
+
   @Override
   public void initialize() {
+    this.setup(0);
+  }
+
+  public void setup(int delay) {
+    this.clearSetupJob();
     this.setupJob = scheduler.schedule(() -> {
       try {
         setupDevice();
+        handleCommunicationEstablished();
+        
         setupRefreshInterval();
+
+        logger.trace("device {} setup up successfully", this.getThing().getUID());
       } catch (ResponseException | IOException e) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        handleCommunicationException(e);
+      } catch (ConfigurationException e) {
+        handleConfigurationException(e);
       } catch (AuthenticationException e) {
         handleAuthenticationException(e);
-      } catch (ConfigurationException e) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
       }
-    }, 0, TimeUnit.SECONDS);
+    }, delay, TimeUnit.SECONDS);
   }
 
   protected PJLinkDeviceConfiguration getConfiguration() throws ConfigurationException {
-    PJLinkDeviceConfiguration config = this.config;
+    Map<String, String> validationMessages = new HashMap<>();
     try {
       validateConfigurationParameters(getThing().getConfiguration().getProperties());
     } catch (ConfigValidationException e) {
-      String message = e.getValidationMessages().entrySet().stream()
-          .map((Map.Entry<String, String> a) -> (a.getKey() + ": " + a.getValue())).collect(Collectors.joining("; "));
-      throw new ConfigurationException(message);
+      validationMessages.putAll(e.getValidationMessages());
     }
+    
+    PJLinkDeviceConfiguration config = this.config;
     if (config == null) {
       this.config = config = getConfigAs(PJLinkDeviceConfiguration.class);
     }
+
+    int autoReconnectPeriod = config.autoReconnectPeriod;
+    if (autoReconnectPeriod != 0 && autoReconnectPeriod < 30) {
+      validationMessages.put("autoReconnectPeriod", "allowed values are 0 (never) or >30");
+    }
+
+    if(validationMessages.size() > 0) {
+      String message = validationMessages.entrySet().stream()
+          .map((Map.Entry<String, String> a) -> (a.getKey() + ": " + a.getValue())).collect(Collectors.joining("; "));
+      throw new ConfigurationException(message);
+    }
+
     return config;
   }
 
@@ -237,7 +268,22 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   }
 
   private void handleAuthenticationException(AuthenticationException e) {
+    this.clearRefreshInterval();
     updateProperty(PJLinkDeviceBindingConstants.PROPERTY_AUTHENTICATION_REQUIRED, Boolean.TRUE.toString());
+    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+  }
+
+  private void handleCommunicationException(Exception e) {
+    this.clearRefreshInterval();
+    PJLinkDeviceConfiguration config = this.config;
+    if(config != null && config.autoReconnectPeriod > 0) {
+      this.setup(config.autoReconnectPeriod);
+    }
+    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+  }
+
+  private void handleConfigurationException(ConfigurationException e) {
+    this.clearRefreshInterval();
     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
   }
 
@@ -247,7 +293,6 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     updateDeviceProperties(device);
     updateInputChannelStates(device);
-    updateStatus(ThingStatus.ONLINE);
   }
 
   private void setupRefreshInterval() throws ConfigurationException {

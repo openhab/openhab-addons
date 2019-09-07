@@ -27,7 +27,7 @@
 				<label>Password</label>
 				<description>The password of the PJLink device.</description>
 			</parameter>
-			<parameter name="tcpPort" type="integer" min="0"  max="65535">
+			<parameter name="tcpPort" type="integer" min="0" max="65535">
 				<default>4352</default>
 				<label>TCP Port</label>
 				<description>The TCP port of the PJLink device to control.</description>
@@ -51,6 +51,11 @@
 				<default>false</default>
 				<label>Poll for selected input channel</label>
 				<description>Enable polling for the selected input channel. Only considered if the refresh interval is greater than zero.</description>
+			</parameter>
+			<parameter name="autoReconnectPeriod" type="integer" min="0">
+				<label>Auto Reconnect Period</label>
+				<description>Seconds between connection retries when connection to the PJLink device has been lost, 0 means never retry, minimum 30s</description>
+				<default>60</default>
 			</parameter>
 		</config-description>
 
