@@ -40,6 +40,7 @@
 			<channel id="amazonMusicPlayListId"
 				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
+			<channel id="announcement" typeId="announcement" />			
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
