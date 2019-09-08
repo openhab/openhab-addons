@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -113,38 +112,11 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
-    /*
-    protected @Nullable String getTahomaVersion(String id) {
-        if (getBridgeHandler() != null) {
-            return getBridgeHandler().getTahomaVersion(id);
-        }
-        return "N/A";
-    }*/
-
     protected SomfyTahomaStatus getTahomaStatus(String id) {
         if (getBridgeHandler() != null) {
             return getBridgeHandler().getTahomaStatus(id);
         }
         return new SomfyTahomaStatus();
-    }
-
-    private @Nullable State getChannelState(Channel channel,
-                                            List<SomfyTahomaState> channelStates) {
-        ChannelTypeUID channelUID = channel.getChannelTypeUID();
-        if (channelUID == null) {
-            return null;
-        }
-
-        State newState = null;
-        @Nullable String stateName = getStateNames().get(channelUID.getId());
-        for (SomfyTahomaState state : channelStates) {
-            if (state.getName().equals(stateName)) {
-                logger.trace("Parsing state for channel: {} with state name: {}", channel.getUID().getId(), state.getName());
-                //sometimes more states are sent in one event, so take the last one
-                newState = parseTahomaState(channel.getAcceptedItemType(), state);
-            }
-        }
-        return newState;
     }
 
     private void cacheStateType(SomfyTahomaState state) {
@@ -258,15 +230,18 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     public void updateThingChannels(List<SomfyTahomaState> states) {
-        // update channel values
-        for (Channel channel : thing.getChannels()) {
-            if (isChannelLinked(channel)) {
-                State channelState = getChannelState(channel, states);
-                if (channelState != null) {
-                    logger.trace("Updating channel: {} with state: {}", channel.getUID(), channelState);
-                    updateState(channel.getUID(), channelState);
-                } else {
-                    logger.trace("Cannot find state for channel {}", channel.getUID());
+        for (SomfyTahomaState state : states) {
+            logger.trace("processing state: {} with value: {}", state.getName(), state.getValue());
+            updateProperty(state.getName(), state.getValue().toString());
+            for (HashMap.Entry<String, String> entry : stateNames.entrySet()) {
+                if (entry.getValue().equals(state.getName()) ) {
+                    //get channel and update it if linked
+                    Channel ch = thing.getChannel(entry.getKey());
+                    if (ch != null && isChannelLinked(ch)) {
+                        logger.trace("updating channel: {} with value: {}", entry.getKey(), state.getValue());
+                        State newState = parseTahomaState(ch.getAcceptedItemType(), state);
+                        updateState(ch.getUID(), newState);
+                    }
                 }
             }
         }
