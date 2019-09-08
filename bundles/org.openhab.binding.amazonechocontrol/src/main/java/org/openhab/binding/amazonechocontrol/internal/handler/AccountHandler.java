@@ -995,7 +995,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                         logger.debug("Device update {} suspended", id);
                         continue;
                     }
-                    if (deviceFilterId == null || deviceFilterId.contentEquals(smartHomeDeviceHandler.findId())) {
+                    if (deviceFilterId == null || deviceFilterId.equals(id)) {
                         smartHomeDeviceHandler.updateChannelStates(allDevices, applianceIdToCapabilityStates);
                     }
                 }

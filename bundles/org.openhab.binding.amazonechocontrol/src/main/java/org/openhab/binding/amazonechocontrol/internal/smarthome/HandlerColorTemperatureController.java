@@ -55,7 +55,10 @@ public class HandlerColorTemperatureController extends HandlerBase {
     static final ChannelTypeUID CHANNEL_TYPE_COLOR_NAME = CHANNEL_TYPE_COLOR_TEMPERATURE_NAME;
     static final String COLOR_ITEM_TYPE_COLOR = ITEM_TYPE_STRING;
 
+    @Nullable
     Integer lastColorTemperature;
+    @Nullable
+    String lastColorName;
 
     @Override
     protected String[] GetSupportedInterface() {
@@ -101,6 +104,11 @@ public class HandlerColorTemperatureController extends HandlerBase {
                     }
                 }
             }
+            if (lastColorName == null) {
+                lastColorName = colorName;
+            } else if (colorName == null && lastColorName != null) {
+                colorName = lastColorName;
+            }
             updateState(CHANNEL_UID_COLOR_NAME, colorName == null ? UnDefType.UNDEF : new StringType(colorName));
         }
     }
@@ -129,6 +137,7 @@ public class HandlerColorTemperatureController extends HandlerBase {
                 if (command instanceof StringType) {
                     String colorTemperatureName = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(colorTemperatureName)) {
+                        lastColorName = colorTemperatureName;
                         connection.smartHomeCommand(entityId, "setColorTemperature", "colorTemperatureName",
                                 colorTemperatureName);
                         return true;

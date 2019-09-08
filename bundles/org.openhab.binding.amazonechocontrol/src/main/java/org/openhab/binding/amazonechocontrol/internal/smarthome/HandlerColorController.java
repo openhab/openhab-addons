@@ -57,7 +57,10 @@ public class HandlerColorController extends HandlerBase {
     static final ChannelTypeUID CHANNEL_TYPE_COLOR_NAME_UID = CHANNEL_TYPE_COLOR_NAME;
     static final String COLOR_ITEM_TYPE_COLOR = ITEM_TYPE_STRING;
 
+    @Nullable
     HSBType lastColor;
+    @Nullable
+    String lastColorName;
 
     @Override
     protected String[] GetSupportedInterface() {
@@ -81,7 +84,6 @@ public class HandlerColorController extends HandlerBase {
             HSBType color = null;
             for (JsonObject state : stateList) {
                 if (ALEXA_PROPERTY.equals(state.get("name").getAsString())) {
-
                     JsonObject value = state.get("value").getAsJsonObject();
                     // For groups take the maximum
                     if (color == null) {
@@ -109,7 +111,13 @@ public class HandlerColorController extends HandlerBase {
                     }
                 }
             }
-            updateState(CHANNEL_UID_COLOR_NAME, colorName == null ? UnDefType.UNDEF : new StringType(colorName));
+            if (lastColorName == null) {
+                lastColorName = colorName;
+            } else if (colorName == null && lastColorName != null) {
+                colorName = lastColorName;
+            }
+            updateState(CHANNEL_UID_COLOR_NAME,
+                    lastColorName == null ? UnDefType.UNDEF : new StringType(lastColorName));
         }
     }
 
@@ -133,6 +141,7 @@ public class HandlerColorController extends HandlerBase {
                 if (command instanceof StringType) {
                     String colorName = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(colorName)) {
+                        lastColorName = colorName;
                         connection.smartHomeCommand(entityId, "setColor", "colorName", colorName);
                         return true;
                     }
