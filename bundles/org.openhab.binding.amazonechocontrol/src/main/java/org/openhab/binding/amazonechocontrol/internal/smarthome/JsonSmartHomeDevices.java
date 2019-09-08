@@ -46,6 +46,12 @@ public class JsonSmartHomeDevices {
         public @Nullable JsonSmartHomeDeviceAlias @Nullable [] aliases;
         public @Nullable SmartHomeDevice @Nullable [] groupDevices;
         public @Nullable String connectedVia;
+        public @Nullable DriverIdentity driverIdentity;
+    }
+
+    static class DriverIdentity {
+        public @Nullable String namespace;
+        public @Nullable String identifier;
     }
 
     public @Nullable SmartHomeDevice @Nullable [] smarthomeDevices;

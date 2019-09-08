@@ -40,6 +40,7 @@ import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.DriverIdentity;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeGroups.SmartHomeGroup;
 import org.osgi.service.component.annotations.Activate;
@@ -176,9 +177,12 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                     // No id
                     continue;
                 }
+                boolean isSkillDevice = false;
+                DriverIdentity driverIdentity = shd.driverIdentity;
+                isSkillDevice = driverIdentity != null && "SKILL".equals(driverIdentity.namespace);
 
-                if (shouldDiscoverSmartHomeDevice == 1 && false /* check here for not direct connected */) {
-                    // No direct connected device
+                if (shouldDiscoverSmartHomeDevice == 1 && isSkillDevice) {
+                    // Connected through skill
                     continue;
                 }
                 if (!shouldDiscoverOpenHabDevices && "openHAB".equalsIgnoreCase(shd.manufacturerName)) {
