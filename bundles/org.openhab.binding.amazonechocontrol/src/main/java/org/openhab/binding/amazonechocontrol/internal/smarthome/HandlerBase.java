@@ -1,12 +1,11 @@
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,10 +51,10 @@ public abstract class HandlerBase {
         return smartHomeDeviceHandler;
     }
 
-    public void intialize(SmartHomeDeviceHandler smartHomeDeviceHandler, List<SmartHomeCapability> capabilties) {
+    public Collection<ChannelInfo> intialize(SmartHomeDeviceHandler smartHomeDeviceHandler,
+            List<SmartHomeCapability> capabilties) {
         this.smartHomeDeviceHandler = smartHomeDeviceHandler;
-        Set<String> unusedChannels = new HashSet<>();
-        unusedChannels.addAll(channels.keySet());
+        Map<String, ChannelInfo> channels = new HashMap<>();
         for (SmartHomeCapability capability : capabilties) {
             Properties properties = capability.properties;
             if (properties != null) {
@@ -71,8 +70,7 @@ public abstract class HandlerBase {
                                 if (channelInfos != null) {
                                     for (ChannelInfo channelInfo : channelInfos) {
                                         if (channelInfo != null) {
-                                            unusedChannels.remove(channelInfo.channelId);
-                                            addChannelToDevice(channelInfo);
+                                            channels.put(channelInfo.channelId, channelInfo);
                                         }
                                     }
                                 }
@@ -82,33 +80,8 @@ public abstract class HandlerBase {
                 }
             }
         }
-        for (String channelId : unusedChannels) {
-            removeChannelFromDevice(channelId);
-        }
-    }
-
-    protected void cleanUp() {
-        Set<String> channelIds = this.channels.keySet();
-        this.channels = new HashMap<>();
-
-        for (String channelId : channelIds) {
-            getSmartHomeDeviceHandler().removeChannelFromDevice(channelId);
-        }
-    }
-
-    protected void removeChannelFromDevice(String channelId) {
-        this.channels.remove(channelId);
-        getSmartHomeDeviceHandler().removeChannelFromDevice(channelId);
-    }
-
-    public void addChannelToDevice(ChannelInfo channelInfo) throws IllegalStateException {
-        if (this.channels.containsKey(channelInfo.channelId)) {
-            return;
-        }
-        this.channels.put(channelInfo.channelId, channelInfo);
-        getSmartHomeDeviceHandler().addChannelToDevice(channelInfo.channelId, channelInfo.itemType,
-                channelInfo.channelTypeUID);
-
+        this.channels = channels;
+        return channels.values();
     }
 
     protected boolean ContainsCapabilityProperty(SmartHomeCapability[] capabilties, String propertyName) {
@@ -133,7 +106,6 @@ public abstract class HandlerBase {
 
     public void updateState(String channelId, State state) {
         getSmartHomeDeviceHandler().updateState(channelId, state);
-
     }
 
     public static class ChannelInfo {

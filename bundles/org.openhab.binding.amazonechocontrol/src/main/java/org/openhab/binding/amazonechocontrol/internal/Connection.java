@@ -1233,6 +1233,23 @@ public class Connection {
         try {
             String resultBody = makeRequestAndReturnString("PUT", url, requestBody, true, null);
             logger.debug(resultBody);
+            JsonObject result = parseJson(resultBody, JsonObject.class);
+            if (result != null) {
+                JsonElement errors = result.get("errors");
+                if (errors != null && errors.isJsonArray()) {
+                    JsonArray errorList = errors.getAsJsonArray();
+                    if (errorList.size() > 0) {
+                        logger.info("Smart home device command failed.");
+                        logger.info("Request:");
+                        logger.info(requestBody);
+                        logger.info("Answer:");
+                        for (JsonElement error : errorList) {
+                            logger.info(error.toString());
+                        }
+                    }
+                }
+            }
+
         } catch (URISyntaxException e) {
             logger.info("Wrong url {}: {}", url, e);
         }

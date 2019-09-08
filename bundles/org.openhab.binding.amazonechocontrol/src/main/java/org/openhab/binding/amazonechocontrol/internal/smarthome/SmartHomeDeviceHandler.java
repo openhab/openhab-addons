@@ -17,6 +17,7 @@ import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.HandlerBase.ChannelInfo;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeGroups.SmartHomeGroup;
@@ -75,45 +77,47 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
     synchronized public boolean setDeviceAndUpdateThingState(AccountHandler accountHandler,
             @Nullable SmartHomeBaseDevice smartHomeBaseDevice) {
-        try {
-            if (this.accountHandler != accountHandler) {
-                this.accountHandler = accountHandler;
-            }
-            if (smartHomeBaseDevice == null) {
-                updateStatus(ThingStatus.UNKNOWN);
-                return false;
-            }
-            this.smartHomeBaseDevice = smartHomeBaseDevice;
-            updateStatus(ThingStatus.ONLINE);
+        if (this.accountHandler != accountHandler) {
+            this.accountHandler = accountHandler;
+        }
+        if (smartHomeBaseDevice == null) {
+            updateStatus(ThingStatus.UNKNOWN);
+            return false;
+        }
+        this.smartHomeBaseDevice = smartHomeBaseDevice;
+        updateStatus(ThingStatus.ONLINE);
 
-            Set<String> unusedHandlers = new HashSet<>();
-            unusedHandlers.addAll(handlers.keySet());
-            Map<String, List<SmartHomeCapability>> capabilities = new HashMap<>();
-            GetCapabilities(capabilities, accountHandler, smartHomeBaseDevice);
-            for (String interfaceName : capabilities.keySet()) {
-                HandlerBase handler = handlers.get(interfaceName);
-                if (handler != null) {
-                    unusedHandlers.remove(interfaceName);
-                } else {
-                    Function<String, HandlerBase> creator = Constants.HandlerFactory.get(interfaceName);
-                    if (creator != null) {
-                        handler = creator.apply(interfaceName);
-                        handlers.put(interfaceName, handler);
-                    }
-                }
-                if (handler != null) {
-                    handler.intialize(this, capabilities.get(interfaceName));
-                }
-            }
-            for (String interfaceName : unusedHandlers) {
-                HandlerBase handler = handlers.get(interfaceName);
-                handlers.remove(interfaceName);
-                handler.cleanUp();
-            }
-        } catch (
+        Thing thing = getThing();
+        Set<String> unusedChannels = new HashSet<>();
+        for (Channel channel : thing.getChannels()) {
+            unusedChannels.add(channel.getUID().getId());
+        }
 
-        IllegalArgumentException e) {
-            logger.debug("Exception while adding channel {}.", e);
+        Set<String> unusedHandlers = new HashSet<>();
+        unusedHandlers.addAll(handlers.keySet());
+        Map<String, List<SmartHomeCapability>> capabilities = new HashMap<>();
+        GetCapabilities(capabilities, accountHandler, smartHomeBaseDevice);
+        for (String interfaceName : capabilities.keySet()) {
+            HandlerBase handler = handlers.get(interfaceName);
+            if (handler != null) {
+                unusedHandlers.remove(interfaceName);
+            } else {
+                Function<String, HandlerBase> creator = Constants.HandlerFactory.get(interfaceName);
+                if (creator != null) {
+                    handler = creator.apply(interfaceName);
+                    handlers.put(interfaceName, handler);
+                }
+            }
+            if (handler != null) {
+                Collection<ChannelInfo> required = handler.intialize(this, capabilities.get(interfaceName));
+                for (ChannelInfo channelInfo : required) {
+                    unusedChannels.remove(channelInfo.channelId);
+                    addChannelToDevice(channelInfo.channelId, channelInfo.itemType, channelInfo.channelTypeUID);
+                }
+            }
+        }
+        for (String interfaceName : unusedHandlers) {
+            handlers.remove(interfaceName);
         }
         return true;
     }
@@ -149,7 +153,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public void addChannelToDevice(String channelId, String itemType, ChannelTypeUID channelTypeUID) {
+    private void addChannelToDevice(String channelId, String itemType, ChannelTypeUID channelTypeUID) {
         Channel channel = getThing().getChannel(channelId);
         if (channel != null) {
             if (channelTypeUID.equals(channel.getChannelTypeUID()) && itemType.equals(channel.getAcceptedItemType())) {
@@ -164,7 +168,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                         .withType(channelTypeUID).build()).build());
     }
 
-    public void removeChannelFromDevice(String channelId) {
+    private void removeChannelFromDevice(String channelId) {
         updateThing(editThing().withoutChannel(new ChannelUID(getThing().getUID(), channelId)).build());
     }
 

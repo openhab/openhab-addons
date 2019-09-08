@@ -37,7 +37,7 @@ public class Constants {
             AmazonEchoControlBindingConstants.BINDING_ID, "colorName");
 
     public static final ChannelTypeUID CHANNEL_TYPE_COLOR = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "colorName");
+            AmazonEchoControlBindingConstants.BINDING_ID, "color");
 
     public static final ChannelTypeUID CHANNEL_TYPE_ARM_STATE = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "armState");

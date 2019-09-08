@@ -122,7 +122,7 @@ public class HandlerColorController extends HandlerBase {
             }
         }
         if (channelId.equals(CHANNEL_UID_COLOR_NAME)) {
-            if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY_COLOR_NAME)) {
+            if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY)) {
                 if (command instanceof StringType) {
                     String colorName = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(colorName)) {

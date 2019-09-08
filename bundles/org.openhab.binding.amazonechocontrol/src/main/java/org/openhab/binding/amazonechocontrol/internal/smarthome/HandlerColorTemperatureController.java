@@ -114,7 +114,7 @@ public class HandlerColorTemperatureController extends HandlerBase {
                     if (intValue > 10000) {
                         intValue = 10000;
                     }
-                    connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY_ACTION, intValue);
+                    connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, intValue);
                     return true;
                 }
             }
