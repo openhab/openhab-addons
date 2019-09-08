@@ -73,7 +73,8 @@ Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h
 The IDs for the modules can be extracted from the developer documentation on the netatmo site.
 First login with your user.   
 Then some examples of the documentation contain the **real results** of your weather station.
-In order to try the examples, you need the device_id of your Netatmo station. You can find it in the configuration menu of the app (android or apple). 
+In order to try the examples, you need the `device_id` of your Netatmo station.
+You can find it in the configuration menu of the app (android or apple).
 Get the IDs of your devices (indoor, outdoor, rain gauge) 
 [here](https://dev.netatmo.com/resources/technical/reference/weather/getstationsdata).
 
