@@ -26,6 +26,7 @@ import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.KNXNetworkLinkFT12;
 import tuwien.auto.calimero.link.medium.TPSettings;
+import tuwien.auto.calimero.link.medium.KNXMediumSettings;
 import tuwien.auto.calimero.serial.FT12Connection;
 
 /**
@@ -55,7 +56,12 @@ public class SerialClient extends AbstractKNXClient {
         try {
             RXTXVersion.getVersion();
             logger.debug("Establishing connection to KNX bus through FT1.2 on serial port {}.", serialPort);
-            return new KNXNetworkLinkFT12(new FT12Connection(serialPort), new TPSettings(), useCEMI);
+            KNXMediumSettings settings = new TPSettings();
+            if (useCEMI) {
+                return KNXNetworkLinkFT12.newCemiLink(serialPort, settings);
+            } else {
+                return new KNXNetworkLinkFT12(serialPort, settings);
+            }
 
         } catch (NoClassDefFoundError e) {
             throw new KNXException(

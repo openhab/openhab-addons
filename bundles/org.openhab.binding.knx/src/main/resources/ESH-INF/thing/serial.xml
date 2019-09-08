@@ -14,6 +14,11 @@
 				<description>The serial port to use for connecting to the KNX bus</description>
 				<required>true</required>
 			</parameter>
+			<parameter name="useCEMI" type="boolean">
+				<label>Use CEMI</label>
+				<description>Set to "true" when having a ft1.2 serial device that uses CEMI (such as the kBerry)</description>
+				<default>false</default>
+			</parameter>
 			<parameter name="readingPause" type="integer">
 				<label>Reading Pause</label>
 				<description>Time in milliseconds of how long should be paused between two read requests to the bus during
