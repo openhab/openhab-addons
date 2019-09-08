@@ -44,9 +44,6 @@ public class HandlerPowerController extends HandlerBase {
     static final String CHANNEL_UID = "powerState";
     static final ChannelTypeUID CHANNEL_TYPE = CHANNEL_TYPE_POWER_STATE;
     static final String ITEM_TYPE = ITEM_TYPE_SWITCH;
-    // List of all actions
-    static final String ACTION_TURN_ON = "turnOn";
-    static final String ACTION_TURN_OFF = "turnOff";
 
     @Override
     protected String[] GetSupportedInterface() {
@@ -86,10 +83,10 @@ public class HandlerPowerController extends HandlerBase {
 
             if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY)) {
                 if (command.equals(OnOffType.ON)) {
-                    connection.smartHomeCommand(entityId, ACTION_TURN_ON);
+                    connection.smartHomeCommand(entityId, "turnOn");
                     return true;
                 } else if (command.equals(OnOffType.OFF)) {
-                    connection.smartHomeCommand(entityId, ACTION_TURN_OFF);
+                    connection.smartHomeCommand(entityId, "turnOff");
                     return true;
                 }
             }

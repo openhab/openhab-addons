@@ -45,8 +45,6 @@ public class HandlerSecurityPanelController extends HandlerBase {
     static final String CHANNEL_UID = "armState";
     static final ChannelTypeUID CHANNEL_TYPE = CHANNEL_TYPE_ARM_STATE;
     static final String ITEM_TYPE = ITEM_TYPE_STRING;
-    // List of all actions
-    final String ACTION = "controlSecurityPanel";
 
     @Override
     protected String[] GetSupportedInterface() {
@@ -83,8 +81,7 @@ public class HandlerSecurityPanelController extends HandlerBase {
                 if (command instanceof StringType) {
                     String armState = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(armState)) {
-
-                        connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, armState);
+                        connection.smartHomeCommand(entityId, "controlSecurityPanel", ALEXA_PROPERTY, armState);
                         return true;
                     }
                 }

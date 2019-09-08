@@ -46,8 +46,6 @@ public class HandlerBrightnessController extends HandlerBase {
     static final String CHANNEL_UID = "brightness";
     static final ChannelTypeUID CHANNEL_TYPE = CHANNEL_TYPE_POWER_STATE;
     static final String ITEM_TYPE = ITEM_TYPE_DIMMER;
-    // List of all actions
-    static final String ACTION = "setBrightness";
 
     Integer lastBrightness;
 
@@ -96,7 +94,7 @@ public class HandlerBrightnessController extends HandlerBase {
                             newValue = 100;
                         }
                         lastBrightness = newValue;
-                        connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, newValue);
+                        connection.smartHomeCommand(entityId, "setBrightness", ALEXA_PROPERTY, newValue);
                         return true;
                     }
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
@@ -106,20 +104,20 @@ public class HandlerBrightnessController extends HandlerBase {
                             newValue = 0;
                         }
                         lastBrightness = newValue;
-                        connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, newValue);
+                        connection.smartHomeCommand(entityId, "setBrightness", ALEXA_PROPERTY, newValue);
                         return true;
                     }
                 } else if (command.equals(OnOffType.OFF)) {
                     lastBrightness = 0;
-                    connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, 0);
+                    connection.smartHomeCommand(entityId, "setBrightness", ALEXA_PROPERTY, 0);
                     return true;
                 } else if (command.equals(OnOffType.ON)) {
                     lastBrightness = 100;
-                    connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, 100);
+                    connection.smartHomeCommand(entityId, "setBrightness", ALEXA_PROPERTY, 100);
                     return true;
                 } else if (command instanceof PercentType) {
                     lastBrightness = ((PercentType) command).intValue();
-                    connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY,
+                    connection.smartHomeCommand(entityId, "setBrightness", ALEXA_PROPERTY,
                             ((PercentType) command).floatValue() / 100);
                     return true;
                 }

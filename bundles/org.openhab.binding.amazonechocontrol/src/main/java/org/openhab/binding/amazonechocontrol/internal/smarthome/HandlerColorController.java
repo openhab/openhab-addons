@@ -52,13 +52,10 @@ public class HandlerColorController extends HandlerBase {
     static final ChannelTypeUID CHANNEL_TYPE = CHANNEL_TYPE_COLOR;
     static final String ITEM_TYPE = ITEM_TYPE_COLOR;
 
-    static final String ALEXA_PROPERTY_COLOR_NAME = "colorName";
+    static final String ALEXA_PROPERTY_COLOR_NAME = "colorProperties";
     static final String CHANNEL_UID_COLOR_NAME = "colorName";
     static final ChannelTypeUID CHANNEL_TYPE_COLOR_NAME_UID = CHANNEL_TYPE_COLOR_NAME;
     static final String COLOR_ITEM_TYPE_COLOR = ITEM_TYPE_STRING;
-    // List of all actions
-    static final String ACTION = "setColor";
-    static final String ALEXA_PROPERTY_ACTION = "colorName";
 
     @Override
     protected String[] GetSupportedInterface() {
@@ -78,6 +75,7 @@ public class HandlerColorController extends HandlerBase {
     @Override
     protected void updateChannels(String interfaceName, List<JsonObject> stateList) {
         if (INTERFACE.equals(interfaceName)) {
+            // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
             HSBType color = null;
             for (JsonObject state : stateList) {
                 if (ALEXA_PROPERTY.equals(state.get("name").getAsString())) {
@@ -126,7 +124,7 @@ public class HandlerColorController extends HandlerBase {
                 if (command instanceof StringType) {
                     String colorName = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(colorName)) {
-                        connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY_ACTION, colorName);
+                        connection.smartHomeCommand(entityId, "setColor", "colorName", colorName);
                         return true;
                     }
                 }

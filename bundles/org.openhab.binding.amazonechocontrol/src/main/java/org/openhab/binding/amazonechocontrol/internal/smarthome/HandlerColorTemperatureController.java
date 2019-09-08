@@ -50,13 +50,10 @@ public class HandlerColorTemperatureController extends HandlerBase {
     static final ChannelTypeUID CHANNEL_TYPE = CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN;
     static final String ITEM_TYPE = ITEM_TYPE_NUMBER;
 
-    static final String ALEXA_PROPERTY_COLOR_NAME = "colorName";
+    static final String ALEXA_PROPERTY_COLOR_NAME = "colorProperties";
     static final String CHANNEL_UID_COLOR_NAME = "colorName";
     static final ChannelTypeUID CHANNEL_TYPE_COLOR_NAME = CHANNEL_TYPE_COLOR_TEMPERATURE_NAME;
     static final String COLOR_ITEM_TYPE_COLOR = ITEM_TYPE_STRING;
-    // List of all actions
-    static final String ACTION = "setColorTemperature";
-    static final String ALEXA_PROPERTY_ACTION = "colorTemperature";
 
     @Override
     protected String[] GetSupportedInterface() {
@@ -105,6 +102,7 @@ public class HandlerColorTemperatureController extends HandlerBase {
     protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
         if (channelId.equals(CHANNEL_UID)) {
+            // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
             if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY)) {
                 if (command instanceof DecimalType) {
                     int intValue = ((DecimalType) command).intValue();
@@ -114,7 +112,7 @@ public class HandlerColorTemperatureController extends HandlerBase {
                     if (intValue > 10000) {
                         intValue = 10000;
                     }
-                    connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY, intValue);
+                    connection.smartHomeCommand(entityId, "setColorTemperature", "colorTemperatureInKelvin", intValue);
                     return true;
                 }
             }
@@ -124,7 +122,8 @@ public class HandlerColorTemperatureController extends HandlerBase {
                 if (command instanceof StringType) {
                     String colorTemperatureName = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(colorTemperatureName)) {
-                        connection.smartHomeCommand(entityId, ACTION, ALEXA_PROPERTY_ACTION, colorTemperatureName);
+                        connection.smartHomeCommand(entityId, "setColorTemperature", "colorTemperatureName",
+                                colorTemperatureName);
                         return true;
                     }
                 }
