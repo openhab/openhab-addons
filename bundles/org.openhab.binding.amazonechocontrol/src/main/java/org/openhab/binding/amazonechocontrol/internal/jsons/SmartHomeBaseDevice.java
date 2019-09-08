@@ -23,5 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public interface SmartHomeBaseDevice {
-    public abstract @Nullable String findId();
+    public @Nullable String findId();
+
+    public boolean isGroup();
+
 }

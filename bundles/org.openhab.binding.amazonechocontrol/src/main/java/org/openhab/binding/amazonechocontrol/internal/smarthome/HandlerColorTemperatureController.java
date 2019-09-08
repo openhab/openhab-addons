@@ -55,6 +55,8 @@ public class HandlerColorTemperatureController extends HandlerBase {
     static final ChannelTypeUID CHANNEL_TYPE_COLOR_NAME = CHANNEL_TYPE_COLOR_TEMPERATURE_NAME;
     static final String COLOR_ITEM_TYPE_COLOR = ITEM_TYPE_STRING;
 
+    Integer lastColorTemperature;
+
     @Override
     protected String[] GetSupportedInterface() {
         return new String[] { INTERFACE, INTERFACE_COLOR_PROPERTIES };
@@ -71,7 +73,7 @@ public class HandlerColorTemperatureController extends HandlerBase {
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList) {
+    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         if (INTERFACE.equals(interfaceName)) {
             Integer colorTemperature = null;
             for (JsonObject state : stateList) {
@@ -83,6 +85,10 @@ public class HandlerColorTemperatureController extends HandlerBase {
                     }
                 }
             }
+            if (colorTemperature != null && !colorTemperature.equals(lastColorTemperature)) {
+                lastColorTemperature = colorTemperature;
+                result.NeedSingleUpdate = true;
+            }
             updateState(CHANNEL_UID, colorTemperature == null ? UnDefType.UNDEF : new DecimalType(colorTemperature));
         }
         if (INTERFACE_COLOR_PROPERTIES.equals(interfaceName)) {
@@ -90,6 +96,7 @@ public class HandlerColorTemperatureController extends HandlerBase {
             for (JsonObject state : stateList) {
                 if (ALEXA_PROPERTY_COLOR_NAME.equals(state.get("name").getAsString())) {
                     if (colorName == null) {
+                        result.NeedSingleUpdate = false;
                         colorName = state.get("value").getAsJsonObject().get("name").getAsString();
                     }
                 }

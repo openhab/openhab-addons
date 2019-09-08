@@ -60,7 +60,7 @@ public class HandlerSecurityPanelController extends HandlerBase {
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList) {
+    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         String armState = null;
         for (JsonObject state : stateList) {
             if (ALEXA_PROPERTY.equals(state.get("name").getAsString())) {

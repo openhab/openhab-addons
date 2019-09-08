@@ -32,6 +32,11 @@ public class JsonSmartHomeDevices {
             return applianceId;
         }
 
+        @Override
+        public boolean isGroup() {
+            return false;
+        }
+
         public @Nullable String applianceId;
         public @Nullable String manufacturerName;
         public @Nullable String friendlyDescription;

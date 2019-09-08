@@ -63,7 +63,7 @@ public class HandlerBrightnessController extends HandlerBase {
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList) {
+    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         Integer brightness = null;
         for (JsonObject state : stateList) {
             if (ALEXA_PROPERTY.equals(state.get("name").getAsString())) {

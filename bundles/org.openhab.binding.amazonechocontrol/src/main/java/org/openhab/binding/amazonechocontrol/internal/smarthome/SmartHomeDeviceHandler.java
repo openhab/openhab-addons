@@ -43,6 +43,7 @@ import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.HandlerBase.ChannelInfo;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.HandlerBase.UpdateChannelResult;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeGroups.SmartHomeGroup;
@@ -181,13 +182,16 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         }
         boolean stateFound = false;
         Map<String, List<JsonObject>> mapInterfaceToStates = new HashMap<>();
+        SmartHomeDevice firstDevice = null;
         for (SmartHomeDevice shd : GetSupportedSmartHomeDevices(smartHomeBaseDevice, allDevices)) {
             JsonArray states = applianceIdToCapabilityStates.get(shd.applianceId);
             if (states == null) {
                 continue;
             }
             stateFound = true;
-
+            if (firstDevice == null) {
+                firstDevice = shd;
+            }
             for (int i = 0; i < states.size(); i++) {
                 String stateJson = states.get(i).getAsString();
                 if (stateJson.startsWith("{") && stateJson.endsWith("}")) {
@@ -203,12 +207,21 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             }
         }
         for (HandlerBase handlerBase : handlers.values()) {
+            UpdateChannelResult result = new UpdateChannelResult();
+
             for (String interfaceName : handlerBase.GetSupportedInterface()) {
                 List<JsonObject> stateList = mapInterfaceToStates.get(interfaceName);
                 if (stateList == null) {
                     stateList = new ArrayList<>();
                 }
-                handlerBase.updateChannels(interfaceName, stateList);
+                handlerBase.updateChannels(interfaceName, stateList, result);
+            }
+            if (result.NeedSingleUpdate) {
+                if (smartHomeBaseDevice instanceof SmartHomeDevice) {
+                    SmartHomeDevice shd = (SmartHomeDevice) smartHomeBaseDevice;
+                    accountHandler.forceDelayedSmartHomeStateUpdate(shd.findId());
+
+                }
             }
         }
         if (stateFound) {
@@ -231,7 +244,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
         try {
             if (command instanceof RefreshType) {
-                accountHandler.forceDelayedSmartHomeStateUpdate();
+                accountHandler.forceDelayedSmartHomeStateUpdate(findId());
                 return;
             }
             SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
@@ -244,14 +257,12 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 return;
             }
             String channelId = channelUID.getId();
-            boolean forcedDelayedUpdate = false;
             for (String interfaceName : handlers.keySet()) {
                 HandlerBase handlerBase = handlers.get(interfaceName);
                 if (!handlerBase.hasChannel(channelId)) {
                     continue;
                 }
                 for (SmartHomeDevice shd : devices) {
-
                     String entityId = shd.entityId;
                     if (entityId == null) {
                         continue;
@@ -260,15 +271,14 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     if (capabilties == null) {
                         return;
                     }
-                    if (!forcedDelayedUpdate) {
-                        forcedDelayedUpdate = true;
-                        accountHandler.forceDelayedSmartHomeStateUpdate();
-                    }
+                    accountHandler.forceDelayedSmartHomeStateUpdate(findId()); // block updates                 
                     if (handlerBase.handleCommand(connection, shd, entityId, capabilties, channelUID.getId(),
                             command)) {
+                        accountHandler.forceDelayedSmartHomeStateUpdate(findId()); // force update again to restart update timer
                         logger.debug("Command {} sent to {}", command, shd.findId());
                     }
                 }
+
             }
         } catch (
 

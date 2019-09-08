@@ -29,7 +29,8 @@ public abstract class HandlerBase {
 
     protected abstract @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property);
 
-    protected abstract void updateChannels(String interfaceName, List<JsonObject> stateList);
+    protected abstract void updateChannels(String interfaceName, List<JsonObject> stateList,
+            UpdateChannelResult result);
 
     protected abstract boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException;
@@ -120,5 +121,9 @@ public abstract class HandlerBase {
             this.itemType = itemType;
             this.channelTypeUID = channelTypeUID;
         }
+    }
+
+    public static class UpdateChannelResult {
+        public boolean NeedSingleUpdate;
     }
 }

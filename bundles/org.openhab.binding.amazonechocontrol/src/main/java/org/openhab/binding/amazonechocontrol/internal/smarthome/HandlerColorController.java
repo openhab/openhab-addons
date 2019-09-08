@@ -57,6 +57,8 @@ public class HandlerColorController extends HandlerBase {
     static final ChannelTypeUID CHANNEL_TYPE_COLOR_NAME_UID = CHANNEL_TYPE_COLOR_NAME;
     static final String COLOR_ITEM_TYPE_COLOR = ITEM_TYPE_STRING;
 
+    HSBType lastColor;
+
     @Override
     protected String[] GetSupportedInterface() {
         return new String[] { INTERFACE, INTERFACE_COLOR_PROPERTIES };
@@ -73,7 +75,7 @@ public class HandlerColorController extends HandlerBase {
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList) {
+    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         if (INTERFACE.equals(interfaceName)) {
             // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
             HSBType color = null;
@@ -89,6 +91,12 @@ public class HandlerColorController extends HandlerBase {
                     }
                 }
             }
+            if (color != null) {
+                if (!color.equals(lastColor)) {
+                    result.NeedSingleUpdate = true;
+                    lastColor = color;
+                }
+            }
             updateState(CHANNEL_UID, color == null ? UnDefType.UNDEF : color);
         }
         if (INTERFACE_COLOR_PROPERTIES.equals(interfaceName)) {
@@ -96,6 +104,7 @@ public class HandlerColorController extends HandlerBase {
             for (JsonObject state : stateList) {
                 if (ALEXA_PROPERTY_COLOR_NAME.equals(state.get("name").getAsString())) {
                     if (colorName == null) {
+                        result.NeedSingleUpdate = false;
                         colorName = state.get("value").getAsJsonObject().get("name").getAsString();
                     }
                 }

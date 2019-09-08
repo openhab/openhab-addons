@@ -38,6 +38,11 @@ public class JsonSmartHomeGroups {
             return value;
         }
 
+        @Override
+        public boolean isGroup() {
+            return true;
+        }
+
         public @Nullable String applianceGroupName;
         public @Nullable Boolean isSpace;
         public @Nullable Boolean space;

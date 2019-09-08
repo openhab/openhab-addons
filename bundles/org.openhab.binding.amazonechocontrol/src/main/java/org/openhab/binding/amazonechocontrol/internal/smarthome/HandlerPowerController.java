@@ -59,7 +59,7 @@ public class HandlerPowerController extends HandlerBase {
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList) {
+    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         Boolean powerState = null;
         for (JsonObject state : stateList) {
             if (ALEXA_PROPERTY.equals(state.get("name").getAsString())) {

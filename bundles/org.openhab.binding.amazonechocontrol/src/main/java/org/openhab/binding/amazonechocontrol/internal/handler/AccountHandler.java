@@ -137,7 +137,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
         Configuration config = getThing().getConfiguration();
         long pollingInterval = ((BigDecimal) config.getProperties().get("pollingIntervalSmartHome")).longValue();
-        updateSmartHomeStateJob = scheduler.scheduleWithFixedDelay(this::updateSmartHomeState, pollingInterval,
+        updateSmartHomeStateJob = scheduler.scheduleWithFixedDelay(() -> updateSmartHomeState(null), pollingInterval,
                 pollingInterval, TimeUnit.SECONDS);
         logger.debug("amazon account bridge handler started.");
     }
@@ -919,8 +919,17 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         return new ArrayList<SmartHomeBaseDevice>();
     }
 
-    public void forceDelayedSmartHomeStateUpdate() {
+    private Set<String> requestedDeviceUpdates;
+
+    public void forceDelayedSmartHomeStateUpdate(@Nullable String deviceId) {
+        if (deviceId == null) {
+            return;
+        }
         synchronized (synchronizeSmartHomeJobScheduler) {
+            if (requestedDeviceUpdates == null) {
+                requestedDeviceUpdates = new HashSet<String>();
+            }
+            requestedDeviceUpdates.add(deviceId);
             ScheduledFuture<?> refreshSmartHomeAfterCommandJob = this.refreshSmartHomeAfterCommandJob;
             if (refreshSmartHomeAfterCommandJob != null) {
                 refreshSmartHomeAfterCommandJob.cancel(false);
@@ -931,17 +940,19 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     private void updateSmartHomeStateJob() {
+        Set<String> requestedDeviceUpdates = this.requestedDeviceUpdates;
+        this.requestedDeviceUpdates = null;
         synchronized (synchronizeSmartHomeJobScheduler) {
             this.refreshSmartHomeAfterCommandJob = null;
         }
-        updateSmartHomeState();
+        if (requestedDeviceUpdates != null) {
+            for (String deviceId : requestedDeviceUpdates) {
+                updateSmartHomeState(deviceId);
+            }
+        }
     }
 
-    synchronized private void updateSmartHomeState() {
-        if (refreshSmartHomeAfterCommandJob != null) {
-            logger.debug("updateSmartHomeState suspended");
-            return;
-        }
+    synchronized private void updateSmartHomeState(String deviceFilterId) {
         try {
             logger.debug("updateSmartHomeState started");
             Connection connection = this.connection;
@@ -950,27 +961,43 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
             List<SmartHomeBaseDevice> allDevices = this.getLastKnownSmartHomeDevice();
             Set<String> applianceIds = new HashSet<>();
-            synchronized (this.smartHomeDeviceHandlers) {
-                if (this.smartHomeDeviceHandlers.size() == 0) {
-                    return;
-                }
-                for (SmartHomeDeviceHandler device : smartHomeDeviceHandlers) {
-                    String id = device.findId();
-                    if (id != null) {
-                        SmartHomeBaseDevice baseDevice = jsonIdSmartHomeDeviceMapping.get(id);
-                        for (SmartHomeDevice shd : SmartHomeDeviceHandler.GetSupportedSmartHomeDevices(baseDevice,
-                                allDevices)) {
-                            applianceIds.add(shd.applianceId);
+            if (deviceFilterId != null) {
+                applianceIds.add(deviceFilterId);
+            } else {
+
+                synchronized (this.smartHomeDeviceHandlers) {
+                    if (this.smartHomeDeviceHandlers.size() == 0) {
+                        return;
+                    }
+                    for (SmartHomeDeviceHandler device : smartHomeDeviceHandlers) {
+                        String id = device.findId();
+                        if (id != null) {
+                            SmartHomeBaseDevice baseDevice = jsonIdSmartHomeDeviceMapping.get(id);
+                            for (SmartHomeDevice shd : SmartHomeDeviceHandler.GetSupportedSmartHomeDevices(baseDevice,
+                                    allDevices)) {
+                                applianceIds.add(shd.applianceId);
+                            }
                         }
                     }
                 }
             }
-
             Map<String, JsonArray> applianceIdToCapabilityStates = connection
                     .getSmartHomeDeviceStatesJson(applianceIds);
+
             synchronized (this.smartHomeDeviceHandlers) {
                 for (SmartHomeDeviceHandler smartHomeDeviceHandler : smartHomeDeviceHandlers) {
-                    smartHomeDeviceHandler.updateChannelStates(allDevices, applianceIdToCapabilityStates);
+                    String id = smartHomeDeviceHandler.findId();
+                    if (id == null) {
+                        continue;
+                    }
+                    Set<String> requestedDeviceUpdates = this.requestedDeviceUpdates;
+                    if (requestedDeviceUpdates != null && requestedDeviceUpdates.contains(id)) {
+                        logger.debug("Device update {} suspended", id);
+                        continue;
+                    }
+                    if (deviceFilterId == null || deviceFilterId.contentEquals(smartHomeDeviceHandler.findId())) {
+                        smartHomeDeviceHandler.updateChannelStates(allDevices, applianceIdToCapabilityStates);
+                    }
                 }
             }
             logger.debug("updateSmartHomeState finished");
