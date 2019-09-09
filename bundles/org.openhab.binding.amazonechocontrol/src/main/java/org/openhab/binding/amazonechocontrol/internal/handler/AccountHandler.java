@@ -940,9 +940,16 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     private void updateSmartHomeStateJob() {
-        Set<String> requestedDeviceUpdates = this.requestedDeviceUpdates;
-        this.requestedDeviceUpdates = null;
+        Set<String> requestedDeviceUpdates;
         synchronized (synchronizeSmartHomeJobScheduler) {
+            Connection connection = this.connection;
+            if (connection == null || !connection.getIsLoggedIn()) {
+                this.refreshSmartHomeAfterCommandJob = scheduler.schedule(this::updateSmartHomeStateJob, 1000,
+                        TimeUnit.SECONDS);
+                return;
+            }
+            requestedDeviceUpdates = this.requestedDeviceUpdates;
+            this.requestedDeviceUpdates = null;
             this.refreshSmartHomeAfterCommandJob = null;
         }
         if (requestedDeviceUpdates != null) {

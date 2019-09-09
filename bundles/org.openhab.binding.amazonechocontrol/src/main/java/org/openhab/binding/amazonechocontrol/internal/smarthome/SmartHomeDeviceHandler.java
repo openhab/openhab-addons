@@ -85,6 +85,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
             return false;
         }
+        boolean changed = this.smartHomeBaseDevice == null;
         this.smartHomeBaseDevice = smartHomeBaseDevice;
         updateStatus(ThingStatus.ONLINE);
 
@@ -113,12 +114,21 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 Collection<ChannelInfo> required = handler.intialize(this, capabilities.get(interfaceName));
                 for (ChannelInfo channelInfo : required) {
                     unusedChannels.remove(channelInfo.channelId);
-                    addChannelToDevice(channelInfo.channelId, channelInfo.itemType, channelInfo.channelTypeUID);
+                    if (addChannelToDevice(channelInfo.channelId, channelInfo.itemType, channelInfo.channelTypeUID)) {
+                        changed = true;
+                    }
                 }
             }
         }
         for (String interfaceName : unusedHandlers) {
             handlers.remove(interfaceName);
+        }
+        for (String channelId : unusedChannels) {
+            changed = true;
+            removeChannelFromDevice(channelId);
+        }
+        if (changed) {
+            accountHandler.forceDelayedSmartHomeStateUpdate(findId());
         }
         return true;
     }
@@ -154,12 +164,12 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         }
     }
 
-    private void addChannelToDevice(String channelId, String itemType, ChannelTypeUID channelTypeUID) {
+    private boolean addChannelToDevice(String channelId, String itemType, ChannelTypeUID channelTypeUID) {
         Channel channel = getThing().getChannel(channelId);
         if (channel != null) {
             if (channelTypeUID.equals(channel.getChannelTypeUID()) && itemType.equals(channel.getAcceptedItemType())) {
                 // channel exist with the same settings
-                return;
+                return false;
             }
             // channel exist with other settings, remove it first
             removeChannelFromDevice(channelId);
@@ -167,6 +177,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         updateThing(
                 editThing().withChannel(ChannelBuilder.create(new ChannelUID(getThing().getUID(), channelId), itemType)
                         .withType(channelTypeUID).build()).build());
+        return true;
     }
 
     private void removeChannelFromDevice(String channelId) {
@@ -271,10 +282,11 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     if (capabilties == null) {
                         return;
                     }
-                    accountHandler.forceDelayedSmartHomeStateUpdate(findId()); // block updates                 
+                    accountHandler.forceDelayedSmartHomeStateUpdate(findId()); // block updates
                     if (handlerBase.handleCommand(connection, shd, entityId, capabilties, channelUID.getId(),
                             command)) {
-                        accountHandler.forceDelayedSmartHomeStateUpdate(findId()); // force update again to restart update timer
+                        accountHandler.forceDelayedSmartHomeStateUpdate(findId()); // force update again to restart
+                                                                                   // update timer
                         logger.debug("Command {} sent to {}", command, shd.findId());
                     }
                 }
