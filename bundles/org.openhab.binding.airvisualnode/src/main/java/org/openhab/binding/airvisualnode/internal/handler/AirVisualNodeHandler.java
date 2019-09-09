@@ -46,6 +46,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.airvisualnode.internal.config.AirVisualNodeConfig;
+import org.openhab.binding.airvisualnode.internal.json.Measurements;
 import org.openhab.binding.airvisualnode.internal.json.NodeData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,23 +199,33 @@ public class AirVisualNodeHandler extends BaseThingHandler {
         } else if (CHANNEL_WIFI_STRENGTH.equals(channelId)) {
             state = new DecimalType(BigDecimal.valueOf(Math.max(0, nodeData.getStatus().getWifiStrength()-1)).longValue());
         } else {
+
+            Measurements measurements = nodeData.getMeasurements().get(0);
             // Handle binding-specific channel IDs
             switch (channelId) {
                 case CHANNEL_CO2:
-                    state = new QuantityType<>(nodeData.getMeasurements().getCo2Ppm(), PARTS_PER_MILLION);
+                    state = new QuantityType<>(measurements.getCo2Ppm(), PARTS_PER_MILLION);
                     break;
                 case CHANNEL_HUMIDITY:
-                    state = new QuantityType<>(nodeData.getMeasurements().getHumidityRH(), PERCENT);
+                    state = new QuantityType<>(measurements.getHumidityRH(), PERCENT);
                     break;
                 case CHANNEL_AQI_US:
-                    state = new QuantityType<>(nodeData.getMeasurements().getPm25AQIUS(), ONE);
+                    state = new QuantityType<>(measurements.getPm25AQIUS(), ONE);
                     break;
                 case CHANNEL_PM_25:
                     // PM2.5 is in ug/m3
-                    state = new QuantityType<>(nodeData.getMeasurements().getPm25Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
+                    state = new QuantityType<>(measurements.getPm25Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
+                    break;
+                case CHANNEL_PM_10:
+                    // PM10 is in ug/m3
+                    state = new QuantityType<>(measurements.getPm10Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
+                    break;
+                case CHANNEL_PM_01:
+                    // PM0.1 is in ug/m3
+                    state = new QuantityType<>(measurements.getPm01Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
                     break;
                 case CHANNEL_TEMP_CELSIUS:
-                    state = new QuantityType<>(nodeData.getMeasurements().getTemperatureC(), CELSIUS);
+                    state = new QuantityType<>(measurements.getTemperatureC(), CELSIUS);
                     break;
                 case CHANNEL_TIMESTAMP:
                     // It seem the Node timestamp is Unix timestamp converted from UTC time plus timezone offset.

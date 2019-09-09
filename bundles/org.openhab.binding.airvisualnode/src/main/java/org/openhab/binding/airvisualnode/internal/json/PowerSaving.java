@@ -24,12 +24,17 @@ public class PowerSaving {
 
     @SerializedName("2slots")
     private List<PowerSavingTimeSlot> timeSlots = null;
+
     private String mode;
+
+    private long runningTime;
+
     @SerializedName("yes")
     private List<PowerSavingTime> times = null;
 
-    public PowerSaving(List<PowerSavingTimeSlot> timeSlots, String mode, List<PowerSavingTime> times) {
+    public PowerSaving(List<PowerSavingTimeSlot> timeSlots, String mode, long runningTime, List<PowerSavingTime> times) {
         this.mode = mode;
+        this.runningTime = runningTime;
         this.times = times;
         this.timeSlots = timeSlots;
     }
@@ -58,4 +63,11 @@ public class PowerSaving {
         this.mode = mode;
     }
 
+    public long getRunningTime() {
+        return runningTime;
+    }
+
+    public void setRunningTime(long runningTime) {
+        this.runningTime = runningTime;
+    }
 }

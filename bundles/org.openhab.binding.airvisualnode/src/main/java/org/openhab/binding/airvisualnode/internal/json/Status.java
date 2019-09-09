@@ -22,19 +22,29 @@ public class Status {
     private String appVersion;
     private int battery;
     private long datetime;
+    private String deviceName;
+    private String ipAddress;
+    private String macAddress;
     private String model;
+    private SensorLife sensorLife;
     private String sensorPm25Serial;
     private int syncTime;
     private String systemVersion;
     private int usedMemory;
     private int wifiStrength;
 
-    public Status(String appVersion, int battery, long datetime, String model, String sensorPm25Serial, int syncTime,
-            String systemVersion, int usedMemory, int wifiStrength) {
+    public Status(String appVersion, int battery, long datetime, String deviceName,
+                  String ipAddress, String macAddress, String model, SensorLife sensorLife,
+                  String sensorPm25Serial, int syncTime, String systemVersion, int usedMemory,
+                  int wifiStrength) {
         this.appVersion = appVersion;
         this.battery = battery;
         this.datetime = datetime;
+        this.deviceName = deviceName;
+        this.ipAddress = ipAddress;
+        this.macAddress = macAddress;
         this.model = model;
+        this.sensorLife = sensorLife;
         this.sensorPm25Serial = sensorPm25Serial;
         this.syncTime = syncTime;
         this.systemVersion = systemVersion;
@@ -66,12 +76,44 @@ public class Status {
         this.datetime = datetime;
     }
 
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
     public String getModel() {
         return model;
     }
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public SensorLife getSensorLife() {
+        return sensorLife;
+    }
+
+    public void setSensorLife(SensorLife sensorLife) {
+        this.sensorLife = sensorLife;
     }
 
     public String getSensorPm25Serial() {
@@ -113,5 +155,4 @@ public class Status {
     public void setWifiStrength(int wifiStrength) {
         this.wifiStrength = wifiStrength;
     }
-
 }

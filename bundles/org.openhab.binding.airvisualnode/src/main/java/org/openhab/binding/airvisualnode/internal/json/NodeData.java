@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.airvisualnode.internal.json;
 
+import java.util.List;
+
 /**
  * Top level object for AirVisual Node JSON data.
  *
@@ -20,13 +22,12 @@ package org.openhab.binding.airvisualnode.internal.json;
 public class NodeData {
 
     private DateAndTime dateAndTime;
-    private Measurements measurements;
+    private List<Measurements> measurements;
     private String serialNumber;
     private Settings settings;
     private Status status;
 
-    public NodeData(DateAndTime dateAndTime, Measurements measurements, String serialNumber, Settings settings,
-            Status status) {
+    public NodeData(DateAndTime dateAndTime, List<Measurements> measurements, String serialNumber, Settings settings, Status status) {
         this.dateAndTime = dateAndTime;
         this.measurements = measurements;
         this.serialNumber = serialNumber;
@@ -42,11 +43,11 @@ public class NodeData {
         this.dateAndTime = dateAndTime;
     }
 
-    public Measurements getMeasurements() {
+    public List<Measurements> getMeasurements() {
         return measurements;
     }
 
-    public void setMeasurements(Measurements measurements) {
+    public void setMeasurements(List<Measurements> measurements) {
         this.measurements = measurements;
     }
 
