@@ -528,6 +528,7 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<description>The color of a smart bulb</description>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="colorName" advanced="false">
 		<item-type>String</item-type>
@@ -571,7 +572,7 @@
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
 		<description>The color temperature of the light</description>
-		<state min="1000" max="10000" step="100" pattern="%.1f K" readOnly="false" />
+		<state min="1000" max="10000" step="100" pattern="%.1f K" readOnly="true" />
 	</channel-type>
 	<channel-type id="brightness" advanced="false">
 		<item-type>Dimmer</item-type>
@@ -596,4 +597,29 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="burglaryAlarm" advanced="false">
+		<item-type>Contact</item-type>
+		<label>Burglary Alarm</label>
+		<description>Burglary alarm</description>
+	</channel-type>
+	<channel-type id="carbonMonoxideAlarm" advanced="false">
+		<item-type>Carbon Monoxid Alarm</item-type>
+		<label>Carbon Monoxid Alarm</label>
+		<description>Carbon monoxid alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="fireAlarm" advanced="false">
+		<item-type>Contact</item-type>
+		<label>Fire Alarm</label>
+		<description>Fire alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="waterAlarm" advanced="false">
+		<item-type>Contact</item-type>
+		<label>Water Alarm</label>
+		<description>Water alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	
 </thing:thing-descriptions>

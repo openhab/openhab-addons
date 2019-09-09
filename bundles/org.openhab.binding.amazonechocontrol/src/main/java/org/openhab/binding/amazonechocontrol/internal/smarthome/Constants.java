@@ -42,11 +42,24 @@ public class Constants {
     public static final ChannelTypeUID CHANNEL_TYPE_ARM_STATE = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "armState");
 
+    public static final ChannelTypeUID CHANNEL_TYPE_BURGLARY_ALARM = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "burglaryAlarm");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_CARBON_MONOXIDE_ALARM = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "carbonMonoxideAlarm");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_FIRE_ALARM = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "fireAlarm");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_WATER_ALARM = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "waterAlarm");
+
     // List of Item types
     public static final String ITEM_TYPE_SWITCH = "Switch";
     public static final String ITEM_TYPE_DIMMER = "Dimmer";
     public static final String ITEM_TYPE_STRING = "String";
     public static final String ITEM_TYPE_NUMBER = "Number";
+    public static final String ITEM_TYPE_CONTACT = "Contact";
     public static final String ITEM_TYPE_COLOR = "Color";
 
 }
