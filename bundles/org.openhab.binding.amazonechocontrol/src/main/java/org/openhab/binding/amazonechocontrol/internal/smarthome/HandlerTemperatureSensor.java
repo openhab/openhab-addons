@@ -78,7 +78,6 @@ public class HandlerTemperatureSensor extends HandlerBase {
                 }
             }
         }
-        QuantityType<Temperature> x;
         updateState(temperature.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
     }
 

@@ -20,6 +20,8 @@ public class Constants {
             put(HandlerSecurityPanelController.INTERFACE, (s) -> new HandlerSecurityPanelController());
             put(HandlerAcousticEventSensor.INTERFACE, (s) -> new HandlerAcousticEventSensor());
             put(HandlerTemperatureSensor.INTERFACE, (s) -> new HandlerTemperatureSensor());
+            put(HandlerPercentageController.INTERFACE, (s) -> new HandlerPercentageController());
+            put(HandlerPowerLevelController.INTERFACE, (s) -> new HandlerPowerLevelController());
         }
     };
 
@@ -31,6 +33,12 @@ public class Constants {
 
     public static final ChannelTypeUID CHANNEL_TYPE_BRIGHTNESS = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "brightness");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_PERCENTAGE = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "percentage");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_POWER_LEVEL = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "powerLevel");
 
     public static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureInKelvin");
