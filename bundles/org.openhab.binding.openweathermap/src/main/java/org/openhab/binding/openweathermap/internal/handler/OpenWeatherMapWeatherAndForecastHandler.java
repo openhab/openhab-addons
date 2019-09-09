@@ -304,12 +304,13 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(snow == null ? 0 : snow.getVolume(), MILLI(METRE));
                     break;
                 case CHANNEL_VISIBILITY:
-                    state = new QuantityType<>(localWeatherData.getVisibility(), METRE).toUnit(KILO(METRE));
+                    Integer localVisibility = localWeatherData.getVisibility();
+                    state = localVisibility == null ? UnDefType.UNDEF
+                            : new QuantityType<>(localVisibility, METRE).toUnit(KILO(METRE));
                     if (state == null) {
                         logger.debug("State conversion failed, cannot update state.");
                         return;
                     }
-
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
