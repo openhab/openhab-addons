@@ -88,7 +88,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         }
         boolean changed = this.smartHomeBaseDevice == null;
         this.smartHomeBaseDevice = smartHomeBaseDevice;
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.OFFLINE);
 
         Thing thing = getThing();
         Set<String> unusedChannels = new HashSet<>();
@@ -189,7 +189,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             Map<String, JsonArray> applianceIdToCapabilityStates) {
         SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
         if (smartHomeBaseDevice == null) {
-            updateStatus(ThingStatus.UNKNOWN);
+            updateStatus(ThingStatus.OFFLINE);
             return;
         }
         boolean stateFound = false;

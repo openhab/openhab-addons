@@ -632,6 +632,11 @@
 		<description>Smoke alarm</description>
 		<state readOnly="true" />
 	</channel-type>
-	
+	<channel-type id="temperature" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>	
 	
 </thing:thing-descriptions>
