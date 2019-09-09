@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -225,7 +226,13 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 if (stateList == null) {
                     stateList = new ArrayList<>();
                 }
-                handlerBase.updateChannels(interfaceName, stateList, result);
+                try {
+                    handlerBase.updateChannels(interfaceName, stateList, result);
+                } catch (Exception e) {
+                    // We catch all exceptions, otherwise all other things are not updated!
+                    logger.debug("Updating states failed {}", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                }
             }
             if (result.NeedSingleUpdate) {
                 if (smartHomeBaseDevice instanceof SmartHomeDevice) {
@@ -292,9 +299,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 }
 
             }
-        } catch (
-
-        Exception e) {
+        } catch (Exception e) {
             logger.warn("Handle command failed {}", e);
         }
 

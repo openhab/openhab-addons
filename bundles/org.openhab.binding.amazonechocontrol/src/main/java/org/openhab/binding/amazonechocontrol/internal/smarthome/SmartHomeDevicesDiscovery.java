@@ -17,10 +17,8 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE_GROUP;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -52,11 +50,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implements ExtendedDiscoveryService {
-
-    public static final Set<String> SUPPORTED_INTERFACES = new HashSet<>(
-            Arrays.asList(HandlerBrightnessController.INTERFACE, HandlerColorTemperatureController.INTERFACE,
-                    HandlerColorController.INTERFACE, HandlerPowerController.INTERFACE,
-                    HandlerSecurityPanelController.INTERFACE));
 
     AccountHandler accountHandler;
     private final Logger logger = LoggerFactory.getLogger(SmartHomeDevicesDiscovery.class);
@@ -192,7 +185,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
 
                 boolean supportedDevice = false;
                 for (SmartHomeCapability capability : shd.capabilities) {
-                    if (SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
+                    if (Constants.SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
                         supportedDevice = true;
                         break;
                     }

@@ -18,6 +18,7 @@ public class Constants {
             put(HandlerColorController.INTERFACE, (s) -> new HandlerColorController());
             put(HandlerColorTemperatureController.INTERFACE, (s) -> new HandlerColorTemperatureController());
             put(HandlerSecurityPanelController.INTERFACE, (s) -> new HandlerSecurityPanelController());
+            put(HandlerAcousticEventSensor.INTERFACE, (s) -> new HandlerAcousticEventSensor());
         }
     };
 
@@ -53,6 +54,12 @@ public class Constants {
 
     public static final ChannelTypeUID CHANNEL_TYPE_WATER_ALARM = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "waterAlarm");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_GLASS_BREAK_DETECTION_STATE = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "glassBreakDetectionState");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_SMOKE_ALARM_DETECTION_STATE = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "smokeAlarmDetectionState");
 
     // List of Item types
     public static final String ITEM_TYPE_SWITCH = "Switch";

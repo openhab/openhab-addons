@@ -620,6 +620,18 @@
 		<description>Water alarm</description>
 		<state readOnly="true" />
 	</channel-type>
+	<channel-type id="glassBreakDetectionState" advanced="false">
+		<item-type>Contact</item-type>
+		<label>Glass Break</label>
+		<description>Glass break alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="smokeAlarmDetectionState" advanced="false">
+		<item-type>Contact</item-type>
+		<label>Smoke Alarm</label>
+		<description>Smoke alarm</description>
+		<state readOnly="true" />
+	</channel-type>
 	
 	
 </thing:thing-descriptions>
