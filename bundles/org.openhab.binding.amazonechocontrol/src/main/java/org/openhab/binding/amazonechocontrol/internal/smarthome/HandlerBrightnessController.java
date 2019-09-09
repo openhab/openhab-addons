@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_POWER_STATE;
+import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.*;
 import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_DIMMER;
 
 import java.io.IOException;
@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -42,10 +41,9 @@ public class HandlerBrightnessController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.BrightnessController";
     // Channel definitions
-    static final String ALEXA_PROPERTY = "brightness";
-    static final String CHANNEL_UID = "brightness";
-    static final ChannelTypeUID CHANNEL_TYPE = CHANNEL_TYPE_POWER_STATE;
-    static final String ITEM_TYPE = ITEM_TYPE_DIMMER;
+    final static ChannelInfo brightness = new ChannelInfo("brightness" /* propertyName */ ,
+            "brightness" /* ChannelId */, CHANNEL_TYPE_BRIGHTNESS /* Channel Type */ ,
+            ITEM_TYPE_DIMMER /* Item Type */);
 
     Integer lastBrightness;
 
@@ -56,37 +54,37 @@ public class HandlerBrightnessController extends HandlerBase {
 
     @Override
     protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (ALEXA_PROPERTY.contentEquals(property)) {
-            return new ChannelInfo[] { new ChannelInfo(ALEXA_PROPERTY, CHANNEL_UID, CHANNEL_TYPE, ITEM_TYPE) };
+        if (brightness.propertyName.equals(property)) {
+            return new ChannelInfo[] { brightness };
         }
         return null;
     }
 
     @Override
     protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
-        Integer brightness = null;
+        Integer brightnessValue = null;
         for (JsonObject state : stateList) {
-            if (ALEXA_PROPERTY.equals(state.get("name").getAsString())) {
+            if (brightness.propertyName.equals(state.get("name").getAsString())) {
                 int value = state.get("value").getAsInt();
                 // For groups take the maximum
-                if (brightness == null) {
-                    brightness = value;
-                } else if (value > brightness) {
-                    brightness = value;
+                if (brightnessValue == null) {
+                    brightnessValue = value;
+                } else if (value > brightnessValue) {
+                    brightnessValue = value;
                 }
             }
         }
-        if (brightness != null) {
-            lastBrightness = brightness;
+        if (brightnessValue != null) {
+            lastBrightness = brightnessValue;
         }
-        updateState(CHANNEL_UID, brightness == null ? UnDefType.UNDEF : new PercentType(brightness));
+        updateState(brightness.channelId, brightnessValue == null ? UnDefType.UNDEF : new PercentType(brightnessValue));
     }
 
     @Override
     protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(CHANNEL_UID)) {
-            if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY)) {
+        if (channelId.equals(brightness.channelId)) {
+            if (ContainsCapabilityProperty(capabilties, brightness.propertyName)) {
                 if (command.equals(IncreaseDecreaseType.INCREASE)) {
                     if (lastBrightness != null) {
                         int newValue = lastBrightness++;
@@ -94,7 +92,7 @@ public class HandlerBrightnessController extends HandlerBase {
                             newValue = 100;
                         }
                         lastBrightness = newValue;
-                        connection.smartHomeCommand(entityId, "setBrightness", ALEXA_PROPERTY, newValue);
+                        connection.smartHomeCommand(entityId, "setBrightness", brightness.propertyName, newValue);
                         return true;
                     }
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
@@ -104,20 +102,20 @@ public class HandlerBrightnessController extends HandlerBase {
                             newValue = 0;
                         }
                         lastBrightness = newValue;
-                        connection.smartHomeCommand(entityId, "setBrightness", ALEXA_PROPERTY, newValue);
+                        connection.smartHomeCommand(entityId, "setBrightness", brightness.propertyName, newValue);
                         return true;
                     }
                 } else if (command.equals(OnOffType.OFF)) {
                     lastBrightness = 0;
-                    connection.smartHomeCommand(entityId, "setBrightness", ALEXA_PROPERTY, 0);
+                    connection.smartHomeCommand(entityId, "setBrightness", brightness.propertyName, 0);
                     return true;
                 } else if (command.equals(OnOffType.ON)) {
                     lastBrightness = 100;
-                    connection.smartHomeCommand(entityId, "setBrightness", ALEXA_PROPERTY, 100);
+                    connection.smartHomeCommand(entityId, "setBrightness", brightness.propertyName, 100);
                     return true;
                 } else if (command instanceof PercentType) {
                     lastBrightness = ((PercentType) command).intValue();
-                    connection.smartHomeCommand(entityId, "setBrightness", ALEXA_PROPERTY,
+                    connection.smartHomeCommand(entityId, "setBrightness", brightness.propertyName,
                             ((PercentType) command).floatValue() / 100);
                     return true;
                 }

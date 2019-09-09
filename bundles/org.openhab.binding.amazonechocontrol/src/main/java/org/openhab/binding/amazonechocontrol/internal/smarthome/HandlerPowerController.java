@@ -21,7 +21,6 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -40,10 +39,9 @@ public class HandlerPowerController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.PowerController";
     // Channel definitions
-    static final String ALEXA_PROPERTY = "powerState";
-    static final String CHANNEL_UID = "powerState";
-    static final ChannelTypeUID CHANNEL_TYPE = CHANNEL_TYPE_POWER_STATE;
-    static final String ITEM_TYPE = ITEM_TYPE_SWITCH;
+    final static ChannelInfo powerState = new ChannelInfo("powerState" /* propertyName */ ,
+            "powerState" /* ChannelId */, CHANNEL_TYPE_POWER_STATE /* Channel Type */ ,
+            ITEM_TYPE_SWITCH /* Item Type */);
 
     @Override
     protected String[] GetSupportedInterface() {
@@ -52,36 +50,37 @@ public class HandlerPowerController extends HandlerBase {
 
     @Override
     protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (ALEXA_PROPERTY.equals(property)) {
-            return new ChannelInfo[] { new ChannelInfo(ALEXA_PROPERTY, CHANNEL_UID, CHANNEL_TYPE, ITEM_TYPE) };
+        if (powerState.propertyName.equals(property)) {
+            return new ChannelInfo[] { powerState };
         }
         return null;
     }
 
     @Override
     protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
-        Boolean powerState = null;
+        Boolean powerStateValue = null;
         for (JsonObject state : stateList) {
-            if (ALEXA_PROPERTY.equals(state.get("name").getAsString())) {
+            if (powerState.propertyName.equals(state.get("name").getAsString())) {
                 String value = state.get("value").getAsString();
                 // For groups take true if all true
                 if ("ON".equals(value)) {
-                    powerState = true;
-                } else if (powerState == null) {
-                    powerState = false;
+                    powerStateValue = true;
+                } else if (powerStateValue == null) {
+                    powerStateValue = false;
                 }
 
             }
         }
-        updateState(CHANNEL_UID, powerState == null ? UnDefType.UNDEF : (powerState ? OnOffType.ON : OnOffType.OFF));
+        updateState(powerState.channelId,
+                powerStateValue == null ? UnDefType.UNDEF : (powerStateValue ? OnOffType.ON : OnOffType.OFF));
     }
 
     @Override
     protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(CHANNEL_UID)) {
+        if (channelId.equals(powerState.channelId)) {
 
-            if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY)) {
+            if (ContainsCapabilityProperty(capabilties, powerState.propertyName)) {
                 if (command.equals(OnOffType.ON)) {
                     connection.smartHomeCommand(entityId, "turnOn");
                     return true;

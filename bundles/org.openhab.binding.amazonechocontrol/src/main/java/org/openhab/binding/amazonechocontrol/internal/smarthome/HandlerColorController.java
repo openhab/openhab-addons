@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -47,15 +46,11 @@ public class HandlerColorController extends HandlerBase {
     public static final String INTERFACE = "Alexa.ColorController";
     public static final String INTERFACE_COLOR_PROPERTIES = "Alexa.ColorPropertiesController";
     // Channel and Properties
-    static final String ALEXA_PROPERTY = "color";
-    static final String CHANNEL_UID = "color";
-    static final ChannelTypeUID CHANNEL_TYPE = CHANNEL_TYPE_COLOR;
-    static final String ITEM_TYPE = ITEM_TYPE_COLOR;
+    final static ChannelInfo color = new ChannelInfo("color" /* propertyName */ , "color" /* ChannelId */,
+            CHANNEL_TYPE_COLOR /* Channel Type */ , ITEM_TYPE_COLOR /* Item Type */);
 
-    static final String ALEXA_PROPERTY_COLOR_NAME = "colorProperties";
-    static final String CHANNEL_UID_COLOR_NAME = "colorName";
-    static final ChannelTypeUID CHANNEL_TYPE_COLOR_NAME_UID = CHANNEL_TYPE_COLOR_NAME;
-    static final String COLOR_ITEM_TYPE_COLOR = ITEM_TYPE_STRING;
+    final static ChannelInfo colorProperties = new ChannelInfo("colorProperties" /* propertyName */ ,
+            "colorName" /* ChannelId */, CHANNEL_TYPE_COLOR_NAME /* Channel Type */ , ITEM_TYPE_STRING /* Item Type */);
 
     @Nullable
     HSBType lastColor;
@@ -69,10 +64,8 @@ public class HandlerColorController extends HandlerBase {
 
     @Override
     protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (ALEXA_PROPERTY.contentEquals(property)) {
-            return new ChannelInfo[] { new ChannelInfo(ALEXA_PROPERTY, CHANNEL_UID, CHANNEL_TYPE, ITEM_TYPE),
-                    new ChannelInfo(ALEXA_PROPERTY_COLOR_NAME, CHANNEL_UID_COLOR_NAME, CHANNEL_TYPE_COLOR_NAME_UID,
-                            COLOR_ITEM_TYPE_COLOR) };
+        if (color.propertyName.contentEquals(property)) {
+            return new ChannelInfo[] { color, colorProperties };
         }
         return null;
     }
@@ -81,42 +74,42 @@ public class HandlerColorController extends HandlerBase {
     protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         if (INTERFACE.equals(interfaceName)) {
             // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
-            HSBType color = null;
+            HSBType colorValue = null;
             for (JsonObject state : stateList) {
-                if (ALEXA_PROPERTY.equals(state.get("name").getAsString())) {
+                if (color.propertyName.equals(state.get("name").getAsString())) {
                     JsonObject value = state.get("value").getAsJsonObject();
                     // For groups take the maximum
-                    if (color == null) {
-                        color = new HSBType(new DecimalType(value.get("hue").getAsInt()),
+                    if (colorValue == null) {
+                        colorValue = new HSBType(new DecimalType(value.get("hue").getAsInt()),
                                 new PercentType(value.get("saturation").getAsInt() * 100),
                                 new PercentType(value.get("brightness").getAsInt() * 100));
                     }
                 }
             }
-            if (color != null) {
-                if (!color.equals(lastColor)) {
+            if (colorValue != null) {
+                if (!colorValue.equals(lastColor)) {
                     result.NeedSingleUpdate = true;
-                    lastColor = color;
+                    lastColor = colorValue;
                 }
             }
-            updateState(CHANNEL_UID, color == null ? UnDefType.UNDEF : color);
+            updateState(color.channelId, colorValue == null ? UnDefType.UNDEF : colorValue);
         }
         if (INTERFACE_COLOR_PROPERTIES.equals(interfaceName)) {
-            String colorName = null;
+            String colorNameValue = null;
             for (JsonObject state : stateList) {
-                if (ALEXA_PROPERTY_COLOR_NAME.equals(state.get("name").getAsString())) {
-                    if (colorName == null) {
+                if (colorProperties.propertyName.equals(state.get("name").getAsString())) {
+                    if (colorNameValue == null) {
                         result.NeedSingleUpdate = false;
-                        colorName = state.get("value").getAsJsonObject().get("name").getAsString();
+                        colorNameValue = state.get("value").getAsJsonObject().get("name").getAsString();
                     }
                 }
             }
             if (lastColorName == null) {
-                lastColorName = colorName;
-            } else if (colorName == null && lastColorName != null) {
-                colorName = lastColorName;
+                lastColorName = colorNameValue;
+            } else if (colorNameValue == null && lastColorName != null) {
+                colorNameValue = lastColorName;
             }
-            updateState(CHANNEL_UID_COLOR_NAME,
+            updateState(colorProperties.channelId,
                     lastColorName == null ? UnDefType.UNDEF : new StringType(lastColorName));
         }
     }
@@ -124,8 +117,8 @@ public class HandlerColorController extends HandlerBase {
     @Override
     protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(CHANNEL_UID)) {
-            if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY)) {
+        if (channelId.equals(color.channelId)) {
+            if (ContainsCapabilityProperty(capabilties, color.propertyName)) {
                 if (command instanceof HSBType) {
                     HSBType color = ((HSBType) command);
                     JsonObject colorObject = new JsonObject();
@@ -136,8 +129,8 @@ public class HandlerColorController extends HandlerBase {
                 }
             }
         }
-        if (channelId.equals(CHANNEL_UID_COLOR_NAME)) {
-            if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY)) {
+        if (channelId.equals(colorProperties.channelId)) {
+            if (ContainsCapabilityProperty(capabilties, color.propertyName)) {
                 if (command instanceof StringType) {
                     String colorName = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(colorName)) {

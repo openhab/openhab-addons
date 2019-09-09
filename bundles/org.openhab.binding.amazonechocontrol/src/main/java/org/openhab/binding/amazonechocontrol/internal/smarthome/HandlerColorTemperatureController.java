@@ -25,7 +25,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -45,15 +44,13 @@ public class HandlerColorTemperatureController extends HandlerBase {
     public static final String INTERFACE = "Alexa.ColorTemperatureController";
     public static final String INTERFACE_COLOR_PROPERTIES = "Alexa.ColorPropertiesController";
     // Channel and Properties
-    static final String ALEXA_PROPERTY = "colorTemperatureInKelvin";
-    static final String CHANNEL_UID = "colorTemperatureInKelvin";
-    static final ChannelTypeUID CHANNEL_TYPE = CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN;
-    static final String ITEM_TYPE = ITEM_TYPE_NUMBER;
+    final static ChannelInfo colorTemperatureInKelvin = new ChannelInfo("colorTemperatureInKelvin" /* propertyName */ ,
+            "colorTemperatureInKelvin" /* ChannelId */, CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN /* Channel Type */ ,
+            ITEM_TYPE_NUMBER /* Item Type */);
 
-    static final String ALEXA_PROPERTY_COLOR_NAME = "colorProperties";
-    static final String CHANNEL_UID_COLOR_NAME = "colorName";
-    static final ChannelTypeUID CHANNEL_TYPE_COLOR_NAME = CHANNEL_TYPE_COLOR_TEMPERATURE_NAME;
-    static final String COLOR_ITEM_TYPE_COLOR = ITEM_TYPE_STRING;
+    final static ChannelInfo colorTemperatureName = new ChannelInfo("colorProperties" /* propertyName */ ,
+            "colorTemperatureName" /* ChannelId */, CHANNEL_TYPE_COLOR_TEMPERATURE_NAME /* Channel Type */ ,
+            ITEM_TYPE_STRING /* Item Type */);
 
     @Nullable
     Integer lastColorTemperature;
@@ -67,10 +64,8 @@ public class HandlerColorTemperatureController extends HandlerBase {
 
     @Override
     protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (ALEXA_PROPERTY.contentEquals(property)) {
-            return new ChannelInfo[] { new ChannelInfo(ALEXA_PROPERTY, CHANNEL_UID, CHANNEL_TYPE, ITEM_TYPE),
-                    new ChannelInfo(ALEXA_PROPERTY_COLOR_NAME, CHANNEL_UID_COLOR_NAME, CHANNEL_TYPE_COLOR_NAME,
-                            COLOR_ITEM_TYPE_COLOR) };
+        if (colorTemperatureInKelvin.propertyName.contentEquals(property)) {
+            return new ChannelInfo[] { colorTemperatureInKelvin, colorTemperatureName };
         }
         return null;
     }
@@ -78,47 +73,49 @@ public class HandlerColorTemperatureController extends HandlerBase {
     @Override
     protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         if (INTERFACE.equals(interfaceName)) {
-            Integer colorTemperature = null;
+            Integer colorTemperatureInKelvinValue = null;
             for (JsonObject state : stateList) {
-                if (ALEXA_PROPERTY.equals(state.get("name").getAsString())) {
+                if (colorTemperatureInKelvin.propertyName.equals(state.get("name").getAsString())) {
                     int value = state.get("value").getAsInt();
                     // For groups take the maximum
-                    if (colorTemperature == null) {
-                        colorTemperature = value;
+                    if (colorTemperatureInKelvinValue == null) {
+                        colorTemperatureInKelvinValue = value;
                     }
                 }
             }
-            if (colorTemperature != null && !colorTemperature.equals(lastColorTemperature)) {
-                lastColorTemperature = colorTemperature;
+            if (colorTemperatureInKelvinValue != null && !colorTemperatureInKelvinValue.equals(lastColorTemperature)) {
+                lastColorTemperature = colorTemperatureInKelvinValue;
                 result.NeedSingleUpdate = true;
             }
-            updateState(CHANNEL_UID, colorTemperature == null ? UnDefType.UNDEF : new DecimalType(colorTemperature));
+            updateState(colorTemperatureInKelvin.channelId, colorTemperatureInKelvinValue == null ? UnDefType.UNDEF
+                    : new DecimalType(colorTemperatureInKelvinValue));
         }
         if (INTERFACE_COLOR_PROPERTIES.equals(interfaceName)) {
-            String colorName = null;
+            String colorTemperatureNameValue = null;
             for (JsonObject state : stateList) {
-                if (ALEXA_PROPERTY_COLOR_NAME.equals(state.get("name").getAsString())) {
-                    if (colorName == null) {
+                if (colorTemperatureName.propertyName.equals(state.get("name").getAsString())) {
+                    if (colorTemperatureNameValue == null) {
                         result.NeedSingleUpdate = false;
-                        colorName = state.get("value").getAsJsonObject().get("name").getAsString();
+                        colorTemperatureNameValue = state.get("value").getAsJsonObject().get("name").getAsString();
                     }
                 }
             }
             if (lastColorName == null) {
-                lastColorName = colorName;
-            } else if (colorName == null && lastColorName != null) {
-                colorName = lastColorName;
+                lastColorName = colorTemperatureNameValue;
+            } else if (colorTemperatureNameValue == null && lastColorName != null) {
+                colorTemperatureNameValue = lastColorName;
             }
-            updateState(CHANNEL_UID_COLOR_NAME, colorName == null ? UnDefType.UNDEF : new StringType(colorName));
+            updateState(colorTemperatureName.channelId,
+                    colorTemperatureNameValue == null ? UnDefType.UNDEF : new StringType(colorTemperatureNameValue));
         }
     }
 
     @Override
     protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(CHANNEL_UID)) {
+        if (channelId.equals(colorTemperatureInKelvin.channelId)) {
             // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
-            if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY)) {
+            if (ContainsCapabilityProperty(capabilties, colorTemperatureInKelvin.propertyName)) {
                 if (command instanceof DecimalType) {
                     int intValue = ((DecimalType) command).intValue();
                     if (intValue < 1000) {
@@ -132,8 +129,8 @@ public class HandlerColorTemperatureController extends HandlerBase {
                 }
             }
         }
-        if (channelId.equals(CHANNEL_UID_COLOR_NAME)) {
-            if (ContainsCapabilityProperty(capabilties, ALEXA_PROPERTY)) {
+        if (channelId.equals(colorTemperatureName.channelId)) {
+            if (ContainsCapabilityProperty(capabilties, colorTemperatureInKelvin.propertyName)) {
                 if (command instanceof StringType) {
                     String colorTemperatureName = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(colorTemperatureName)) {
