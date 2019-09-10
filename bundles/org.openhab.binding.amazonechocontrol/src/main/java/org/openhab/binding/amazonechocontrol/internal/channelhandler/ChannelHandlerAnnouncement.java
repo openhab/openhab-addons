@@ -51,10 +51,9 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                     try {
                         AnnouncementRequestJson request = parseJson(commandValue, AnnouncementRequestJson.class);
                         if (request != null) {
-                            if (StringUtils.isEmpty(request.speak)) {
+                            speak = request.speak;
+                            if (speak == null || StringUtils.isEmpty(speak)) {
                                 speak = " "; // blank generates a beep
-                            } else {
-                                speak = request.speak;
                             }
                             title = request.title;
                             body = request.body;

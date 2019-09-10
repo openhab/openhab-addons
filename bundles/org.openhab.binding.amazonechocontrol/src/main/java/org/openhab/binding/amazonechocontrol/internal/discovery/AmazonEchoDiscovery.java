@@ -61,7 +61,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
 
     @Nullable
     ScheduledFuture<?> startScanStateJob;
-    static Long activateTimeStamp;
+    static @Nullable Long activateTimeStamp;
 
     private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
@@ -87,7 +87,9 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
     @Override
     protected void startScan() {
         stopScanJob();
-        removeOlderResults(activateTimeStamp);
+        if (activateTimeStamp != null) {
+            removeOlderResults(activateTimeStamp);
+        }
 
         setDevices(accountHandler.updateDeviceList());
 
