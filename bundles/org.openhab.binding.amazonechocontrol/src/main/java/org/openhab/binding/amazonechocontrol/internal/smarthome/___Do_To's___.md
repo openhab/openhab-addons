@@ -6,7 +6,9 @@
 4. Write Release Notes
 5. Create JAR File for OH 2.4
 6. Create Thread in the Community and write a hint on Facebook (and Twitter?)
-7. Add translations for the new channels
-8. Refactoring Value Handling of groups or channel detection in groups (Maybe make the Handler Structure more generic)
-9. Overview Page in the BindingServlet to show the user all devices, capabilities (with hint, if supported or not) and ApplianceId's
-10. Support more Controllers
+7. Create Pull-Request
+8. Add translations for the new channels
+9. Refactoring Value Handling of groups or channel detection in groups (Maybe make the Handler Structure more generic)
+10. Overview Page in the BindingServlet to show the user all devices, capabilities (with hint, if supported or not) and ApplianceId's
+11. Support more Controllers
+12. Ask Kai Kreuzer for own repository in GitHab
