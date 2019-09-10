@@ -56,7 +56,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
 
     @Nullable
     ScheduledFuture<?> startScanStateJob;
-    static Long activateTimeStamp;
+    static @Nullable Long activateTimeStamp;
 
     private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
@@ -82,7 +82,9 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
     @Override
     protected void startScan() {
         stopScanJob();
-        removeOlderResults(activateTimeStamp);
+        if (activateTimeStamp != null) {
+            removeOlderResults(activateTimeStamp);
+        }
         setSmartHomeDevices(accountHandler.updateSmartHomeDeviceList(false));
     }
 

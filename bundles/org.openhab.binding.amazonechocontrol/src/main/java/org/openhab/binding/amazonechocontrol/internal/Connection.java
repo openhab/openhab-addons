@@ -1202,7 +1202,8 @@ public class Connection {
         smartHomeCommand(entityId, action, null, null);
     }
 
-    public void smartHomeCommand(String entityId, String action, String property, Object value) throws IOException {
+    public void smartHomeCommand(String entityId, String action, @Nullable String property, @Nullable Object value)
+            throws IOException {
         String url = alexaServer + "/api/phoenix/state";
 
         JsonObject json = new JsonObject();

@@ -108,6 +108,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private @Nullable AccountServlet accountServlet;
     private final Gson gson;
     int checkDataCounter;
+    private @Nullable Set<String> requestedDeviceUpdates;
 
     public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage, Gson gson) {
         super(bridge);
@@ -919,8 +920,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         return new ArrayList<SmartHomeBaseDevice>();
     }
 
-    private Set<String> requestedDeviceUpdates;
-
     public void forceDelayedSmartHomeStateUpdate(@Nullable String deviceId) {
         if (deviceId == null) {
             return;
@@ -959,7 +958,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         }
     }
 
-    synchronized private void updateSmartHomeState(String deviceFilterId) {
+    synchronized private void updateSmartHomeState(@Nullable String deviceFilterId) {
         try {
             logger.debug("updateSmartHomeState started");
             Connection connection = this.connection;
@@ -982,7 +981,10 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             SmartHomeBaseDevice baseDevice = jsonIdSmartHomeDeviceMapping.get(id);
                             for (SmartHomeDevice shd : SmartHomeDeviceHandler.GetSupportedSmartHomeDevices(baseDevice,
                                     allDevices)) {
-                                applianceIds.add(shd.applianceId);
+                                String applianceId = shd.applianceId;
+                                if (applianceId != null) {
+                                    applianceIds.add(applianceId);
+                                }
                             }
                         }
                     }
