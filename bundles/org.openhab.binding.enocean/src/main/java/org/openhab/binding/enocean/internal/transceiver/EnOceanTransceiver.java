@@ -426,8 +426,8 @@ public abstract class EnOceanTransceiver {
                     pl.forEach(l -> l.espPacketReceived(msg));
                 }
             }
-        } catch (Exception e) {	
-            logger.error("Exception in informListeners", e);	
+        } catch (Exception e) {
+            logger.error("Exception in informListeners", e);
         }
     }
 
