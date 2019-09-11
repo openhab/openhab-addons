@@ -532,7 +532,7 @@
 	</channel-type>
 	<channel-type id="colorName" advanced="false">
 		<item-type>String</item-type>
-		<label>Color</label>
+		<label>Color Name</label>
 		<description>The color of a smart bulb</description>
 		<state pattern="String" readOnly="false">
 			<options>
@@ -556,7 +556,7 @@
 	</channel-type>
 	<channel-type id="colorTemperatureName" advanced="false">
 		<item-type>String</item-type>
-		<label>White temperature</label>
+		<label>White Temperature Name</label>
 		<description>The temperature of white</description>
 		<state pattern="String" readOnly="false">
 			<options>

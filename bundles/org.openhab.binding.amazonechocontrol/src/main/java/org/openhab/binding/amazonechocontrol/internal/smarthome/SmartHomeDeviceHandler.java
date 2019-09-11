@@ -88,7 +88,6 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         }
         boolean changed = this.smartHomeBaseDevice == null;
         this.smartHomeBaseDevice = smartHomeBaseDevice;
-        updateStatus(ThingStatus.OFFLINE);
 
         Thing thing = getThing();
         Set<String> unusedChannels = new HashSet<>();
@@ -129,6 +128,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             removeChannelFromDevice(channelId);
         }
         if (changed) {
+            updateStatus(ThingStatus.UNKNOWN);
             accountHandler.forceDelayedSmartHomeStateUpdate(findId());
         }
         return true;
