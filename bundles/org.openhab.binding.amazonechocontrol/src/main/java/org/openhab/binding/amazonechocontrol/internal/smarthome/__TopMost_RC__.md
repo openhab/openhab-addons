@@ -23,9 +23,9 @@ Please [read](https://www.openhab.org/docs/administration/bundles.html)
 ## Download Latest Stable Version
 The lastest release - 2.5 (Release Candidate 3) -  this version is included in the daily snapshot build of OH 2.5
 
-The documention of all feature can be found 
-
 [Download Beta 2.5 (RC 3)](https://www.dropbox.com/s/t4djng666piqu2q/org.openhab.binding.amazonechocontrol_2.5.0.RC_3.jar?dl=0)
+
+The documention of all feature can be found below in this posting.
 
 Whats new in 2.5 (RC 3):
 - **Breaking Change**: The behavior of the announcement channel is changed.
