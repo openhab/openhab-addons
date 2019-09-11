@@ -12,16 +12,12 @@
  */
 package org.openhab.binding.etherrain.internal.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * The {@link EtherRainStatusResponse} is a encapsulation of responses from the EtherRain
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
 public class EtherRainStatusResponse {
-    private final Logger logger = LoggerFactory.getLogger(EtherRainStatusResponse.class);
 
     private String uniqueName;
     private String macAddress;
