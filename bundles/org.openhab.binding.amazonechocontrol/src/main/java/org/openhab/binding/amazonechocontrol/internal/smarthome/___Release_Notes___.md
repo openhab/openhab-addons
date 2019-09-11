@@ -1,4 +1,4 @@
-#Ladies and Gentlemen
+##Ladies and Gentlemen
 
 Please welcome @Lukask in our community!
 
@@ -8,6 +8,7 @@ But this features are very new with a lot of new code and so I do not want to ha
 
 And so we deliver today 2 different version of the binding. One relative stable Release Candidate version with the latest bugfixes and a development version with all the cool new features and of course all changes of the latest release candidate version.
 
+## New Preview and Beta test thread
 To make it easy for you, there are now 2 threads in this community, this one for support of the stable version and a new "Beta And Preview: Openhab2 Amazon Echo Control Binding".
 
 If you want test our latest feature, switch now to the new thread.
