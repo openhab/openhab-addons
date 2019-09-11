@@ -72,7 +72,7 @@ The configuration of your amazon account must be done in the 'Amazon Account' de
 
 ### Discover Smart Home Devices
 
-If you want to discover your smart home devices you need to activate it in the 'Amazon Account' thing. Devices from other skills can be discovered too.
+If you want to discover your smart home devices you need to activate it in the 'Amazon Account' thing. Devices from other skills can be discovered too. See section *Smart Home Devices* below for more information.
 
 ## First Steps
 
@@ -361,7 +361,9 @@ sitemap flashbriefings label="Flash Briefings"
 }
 ```
 
-## Smart Home
+## Smart Home Devices
+
+Note: the cannels of smartHomeDevices and smartHomeDeviceGroup will be created dynamically based on the capabilities reported by the amazon server. This can take a little bit of time. 
 
 ### Supported Things
 
@@ -415,7 +417,7 @@ Take a look in the channel description above to know, which channels are support
 // Lights and lightgroups
 Switch Light_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:powerState" }
 Dimmer Light_Brightness "Brightness" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:brightness" }
-Color  Light_Color "Color" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorName" }
+Color  Light_Color "Color" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:color" }
 String Light_Color_Name "Color Name" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorName" }
 String Light_White "White temperature" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorTemperatureName" }
 
