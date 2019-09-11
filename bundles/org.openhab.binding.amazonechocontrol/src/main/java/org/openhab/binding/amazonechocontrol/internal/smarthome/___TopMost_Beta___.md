@@ -1,6 +1,6 @@
 # Preview and Beta Test Thread
 
-In this @michi and @Lukask provides the latest features of the amazonechocontrol binding.
+In this thread @Lukask and I (@michi) provides the latest features of the amazonechocontrol binding.
 
 Please jump to the [Release Candidate and Support: Amazon Echo Control Binding](https://community.openhab.org/t/release-candidate-and-support-amazon-echo-control-binding/37844) thread if you need support of the released binding version or to download a stable bugfixed version.
 
