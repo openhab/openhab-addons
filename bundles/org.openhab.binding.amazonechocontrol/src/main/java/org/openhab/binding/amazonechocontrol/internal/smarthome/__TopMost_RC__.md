@@ -3,7 +3,7 @@
 This thread tries to give you support with the released version of the amazon echo control binding.
 Also relative stable (sometimes more stable then the offical version) can be downloaded from here.
 
-Please jump to the Preview and Beta: amazonechocontrol binding thread to get the latest features if you want do a beta test. 
+Please jump to the [Preview and Beta: Amazon Echo Control](LINK) Binding thread to get the latest features if you want do a beta test. 
 
 ## FAQ and Hints
 
