@@ -23,8 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SomfyTahomaConfig {
     private String email = "";
-    private String password =  "";
-    private String thingUid = "";
+    private String password = "";
     private int refresh = 30;
     private int statusTimeout = 300;
 
@@ -36,19 +35,19 @@ public class SomfyTahomaConfig {
         return password;
     }
 
-    public String getThingUid() {
-        return thingUid;
-    }
-
-    public void setThingUid(String thingUid) {
-        this.thingUid = thingUid;
-    }
-
     public int getRefresh() {
         return refresh;
     }
 
     public int getStatusTimeout() {
         return statusTimeout;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

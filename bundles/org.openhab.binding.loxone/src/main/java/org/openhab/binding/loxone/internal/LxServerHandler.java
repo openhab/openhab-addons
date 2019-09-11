@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
-import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,7 +60,7 @@ import com.google.gson.GsonBuilder;
 
 /**
  * Representation of a Loxone Miniserver. It is an openHAB {@link Thing}, which is used to communicate with
- * objects (controls) configured in the Miniserver over {@link Channels}.
+ * objects (controls) configured in the Miniserver over channels.
  *
  * @author Pawel Pieczul - Initial contribution
  */
@@ -72,17 +71,11 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
 
     private static final Gson GSON;
 
+    private LxBindingConfiguration bindingConfig;
     private InetAddress host;
-    private int port;
-
-    private int firstConDelay = 1;
-    private int connectErrDelay = 10;
-    private int userErrorDelay = 60;
-    private int comErrorDelay = 30;
-    private long keepAlivePeriod = 240; // 4 minutes, server timeout is 5 minutes
 
     // initial delay to initiate connection
-    private int reconnectDelay = firstConDelay;
+    private int reconnectDelay;
 
     // Map of state UUID to a map of control UUID and state objects
     // State with a unique UUID can be configured in many controls and each control can even have a different name of
@@ -167,40 +160,20 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         debugId = staticDebugId.getAndIncrement();
 
         logger.trace("[{}] Initializing thing instance", debugId);
-        LxBindingConfiguration cfg = getConfig().as(LxBindingConfiguration.class);
+        bindingConfig = getConfig().as(LxBindingConfiguration.class);
         try {
-            this.host = InetAddress.getByName(cfg.host);
+            this.host = InetAddress.getByName(bindingConfig.host);
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
             return;
         }
-        this.port = cfg.port;
-        if (cfg.keepAlivePeriod > 0 && cfg.keepAlivePeriod != keepAlivePeriod) {
-            logger.debug("[{}] Changing keepAlivePeriod to {}", debugId, cfg.keepAlivePeriod);
-            keepAlivePeriod = cfg.keepAlivePeriod;
-        }
-        if (cfg.firstConDelay >= 0 && firstConDelay != cfg.firstConDelay) {
-            logger.debug("[{}] Changing firstConDelay to {}", debugId, cfg.firstConDelay);
-            firstConDelay = cfg.firstConDelay;
-        }
-        if (cfg.connectErrDelay >= 0 && connectErrDelay != cfg.connectErrDelay) {
-            logger.debug("[{}] Changing connectErrDelay to {}", debugId, cfg.connectErrDelay);
-            connectErrDelay = cfg.connectErrDelay;
-        }
-        if (cfg.userErrorDelay >= 0 && userErrorDelay != cfg.userErrorDelay) {
-            logger.debug("[{}] Changing userErrorDelay to {}", debugId, cfg.userErrorDelay);
-            userErrorDelay = cfg.userErrorDelay;
-        }
-        if (cfg.comErrorDelay >= 0 && comErrorDelay != cfg.comErrorDelay) {
-            logger.debug("[{}] Changing comErrorDelay to {}", debugId, cfg.comErrorDelay);
-            comErrorDelay = cfg.comErrorDelay;
-        }
+        reconnectDelay = bindingConfig.firstConDelay;
 
         jettyThreadPool = new QueuedThreadPool();
         jettyThreadPool.setName(LxServerHandler.class.getSimpleName() + "-" + debugId);
         jettyThreadPool.setDaemon(true);
 
-        socket = new LxWebSocket(debugId, this, cfg, host);
+        socket = new LxWebSocket(debugId, this, bindingConfig, host);
         wsClient = new WebSocketClient();
         wsClient.setExecutor(jettyThreadPool);
 
@@ -459,7 +432,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
                         "Too many failed login attempts - stopped trying");
                 break;
             case USER_UNAUTHORIZED:
-                setReconnectDelay(userErrorDelay);
+                setReconnectDelay(bindingConfig.userErrorDelay);
                 updateStatusToOffline(ThingStatusDetail.CONFIGURATION_ERROR,
                         reason != null ? reason : "User authentication error (invalid user name or password)");
                 break;
@@ -467,7 +440,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
                 updateStatusToOffline(ThingStatusDetail.COMMUNICATION_ERROR, "User authentication timeout");
                 break;
             case COMMUNICATION_ERROR:
-                setReconnectDelay(comErrorDelay);
+                setReconnectDelay(bindingConfig.comErrorDelay);
                 String text = "Error communicating with Miniserver";
                 if (reason != null) {
                     text += " (" + reason + ")";
@@ -576,7 +549,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             // without this zero timeout, jetty will wait 30 seconds for stopping the client to eventually fail
             // with the timeout it is immediate and all threads end correctly
             jettyThreadPool.setStopTimeout(0);
-            URI target = new URI("ws://" + host.getHostAddress() + ":" + port + SOCKET_URL);
+            URI target = new URI("ws://" + host.getHostAddress() + ":" + bindingConfig.port + SOCKET_URL);
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setSubProtocols("remotecontrol");
             socket.startResponseTimeout();
@@ -664,11 +637,11 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
                     if (!connect()) {
                         updateStatusToOffline(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Failed to connect to Miniserver's WebSocket");
-                        reconnectDelay = connectErrDelay;
+                        reconnectDelay = bindingConfig.connectErrDelay;
                     } else {
                         try {
-                            logger.debug("[{}] Sleeping for {} seconds.", debugId, keepAlivePeriod);
-                            while (!sessionActive.await(keepAlivePeriod, TimeUnit.SECONDS)) {
+                            logger.debug("[{}] Sleeping for {} seconds.", debugId, bindingConfig.keepAlivePeriod);
+                            while (!sessionActive.await(bindingConfig.keepAlivePeriod, TimeUnit.SECONDS)) {
                                 socket.sendKeepAlive();
                             }
                         } catch (InterruptedException e) {

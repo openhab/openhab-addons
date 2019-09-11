@@ -23,6 +23,6 @@ public enum ConnectState {
 
     CONNECTTING,
 
-    CONNECTED;
+    CONNECTED
 
 }

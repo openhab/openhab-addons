@@ -102,6 +102,9 @@ Since there is a separate rule action instance for each `smtp` thing, this needs
 The first parameter always has to be `mail` and the second is the full Thing UID of the SMTP server that should be used.
 Once this action instance is retrieved, you can invoke the action method on it.
 
+Please note: all strings are expected to be UTF-8 encoded.
+Using different character sets may produce unwanted results.
+
 Examples:
 
 ```

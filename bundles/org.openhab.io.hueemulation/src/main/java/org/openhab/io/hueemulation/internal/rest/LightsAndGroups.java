@@ -98,7 +98,6 @@ import io.swagger.annotations.ApiResponses;
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class LightsAndGroups implements RegistryChangeListener<Item> {
     private final Logger logger = LoggerFactory.getLogger(LightsAndGroups.class);
     private static final String ITEM_TYPE_GROUP = "Group";

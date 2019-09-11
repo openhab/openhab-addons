@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pjLinkDevice"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="pjLinkDevice">
+		<label>PJLink Device</label>
+		<description>A PJLink compatible device, e.g. a digital projector</description>
+
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="input" typeId="input" />
+			<channel id="audioMute" typeId="audioMute" />
+			<channel id="videoMute" typeId="videoMute" />
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true" min="1">
+				<context>network-address</context>
+				<label>IP address</label>
+				<description>The address of the PJLink device to control.</description>
+			</parameter>
+			<parameter name="adminPassword" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password of the PJLink device.</description>
+			</parameter>
+			<parameter name="tcpPort" type="integer" min="0" max="65535">
+				<default>4352</default>
+				<label>TCP Port</label>
+				<description>The TCP port of the PJLink device to control.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<default>5</default>
+				<label>Refresh interval (s)</label>
+				<description>How often to poll the device state (in seconds). A value of zero will disable polling.</description>
+			</parameter>
+			<parameter name="refreshPower" type="boolean">
+				<default>false</default>
+				<label>Poll for power state</label>
+				<description>Enable polling for the power state. Only considered if the refreshInterval interval is greater than zero.</description>
+			</parameter>
+			<parameter name="refreshMute" type="boolean">
+				<default>false</default>
+				<label>Poll for mute state</label>
+				<description>Enable polling for the mute state. Only considered if the refreshInterval interval is greater than zero.</description>
+			</parameter>
+			<parameter name="refreshInputChannel" type="boolean">
+				<default>false</default>
+				<label>Poll for selected input channel</label>
+				<description>Enable polling for the selected input channel. Only considered if the refreshInterval interval is greater than zero.</description>
+			</parameter>
+			<parameter name="autoReconnectInterval" type="integer" min="0">
+				<label>Auto reconnect interval</label>
+				<description>Seconds between connection retries when connection to the PJLink device has been lost, 0 means never retry, minimum 30s</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power ON/OFF the projector</description>
+	</channel-type>
+
+	<channel-type id="input">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>Select the input signal to use</description>
+	</channel-type>
+
+	<channel-type id="audioMute">
+		<item-type>Switch</item-type>
+		<label>Audio Mute</label>
+		<description>Select the audio mute status</description>
+	</channel-type>
+
+	<channel-type id="videoMute">
+		<item-type>Switch</item-type>
+		<label>Video Mute</label>
+		<description>Select the video mute status</description>
+	</channel-type>
+
+</thing:thing-descriptions>

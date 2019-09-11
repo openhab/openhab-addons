@@ -44,7 +44,7 @@ public class RFXComInterfaceControlMessageTest {
         configuration.enableBlindsT1T2T3T4 = false;
         configuration.enableBlindsT0 = false;
         configuration.enableProGuard = false;
-//      configuration.enableFS20Packets = false;
+        // configuration.enableFS20Packets = false;
         configuration.enableLaCrosse = false;
         configuration.enableHidekiUPM = false;
         configuration.enableADLightwaveRF = false;
@@ -60,11 +60,11 @@ public class RFXComInterfaceControlMessageTest {
         configuration.enableX10 = false;
     }
 
-    private void testMessage(RFXComInterfaceMessage.TransceiverType transceiverType, RFXComBridgeConfiguration configuration, String data)
-            throws RFXComException {
+    private void testMessage(RFXComInterfaceMessage.TransceiverType transceiverType,
+            RFXComBridgeConfiguration configuration, String data) throws RFXComException {
 
         assertArrayEquals(HexUtils.hexToBytes(data),
-            new RFXComInterfaceControlMessage(transceiverType, configuration).decodeMessage());
+                new RFXComInterfaceControlMessage(transceiverType, configuration).decodeMessage());
     }
 
     @Test
@@ -133,11 +133,11 @@ public class RFXComInterfaceControlMessageTest {
         testMessage(_433_92MHZ_TRANSCEIVER, configuration, "0D00000203530000200000000000");
     }
 
-//  @Test
-//  public void testFS20PacketsMessage() throws RFXComException {
-//      configuration.enableFS20Packets = true;
-//      testMessage(_433_92MHZ_TRANSCEIVER, configuration, "0D00000203530000100000000000");
-//  }
+    // @Test
+    // public void testFS20PacketsMessage() throws RFXComException {
+    // configuration.enableFS20Packets = true;
+    // testMessage(_433_92MHZ_TRANSCEIVER, configuration, "0D00000203530000100000000000");
+    // }
 
     @Test
     public void testLaCrosseMessage() throws RFXComException {

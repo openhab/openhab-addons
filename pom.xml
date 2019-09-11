@@ -33,6 +33,7 @@
     <module>bom</module>
     <module>bundles</module>
     <module>features</module>
+    <module>itests</module>
   </modules>
 
   <scm>
@@ -68,7 +69,7 @@
 
     <bnd.version>4.2.0</bnd.version>
     <karaf.version>4.2.6</karaf.version>
-    <sat.version>0.6.1</sat.version>
+    <sat.version>0.7.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage></bnd.importpackage>
@@ -481,6 +482,19 @@ Import-Package: \\
                     <ignore></ignore>
                   </action>
                 </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[3.0.0,)</versionRange>
+                    <goals>
+                      <goal>unpack</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute></execute>
+                  </action>
+                </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
@@ -654,17 +668,6 @@ Import-Package: \\
     </profile>
 
     <profile>
-      <id>skip-itest</id>
-      <activation>
-        <property>
-          <name>!skipTests</name>
-        </property>
-      </activation>
-      <modules>
-        <module>itests</module>
-      </modules>
-    </profile>
-    <profile>
       <id>with-bnd-resolver-resolve</id>
       <activation>
         <property>
@@ -691,6 +694,45 @@ Import-Package: \\
         </pluginManagement>
       </build>
     </profile>
+
+    <profile>
+      <id>embedExternalDependency</id>
+      <activation>
+        <file>
+          <exists>embedExternalDependency.profile</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <!-- unpack dependency -->
+              <execution>
+                <id>unpack-dependency</id>
+                <goals>  
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>${embedDependency.groupId}</groupId>
+                      <artifactId>${embedDependency.artifactId}</artifactId>
+                      <version>${embedDependency.version}</version>
+                      <type>jar</type>
+                      <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                      <overWrite>true</overWrite>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
 </project>

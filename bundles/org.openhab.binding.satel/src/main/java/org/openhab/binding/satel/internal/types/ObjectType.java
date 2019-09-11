@@ -31,5 +31,5 @@ public enum ObjectType {
     OUTPUT,
     DOOR,
     TROUBLE,
-    TROUBLE_MEMORY;
+    TROUBLE_MEMORY
 }

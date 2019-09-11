@@ -105,7 +105,7 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
                         "Z-Way bridge handler not found or not ONLINE.");
             }
         }
-    };
+    }
 
     public ZWayZAutomationDeviceHandler(Thing thing) {
         super(thing);

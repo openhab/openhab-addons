@@ -3,7 +3,7 @@
 This binding integrates with [Lutron](http://www.lutron.com) lighting control and home automation systems.
 It contains separate binding support for four different types of Lutron systems:
 
-* RadioRA 2 and other systems that can be controlled by Lutron Integration Protocol, such as Caseta and Homeworks QS
+* RadioRA 2 and other systems that can be controlled by Lutron Integration Protocol, such as Homeworks QS, RA2 Select, and Caseta PRO
 * The original RadioRA system, referred to here as RadioRA Classic
 * Legacy HomeWorks RS232 Processors
 * Grafik Eye 3x/4x systems with GRX-PRG or GRX-CI-PRG control interfaces
@@ -14,6 +14,7 @@ Each is described in a separate section below.
 
 **Note:** While the integration protocol used by this binding should largely be compatible with other current Lutron systems, this binding has only been fully tested with RadioRA 2 and Caseta.
 Homeworks QS support is still a work in progress.
+RA2 Select is believed to work, but it is unconfirmed.
 It has not yet been tested with Quantum, QS Standalone, or myRoom plus systems.
 
 **Note:** Caseta support is only possible with the Smart Bridge **Pro** hub.
@@ -24,14 +25,17 @@ The standard Caseta hub does not support Lutron Integration Protocol.
 This binding currently supports the following thing types:
 
 * **ipbridge** - The Lutron main repeater/processor/hub
-* **dimmer** - Dimmer
+* **dimmer** - Dimmer or fan controller
 * **switch** - Switch or relay module
 * **occupancysensor** - Occupancy/vacancy sensor
 * **keypad** - Lutron seeTouch or Hybrid seeTouch Keypad
 * **ttkeypad** - Tabletop seeTouch Keypad
+* **intlkeypad** - International seeTouch Keypad (HomeWorks QS only)
 * **pico** - Pico Keypad
+* **grafikeyekeypad** - GRAFIK Eye QS Keypad (RadioRA 2/HomeWorks QS only)
 * **virtualkeypad** - Repeater virtual keypad
 * **vcrx** - Visor control receiver module (VCRX)
+* **qsio** - HomeWorks QS IO Interface
 * **cco** - Contact closure output module or VCRX CCO
 * **shade** - Lutron shade or motorized drape
 * **greenmode** - Green Mode subsystem
@@ -39,13 +43,15 @@ This binding currently supports the following thing types:
 
 ## Discovery
 
-Full discovery is supported for RadioRA 2 systems.
-Both the main repeaters themselves and the devices connected to them can be automatically discovered.
-Discovered RadioRA 2 main repeaters will be accessed using the default integration credentials.
-These can be changed in the main repeater thing configuration.
+Full discovery is supported for RadioRA 2 and HomeWorks QS systems.
+Both the main repeaters/processors themselves and the devices connected to them can be automatically discovered.
+Discovered repeaters/processors will be accessed using the default integration credentials.
+These can be changed in the bridge thing configuration.
 
-**Note:** Discovery of devices paired with a bridge may work on systems other than RadioRA 2 (e.g. HomeWorks QS).
-However, the bridge itself will need to be manually added as bridge discovery is only supported for RadioRA 2.
+Hubs and their connected devices in Caseta and RA2 Select systems need to be configured manually.
+
+**Remember:** Discovered keypads will not have their model parameter automatically set.
+You must manually set the model parameter for each keypad so that the correct channels for your particular keypad model will be created.
 
 ## Binding Configuration
 
@@ -59,9 +65,11 @@ If a thing will not come online, but instead has the status "UNKNOWN: Awaiting i
 
 ### Bridge
 
-The bridge may currently be a RadioRA 2 main repeater or a Caseta Smart Bridge Pro.
-A Homeworks QS Processor should also work, but support is still experimental.
+A bridge may currently be a RadioRA 2 main repeater, a HomeWorks QS Processor, a Caseta Smart Bridge Pro, or a RA2 Select main repeater.
 The bridge configuration requires the IP address of the bridge as well as the telnet username and password to log in to the bridge.
+
+It is recommended that main repeaters/processors be configured with static IP addresses.
+However if automatic discovery is used, the bridge thing will work with DHCP-configured addresses.
 
 The optional advanced parameter `heartbeat` can be used to set the interval between connection keepalive heartbeat messages, in minutes.
 It defaults to 5.
@@ -69,10 +77,17 @@ Note that the handler will wait up to 30 seconds for a heartbeat response before
 The optional advanced parameter `reconnect` can be used to set the connection retry interval, in minutes.
 It also defaults to 5.
 
-Example definition (from the thing file):
+The optional advanced parameter `discoveryFile` can be set to force the device discovery service to read the Lutron configuration XML from a local file rather than retrieving it via HTTP from the RadioRA 2 or HomeWorks QS bridge device.
+This is useful in the case of some older Lutron software versions, where the discovery service may have problems retrieving the file from the bridge device.
+Note that the user which openHAB runs under must have permission to read the file.
+
+Thing configuration file example:
 
 ```
-Thing lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", password="integration" ]
+Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", password="integration" ] {
+    Thing ...
+    Thing ...
+}
 ```
 
 ### Dimmers
@@ -80,10 +95,10 @@ Thing lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", passwor
 Dimmers can optionally be configured to specify a fade in and fade out time in seconds using the `fadeInTime` and `fadeOutTime` parameters.
 A **dimmer** thing has a single channel *lightlevel* with type Dimmer and category DimmableLight.
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:dimmer:livingroom (lutron:ipbridge:radiora2) [ integrationId=8, fadeInTime=0.5, fadeOutTime=5 ]
+Thing dimmer livingroom [ integrationId=8, fadeInTime=0.5, fadeOutTime=5 ]
 ```
 
 ### Switches
@@ -91,10 +106,10 @@ Thing lutron:dimmer:livingroom (lutron:ipbridge:radiora2) [ integrationId=8, fad
 Switches take no additional parameters besides `integrationId`.
 A **switch** thing has a single channel *switchstatus* with type Switch and category Switch.
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:switch:porch (lutron:ipbridge:radiora2) [ integrationId=8 ]
+Thing switch porch [ integrationId=8 ]
 ```
 
 ### Occupancy Sensors
@@ -107,15 +122,15 @@ It is read-only, and ignores all commands.
 The channel state can be monitored for occupied (ON) or unoccupied (OFF) events coming from the sensor.
 The sensors cannot be queried for their state, so initial channel state at startup will be undefined (NULL).
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:occupancysensor:shopsensor (lutron:ipbridge:radiora2) [ integrationId=7 ]
+Thing occupancysensor shopsensor [ integrationId=7 ]
 ```
 
-### SeeTouch and Hybrid SeeTouch Keypads
+### seeTouch and Hybrid seeTouch Keypads
 
-SeeTouch and Hybrid SeeTouch keypads are interfaced with using the **keypad** thing.
+seeTouch and Hybrid seeTouch keypads are interfaced with using the **keypad** thing.
 In addition to the usual `integrationID` parameter, it accepts `model` and `autorelease` parameters.
 The `model` parameter should be set to the Lutron keypad model number.
 This will cause the handler to create only the appropriate channels for that particular keypad model.
@@ -143,29 +158,70 @@ Note, however, that version 11.6 or higher of the RadioRA 2 software may be requ
 When using auto-discovery, remember to select the correct value for the `model` parameter after accepting the keypad thing from the inbox.
 The correct channels will then be automatically configured.
 
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.104 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:keypad:radiora2:entrykeypad`) from the openHAB CLI to list the channels.
+
 Supported settings for `model` parameter: H1RLD, H2RLD, H3BSRL, H3S, H4S, H5BRL, H6BRL, HN1RLD, HN2RLD, HN3S, HN3BSRL, HN4S, HN5BRL, HN6BRL, W1RLD, W2RLD, W3BD, W3BRL, W3BSRL, W3S, W4S, W5BRL, W5BRLIR, W6BRL, W7B, Generic (default)
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:keypad:entrykeypad (lutron:ipbridge:radiora2) [ integrationId=10, model="W7B" autorelease="true" ]
+Thing keypad entrykeypad [ integrationId=10, model="W7B" autorelease=true ]
 ```
 
-### Tabletop SeeTouch Keypads
+Example rule triggered by a keypad button press:
 
-Tabletop SeeTouch keypads use the **ttkeypad** thing.
+```
+rule ExampleScene
+when
+  Item entrykeypad_button4 received update ON
+then
+  Library1_Brightness.sendCommand(OFF)
+end
+```
+
+### Tabletop seeTouch Keypads
+
+Tabletop seeTouch keypads use the **ttkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
 When using auto-discovery, remember to select the correct value for the `model` parameter after accepting the **ttkeypad** thing from the inbox.
 The correct channels will then be automatically configured.
 
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.110 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:ttkeypad:radiora2:bedroomkeypad`) from the openHAB CLI to list the channels.
+
 Supported settings for `model` parameter: T5RL, T10RL, T15RL, T5CRL, T10CRL, T15CRL, Generic (default)
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:ttkeypad:bedroomkeypad (lutron:ipbridge:radiora2) [ integrationId=11, model="T10RL" autorelease="true" ]
+Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true ]
+```
+
+### International seeTouch Keypads (Homeworks QS)
+
+International seeTouch keypads used in the Homeworks QS system use the **intlkeypad** thing.
+It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and led channel types as the **keypad** thing.
+See the **keypad** section above for a full discussion of configuration and use.
+
+If using auto-discovery, remember to select the correct value for the `model` parameter after accepting the **intlkeypad** thing from the inbox.
+The correct channels will then be automatically configured.
+
+To support this keypad's contact closure inputs, CCI channels named *cci1* and *cci2* are created with item type Contact and category Switch.
+They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
+They present ON/OFF states the same as a keypad button.
+
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.107 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:intlkeypad:hwprocessor:kitchenkeypad`) from the openHAB CLI to list the channels.
+
+Supported settings for `model` parameter: 2B, 3B, 4B, 5BRL, 6BRL, 7BRL, 8BRL, 10BRL / Generic (default)
+
+Thing configuration file example:
+
+```
+Thing intlkeypad kitchenkeypad [ integrationId=15, model="10BRL" autorelease=true ]
 ```
 
 ### Pico Keypads
@@ -178,12 +234,41 @@ See the discussion above for a full discussion of configuration and use.
 When using auto-discovery, remember to select the correct value for the `model` parameter after accepting the **pico** thing from the inbox.
 The correct channels will then be automatically configured.
 
+Component numbering: For button layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.113 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:pico:radiora2:hallpico`) from the openHAB CLI to list the channels.
+
 Supported settings for `model` parameter: 2B, 2BRL, 3B, 3BRL, 4B, Generic (default)
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:pico:hallpico (lutron:ipbridge:radiora2) [ integrationId=12, model="3BRL", autorelease="true" ]
+Thing pico hallpico [ integrationId=12, model="3BRL", autorelease=true ]
+```
+
+### GRAFIK Eye QS Keypads (in RadioRA 2/HomeWorks QS systems)
+
+GRAFIK Eye devices can contain up to 6 lighting dimmers, a scene controller, a time clock, and a front panel with a column of 5 programmable scene buttons and 0 to 3 columns of programmable shade or lighting control buttons.
+They can be used as peripheral devices in a RadioRA 2 or HomeWorks QS system, or can be used as stand-alone controllers that themselves can control other Lutron devices.
+The **grafikeyekeypad** thing is used to interface to the GRAFIK Eye QS front panel keypad when it is used in a RadioRA 2 or HomeWorks QS system.
+In this configuration, the integrated dimmers will appear to openHAB as separate output devices.
+
+If your GRAFIK Eye is being used as a stand-alone device and is not integrated in to a RadioRA 2 or HomeWorks QS system, then *this is not the thing you are looking for*.
+You should instead be using the **grafikeye** thing (see below).
+
+The **grafikeyekeypad** thing accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button, led, and cci, channel types as the other keypad things (see above). The model parameter should be set to indicate whether there are zero, one, two, or three columns of buttons on the left side of the panel. Note that this count does not include the column of 5 scene buttons always found on the right side of the panel.
+
+To support the GRAFIK Eye's contact closure input, a CCI channel named *cci1* will be created with item type Contact and category Switch.
+It is marked as Advanced, so it will not be automatically linked to items in the Paper UI's Simple Mode.
+It presents ON/OFF states the same as a keypad button.
+
+Component numbering: The buttons and LEDs on the GRAFIK Eye are numbered top to bottom, starting with the 5 scene buttons in a column on the right side of the panel, and then proceeding with the columns of buttons (if any) on the left side of the panel, working left to right. If you are having problems determining which channels have been created for a given model setting, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:grafikeyekeypad:radiora2:theaterkeypad`) from the openHAB CLI to list the channels.
+
+Supported settings for `model` parameter: 0COL, 1COL, 2COL, 3COL (default)
+
+Thing configuration file example:
+
+```
+Thing lutron:grafikeyekeypad:theaterkeypad (lutron:ipbridge:radiora2) [ integrationId=12, model="3COL", autorelease="true" ]
 ```
 
 ### Virtual Keypads
@@ -195,15 +280,15 @@ There are 100 of these virtual buttons, and 100 corresponding virtual indicator 
 The behavior of this binding is the same as the other keypad bindings, with the exception that the button and led channels created have the Advanced flag set.
 This means, among other things, that they will not be automatically linked to items in the Paper UI's Simple Mode.
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:virtualkeypad:repeaterbuttons (lutron:ipbridge:radiora2) [ integrationId=1, autorelease="true" ]
+Thing virtualkeypad repeaterbuttons [ integrationId=1, autorelease=true ]
 ```
 
 ### VCRX Modules
 
-The Lutron VCRX appears to OpenHAB as multiple devices.
+The Lutron VCRX appears to openHAB as multiple devices.
 The 6 buttons (which can be activated remotely by HomeLink remote controls), 6 corresponding LEDs, and 4 contact closure inputs (CCIs) are handled by the **vcrx** thing, which behaves like a keypad.
 The contact closure outputs (CCOs) have their own integration IDs and are handled by the **cco** thing (see below).
 
@@ -212,13 +297,32 @@ Supplying a model is not required, as there is only one model.
 
 To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
 They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
-They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in OpenHAB.
+They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in openHAB.
 Note that the `autorelease` option **does not** apply to CCI channels.
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:vcrx:vcrx1 (lutron:ipbridge:radiora2) [ integrationId=13, autorelease="true" ]
+Thing vcrx vcrx1 [ integrationId=13, autorelease=true ]
+```
+
+### QS IO Interface (HomeWorks QS)
+
+The Lutron QS IO Interface (QSE-IO) appears to openHAB as multiple devices.
+The 5 contact closure inputs (CCIs) are handled by the **qsio** thing.
+The 5 contact closure outputs (CCOs) are handled by the **cco** thing (see below).
+The only configuration option is `integrationId`
+
+To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
+They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
+They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in openHAB.
+
+Some functionality may depend on QSE-IO DIP switch settings. See the Lutron documentation for more information.
+
+Thing configuration file example:
+
+```
+Thing qsio sensorinputs [ integrationId=42 ]
 ```
 
 ### CCO Modules
@@ -241,14 +345,14 @@ Sending an OFF command does nothing.
 Because of limitations in RadioRA 2, you cannot monitor the state of a pulsed CCO.
 Therefore, the channel state will only transition OFF->ON->OFF when you send a ON command.
 
-For maintained CCOs, sending ON and OFF commands works as expected, and the channel state updates as expected when either OpenHAB commands or external events change the CCO device state.
+For maintained CCOs, sending ON and OFF commands works as expected, and the channel state updates as expected when either openHAB commands or external events change the CCO device state.
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:cco:garage (lutron:ipbridge:radiora2) [ integrationId=5, outputType="Pulsed", pulseLength=0.5 ]
-Thing lutron:ccopulsed:gate (lutron:ipbridge:radiora2) [ integrationId=6, pulseLength=0.25 ]
-Thing lutron:ccomaintained:relay1 (lutron:ipbridge:radiora2) [ integrationId=7 ]
+Thing cco garage [ integrationId=5, outputType="Pulsed", pulseLength=0.5 ]
+Thing ccopulsed gate [ integrationId=6, pulseLength=0.25 ]
+Thing ccomaintained relay1 [ integrationId=7 ]
 ```
 
 ### Shades
@@ -265,15 +369,15 @@ The shade handler should be compatible with all Lutron devices which appear to t
 
 **Note:** While a shade is moving, the Lutron system will report the target level for the shade rather than the actual current level.
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:shade:libraryshade (lutron:ipbridge:radiora2) [ integrationId=33]
+Thing shade libraryshade [ integrationId=33]
 ```
 
 ### Green Mode
 
-The Radio RA2 system has a "Green Mode" or "Green Button" feature which allows the system to be placed in to one or more user-defined power saving modes called "steps".
+Radio RA2 and HomeWorks QS systems have a "Green Mode" or "Green Button" feature which allows the system to be placed in to one or more user-defined power saving modes called "steps".
 Each step can take actions such as trimming down the 100% level on selected lighting dimmers by a specified percentage, shutting off certain loads, modifying thermostat settings, etc.
 Typically step 1 is "Off" or "Normal", and step 2 is "Green Mode", however other steps may be defined by the installer as desired.
 
@@ -291,16 +395,16 @@ A setting of 0 will disabled polling.
 You can also initiate a poll at any time by sending a refresh command (RefreshType.REFRESH) to the step channel.
 Note that it should usually be unnecessary for the poll interval to be set to less than 5-10 minutes, since the green mode step typically changes rather infrequently and takes effect gradually.
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:greenmode:greenmode (lutron:ipbridge:radiora2) [ integrationId=22 ]
+Thing greenmode greenmode [ integrationId=22 ]
 ```
 
 ### Timeclock
 
-Radio RA2 and Homeworks QS have timeclock subsystems that provide scheduled execution of tasks at set times, randomized times, or at arbitrary offsets from local sunrise/sunset.
-The tasks executed depend on which timeclock mode (e.g. Normal, Away, Suspend) is currently selected, and the modes themselves are user-definable (Radio RA2 only).
+RadioRA 2 and Homeworks QS have timeclock subsystems that provide scheduled execution of tasks at set times, randomized times or at arbitrary offsets from local sunrise/sunset.
+The tasks executed depend on the currently selected timeclock mode (e.g. Normal, Away, Suspend) and the modes themselves are user-definable (RadioRA 2 only).
 In addition, tasks can be individually executed, and enabled or disabled for scheduled execution.
 
 The **timeclock** thing provides an interface to timeclock functions.
@@ -318,15 +422,32 @@ It creates the following six channels:
 
 All channels except *clockmode* are marked as advanced.
 
-Example:
+Thing configuration file example:
 
 ```
-Thing lutron:timeclock:timeclock (lutron:ipbridge:radiora2) [ integrationId=23 ]
+Thing timeclock timeclock [ integrationId=23 ]
+```
+
+Example rule to refresh sunrise/sunset channels daily and at restart:
+
+```
+import org.eclipse.smarthome.core.types.RefreshType
+
+rule "Lutron sunrise/sunset daily refresh"
+
+when
+  // Trigger at time 00:05:00 every day
+  Time cron "0 5 0 * * ?" or
+  Thing "lutron:timeclock:70acb5a7:23" changed to ONLINE
+then
+  Timeclock_Sunrise.sendCommand(RefreshType.REFRESH)
+  Timeclock_Sunset.sendCommand(RefreshType.REFRESH)
+end
 ```
 
 ## Channels
 
-The following is a summary of channels for all RadioRA2 binding things:
+The following is a summary of channels for all RadioRA 2 binding things:
 
 | Thing               | Channel           | Item Type     | Description                                  |
 |---------------------|-------------------|---------------|--------------------------------------------- |
@@ -346,8 +467,8 @@ The following is a summary of channels for all RadioRA2 binding things:
 | timeclock           | enableevent       | Number        | Enable event or monitor events enabled       |
 | timeclock           | disableevent      | Number        | Disable event or monitor events disabled     |
 
-The channels available on each keypad device (i.e. keypad, ttkeypad, pico, vcrx, and virtualkeypad) will vary with keypad type and model.
-Appropriate channels will be created automatically by the keypad, ttkeypad, and pico handlers based on the setting of the `model` parameter for those thing types.
+The channels available on each keypad device (i.e. keypad, ttkeypad, intlkeypad, grafikeyekeypad, pico, vcrx, and virtualkeypad) will vary with keypad type and model.
+Appropriate channels will be created automatically by the keypad, ttkeypad, intlkeypad, grafikeyekeypad, and pico thing handlers based on the setting of the `model` parameter for those thing types.
 
 ### Commands supported by channels
 
@@ -374,23 +495,44 @@ The only exceptions are **greenmode** *step*, which is periodically polled and a
 Many other channels accept REFRESH commands to initiate a poll, but sending one should not normally be necessary.
 
 
-## Full Radio RA2 Configuration Example
+## RadioRA 2 Configuration File Example
 
-demo.Things:
+demo.things:
 
 ```
-lutron:dimmer:theater (lutron:ipbridge:radiora2) [ integrationId=8, fadeOutTime=2 ]
-lutron:occupancysensor:theater (lutron:ipbridge:radiora2) [ integrationId=9 ]
-lutron:keypad:theater (lutron:ipbridge:radiora2) [ integrationId=10 ]
+Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.123", user="lutron", password="integration" ] {
+        Thing dimmer lrtable "Table Lamp" @ "Living Room" [ integrationId=45, fadeInTime=0.5, fadeOutTime=5 ]
+        Thing dimmer lrtorch "Torch Lamp" @ "Living Room" [ integrationId=44, fadeInTime=0.5, fadeOutTime=5 ]
+        Thing dimmer lrspot [ integrationId=38, fadeInTime=0.5, fadeOutTime=5 ]
+        Thing switch path [ integrationId=61 ]
+        Thing keypad entrykeypad [ integrationId=64, model="W7B", autorelease=true ]
+        Thing ttkeypad bedroomkeypad [ integrationId=28, model="T15RL", autorelease=true ]
+        Thing pico librarypico [ integrationId=71, model="3BRL", autorelease=true ]
+        Thing vcrx vcrx1 [ integrationId=34, autorelease=true ]
+        Thing cco garage1 [ integrationId=75, outputType="Pulsed", pulseLength=0.5 ]
+        Thing shade libraryshade1 [ integrationId=66]
+        Thing greenmode greenmode [ integrationId=22 ]
+        Thing timeclock timeclock [ integrationId=23 ]
+        Thing occupancysensor laundryocc [ integrationId=62 ]
+}
 ```
 
 demo.items:
 
 ```
-Dimmer TheaterLights { channel="lutron:dimmer:theater:lightlevel" }
-Switch TheaterMotion { channel="lutron:occupancysensor:theater:occupancystatus" }
-Switch TheaterScene1 { channel="lutron:keypad:theater:button1" }
-Switch TheaterScene2 { channel="lutron:keypad:theater:button2" }
+Dimmer   LivingRm_TableLamp  "Table Lamp"      { channel="lutron:dimmer:radiora2:lrtable:lightlevel" }
+Switch   FrontYard_PathLight "Path Light"      { channel="lutron:switch:radiora2:path:switchstatus" }
+Switch   LaundryRm_Sensor    "Occ Sensor"      { channel="lutron:occupancysensor:radiora2:laundryocc:occupancystatus" }
+Switch   Entryway_Keypad_B1  "Keypad Button 1" { channel="lutron:keypad:radiora2:entrykeypad:button1" }
+Switch   Entryway_Keypad_L1  "Keypad LED 1"    { channel="lutron:keypad:radiora2:entrykeypad:led1" }
+Contact  Vcrx1_CCI1          "Input 1"         { channel="lutron:vcrx:radiora2:vcrx1:cci1" }
+Switch   Garage_CCO1         "Garage Door"     { channel="lutron:cco:radiora2:garage1:switchstatus" }
+DateTime Timeclock_Sunrise   "Sunrise"         { channel="lutron:timeclock:radiora2:timeclock:sunrise" }
+DateTime Timeclock_Sunset    "Sunset"          { channel="lutron:timeclock:radiora2:timeclock:sunset" }
+Number   Timeclock_Clockmode "Clock Mode"      { channel="lutron:timeclock:radiora2:timeclock:clockmode" }
+Number   Greenmode_Step      "Green Step"      { channel="lutron:greenmode:radiora2:greenmode:step" }
+Rollershutter Lib_Shade1     "Shade 1"         { channel="lutron:shade:radiora2:libraryshade1:shadelevel" }
+
 ```
 
 # Lutron RadioRA (Classic) Binding
@@ -648,6 +790,6 @@ Rollershutter Grx_ZoneShade7 "Zone 7 Shade" { channel="lutron:grafikeye:home:zon
 Rollershutter Grx_ZoneShade8 "Zone 8 Shade" { channel="lutron:grafikeye:home:zoneshade8" }
 ```
 
-Lutron, GRAFIK Eye, HomeWorks, RadioRA, RadioRA2, Caseta, Sivoia QS, Serena, seeTouch, Pico, and Quantum are trademarks of Lutron Electronics Co., Inc.
+Lutron, GRAFIK Eye, HomeWorks, HomeWorks QS, RadioRA, RadioRA 2, RA2 Select, Caseta, Sivoia QS, Serena, seeTouch, Pico, and Quantum are trademarks of Lutron Electronics Co., Inc.
 HomeLink is a registered trademark of Gentex Corporation.
 This software and its associated documentation are not endorsed or approved by Lutron Electronics Co.

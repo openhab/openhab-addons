@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.DimmerDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.EnergySwitchDevice;
+import org.openhab.binding.tplinksmarthome.internal.device.PowerStripDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.RangeExtenderDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
@@ -52,27 +53,47 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
     @Nullable
     @Override
     protected ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        SmartHomeDevice device;
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        final TPLinkSmartHomeThingType type = TPLinkSmartHomeThingType.THING_TYPE_MAP.get(thingTypeUID);
 
-        if (HS110.is(thingTypeUID)) {
-            device = new EnergySwitchDevice();
-        } else if (HS220.is(thingTypeUID)) {
-            device = new DimmerDevice();
-        } else if (LB130.is(thingTypeUID) || LB230.is(thingTypeUID) || KL130.is(thingTypeUID)) {
-            device = new BulbDevice(thingTypeUID, COLOR_TEMPERATURE_LB130_MIN, COLOR_TEMPERATURE_LB130_MAX);
-        } else if (LB120.is(thingTypeUID) || KL120.is(thingTypeUID)) {
-            device = new BulbDevice(thingTypeUID, COLOR_TEMPERATURE_LB120_MIN, COLOR_TEMPERATURE_LB120_MAX);
-        } else if (TPLinkSmartHomeThingType.isSwitchingDevice(thingTypeUID)) {
-            device = new SwitchDevice();
-        } else if (TPLinkSmartHomeThingType.isBulbDevice(thingTypeUID)) {
-            device = new BulbDevice(thingTypeUID);
-        } else if (TPLinkSmartHomeThingType.isRangeExtenderDevice(thingTypeUID)) {
-            device = new RangeExtenderDevice();
-        } else {
+        if (type == null) {
             return null;
         }
-        return new SmartHomeHandler(thing, device, ipAddressService);
+        final SmartHomeDevice device;
+
+        switch (type.getDeviceType()) {
+            case BULB:
+                if (TPLinkSmartHomeThingType.isBulbDeviceWithTemperatureColor1(thingTypeUID)) {
+                    device = new BulbDevice(thingTypeUID, COLOR_TEMPERATURE_1_MIN, COLOR_TEMPERATURE_1_MAX);
+                } else if (TPLinkSmartHomeThingType.isBulbDeviceWithTemperatureColor2(thingTypeUID)) {
+                    device = new BulbDevice(thingTypeUID, COLOR_TEMPERATURE_2_MIN, COLOR_TEMPERATURE_2_MAX);
+                } else {
+                    device = new BulbDevice(thingTypeUID);
+                }
+                break;
+            case DIMMER:
+                device = new DimmerDevice();
+                break;
+            case PLUG:
+                if (HS110.is(thingTypeUID)) {
+                    device = new EnergySwitchDevice();
+                } else {
+                    device = new SwitchDevice();
+                }
+                break;
+            case SWITCH:
+                device = new SwitchDevice();
+                break;
+            case RANGE_EXTENDER:
+                device = new RangeExtenderDevice();
+                break;
+            case STRIP:
+                device = new PowerStripDevice(thingTypeUID);
+                break;
+            default:
+                return null;
+        }
+        return new SmartHomeHandler(thing, device, type, ipAddressService);
     }
 
     @Reference

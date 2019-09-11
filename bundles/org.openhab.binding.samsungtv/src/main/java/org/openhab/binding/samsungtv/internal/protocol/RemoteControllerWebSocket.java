@@ -149,7 +149,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
                 // websocket connect will be done in lifetime handler
                 return;
             } catch (Exception e) {
-                logger.warn("Cannot connect to websocket remote control interface: " + e.getMessage());
+                logger.warn("Cannot connect to websocket remote control interface: {}", e.getMessage(), e);
                 throw new RemoteControllerException(e);
             }
         }
@@ -293,7 +293,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
      * @throws RemoteControllerException
      */
     public void sendKeys(List<KeyCode> keys, int sleepInMs) throws RemoteControllerException {
-        logger.debug("Try to send sequnce of commands: {}", keys);
+        logger.debug("Try to send sequence of commands: {}", keys);
 
         if (!isConnected()) {
             openConnection();

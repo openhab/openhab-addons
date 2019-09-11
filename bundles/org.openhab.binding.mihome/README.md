@@ -40,7 +40,7 @@ After setup, you can disconnect the gateway from the internet to keep your senso
 
     	1.  Install MiHome app from [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.smarthome) or [AppStore](https://itunes.apple.com/app/mi-home-xiaomi-for-your-smarthome/id957323480) (your phone may need to be changed to English language first)
     	2.  In the app create a Mi Home account and make sure to set your region to Mainland (China) under Settings -> Locale
-    	3.  If asked, update your gateway to the latest firmware (note that update window may pop up sequentially)
+    	3.  If asked, do NOT update your gateway to the latest firmware (note that update window may pop up sequentially).  If you update, you may not be able to access the developer mode below.
 
 *   Enable developer mode of your gateway:
 
@@ -51,6 +51,7 @@ After setup, you can disconnect the gateway from the internet to keep your senso
         5.  Choose `wireless communication protocol`
         6.  Tap the toggle switch to enable WiFi functions. Note down the developer key (aka password), something like: 91bg8zfkf9vd6uw7
         7.  Make sure you hit the OK button (to the right of the cancel button) to save your changes
+        8.  Now update the gateway to the latest firmware
 
 *   In openHAB you should now be able to discover the Xiaomi Gateway
 *   From now on you don't really need the app anymore. Only if you want to update the gateway firmware or if you want to add devices (see below). But adding devices can also be done without the app (see below)

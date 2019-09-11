@@ -66,7 +66,7 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
 
         // if not in cache, get audio data and put to cache
         try (InputStream is = super.getTextToSpeech(apiKey, text, locale, audioFormat);
-                FileOutputStream fos = new FileOutputStream(audioFileInCache);) {
+                FileOutputStream fos = new FileOutputStream(audioFileInCache)) {
             copyStream(is, fos);
             // write text to file for transparency too
             // this allows to know which contents is in which audio file

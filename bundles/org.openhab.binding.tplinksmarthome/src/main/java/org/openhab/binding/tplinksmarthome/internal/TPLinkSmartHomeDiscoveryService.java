@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.SUPPORTED_THING_TYPES;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Hilbrand Bouwkamp - Complete make-over, reorganized code and code cleanup.
  */
 @Component(service = { DiscoveryService.class,
-        TPLinkIpAddressService.class }, immediate = true, configurationPid = "discovery.tplinksmarthome")
+        TPLinkIpAddressService.class }, configurationPid = "discovery.tplinksmarthome")
 @NonNullByDefault
 public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService implements TPLinkIpAddressService {
 
@@ -68,8 +68,8 @@ public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService im
 
     public TPLinkSmartHomeDiscoveryService() throws UnknownHostException {
         super(SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS);
-        InetAddress broadcast = InetAddress.getByName(BROADCAST_IP);
-        byte[] discoverbuffer = CryptUtil.encrypt(Commands.getSysinfo());
+        final InetAddress broadcast = InetAddress.getByName(BROADCAST_IP);
+        final byte[] discoverbuffer = CryptUtil.encrypt(Commands.getSysinfo());
         discoverPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcast,
                 Connection.TP_LINK_SMART_HOME_PORT);
     }
@@ -106,7 +106,7 @@ public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService im
                     if (discoverSocket == null) {
                         break;
                     }
-                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                    final DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
                     discoverSocket.receive(packet);
                     logger.debug("TP-Link Smart device discovery returned package with length {}", packet.getLength());
@@ -139,7 +139,8 @@ public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService im
      * @throws IOException exception in case sending the packet failed
      */
     protected DatagramSocket sendDiscoveryPacket() throws IOException {
-        DatagramSocket ds = new DatagramSocket(null);
+        final DatagramSocket ds = new DatagramSocket(null);
+
         ds.setBroadcast(true);
         ds.setSoTimeout(UDP_PACKET_TIMEOUT_MS);
         ds.send(discoverPacket);
@@ -165,24 +166,26 @@ public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService im
      * @throws IOException in case decrypting of the data failed
      */
     private void detectThing(DatagramPacket packet) throws IOException {
-        String ipAddress = packet.getAddress().getHostAddress();
-        String rawData = CryptUtil.decrypt(packet.getData(), packet.getLength());
-        Sysinfo sysinfoRaw = commands.getSysinfoReponse(rawData);
-        Sysinfo sysinfo = sysinfoRaw.getActualSysinfo();
+        final String ipAddress = packet.getAddress().getHostAddress();
+        final String rawData = CryptUtil.decrypt(packet.getData(), packet.getLength());
+        final Sysinfo sysinfoRaw = commands.getSysinfoReponse(rawData);
+        final Sysinfo sysinfo = sysinfoRaw.getActualSysinfo();
 
         logger.trace("Detected TP-Link Smart Home device: {}", rawData);
-        String deviceId = sysinfo.getDeviceId();
+        final String deviceId = sysinfo.getDeviceId();
         logger.debug("TP-Link Smart Home device '{}' with id {} found on {} ", sysinfo.getAlias(), deviceId, ipAddress);
         idInetAddressCache.put(deviceId, ipAddress);
-        Optional<ThingTypeUID> thingTypeUID = getThingTypeUID(sysinfo.getModel());
+        final Optional<TPLinkSmartHomeThingType> thingType = getThingTypeUID(sysinfo.getModel());
 
-        if (thingTypeUID.isPresent()) {
-            ThingUID thingUID = new ThingUID(thingTypeUID.get(),
+        if (thingType.isPresent()) {
+            final ThingTypeUID thingTypeUID = thingType.get().thingTypeUID();
+            final ThingUID thingUID = new ThingUID(thingTypeUID,
                     deviceId.substring(deviceId.length() - 6, deviceId.length()));
-            Map<String, Object> properties = PropertiesCollector.collectProperties(thingTypeUID.get(), ipAddress,
+            final Map<String, Object> properties = PropertiesCollector.collectProperties(thingType.get(), ipAddress,
                     sysinfoRaw);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(sysinfo.getAlias())
-                    .withRepresentationProperty(deviceId).withProperties(properties).build();
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                    .withLabel(sysinfo.getAlias()).withRepresentationProperty(deviceId).withProperties(properties)
+                    .build();
             thingDiscovered(discoveryResult);
         } else {
             logger.debug("Detected, but ignoring unsupported TP-Link Smart Home device model '{}'", sysinfo.getModel());
@@ -195,8 +198,9 @@ public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService im
      * @param model model value returned by the device
      * @return {@link ThingTypeUID} or null if device not recognized
      */
-    private Optional<ThingTypeUID> getThingTypeUID(String model) {
-        String modelLC = model.toLowerCase(Locale.ENGLISH);
-        return SUPPORTED_THING_TYPES.stream().filter(suid -> modelLC.startsWith(suid.getId())).findFirst();
+    private Optional<TPLinkSmartHomeThingType> getThingTypeUID(String model) {
+        final String modelLC = model.toLowerCase(Locale.ENGLISH);
+        return SUPPORTED_THING_TYPES_LIST.stream().filter(type -> modelLC.startsWith(type.thingTypeUID().getId()))
+                .findFirst();
     }
 }

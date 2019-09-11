@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Set;
 
+import javax.servlet.ServletException;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
@@ -33,6 +35,7 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +49,8 @@ import org.slf4j.LoggerFactory;
 public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODULE);
+    private static final String alias = "/" + BINDING_ID;
+
     private HttpService httpService;
     private String callbackUrl = null;
     private NetworkAddressService networkAddressService;
@@ -61,25 +66,26 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
         Dictionary<String, Object> properties = componentContext.getProperties();
         callbackUrl = (String) properties.get("callbackUrl");
-        KonnectedHTTPServlet servlet = registerWebHookServlet();
-        this.servlet = servlet;
+        try {
+            this.servlet = registerWebHookServlet();
+        } catch (KonnectedWebHookFail e) {
+            logger.error("Failed registering Konnected servlet - binding is not functional!", e);
+        }
     }
 
     @Override
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
-        servlet.deactivate();
+        httpService.unregister(alias);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         KonnectedHandler thingHandler = new KonnectedHandler(thing, '/' + BINDING_ID, createCallbackUrl(),
                 createCallbackPort());
-        logger.debug("Adding thinghandler for thing {} to webhook.", thing.getUID().getId());
-        try {
+        if (servlet != null) {
+            logger.debug("Adding thinghandler for thing {} to webhook.", thing.getUID().getId());
             servlet.add(thingHandler);
-        } catch (KonnectedWebHookFail e) {
-            logger.trace("there was an error adding the thing handler to the servlet: {}", e.getMessage());
         }
         return thingHandler;
     }
@@ -94,11 +100,14 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
         super.removeHandler(thingHandler);
     }
 
-    private KonnectedHTTPServlet registerWebHookServlet() {
-        KonnectedHTTPServlet servlet = null;
-        String configCallBack = '/' + BINDING_ID;
-        servlet = new KonnectedHTTPServlet(httpService, configCallBack);
-        return servlet;
+    private KonnectedHTTPServlet registerWebHookServlet() throws KonnectedWebHookFail {
+        KonnectedHTTPServlet servlet = new KonnectedHTTPServlet();
+        try {
+            httpService.registerServlet(alias, servlet, null, httpService.createDefaultHttpContext());
+            return servlet;
+        } catch (ServletException | NamespaceException e) {
+            throw new KonnectedWebHookFail("Could not start Konnected Webhook servlet: " + e.getMessage(), e);
+        }
     }
 
     @Reference

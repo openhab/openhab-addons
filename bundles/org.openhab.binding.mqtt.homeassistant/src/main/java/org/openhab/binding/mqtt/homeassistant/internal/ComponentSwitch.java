@@ -42,7 +42,7 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.ChannelCo
         protected @Nullable String command_topic;
         protected String payload_on = "true";
         protected String payload_off = "false";
-    };
+    }
 
     public ComponentSwitch(CFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);

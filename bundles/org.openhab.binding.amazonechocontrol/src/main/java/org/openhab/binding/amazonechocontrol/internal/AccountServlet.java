@@ -76,19 +76,20 @@ public class AccountServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(AccountServlet.class);
 
-    HttpService httpService;
+    final HttpService httpService;
     String servletUrlWithoutRoot;
-    String servletUrl;
+    final String servletUrl;
     AccountHandler account;
     String id;
     @Nullable
     Connection connectionToInitialize;
-    Gson gson = new Gson();
+    final Gson gson;
 
-    public AccountServlet(HttpService httpService, String id, AccountHandler account) {
+    public AccountServlet(HttpService httpService, String id, AccountHandler account, Gson gson) {
         this.httpService = httpService;
         this.account = account;
         this.id = id;
+        this.gson = gson;
         try {
             servletUrlWithoutRoot = "amazonechocontrol/" + URLEncoder.encode(id, "UTF8");
         } catch (UnsupportedEncodingException e) {
@@ -112,7 +113,7 @@ public class AccountServlet extends HttpServlet {
         if (oldConnection == null) {
             oldConnection = account.findConnection();
         }
-        return new Connection(oldConnection);
+        return new Connection(oldConnection, this.gson);
     }
 
     public void dispose() {
@@ -157,7 +158,7 @@ public class AccountServlet extends HttpServlet {
             Map<String, String[]> map = req.getParameterMap();
             String domain = map.get("domain")[0];
             String loginData = connection.serializeLoginData();
-            Connection newConnection = new Connection(null);
+            Connection newConnection = new Connection(null, this.gson);
             if (newConnection.tryRestoreLogin(loginData, domain)) {
                 account.setConnection(newConnection);
             }
@@ -282,7 +283,7 @@ public class AccountServlet extends HttpServlet {
                 }
                 // handle commands
                 if (baseUrl.equals("/newdevice") || baseUrl.equals("/newdevice/")) {
-                    this.connectionToInitialize = new Connection(null);
+                    this.connectionToInitialize = new Connection(null, this.gson);
                     this.account.setConnection(null);
                     resp.sendRedirect(this.servletUrl);
                     return;
@@ -301,9 +302,7 @@ public class AccountServlet extends HttpServlet {
                     Device device = account.findDeviceJson(serialNumber);
                     if (device != null) {
                         Thing thing = account.findThingBySerialNumber(device.serialNumber);
-                        if (thing != null) {
-                            handleIds(resp, connection, device, thing);
-                        }
+                        handleIds(resp, connection, device, thing);
                         return;
                     }
                 }
@@ -331,7 +330,7 @@ public class AccountServlet extends HttpServlet {
     }
 
     public Map<String, String> getQueryMap(@Nullable String query) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         if (query != null) {
             String[] params = query.split("&");
             for (String param : params) {
@@ -374,6 +373,12 @@ public class AccountServlet extends HttpServlet {
         html.append(" | <a href='" + servletUrl + "/newdevice' >");
         html.append(StringEscapeUtils.escapeHtml("Logout and create new device id"));
         html.append("</a>");
+        // customer id
+        html.append("<br>Customer Id: ");
+        html.append(StringEscapeUtils.escapeHtml(connection.getCustomerId()));
+        // customer name
+        html.append("<br>Customer Name: ");
+        html.append(StringEscapeUtils.escapeHtml(connection.getCustomerName()));
         // device name
         html.append("<br>App name: ");
         html.append(StringEscapeUtils.escapeHtml(connection.getDeviceName()));
@@ -393,7 +398,7 @@ public class AccountServlet extends HttpServlet {
 
         // device list
         html.append(
-                "<table><tr><th align='left'>Device</th><th align='left'>Serial Number</th><th align='left'>State</th><th align='left'>Thing</th><th align='left'>Family</th><th align='left'>Type</th></tr>");
+                "<table><tr><th align='left'>Device</th><th align='left'>Serial Number</th><th align='left'>State</th><th align='left'>Thing</th><th align='left'>Family</th><th align='left'>Type</th><th align='left'>Customer Id</th></tr>");
         for (Device device : this.account.getLastKnownDevices()) {
 
             html.append("<tr><td>");
@@ -409,14 +414,18 @@ public class AccountServlet extends HttpServlet {
                         + URLEncoder.encode(device.serialNumber, "UTF8") + "'>"
                         + StringEscapeUtils.escapeHtml(accountHandler.getLabel()) + "</a>");
             } else {
-                html.append("Not defined");
+                html.append("<a href='" + servletUrl + "/ids/?serialNumber="
+                        + URLEncoder.encode(device.serialNumber, "UTF8") + "'>"
+                        + StringEscapeUtils.escapeHtml("Not defined") + "</a>");
             }
             html.append("</td><td>");
             html.append(StringEscapeUtils.escapeHtml(nullReplacement(device.deviceFamily)));
             html.append("</td><td>");
             html.append(StringEscapeUtils.escapeHtml(nullReplacement(device.deviceType)));
             html.append("</td><td>");
-            html.append("</td></tr>");
+            html.append(StringEscapeUtils.escapeHtml(nullReplacement(device.deviceOwnerCustomerId)));
+            html.append("</td>");
+            html.append("</tr>");
         }
         html.append("</table>");
         createPageEndAndSent(resp, html);
@@ -467,16 +476,34 @@ public class AccountServlet extends HttpServlet {
         }
     }
 
-    private void handleIds(HttpServletResponse resp, Connection connection, Device device, Thing thing)
+    private void handleIds(HttpServletResponse resp, Connection connection, Device device, @Nullable Thing thing)
             throws IOException, URISyntaxException {
-        StringBuilder html = createPageStart("Channel Options - " + thing.getLabel());
-
+        StringBuilder html;
+        if (thing != null) {
+            html = createPageStart("Channel Options - " + thing.getLabel());
+        } else {
+            html = createPageStart("Device Information - No thing defined");
+        }
         renderBluetoothMacChannel(connection, device, html);
         renderAmazonMusicPlaylistIdChannel(connection, device, html);
         renderPlayAlarmSoundChannel(connection, device, html);
         renderMusicProviderIdChannel(connection, html);
-
+        renderCapabilities(connection, device, html);
         createPageEndAndSent(resp, html);
+    }
+
+    private void renderCapabilities(Connection connection, Device device, StringBuilder html) {
+        html.append("<h2>Capabilities</h2>");
+        html.append("<table><tr><th align='left'>Name</th></tr>");
+        String[] capabilities = device.capabilities;
+        if (capabilities != null) {
+            for (String capability : capabilities) {
+                html.append("<tr><td>");
+                html.append(StringEscapeUtils.escapeHtml(capability));
+                html.append("</td></tr>");
+            }
+        }
+        html.append("</table>");
     }
 
     private void renderMusicProviderIdChannel(Connection connection, StringBuilder html) {
@@ -599,11 +626,11 @@ public class AccountServlet extends HttpServlet {
         try {
             Map<String, String> headers = null;
             if (referer != null) {
-                headers = new HashMap<String, String>();
+                headers = new HashMap<>();
                 headers.put("Referer", referer);
             }
 
-            urlConnection = connection.makeRequest(verb, url, postData, json, false, headers);
+            urlConnection = connection.makeRequest(verb, url, postData, json, false, headers, 0);
             if (urlConnection.getResponseCode() == 302) {
                 {
                     String location = urlConnection.getHeaderField("location");

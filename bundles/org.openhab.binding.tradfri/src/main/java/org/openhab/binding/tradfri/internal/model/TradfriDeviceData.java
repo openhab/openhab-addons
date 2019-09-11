@@ -14,6 +14,8 @@ package org.openhab.binding.tradfri.internal.model;
 
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Kai Kreuzer - Initial contribution
  * @author Christoph Weitkamp - Restructuring and refactoring of the binding
  */
+@NonNullByDefault
 public abstract class TradfriDeviceData {
 
     private final Logger logger = LoggerFactory.getLogger(TradfriDeviceData.class);
@@ -54,7 +57,8 @@ public abstract class TradfriDeviceData {
             attributes = array.get(0).getAsJsonObject();
             generalInfo = root.getAsJsonObject(DEVICE);
         } catch (JsonSyntaxException e) {
-            logger.error("JSON error: {}", e.getMessage(), e);
+            logger.warn("JSON error: {}", e.getMessage(), e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -70,7 +74,7 @@ public abstract class TradfriDeviceData {
         }
     }
 
-    public String getFirmwareVersion() {
+    public @Nullable String getFirmwareVersion() {
         if (generalInfo.get(DEVICE_FIRMWARE) != null) {
             return generalInfo.get(DEVICE_FIRMWARE).getAsString();
         } else {
@@ -78,7 +82,7 @@ public abstract class TradfriDeviceData {
         }
     }
 
-    public String getModelId() {
+    public @Nullable String getModelId() {
         if (generalInfo.get(DEVICE_MODEL) != null) {
             return generalInfo.get(DEVICE_MODEL).getAsString();
         } else {
@@ -86,7 +90,7 @@ public abstract class TradfriDeviceData {
         }
     }
 
-    public String getVendor() {
+    public @Nullable String getVendor() {
         if (generalInfo.get(DEVICE_VENDOR) != null) {
             return generalInfo.get(DEVICE_VENDOR).getAsString();
         } else {

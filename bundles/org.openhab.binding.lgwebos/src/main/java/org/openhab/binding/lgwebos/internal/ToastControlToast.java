@@ -12,15 +12,6 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
-import javax.imageio.ImageIO;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
@@ -52,18 +43,7 @@ public class ToastControlToast extends BaseChannelHandler<Void, Object> {
         }
         if (hasCapability(device, ToastControl.Show_Toast)) {
             final String value = command.toString();
-            final ToastControl control = getControl(device);
-            try {
-                BufferedImage bi = ImageIO.read(getClass().getResource("/openhab-logo-square.png"));
-                try (ByteArrayOutputStream os = new ByteArrayOutputStream();
-                        OutputStream b64 = Base64.getEncoder().wrap(os);) {
-                    ImageIO.write(bi, "png", b64);
-                    control.showToast(value, os.toString(StandardCharsets.UTF_8.name()), "png",
-                            getDefaultResponseListener());
-                }
-            } catch (IOException ex) {
-                logger.warn("Failed to load toast icon: {}", ex.getMessage());
-            }
+            getControl(device).showToast(value, getDefaultResponseListener());
         }
     }
 }

@@ -69,7 +69,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
         Dictionary<String, Object> properties = componentContext.getProperties();
         opmlUrl = (String) properties.get("opmlUrl");
         callbackUrl = (String) properties.get("callbackUrl");
-    };
+    }
 
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,

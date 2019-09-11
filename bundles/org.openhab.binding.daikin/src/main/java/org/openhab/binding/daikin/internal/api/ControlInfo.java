@@ -28,11 +28,13 @@ import org.slf4j.LoggerFactory;
  * Class for holding the set of parameters used by set and get control info.
  *
  * @author Tim Waterhouse - Initial Contribution
+ * @author Paul Smedley <paul@smedley.id.au> - mods for Daikin Airbase
  *
  */
 public class ControlInfo {
-    private static Logger LOGGER = LoggerFactory.getLogger(ControlInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ControlInfo.class);
 
+    public String ret;
     public boolean power = false;
     public Mode mode = Mode.AUTO;
     /** Degrees in Celsius. */
@@ -57,6 +59,7 @@ public class ControlInfo {
                 }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
 
         ControlInfo info = new ControlInfo();
+        info.ret = responseMap.get("ret");
         info.power = "1".equals(responseMap.get("pow"));
         info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> parseInt(value))
                 .map(value -> Mode.fromValue(value)).orElse(Mode.AUTO);

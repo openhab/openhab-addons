@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VolvoOnCallDiscoveryService extends AbstractDiscoveryService {
     private static final int SEARCH_TIME = 2;
-    private final Logger logger = LoggerFactory.getLogger(VolvoOnCallBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(VolvoOnCallDiscoveryService.class);
     private final VolvoOnCallBridgeHandler bridgeHandler;
 
     public VolvoOnCallDiscoveryService(VolvoOnCallBridgeHandler bridgeHandler) {
@@ -63,7 +63,7 @@ public class VolvoOnCallDiscoveryService extends AbstractDiscoveryService {
                                 .withRepresentationProperty(accountVehicle.vehicleId).build());
 
             } catch (IOException e) {
-                logger.warn("Error while discovering vehicle", e.getMessage());
+                logger.warn("Error while discovering vehicle: {}", e.getMessage());
             }
         });
 

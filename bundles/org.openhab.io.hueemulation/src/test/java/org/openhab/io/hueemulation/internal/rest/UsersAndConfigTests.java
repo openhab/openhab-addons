@@ -68,17 +68,17 @@ public class UsersAndConfigTests {
     }
 
     @Test
-    public void invalidUser() throws IOException {
+    public void invalidUser() {
         assertFalse(commonSetup.userManagement.authorizeUser("blub"));
     }
 
     @Test
-    public void validUser() throws IOException {
+    public void validUser() {
         assertTrue(commonSetup.userManagement.authorizeUser("testuser"));
     }
 
     @Test
-    public void configStoreRestartOnNoUUID() throws IOException {
+    public void configStoreRestartOnNoUUID() {
         ConfigStore configStore = new ConfigStoreWithoutMetadata(commonSetup.networkAddressService,
                 commonSetup.configAdmin, commonSetup.scheduler);
 
@@ -95,7 +95,7 @@ public class UsersAndConfigTests {
     }
 
     @Test
-    public void addUser() throws IOException {
+    public void addUser() {
         // GET should fail
         assertEquals(405, commonSetup.client.target(commonSetup.basePath).request().get().getStatus());
 
@@ -123,8 +123,7 @@ public class UsersAndConfigTests {
     }
 
     @Test
-    public void UnauthorizedAccessTest()
-            throws InterruptedException, ExecutionException, TimeoutException, IOException {
+    public void UnauthorizedAccessTest() {
 
         // Unauthorized config
         Response response;

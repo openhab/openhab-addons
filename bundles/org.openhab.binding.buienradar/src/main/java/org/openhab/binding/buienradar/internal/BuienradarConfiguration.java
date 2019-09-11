@@ -28,4 +28,15 @@ public class BuienradarConfiguration {
      * Refresh interval for retrieving results from buienradar.
      */
     public Integer refreshIntervalMinutes;
+
+    /**
+     * Number of retries to try to retrieve buienradar results.
+     */
+    public Integer retries;
+
+    /**
+     * Exponential backoff base value for retries in seconds. For example, when this is 2 seconds, will retry at 2, 4,
+     * 8, 16, 32, 64 seconds.
+     */
+    public Integer exponentialBackoffRetryBaseInSeconds;
 }

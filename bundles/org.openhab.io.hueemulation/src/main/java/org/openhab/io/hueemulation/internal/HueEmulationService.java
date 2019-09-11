@@ -91,20 +91,20 @@ public class HueEmulationService implements EventHandler {
     public class LogAccessInterceptor implements ContainerResponseFilter {
         @NonNullByDefault({})
         @Override
-        public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
-                throws IOException {
+        public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
 
             if (!logger.isDebugEnabled()) {
                 return;
             }
 
-            InputStream stream = requestContext.getEntityStream();
-            String body = stream != null
-                    ? new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"))
-                    : "";
+            // InputStream stream = requestContext.getEntityStream();
+            // String body = stream != null
+            //         ? new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"))
+            //         : "";
 
-            logger.debug("REST request {} {}: {}", requestContext.getMethod(), requestContext.getUriInfo().getPath(),
-                    body);
+            // logger.debug("REST request {} {}: {}", requestContext.getMethod(), requestContext.getUriInfo().getPath(),
+            //         body);
+            logger.debug("REST request {} {}", requestContext.getMethod(), requestContext.getUriInfo().getPath());
             logger.debug("REST response: {}", responseContext.getEntity());
         }
 

@@ -80,19 +80,15 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
         ThingTypeUID uid = RFXComBindingConstants.PACKET_TYPE_THING_TYPE_UID_MAP.get(message.getPacketType());
         ThingUID thingUID = new ThingUID(uid, bridge, id.replace(ID_DELIMITER, "_"));
 
-        if (callback.getExistingThing(thingUID) == null) {
-            if (!bridgeHandler.getConfiguration().disableDiscovery) {
-                logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
-                DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID)
-                        .withBridge(bridge);
-                message.addDevicePropertiesTo(discoveryResultBuilder);
+        if (!bridgeHandler.getConfiguration().disableDiscovery) {
+            logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
+            DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID)
+                    .withBridge(bridge);
+            message.addDevicePropertiesTo(discoveryResultBuilder);
 
-                thingDiscovered(discoveryResultBuilder.build());
-            } else {
-                logger.trace("Ignoring RFXCOM {} with id '{}' - discovery disabled", thingUID, id);
-            }
+            thingDiscovered(discoveryResultBuilder.build());
         } else {
-            logger.trace("Ignoring already known RFXCOM {} with id '{}'", thingUID, id);
+            logger.trace("Ignoring RFXCOM {} with id '{}' - discovery disabled", thingUID, id);
         }
     }
 }

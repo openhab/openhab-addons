@@ -54,7 +54,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class,
-        ChannelTypeProvider.class }, immediate = true, configurationPid = "binding.harmonyhub")
+        ChannelTypeProvider.class }, configurationPid = "binding.harmonyhub")
 public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements ChannelTypeProvider {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream

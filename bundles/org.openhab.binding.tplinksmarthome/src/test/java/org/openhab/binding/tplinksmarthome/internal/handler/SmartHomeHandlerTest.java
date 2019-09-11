@@ -16,14 +16,15 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_SWITCH;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -37,10 +38,12 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants;
 import org.openhab.binding.tplinksmarthome.internal.Commands;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeDiscoveryService;
+import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 
@@ -49,24 +52,23 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class SmartHomeHandlerTest {
 
-    private static final String CHANNEL_PREFIX = "binding:tplinksmarthome:1234:";
-
-    private SmartHomeHandler handler;
+    private @NonNullByDefault({}) SmartHomeHandler handler;
 
     @Mock
-    private Connection connection;
+    private @NonNullByDefault({}) Connection connection;
     @Mock
-    private ThingHandlerCallback callback;
+    private @NonNullByDefault({}) ThingHandlerCallback callback;
     @Mock
-    private Thing thing;
+    private @NonNullByDefault({}) Thing thing;
     @Mock
-    private SmartHomeDevice smartHomeDevice;
+    private @NonNullByDefault({}) SmartHomeDevice smartHomeDevice;
     @Mock
-    private TPLinkSmartHomeDiscoveryService discoveryService;
+    private @NonNullByDefault({}) TPLinkSmartHomeDiscoveryService discoveryService;
 
-    private @NonNull final Configuration configuration = new Configuration();
+    private final Configuration configuration = new Configuration();
 
     @Before
     public void setUp() throws IOException {
@@ -77,13 +79,14 @@ public class SmartHomeHandlerTest {
         when(smartHomeDevice.getUpdateCommand()).thenReturn(Commands.getSysinfo());
         when(connection.sendCommand(Commands.getSysinfo()))
                 .thenReturn(ModelTestUtil.readJson("plug_get_sysinfo_response"));
-        handler = new SmartHomeHandler(thing, smartHomeDevice, discoveryService) {
+        handler = new SmartHomeHandler(thing, smartHomeDevice, TPLinkSmartHomeThingType.HS100, discoveryService) {
             @Override
             Connection createConnection(TPLinkSmartHomeConfiguration config) {
                 return connection;
             }
         };
-        when(smartHomeDevice.handleCommand(eq(CHANNEL_SWITCH), eq(connection), any(), any())).thenReturn(true);
+        when(smartHomeDevice.handleCommand(eq(CHANNEL_UID_SWITCH), any())).thenReturn(true);
+        when(callback.isChannelLinked(any())).thenReturn(true);
         handler.setCallback(callback);
     }
 
@@ -118,18 +121,19 @@ public class SmartHomeHandlerTest {
 
     private void assertHandleCommandRefreshType(int expectedRssi) {
         handler.initialize();
-        ChannelUID channelUID = new ChannelUID(CHANNEL_PREFIX + CHANNEL_RSSI);
+        ChannelUID channelUID = ChannelUIDConstants.CHANNEL_UID_RSSI;
         handler.handleCommand(channelUID, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(channelUID), stateCaptor.capture());
-        assertEquals("State of RSSI channel should be set", new DecimalType(expectedRssi), stateCaptor.getValue());
+        assertEquals("State of RSSI channel should be set", new QuantityType<>(expectedRssi + " dBm"),
+                stateCaptor.getValue());
     }
 
     @Test
     public void testHandleCommandOther() throws InterruptedException {
         handler.initialize();
-        ChannelUID channelUID = new ChannelUID(CHANNEL_PREFIX + CHANNEL_SWITCH);
-        Mockito.doReturn(OnOffType.ON).when(smartHomeDevice).updateChannel(eq(channelUID.getId()), any());
+        ChannelUID channelUID = ChannelUIDConstants.CHANNEL_UID_SWITCH;
+        Mockito.doReturn(OnOffType.ON).when(smartHomeDevice).updateChannel(eq(channelUID), any());
         handler.handleCommand(channelUID, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(channelUID), stateCaptor.capture());

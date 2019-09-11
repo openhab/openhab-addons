@@ -179,7 +179,7 @@ public class ExecHandler extends BaseThingHandler {
                 StringBuilder errorBuilder = new StringBuilder();
 
                 try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-                        BufferedReader br = new BufferedReader(isr);) {
+                        BufferedReader br = new BufferedReader(isr)) {
                     String line = null;
                     while ((line = br.readLine()) != null) {
                         outputBuilder.append(line).append("\n");
@@ -192,7 +192,7 @@ public class ExecHandler extends BaseThingHandler {
                 }
 
                 try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                        BufferedReader br = new BufferedReader(isr);) {
+                        BufferedReader br = new BufferedReader(isr)) {
                     String line = null;
                     while ((line = br.readLine()) != null) {
                         errorBuilder.append(line).append("\n");

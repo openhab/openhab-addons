@@ -15,8 +15,8 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -49,7 +49,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
 
     AccountHandler accountHandler;
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
-    private final HashSet<String> discoverdFlashBriefings = new HashSet<String>();
+    private final HashSet<String> discoverdFlashBriefings = new HashSet<>();
 
     @Nullable
     ScheduledFuture<?> startScanStateJob;
@@ -68,7 +68,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
     }
 
     public void activate() {
-        activate(new Hashtable<String, @Nullable Object>());
+        activate(new HashMap<>());
     }
 
     @Override
@@ -135,7 +135,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
             modified(config);
         }
         activateTimeStamp = new Date().getTime();
-    };
+    }
 
     synchronized void setDevices(List<Device> deviceList) {
         DiscoveryServiceCallback discoveryServiceCallback = this.discoveryServiceCallback;

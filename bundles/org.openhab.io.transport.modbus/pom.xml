@@ -21,8 +21,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>net.wimpi</groupId>
-      <artifactId>jamod</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>net.wimpi.jamod</artifactId>
       <version>1.2.3.OH</version>
       <scope>provided</scope>
     </dependency>

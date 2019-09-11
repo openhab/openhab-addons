@@ -53,7 +53,7 @@ public class SmartyDecrypter implements TelegramParser {
         READ_FRAME_COUNTER,
         READ_PAYLOAD,
         READ_GCM_TAG,
-        DONE_READING_TELEGRAM;
+        DONE_READING_TELEGRAM
     }
 
     private static final byte START_BYTE = (byte) 0xDB;

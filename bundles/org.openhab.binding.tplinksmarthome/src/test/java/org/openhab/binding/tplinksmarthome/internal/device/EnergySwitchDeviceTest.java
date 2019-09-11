@@ -13,14 +13,15 @@
 package org.openhab.binding.tplinksmarthome.internal.device;
 
 import static org.junit.Assert.*;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
@@ -35,13 +36,13 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @RunWith(value = Parameterized.class)
+@NonNullByDefault
 public class EnergySwitchDeviceTest {
 
     private static final List<Object[]> TESTS = Arrays
             .asList(new Object[][] { { "plug_get_realtime_response", }, { "plug_get_realtime_response_v2", } });
 
     private final EnergySwitchDevice device = new EnergySwitchDevice();
-    @NonNull
     private final DeviceState deviceState;
 
     public EnergySwitchDeviceTest(String name) throws IOException {
@@ -55,32 +56,33 @@ public class EnergySwitchDeviceTest {
 
     @Test
     public void testUpdateChannelEnergyCurrent() {
-        assertEquals("Energy current should have valid state value", 1,
-                ((DecimalType) device.updateChannel(CHANNEL_ENERGY_CURRENT, deviceState)).intValue());
+        assertEquals("Energy current should have valid state value", new QuantityType<>(1 + " A"),
+                device.updateChannel(CHANNEL_UID_ENERGY_CURRENT, deviceState));
     }
 
     @Test
     public void testUpdateChannelEnergyTotal() {
-        assertEquals("Energy total should have valid state value", 10,
-                ((DecimalType) device.updateChannel(CHANNEL_ENERGY_TOTAL, deviceState)).intValue());
+        assertEquals("Energy total should have valid state value", new QuantityType<>(10 + " kWh"),
+                device.updateChannel(CHANNEL_UID_ENERGY_TOTAL, deviceState));
     }
 
     @Test
     public void testUpdateChannelEnergyVoltage() {
-        State state = device.updateChannel(CHANNEL_ENERGY_VOLTAGE, deviceState);
-        assertEquals("Energy voltage should have valid state value", 230, ((DecimalType) state).intValue());
-        assertEquals("Channel patten to display as int", "230 V", state.format("%.0f V"));
+        State state = device.updateChannel(CHANNEL_UID_ENERGY_VOLTAGE, deviceState);
+        assertEquals("Energy voltage should have valid state value", 230, ((QuantityType<?>) state).intValue());
+        assertEquals("Channel patten to format voltage correctly", "230 V", state.format("%.0f %unit%"));
     }
 
     @Test
-    public void testUpdateChanneEnergyPowerl() {
-        assertEquals("Energy power should have valid state value", 20,
-                ((DecimalType) device.updateChannel(CHANNEL_ENERGY_POWER, deviceState)).intValue());
+    public void testUpdateChanneEnergyPower() {
+        assertEquals("Energy power should have valid state value", new QuantityType<>(20 + " W"),
+                device.updateChannel(CHANNEL_UID_ENERGY_POWER, deviceState));
     }
 
     @Test
     public void testUpdateChannelOther() {
-        assertSame("Unknown channel should return UNDEF", UnDefType.UNDEF, device.updateChannel("OTHER", deviceState));
+        assertSame("Unknown channel should return UNDEF", UnDefType.UNDEF,
+                device.updateChannel(CHANNEL_UID_OTHER, deviceState));
     }
 
 }

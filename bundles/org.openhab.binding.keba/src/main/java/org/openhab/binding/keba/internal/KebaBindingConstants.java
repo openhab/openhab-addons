@@ -69,11 +69,13 @@ public class KebaBindingConstants {
     public static final String CHANNEL_SESSION_RFID_TAG = "sessionrfidtag";
     public static final String CHANNEL_SESSION_RFID_CLASS = "sessionrfidclass";
     public static final String CHANNEL_SESSION_SESSION_ID = "sessionid";
+    public static final String CHANNEL_SETENERGY = "setenergylimit";
+    public static final String CHANNEL_AUTHENTICATE = "authenticate";
 
     public enum KebaType {
         P20,
         P30
-    };
+    }
 
     public enum KebaSeries {
 
@@ -104,5 +106,5 @@ public class KebaBindingConstants {
 
             throw new IllegalArgumentException("Not a valid series");
         }
-    };
+    }
 }

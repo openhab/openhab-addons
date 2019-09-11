@@ -7,6 +7,7 @@ Fragment-Host: org.openhab.binding.feed
 	bnd.identity;id='org.openhab.binding.feed.tests',\
 	bnd.identity;id='org.openhab.core.binding.xml',\
 	bnd.identity;id='org.openhab.core.thing.xml',\
+	bnd.identity;id='org.apache.felix.configadmin',\
 	osgi.identity;filter:='(&(osgi.identity=org.ops4j.pax.web.pax-web-runtime)(version>=7.2.3))'
 
 
@@ -22,7 +23,6 @@ Fragment-Host: org.openhab.binding.feed
 #
 -runbundles: \
 	org.apache.servicemix.specs.activation-api-1.1;version='[2.9.0,2.9.1)',\
-	org.apache.servicemix.specs.annotation-api-1.3;version='[1.3.0,1.3.1)',\
 	org.apache.servicemix.specs.jaxb-api-2.2;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.specs.stax-api-1.2;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.bundles.jdom;version='[2.0.6,2.0.7)',\
@@ -31,7 +31,6 @@ Fragment-Host: org.openhab.binding.feed
 	org.apache.commons.collections;version='[3.2.1,3.2.2)',\
 	org.apache.commons.lang;version='[2.6.0,2.6.1)',\
 	org.apache.felix.scr;version='[2.1.10,2.1.11)',\
-	org.apache.felix.configadmin,\
 	org.apache.servicemix.bundles.xstream;version='[1.4.7,1.4.8)',\
 	org.apache.xbean.bundleutils;version='[4.12.0,4.12.1)',\
 	org.apache.xbean.finder;version='[4.12.0,4.12.1)',\
@@ -53,8 +52,6 @@ Fragment-Host: org.openhab.binding.feed
 	osgi.enroute.hamcrest.wrapper;version='[1.3.0,1.3.1)',\
 	osgi.enroute.junit.wrapper;version='[4.12.0,4.12.1)',\
 	slf4j.api;version='[1.7.25,1.7.26)',\
-	tec.uom.lib.uom-lib-common;version='[1.0.2,1.0.3)',\
-	tec.uom.se;version='[1.0.8,1.0.9)',\
 	slf4j.simple;version='[1.7.21,1.7.22)',\
 	com.rometools.rome;version='[1.12.0,1.12.1)',\
 	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
@@ -70,4 +67,9 @@ Fragment-Host: org.openhab.binding.feed
 	org.ops4j.pax.swissbox.optional.jcl;version='[1.8.2,1.8.3)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[7.2.3,7.2.4)',\
 	org.ops4j.pax.web.pax-web-runtime;version='[7.2.3,7.2.4)',\
-	org.ops4j.pax.web.pax-web-spi;version='[7.2.3,7.2.4)'
+	org.ops4j.pax.web.pax-web-spi;version='[7.2.3,7.2.4)',\
+	org.apache.felix.configadmin;version='[1.9.8,1.9.9)',\
+	slf4j.api;version='[1.7.16,1.7.17)',\
+	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
+	tec.uom.se;version='[1.0.10,1.0.11)',\
+	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)'

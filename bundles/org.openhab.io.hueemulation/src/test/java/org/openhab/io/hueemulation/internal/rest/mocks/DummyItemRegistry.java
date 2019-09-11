@@ -90,12 +90,12 @@ public class DummyItemRegistry implements ItemRegistry {
     }
 
     @Override
-    public Item getItem(@Nullable String name) throws ItemNotFoundException {
+    public Item getItem(@Nullable String name) {
         return items.get(name);
     }
 
     @Override
-    public Item getItemByPattern(String name) throws ItemNotFoundException, ItemNotUniqueException {
+    public Item getItemByPattern(String name) {
         return items.get(name);
     }
 

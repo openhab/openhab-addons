@@ -57,8 +57,7 @@ public class RFXComLighting4MessageTest {
     }
 
     private void testMessage(String hexMsg, RFXComLighting4Message.SubType subType, String deviceId, Integer pulse,
-            byte commandByte, Integer seqNbr, int signalLevel, int offCommand, int onCommand)
-            throws RFXComException {
+            byte commandByte, Integer seqNbr, int signalLevel, int offCommand, int onCommand) throws RFXComException {
         RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals("Sensor Id", deviceId, msg.getDeviceId());

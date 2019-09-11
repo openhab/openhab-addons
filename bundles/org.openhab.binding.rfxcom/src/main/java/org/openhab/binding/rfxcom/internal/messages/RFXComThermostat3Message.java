@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.*;
 
@@ -20,10 +20,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -56,7 +59,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
         }
     }
 
-    public enum Commands implements ByteEnumWrapper {
+    public enum Commands implements ByteEnumWrapperWithSupportedSubTypes<SubType> {
         OFF(0),
         ON(1),
         UP(2),
@@ -84,21 +87,15 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
             return (byte) command;
         }
 
-        public static Commands fromByte(int input, SubType subType) throws RFXComUnsupportedValueException {
-            for (Commands c : Commands.values()) {
-                if (c.command == input && c.supportedBySubTypes.contains(subType)) {
-                    return c;
-                }
-            }
-
-            throw new RFXComUnsupportedValueException(Commands.class, input);
+        @Override
+        public List<SubType> supportedBySubTypes() {
+            return supportedBySubTypes;
         }
     }
 
     public SubType subType;
     private int unitId;
     public Commands command;
-    private byte commandId;
 
     public RFXComThermostat3Message() {
         super(PacketType.THERMOSTAT3);
@@ -115,7 +112,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
         str += super.toString();
         str += ", Sub type = " + subType;
         str += ", Device Id = " + getDeviceId();
-        str += ", Command = " + command + "(" + commandId + ")";
+        str += ", Command = " + command;
         str += ", Signal level = " + signalLevel;
 
         return str;
@@ -132,8 +129,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
 
         subType = fromByte(SubType.class, super.subType);
         unitId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
-        commandId = data[7];
-        command = Commands.fromByte(commandId, subType);
+        command = fromByte(Commands.class, (int) data[7], subType);
         signalLevel = (byte) ((data[8] & 0xF0) >> 4);
     }
 
@@ -159,19 +155,51 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
         switch (channelId) {
             case CHANNEL_COMMAND:
                 switch (command) {
+                    case RUN_DOWN:
                     case OFF:
-                    case SECOND_OFF:
                         return OnOffType.OFF;
                     case ON:
+                    case RUN_UP:
+                    case UP:
+                        return OnOffType.ON;
                     case SECOND_ON:
+                    case SECOND_OFF:
+                        return null;
+                    default:
+                        return UnDefType.UNDEF;
+
+                }
+            case CHANNEL_CONTROL:
+                switch (command) {
+                    case ON:
                         return OnOffType.ON;
                     case UP:
+                    case RUN_UP:
                         return UpDownType.UP;
+                    case OFF:
+                        return OnOffType.OFF;
                     case DOWN:
+                    case RUN_DOWN:
                         return UpDownType.DOWN;
+                    case SECOND_ON:
+                    case SECOND_OFF:
+                    case STOP:
+                        return null;
                     default:
                         throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
+            case CHANNEL_COMMAND_SECOND:
+                switch (command) {
+                    case SECOND_OFF:
+                        return OnOffType.OFF;
+                    case SECOND_ON:
+                        return OnOffType.ON;
+                    default:
+                        return null;
+                }
+            case CHANNEL_COMMAND_STRING:
+                return command == null ? UnDefType.UNDEF : StringType.valueOf(command.toString());
+
             default:
                 return super.convertToState(channelId);
         }
@@ -183,13 +211,33 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
             case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {
                     command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
-                } else if (type instanceof UpDownType) {
-                    command = (type == UpDownType.UP ? Commands.UP : Commands.DOWN);
-                } else if (type instanceof OpenClosedType) {
-                    command = (type == OpenClosedType.CLOSED ? Commands.ON : Commands.OFF);
                 } else {
                     throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
+                break;
+
+            case CHANNEL_COMMAND_SECOND:
+                if (type instanceof OnOffType) {
+                    command = (type == OnOffType.ON ? Commands.SECOND_ON : Commands.SECOND_OFF);
+                } else {
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
+                }
+                break;
+
+            case CHANNEL_CONTROL:
+                if (type instanceof UpDownType) {
+                    command = (type == UpDownType.UP ? Commands.UP : Commands.DOWN);
+                } else if (type == StopMoveType.STOP) {
+                    command = Commands.STOP;
+                } else if (type instanceof PercentType) {
+                    command = ((PercentType) type).as(UpDownType.class) == UpDownType.UP ? Commands.UP : Commands.DOWN;
+                } else {
+                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
+                }
+                break;
+
+            case CHANNEL_COMMAND_STRING:
+                command = Commands.valueOf(type.toString().toUpperCase());
                 break;
 
             default:

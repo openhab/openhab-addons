@@ -14,12 +14,11 @@ package org.openhab.binding.tplinksmarthome.internal.device;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.tplinksmarthome.internal.Connection;
 import org.openhab.binding.tplinksmarthome.internal.model.SetRelayState;
 
 /**
@@ -36,7 +35,7 @@ public class RangeExtenderDevice extends SwitchDevice {
     }
 
     @Override
-    protected @Nullable SetRelayState setOnOffState(@NonNull Connection connection, @NonNull OnOffType onOff)
+    protected @Nullable SetRelayState setOnOffState(ChannelUID channelUid, OnOffType onOff)
             throws IOException {
         // It's unknown what the command is to send to the device so it's not supported.
         return null;

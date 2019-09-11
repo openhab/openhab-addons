@@ -150,17 +150,21 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             }
 
             ICloudAccountDataResponse iCloudData = deviceInformationParser.parse(json);
+            try {
+                int statusCode = Integer.parseUnsignedInt(iCloudData.getICloudAccountStatusCode());
+                if (statusCode == 200) {
+                    updateStatus(ThingStatus.ONLINE);
+                    informDeviceInformationListeners(iCloudData.getICloudDeviceInformationList());
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Status = " + statusCode + ", Response = " + json);
+                }
 
-            int statusCode = Integer.parseUnsignedInt(iCloudData.getICloudAccountStatusCode());
-            if (statusCode == 200) {
-                updateStatus(ThingStatus.ONLINE);
-                informDeviceInformationListeners(iCloudData.getICloudDeviceInformationList());
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Status = " + statusCode + ", Response = " + json);
+                logger.debug("iCloud bridge data refresh complete.");
+            } catch (NumberFormatException e) {
+                logger.warn("iCloud returned an incorrect account status code : '{}'",
+                        iCloudData.getICloudAccountStatusCode());
             }
-
-            logger.debug("iCloud bridge data refresh complete.");
         }
     }
 

@@ -19,6 +19,7 @@
 			<channel id="contact" typeId="contact" />
 			<channel id="dimmingLevel" typeId="dimminglevel" />
 			<channel id="mood" typeId="mood" />
+			<channel id="commandString" typeId="commandString" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
 		</channels>
 

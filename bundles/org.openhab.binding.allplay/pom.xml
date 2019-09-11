@@ -14,7 +14,18 @@
   <name>openHAB Add-ons :: Bundles :: AllPlay Binding</name>
 
   <properties>
-    <bnd.importpackage>org.slf4j.impl.*;resolution:=optional,de.kaizencode.tchaikovsky.*</bnd.importpackage>
+    <embedDependency.groupId>org.openhab.osgiify</embedDependency.groupId>
+    <embedDependency.artifactId>de.kaizencode.tchaikovsky</embedDependency.artifactId>
+    <embedDependency.version>0.0.1</embedDependency.version>
   </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>de.kaizencode.tchaikovsky</artifactId>
+      <version>0.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
 </project>

@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.openhab.binding.loxone.internal.LxBindingConfiguration;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxConfig;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -45,6 +46,7 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
 
     Gson gson;
     LxConfig config;
+    LxBindingConfiguration bindingConfig = new LxBindingConfiguration();
 
     Queue<String> actionQueue = new LinkedList<>();
 
