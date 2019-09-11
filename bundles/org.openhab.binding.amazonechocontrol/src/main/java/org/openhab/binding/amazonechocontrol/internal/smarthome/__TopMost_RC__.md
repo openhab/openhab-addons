@@ -1,19 +1,29 @@
-#Release Candidate and Support Thread
+# Release Candidate and Support Thread
 
 This thread tries to give you support with the released version of the amazon echo control binding.
 Also relative stable (sometimes more stable then the offical version) can be downloaded from here.
 
 Please jump to the Preview and Beta: amazonechocontrol binding thread to get the latest features if you want do a beta test. 
 
-**FAQ and Hints:** 
+## FAQ and Hints:
 
-[When I have to remove and recreate things for a binding upgrade?](https://community.openhab.org/t/release-candiate-openhab2-amazonechocontrol-binding-controlling-alexa-from-openhab2/37844/526)
+**When I have to remove and recreate things for a binding upgrade?**
 
-*I do not see all channels*
+Check *When I have to remove and recreate things for a binding upgrade?* from below
+
+**I do not see all channels:**
+
+Please check out the section *When I have to remove and recreate things for a binding upgrade?* from below
 Please click on "Show more" in the PaperUI Thing definition page
 
-**Download Latest Stable Version**
+**How I check the version of the binding**
+
+Please [read](https://www.openhab.org/docs/administration/bundles.html)
+
+## Download Latest Stable Version
 The lastest release - 2.5 (Release Candidate 3) -  this version is included in the daily snapshot build of OH 2.5
+
+The documention of all feature can be found 
 
 [Download Beta 2.5 (RC 3)](https://www.dropbox.com/s/t4djng666piqu2q/org.openhab.binding.amazonechocontrol_2.5.0.RC_3.jar?dl=0)
 
@@ -27,94 +37,6 @@ Whats new in 2.5 (RC 2) (This is the version which is included in OH 2.5 RC3):
 
 Whats new in 2.5 (RC 1):
 - Fix an issue of Beta 8, where announcement was broken.
-
-Whats new in Beta 2.5 (8):
-- Fix an issue of Beta 7 where new login are not possible anymore
-
-Whats new in Beta 2.5 (7):
-- Fix issue 'Bad request' for TTS calls if the devices are owned by another customer id than the account
-- Repeat calls in case of 'Bad request' if there are many request at the same time
-
-Whats new in Beta 2.5 (6):
-- Fix the startRoutine channel if more than 20 routines are defined
-- New channel announcement for echo show and echo spot devices
-
-Whats new in Beta 2.5 (5):
-- Fix memory and thread leak if internet connection is lost
-- Fix problem with not updated channels after some while
-
-Whats new in Beta 2.5 (4):
-- Bugfix for error in notification updates - bug since 2.5 (3), no need to upgrade for 2.4 (2) users
-
-Whats new in Beta 2.5 (3):
-- Bugfix to handle refresh commands for initializing newly created item links
-- Bugfix for 'Unknown' in lastVoiceCommand channel
-- New channel: nextMusicAlarm
-
-Whats new in Beta 2.5 (2):
-- Bugfix for wrong encoding for french sites
-- New channels: nextReminder, nextTimer, nextAlarm
-- [SSML](https://docs.aws.amazon.com/polly/latest/dg/supported-ssml.html) support for TTS
-
-Whats new in Beta 2.5 (1):
-- Cache for state description, this means a better performance for REST calls and the PaperUI
-
-Whats new in Beta 2.4 (10):
-- Proxy function fixed for PUT and POST
-- Support of TTS for users which does not use the main account
-
-Whats new in Beta 2.4 (9) --> This is the released 2.4 version:
-- Fixed tuneIn channels
-
-Whats new in Beta 2.4 (8):
-- Try to bugfix login problems
-- announcement channel removed, because it does not work and I have no possibility to test it because the feature is not available at amazon.de
-
-
-Whats new in Beta 2.4 (7):
-- Workaround for bad formatted login url from the amazon server
-- New channel _announcement_. This channel is not yet tested by me because it is not supported in amazon.de. But amazon.com should work. Please give me feedback!
-
-Whats new in Beta 2.4 (6):
-- Support for GZIP content response of amazon server (reduce the network traffic)
-- Fix the bug in the 2 factor authentication. It can now be used without entering the code in the password field, instead you get the amazon dialog to enter the verification code.
-
-Whats new in Beta 2.4 (5):
-- Fix problem with changed amazon response
-
-Whats new in Beta 2.4 (4):
-this version is only tested with amazon.de. Beta testers from other domains are welcome to give me feedback.
-- New channel textToSpeechVolume
-- New login method which prevents problems with session renew
-- No password storage in openHAB configuration
-- Support for 2 factor authentication (currently only by using the code in the password field)
-- Alexa activation word is dropped for channel lastVoiceCommand
-- Logging of push is changed to debug level standard messages
-
-If you upgrade from previous version, you have to login to the amazon account one time (See "First Steps" below)
-
-Whats new in Beta 2.4 (3):
-WARNING: this beta has maybe problems by resolving bundles. It would to get feedback if it works or not and on which OH version and platform.
-- New channel mediaProgress
-- New channel mediaProgressTime
-- New channel notificationVolume
-- New channel ascendingAlarm
-
-Whats new in Beta 2.4 (2):
-- update of channels triggered by Web-Socket connection to the amazon server
-- new channel "lastVoiceCommand" -> See "Steps for update from previous version (If you want use the new channels):" to get the new channel
-
-Whats new in Beta 2.4 (1):
-- fixed Problem with volumne state
-
-_**OpenHAB 2.3 Users:**_
-The binding is now included in the [official distribution](https://www.openhab.org/download/). Before you upgrade to the latest version [read this post](https://www.michael-geramb.at/app/download/12015638499/org.openhab.binding.amazonechocontrol_2.2.1_RC3.jar?t=1527103305).
-
-_**OpenHAB 2.2 Users:**_
-The RC3 will be the last available build for OpenHAB 2.2. It is technical ident with the version included int OpenHAB 2.3.
-Use the marketplace of download it from [here](https://www.michael-geramb.at/app/download/12015638499/org.openhab.binding.amazonechocontrol_2.2.1_RC3.jar?t=1527103305).
-
-Please check the documentation to see a detailed description of the channels.
 
 **Steps for update from previous version (If you want use the new channels):**
 1. Remove discovered echo devices from your inbox
