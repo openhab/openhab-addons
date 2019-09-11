@@ -5,7 +5,7 @@ Also relative stable (sometimes more stable then the offical version) can be dow
 
 Please jump to the Preview and Beta: amazonechocontrol binding thread to get the latest features if you want do a beta test. 
 
-## FAQ and Hints:
+## FAQ and Hints
 
 **When I have to remove and recreate things for a binding upgrade?**
 
