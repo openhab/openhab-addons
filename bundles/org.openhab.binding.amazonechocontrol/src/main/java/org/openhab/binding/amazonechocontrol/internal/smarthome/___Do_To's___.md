@@ -11,4 +11,5 @@
 9. Refactoring Value Handling of groups or channel detection in groups (Maybe make the Handler Structure more generic)
 10. Overview Page in the BindingServlet to show the user all devices, capabilities (with hint, if supported or not) and ApplianceId's
 11. Support more Controllers
-12. Ask Kai Kreuzer for own repository in GitHab
+12. Move channel type declarations from Constants to the Handler
+13. Ask Kai Kreuzer for own repository in GitHab
