@@ -21,4 +21,3 @@ If you want to use the channel for Echo Show and Echo Spot devices without a spo
 The Version can be downloaded from the [top most posting of this thread](https://community.openhab.org/t/released-openhab2-amazon-echo-control-binding-controlling-alexa-from-openhab2/37844)
 
 
-
