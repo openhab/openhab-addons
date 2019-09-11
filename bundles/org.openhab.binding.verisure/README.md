@@ -27,7 +27,7 @@ This binding supports the following thing types:
 ## Binding Configuration
 
 You will have to configure the bridge with username and password, these must be the same credentials as used when logging into https://mypages.verisure.com. 
-You can also configure your pin-code(s) to be able to lock/unlock the SmartLock(s) and arm/unarm the Alarm(s). 
+You must also configure your pin-code(s) to be able to lock/unlock the SmartLock(s) and arm/unarm the Alarm(s). 
 **NOTE:** To be able to have full control over all SmartLock functionality, the user has to have Administrator rights.
 
 ## Discovery
@@ -292,16 +292,14 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
 Switch   SmartLock                     "Verisure SmartLock"  <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:setSmartLockStatus"}
 Number   AlarmHome                     "Alarm Home"          <alarm>                    {channel="verisure:alarm:myverisure:JannesAlarm:setAlarmStatus"}
 Switch   AlarmHomeVirtual              "Verisure Alarm"      <alarm>  [ "Switchable" ] 
-String   AlarmStatus                   "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:JannesAlarm:status"}
+String   AlarmStatus                   "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:JannesAlarm:alarmStatus"}
 Number   AlarmNumericStatus            "Verisure Alarm Numeric Status"                  {channel="verisure:alarm:myverisure:JannesAlarm:numericStatus"}
-String   AlarmAlarmStatus              "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:JannesAlarm:alarmStatus"}
 String   AlarmTimeStamp                "Verisure Alarm Time Stamp"                      {channel="verisure:alarm:myverisure:JannesAlarm:timestamp"}
 String   AlarmChangedByUser            "Verisure Alarm Changed By User"                 {channel="verisure:alarm:myverisure:JannesAlarm:changedByUser"}
 Switch   AutoLock                      "AutoLock"            <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:setAutoRelock"}
 String   SmartLockStatus               "SmartLock Status"                               {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockStatus"}
-String   SmartLockCurrentStatus        "SmartLock Current Status"                       {channel="verisure:smartLock:myverisure:JannesSmartLock:status"}
 Number   SmartLockNumericStatus        "SmartLock Numeric Status"                       {channel="verisure:smartLock:myverisure:JannesSmartLock:numericStatus"}
-String   SmartLockVolume               "SmartLock Volym"     <lock>                     {channel="verisure:smartLock:myverisure:JannesSmartLock:setSmartLockVolume"}
+String   SmartLockVolume               "SmartLock Volume"     <lock>                     {channel="verisure:smartLock:myverisure:JannesSmartLock:setSmartLockVolume"}
 String   SmartLockVolumes              "SmartLock Volumes"                              {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockVolume"}
 
 // SmartPlugs         
@@ -315,16 +313,14 @@ String DoorWindowStatus                "Door Window Status"      {channel="veris
 // UserLocation
 String UserName                        "User Name"               {channel="verisure:userPresence:myverisure:JannesUserPresence:userName"}
 String UserLocationEmail               "User Location Email"     {channel="verisure:userPresence:myverisure:JannesUserPresence:webAccount"}
-String UserLocationStatus              "User Location Status"    {channel="verisure:userPresence:myverisure:JannesUserPresence:userLocationStatus"}
 String UserLocationName                "User Location Name"      {channel="verisure:userPresence:myverisure:JannesUserPresence:userLocationName"}
 
 String UserNameGlava                   "User Name Glava"               {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:userName"}
 String UserLocationEmailGlava          "User Location Email Glava"     {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:webAccount"}
-String UserLocationStatusGlava         "User Location Status Glava"    {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:userLocationStatus"}
 String UserLocationNameGlava           "User Location Name Glava"      {channel="verisure:userPresence:myverisure:userpresencetestgmailcom1123456789:userLocationName"}
 
 // Broadband Connection
-String CurrentBBStatus                 "Broadband Connection Status"       {channel="verisure:broadbandConnection:1:bc123456789:status"}
+String CurrentBBStatus                 "Broadband Connection Status"       {channel="verisure:broadbandConnection:myverisure:bc123456789:status"}
 
 ````
 
@@ -347,12 +343,10 @@ String CurrentBBStatus                 "Broadband Connection Status"       {chan
             }
             Text item=AlarmStatus label="Alarm Status [%s]"
             Text item=AlarmNumericStatus label="Alarm Numeric Status [%d]"
-            Text item=AlarmAlarmStatus
             Text item=AlarmHomeInstallationName label="Alarm Installation [%s]"
             Text item=AlarmChangedByUser label="Changed by user [%s]"
             Text item=AlarmTimeStamp
-            Text item=SmartLockStatus abel="SmartLock status [%s]"
-            Text item=SmartLockCurrentStatus label="SmartLock Current Status [%s]"
+            Text item=SmartLockStatus label="SmartLock status [%s]"
             Text item=SmartLockNumericStatus label="Smart Lock Numeric Status [%d]"
             Text item=SmartLockLastUpdated
             Text item=SmartLockOperatedBy label="Changed by user [%s]"
@@ -374,8 +368,7 @@ String CurrentBBStatus                 "Broadband Connection Status"       {chan
 			Frame label="User Presence Champinjonvägen" {
 				Text item=UserName label="User Name [%s]"
 				Text item=UserLocationEmail label="User Email [%s]"
-                  Text item=UserLocationName label="User Location Name [%s]"
-				Text item=UserLocationStatus label="Location Status [%s]"
+                     Text item=UserLocationName label="User Location Name [%s]"
 			}
 		}
 	}

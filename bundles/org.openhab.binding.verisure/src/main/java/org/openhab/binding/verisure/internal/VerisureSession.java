@@ -303,7 +303,7 @@ public class VerisureSession {
 				return 0;
 			case HttpStatus.INTERNAL_SERVER_ERROR_500:
 				// Verisure service temporarily down
-				logger.debug("Status code 503. Verisure service temporarily down");
+				logger.debug("Status code 500. Verisure service temporarily down");
 				return HttpStatus.INTERNAL_SERVER_ERROR_500;
 			case HttpStatus.SERVICE_UNAVAILABLE_503:
 				// Verisure service temporarily down
