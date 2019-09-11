@@ -1,5 +1,4 @@
-# Amazon Echo Control Binding
-
+# Amazon Echo Control Binding (Test)
 
 This binding can control Amazon Echo devices (Alexa).
 
