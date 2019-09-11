@@ -1,5 +1,6 @@
 # Amazon Echo Control Binding
 
+
 This binding can control Amazon Echo devices (Alexa).
 
 It provides features to control and view the current state of echo devices:
