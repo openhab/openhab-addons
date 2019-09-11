@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-
     <bridge-type id="pc-link">
         <label>PC-Link</label>
         <description>PC-Link via serial connection</description>
@@ -25,8 +24,7 @@
 
 	<thing-type id="push-button">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="pc-link-ip" />
-            <bridge-type-ref id="pc-link-serial" />
+            <bridge-type-ref id="pc-link" />
         </supported-bridge-type-refs>
 
 		<label>Push button</label>
@@ -53,8 +51,7 @@
 	
 	<thing-type id="switch-module">
       <supported-bridge-type-refs>
-        <bridge-type-ref id="pc-link-ip" />
-        <bridge-type-ref id="pc-link-serial" />
+        <bridge-type-ref id="pc-link" />
       </supported-bridge-type-refs>
 
       <label>Switch module</label>
@@ -78,8 +75,7 @@
 
     <thing-type id="dimmer-module">
       <supported-bridge-type-refs>
-        <bridge-type-ref id="pc-link-ip" />
-        <bridge-type-ref id="pc-link-serial" />
+        <bridge-type-ref id="pc-link" />
       </supported-bridge-type-refs>
 
       <label>Dimmer module</label>
@@ -103,8 +99,7 @@
 
     <thing-type id="rollershutter-module">
       <supported-bridge-type-refs>
-        <bridge-type-ref id="pc-link-ip" />
-        <bridge-type-ref id="pc-link-serial" />
+        <bridge-type-ref id="pc-link" />
       </supported-bridge-type-refs>
 
       <label>Rollershutter module</label>

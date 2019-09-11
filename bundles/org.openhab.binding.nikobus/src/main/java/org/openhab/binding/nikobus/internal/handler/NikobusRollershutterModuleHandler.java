@@ -60,5 +60,4 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
         }
         throw new IllegalArgumentException("Unexpected value " + value + " received");
     }
-
 }
