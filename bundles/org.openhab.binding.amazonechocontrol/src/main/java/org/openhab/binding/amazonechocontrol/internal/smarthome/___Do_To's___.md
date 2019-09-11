@@ -1,7 +1,7 @@
 # Do To's
 
 1. Configuration Value to enable/disable discover of SmartHomeGroups
-2. Add SkillName (Maybe via-property) as prefix to the discovered Things
+2. Add SkillName as prefix to the discovered Things
 3. Update Documentation: Split Readme in 3 Sections (Or Files?) : Echo, FlashBriefing, SmartHome
 4. Write Release Notes
 5. Create JAR File for OH 2.4
