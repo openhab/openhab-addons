@@ -106,7 +106,8 @@ You will find the required serial number in settings of the device in the alexa 
 | Configuration name              | Default | Description                                                                           |
 |---------------------------------|---------|---------------------------------------------------------------------------------------|
 | discoverSmartHome               | 0       | 0...No discover, 1...Discover direct connected, 2...Discover direct and skill devices |
-| pollingIntervalSmartHome        | 20      | Polling interval for the state of the connected devices                               |
+| pollingIntervalSmartHome        | 10      | Defines the time in minutes for openHAB to pull the
+					state of the connected devices. The minimum is 10 minutes.                              |
 | discoverOpenHabSmartHomeDevices | false   | Defines, if smart home devices of the openHAB skill should be discovered. This option is for development and testing purpose only. ||
 
 #### echo, echospot, echoshow, wha Things
@@ -364,6 +365,7 @@ sitemap flashbriefings label="Flash Briefings"
 ## Smart Home Devices
 
 Note: the cannels of smartHomeDevices and smartHomeDeviceGroup will be created dynamically based on the capabilities reported by the amazon server. This can take a little bit of time. 
+The polling interval configured in the Account Thing to get the state is specified in minutes and has a minimum of 10. This means it takes up to 10 minutes to see the state of a channel. The reason for this low interval is, that the polling causes a big server load for the Smart Home Skills.
 
 ### Supported Things
 

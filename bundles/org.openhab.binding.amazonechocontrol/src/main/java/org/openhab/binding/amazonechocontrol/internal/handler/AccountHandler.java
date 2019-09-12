@@ -137,9 +137,12 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         checkDataJob = scheduler.scheduleWithFixedDelay(this::checkData, 4, 60, TimeUnit.SECONDS);
 
         Configuration config = getThing().getConfiguration();
-        long pollingInterval = ((BigDecimal) config.getProperties().get("pollingIntervalSmartHome")).longValue();
-        updateSmartHomeStateJob = scheduler.scheduleWithFixedDelay(() -> updateSmartHomeState(null), pollingInterval,
-                pollingInterval, TimeUnit.SECONDS);
+        float pollingInterval = ((BigDecimal) config.getProperties().get("pollingIntervalSmartHome")).floatValue();
+        if (pollingInterval < 10) {
+            pollingInterval = 10;
+        }
+        updateSmartHomeStateJob = scheduler.scheduleWithFixedDelay(() -> updateSmartHomeState(null), 60,
+                (long) (pollingInterval / 60f), TimeUnit.SECONDS);
         logger.debug("amazon account bridge handler started.");
     }
 
@@ -971,6 +974,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 applianceIds.add(deviceFilterId);
             } else {
 
+                if (applianceIds.size() == 0) {
+                    return;
+                }
                 synchronized (this.smartHomeDeviceHandlers) {
                     if (this.smartHomeDeviceHandlers.size() == 0) {
                         return;
