@@ -37,7 +37,7 @@ It also provides features to control devices connected to your echo:
 Restrictions:
 
 - groups can't receive their current color (multiple colors are possible)
-- lights can only receive their state every 30 seconds
+- devices can only receive their state every 60 seconds
 - turning on/off (or switch color, change brightness) will send a request for every single bulb in a group
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
