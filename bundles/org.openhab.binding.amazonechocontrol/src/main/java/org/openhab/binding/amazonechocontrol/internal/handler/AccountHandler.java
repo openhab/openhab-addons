@@ -142,7 +142,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             pollingInterval = 10;
         }
         updateSmartHomeStateJob = scheduler.scheduleWithFixedDelay(() -> updateSmartHomeState(null), 60,
-                (long) (pollingInterval / 60f), TimeUnit.SECONDS);
+                (long) (pollingInterval * 60f), TimeUnit.SECONDS);
         logger.debug("amazon account bridge handler started.");
     }
 
