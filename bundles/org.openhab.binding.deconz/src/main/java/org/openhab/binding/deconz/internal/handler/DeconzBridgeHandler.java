@@ -19,8 +19,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -160,9 +162,11 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         String url = url(config.host, config.apikey, null, null);
 
         http.get(url, config.timeout).thenApply(this::parseBridgeFullStateResponse).exceptionally(e -> {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            if (!(e instanceof SocketTimeoutException)) {
+            if (!(e instanceof SocketTimeoutException) && !(e instanceof TimeoutException)
+                    && !(e instanceof CompletionException)) {
                 logger.warn("Get full state failed", e);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             return null;
         }).whenComplete((value, error) -> {
@@ -173,7 +177,8 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         }).thenAccept(fullState -> {
             // Auth failed
             if (fullState == null) {
-                requestApiKey();
+                // requestApiKey();
+                logger.warn("Full state is 'null'");
                 return;
             }
             if (fullState.config.name.isEmpty()) {
