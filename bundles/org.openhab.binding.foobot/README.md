@@ -23,20 +23,21 @@ The discovery process is able to automatically discover all devices associated w
 Bridge has the following configuration parameters:
 
 | Parameter        | Description                                           | Required
-|------------------|-------------------------------------------------------|---------
+|------------------|-------------------------------------------------------|----------
 | apikey           | API Key from https://api.foobot.io/apidoc/index.html  | Mandatory
-| username         | The e-mail address you for the Foobot App             | Mandatory
+| username         | The e-mail address used to log into the Foobot App    | Mandatory
 | refreshInterval  | Refresh interval in minutes, minimal 5 minutes        | Optional, the default value is 7 minutes.
 
-The minimal refresh rate is 5 minutes because the device only sends data each 5 minutes.
+The minimal refresh rate is 5 minutes because the device only sends data every 5 minutes.
 
 ## Channels
 
 The bridge has one channel:
 
 | Channel ID           | Item Type | Description
-|----------------------|-----------|---------------------------------------
-| apiKeyLimitRemaining | Number    | The remaining api key limit
+|----------------------|-----------|-----------------------------------------------
+| apiKeyLimitRemaining | Number    | The remaining number of API requests for today
+
 
 The AirQuality senors information that is retrieved is available as these channels:
 
