@@ -79,6 +79,47 @@
     <feature.directory>src/main/feature/feature.xml</feature.directory>
   </properties>
 
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>jcenter</id>
+      <name>JCenter Repository</name>
+      <url>https://jcenter.bintray.com</url>
+    </repository>
+
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>openhab-release</id>
+      <name>openHAB Release Repository</name>
+      <url>${oh.repo.releaseBaseUrl}/libs-release</url>
+    </repository>
+
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+      <id>openhab-snapshot</id>
+      <name>openHAB Snapshot Repository</name>
+      <url>${oh.repo.snapshotBaseUrl}/libs-snapshot</url>
+    </repository>
+  </repositories>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
