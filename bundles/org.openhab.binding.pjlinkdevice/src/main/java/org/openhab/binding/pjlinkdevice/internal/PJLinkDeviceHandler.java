@@ -205,7 +205,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         case CHANNEL_TYPE_LAMP_ACTIVE:
         case CHANNEL_TYPE_LAMP_HOURS:
           if (command == RefreshType.REFRESH) {
-            List<LampState> lampStates = device.getLampStates();
+            List<LampState> lampStates = device.getLampStatesCached();
             // update all lamp related channels, as the response contains information about all of them
             for (Channel lampChannel : thing.getChannels()) {
               String lampChannelTypeId = getChannelTypeId(lampChannel.getUID());

@@ -31,6 +31,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AuthenticationException;
+import org.openhab.binding.pjlinkdevice.internal.device.command.CachedCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 import org.openhab.binding.pjlinkdevice.internal.device.command.authentication.AuthenticationCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.errorstatus.ErrorStatusQueryCommand;
@@ -43,6 +44,7 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.input.InputListQ
 import org.openhab.binding.pjlinkdevice.internal.device.command.input.InputQueryCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.input.InputQueryResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.lampstatus.LampStatesCommand;
+import org.openhab.binding.pjlinkdevice.internal.device.command.lampstatus.LampStatesResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.lampstatus.LampStatesResponse.LampState;
 import org.openhab.binding.pjlinkdevice.internal.device.command.mute.MuteInstructionCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.mute.MuteInstructionCommand.MuteInstructionChannel;
@@ -331,6 +333,13 @@ public class PJLinkDevice {
 
     public List<LampState> getLampStates() throws ResponseException, IOException, AuthenticationException {
         return new LampStatesCommand(this).execute().getResult();
+    }
+
+    private CachedCommand<LampStatesResponse> cachedLampHoursCommand = new CachedCommand<LampStatesResponse>(
+            new LampStatesCommand(this));
+
+    public List<LampState> getLampStatesCached() throws ResponseException, IOException, AuthenticationException {
+        return cachedLampHoursCommand.execute().getResult();
     }
 
     public String getOtherInformation() throws ResponseException, IOException, AuthenticationException {

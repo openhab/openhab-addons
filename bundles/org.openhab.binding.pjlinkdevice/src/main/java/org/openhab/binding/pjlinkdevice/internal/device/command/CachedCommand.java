@@ -1,0 +1,73 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.pjlinkdevice.internal.device.command;
+
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
+
+/**
+ * Basic command interface allowing to execute the command.
+ *
+ * @author Nils Schnabel - Initial contribution
+ */
+@NonNullByDefault
+public class CachedCommand<ResponseType extends Response<?>> implements Command<ResponseType> {
+
+    private Command<ResponseType> cachedCommand;
+    private ExpiringCache<ResponseType> cache;
+
+    public CachedCommand(Command<ResponseType> cachedCommand) {
+        this(cachedCommand, 1000);
+    }
+
+    public CachedCommand(Command<ResponseType> cachedCommand, int expiry) {
+        this.cachedCommand = cachedCommand;
+        this.cache = new ExpiringCache<ResponseType>(expiry, () -> {
+            try {
+                return this.cachedCommand.execute();
+            } catch (ResponseException | IOException | AuthenticationException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    @Override
+    public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
+        ExpiringCache<ResponseType> cache = this.cache;
+        try {
+            @Nullable
+            ResponseType result = cache.getValue();
+            if (result == null) {
+                // this can not happen in reality, limitation of ExpiringCache
+                throw new ResponseException("Cached value is null");
+            }
+            return result;
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof ResponseException) {
+                throw (ResponseException) cause;
+            }
+            if (cause instanceof IOException) {
+                throw (IOException) cause;
+            }
+            if (cause instanceof AuthenticationException) {
+                throw (AuthenticationException) cause;
+            }
+            throw e;
+        }
+    }
+
+}
