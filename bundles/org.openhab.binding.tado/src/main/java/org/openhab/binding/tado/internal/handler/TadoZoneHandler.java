@@ -42,6 +42,7 @@ import org.openhab.binding.tado.internal.TadoBindingConstants.ZoneType;
 import org.openhab.binding.tado.internal.TadoHvacChange;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
 import org.openhab.binding.tado.internal.api.ApiException;
+import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.Overlay;
 import org.openhab.binding.tado.internal.api.model.OverlayTemplate;
@@ -96,7 +97,9 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     public ZoneState getZoneState() throws IOException, ApiException {
-        return getApi().showZoneState(getHomeId(), getZoneId());
+        // null pointer exception fixed by Andrew Fiddian-Green
+        HomeApi api = getApi();
+        return api != null ? api.showZoneState(getHomeId(), getZoneId()) : null;
     }
 
     public GenericZoneCapabilities getZoneCapabilities() {
