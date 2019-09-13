@@ -12,9 +12,3 @@ https://www.eclipse.org/legal/epl-2.0/.
 
 https://github.com/openhab/openhab2-addons
 
-== Third-party Content
-
-Jetty WebSocket-Websocket
-* License: Eclipse Public License v1.0 and Apache License v2.0
-* Project: https://www.eclipse.org/jetty/
-* Source:  http://github.com/eclipse/jetty.project
