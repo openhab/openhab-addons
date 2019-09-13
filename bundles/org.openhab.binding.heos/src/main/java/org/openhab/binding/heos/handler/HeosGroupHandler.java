@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HeosGroupHandler extends HeosThingBaseHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(HeosThingBaseHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HeosGroupHandler.class);
 
     private String gid;
     private HeosGroup heosGroup;
