@@ -19,6 +19,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Dennis Frommknecht - Initial contribution
+ * @author Andrew Fiddian-Green - Added the zone Low Battery Alarm channel code
+ * 
  */
 public class TadoBindingConstants {
 
@@ -77,6 +79,9 @@ public class TadoBindingConstants {
 
     public final static String CHANNEL_ZONE_TIMER_DURATION = "timerDuration";
     public final static String CHANNEL_ZONE_OVERLAY_EXPIRY = "overlayExpiry";
+
+    // battery low alarm channel
+    public final static String CHANNEL_ZONE_BATTERY_LOW_ALARM = "batteryLowAlarm";
 
     public final static String CHANNEL_MOBILE_DEVICE_AT_HOME = "atHome";
 

@@ -39,7 +39,9 @@ abstract public class BaseHomeThingHandler extends BaseThingHandler {
     }
 
     protected HomeApi getApi() {
-        return getHomeHandler().getApi();
+        // null pointer exception fixed by Andrew Fiddian-Green
+        // was: return getHomeHandler().getApi();
+        return getHomeHandler() != null ? getHomeHandler().getApi() : null;
     }
 
     protected void onSuccessfulOperation() {

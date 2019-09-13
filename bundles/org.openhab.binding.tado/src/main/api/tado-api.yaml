@@ -377,6 +377,26 @@ definitions:
     - HOT_WATER
     readOnly: true
 
+  ControlDevice:
+    type: object
+    description: A Tado control device.
+    properties:
+      deviceType:
+        type: string
+        description: The type of Tado control device.
+        readOnly: true
+      serialNo:
+        type: string
+        description: The serial number of the device.
+        readOnly: true
+      batteryState:
+        type: string
+        description: The state of the device battery (if applicable).
+        readOnly: true
+    required:
+    - deviceType
+    - serialNo
+
   Zone:
     type: object
     properties:
@@ -390,6 +410,10 @@ definitions:
         type: string
       type:
         $ref: "#/definitions/TadoSystemType"
+      devices:
+        type: array
+        items:
+          $ref: "#/definitions/ControlDevice"
     required:
     - id
     - name

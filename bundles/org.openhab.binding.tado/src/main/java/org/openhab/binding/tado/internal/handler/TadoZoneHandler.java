@@ -56,6 +56,8 @@ import org.slf4j.LoggerFactory;
  * The {@link TadoZoneHandler} is responsible for handling commands of zones and update their state.
  *
  * @author Dennis Frommknecht - Initial contribution
+ * @author Andrew Fiddian-Green - Added the zone Low Battery Alarm channel code
+ * 
  */
 public class TadoZoneHandler extends BaseHomeThingHandler {
     private Logger logger = LoggerFactory.getLogger(TadoZoneHandler.class);
@@ -64,6 +66,10 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private ScheduledFuture<?> refreshTimer;
     private ScheduledFuture<?> scheduledHvacChange;
     private GenericZoneCapabilities capabilities;
+    
+    // this a static final object because we only need a single battery checker 
+    // class instance to serve the whole binding / system 
+    private static final TadoBatteryChecker batteryChecker = new TadoBatteryChecker();
 
     TadoHvacChange pendingHvacChange;
 
@@ -250,6 +256,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
         }
+
+        updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM, batteryChecker.getBatteryLowAlarm(this));
     }
 
     private void scheduleZoneStateUpdate() {
