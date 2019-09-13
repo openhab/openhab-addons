@@ -401,7 +401,7 @@ The only possibility to find out the id is by using the discover function in the
 #### smarthome.things
 
 ```
-Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2 pollingIntervalSmartHome=20]
+Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2, pollingIntervalSmartHome=20]
 {
     Thing smartHomeDevice      smartHomeDevice1 "Smart Home Device 1" @ "Living Room" [id="ID"]
     Thing smartHomeDevice      smartHomeDevice2 "Smart Home Device 2" @ "Living Room" [id="ID"]
