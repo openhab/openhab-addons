@@ -93,6 +93,7 @@
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.hdpowerview</module>
     <module>org.openhab.binding.helios</module>
+    <module>org.openhab.binding.heos</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.hue</module>
