@@ -32,7 +32,7 @@ abstract public class BaseHomeThingHandler extends BaseThingHandler {
     public Long getHomeId() {
         // null pointer exception fixed by Andrew Fiddian-Green
         TadoHomeHandler handler = getHomeHandler();
-        return handler != null ? handler.getHomeId() : 0;
+        return handler != null ? handler.getHomeId() : new Long(0);
     }
 
     protected TadoHomeHandler getHomeHandler() {

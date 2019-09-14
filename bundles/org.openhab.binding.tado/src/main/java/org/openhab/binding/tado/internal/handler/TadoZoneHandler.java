@@ -68,10 +68,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private ScheduledFuture<?> scheduledHvacChange;
     private GenericZoneCapabilities capabilities;
     
-    // this a static final object because we only need a single battery checker 
-    // class instance to serve the whole binding / system 
-    private static final TadoBatteryChecker batteryChecker = new TadoBatteryChecker();
-
     TadoHvacChange pendingHvacChange;
 
     public TadoZoneHandler(Thing thing) {
@@ -259,8 +255,11 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
         }
-
-        updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM, batteryChecker.getBatteryLowAlarm(this));
+        
+        TadoHomeHandler home = getHomeHandler();
+        if (home != null) {
+            updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM, home.getBatteryLowAlarm(getZoneId()));
+        }
     }
 
     private void scheduleZoneStateUpdate() {

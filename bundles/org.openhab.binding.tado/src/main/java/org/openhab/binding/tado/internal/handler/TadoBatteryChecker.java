@@ -37,47 +37,45 @@ public class TadoBatteryChecker {
     private Logger logger = LoggerFactory.getLogger(TadoBatteryChecker.class);
 
     private List<Zone> zoneList = null;
-    private long homeId = -1;
     private Date refreshTime = new Date();
+    private TadoHomeHandler homeHandler;
 
-    public TadoBatteryChecker() {
+    public TadoBatteryChecker(TadoHomeHandler homeHandler) {
+        this.homeHandler = homeHandler;
     }
 
-    private synchronized void initializeZoneList(TadoZoneHandler callerZone) {
+    private synchronized void refreshZoneList() {
         Date now = new Date();
-        if (now.after(refreshTime) || homeId != callerZone.getHomeId() || zoneList == null) {
+        if (homeHandler != null && (now.after(refreshTime) || zoneList == null)) {
             // be frugal, we only need to refresh the battery state hourly
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(now);
             calendar.add(Calendar.HOUR, 1);
             refreshTime = calendar.getTime();
 
-            // note: (to do) we would require multiple zoneLists or multiple
-            // TadoBatteryChecker instances if simultaneously monitoring multiple homes, but
-            // this is highly unlikely so we won't bother writing code for it yet ;)
-            homeId = callerZone.getHomeId();
-            logger.debug("Fetching (battery state) zone list for HomeId {}", homeId);
-            try {
-                zoneList = callerZone.getApi().listZones(homeId);
-            } catch (IOException | ApiException e) {
-                zoneList = null;
-                logger.debug("Fetch (battery state) zone list exception {}", e);
+            Long homeId = homeHandler.getHomeId();
+            if (homeId != null) {
+                logger.debug("Fetching (battery state) zone list for HomeId {}", homeId);
+                try {
+                    zoneList = homeHandler.getApi().listZones(homeId);
+                } catch (IOException | ApiException e) {
+                    zoneList = null;
+                    logger.debug("Fetch (battery state) zone list exception {}", e);
+                }
             }
         }
     }
 
-    public OnOffType getBatteryLowAlarm(TadoZoneHandler callerZone) {
-        initializeZoneList(callerZone);
+    public OnOffType getBatteryLowAlarm(long zoneId) {
+        refreshZoneList();
         if (zoneList != null) {
-            for (Zone thisZone : zoneList) {
-                if (thisZone.getId() == callerZone.getZoneId()) {
+            // logger.debug("Fetching battery state for ZoneId {}", zoneId);
+            for (Zone zone : zoneList) {
+                if (zoneId == zone.getId()) {
                     Boolean alarm = false;
-                    for (ControlDevice thisDevice : thisZone.getDevices()) {
-                        String batteryState = thisDevice.getBatteryState();
+                    for (ControlDevice device : zone.getDevices()) {
+                        String batteryState = device.getBatteryState();
                         alarm = alarm || (batteryState != null && !batteryState.equals("NORMAL"));
-//                        logger.trace("HomeId {}, ZoneId {}, Device SerialNo {}, Battery State {}",
-//                                callerZone.getHomeId(), callerZone.getZoneId(), thisDevice.getSerialNo(),
-//                                thisDevice.getBatteryState());
                     }
                     return OnOffType.from(alarm);
                 }

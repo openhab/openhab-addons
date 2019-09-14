@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -46,10 +47,13 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     private HomeApi api;
     private Long homeId;
 
+    private TadoBatteryChecker batteryChecker;
+
     private ScheduledFuture<?> initializationFuture;
 
     public TadoHomeHandler(Bridge bridge) {
         super(bridge);
+        batteryChecker = new TadoBatteryChecker(this);
     }
 
     public TemperatureUnit getTemperatureUnit() {
@@ -126,4 +130,9 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Nothing to do for a bridge
     }
+    
+    public OnOffType getBatteryLowAlarm(long zoneId) {
+        return batteryChecker.getBatteryLowAlarm(zoneId); 
+    }
+
 }
