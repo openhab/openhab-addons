@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="networkupstools"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="dynamic-string">
+        <item-type>String</item-type>
+        <label>String</label>
+        <description>String data</description>
+        <state readOnly="true" />
+        <config-description-ref uri="channel-type:ups:dynamic-channel-config" />
+    </channel-type>
+    <channel-type id="dynamic-number">
+        <item-type>Number</item-type>
+        <label>Number</label>
+        <description>Number data</description>
+        <state readOnly="true" />
+        <config-description-ref uri="channel-type:ups:dynamic-channel-config" />
+    </channel-type>
+    <channel-type id="dynamic-switch">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>Switch data</description>
+        <state readOnly="true" />
+        <config-description-ref uri="channel-type:ups:dynamic-channel-config" />
+    </channel-type>
+
+</thing:thing-descriptions>
