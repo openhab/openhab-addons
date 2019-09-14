@@ -510,7 +510,23 @@ definitions:
     properties:
       heatingPower:
         $ref: "#/definitions/PercentageDataPoint"
+      acPower:
+        $ref: "#/definitions/AcPowerDataPoint"
 
+  AcPowerDataPoint:
+    type: object
+    properties:
+      timestamp:
+        description: Measurement timestamp
+        type: string
+        format: date-time
+      value:
+        description: AC Power state (OFF, ON)
+        type: string
+    required:
+    - timestamp
+    - value
+  
   SensorDataPoints:
     type: object
     properties:

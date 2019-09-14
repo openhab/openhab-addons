@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Dennis Frommknecht - Initial contribution
- * @author Andrew Fiddian-Green - Added the zone Low Battery Alarm channel code
+ * @author Andrew Fiddian-Green - Added the zone Low Battery Alarm channel code and AcPower channel
  * 
  */
 public class TadoBindingConstants {
@@ -43,6 +43,7 @@ public class TadoBindingConstants {
     public final static String CHANNEL_ZONE_HUMIDITY = "humidity";
 
     public final static String CHANNEL_ZONE_HEATING_POWER = "heatingPower";
+    public final static String CHANNEL_ZONE_AC_POWER = "acPower";
 
     public final static String CHANNEL_ZONE_HVAC_MODE = "hvacMode";
 

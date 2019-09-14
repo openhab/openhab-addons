@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * The {@link TadoZoneHandler} is responsible for handling commands of zones and update their state.
  *
  * @author Dennis Frommknecht - Initial contribution
- * @author Andrew Fiddian-Green - Added the zone Low Battery Alarm channel code
+ * @author Andrew Fiddian-Green - Added the zone Low Battery Alarm channel code, and AcPower channel
  * 
  */
 public class TadoZoneHandler extends BaseHomeThingHandler {
@@ -237,7 +237,10 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             TadoZoneStateAdapter state = new TadoZoneStateAdapter(zoneState, getTemperatureUnit());
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE, state.getInsideTemperature());
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_HUMIDITY, state.getHumidity());
+            
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER, state.getHeatingPower());
+            // AC Power
+            updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_AC_POWER, state.getAcPower());
 
             updateState(TadoBindingConstants.CHANNEL_ZONE_OPERATION_MODE, state.getOperationMode());
 

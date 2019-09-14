@@ -47,6 +47,7 @@
 			<channel typeId="operationMode" id="operationMode"></channel>
 			
 			<channel typeId="batteryLowAlarm" id="batteryLowAlarm"></channel>
+			<channel typeId="acPower" id="acPower"></channel>
 		</channels>
 
 		<config-description>
@@ -206,6 +207,12 @@
 		<item-type>Switch</item-type>
 		<label>Battery Low Alarm</label>
 		<description>ON if one or more devices in the zone have a low battery</description>
+	</channel-type>
+
+	<channel-type id="acPower">
+		<item-type>Switch</item-type>
+		<label>AirCon Power State</label>
+		<description>Indicates if the air-conditioning is Off or On</description>
 	</channel-type>
 
 </thing:thing-descriptions>
