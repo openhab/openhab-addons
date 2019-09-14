@@ -49,7 +49,7 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService
 
     private final Logger logger = LoggerFactory.getLogger(FoobotAccountDiscoveryService.class);
 
-    private @NonNullByDefault({}) FoobotAccountHandler handler;
+    private @Nullable FoobotAccountHandler handler;
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
     public FoobotAccountDiscoveryService() {

@@ -45,5 +45,5 @@ public class FoobotBindingConstants {
 
     public static final String PROPERTY_NAME = "name";
 
-    public static final int DEFAULT_REFRESH_PERIOD_MINUTES = 7;
+    public static final int DEFAULT_REFRESH_PERIOD_MINUTES = 8;
 }

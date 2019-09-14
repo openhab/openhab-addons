@@ -3,6 +3,7 @@
 This binding fetches the Indoor Air Quality data of each of your Foobot devices from the Foobot cloud service.
 
 To use this binding, you first need to [register and get your API key](https://api.foobot.io/apidoc/index.html).
+The api is rate limited to 200 calls per day. If you need a higher rate limit please contact Foobot.
 
 ## Supported Things
 
@@ -26,9 +27,10 @@ Bridge has the following configuration parameters:
 |------------------|-------------------------------------------------------|----------
 | apikey           | API Key from https://api.foobot.io/apidoc/index.html  | Mandatory
 | username         | The e-mail address used to log into the Foobot App    | Mandatory
-| refreshInterval  | Refresh interval in minutes, minimal 5 minutes        | Optional, the default value is 7 minutes.
+| refreshInterval  | Refresh interval in minutes, minimal 5 minutes        | Optional, the default value is 8 minutes.
 
 The minimal refresh rate is 5 minutes because the device only sends data every 5 minutes.
+The default is 8 minutes. This will get you through the day with the default rate limit of 200 calls per day.
 
 ## Channels
 
