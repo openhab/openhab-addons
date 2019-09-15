@@ -28,5 +28,4 @@ public class AcDeviceConfig {
     public String toString() {
         return "[deviceID=" + deviceID + ", buildingID=" + buildingID + ", pollingInterval=" + pollingInterval + "]";
     }
-
 }

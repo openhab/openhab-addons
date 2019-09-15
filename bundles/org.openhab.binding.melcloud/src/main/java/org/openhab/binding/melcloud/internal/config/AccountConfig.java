@@ -28,5 +28,4 @@ public class AccountConfig {
     public String toString() {
         return "[username=" + username + ", password=*****" + ", languageId=" + language + "]";
     }
-
 }
