@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.senechome.internal;
 
@@ -68,7 +72,6 @@ public class SenecHomeHandler extends BaseThingHandler {
 
     public SenecHomeHandler(Thing thing, Gson gson) {
         super(thing);
-        logger.info("INIT");
         this.gson = gson;
     }
 
@@ -99,14 +102,13 @@ public class SenecHomeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SenecHomeConfiguration.class);
-        logger.info("" + config.refreshInterval);
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     private void refresh() {
         try {
             SenecHomeResponse response = readSenecValues();
-            logger.info("received {}", response);
+            logger.trace("received {}", response);
 
             BigDecimal pvLimitation = new BigDecimal(100).subtract(getSenecValue(response.limitation.powerLimitation))
                     .setScale(0, RoundingMode.HALF_UP);
@@ -167,7 +169,7 @@ public class SenecHomeHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            logger.info("Error refreshing source '{}'", getThing().getUID(), e);
+            logger.error("Error refreshing source '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     e.getClass().getName() + ":" + e.getMessage());
         }
@@ -183,7 +185,7 @@ public class SenecHomeHandler extends BaseThingHandler {
         } else if (VALUE_TYPE_FLOAT.equalsIgnoreCase(type[0])) {
             return parseFloatValue(type[1]);
         } else {
-            logger.warn("Unknown value type [" + type[0] + "]");
+            logger.warn("Unknown value type [{}]", type[0]);
         }
 
         // TODO: good choice?
@@ -269,9 +271,8 @@ public class SenecHomeHandler extends BaseThingHandler {
                     // skip updating state (possible flapping state)
                     return;
                 } else {
-                    logger.debug("" + status + " longer than required duration " + duration);
+                    logger.debug("{} longer than required duration {}", status, duration);
                 }
-
             } else {
                 this.limitationStatus.setState(status);
                 this.limitationStatus.setTime(new Date().getTime());
@@ -283,7 +284,7 @@ public class SenecHomeHandler extends BaseThingHandler {
             this.limitationStatus = new PowerLimitationStatus(status, new Date().getTime());
         }
 
-        logger.debug("Updating power limitation state " + status);
+        logger.debug("Updating power limitation state {}", status);
         updateState(channel.getUID(), status ? OnOffType.ON : OnOffType.OFF);
     }
 

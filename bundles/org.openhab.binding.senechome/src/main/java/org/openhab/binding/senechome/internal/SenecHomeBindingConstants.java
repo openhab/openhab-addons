@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.senechome.internal;
 
@@ -19,18 +23,18 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class SenecHomeBindingConstants {
-    private final static String BINDING_ID = "senechome";
-    private final static String THING_BASE_ID = "senechome";
-    public final static ThingTypeUID THING_TYPE_SENEC_HOME_BATTERY = new ThingTypeUID(BINDING_ID, THING_BASE_ID);
+    private static final String BINDING_ID = "senechome";
+    private static final String THING_BASE_ID = "senechome";
+    public static final ThingTypeUID THING_TYPE_SENEC_HOME_BATTERY = new ThingTypeUID(BINDING_ID, THING_BASE_ID);
 
-    public final static String CHANNEL_SENEC_POWER_LIMITATION = "powerLimitation";
-    public final static String CHANNEL_SENEC_POWER_LIMITATION_STATE = "powerLimitationState";
-    public final static String CHANNEL_SENEC_BATTERY_STATE = "batteryState";
-    public final static String CHANNEL_SENEC_POWER_CONSUMPTION = "houseConsumption";
-    public final static String CHANNEL_SENEC_ENERGY_PRODUCTION = "energyProduction";
-    public final static String CHANNEL_SENEC_BATTERY_POWER = "batteryPower";
-    public final static String CHANNEL_SENEC_BATTERY_FUEL_CHARGE = "batteryFuelCharge";
-    public final static String CHANNEL_SENEC_GRID_POWER = "gridPower";
-    public final static String CHANNEL_SENEC_GRID_POWER_SUPPLY = "gridPowerSupply";
-    public final static String CHANNEL_SENEC_GRID_POWER_DRAW = "gridPowerDraw";
+    public static final String CHANNEL_SENEC_POWER_LIMITATION = "powerLimitation";
+    public static final String CHANNEL_SENEC_POWER_LIMITATION_STATE = "powerLimitationState";
+    public static final String CHANNEL_SENEC_BATTERY_STATE = "batteryState";
+    public static final String CHANNEL_SENEC_POWER_CONSUMPTION = "houseConsumption";
+    public static final String CHANNEL_SENEC_ENERGY_PRODUCTION = "energyProduction";
+    public static final String CHANNEL_SENEC_BATTERY_POWER = "batteryPower";
+    public static final String CHANNEL_SENEC_BATTERY_FUEL_CHARGE = "batteryFuelCharge";
+    public static final String CHANNEL_SENEC_GRID_POWER = "gridPower";
+    public static final String CHANNEL_SENEC_GRID_POWER_SUPPLY = "gridPowerSupply";
+    public static final String CHANNEL_SENEC_GRID_POWER_DRAW = "gridPowerDraw";
 }
