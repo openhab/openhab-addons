@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 
 /**
- * Basic command interface allowing to execute the command.
+ * CachedCommand wraps any command and caches its response for a configurable period of time.
  *
  * @author Nils Schnabel - Initial contribution
  */
