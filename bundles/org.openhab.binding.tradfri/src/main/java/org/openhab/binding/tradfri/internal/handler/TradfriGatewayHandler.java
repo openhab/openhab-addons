@@ -101,6 +101,7 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
                     "Host must be specified in the configuration!");
             return;
         }
+
         if (isNullOrEmpty(configuration.code)) {
             if (isNullOrEmpty(configuration.identity) || isNullOrEmpty(configuration.preSharedKey)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -111,31 +112,23 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
             }
         } else {
             String currentFirmware = thing.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
-            if (isNullOrEmpty(currentFirmware)
-                    || MIN_SUPPORTED_VERSION.compareTo(new TradfriVersion(currentFirmware)) > 0) {
-                // older firmware - fall back to authentication with security code
-                // in this case the Thing configuration will not be persisted
-                if (!isNullOrEmpty(currentFirmware)) {
-                    // show warning only if we already have set the firmware property
-                    logger.warn("Gateway with old firmware '{}' - please consider upgrading to the latest version.",
-                            currentFirmware);
-                }
-
-                Configuration editedConfig = editConfiguration();
-                editedConfig.put(TradfriBindingConstants.GATEWAY_CONFIG_IDENTITY, "");
-                editedConfig.put(TradfriBindingConstants.GATEWAY_CONFIG_PRE_SHARED_KEY, configuration.code);
-                updateConfiguration(editedConfig);
-
-                establishConnection();
-            } else {
-                // Running async operation to retrieve new <'identity','key'> pair
-                scheduler.execute(() -> {
-                    boolean success = obtainIdentityAndPreSharedKey();
-                    if (success) {
-                        establishConnection();
-                    }
-                });
+            if (!isNullOrEmpty(currentFirmware)
+                    && MIN_SUPPORTED_VERSION.compareTo(new TradfriVersion(currentFirmware)) > 0) {
+                // older firmware not supported
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        String.format(
+                                "Gateway firmware version '%s' is too old! Minimum supported firmware version is '%s'.",
+                                currentFirmware, MIN_SUPPORTED_VERSION.toString()));
+                return;
             }
+
+            // Running async operation to retrieve new <'identity','key'> pair
+            scheduler.execute(() -> {
+                boolean success = obtainIdentityAndPreSharedKey();
+                if (success) {
+                    establishConnection();
+                }
+            });
         }
     }
 
