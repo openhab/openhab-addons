@@ -18,7 +18,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.ControlDevice;
 import org.openhab.binding.tado.internal.api.model.Zone;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class TadoBatteryChecker {
-    private Logger logger = LoggerFactory.getLogger(TadoBatteryChecker.class);
+    private final Logger logger = LoggerFactory.getLogger(TadoBatteryChecker.class);
 
     private List<Zone> zoneList = null;
     private Date refreshTime = new Date();
@@ -60,28 +61,33 @@ public class TadoBatteryChecker {
                     zoneList = homeHandler.getApi().listZones(homeId);
                 } catch (IOException | ApiException e) {
                     zoneList = null;
-                    logger.debug("Fetch (battery state) zone list exception {}", e);
+                    logger.debug("Fetch (battery state) zone list exception", e);
                 }
             }
         }
     }
 
-    public OnOffType getBatteryLowAlarm(long zoneId) {
+    public State getBatteryLowAlarm(long zoneId) {
         refreshZoneList();
+        boolean hasBatteryStateValue = false;
         if (zoneList != null) {
             // logger.debug("Fetching battery state for ZoneId {}", zoneId);
             for (Zone zone : zoneList) {
                 if (zoneId == zone.getId()) {
-                    Boolean alarm = false;
                     for (ControlDevice device : zone.getDevices()) {
                         String batteryState = device.getBatteryState();
-                        alarm = alarm || (batteryState != null && !batteryState.equals("NORMAL"));
+                        if (batteryState != null) {
+                            if (!batteryState.equals("NORMAL")) {    
+                                return OnOffType.ON;
+                            }
+                            hasBatteryStateValue = true;
+                        }
                     }
-                    return OnOffType.from(alarm);
+                    break;
                 }
             }
         }
-        return OnOffType.from(false);
+        return hasBatteryStateValue ? OnOffType.OFF : UnDefType.UNDEF;
     }
 
 }

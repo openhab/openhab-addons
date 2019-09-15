@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * The {@link TadoZoneHandler} is responsible for handling commands of zones and update their state.
  *
  * @author Dennis Frommknecht - Initial contribution
- * @author Andrew Fiddian-Green - Added the zone Low Battery Alarm channel code, and AcPower channel
+ * @author Andrew Fiddian-Green - Added Low Battery Alarm and AcPower channels
  * 
  */
 public class TadoZoneHandler extends BaseHomeThingHandler {
@@ -67,7 +67,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private ScheduledFuture<?> refreshTimer;
     private ScheduledFuture<?> scheduledHvacChange;
     private GenericZoneCapabilities capabilities;
-    
     TadoHvacChange pendingHvacChange;
 
     public TadoZoneHandler(Thing thing) {
@@ -93,7 +92,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     public ZoneState getZoneState() throws IOException, ApiException {
-        // null pointer exception fixed by Andrew Fiddian-Green
         HomeApi api = getApi();
         return api != null ? api.showZoneState(getHomeId(), getZoneId()) : null;
     }

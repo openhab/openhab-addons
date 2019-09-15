@@ -30,7 +30,6 @@ abstract public class BaseHomeThingHandler extends BaseThingHandler {
     }
 
     public Long getHomeId() {
-        // null pointer exception fixed by Andrew Fiddian-Green
         TadoHomeHandler handler = getHomeHandler();
         return handler != null ? handler.getHomeId() : new Long(0);
     }
@@ -41,7 +40,6 @@ abstract public class BaseHomeThingHandler extends BaseThingHandler {
     }
 
     protected HomeApi getApi() {
-        // null pointer exception fixed by Andrew Fiddian-Green
         TadoHomeHandler handler = getHomeHandler();
         return handler != null ? handler.getApi() : null;
     }
