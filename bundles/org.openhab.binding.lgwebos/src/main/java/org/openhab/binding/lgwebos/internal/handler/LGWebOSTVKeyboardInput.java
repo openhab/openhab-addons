@@ -147,7 +147,6 @@ public class LGWebOSTVKeyboardInput {
     }
 
     public ServiceSubscription<TextInputStatusInfo> connect(final ResponseListener<TextInputStatusInfo> listener) {
-
         ServiceSubscription<TextInputStatusInfo> subscription = new ServiceSubscription<>(KEYBOARD_INPUT, null,
                 rawData -> parseRawKeyboardData(rawData), listener);
         service.sendCommand(subscription);

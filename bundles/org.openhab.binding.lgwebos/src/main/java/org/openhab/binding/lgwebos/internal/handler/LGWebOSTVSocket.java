@@ -49,7 +49,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
@@ -115,17 +114,17 @@ public class LGWebOSTVSocket {
     private final Logger logger = LoggerFactory.getLogger(LGWebOSTVSocket.class);
     private int nextRequestId = 0;
 
-    private static String FOREGROUND_APP = "ssap://com.webos.applicationManager/getForegroundAppInfo";
-    // private static String APP_STATUS = "ssap://com.webos.service.appstatus/getAppStatus";
-    // private static String APP_STATE = "ssap://system.launcher/getAppState";
-    private static String VOLUME = "ssap://audio/getVolume";
-    private static String MUTE = "ssap://audio/getMute";
-    // private static String VOLUME_STATUS = "ssap://audio/getStatus";
-    private static String CHANNEL_LIST = "ssap://tv/getChannelList";
-    private static String CHANNEL = "ssap://tv/getCurrentChannel";
-    // private static String PROGRAM = "ssap://tv/getChannelProgramInfo";
-    // private static String CURRENT_PROGRAM = "ssap://tv/getChannelCurrentProgramInfo";
-    // private static String THREED_STATUS = "ssap://com.webos.service.tv.display/get3DStatus";
+    private static final String FOREGROUND_APP = "ssap://com.webos.applicationManager/getForegroundAppInfo";
+    // private static final String APP_STATUS = "ssap://com.webos.service.appstatus/getAppStatus";
+    // private static final String APP_STATE = "ssap://system.launcher/getAppState";
+    private static final String VOLUME = "ssap://audio/getVolume";
+    private static final String MUTE = "ssap://audio/getMute";
+    // private static final String VOLUME_STATUS = "ssap://audio/getStatus";
+    private static final String CHANNEL_LIST = "ssap://tv/getChannelList";
+    private static final String CHANNEL = "ssap://tv/getCurrentChannel";
+    // private static final String PROGRAM = "ssap://tv/getChannelProgramInfo";
+    // private static final String CURRENT_PROGRAM = "ssap://tv/getChannelCurrentProgramInfo";
+    // private static final String THREED_STATUS = "ssap://com.webos.service.tv.display/get3DStatus";
 
     public LGWebOSTVSocket(WebSocketClient client, ConfigProvider config, String host, int port) {
         this.config = config;
@@ -292,7 +291,6 @@ public class LGWebOSTVSocket {
     public void sendCommand(ServiceCommand<?> command) {
         switch (state) {
             case REGISTERED:
-
                 int requestId = nextRequestId();
                 requests.put(requestId, command);
                 JsonObject packet = new JsonObject();
@@ -310,7 +308,7 @@ public class LGWebOSTVSocket {
             case REGISTERING:
             case DISCONNECTED:
             case DISCONNECTING:
-                logger.warn("Skipping command {} for {} in state {}", command.toString(), command.getTarget(), state);
+                logger.warn("Skipping command {} for {} in state {}", command, command.getTarget(), state);
                 break;
         }
 
@@ -650,13 +648,13 @@ public class LGWebOSTVSocket {
         JsonObject payload = new JsonObject();
         payload.addProperty("target", url);
 
-        ServiceCommand<LaunchSession> request = new ServiceCommand<>(uri, payload, obj -> new LaunchSession() {
-            {
-                setService(LGWebOSTVSocket.this);
-                setAppId(obj.get("id").getAsString()); // note that response uses id to mean appId
-                setSessionId(obj.get("sessionId").getAsString());
-                setSessionType(LaunchSessionType.App);
-            }
+        ServiceCommand<LaunchSession> request = new ServiceCommand<>(uri, payload, obj -> {
+            LaunchSession launchSession = new LaunchSession();
+            launchSession.setService(this);
+            launchSession.setAppId(obj.get("id").getAsString()); // note that response uses id to mean appId
+            launchSession.setSessionId(obj.get("sessionId").getAsString());
+            launchSession.setSessionType(LaunchSessionType.App);
+            return launchSession;
         }, listener);
         sendCommand(request);
     }
@@ -669,7 +667,11 @@ public class LGWebOSTVSocket {
             case ExternalInputPicker:
                 service.closeApp(launchSession, listener);
                 break;
+
             /*
+             * If we want to extend support for MediaPlayer or WebAppLauncher at some point, this is how it was handeled
+             * in connectsdk:
+             *
              * case Media:
              * if (service instanceof MediaPlayer) {
              * ((MediaPlayer) service).closeMedia(launchSession, listener);
@@ -751,7 +753,7 @@ public class LGWebOSTVSocket {
             }
 
             @Override
-            public void onError(@NonNull String errorMessage) {
+            public void onError(String errorMessage) {
                 logger.debug("Error in communication with Mouse Socket: {}", errorMessage);
             }
         });

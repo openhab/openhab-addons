@@ -25,8 +25,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
-import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
 import org.openhab.binding.lgwebos.internal.handler.core.ChannelInfo;
+import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +72,6 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
 
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
-
         final String value = command.toString();
 
         List<ChannelInfo> channels = channelListCache.get(handler.getThing().getUID());

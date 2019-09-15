@@ -47,10 +47,10 @@ import com.google.gson.JsonObject;
  * @author Hyun Kook Khang - Connect SDK initial contribution
  * @author Sebastian Prehn - Adoption for openHAB
  */
-public class ServiceSubscription<X> extends ServiceCommand<X> {
+public class ServiceSubscription<T> extends ServiceCommand<T> {
 
-    public ServiceSubscription(String uri, JsonObject payload, Function<JsonObject, X> converter,
-            ResponseListener<X> listener) {
+    public ServiceSubscription(String uri, JsonObject payload, Function<JsonObject, T> converter,
+            ResponseListener<T> listener) {
         super(uri, payload, converter, listener);
         type = Type.subscribe;
     }

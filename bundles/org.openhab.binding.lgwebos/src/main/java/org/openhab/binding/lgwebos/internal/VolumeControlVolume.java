@@ -67,7 +67,6 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
 
     @Override
     protected Optional<ServiceSubscription<Float>> getSubscription(String channelUID, LGWebOSHandler handler) {
-
         return Optional.of(handler.getSocket().subscribeVolume(new ResponseListener<Float>() {
 
             @Override

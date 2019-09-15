@@ -23,6 +23,7 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.jupnp.UpnpService;
 import org.jupnp.model.message.header.ServiceTypeHeader;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -46,22 +47,14 @@ public class LGWebOSUpnpDiscoverySearch extends AbstractDiscoveryService {
     private static final int SEARCH_INTERVAL_SECONDS = 10;
     private static final int SEARCH_START_UP_DELAY_SECONDS = 0;
 
-    @NonNullByDefault({})
-    private UpnpService upnpService;
+    private final UpnpService upnpService;
 
     private @Nullable ScheduledFuture<?> searchJob;
 
-    public LGWebOSUpnpDiscoverySearch() {
+    @Activate
+    public LGWebOSUpnpDiscoverySearch(final @Reference UpnpService upnpService) {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS, true);
-    }
-
-    @Reference
-    public void setUpnpService(UpnpService upnpService) {
         this.upnpService = upnpService;
-    }
-
-    public void unsetUpnpService(UpnpService upnpService) {
-        this.upnpService = null;
     }
 
     private void search() {

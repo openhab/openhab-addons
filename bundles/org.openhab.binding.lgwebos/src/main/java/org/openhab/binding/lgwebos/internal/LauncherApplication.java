@@ -75,7 +75,6 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
 
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
-
         final String value = command.toString();
 
         List<AppInfo> appInfos = applicationListCache.get(handler.getThing().getUID());
@@ -95,7 +94,6 @@ public class LauncherApplication extends BaseChannelHandler<AppInfo> {
 
     @Override
     protected Optional<ServiceSubscription<AppInfo>> getSubscription(String channelId, LGWebOSHandler handler) {
-
         return Optional.of(handler.getSocket().subscribeRunningApp(new ResponseListener<AppInfo>() {
 
             @Override

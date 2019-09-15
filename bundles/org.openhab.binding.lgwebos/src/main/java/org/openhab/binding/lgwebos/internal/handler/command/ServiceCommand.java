@@ -48,7 +48,7 @@ import com.google.gson.JsonObject;
  * @author Hyun Kook Khang - Connect SDK initial contribution
  * @author Sebastian Prehn - Adoption for openHAB
  */
-public class ServiceCommand<X> {
+public class ServiceCommand<T> {
 
     protected enum Type {
         request,
@@ -58,14 +58,14 @@ public class ServiceCommand<X> {
     protected Type type;
     protected JsonObject payload;
     protected String target;
-    protected Function<JsonObject, X> converter;
+    protected Function<JsonObject, T> converter;
 
     int requestId;
 
-    ResponseListener<X> responseListener;
+    ResponseListener<T> responseListener;
 
-    public ServiceCommand(String targetURL, JsonObject payload, Function<JsonObject, X> converter,
-            ResponseListener<X> listener) {
+    public ServiceCommand(String targetURL, JsonObject payload, Function<JsonObject, T> converter,
+            ResponseListener<T> listener) {
         this.target = targetURL;
         this.payload = payload;
         this.converter = converter;
@@ -95,7 +95,7 @@ public class ServiceCommand<X> {
         this.getResponseListener().onError(error);
     }
 
-    public ResponseListener<X> getResponseListener() {
+    public ResponseListener<T> getResponseListener() {
         return responseListener;
     }
 

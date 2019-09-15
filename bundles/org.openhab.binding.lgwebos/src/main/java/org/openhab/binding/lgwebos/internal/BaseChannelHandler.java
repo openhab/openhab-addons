@@ -30,28 +30,29 @@ import org.slf4j.LoggerFactory;
  * @author Sebastian Prehn - initial contribution
  */
 @NonNullByDefault
-abstract class BaseChannelHandler<X> implements ChannelHandler {
+abstract class BaseChannelHandler<T> implements ChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseChannelHandler.class);
 
-    private final ResponseListener<X> defaultResponseListener = createResponseListener();
+    private final ResponseListener<T> defaultResponseListener = createResponseListener();
 
     protected <Y> ResponseListener<Y> createResponseListener() {
         return new ResponseListener<Y>() {
 
             @Override
             public void onError(String error) {
-                logger.warn("{}: received error response: {}", getClass().getName(), error);
+                logger.warn("{} received error response: {}", BaseChannelHandler.this.getClass().getSimpleName(),
+                        error);
             }
 
             @Override
             public void onSuccess(Y object) {
-                logger.debug("{}: {}.", getClass().getName(), object);
+                logger.debug("{} received: {}.", BaseChannelHandler.this.getClass().getSimpleName(), object);
             }
         };
     }
 
     // IP to Subscriptions map
-    private Map<ThingUID, ServiceSubscription<X>> subscriptions = new ConcurrentHashMap<>();
+    private Map<ThingUID, ServiceSubscription<T>> subscriptions = new ConcurrentHashMap<>();
 
     @Override
     public void onDeviceReady(String channelId, LGWebOSHandler handler) {
@@ -67,7 +68,7 @@ abstract class BaseChannelHandler<X> implements ChannelHandler {
     public final synchronized void refreshSubscription(String channelId, LGWebOSHandler handler) {
         removeAnySubscription(handler);
         if (handler.isChannelInUse(channelId)) { // only listen if least one item is configured for this channel
-            Optional<ServiceSubscription<X>> listener = getSubscription(channelId, handler);
+            Optional<ServiceSubscription<T>> listener = getSubscription(channelId, handler);
 
             if (listener.isPresent()) {
                 logger.debug("Subscribed {} on IP: {}", this.getClass().getName(), handler.getThing().getUID());
@@ -85,20 +86,20 @@ abstract class BaseChannelHandler<X> implements ChannelHandler {
      * @return an {@code Optional} containing the ServiceSubscription, or an empty {@code Optional} if subscription is
      *         not supported.
      */
-    protected Optional<ServiceSubscription<X>> getSubscription(String channelId, LGWebOSHandler handler) {
+    protected Optional<ServiceSubscription<T>> getSubscription(String channelId, LGWebOSHandler handler) {
         return Optional.empty();
     }
 
     @Override
     public final synchronized void removeAnySubscription(LGWebOSHandler handler) {
-        ServiceSubscription<X> l = subscriptions.remove(handler.getThing().getUID());
+        ServiceSubscription<T> l = subscriptions.remove(handler.getThing().getUID());
         if (l != null) {
             handler.getSocket().unsubscribe(l);
             logger.debug("Unsubscribed {} on IP: {}", this.getClass().getName(), handler.getThing().getUID());
         }
     }
 
-    protected ResponseListener<X> getDefaultResponseListener() {
+    protected ResponseListener<T> getDefaultResponseListener() {
         return defaultResponseListener;
     }
 

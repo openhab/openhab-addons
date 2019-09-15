@@ -29,4 +29,9 @@ public class CommandConfirmation {
         return returnValue;
     }
 
+    @Override
+    public String toString() {
+        return "CommandConfirmation [returnValue=" + returnValue + "]";
+    }
+
 }

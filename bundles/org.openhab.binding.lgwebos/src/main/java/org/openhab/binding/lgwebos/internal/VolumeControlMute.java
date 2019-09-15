@@ -47,7 +47,6 @@ public class VolumeControlMute extends BaseChannelHandler<Boolean> {
 
     @Override
     protected Optional<ServiceSubscription<Boolean>> getSubscription(String channelId, LGWebOSHandler handler) {
-
         return Optional.of(handler.getSocket().subscribeMute(new ResponseListener<Boolean>() {
 
             @Override

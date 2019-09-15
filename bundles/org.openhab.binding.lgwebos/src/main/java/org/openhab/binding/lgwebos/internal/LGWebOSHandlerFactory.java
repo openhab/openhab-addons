@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -40,20 +41,16 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.lgwebos")
 public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(LGWebOSHandlerFactory.class);
-    @NonNullByDefault({})
-    private WebSocketClient webSocketClient;
 
-    @Reference
-    protected void setWebSocketClient(WebSocketFactory webSocketFactory) {
+    private final WebSocketClient webSocketClient;
+
+    @Activate
+    public LGWebOSHandlerFactory(final @Reference WebSocketFactory webSocketFactory) {
         /*
          * Cannot use openHAB's shared web socket client (webSocketFactory.getCommonWebSocketClient()) as we have to
          * change client settings.
          */
         this.webSocketClient = webSocketFactory.createWebSocketClient("lgwebos");
-    }
-
-    protected void unsetWebSocketClient(WebSocketFactory webSocketFactory) {
-        this.webSocketClient = null;
     }
 
     @Override

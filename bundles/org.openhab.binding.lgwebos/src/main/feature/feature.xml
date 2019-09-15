@@ -5,7 +5,7 @@
     <feature name="openhab-binding-lgwebos" description="LG webOS Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
-        <bundle dependency="true">mvn:org.eclipse.jetty.websocket/websocket-client/9.4.11.v20180605</bundle>
+        <feature>openhab.tp-httpclient</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.lgwebos/${project.version}</bundle>
     </feature>
 </features>
