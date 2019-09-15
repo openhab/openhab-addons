@@ -42,7 +42,7 @@ public class HeliosVentilationDataPoint {
     /**
      * mapping from temperature byte values to °C
      */
-    private static final int Temp_Map[] = { -74, -70, -66, -62, -59, -56, -54, -52, -50, -48, -47, -46, -44, -43, -42,
+    private static final int TEMP_MAP[] = { -74, -70, -66, -62, -59, -56, -54, -52, -50, -48, -47, -46, -44, -43, -42,
             -41, -40, -39, -38, -37, -36, -35, -34, -33, -33, -32, -31, -30, -30, -29, -28, -28, -27, -27, -26, -25,
             -25, -24, -24, -23, -23, -22, -22, -21, -21, -20, -20, -19, -19, -19, -18, -18, -17, -17, -16, -16, -16,
             -15, -15, -14, -14, -14, -13, -13, -12, -12, -12, -11, -11, -11, -10, -10, -9, -9, -9, -8, -8, -8, -7, -7,
@@ -57,7 +57,7 @@ public class HeliosVentilationDataPoint {
     /**
      * mapping from human readable fanspeed to raw value
      */
-    private static final int Fanspeed_Map[] = { 0, 1, 3, 7, 15, 31, 63, 127, 255 };
+    private static final int FANSPEED_MAP[] = { 0, 1, 3, 7, 15, 31, 63, 127, 255 };
 
     private static final int BYTE_PERCENT_OFFSET = 52;
 
@@ -175,7 +175,7 @@ public class HeliosVentilationDataPoint {
     public State asState(byte b) {
         int val = b & 0xff;
         if (datatype == DataType.TEMPERATURE) {
-            return new QuantityType<>(Temp_Map[val], SIUnits.CELSIUS);
+            return new QuantityType<>(TEMP_MAP[val], SIUnits.CELSIUS);
         } else if (datatype == DataType.BYTE_PERCENT) {
             return new QuantityType<>((int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET)),
                     SmartHomeUnits.PERCENT);
@@ -192,7 +192,7 @@ public class HeliosVentilationDataPoint {
             return new QuantityType<>(val, SmartHomeUnits.PERCENT);
         } else if (datatype == DataType.FANSPEED) {
             int i = 1;
-            while (i < Fanspeed_Map.length && Fanspeed_Map[i] < val) {
+            while (i < FANSPEED_MAP.length && FANSPEED_MAP[i] < val) {
                 i++;
             }
             return new DecimalType(i);
@@ -237,7 +237,7 @@ public class HeliosVentilationDataPoint {
         } else if (datatype == DataType.TEMPERATURE) {
             int temp = (int) Math.round(value.doubleValue());
             int i = 0;
-            while (i < Temp_Map.length && Temp_Map[i] < temp) {
+            while (i < TEMP_MAP.length && TEMP_MAP[i] < temp) {
                 i++;
             }
             result = (byte) i;
@@ -248,7 +248,7 @@ public class HeliosVentilationDataPoint {
             } else if (i > 8) {
                 i = 8;
             }
-            result = (byte) Fanspeed_Map[i];
+            result = (byte) FANSPEED_MAP[i];
         } else if (datatype == DataType.BYTE_PERCENT) {
             result = (byte) ((value.doubleValue() / 100.0) * (255 - BYTE_PERCENT_OFFSET) + BYTE_PERCENT_OFFSET);
         } else if (datatype == DataType.PERCENT) {
@@ -281,15 +281,18 @@ public class HeliosVentilationDataPoint {
 
     /**
      * Add a link to a datapoint on the same address.
+     * Caller has to ensure that identical datapoints are not added several times.
      *
      * @param link is the sister datapoint
      */
-    @SuppressWarnings("null")
     public void append(HeliosVentilationDataPoint link) {
-        if (this.link == null) {
-            this.link = link;
-        } else {
+        if (this == link) {
+            // this datapoint is already there, so we do nothing and return
+            return;
+        } else if (this.link != null) {
             this.link.append(link);
+        } else {
+            this.link = link;
         }
     }
 
