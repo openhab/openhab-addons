@@ -22,8 +22,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Power;
@@ -68,11 +70,14 @@ public class SenecHomeHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) SenecHomeConfiguration config;
     private @Nullable PowerLimitationStatus limitationStatus = null;
+    private  @Nullable SenecHomeApi senecHomeApi;
     private Gson gson;
+    private SenecHomeApiFactory apiFactory;
 
-    public SenecHomeHandler(Thing thing, Gson gson) {
+    public SenecHomeHandler(Thing thing, Gson gson, SenecHomeApiFactory apiFactory) {
         super(thing);
         this.gson = gson;
+        this.apiFactory = apiFactory;
     }
 
     @Override
@@ -102,12 +107,13 @@ public class SenecHomeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SenecHomeConfiguration.class);
+        senecHomeApi = apiFactory.getHttpApi(config, gson);
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     private void refresh() {
         try {
-            SenecHomeResponse response = readSenecValues();
+            SenecHomeResponse response = senecHomeApi.getStatistics();
             logger.trace("received {}", response);
 
             BigDecimal pvLimitation = new BigDecimal(100).subtract(getSenecValue(response.limitation.powerLimitation))
@@ -168,7 +174,7 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateGridPowerValues(getThing(), getSenecValue(response.grid.currentGridValue));
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.info("Error refreshing source '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     e.getClass().getName() + ":" + e.getMessage());
@@ -226,40 +232,6 @@ public class SenecHomeHandler extends BaseThingHandler {
 
             return new BigDecimal(significand * Math.pow(2, exponent) * sign);
         }
-    }
-
-    /**
-     * POST json with empty, but expected fields, to lala.cgi of Senec webinterface
-     * the response will contain the same fields, but with the corresponding values
-     *
-     * To receive new values, just modify the Json objects and add them to the thing channels
-     *
-     * @param hostname Hostname or ip address of senec battery
-     * @return Instance of SenecHomeResponse
-     * @throws MalformedURLException Configuration/URL is wrong
-     * @throws IOException           Communication failed
-     */
-    protected SenecHomeResponse readSenecValues() throws MalformedURLException, IOException {
-        URLConnection conn = new URL("http://" + config.hostname).openConnection();
-        conn.setRequestProperty("Accept", "application/json");
-        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        conn.setDoOutput(true);
-        conn.setDoInput(true);
-
-        PrintWriter out = new PrintWriter(conn.getOutputStream());
-        out.print(gson.toJson(new SenecHomeResponse()));
-        out.flush();
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line;
-
-        StringBuilder response = new StringBuilder();
-        while ((line = in.readLine()) != null) {
-            response.append(line);
-        }
-
-        SenecHomeResponse senecResponse = gson.fromJson(response.toString(), SenecHomeResponse.class);
-        return senecResponse;
     }
 
     protected void updatePowerLimitationStatus(Channel channel, boolean status, int duration) {

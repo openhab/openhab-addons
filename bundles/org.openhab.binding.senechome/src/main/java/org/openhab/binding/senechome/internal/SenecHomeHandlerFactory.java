@@ -23,7 +23,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.senechome.internal.SenecHomeBindingConstants;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import com.google.gson.Gson;
 
@@ -39,7 +41,14 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY);
+    
+    private SenecHomeApiFactory apiFactory;
 
+    @Activate
+    public SenecHomeHandlerFactory(@Reference SenecHomeApiFactory apiFactory) {
+        this.apiFactory = apiFactory;
+    }
+    
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -50,7 +59,7 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY.equals(thingTypeUID)) {
-            return new SenecHomeHandler(thing, new Gson());
+            return new SenecHomeHandler(thing, new Gson(), apiFactory);
         }
 
         return null;
