@@ -26,6 +26,13 @@ public class AccountConfig {
 
     @Override
     public String toString() {
-        return "[username=" + username + ", password=*****" + ", languageId=" + language + "]";
+        return "[username=" + username + ", password=" + getPasswordForPrinting() + ", languageId=" + language + "]";
+    }
+
+    private String getPasswordForPrinting() {
+        if (password != null) {
+            return password.isEmpty() ? "<empty>" : "*********";
+        }
+        return "<null>";
     }
 }
