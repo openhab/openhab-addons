@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,7 +12,7 @@
  */
 package org.openhab.binding.verisure.internal.handler;
 
-import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.CHANNEL_TIMESTAMP;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -86,25 +87,24 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         }
     }
 
-	protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp) {
-		if (lastUpdatedTimeStamp != null) {
-			try {
-				logger.debug("Parsing date {}", lastUpdatedTimeStamp);
-				ZonedDateTime zdt = ZonedDateTime.parse(lastUpdatedTimeStamp);
-				ZonedDateTime zdtLocal = zdt.withZoneSameInstant(ZoneId.systemDefault());
+    protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp) {
+        if (lastUpdatedTimeStamp != null) {
+            try {
+                logger.debug("Parsing date {}", lastUpdatedTimeStamp);
+                ZonedDateTime zdt = ZonedDateTime.parse(lastUpdatedTimeStamp);
+                ZonedDateTime zdtLocal = zdt.withZoneSameInstant(ZoneId.systemDefault());
 
-				logger.trace("Parsing datetime successful. Using date. {}", new DateTimeType(zdtLocal));
-				ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP);
-				updateState(cuid, new DateTimeType(zdtLocal));
+                logger.trace("Parsing datetime successful. Using date. {}", new DateTimeType(zdtLocal));
+                ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP);
+                updateState(cuid, new DateTimeType(zdtLocal));
+            } catch (IllegalArgumentException e) {
+                logger.warn("Parsing date failed: {}.", e);
+            }
+        } else {
+            logger.debug("Timestamp is null!");
+        }
+    }
 
-			} catch (IllegalArgumentException e) {
-				logger.warn("Parsing date failed: {}.", e);
-			}
-		} else {
-			logger.debug("Timestamp is null!");
-		}
-	}
-    
     @Override
     public void initialize() {
         logger.debug("initialize on thing: {}", thing);
@@ -165,9 +165,8 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
             }
         }
     }
-    
+
     public synchronized void update(@Nullable VerisureThingJSON thing) {
-    	
     }
 
     @Override

@@ -58,10 +58,10 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
     public synchronized void update(@Nullable VerisureThingJSON thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
-        if (getThing().getThingTypeUID().equals(THING_TYPE_SMOKEDETECTOR) ||
-        	getThing().getThingTypeUID().equals(THING_TYPE_WATERDETECTOR) ||
-        	getThing().getThingTypeUID().equals(THING_TYPE_NIGHT_CONTROL) ||
-        	getThing().getThingTypeUID().equals(THING_TYPE_SIREN)) {
+        if (getThing().getThingTypeUID().equals(THING_TYPE_SMOKEDETECTOR)
+                || getThing().getThingTypeUID().equals(THING_TYPE_WATERDETECTOR)
+                || getThing().getThingTypeUID().equals(THING_TYPE_NIGHT_CONTROL)
+                || getThing().getThingTypeUID().equals(THING_TYPE_SIREN)) {
             VerisureClimatesJSON obj = (VerisureClimatesJSON) thing;
             if (obj != null) {
                 updateClimateDeviceState(obj);
@@ -71,26 +71,28 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
         }
     }
 
-	private void updateClimateDeviceState(VerisureClimatesJSON climateJSON) {
-		ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_TEMPERATURE);
-		Double temperature = climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureValue();
-		updateState(cuid, new QuantityType<Temperature>(temperature, SIUnits.CELSIUS));
-		cuid = new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY);
-		Boolean humidityEnabled = climateJSON.getData().getInstallation().getClimates().get(0).isHumidityEnabled();
-		if (humidityEnabled) {
-			cuid = new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY);
-			Double humidity = climateJSON.getData().getInstallation().getClimates().get(0).getHumidityValue();
-			updateState(cuid, new DecimalType(humidity));
-		}
-		updateTimeStamp(climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureTimestamp());
-		cuid = new ChannelUID(getThing().getUID(), CHANNEL_LOCATION);
-		updateState(cuid, new StringType(climateJSON.getLocation()));
-		cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
-		BigDecimal siteId = climateJSON.getSiteId();
-		if (siteId != null) {
-			updateState(cuid, new DecimalType(siteId.longValue()));
-		}
-		cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-		updateState(cuid, new StringType(climateJSON.getSiteName()));
-	}
+    private void updateClimateDeviceState(VerisureClimatesJSON climateJSON) {
+        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_TEMPERATURE);
+        Double temperature = climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureValue();
+        if (temperature != null) {
+            updateState(cuid, new QuantityType<Temperature>(temperature, SIUnits.CELSIUS));
+        }
+        cuid = new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY);
+        Boolean humidityEnabled = climateJSON.getData().getInstallation().getClimates().get(0).isHumidityEnabled();
+        if (humidityEnabled) {
+            cuid = new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY);
+            Double humidity = climateJSON.getData().getInstallation().getClimates().get(0).getHumidityValue();
+            updateState(cuid, new DecimalType(humidity));
+        }
+        updateTimeStamp(climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureTimestamp());
+        cuid = new ChannelUID(getThing().getUID(), CHANNEL_LOCATION);
+        updateState(cuid, new StringType(climateJSON.getLocation()));
+        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
+        BigDecimal siteId = climateJSON.getSiteId();
+        if (siteId != null) {
+            updateState(cuid, new DecimalType(siteId.longValue()));
+        }
+        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
+        updateState(cuid, new StringType(climateJSON.getSiteName()));
+    }
 }

@@ -85,11 +85,11 @@ public class VerisureBindingConstants {
     public static final String SMARTLOCK_SET_COMMAND = BASEURL + "/overview/setdoorlock.cmd";
     public static final String SMARTLOCK_AUTORELOCK_COMMAND = BASEURL + "/settings/setautorelock.cmd";
     public static final String SMARTLOCK_VOLUME_COMMAND = BASEURL + "/settings/setvolume.cmd";
-    
+
     public static final String SMARTPLUG_COMMAND = BASEURL + "/settings/smartplug/onoffplug.cmd";
     public static final String START_REDIRECT = "/uk/start.html";
     public static final String START_SUF = BASEURL + START_REDIRECT;
-    
+
     // GraphQL constants
     public static final String STATUS = BASEURL + "/uk/status";
     public static final String SETTINGS = BASEURL + "/uk/settings.html?giid=";

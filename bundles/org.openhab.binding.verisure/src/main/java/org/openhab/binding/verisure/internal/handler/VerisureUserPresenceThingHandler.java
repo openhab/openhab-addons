@@ -46,12 +46,13 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler {
     public VerisureUserPresenceThingHandler(Thing thing) {
         super(thing);
     }
-    
+
+    @Override
     public synchronized void update(@Nullable VerisureThingJSON thing) {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         if (getThing().getThingTypeUID().equals(THING_TYPE_USERPRESENCE)) {
-        	VerisureUserPresencesJSON obj = (VerisureUserPresencesJSON) thing;
+            VerisureUserPresencesJSON obj = (VerisureUserPresencesJSON) thing;
             if (obj != null) {
                 updateUserPresenceState(obj);
             }
@@ -59,17 +60,22 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler {
             logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
         }
     }
-    
+
     private void updateUserPresenceState(VerisureUserPresencesJSON userPresenceJSON) {
         ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_USER_NAME);
-        updateState(cuid, new StringType(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getName()));
+        updateState(cuid,
+                new StringType(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getName()));
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_USER_LOCATION_NAME);
-        updateState(cuid, new StringType(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getCurrentLocationName()));
+        updateState(cuid, new StringType(
+                userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getCurrentLocationName()));
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_WEBACCOUNT);
-        updateState(cuid, new StringType(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getWebAccount()));
-        updateTimeStamp(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getCurrentLocationTimestamp());
+        updateState(cuid,
+                new StringType(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getWebAccount()));
+        updateTimeStamp(
+                userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getCurrentLocationTimestamp());
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_USER_DEVICE_NAME);
-        updateState(cuid, new StringType(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getDeviceName()));
+        updateState(cuid,
+                new StringType(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getDeviceName()));
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
         BigDecimal siteId = userPresenceJSON.getSiteId();
         if (siteId != null) {
@@ -80,5 +86,3 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler {
         updateState(cuid, instName);
     }
 }
-
-

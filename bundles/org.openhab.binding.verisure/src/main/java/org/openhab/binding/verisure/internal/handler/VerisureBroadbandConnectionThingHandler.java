@@ -46,7 +46,7 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
     public VerisureBroadbandConnectionThingHandler(Thing thing) {
         super(thing);
     }
-    
+
     @Override
     public synchronized void update(@Nullable VerisureThingJSON thing) {
         logger.debug("update on thing: {}", thing);
@@ -65,7 +65,8 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
         ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP);
         updateTimeStamp(vbcJSON.getData().getInstallation().getBroadband().getTestDate());
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_CONNECTED);
-        updateState(cuid, new StringType(vbcJSON.getData().getInstallation().getBroadband().isBroadbandConnected().toString()));
+        updateState(cuid,
+                new StringType(vbcJSON.getData().getInstallation().getBroadband().isBroadbandConnected().toString()));
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
         BigDecimal siteId = vbcJSON.getSiteId();
         if (siteId != null) {
@@ -75,5 +76,5 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
         StringType instName = new StringType(vbcJSON.getSiteName());
         updateState(cuid, instName);
     }
-  
+
 }

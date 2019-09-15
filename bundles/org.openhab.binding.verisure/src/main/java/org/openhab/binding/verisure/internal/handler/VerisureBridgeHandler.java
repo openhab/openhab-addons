@@ -130,7 +130,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                 logger.warn("Failed to initialize! Exception caught: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (UnsupportedEncodingException e) {
-                logger.warn("Failed to URL Encode password: {}, exception caught: {} ", e.getMessage(), e);
+                logger.warn("Failed to URL Encode password, exception caught: {} ", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }

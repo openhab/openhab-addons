@@ -49,7 +49,7 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
     /**
      *
      * @param status
-     *                   The status
+     *            The status
      */
     public void setStatus(String status) {
         this.status = status;

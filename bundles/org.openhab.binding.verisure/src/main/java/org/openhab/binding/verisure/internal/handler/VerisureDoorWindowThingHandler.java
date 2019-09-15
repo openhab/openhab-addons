@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.verisure.internal.model.VerisureDoorWindowsJSON;
-
 import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
 
 //import com.google.common.collect.Sets;
@@ -50,7 +49,7 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler {
     public VerisureDoorWindowThingHandler(Thing thing) {
         super(thing);
     }
-    
+
     @Override
     public synchronized void update(@Nullable VerisureThingJSON thing) {
         logger.debug("update on thing: {}", thing);
@@ -73,10 +72,11 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler {
             updateState(cuid, OpenClosedType.OPEN);
         } else {
             updateState(cuid, OpenClosedType.CLOSED);
-        }        
+        }
         updateTimeStamp(doorWindowJSON.getData().getInstallation().getDoorWindows().get(0).getReportTime());
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_LOCATION);
-        updateState(cuid, new StringType(doorWindowJSON.getData().getInstallation().getDoorWindows().get(0).getDevice().getArea()));
+        updateState(cuid, new StringType(
+                doorWindowJSON.getData().getInstallation().getDoorWindows().get(0).getDevice().getArea()));
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
         BigDecimal siteId = doorWindowJSON.getSiteId();
         if (siteId != null) {
@@ -85,6 +85,6 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler {
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
         StringType instName = new StringType(doorWindowJSON.getSiteName());
         updateState(cuid, instName);
-    }    
+    }
 
 }

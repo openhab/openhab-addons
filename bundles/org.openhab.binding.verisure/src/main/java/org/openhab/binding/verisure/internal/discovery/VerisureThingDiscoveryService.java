@@ -71,7 +71,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
                 for (Map.Entry<String, VerisureThingJSON> entry : verisureThings.entrySet()) {
                     VerisureThingJSON thing = entry.getValue();
                     if (thing != null) {
-                        logger.info(thing.toString());
+                        logger.info("Thing: {}", thing.toString());
                         onThingAddedInternal(thing);
                     }
                 }
@@ -126,7 +126,8 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
                 } else if (thing instanceof VerisureSmartPlugsJSON) {
                     thingUID = new ThingUID(THING_TYPE_SMARTPLUG, bridgeUID, deviceId);
                 } else if (thing instanceof VerisureClimatesJSON) {
-                    String type = ((VerisureClimatesJSON) thing).getData().getInstallation().getClimates().get(0).getDevice().getGui().getLabel();
+                    String type = ((VerisureClimatesJSON) thing).getData().getInstallation().getClimates().get(0)
+                            .getDevice().getGui().getLabel();
                     if ("SMOKE".equals(type)) {
                         thingUID = new ThingUID(THING_TYPE_SMOKEDETECTOR, bridgeUID, deviceId);
                     } else if ("WATER".equals(type)) {
@@ -141,7 +142,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
                 } else if (thing instanceof VerisureBroadbandConnectionsJSON) {
                     thingUID = new ThingUID(THING_TYPE_BROADBAND_CONNECTION, bridgeUID, deviceId);
                 } else {
-                    logger.warn("Unsupported JSON! thing {}" , thing.toString());
+                    logger.warn("Unsupported JSON! thing {}", thing.toString());
                 }
             }
         }

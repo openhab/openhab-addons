@@ -29,7 +29,7 @@ public interface DeviceStatusListener {
      * This method is called whenever the state of the given device has changed.
      *
      * @param updateObject
-     *                         The object that was changed.
+     *            The object that was changed.
      */
     public void onDeviceStateChanged(VerisureThingJSON updateObject);
 
@@ -37,7 +37,7 @@ public interface DeviceStatusListener {
      * This method us called whenever a device is removed.
      *
      * @param device
-     *                   The object that is removed
+     *            The object that is removed
      */
     public void onDeviceRemoved(VerisureThingJSON updateObject);
 
@@ -45,7 +45,7 @@ public interface DeviceStatusListener {
      * This method us called whenever a device is added.
      *
      * @param device
-     *                   The object which is added.
+     *            The object which is added.
      */
     public void onDeviceAdded(VerisureThingJSON updateObject);
 

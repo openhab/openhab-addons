@@ -71,7 +71,7 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private static final boolean DEBUG = false;
-    
+
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(VerisureHandlerFactory.class);
 
@@ -117,8 +117,8 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("Create VerisureUserPresenceThingHandler {}", thing.getThingTypeUID());
             thingHandler = new VerisureUserPresenceThingHandler(thing);
         } else {
-        	logger.debug("Not possible to create thing handler for thing {}", thing);
-        } 
+            logger.debug("Not possible to create thing handler for thing {}", thing);
+        }
         return thingHandler;
     }
 
@@ -133,21 +133,20 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
         logger.debug("setHttpClientFactory this: {}", this);
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        // For internal development only, will be removed in production
         this.httpClient = new HttpClient(new SslContextFactory());
-        
+
         try {
-        	
-			this.httpClient.start();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (DEBUG) {
-			logger.debug("setHttpClientFactory configure proxy!");
-			ProxyConfiguration proxyConfig = httpClient.getProxyConfiguration();
-			HttpProxy proxy = new HttpProxy("127.0.0.1", 8090);
-			proxyConfig.getProxies().add(proxy);
-		}
+            this.httpClient.start();
+        } catch (Exception e) {
+            logger.warn("Could not start HTTP client: {}", e);
+        }
+        if (DEBUG) {
+            logger.debug("setHttpClientFactory configure proxy!");
+            ProxyConfiguration proxyConfig = httpClient.getProxyConfiguration();
+            HttpProxy proxy = new HttpProxy("127.0.0.1", 8090);
+            proxyConfig.getProxies().add(proxy);
+        }
     }
 
     protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
