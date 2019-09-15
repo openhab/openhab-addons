@@ -168,8 +168,8 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateGridPowerValues(getThing(), getSenecValue(response.grid.currentGridValue));
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            logger.error("Error refreshing source '{}'", getThing().getUID(), e);
+        } catch (IOException e) {
+            logger.info("Error refreshing source '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     e.getClass().getName() + ":" + e.getMessage());
         }
@@ -289,7 +289,7 @@ public class SenecHomeHandler extends BaseThingHandler {
     }
 
     protected void updateBatteryState(Channel channel, int code) {
-        updateState(channel.getUID(), new StringType(SenecBatteryStatus.byCode(code).name()));
+        updateState(channel.getUID(), new StringType(SenecBatteryStatus.fromCode(code).name()));
     }
 
     protected void updateGridPowerValues(Thing thing, BigDecimal gridTotalValue) {

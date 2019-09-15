@@ -38,7 +38,7 @@ public enum SenecBatteryStatus {
     RESTARTING(22),
     UNKNOWN(-1);
 
-    int code;
+    private int code;
 
     SenecBatteryStatus(int index) {
         this.code = index;
@@ -48,7 +48,7 @@ public enum SenecBatteryStatus {
         return code;
     }
 
-    public static SenecBatteryStatus byCode(int code) {
+    public static SenecBatteryStatus fromCode(int code) {
         for (SenecBatteryStatus state : SenecBatteryStatus.values()) {
             if (state.code == code) {
                 return state;
