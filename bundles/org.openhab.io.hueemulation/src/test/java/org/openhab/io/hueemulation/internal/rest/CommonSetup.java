@@ -16,6 +16,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -125,7 +127,10 @@ public class CommonSetup {
 
         userManagement = Mockito.spy(new UserManagement(storageService, cs));
 
-        basePath = "http://localhost:8080/api";
+        try (ServerSocket serverSocket = new ServerSocket()) {
+            serverSocket.bind(new InetSocketAddress(0));
+            basePath = "http://localhost:" + serverSocket.getLocalPort() + "/api";
+        }
     }
 
     /**
