@@ -98,7 +98,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
   public void refresh(PJLinkDeviceConfiguration config) {
     // Do not poll if device is offline
-    if (PJLinkDeviceHandler.this.getThing().getStatusInfo().getStatus() != ThingStatus.ONLINE) {
+    if (PJLinkDeviceHandler.this.getThing().getStatus() != ThingStatus.ONLINE) {
       PJLinkDeviceHandler.this.logger.debug("Not polling device status because device is offline");
       // setup() will schedule a new refresh interval after successful reconnection, cancel this one
       this.clearRefreshInterval();
@@ -106,20 +106,18 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     }
 
     PJLinkDeviceHandler.this.logger.debug("Polling device status...");
-    if (config.refreshPower && PJLinkDeviceHandler.this.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
+    if (config.refreshPower && PJLinkDeviceHandler.this.getThing().getStatus() == ThingStatus.ONLINE) {
       PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER), RefreshType.REFRESH);
     }
-    if (config.refreshMute && PJLinkDeviceHandler.this.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
+    if (config.refreshMute && PJLinkDeviceHandler.this.getThing().getStatus() == ThingStatus.ONLINE) {
       // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
       PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
           RefreshType.REFRESH);
     }
-    if (config.refreshInputChannel
-        && PJLinkDeviceHandler.this.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
+    if (config.refreshInputChannel && PJLinkDeviceHandler.this.getThing().getStatus() == ThingStatus.ONLINE) {
       PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT), RefreshType.REFRESH);
     }
-    if (config.refreshLampState
-        && PJLinkDeviceHandler.this.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
+    if (config.refreshLampState && PJLinkDeviceHandler.this.getThing().getStatus() == ThingStatus.ONLINE) {
       // this updates both CHANNEL_LAMP_ACTIVE and CHANNEL_LAMP_HOURS
       PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_LAMP_1_HOURS),
           RefreshType.REFRESH);
