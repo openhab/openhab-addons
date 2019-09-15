@@ -235,7 +235,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
           }
           break;
         default:
-          logger.debug("unknown channel {}", channelUID.getId());
+          logger.debug("unknown channel {}", channelUID);
+          break;
       }
 
       logger.trace("Successfully handled command {} on channel {}", command, channelUID.getId());
