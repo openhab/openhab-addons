@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -43,13 +44,9 @@ public class HeliosVentilationHandlerFactory extends BaseThingHandlerFactory {
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+    @Activate
+    public HeliosVentilationHandlerFactory(@Reference SerialPortManager serialPortManager) {
         this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 
     @Override
