@@ -34,7 +34,6 @@ public class LampStatesCommand extends AbstractCommand<LampStatesRequest, LampSt
   @Override
   protected LampStatesRequest createRequest() {
     return new LampStatesRequest();
-
   }
 
   @Override

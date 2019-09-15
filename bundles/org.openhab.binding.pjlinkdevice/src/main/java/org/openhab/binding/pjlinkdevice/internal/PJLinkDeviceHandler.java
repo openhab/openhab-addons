@@ -258,7 +258,6 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
       return null;
     }
     ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-    channel.getChannelTypeUID();
     if (channelTypeUID == null) {
       logger.debug("channelTypeUID for channel {} is null", channel);
       return null;
