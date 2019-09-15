@@ -33,7 +33,7 @@ The *pjLinkDevice* thing type has the following parameters:
 | refreshPower          | enables polling of the power status. *Optional, the default value is false*                                                                                  |
 | refreshMute           | enables polling of the mute status. *Optional, the default value is false*                                                                                   |
 | refreshInputChannel   | enables polling of the selected input channel. *Optional, the default value is false*                                                                        |
-| refreshLampStatus     | enables polling of the lamp usage hours and activity. *Optional, the default value is false*                                                                 |
+| refreshLampState      | enables polling of the lamp usage hours and activity. *Optional, the default value is false*                                                                 |
 | autoReconnectInterval | seconds between connection retries when connection to the PJLink device has been lost, 0 means never retry, minimum 30s *Optional, the default value is 60*  |
 
 
