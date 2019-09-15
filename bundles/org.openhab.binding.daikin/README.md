@@ -19,6 +19,7 @@ This addon will broadcast messages on your local network looking for Daikin air 
 
 The temperature channels have a precision of one half degree Celsius.
 For the BRP072A42:
+
 | Channel Name | Description |
 |--------------|---------------------------------------------------------------------------------------------|
 | power        | Turns the power on/off for the air conditioning unit.                                       |
@@ -30,6 +31,7 @@ For the BRP072A42:
 | fanspeed     | The fan speed set for the unit (AUTO, SILENCE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5) |
 
 For the BRP15B61:
+
 | Channel Name    | Description |
 |-----------------|---------------------------------------------------------------------------------------------|
 | power           | Turns the power on/off for the air conditioning unit.                                       |
