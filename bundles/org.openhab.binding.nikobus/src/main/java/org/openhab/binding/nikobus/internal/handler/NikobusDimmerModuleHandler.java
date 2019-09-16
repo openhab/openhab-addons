@@ -47,7 +47,7 @@ public class NikobusDimmerModuleHandler extends NikobusSwitchModuleHandler {
     public void requestStatus(SwitchModuleGroup group) {
         Utils.cancel(requestUpdateFuture);
         super.requestStatus(group);
-        requestUpdateFuture = scheduler.schedule(() -> {
+        requestUpdateFuture = scheduler.schedule(() -> super.requestStatus(group), 1, TimeUnit.SECONDS);
             super.requestStatus(group);
         }, 1000, TimeUnit.MILLISECONDS);
     }
