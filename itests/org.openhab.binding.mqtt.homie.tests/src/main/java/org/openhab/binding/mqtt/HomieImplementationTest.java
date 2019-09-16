@@ -310,7 +310,7 @@ public class HomieImplementationTest extends JavaOSGiTest {
         // Publish a retain=false value to MQTT.
         property.getChannelState().publishValue(OnOffType.ON).get();
         // This test is flaky if the MQTT broker does not get a time to "forget" this non-retained value
-        Thread.sleep(50);
+        Thread.sleep(500);
         // No value is expected to be retained on this MQTT topic
         watcher = new WaitForTopicValue(embeddedConnection, propertyTestTopic + "/set");
         assertNull(watcher.waitForTopicValue(50));
