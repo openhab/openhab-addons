@@ -68,7 +68,6 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class VerisureSession {
 
-    @NonNullByDefault
     private final class VerisureInstallation {
         private @Nullable String installationName;
         private @Nullable BigDecimal installationId;
@@ -540,26 +539,33 @@ public class VerisureSession {
                 logger.debug("Installation: {}", installations.toString());
                 if (installations.getData() != null) {
                     List<Owainstallation> owaInstList = installations.getData().getAccount().getOwainstallations();
-                    List<String> pinCodes = Arrays.asList(pinCode.split(","));
                     Boolean pinCodesMatchInstallations = true;
-                    if (owaInstList.size() != pinCodes.size()) {
-                        logger.debug("Number of installations {} does not match number of pin codes configured {}",
-                                owaInstList.size(), pinCodes.size());
-                        pinCodesMatchInstallations = false;
+                    List<String> pinCodes = null;
+                    if (pinCode != null) {
+                        pinCodes = Arrays.asList(pinCode.split(","));
+                        if (owaInstList.size() != pinCodes.size()) {
+                            logger.debug("Number of installations {} does not match number of pin codes configured {}",
+                                    owaInstList.size(), pinCodes.size());
+                            pinCodesMatchInstallations = false;
+                        }
+                    } else {
+                        logger.debug("No pin-code defined for user {}", userName);
                     }
                     for (int i = 0; i < owaInstList.size(); i++) {
                         VerisureInstallation vInst = new VerisureInstallation();
                         if (owaInstList.get(i).getAlias() != null && owaInstList.get(i).getGiid() != null) {
                             vInst.setInstallationId(new BigDecimal(owaInstList.get(i).getGiid()));
                             vInst.setInstallationName(owaInstList.get(i).getAlias());
-                            if (pinCodesMatchInstallations) {
-                                vInst.setPinCode(new BigDecimal(pinCodes.get(i)));
-                                logger.debug("Setting pincode {} to installation ID {}", pinCodes.get(i),
-                                        owaInstList.get(i).getGiid());
-                            } else {
-                                vInst.setPinCode(new BigDecimal(pinCodes.get(0)));
-                                logger.debug("Setting pincode {} to installation ID {}", pinCodes.get(0),
-                                        owaInstList.get(i).getGiid());
+                            if (pinCode != null) {
+                                if (pinCodesMatchInstallations) {
+                                    vInst.setPinCode(new BigDecimal(pinCodes.get(i)));
+                                    logger.debug("Setting pincode {} to installation ID {}", pinCodes.get(i),
+                                            owaInstList.get(i).getGiid());
+                                } else {
+                                    vInst.setPinCode(new BigDecimal(pinCodes.get(0)));
+                                    logger.debug("Setting pincode {} to installation ID {}", pinCodes.get(0),
+                                            owaInstList.get(i).getGiid());
+                                }
                             }
                             verisureInstallations.put(new BigDecimal(owaInstList.get(i).getGiid()), vInst);
                         } else {

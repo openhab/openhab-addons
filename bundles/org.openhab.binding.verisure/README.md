@@ -51,7 +51,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 *   refresh - Specifies the refresh interval in seconds
 
-*   pin - The username's pin code to arm/disarm alarm and lock/unlock door. In the case of more than one installation and different pin-codes, use a comma separated string where pi code matches order of installations. The installation order can be found using DEBUG log settings.
+*   pin - The username's pin code to arm/disarm alarm and lock/unlock door. In the case of more than one installation and different pin-codes, use a comma separated string where pin-code matches order of installations. The installation order can be found using DEBUG log settings.
     * Two installations where the first listed installation uses a 6 digit pin-code and second listed installation uses a 4 digit pin-code: 123456,1234
 
 
