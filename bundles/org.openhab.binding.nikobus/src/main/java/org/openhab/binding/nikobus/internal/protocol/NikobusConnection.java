@@ -66,7 +66,7 @@ public class NikobusConnection implements SerialPortEventListener {
 
         SerialPortIdentifier portId = serialPortManager.getIdentifier(portName);
         if (portId == null) {
-            throw new IOException("Port is not known!");
+            throw new IOException(String.format("Port '%s' is not known!", portName));
         }
 
         logger.info("Connecting to {}", portName);
