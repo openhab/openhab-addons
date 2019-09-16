@@ -165,8 +165,8 @@ public class HomieImplementationTest extends JavaOSGiTest {
     public void retrieveAllTopics() throws InterruptedException, ExecutionException, TimeoutException {
         // four topics are not under /testnode !
         CountDownLatch c = new CountDownLatch(registeredTopics - 4);
-        connection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown()).get(5000,
-                TimeUnit.MILLISECONDS);
+        connection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown())
+                .get(5000, TimeUnit.MILLISECONDS);
         assertTrue("Connection " + connection.getClientId() + " not retrieving all topics ",
                 c.await(5000, TimeUnit.MILLISECONDS));
     }
@@ -197,7 +197,7 @@ public class HomieImplementationTest extends JavaOSGiTest {
         assertThat(property.attributes.name, is("Testprop"));
         assertThat(property.attributes.unit, is("°C"));
         assertThat(property.attributes.datatype, is(DataTypeEnum.float_));
-        waitForAssert(()->assertThat(property.attributes.format, is("-100:100")));
+        waitForAssert(() -> assertThat(property.attributes.format, is("-100:100")));
         verify(property, timeout(500).atLeastOnce()).attributesReceived();
 
         // Receive property value
@@ -309,10 +309,13 @@ public class HomieImplementationTest extends JavaOSGiTest {
 
         // Publish a retain=false value to MQTT.
         property.getChannelState().publishValue(OnOffType.ON).get();
-        // This test is flaky if the MQTT broker does not get a time to "forget" this non-retained value
-        Thread.sleep(50);
         // No value is expected to be retained on this MQTT topic
-        watcher = new WaitForTopicValue(embeddedConnection, propertyTestTopic + "/set");
-        assertNull(watcher.waitForTopicValue(50));
+        waitForAssert(() -> {
+            try {
+                WaitForTopicValue w = new WaitForTopicValue(embeddedConnection, propertyTestTopic + "/set");
+                assertNull(w.waitForTopicValue(50));
+            } catch (InterruptedException | ExecutionException e) {
+            }
+        }, 500, 100);
     }
 }
