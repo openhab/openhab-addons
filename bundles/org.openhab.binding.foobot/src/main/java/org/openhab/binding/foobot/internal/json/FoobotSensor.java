@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
  */
 @NonNullByDefault
 public enum FoobotSensor {
+    TIME("time", "time", null),
     PM("pm", "pm", SmartHomeUnits.MICROGRAM_PER_CUBICMETRE),
     TEMPERATURE("temperature", "tmp", "C", SIUnits.CELSIUS, ImperialUnits.FAHRENHEIT),
     HUMIDITY("humidity", "hum", null),

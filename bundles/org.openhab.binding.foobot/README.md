@@ -44,7 +44,8 @@ The bridge has one channel:
 The AirQuality senors information that is retrieved is available as these channels:
 
 | Channel ID        | Item Type            | Description
-|-------------------|----------------------|---------------------------------------
+|-------------------|----------------------|---------------------------------------------
+| time              | DateTime             | Last time the sensor data was send to Foobot
 | pm                | Number:Density       | Particulate Matter level (ug/m3)
 | temperature       | Number:Temperature   | Temperature in Celsius or Fahrenheit
 | humidity          | Number:Dimensionless | Humidity level (%)

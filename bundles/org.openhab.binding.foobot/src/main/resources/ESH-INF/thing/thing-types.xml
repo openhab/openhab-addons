@@ -43,6 +43,7 @@
 		<description>Shows the air quality data from the Foobot device.</description>
 
 		<channels>
+			<channel id="time" typeId="time" />
 			<channel id="pm" typeId="pm" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="humidity" typeId="humidity" />
@@ -61,6 +62,12 @@
 		</config-description>
 	</thing-type>
 
+	<channel-type id="time">
+		<item-type>DateTime</item-type>
+		<label>Last Readout</label>
+		<description>The last time the sensor data was uploaded to Foobot</description>
+		<state readOnly="true" />
+	</channel-type>
 	<channel-type id="pm">
 		<item-type>Number:Density</item-type>
 		<label>Particulate Matter</label>

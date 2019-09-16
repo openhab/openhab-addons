@@ -14,6 +14,9 @@ package org.openhab.binding.foobot.internal.handler;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 import javax.measure.Unit;
@@ -22,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -161,7 +165,17 @@ public class FoobotDeviceHandler extends BaseThingHandler {
 
                 updateState(channelUid, sensorDataToState(channelUid.getId(), sensorData));
             }
+            updateTime(sensorData);
         }
+    }
+
+    private void updateTime(final FoobotJsonData sensorData) {
+        final State lastTime = sensorDataToState(FoobotSensor.TIME.getChannelId(), sensorData);
+
+        if (lastTime instanceof DecimalType) {
+            ((DecimalType) lastTime).intValue();
+        }
+
     }
 
     @Override
@@ -188,8 +202,10 @@ public class FoobotDeviceHandler extends BaseThingHandler {
             return UnDefType.UNDEF;
         } else {
             final Unit<?> stateUnit = sensor.getUnit(unit);
-
-            if (stateUnit == null) {
+            if (sensor == FoobotSensor.TIME) {
+                return new DateTimeType(
+                        ZonedDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(value)), ZoneId.systemDefault()));
+            } else if (stateUnit == null) {
                 return new DecimalType(value);
             } else {
                 return new QuantityType(new BigDecimal(value), stateUnit);
