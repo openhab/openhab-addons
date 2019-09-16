@@ -48,14 +48,12 @@ public class NikobusDimmerModuleHandler extends NikobusSwitchModuleHandler {
         Utils.cancel(requestUpdateFuture);
         super.requestStatus(group);
         requestUpdateFuture = scheduler.schedule(() -> super.requestStatus(group), 1, TimeUnit.SECONDS);
-            super.requestStatus(group);
-        }, 1000, TimeUnit.MILLISECONDS);
     }
 
     @Override
     protected int valueFromCommand(Command command) {
         if (command instanceof PercentType) {
-            return (int) (((PercentType) command).doubleValue() / 100.0 * 255.0 + 0.5);
+            return Math.round(((PercentType) command).floatValue() / 100f * 255f);
         }
 
         return super.valueFromCommand(command);
@@ -63,7 +61,7 @@ public class NikobusDimmerModuleHandler extends NikobusSwitchModuleHandler {
 
     @Override
     protected State stateFromValue(int value) {
-        int result = (int) ((value * 100.0 / 255.0) + 0.5);
+        int result = Math.round(value * 100f / 255f);
         return new PercentType(result);
     }
 }

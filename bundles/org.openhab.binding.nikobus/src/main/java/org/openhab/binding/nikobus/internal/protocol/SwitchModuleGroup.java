@@ -65,10 +65,9 @@ public enum SwitchModuleGroup {
     public static SwitchModuleGroup mapFromChannel(int channelNumber) {
         int max = SECOND.getOffset() + SECOND.getCount();
         if (channelNumber < FIRST.getOffset() || channelNumber > max) {
-            throw new IllegalArgumentException("Channel number should be between " + FIRST.getOffset() + " and " + max
-                    + ", but got " + channelNumber);
+            throw new IllegalArgumentException(String.format("Channel number should be between [%d, %d], but got %d",
+                    FIRST.getOffset(), max, channelNumber));
         }
-
         return channelNumber >= SECOND.getOffset() ? SECOND : FIRST;
     }
 }

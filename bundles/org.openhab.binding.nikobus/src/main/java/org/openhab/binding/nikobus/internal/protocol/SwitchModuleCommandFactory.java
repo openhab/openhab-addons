@@ -36,7 +36,7 @@ public class SwitchModuleCommandFactory {
             Consumer<Result> resultConsumer) {
         checkAddress(address);
         if (value.length() != 12) {
-            throw new IllegalArgumentException("Value must have 12 chars");
+            throw new IllegalArgumentException(String.format("Value must have 12 chars but got '%s'", value));
         }
 
         String payload = group.getStatusUpdate() + address + value + "FF";
@@ -45,7 +45,7 @@ public class SwitchModuleCommandFactory {
 
     private static void checkAddress(String address) {
         if (address.length() != 4) {
-            throw new IllegalArgumentException("Address must have 4 chars");
+            throw new IllegalArgumentException(String.format("Address must have 4 chars but got '%s'", address));
         }
     }
 }

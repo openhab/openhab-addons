@@ -151,7 +151,7 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
             } else if (stringBuilder.length() > 128) {
                 // Fuse, if for some reason we don't receive \r don't fill buffer.
                 stringBuilder.setLength(0);
-                logger.error("Resetting read buffer, should not happen, am I connected to Nikobus?");
+                logger.warn("Resetting read buffer, should not happen, am I connected to Nikobus?");
             }
         }
     }
@@ -264,7 +264,7 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
             outputStream.write(command.getPayload().getBytes());
             outputStream.flush();
         } catch (IOException e) {
-            logger.error("Sending command failed due {}", e.getMessage(), e);
+            logger.debug("Sending command failed due {}", e.getMessage(), e);
             connection.close();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } finally {
