@@ -78,9 +78,9 @@ public class NikobusConnection implements SerialPortEventListener {
             this.serialPort = serialPort;
             logger.info("Connected to {}", portName);
         } catch (PortInUseException e) {
-            throw new IOException("Port is in use!", e);
+            throw new IOException(String.format("Port '%s' is in use!", portName), e);
         } catch (TooManyListenersException e) {
-            throw new IOException("Cannot attach listener to port!", e);
+            throw new IOException(String.format("Cannot attach listener to port '%s'!", portName), e);
         }
     }
 
@@ -103,7 +103,7 @@ public class NikobusConnection implements SerialPortEventListener {
                     inputStream.close();
                 }
             } catch (IOException e) {
-                logger.error("Error closing serial port.", e);
+                logger.debug("Error closing serial port.", e);
             } finally {
                 serialPort.close();
                 logger.debug("Closed serial port.");
@@ -124,30 +124,27 @@ public class NikobusConnection implements SerialPortEventListener {
 
     @Override
     public void serialEvent(SerialPortEvent event) {
-        switch (event.getEventType()) {
-            case SerialPortEvent.DATA_AVAILABLE:
-                SerialPort serialPort = this.serialPort;
-                if (serialPort == null) {
-                    return;
+        if (event.getEventType() != SerialPortEvent.DATA_AVAILABLE) {
+            return;
+        }
+        SerialPort serialPort = this.serialPort;
+        if (serialPort == null) {
+            return;
+        }
+        try {
+            InputStream inputStream = serialPort.getInputStream();
+            if (inputStream == null) {
+                return;
+            }
+            byte[] readBuffer = new byte[64];
+            while (inputStream.available() > 0) {
+                int length = inputStream.read(readBuffer);
+                for (int i = 0; i < length; ++i) {
+                    processData.accept(readBuffer[i]);
                 }
-                try {
-                    InputStream inputStream = serialPort.getInputStream();
-                    if (inputStream == null) {
-                        return;
-                    }
-                    byte[] readBuffer = new byte[64];
-                    while (inputStream.available() > 0) {
-                        int length = inputStream.read(readBuffer);
-                        for (int i = 0; i < length; ++i) {
-                            processData.accept(readBuffer[i]);
-                        }
-                    }
-                } catch (IOException e) {
-                    logger.debug("Error reading from serial port: {}", e.getMessage(), e);
-                }
-                break;
-            default:
-                break;
+            }
+        } catch (IOException e) {
+            logger.debug("Error reading from serial port: {}", e.getMessage(), e);
         }
     }
 }
