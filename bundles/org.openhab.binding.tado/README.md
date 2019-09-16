@@ -64,7 +64,8 @@ Name | Type | Description | Read/Write | Zone type
 `overlayExpiry` | DateTime | End date and time of a timer | R | `HEATING`, `AC`, `DHW`
 `timerDuration` | Number | Timer duration in minutes | RW | `HEATING`, `AC`, `DHW`
 `operationMode` | String | Operation mode the zone is currently in. One of `SCHEDULE` (follow smart schedule), `MANUAL` (override until ended manually), `TIMER` (override for a given time), `UNTIL_CHANGE` (active until next smart schedule block or until AWAY mode becomes active) | RW | `HEATING`, `AC`, `DHW`
-`batteryLowAlarm` | Switch | A control device in the Zone has a low battery | R | Any Zone having battery powered control devices
+`batteryLowAlarm` | Switch | A control device in the Zone has a low battery (if applicable) | R | Any Zone
+`openWindowDetected` | Switch | An open window has been detected in the Zone | R | Any Zone
 
 The `RW` items are used to either override the schedule or to return to it (if `hvacMode` is set to `SCHEDULE`).
 

@@ -620,12 +620,15 @@ definitions:
       overlay:
         description: The currently active overlay for the zone, `null` if none.
         $ref: "#/definitions/Overlay"
-      openWindow:
-        description: The currently active open window for the zone, `null` if none.
-        $ref: "#/definitions/OpenWindow"
       setting:
         description: Current setting of the zone.
         $ref: "#/definitions/GenericZoneSetting"
+      openWindow:
+        description: The currently active open window for the zone, `null` if none.
+        $ref: "#/definitions/OpenWindow"
+      openWindowDetected:
+        description: Indicates is an open window has been detected
+        type: boolean
       link:
         description: Link object of current zone connection.
         $ref: "#/definitions/Link"
