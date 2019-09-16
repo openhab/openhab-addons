@@ -244,7 +244,6 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     webSocketConnection.registerValueListener(config.id, this);
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 });
-
     }
 
     private void createAndUpdateChannelIfExists(String channelId, State state) {
@@ -319,12 +318,12 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
 
         switch (channelUID.getId()) {
             case CHANNEL_LIGHT:
-                if (state.dark != null) {
-                    boolean dark = state.dark;
+                Boolean dark = state.dark;
+                if (dark != null) {
+                    Boolean daylight = state.daylight;
                     if (dark) { // if it's dark, it's dark ;)
                         updateState(channelUID, new StringType("Dark"));
-                    } else if (state.daylight != null) { // if its not dark, it might be between darkness and daylight
-                        boolean daylight = state.daylight;
+                    } else if (daylight != null) { // if its not dark, it might be between darkness and daylight
                         if (daylight) {
                             updateState(channelUID, new StringType("Daylight"));
                         } else if (!daylight) {
