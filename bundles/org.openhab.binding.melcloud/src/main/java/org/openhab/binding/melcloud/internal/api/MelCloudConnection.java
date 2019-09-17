@@ -77,7 +77,6 @@ public class MelCloudConnection {
             logger.debug("Login response: {}", loginResponse);
             LoginClientResponse resp = gson.fromJson(loginResponse, LoginClientResponse.class);
             if (resp.getErrorId() != null) {
-
                 String errorMsg = String.format("Login failed, error code: %s", resp.getErrorId());
                 if (resp.getErrorMessage() != null) {
                     errorMsg.concat(String.format(" (%s)", resp.getErrorMessage()));
@@ -103,19 +102,16 @@ public class MelCloudConnection {
                     if (building.getStructure().getDevices() != null) {
                         devices.addAll(building.getStructure().getDevices());
                     }
-
                     building.getStructure().getFloors().forEach(floor -> {
                         if (floor.getDevices() != null) {
                             devices.addAll(floor.getDevices());
                         }
-
                         floor.getAreas().forEach(area -> {
                             if (area.getDevices() != null) {
                                 devices.addAll(area.getDevices());
                             }
                         });
                     });
-
                 });
                 logger.debug("Found {} devices", devices.size());
 

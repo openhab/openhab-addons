@@ -90,8 +90,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         config = getThing().getConfiguration().as(AcDeviceConfig.class);
         logger.debug("A.C. device config: {}", config);
 
-        initializeBridge((getBridge() == null) ? null : getBridge().getHandler(),
-                (getBridge() == null) ? null : getBridge().getStatus());
+        initializeBridge(bridge.getHandler(), bridge.getStatus());
     }
 
     @Override
@@ -107,7 +106,10 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged {} for thing {}", bridgeStatusInfo, getThing().getUID());
-        initializeBridge((getBridge() == null) ? null : getBridge().getHandler(), bridgeStatusInfo.getStatus());
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            initializeBridge(bridge.getHandler(), bridgeStatusInfo.getStatus());
+        }
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             startAutomaticRefresh();
@@ -165,13 +167,13 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
             case CHANNEL_SET_TEMPERATURE:
                 BigDecimal val = null;
                 if (command instanceof QuantityType) {
-                    QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command).toUnit(CELSIUS);
+                    QuantityType<Temperature> quantity = new QuantityType<Temperature>(command.toString())
+                            .toUnit(CELSIUS);
                     if (quantity != null) {
                         val = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
                     }
                 } else {
                     val = new BigDecimal(command.toString()).setScale(1, RoundingMode.HALF_UP);
-
                 }
                 if (val != null) {
                     // round nearest .5
@@ -210,7 +212,6 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         } else {
             logger.debug("Nothing to send");
         }
-
     }
 
     private DeviceStatus getDeviceStatusCopy(DeviceStatus deviceStatus) {
