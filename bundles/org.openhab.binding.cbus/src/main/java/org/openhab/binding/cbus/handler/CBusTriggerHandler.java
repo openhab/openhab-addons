@@ -43,9 +43,9 @@ public class CBusTriggerHandler extends CBusGroupHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-	Group group = this.group;
-	if (group == null)
-	    return;
+        Group group = this.group;
+        if (group == null)
+            return;
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_VALUE)) {
             logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
             try {
@@ -60,14 +60,14 @@ public class CBusTriggerHandler extends CBusGroupHandler {
 
     @Override
     protected @Nullable Group getGroup(int groupID) throws CGateException {
-	CBusNetworkHandler networkHandler = cBusNetworkHandler;
-	if (networkHandler == null)
-	    return null;
-	Network network = networkHandler.getNetwork();
-	if (network == null)
+        CBusNetworkHandler networkHandler = cBusNetworkHandler;
+        if (networkHandler == null)
+            return null;
+        Network network = networkHandler.getNetwork();
+        if (network == null)
                 return null;
-	Application application = network
-		.getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_TRIGGER));
-	return application.getGroup(groupID);
+        Application application = network
+                .getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_TRIGGER));
+        return application.getGroup(groupID);
     }
 }

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CBusNetworkDiscovery extends AbstractDiscoveryService {
 
-    private final Logger Logger = LoggerFactory.getLogger(CBusNetworkDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(CBusNetworkDiscovery.class);
 
     private CBusCGateHandler cBusCGateHandler;
 
@@ -51,7 +51,7 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
             try {
                 ArrayList<Network> networks = Network.listAll(cBusCGateHandler.getCGateSession(), false);
                 for (Network network : networks) {
-                    Logger.debug("Found Network: {} {}", network.getNetworkID(), network.getName());
+                    logger.debug("Found Network: {} {}", network.getNetworkID(), network.getName());
                     Map<String, Object> properties = new HashMap<>(2);
                     properties.put(CBusBindingConstants.PROPERTY_ID, network.getNetworkID());
                     properties.put(CBusBindingConstants.PROPERTY_NAME, network.getName());
@@ -67,7 +67,7 @@ public class CBusNetworkDiscovery extends AbstractDiscoveryService {
                     thingDiscovered(result);
                 }
             } catch (CGateException e) {
-                Logger.error("Failed to discover networks", e);
+                logger.error("Failed to discover networks", e);
             }
         }
     }

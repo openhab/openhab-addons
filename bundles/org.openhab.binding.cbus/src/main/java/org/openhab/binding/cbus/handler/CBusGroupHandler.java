@@ -70,15 +70,15 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
 
     public void updateStatus() {
         try {
-	    CBusNetworkHandler networkHandler = cBusNetworkHandler;
+            CBusNetworkHandler networkHandler = cBusNetworkHandler;
             if (networkHandler == null || !networkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else
             {
-		Group group = this.group;
+                Group group = this.group;
                 if (group == null) {
                     this.group = getGroup(Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
-		    group = this.group;
+                    group = this.group;
                 }
                 if (group == null) {
                     logger.debug("Set state to configuration error -no group");

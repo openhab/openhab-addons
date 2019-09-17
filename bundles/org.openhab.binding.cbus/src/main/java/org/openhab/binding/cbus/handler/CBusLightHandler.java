@@ -51,9 +51,9 @@ public class CBusLightHandler extends CBusGroupHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-	Group group = this.group;
-	if (group == null)
-	    return;
+        Group group = this.group;
+        if (group == null)
+            return;
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
             logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
             if (command instanceof OnOffType) {
@@ -90,9 +90,9 @@ public class CBusLightHandler extends CBusGroupHandler {
 
     @Override
     protected @Nullable Group getGroup(int groupID) throws CGateException {
-	CBusNetworkHandler networkHandler = cBusNetworkHandler;
-	if (networkHandler == null)
-	    return null;
+        CBusNetworkHandler networkHandler = cBusNetworkHandler;
+        if (networkHandler == null)
+            return null;
         Network network = networkHandler.getNetwork();
         if (network != null)
         {

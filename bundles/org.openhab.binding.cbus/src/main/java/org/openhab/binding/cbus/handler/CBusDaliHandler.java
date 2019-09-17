@@ -45,9 +45,9 @@ public class CBusDaliHandler extends CBusGroupHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-	Group group = this.group;
-	if (group == null)
-	    return;
+        Group group = this.group;
+        if (group == null)
+            return;
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
             logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
             try {
@@ -64,7 +64,6 @@ public class CBusDaliHandler extends CBusGroupHandler {
                     logger.warn("Increase/Decrease not implemented for {}", channelUID.getAsString());
                 }
             } catch (CGateException e) {
-
                 logger.error("Cannot send command {} to {}", command.toString(), group.toString(), e);
             }
         }
@@ -72,9 +71,9 @@ public class CBusDaliHandler extends CBusGroupHandler {
 
     @Override
     protected @Nullable Group getGroup(int groupID) throws CGateException {
-	CBusNetworkHandler networkHandler = cBusNetworkHandler;
-	if (networkHandler == null)
-	    return null;
+        CBusNetworkHandler networkHandler = cBusNetworkHandler;
+        if (networkHandler == null)
+            return null;
         Network network = networkHandler.getNetwork();
         if (network == null)
             return null;

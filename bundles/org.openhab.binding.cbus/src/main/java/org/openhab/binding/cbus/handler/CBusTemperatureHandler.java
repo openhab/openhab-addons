@@ -43,9 +43,9 @@ public class CBusTemperatureHandler extends CBusGroupHandler {
 
     @Override
     protected @Nullable Group getGroup(int groupID) throws CGateException {
-	CBusNetworkHandler networkHandler = cBusNetworkHandler;
-	if (networkHandler == null)
-	    return null;
+        CBusNetworkHandler networkHandler = cBusNetworkHandler;
+        if (networkHandler == null)
+            return null;
         Network network = networkHandler.getNetwork();
         if (network == null)
             return null;

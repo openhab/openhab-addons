@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CBusGroupDiscovery extends AbstractDiscoveryService {
 
-    private final Logger Logger = LoggerFactory.getLogger(CBusGroupDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(CBusGroupDiscovery.class);
 
     private CBusNetworkHandler cbusNetworkHandler;
 
@@ -71,7 +71,7 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                     }
                     ArrayList<Group> groups = application.getGroups(false);
                     for (Group group : groups) {
-                        Logger.debug("Found group: {} {} {}", application.getName(), group.getGroupID(),
+                        logger.debug("Found group: {} {} {}", application.getName(), group.getGroupID(),
                                 group.getName());
                         Map<String, Object> properties = new HashMap<>(2);
                         properties.put(CBusBindingConstants.CONFIG_GROUP_ID, group.getGroupID());
@@ -89,7 +89,7 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                     }
                 }
             } catch (CGateException e) {
-                Logger.error("Failed to discover groups", e);
+                logger.error("Failed to discover groups", e);
             }
         }
     }

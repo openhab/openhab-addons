@@ -50,7 +50,53 @@ import com.daveoxley.cbus.status.StatusChangeCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
+
+/**
+ * The {@link CBusThreadPool} is responsible for executing jobs from a threadpool
+ *
+ * @author John Harvey - Initial contribution
+ */
+
+@NonNullByDefault
+final class CBusThreadPool extends CGateThreadPool
+{
+    @NonNullByDefault
+    public class CBusThreadPoolExecutor extends CGateThreadPoolExecutor
+    {
+        private final ThreadPoolExecutor threadPool;
+                
+        public CBusThreadPoolExecutor(@Nullable String poolName)
+        {
+            threadPool = (ThreadPoolExecutor) ThreadPoolManager.getPool(poolName);
+        }
+        
+        @Override
+        protected void execute(@Nullable Runnable runnable)
+        {
+            threadPool.execute(runnable);
+        }
+    }
+    public CBusThreadPool()
+    {}
+    private Map<@Nullable String, CGateThreadPoolExecutor> executorMap= new HashMap<@Nullable String, CGateThreadPoolExecutor>();
+
+    @Override
+    @SuppressWarnings({ "unused", "null" }) /* map.get() can return null */
+    protected  CGateThreadPoolExecutor CreateExecutor(@Nullable String name)
+    {
+        @Nullable CGateThreadPoolExecutor executor = executorMap.get(name);
+
+        if (executor != null)
+        {
+            return executor;
+        }
+        CGateThreadPoolExecutor newExecutor =  new CBusThreadPoolExecutor(name);
+        executorMap.put(name, newExecutor);
+        return newExecutor;
+    }
+}
 
 /**
  * The {@link CBusCGateHandler} is responsible for handling commands, which are
@@ -58,39 +104,8 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Scott Linton - Initial contribution
  */
-    final class CBusThreadPool extends CGateThreadPool
-    {
-        public class CBusThreadPoolExecutor extends CGateThreadPoolExecutor
-        {
 
-            private final ThreadPoolExecutor thread_pool;
-
-            public CBusThreadPoolExecutor(String poolName)
-            {
-                    thread_pool = (ThreadPoolExecutor) ThreadPoolManager.getPool(poolName);
-            }
-
-            protected void execute(Runnable runnable)
-            {
-                    thread_pool.execute(runnable);
-            }
-        }
-        public CBusThreadPool()
-        {}
-        private Map<String, CGateThreadPoolExecutor> m_executorMap= new HashMap<String, CGateThreadPoolExecutor>();
-        protected  CGateThreadPoolExecutor CreateExecutor(String name)
-        {
-            CGateThreadPoolExecutor executor = m_executorMap.get(name);
-            if (executor != null)
-            {
-                    return executor;
-            }
-            executor =  new CBusThreadPoolExecutor(name);
-            m_executorMap.put(name, executor);
-            return executor;
-        }
-    }
-
+@NonNullByDefault
 public class CBusCGateHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(CBusCGateHandler.class);
@@ -109,7 +124,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
+        // Nothing to do here
     }
 
     @Override
@@ -130,13 +145,14 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 return;
             }
         }
-	InetAddress address = this.ipAddress;
-	if (address != null)
-	    logger.debug("CGate IP         {}.", address.getHostAddress());
+        InetAddress address = this.ipAddress;
+        if (address != null)
+            logger.debug("CGate IP         {}.", address.getHostAddress());
 
         keepAliveFuture = threadPool.submit(new KeepAlive());
     }
 
+    @NonNullByDefault
     private class KeepAlive extends Thread {
 
         @Override
@@ -144,7 +160,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             try {
                 while (!isInterrupted()) {
                     try {
-			CGateSession session = cGateSession;
+                        CGateSession session = cGateSession;
                         if (session == null || !session.isConnected()) {
                             if (!getThing().getStatus().equals(ThingStatus.ONLINE))
                                 connect();
@@ -159,19 +175,16 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 }
             } catch (InterruptedException e) {
             }
-
         }
     }
 
-
-
     private void connect() {
-	CGateSession cGateSession = this.cGateSession;
+        CGateSession cGateSession = this.cGateSession;
         if (cGateSession == null) {
             cGateSession = CGateInterface.connect(this.ipAddress, 20023, 20024, 20025, new CBusThreadPool());
             cGateSession.registerEventCallback(new EventMonitor());
             cGateSession.registerStatusChangeCallback(new StatusChangeMonitor());
-	    this.cGateSession = cGateSession;
+            this.cGateSession = cGateSession;
         }
         if (cGateSession.isConnected()) {
             logger.debug("CGate session reports online");
@@ -200,9 +213,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
     public void updateStatus() {
         ThingStatus lastStatus = getThing().getStatus();
-	CGateSession cGateSession = this.cGateSession;
-	if (cGateSession == null)
-	    return;
+        CGateSession cGateSession = this.cGateSession;
+        if (cGateSession == null)
+            return;
         if (cGateSession.isConnected()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -245,7 +258,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             }
         });
     }
-
+    @NonNullByDefault
     private class StatusChangeMonitor extends StatusChangeCallback {
 
         @Override
@@ -254,11 +267,17 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         }
 
         @Override
-        public void processStatusChange(@Nullable CGateSession cGateSession, String status) {
-	    if (cGateSession == null)
-		return;
+        public void processStatusChange(@Nullable CGateSession cGateSession, @Nullable String status) {
+            if (cGateSession == null)
+                return;
+            if (status == null)
+                return;
             if (status.startsWith("# "))
+            {
                 status = status.substring(2);
+                if (status == null)
+                        return;
+            }
                               
             String contents[] = status.split("#");
             LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(contents[0].split("\\s+")));
@@ -270,27 +289,28 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 // We created this event - don't worry about processing it again...
                 return;
             }
-            if (tokenizer.peek().equals("lighting")) {
+            @Nullable String firstToken = tokenizer.peek();
+            if (firstToken.equals("lighting")) {
                 tokenizer.poll();
-                String state = tokenizer.poll();
-                String address = tokenizer.poll();
+                @Nullable String state = tokenizer.poll();
+                @Nullable String address = tokenizer.poll();
                 if (state.equals("ramp")) {
                     state = tokenizer.poll();
                 }
                 updateGroup(address, state);
-            } else if (tokenizer.peek().equals("temperature")) {
+            } else if (firstToken.equals("temperature")) {
                 tokenizer.poll();
                 tokenizer.poll();
-                String address = tokenizer.poll();
-                String temp = tokenizer.poll();
+                @Nullable String address = tokenizer.poll();
+                @Nullable String temp = tokenizer.poll();
                 updateGroup(address, temp);
-            } else if (tokenizer.peek().equals("trigger")) {
+            } else if (firstToken.equals("trigger")) {
                 tokenizer.poll();
-                String command = tokenizer.poll();
-                String address = tokenizer.poll();
+                @Nullable String command = tokenizer.poll();
+                @Nullable String address = tokenizer.poll();
                 if (command.equals("event"))
                 {
-                    String level = tokenizer.poll();
+                    @Nullable String level = tokenizer.poll();
                     updateGroup(address, level);
                 } else if (command.equals("indicatorkill"))
                 {
@@ -299,11 +319,11 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 {
                     logger.error("Unhandled trigger command {} - status {}",command, status);
                 }
-            } else if (tokenizer.peek().equals("clock")) {
+            } else if (firstToken.equals("clock")) {
                 tokenizer.poll();
-                String address = "";
-                String value = "";
-                String type = tokenizer.poll();
+                @Nullable String address = "";
+                @Nullable String value = "";
+                @Nullable String type = tokenizer.poll();
                 if (type.equals("date")) {
                     address = tokenizer.poll() + "/1";
                     value = tokenizer.poll();
@@ -316,12 +336,15 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 if (value != "") {
                     updateGroup(address, value);
                 }
-            } else if (commentTokenizer.peek().equals("lighting")) {
+            } else if (firstToken.equals("lighting")) {
                 commentTokenizer.poll();
-                if (commentTokenizer.peek().equals("SyncUpdate")) {
+                @Nullable String commentToken = commentTokenizer.peek();
+                if (commentToken.equals("SyncUpdate")) {
                     commentTokenizer.poll();
-                    String address = commentTokenizer.poll();
-                    String level = commentTokenizer.poll().replace("level=", "");
+                    @Nullable String address = commentTokenizer.poll();
+                    
+                    @Nullable String level = commentTokenizer.poll();
+                    level.replace("level=", "");
                     updateGroup(address, level);
                 }
             } else {
@@ -331,6 +354,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
     }
 
+    @NonNullByDefault
     private class EventMonitor extends EventCallback {
 
         @Override
@@ -339,15 +363,17 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         }
 
         @Override
-        public void processEvent(CGateSession cgate_session, int eventCode, GregorianCalendar event_time,
-                String event) {
+        public void processEvent(@Nullable CGateSession cgate_session, int eventCode, @Nullable GregorianCalendar event_time,
+                                 @Nullable String event) {
+            if (event == null)
+                return;
             LinkedList<String> tokenizer = new LinkedList<String>(Arrays.asList(event.trim().split("\\s+")));
             // List<String> tokenizer = Collections.synchronizedList(new LinkedList<String>());//
             // Arrays.asList(event.trim().split("\\s+"))));
             if (eventCode == 701) {
-                String address = tokenizer.poll();
+                @Nullable String address = tokenizer.poll();
                 // String oid = tokenizer.poll();
-                String value = tokenizer.poll();
+                @Nullable String value = tokenizer.poll();
                 if (value.startsWith("level=")) {
                     String level = value.replace("level=", "");
                     updateGroup(address, level);
@@ -357,7 +383,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
     }
 
-    private void updateGroup(String address, String value) {
+    private void updateGroup(@Nullable String address, @Nullable String value) {
+        if (address == null || value == null)
+                return;
         String[] addressParts = address.trim().replace("//", "").split("/");
         updateGroup(addressParts[1], addressParts[2], addressParts[3], value);
     }
@@ -443,7 +471,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                             logger.debug("Failed to Updat CBus Lighting Group {} with value {}: No Channel", thing.getUID(), value);
                         }
                         handled = true;
-
                     }
                     // Temperature Application
                     else if (application.equals(CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE)
@@ -469,14 +496,14 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TRIGGER)
                             && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
                                     .equals(group)) {
-			Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE);
-			if (channel != null)
-			{
-				ChannelUID channelUID = channel.getUID();
-				DecimalType val = new DecimalType(value);
-				updateState(channelUID, val);
-				logger.trace("Updating CBus Trigger Group {} with value {}", thing.getUID(), value);
-			}
+                        Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE);
+                        if (channel != null)
+                        {
+                                ChannelUID channelUID = channel.getUID();
+                                DecimalType val = new DecimalType(value);
+                                updateState(channelUID, val);
+                                logger.trace("Updating CBus Trigger Group {} with value {}", thing.getUID(), value);
+                        }
                         handled = true;
                     }
                 }
@@ -490,6 +517,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         }
     }
 
+    @Nullable
     public CGateSession getCGateSession() {
         return cGateSession;
     }
@@ -497,10 +525,10 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-	Future<?> keepAliveFuture = this.keepAliveFuture;
-	if (keepAliveFuture != null)
-		keepAliveFuture.cancel(true);
-	CGateSession cGateSession = this.cGateSession;
+        Future<?> keepAliveFuture = this.keepAliveFuture;
+        if (keepAliveFuture != null)
+                keepAliveFuture.cancel(true);
+        CGateSession cGateSession = this.cGateSession;
         if (cGateSession != null && cGateSession.isConnected()) {
             try {
                 cGateSession.close();
