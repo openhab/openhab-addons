@@ -30,6 +30,7 @@ public class Config {
     private String apiversion;
     private String bridgeid;
     private String mac;
+    private String modelid;
     private boolean dhcp;
     private String ipaddress;
     private String netmask;
@@ -78,6 +79,15 @@ public class Config {
      */
     public String getMACAddress() {
         return mac;
+    }
+
+    /**
+     * Returns the model id
+     *
+     * @return model id
+     */
+    public String getModelId() {
+        return modelid;
     }
 
     /**
