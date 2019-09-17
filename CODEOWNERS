@@ -228,7 +228,7 @@
 /itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
 /itests/org.openhab.binding.wemo.tests/ @hmerk
 /itests/org.openhab.io.hueemulation.tests/ @davidgraeff @digitaldan
-/itests/org.openhab.io.mqttembeddedbroker.tests/ @davidgraeff
+/itests/org.openhab.io.mqttembeddedbroker.tests/ @J-N-K 
 /itests/org.openhab.persistence.mapdb.tests/ @mkhl
 
 # PLEASE HELP ADDING FURTHER LINES HERE!
