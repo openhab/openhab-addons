@@ -28,6 +28,7 @@ public class Config {
     private String name;
     private String swversion;
     private String apiversion;
+    private String bridgeid;
     private String mac;
     private boolean dhcp;
     private String ipaddress;
@@ -59,6 +60,15 @@ public class Config {
      */
     public String getSoftwareVersion() {
         return swversion;
+    }
+
+    /**
+     * Returns the bridge id
+     *
+     * @return bridge id
+     */
+    public String getBridgeId() {
+        return bridgeid;
     }
 
     /**
