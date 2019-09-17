@@ -17,6 +17,8 @@ Fragment-Host: org.openhab.io.hueemulation
 
 -runproperties: logback.configurationFile=file:${.}/logback.xml
 
+-runvm: -Dorg.osgi.service.http.port=${org.osgi.service.http.port}
+
 #
 # done
 #

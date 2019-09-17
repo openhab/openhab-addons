@@ -69,7 +69,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
     // Servlet URL configuration
     private static final String MOCK_SERVLET_PROTOCOL = "http";
     private static final String MOCK_SERVLET_HOSTNAME = "localhost";
-    private static final int MOCK_SERVLET_PORT = 9090;
+    private static final int MOCK_SERVLET_PORT = Integer.getInteger("org.osgi.service.http.port", 8080);
     private static final String MOCK_SERVLET_PATH = "/test/feed";
 
     // Files used for the test as input. They are located in /src/test/resources directory
