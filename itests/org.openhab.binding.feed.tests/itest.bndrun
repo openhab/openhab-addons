@@ -16,7 +16,7 @@ Fragment-Host: org.openhab.binding.feed
     bnd.identity;id='org.openhab.core.storage.json',\
     bnd.identity;id='org.openhab.core.storage.mapdb'
 
--runvm: -Dorg.osgi.service.http.port=9090
+-runvm: -Dorg.osgi.service.http.port=${org.osgi.service.http.port}
 
 #
 # done

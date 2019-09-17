@@ -86,7 +86,8 @@ public class HueEmulationServiceOSGiTest extends JavaOSGiTest {
         waitFor(() -> !hueService.cs.ds.config.ipaddress.isEmpty(), 5000, 100);
 
         String ipAddress = hueService.cs.ds.config.ipaddress;
-        int port = hueService.cs.config.discoveryHttpPort == 0 ? 8080 : hueService.cs.config.discoveryHttpPort;
+        int port = hueService.cs.config.discoveryHttpPort == 0 ? Integer.getInteger("org.osgi.service.http.port", 8080)
+                : hueService.cs.config.discoveryHttpPort;
         String url = "http://" + ipAddress + ":" + port + "/description.xml";
 
         waitForAssert(() -> {
