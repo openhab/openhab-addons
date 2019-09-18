@@ -783,7 +783,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
     }
 
     @Override
-    public void startAnnouncment(Device device, String text, String bodyText, String title, Integer volume)
+    public void startAnnouncment(Device device, String text, String bodyText, String title, @Nullable Integer volume)
             throws IOException, URISyntaxException {
         Connection connection = this.findConnection();
         if (connection == null) {

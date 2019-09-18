@@ -1100,8 +1100,8 @@ public class Connection {
         executeSequenceCommand(null, "Alexa.Notifications.SendMobilePush", parameters);
     }
 
-    public void sendAnnouncement(Device device, String text, String bodyText, @Nullable String title, Integer ttsVolume,
-            int standardVolume) throws IOException, URISyntaxException {
+    public void sendAnnouncement(Device device, String text, String bodyText, @Nullable String title,
+            @Nullable Integer ttsVolume, int standardVolume) throws IOException, URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("expireAfter", "PT5S");
         JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
@@ -1140,7 +1140,7 @@ public class Connection {
         executeSequenceCommandWithVolume(device, "AlexaAnnouncement", parameters, ttsVolume, standardVolume);
     }
 
-    public void textToSpeech(Device device, String text, Integer ttsVolume, int standardVolume)
+    public void textToSpeech(Device device, String text, @Nullable Integer ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("textToSpeak", text);
@@ -1148,7 +1148,7 @@ public class Connection {
     }
 
     private void executeSequenceCommandWithVolume(@Nullable Device device, String command,
-            @Nullable Map<String, Object> parameters, Integer ttsVolume, int standardVolume)
+            @Nullable Map<String, Object> parameters, @Nullable Integer ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
         if (ttsVolume != null) {
 
