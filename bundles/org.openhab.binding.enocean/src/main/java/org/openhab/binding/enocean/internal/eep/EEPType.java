@@ -104,6 +104,7 @@ import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_03;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_09;
+import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_0A;
 import org.openhab.binding.enocean.internal.eep.A5_20.A5_20_04;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Blinds;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Dimming;
@@ -161,7 +162,7 @@ public enum EEPType {
             CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD),
     Generic4BS(RORG._4BS, 0xFF, 0xFF, false, Generic4BS.class, THING_TYPE_GENERICTHING, CHANNEL_GENERIC_SWITCH,
             CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_DIMMER, CHANNEL_GENERIC_NUMBER, CHANNEL_GENERIC_STRING,
-            CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD),
+            CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD, CHANNEL_VIBRATION),
     GenericVLD(RORG.VLD, 0xFF, 0xFF, false, GenericVLD.class, THING_TYPE_GENERICTHING, CHANNEL_GENERIC_SWITCH,
             CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_DIMMER, CHANNEL_GENERIC_NUMBER, CHANNEL_GENERIC_STRING,
             CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD),
@@ -186,6 +187,8 @@ public enum EEPType {
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT),
     MechanicalHandle02(RORG._4BS, 0x14, 0x09, false, A5_14_09.class, THING_TYPE_MECHANICALHANDLE,
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_BATTERY_VOLTAGE),
+    MechanicalHandle03(RORG._4BS, 0x14, 0x0A, false, A5_14_0A.class, THING_TYPE_MECHANICALHANDLE,
+            CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_VIBRATION, CHANNEL_BATTERY_VOLTAGE),
 
     ContactAndSwitch01(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT),
     ContactAndSwitch02(RORG._4BS, 0x14, 0x01, false, A5_14_01.class, THING_TYPE_CONTACT, CHANNEL_BATTERY_VOLTAGE,
