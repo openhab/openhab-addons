@@ -172,24 +172,6 @@
 			<channel id="output-6" typeId="rollershutter-output">
 				<label>Output 6</label>
 			</channel>
-			<channel id="output-7" typeId="rollershutter-output">
-				<label>Output 7</label>
-			</channel>
-			<channel id="output-8" typeId="rollershutter-output">
-				<label>Output 8</label>
-			</channel>
-			<channel id="output-9" typeId="rollershutter-output">
-				<label>Output 9</label>
-			</channel>
-			<channel id="output-10" typeId="rollershutter-output">
-				<label>Output 10</label>
-			</channel>
-			<channel id="output-11" typeId="rollershutter-output">
-				<label>Output 11</label>
-			</channel>
-			<channel id="output-12" typeId="rollershutter-output">
-				<label>Output 12</label>
-			</channel>
 		</channels>
 	</thing-type>
 

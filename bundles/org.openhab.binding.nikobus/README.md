@@ -91,7 +91,7 @@ Once connected to the Nikobus installation using a bridge, one can communicate w
 
 ### Modules
 
-Each module is defined by its address and contains 12 outputs (channels), where `output-1` corresponds to module's first output, `output-2` to module's second output and so on. If physical module has less outputs, only those channels can be used (i.e. `05-002-02` has only 4 outputs, so only channels 1-4 can be used) .
+Each module is defined by its address and contains 12 outputs (channels), where `output-1` corresponds to module's first output, `output-2` to module's second output and so on. If physical module has less outputs, only those channels can be used (i.e. `05-002-02` has only 4 outputs, so only channels 1-4 can be used).
 
 Large module contains 2 channel groups, where the first group controls channels 1-6 and the second one controls channels 7-12. The small module contains only a single channel group controlling all 4 channels.
 
@@ -161,12 +161,6 @@ Defines a `rollershutter-module` with address `4C6C`.
 | output-4  | Rollershutter | Output 4     |
 | output-5  | Rollershutter | Output 5     |
 | output-6  | Rollershutter | Output 6     |
-| output-7  | Rollershutter | Output 7     |
-| output-8  | Rollershutter | Output 8     |
-| output-9  | Rollershutter | Output 9     |
-| output-10 | Rollershutter | Output 10    |
-| output-11 | Rollershutter | Output 11    |
-| output-12 | Rollershutter | Output 12    |
 
 ### Buttons
 
