@@ -12,38 +12,17 @@
  */
 package org.openhab.binding.heos.internal;
 
-import static org.openhab.binding.heos.HeosBindingConstants.*;
+import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandler;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerAlbum;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerArtist;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerBuildGroup;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerControl;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerCover;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerCurrentPosition;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerDuration;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerFavoriteSelect;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerGrouping;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerInputs;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerMute;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerPlayURL;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerPlayerSelect;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerPlaylist;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerRawCommand;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerReboot;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerRepeatMode;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerShuffleMode;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerStation;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerTitle;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerType;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerVolume;
+import org.openhab.binding.heos.internal.handler.*;
+import org.openhab.binding.heos.internal.resources.HeosEventListener;
 
 /**
  * The {@link HeosChannelHandlerFactory} is responsible for creating and returning
@@ -51,78 +30,82 @@ import org.openhab.binding.heos.internal.handler.HeosChannelHandlerVolume;
  * It also stores already created handler for further use.
  *
  * @author Johannes Einig - Initial contribution
- *
  */
+@NonNullByDefault
 public class HeosChannelHandlerFactory {
+    private final HeosBridgeHandler bridge;
+    private final HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider;
+    private final Map<ChannelUID, HeosChannelHandler> handlerStorageMap = new HashMap<>();
 
-    private HeosBridgeHandler bridge;
-    private HeosFacade api;
-    private Map<ChannelUID, HeosChannelHandler> handlerStorageMap = new HashMap<>();
-
-    public HeosChannelHandlerFactory(HeosBridgeHandler bridge, HeosFacade api) {
+    public HeosChannelHandlerFactory(HeosBridgeHandler bridge,
+            HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider) {
         this.bridge = bridge;
-        this.api = api;
+        this.heosDynamicStateDescriptionProvider = heosDynamicStateDescriptionProvider;
     }
 
-    public HeosChannelHandler getChannelHandler(ChannelUID channelUID, ChannelTypeUID channelTypeUID) {
+    public @Nullable HeosChannelHandler getChannelHandler(ChannelUID channelUID, HeosEventListener eventListener,
+            @Nullable ChannelTypeUID channelTypeUID) {
         if (handlerStorageMap.containsKey(channelUID)) {
             return handlerStorageMap.get(channelUID);
         } else {
-            HeosChannelHandler createdChannelHandler = createNewChannelHandler(channelUID, channelTypeUID);
-            handlerStorageMap.put(channelUID, createdChannelHandler);
-            return createdChannelHandler;
+            HeosChannelHandler handler = createNewChannelHandler(channelUID, eventListener, channelTypeUID);
+            if (handler != null) {
+                handlerStorageMap.put(channelUID, handler);
+            }
+            return handler;
         }
     }
 
-    private HeosChannelHandler createNewChannelHandler(ChannelUID channelUID, ChannelTypeUID channelTypeUID) {
+    private @Nullable HeosChannelHandler createNewChannelHandler(ChannelUID channelUID, HeosEventListener eventListener,
+            @Nullable ChannelTypeUID channelTypeUID) {
         switch (channelUID.getId()) {
             case CH_ID_CONTROL:
-                return new HeosChannelHandlerControl(bridge, api);
+                return new HeosChannelHandlerControl(eventListener, bridge);
             case CH_ID_VOLUME:
-                return new HeosChannelHandlerVolume(bridge, api);
+                return new HeosChannelHandlerVolume(eventListener, bridge);
             case CH_ID_MUTE:
-                return new HeosChannelHandlerMute(bridge, api);
-            case CH_ID_PLAY_URL:
-                return new HeosChannelHandlerPlayURL(bridge, api);
+                return new HeosChannelHandlerMute(eventListener, bridge);
             case CH_ID_INPUTS:
-                return new HeosChannelHandlerInputs(bridge, api);
-            case CH_ID_UNGROUP:
-                return new HeosChannelHandlerGrouping(bridge, api);
-            case CH_ID_RAW_COMMAND:
-                return new HeosChannelHandlerRawCommand(bridge, api);
-            case CH_ID_REBOOT:
-                return new HeosChannelHandlerReboot(bridge, api);
-            case CH_ID_BUILDGROUP:
-                return new HeosChannelHandlerBuildGroup(bridge, api);
-            case CH_ID_PLAYLISTS:
-                return new HeosChannelHandlerPlaylist(bridge, api);
+                return new HeosChannelHandlerInputs(eventListener, bridge);
             case CH_ID_REPEAT_MODE:
-                return new HeosChannelHandlerRepeatMode(bridge, api);
+                return new HeosChannelHandlerRepeatMode(eventListener, bridge);
             case CH_ID_SHUFFLE_MODE:
-                return new HeosChannelHandlerShuffleMode(bridge, api);
+                return new HeosChannelHandlerShuffleMode(eventListener, bridge);
             case CH_ID_ALBUM:
-                return new HeosChannelHandlerAlbum(bridge, api);
             case CH_ID_SONG:
-                return new HeosChannelHandlerTitle(bridge, api);
             case CH_ID_ARTIST:
-                return new HeosChannelHandlerArtist(bridge, api);
             case CH_ID_COVER:
-                return new HeosChannelHandlerCover(bridge, api);
-            case CH_ID_CUR_POS:
-                return new HeosChannelHandlerCurrentPosition(bridge, api);
-            case CH_ID_DURATION:
-                return new HeosChannelHandlerDuration(bridge, api);
             case CH_ID_TYPE:
-                return new HeosChannelHandlerType(bridge, api);
             case CH_ID_STATION:
-                return new HeosChannelHandlerStation(bridge, api);
+                return new HeosChannelHandlerNowPlaying(eventListener, bridge);
+            case CH_ID_QUEUE:
+                return new HeosChannelHandlerQueue(heosDynamicStateDescriptionProvider, bridge);
+            case CH_ID_CLEAR_QUEUE:
+                return new HeosChannelHandlerClearQueue(bridge);
+
+            case CH_ID_PLAY_URL:
+                return new HeosChannelHandlerPlayURL(bridge);
+            case CH_ID_UNGROUP:
+                return new HeosChannelHandlerGrouping(bridge);
+            case CH_ID_RAW_COMMAND:
+                return new HeosChannelHandlerRawCommand(eventListener, bridge);
+            case CH_ID_REBOOT:
+                return new HeosChannelHandlerReboot(bridge);
+            case CH_ID_BUILDGROUP:
+                return new HeosChannelHandlerBuildGroup(channelUID, bridge);
+            case CH_ID_PLAYLISTS:
+                return new HeosChannelHandlerPlaylist(heosDynamicStateDescriptionProvider, bridge);
+            case CH_ID_FAVORITES:
+                return new HeosChannelHandlerFavorite(heosDynamicStateDescriptionProvider, bridge);
+            case CH_ID_CUR_POS:
+            case CH_ID_DURATION:
+                // nothing to handle, we receive updates automatically
+                return null;
         }
+
         if (channelTypeUID != null) {
-            if (CH_TYPE_FAVORITE.equals(channelTypeUID)) {
-                return new HeosChannelHandlerFavoriteSelect(bridge, api);
-            }
             if (CH_TYPE_PLAYER.equals(channelTypeUID)) {
-                return new HeosChannelHandlerPlayerSelect(bridge, api);
+                return new HeosChannelHandlerPlayerSelect(channelUID, bridge);
             }
         }
         return null;

@@ -10,6 +10,6 @@
 
   <artifactId>org.openhab.binding.heos</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Heos Binding</name>
+  <name>openHAB Add-ons :: Bundles :: HEOS Binding</name>
 
 </project>

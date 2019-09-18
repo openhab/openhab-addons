@@ -12,9 +12,18 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
+import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
+import org.openhab.binding.heos.internal.resources.HeosEventListener;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
+
+import com.google.gson.JsonElement;
 
 /**
  *
@@ -22,29 +31,36 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
  * from the implementing thing.
  *
  * @author Johannes Einig - Initial contribution
- *
  */
-public class HeosChannelHandlerRawCommand extends HeosChannelHandler {
+@NonNullByDefault
+public class HeosChannelHandlerRawCommand extends BaseHeosChannelHandler {
+    private final HeosEventListener eventListener;
 
-    public HeosChannelHandlerRawCommand(HeosBridgeHandler bridge, HeosFacade api) {
-        super(bridge, api);
+    public HeosChannelHandlerRawCommand(HeosEventListener eventListener, HeosBridgeHandler bridge) {
+        super(bridge);
+        this.eventListener = eventListener;
     }
 
     @Override
-    protected void handleCommandPlayer() {
+    public void handlePlayerCommand(Command command, String id, ThingUID uid) {
         // not used on player
     }
 
     @Override
-    protected void handleCommandGroup() {
+    public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
+            HeosGroupHandler heosGroupHandler) {
         // not used on group
     }
 
     @Override
-    protected void handleCommandBridge() {
+    public void handleBridgeCommand(Command command, ThingUID uid) throws IOException, ReadException {
         if (command instanceof RefreshType) {
             return;
         }
-        api.sendRawCommand(command.toString());
+        HeosResponseObject<JsonElement> response = getApi().sendRawCommand(command.toString());
+
+        if (response.result) {
+            eventListener.playerStateChangeEvent(response);
+        }
     }
 }

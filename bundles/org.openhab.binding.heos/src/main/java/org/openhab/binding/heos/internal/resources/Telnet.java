@@ -19,11 +19,11 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.net.telnet.TelnetClient;
-import org.apache.commons.net.telnet.TelnetInputListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,27 +39,21 @@ public class Telnet {
     private static final int READ_TIMEOUT = 3000;
     private static final int IS_ALIVE_TIMEOUT = 10000;
 
+    private final HeosStringPropertyChangeListener eolNotifier = new HeosStringPropertyChangeListener();
+    private final TelnetClient client = new TelnetClient();
+
     private String ip;
     private int port;
 
-    private String readResult;
+    // Has to be initialized because value is used later with readResult.concat() function
+    private String readResult = "";
     private String readLineResult;
     private List<String> readResultList = new ArrayList<>(5);
 
     private InetAddress address;
-    private TelnetClient client;
     private DataOutputStream outStream;
     private InputStream inputStream;
     private BufferedInputStream bufferedStream;
-
-    private HeosStringPropertyChangeListener eolNotifyer = new HeosStringPropertyChangeListener();
-
-    private TelnetInputListener inputListener;
-
-    public Telnet() {
-        client = new TelnetClient();
-        readResult = ""; // Has to bin initialized because value is used later with readResult.concat() function
-    }
 
     /**
      * Connects to a host with the specified IP address and port
@@ -81,7 +75,7 @@ public class Telnet {
         return openConnection();
     }
 
-    private boolean openConnection() throws SocketException, IOException {
+    private boolean openConnection() throws IOException {
         client.setConnectTimeout(5000);
         client.connect(ip, port);
         outStream = new DataOutputStream(client.getOutputStream());
@@ -111,42 +105,15 @@ public class Telnet {
      * Send command without additional commands
      *
      * @param command The command to be send
-     * @return true after the command was send
      * @throws IOException
      */
-    public boolean sendClear(String command) throws IOException {
-        if (client.isConnected()) {
-            outStream.writeBytes(command);
-            outStream.flush();
-            return true;
-        } else {
-            return false;
+    private void sendClear(String command) throws IOException {
+        if (!client.isConnected()) {
+            return;
         }
-    }
 
-    /**
-     * The read function reads the input of the Telnet connection
-     * it determine the amount of bytes to read.
-     * If no bytes available i is 0, if End of Line is detected i=-1
-     * Bytes are read into buffer and changed to String
-     * Then the single values are merged by function concatReadResult
-     *
-     * @throws IOException
-     */
-    public boolean read() throws IOException {
-        if (client.isConnected()) {
-            int i = 1;
-            while (i != -1) {
-                i = bufferedStream.available();
-                byte[] buffer = new byte[i];
-                bufferedStream.read(buffer);
-                String str = new String(buffer, "UTF-8");
-                i = concatReadResult(str);
-            }
-            return true;
-        } else {
-            return false;
-        }
+        outStream.writeBytes(command);
+        outStream.flush();
     }
 
     /**
@@ -155,7 +122,7 @@ public class Telnet {
      * element in the returned {@code ArrayList<>}
      * Reading timed out after 3000 milliseconds. For another timing
      *
-     * @see readLine(int timeOut).
+     * @see Telnet.readLine(int timeOut).
      *
      * @return A list with all read commands
      * @throws ReadException
@@ -180,20 +147,17 @@ public class Telnet {
     public List<String> readLine(int timeOut) throws ReadException, IOException {
         readResultList.clear();
         long timeZero = System.currentTimeMillis();
-        long timeAfterTry = 0;
-        long timeTryiedToRead = 0;
         if (client.isConnected()) {
             readLineResult = "";
             int i = 1;
             while (i != -1) {
                 i = bufferedStream.available();
                 byte[] buffer = new byte[i];
+                // TODO this could block for ever?
                 bufferedStream.read(buffer);
-                String str = new String(buffer, "UTF-8");
+                String str = new String(buffer, StandardCharsets.UTF_8);
                 i = concatReadLineResult(str);
-                timeAfterTry = System.currentTimeMillis();
-                timeTryiedToRead = timeAfterTry - timeZero;
-                if (timeTryiedToRead >= timeOut) {
+                if (System.currentTimeMillis() - timeZero >= timeOut) {
                     throw new ReadException();
                 }
             }
@@ -210,7 +174,7 @@ public class Telnet {
      * End of line is detected. Each element of the list
      * should be a JSON Element
      */
-    private int concatReadLineResult(String value) {
+    private synchronized int concatReadLineResult(String value) {
         readLineResult = readLineResult.concat(value);
         if (readLineResult.endsWith("\r\n")) {
             readLineResult = readLineResult.trim();
@@ -232,25 +196,22 @@ public class Telnet {
      * @throws IOException
      */
     public void disconnect() throws IOException {
-        logger.debug("Disconnecting TelnetClient...");
         client.disconnect();
-        logger.debug("Telnet client disconnected");
+        inputStream = null;
+        outStream = null;
     }
 
     /**
      * Input Listener which fires event if input is detected
      */
     public void startInputListener() {
-        inputListener = new TelnetInputListener() {
-            @Override
-            public void telnetInputAvailable() {
-                inputAvailableRead();
-            }
-        };
-        client.registerInputListener(inputListener);
+        logger.debug("Starting input listener");
+        client.setReaderThread(true);
+        client.registerInputListener(this::inputAvailableRead);
     }
 
     public void stopInputListener() {
+        logger.debug("Stopping input listener");
         client.unregisterInputListener();
     }
 
@@ -264,10 +225,10 @@ public class Telnet {
             int i = bufferedStream.available();
             byte[] buffer = new byte[i];
             bufferedStream.read(buffer);
-            String str = new String(buffer, "UTF-8");
-            i = concatReadResult(str);
+            String str = new String(buffer, StandardCharsets.UTF_8);
+            concatReadResult(str);
         } catch (IOException e) {
-            logger.debug("IO Exception- Message: {}", e.getMessage());
+            logger.debug("IO Exception, message: {}", e.getMessage());
         }
     }
 
@@ -281,7 +242,7 @@ public class Telnet {
     private int concatReadResult(String value) {
         readResult = readResult.concat(value);
         if (readResult.contains("\r\n")) {
-            eolNotifyer.setValue(readResult.trim());
+            eolNotifier.setValue(readResult.trim());
             readResult = "";
             return -1;
         }
@@ -295,24 +256,29 @@ public class Telnet {
      *
      * @return true if HEOS is reachable
      */
-    public boolean isConnectionAlive() {
+    public boolean isHostReachable() {
         try {
-            return address.isReachable(IS_ALIVE_TIMEOUT);
+            return address != null && address.isReachable(IS_ALIVE_TIMEOUT);
         } catch (IOException e) {
             logger.debug("IO Exception- Message: {}", e.getMessage());
             return false;
         }
     }
 
+    @Override
+    public String toString() {
+        return "Telnet{" + "ip='" + ip + '\'' + ", port=" + port + '}';
+    }
+
     public HeosStringPropertyChangeListener getReadResultListener() {
-        return eolNotifyer;
+        return eolNotifier;
     }
 
     public boolean isConnected() {
         return client.isConnected();
     }
 
-    public class ReadException extends Exception {
+    public static class ReadException extends Exception {
         private static final long serialVersionUID = 1L;
 
         public ReadException() {
