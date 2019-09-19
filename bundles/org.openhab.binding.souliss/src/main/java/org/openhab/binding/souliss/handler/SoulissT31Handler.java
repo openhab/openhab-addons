@@ -179,13 +179,13 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                     case SoulissBindingConstants.T31_ON_MESSAGE_FIRE_CHANNEL:
                         if (!_fireState.equals(_state)) {
                             this.updateState(SoulissBindingConstants.T31_FIRE_CHANNEL, OnOffType.ON);
-                            _powerState = (StringType) _state;
+                            _fireState = (StringType) _state;
                         }
                         break;
                     case SoulissBindingConstants.T31_OFF_MESSAGE_FIRE_CHANNEL:
                         if (!_fireState.equals(_state)) {
                             this.updateState(SoulissBindingConstants.T31_FIRE_CHANNEL, OnOffType.OFF);
-                            _powerState = (StringType) _state;
+                            _fireState = (StringType) _state;
                         }
                         break;
                 }
@@ -217,7 +217,7 @@ public class SoulissT31Handler extends SoulissGenericHandler {
 
     String sMessage = "";
 
-    public void setRawStateValues(byte _rawState_byte0, float _valTemp, byte _valSetPoint) {
+    public void setRawStateValues(byte _rawState_byte0, float _valTemp, float _valSetPoint) {
 
         sMessage = "";
         switch (getBitState(_rawState_byte0, 0)) {
