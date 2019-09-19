@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="io:homekit">
+
+		<parameter-group name="core">
+			<label>Core configuration</label>
+		</parameter-group>
+		<parameter-group name="thermostat">
+			<label>Thermostat settings</label>
+			<description>General thermostat settings</description>
+		</parameter-group>
+		<parameter-group name="thermostatTargetHeatingCooling">
+			<label>Thermostat targetHeatingCooling mapping</label>
+			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
+		</parameter-group>
+		<parameter-group name="thermostatCurrentHeatingCooling">
+			<label>Thermostat currentHeatingCooling mapping</label>
+			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
+		</parameter-group>
+
+		<parameter name="port" type="integer" required="true" groupName="core">
+			<label>Port</label>
+			<description>Defines the port the HomeKit integration listens on.</description>
+			<default>9124</default>
+		</parameter>
+		<parameter name="pin" type="text" pattern="\d{3}-\d{2}-\d{3}" required="true" groupName="core">
+			<label>Pin</label>
+			<description>Defines the pin, used for pairing, in the form ###-##-###.</description>
+			<default>031-45-154</default>
+		</parameter>
+		<parameter name="networkInterface" type="text" required="false" groupName="core">
+			<label>Network Interface</label>
+			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
+		</parameter>
+
+		<parameter name="useFahrenheitTemperature" type="boolean" required="true" groupName="thermostat">
+			<label>Use Fahrenheit Temperature</label>
+			<description>Defines whether or not to direct HomeKit clients to use fahrenheit temperatures instead of celsius.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="thermostatTargetModeCool" type="text" required="true" groupName="thermostatTargetHeatingCooling">
+			<label>Cool Value</label>
+			<description>Word used to set the target heatingCoolingMode to COOL (if a thermostat is defined).</description>
+			<default>CoolOn</default>
+		</parameter>
+		<parameter name="thermostatTargetModeHeat" type="text" required="true" groupName="thermostatTargetHeatingCooling">
+			<label>Heat Value</label>
+			<description>Word used to set the target heatingCoolingMode to HEAT (if a thermostat is defined).</description>
+			<default>HeatOn</default>
+		</parameter>
+		<parameter name="thermostatTargetModeAuto" type="text" required="true" groupName="thermostatTargetHeatingCooling">
+			<label>Auto Value</label>
+			<description>Word used to set the target heatingCoolingMode to AUTO (if a thermostat is defined).</description>
+			<default>Auto</default>
+		</parameter>
+		<parameter name="thermostatTargetModeOff" type="text" required="true" groupName="thermostatTargetHeatingCooling">
+			<label>Off Value</label>
+			<description>Word used to set the target heatingCoolingMode to OFF (if a thermostat is defined).</description>
+			<default>Off</default>
+		</parameter>
+
+		<parameter name="thermostatCurrentModeHeating" type="text" required="true" groupName="thermostatCurrentHeatingCooling">
+			<label>Heating Value</label>
+			<description>Value for setting target heatingCoolingCurrentMode to HEAT (IE: indicating that the heater is currently warming the home).</description>
+			<default>Heating</default>
+		</parameter>
+		<parameter name="thermostatCurrentModeCooling" type="text" required="true" groupName="thermostatCurrentHeatingCooling">
+			<label>Cooling Value</label>
+			<description>Value for setting target heatingCoolingCurrentMode to COOL (IE: indicating that the air condition is currently cooling the home).</description>
+			<default>Cooling</default>
+		</parameter>
+		<parameter name="thermostatCurrentModeOff" type="text" required="true" groupName="thermostatCurrentHeatingCooling">
+			<label>Off Value</label>
+			<description>Value for setting target heatingCoolingCurrentMode to OFF (IE: the hvac is currently idle, because the target temperature has been reached per the mode).</description>
+			<default>Off</default>
+		</parameter>
+
+	</config-description>
+</config-description:config-descriptions>

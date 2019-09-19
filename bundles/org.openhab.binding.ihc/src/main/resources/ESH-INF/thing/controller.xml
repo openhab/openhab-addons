@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ihc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="controller"
+		extensible="switch, contact, number, dimmmer, datetime, string, rollershutter, pulse-output, rf-device-battery-level, rf-device-signal-strength, push-button-trigger">
+
+		<label>IHC / ELKO Controller</label>
+		<description></description>
+
+		<channels>
+			<channel typeId="controller-state" id="controllerState" />
+			<channel typeId="controller-uptime" id="controllerUptime" />
+			<channel typeId="controller-time" id="controllerTime" />
+		</channels>
+
+		<properties>
+			<property name="controllerManufacturer" />
+			<property name="controllerSerialNumber" />
+			<property name="controllerSwVersion" />
+			<property name="controllerHwVersion" />
+			<property name="controllerIsWithoutViewer" />
+			<property name="controllerSwDate" />
+			<property name="controllerProductionDate" />
+			<property name="projectDate" />
+			<property name="projectNumber" />
+		</properties>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network/IP address of the IHC / ELKO controller without https prefix, but can contain TCP port if default port is not used</description>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>User Name</label>
+				<description>User name to login to the IHC / ELKO controller.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to login to the IHC / ELKO controller.</description>
+			</parameter>
+			<parameter name="timeout" type="integer" required="false" step="1000" unit="ms">
+				<label>Timeout</label>
+				<description>Timeout to communicate to IHC / ELKO controller.</description>
+				<default>5000</default>
+			</parameter>
+			<parameter name="loadProjectFile" type="boolean" required="false">
+				<label>Load Project File</label>
+				<description>Load project file from controller.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="createChannelsAutomatically" type="boolean" required="false">
+				<label>Create Channels Automatically</label>
+				<description>Create channels automatically from project file. Project file loading parameter should be enabled as well.</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

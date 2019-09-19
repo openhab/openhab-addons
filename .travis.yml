@@ -1,17 +1,33 @@
 sudo: required
-dist: trusty
+dist: xenial
 
 language: java
-jdk: oraclejdk8
-before_install: echo "MAVEN_OPTS='-Xms1g -Xmx2g -XX:PermSize=512m -XX:MaxPermSize=1g'" > ~/.mavenrc
 
-install:
-  - echo 'mvn clean install -B -DskipChecks=true -DskipTests=true -V 1> .build.stdout 2> .build.stderr' > .build.sh
-  - chmod 0755 .build.sh
-script:
-  - travis_wait 60 ./.build.sh
-after_success:
-  - tail -n  200 .build.stdout
-after_failure:
-  - tail -n  300 .build.stderr
-  - tail -n 2000 .build.stdout
+jdk:
+  - openjdk8
+  - openjdk11
+
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.bnd/cache/
+
+before_cache:
+  # remove resolver-status.properties, they change with each run and invalidate the cache
+  - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
+
+before_script:
+  # enable IPv6, see: https://github.com/travis-ci/travis-ci/issues/8361
+  - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
+      sudo sh -c 'echo 0 > /proc/sys/net/ipv6/conf/all/disable_ipv6';
+    fi
+
+notifications:
+    webhooks: https://www.travisbuddy.com/
+
+travisBuddy:
+    insertMode: update
+    successBuildLog: true
+
+install: true
+script: ./buildci.sh "$TRAVIS_COMMIT_RANGE"

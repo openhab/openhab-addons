@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rotel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="mainZoneType1">
+		<label>Main Zone</label>
+		<description>The controls of the main zone</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="recordSource" typeId="recordSource" />
+			<channel id="dsp" typeId="dsp" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="bass" typeId="bass" />
+			<channel id="treble" typeId="treble" />
+			<channel id="line1" typeId="frontPanelLine" />
+			<channel id="line2" typeId="frontPanelLine" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mainZoneType2">
+		<label>Main Zone</label>
+		<description>The controls of the main zone</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="recordSource" typeId="recordSource" />
+			<channel id="dsp" typeId="dsp" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="line1" typeId="frontPanelLine" />
+			<channel id="line2" typeId="frontPanelLine" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mainZoneType3">
+		<label>Main Zone</label>
+		<description>The controls of the main zone</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="recordSource" typeId="recordSource" />
+			<channel id="dsp" typeId="dsp" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="bass" typeId="bass" />
+			<channel id="treble" typeId="treble" />
+			<channel id="line1" typeId="frontPanelLine" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mainZoneType4">
+		<label>Main Zone</label>
+		<description>The controls of the main zone</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="recordSource" typeId="recordSource" />
+			<channel id="dsp" typeId="dsp" />
+			<channel id="volumeUpDown" typeId="volumeUpDown" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="bass" typeId="bass" />
+			<channel id="treble" typeId="treble" />
+			<channel id="line1" typeId="frontPanelLine" />
+			<channel id="line2" typeId="frontPanelLine" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="mainZoneType5">
+		<label>Main Zone</label>
+		<description>The controls of the main zone</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="recordSource" typeId="recordSource" />
+			<channel id="dsp" typeId="dsp" />
+			<channel id="volumeUpDown" typeId="volumeUpDown" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="bass" typeId="bass" />
+			<channel id="treble" typeId="treble" />
+			<channel id="line1" typeId="frontPanelLine" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone2type1">
+		<label>Zone 2</label>
+		<description>The controls of the zone 2</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone2type2">
+		<label>Zone 2</label>
+		<description>The controls of the zone 2</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="volumeUpDown" typeId="volumeUpDown" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone3">
+		<label>Zone 3</label>
+		<description>The controls of the zone 3</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone4">
+		<label>Zone 4</label>
+		<description>The controls of the zone 4</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="source" typeId="source" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="source">
+		<item-type>String</item-type>
+		<label>Source Input</label>
+		<description>Select the source input</description>
+	</channel-type>
+
+	<channel-type id="recordSource" advanced="true">
+		<item-type>String</item-type>
+		<label>Record Source</label>
+		<description>Select the source to be recorded</description>
+	</channel-type>
+
+	<channel-type id="dsp">
+		<item-type>String</item-type>
+		<label>DSP Mode</label>
+		<description>Select the DSP mode</description>
+	</channel-type>
+
+	<channel-type id="volumeUpDown">
+		<item-type>Number</item-type>
+		<label>Volume</label>
+		<description>Increase or decrease the volume</description>
+		<category>SoundVolume</category>
+		<state pattern="%d" readOnly="false" />
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="bass" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bass Adjustment</label>
+		<description>Adjust the bass</description>
+		<state pattern="%d" readOnly="false" />
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="treble" advanced="true">
+		<item-type>Number</item-type>
+		<label>Treble Adjustment</label>
+		<description>Adjust the treble</description>
+		<state pattern="%d" readOnly="false" />
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="track" advanced="true">
+		<item-type>Number</item-type>
+		<label>Current Track</label>
+		<description>The current CD track number</description>
+		<state pattern="%d" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="frequency" advanced="true">
+		<item-type>Number</item-type>
+		<label>Current Frequency</label>
+		<description>The current frequency (in kHz) for digital source input</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="frontPanelLine" advanced="true">
+		<item-type>String</item-type>
+		<label>Front Panel Line</label>
+		<description>The line content displayed on the device front panel</description>
+	</channel-type>
+
+	<channel-type id="brightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Front Panel Display Brightness</label>
+		<description>The backlight brightness level (in %) of the device front panel</description>
+	</channel-type>
+
+</thing:thing-descriptions>

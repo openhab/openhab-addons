@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="xmltv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="xmltvfile">
+		<label>XmlTVFile</label>
+		<description>This is the interface to a XmlTV file</description>
+
+		<config-description>
+			<parameter name="filePath" type="text" required="true">
+				<label>XmlTV file path</label>
+				<description>Path to an XmlTV file.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="h">
+				<label>Refresh interval</label>
+				<description>Specifies the XMLTV file reload interval in hours</description>
+				<default>24</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	
+	<thing-type id="channel">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="xmltvfile" />
+		</supported-bridge-type-refs>
+		<label>Channel</label>
+		<description>This represent a channel on a given TV file</description>
+
+		<channel-groups>
+			<channel-group id="channelprops" typeId="channelprops" />
+			<channel-group id="currentprog" typeId="currentprog" />
+			<channel-group id="nextprog" typeId="nextprog" />
+		</channel-groups>
+		
+		<config-description>
+			<parameter name="channelId" type="text" required="true">
+				<label>Channel Id</label>
+				<description>Id of the channel as presented in the XmlTV file.</description>
+			</parameter>
+			
+			<parameter name="offset" type="integer" min="-1440" max="1440" unit="min">
+				<label>Offset</label>
+				<description>Moves an event or datetime value forward or backward (in minutes)</description>
+				<default>0</default>
+			</parameter>
+			
+			<parameter name="refresh" type="integer" unit="s">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds</description>
+				<default>60</default>
+			</parameter>
+			
+		</config-description>
+		
+	</thing-type>
+	
+	<channel-group-type id="channelprops">
+		<label>Channel properties</label>
+		<description>Properties of the current channel</description>
+		<channels>
+			<channel id="iconUrl" typeId="iconUrl" />
+			<channel id="icon" typeId="icon" />
+		</channels>
+	</channel-group-type>
+	
+	<channel-group-type id="currentprog">
+		<label>Current Program</label>
+		<description>Program currently on air on this channel</description>
+		<channels>
+			<channel id="progStart" typeId="progStart" />
+			<channel id="progEnd" typeId="progEnd" />
+			<channel id="progTitle" typeId="progTitle" />
+			<channel id="progCategory" typeId="progCategory" />
+			<channel id="progIconUrl" typeId="progIconUrl" />
+			<channel id="icon" typeId="icon" />
+			<channel id="elapsedTime" typeId="elapsedTime" />
+			<channel id="remainingTime" typeId="remainingTime"/>
+			<channel id="progress" typeId="progress" />
+		</channels>
+	</channel-group-type>
+	
+	<channel-group-type id="nextprog">
+		<label>Next Program</label>
+		<description>Program which will follow current program on this channel</description>
+		<channels>
+			<channel id="progStart" typeId="progStart" />
+			<channel id="timeLeft" typeId="timeLeft" />
+			<channel id="progEnd" typeId="progEnd" />
+			<channel id="progTitle" typeId="progTitle" />
+			<channel id="progCategory" typeId="progCategory" />
+			<channel id="progIconUrl" typeId="progIconUrl" />
+			<channel id="icon" typeId="icon" />
+		</channels>
+	</channel-group-type>
+		
+	<channel-type id="iconUrl" advanced="true">
+		<item-type>String</item-type>
+		<label>Channel Icon URL</label>
+		<description>Icon URL of the TV channel.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	
+	<channel-type id="progIconUrl" advanced="true">
+		<item-type>String</item-type>
+		<label>Program URL</label>
+		<description>URL to an image of the program.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="progTitle">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Program Title.</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="progCategory">
+		<item-type>String</item-type>
+		<label>Category</label>
+		<description>Program Category.</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="progStart">
+		<item-type>DateTime</item-type>
+		<label>Start Time</label>
+		<description>Program Start Time</description>
+		<state readOnly="true" pattern="%1$tF %1$tR" />
+	</channel-type>
+	
+	<channel-type id="progEnd">
+		<item-type>DateTime</item-type>
+		<label>End Time</label>
+		<description>Program End Time</description>
+		<state readOnly="true" pattern="%1$tF %1$tR" />
+	</channel-type>
+	
+	<channel-type id="elapsedTime">
+		<item-type>Number:Time</item-type>
+		<label>Current Time</label>
+		<description>Current time of currently playing program.</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="remainingTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Time</label>
+		<description>Time remaining until end of the program.</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+	
+	<channel-type id="timeLeft" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Time Left</label>
+		<description>Time left before program start</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="progress">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Progress</label>
+		<description>Relative progression of the current program.</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+	
+	<channel-type id="icon">
+		<item-type>Image</item-type>
+		<label>Icon</label>
+		<description>Icon of the channel / program.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	
+</thing:thing-descriptions>

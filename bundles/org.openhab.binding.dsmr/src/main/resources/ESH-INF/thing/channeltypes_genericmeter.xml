@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="genValueType">
+		<item-type>Number</item-type>
+		<label>Delivery</label>
+		<description>The total amount delivered in the past period.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="genValvePositionType">
+		<item-type>Number</item-type>
+		<label>Valve Position</label>
+		<description>The valve switch position.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

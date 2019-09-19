@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="somfytahoma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="control_silent">
+		<item-type>Rollershutter</item-type>
+		<label>Control (silent)</label>
+		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%) (only for IO devices)</description>
+	</channel-type>
+
+	<channel-type id="control">
+		<item-type>Rollershutter</item-type>
+		<label>Control</label>
+		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%)</description>
+	</channel-type>
+
+	<channel-type id="orientation">
+		<item-type>Dimmer</item-type>
+		<label>Orientation</label>
+		<description>Orientation of the device slats</description>
+		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>An ON/OFF switch (zwave/enocean/rts)</description>
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>A contact having OPEN/CLOSE state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="luminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Luminance</label>
+		<description>A light sensor luminance in lux</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="alarm_command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>A channel used for sending commands to Somfy Alarm device</description>
+		<state>
+			<options>
+				<option value="on">ARM</option>
+				<option value="off">DISARM</option>
+				<option value="alarmPartial1">ARM_PARTIAL_1</option>
+				<option value="alarmPartial2">ARM_PARTIAL_2</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="intrusion_control">
+		<item-type>String</item-type>
+		<label>Intrusion Control</label>
+		<description>A channel used for Alarm external intrusion controlling</description>
+		<state>
+			<options>
+				<option value="detected">DETECTED</option>
+				<option value="notdetected">NOT DETECTED</option>
+				<option value="pending">PENDING</option>
+				<option value="sos">SOS</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarm_state">
+		<item-type>String</item-type>
+		<label>Alarm State</label>
+		<description>A state of the Somfy Alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="active_zones_state">
+		<item-type>String</item-type>
+		<label>Active Zones State</label>
+		<description>Active Zones State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="intrusion_state">
+		<item-type>String</item-type>
+		<label>Alarm Intrusion State</label>
+		<description>An intrusion state of the Somfy Alarm</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cyclic_button_state">
+		<item-type>String</item-type>
+		<label>Cyclic Button State</label>
+		<description>Cyclic Button State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery_status_state">
+		<item-type>String</item-type>
+		<label>Battery Status State</label>
+		<description>Battery Status State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lighting_led_pod_mod_state">
+		<item-type>Number</item-type>
+		<label>Lighting Led Pod Mod State</label>
+		<description>Lighting Led Pod Mod State</description>
+		<state pattern="%.2f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<description>The current temperature of the heating system</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current_state">
+		<item-type>String</item-type>
+		<label>Heating System Current State</label>
+		<description>A channel used for getting the heating state</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="target_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>The target temperature of the heating system</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="target_heating_level">
+		<item-type>String</item-type>
+		<label>Target Heating Level</label>
+		<description>A channel used for getting/setting the target heating level (on/off, frostprotection, confort, eco)</description>
+		<state>
+			<options>
+				<option value="frostprotection">FROSTPROTECTION</option>
+				<option value="comfort">COMFORT</option>
+				<option value="eco">ECO</option>
+				<option value="off">OFF</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="gate_command">
+		<item-type>String</item-type>
+		<label>Gate Command</label>
+		<description>A channel used for getting/setting the gate position (open, close, pedestrian, stop)</description>
+		<state>
+			<options>
+				<option value="open">OPEN</option>
+				<option value="close">CLOSE</option>
+				<option value="pedestrian">PEDESTRIAN</option>
+				<option value="stop">STOP</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="gate_state">
+		<item-type>String</item-type>
+		<label>Gate Status</label>
+		<description>A channel used for getting the gate state (open, closed, pedestrian)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="open">
+		<item-type>Switch</item-type>
+		<label>Open/Close</label>
+		<description>A channel for controlling door OPEN/CLOSE state</description>
+	</channel-type>
+
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<description>A lock having ON/OFF state (unlocked/locked)</description>
+	</channel-type>
+
+	<channel-type id="handle_state">
+		<item-type>String</item-type>
+		<label>Handle State</label>
+		<description>A state of the Somfy Window Handle</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The temperature value of the sensor</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

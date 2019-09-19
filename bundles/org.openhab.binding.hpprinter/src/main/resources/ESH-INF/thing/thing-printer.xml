@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hpprinter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="printer">
+
+		<label>HP Printer</label>
+		<description>An HP Printer.</description>
+		<channel-groups>
+			<channel-group typeId="printerStatus" id="status"></channel-group>
+			<channel-group typeId="ink" id="ink">
+			</channel-group>
+			<channel-group typeId="usageInfo" id="usage"></channel-group>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:hpprinter:config" />
+
+	</thing-type>
+
+</thing:thing-descriptions>

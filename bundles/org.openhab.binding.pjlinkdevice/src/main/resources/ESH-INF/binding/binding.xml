@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="pjLinkDevice" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>PJLinkDevice Binding</name>
+	<description>This binding can control PJLink compatible devices.
+	
+	The PJLink protocol was mainly standardized for digital projectors, but some other types of devices also use it, in particular TV screens.</description>
+	<author>Nils Schnabel</author>
+
+</binding:binding>

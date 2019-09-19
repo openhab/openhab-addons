@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0" immediate="true" name="org.openhab.binding.amazondashbutton.internal.config.AmazonDashButtonConfigOptionProvider">
+    <service servicefactory="false">
+        <provide interface="org.eclipse.smarthome.config.core.ConfigOptionProvider"/>
+    </service>
+    <implementation class="org.openhab.binding.amazondashbutton.internal.config.AmazonDashButtonConfigOptionProvider"/>
+</scr:component>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="waterValueType">
+		<item-type>Number:Volume</item-type>
+		<label>Water Delivery</label>
+		<description>The total amount of water used in the past period.</description>
+		<state pattern="%.3f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="waterValvePositionType">
+		<item-type>Number</item-type>
+		<label>Water Valve Position</label>
+		<description>The water valve switch position.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

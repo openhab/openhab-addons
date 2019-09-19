@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nibeuplink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="custom-type-CH01">
+		<item-type>Number</item-type>
+		<label>Custom Channel 01</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="custom-type-CH02">
+		<item-type>Number</item-type>
+		<label>Custom Channel 02</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="custom-type-CH03">
+		<item-type>Number</item-type>
+		<label>Custom Channel 03</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="custom-type-CH04">
+		<item-type>Number</item-type>
+		<label>Custom Channel 04</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="custom-type-CH05">
+		<item-type>Number</item-type>
+		<label>Custom Channel 05</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="custom-type-CH06">
+		<item-type>Number</item-type>
+		<label>Custom Channel 06</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="custom-type-CH07">
+		<item-type>Number</item-type>
+		<label>Custom Channel 07</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="custom-type-CH08">
+		<item-type>Number</item-type>
+		<label>Custom Channel 08</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

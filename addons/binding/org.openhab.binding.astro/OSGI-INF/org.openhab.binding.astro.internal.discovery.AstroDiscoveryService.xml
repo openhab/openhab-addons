@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" immediate="true" name="org.openhab.binding.astro.internal.discovery.AstroDiscoveryService" activate="activate" deactivate="deactivate" modified="modified" configuration-pid="discovery.astro">
+    <service servicefactory="false">
+        <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+    </service>
+    <reference name="LocationProvider" interface="org.eclipse.smarthome.core.i18n.LocationProvider" cardinality="1..1" policy="static" bind="setLocationProvider" unbind="unsetLocationProvider"/>
+    <reference name="LocaleProvider" interface="org.eclipse.smarthome.core.i18n.LocaleProvider" cardinality="1..1" policy="static" bind="setLocaleProvider" unbind="unsetLocaleProvider"/>
+    <reference name="TranslationProvider" interface="org.eclipse.smarthome.core.i18n.TranslationProvider" cardinality="1..1" policy="static" bind="setTranslationProvider" unbind="unsetTranslationProvider"/>
+    <implementation class="org.openhab.binding.astro.internal.discovery.AstroDiscoveryService"/>
+</scr:component>

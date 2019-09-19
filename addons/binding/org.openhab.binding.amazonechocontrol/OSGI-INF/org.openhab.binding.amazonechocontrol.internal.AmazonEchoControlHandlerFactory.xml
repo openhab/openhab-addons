@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" name="org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlHandlerFactory" configuration-pid="binding.amazonechocontrol">
+    <service servicefactory="false">
+        <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+    </service>
+    <reference name="HttpService" interface="org.osgi.service.http.HttpService" cardinality="1..1" policy="dynamic" bind="setHttpService" unbind="unsetHttpService"/>
+    <reference name="StorageService" interface="org.eclipse.smarthome.core.storage.StorageService" cardinality="1..1" policy="static" bind="setStorageService" unbind="unsetStorageService"/>
+    <implementation class="org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlHandlerFactory"/>
+</scr:component>

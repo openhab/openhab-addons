@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="powermax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="mode" advanced="true">
+		<item-type>String</item-type>
+		<label>System Mode</label>
+		<description>Current mode can be Standard, Powerlink or Download</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="Download">Download</option>
+				<option value="Powerlink">Powerlink</option>
+				<option value="Standard">Standard</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="trouble">
+		<item-type>Switch</item-type>
+		<label>Trouble Detected</label>
+		<description>Whether or not a trouble is detected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="alert_in_memory" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alert in Memory</label>
+		<description>Whether or not an alert is saved in system memory</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="system_status">
+		<item-type>String</item-type>
+		<label>System Status</label>
+		<description>A short status summary of the system</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="ready" advanced="true">
+		<item-type>Switch</item-type>
+		<label>System Ready</label>
+		<description>Whether or not the system is ready for arming</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="with_zones_bypassed" advanced="true">
+		<item-type>Switch</item-type>
+		<label>With Zones Bypassed</label>
+		<description>Whether or not at least one zone is bypassed</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="alarm_active">
+		<item-type>Switch</item-type>
+		<label>Alarm Active</label>
+		<description>Whether or not an alarm is active</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="system_armed">
+		<item-type>Switch</item-type>
+		<label>System Armed</label>
+		<description>Whether or not the system is armed</description>
+	</channel-type>
+
+	<channel-type id="arm_mode">
+		<item-type>String</item-type>
+		<label>System Arm Mode</label>
+		<state readOnly="false" pattern="%s">
+			<options>
+				<option value="Disarmed">Disarmed</option>
+				<option value="Stay">Armed Home</option>
+				<option value="Armed">Armed Away</option>
+				<option value="StayInstant">Armed Home Instant</option>
+				<option value="ArmedInstant">Armed Away Instant</option>
+				<option value="Night">Armed Night</option>
+				<option value="NightInstant">Armed Night Instant</option>
+				<option value="EntryDelay">Entry Delay</option>
+				<option value="ExitDelay">Exit Delay</option>
+				<option value="NotReady">Not Ready</option>
+				<option value="Ready">Ready</option>
+				<option value="UserTest">User Test</option>
+				<option value="Force">Bypass</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tripped">
+		<item-type>Contact</item-type>
+		<label>Zone Tripped</label>
+		<description>Whether or not the zone is tripped</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="last_trip">
+		<item-type>DateTime</item-type>
+		<label>Zone Last Trip</label>
+		<description>Timestamp when the zone was last tripped</description>
+		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+	</channel-type>
+
+	<channel-type id="bypassed">
+		<item-type>Switch</item-type>
+		<label>Zone Bypassed</label>
+		<description>Whether or not the zone is bypassed</description>
+	</channel-type>
+
+	<channel-type id="armed">
+		<item-type>Switch</item-type>
+		<label>Zone Armed</label>
+		<description>Whether or not the zone is armed</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="pgm_status" advanced="true">
+		<item-type>Switch</item-type>
+		<label>PGM Status</label>
+	</channel-type>
+
+	<channel-type id="x10_status">
+		<item-type>String</item-type>
+		<label>X10 Device Status</label>
+		<state readOnly="false" pattern="%s">
+			<options>
+				<option value="ON">On</option>
+				<option value="OFF">Off</option>
+				<option value="DIM">Dim</option>
+				<option value="BRIGHT">Bright</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="event_log" advanced="true">
+		<item-type>String</item-type>
+		<label>Event Log Entry</label>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="update_event_logs" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Update Event Logs</label>
+		<description>Switch command to update the event logs</description>
+	</channel-type>
+
+	<channel-type id="download_setup" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Download Setup</label>
+		<description>Switch command to download the setup</description>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" name="org.openhab.binding.astro.internal.AstroHandlerFactory" configuration-pid="binding.astro">
+    <service servicefactory="false">
+        <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+    </service>
+    <reference name="TimeZoneProvider" interface="org.eclipse.smarthome.core.i18n.TimeZoneProvider" cardinality="1..1" policy="static" bind="setTimeZoneProvider" unbind="unsetTimeZoneProvider"/>
+    <reference name="CronScheduler" interface="org.eclipse.smarthome.core.scheduler.CronScheduler" cardinality="1..1" policy="static" bind="setCronScheduler" unbind="unsetCronScheduler"/>
+    <implementation class="org.openhab.binding.astro.internal.AstroHandlerFactory"/>
+</scr:component>

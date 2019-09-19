@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons</groupId>
+    <artifactId>org.openhab.addons.reactor</artifactId>
+    <version>2.5.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.openhab.addons.itests</groupId>
+  <artifactId>org.openhab.addons.reactor.itests</artifactId>
+  <packaging>pom</packaging>
+
+  <name>openHAB Add-ons :: Integration Tests</name>
+
+  <modules>
+    <module>org.openhab.binding.astro.tests</module>
+    <module>org.openhab.binding.avmfritz.tests</module>
+    <module>org.openhab.binding.feed.tests</module>
+    <module>org.openhab.binding.hue.tests</module>
+    <module>org.openhab.binding.max.tests</module>
+    <module>org.openhab.binding.mqtt.homeassistant.tests</module>
+    <module>org.openhab.binding.mqtt.homie.tests</module>
+    <module>org.openhab.binding.nest.tests</module>
+    <module>org.openhab.binding.ntp.tests</module>
+    <module>org.openhab.binding.systeminfo.tests</module>
+    <module>org.openhab.binding.tradfri.tests</module>
+    <module>org.openhab.binding.wemo.tests</module>
+    <module>org.openhab.io.hueemulation.tests</module>
+    <module>org.openhab.io.mqttembeddedbroker.tests</module>
+    <module>org.openhab.persistence.mapdb.tests</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.core.bom</groupId>
+      <artifactId>org.openhab.core.bom.openhab-core</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.core.bom</groupId>
+      <artifactId>org.openhab.core.bom.compile</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <configuration>
+            <archive>
+              <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            </archive>
+            <skipIfEmpty>true</skipIfEmpty>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>biz.aQute.bnd</groupId>
+        <artifactId>bnd-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <!-- BEG: itests common -->
+      <id>itests-common</id>
+      <activation>
+        <file>
+          <exists>itest.bndrun</exists>
+        </file>
+      </activation>
+
+      <dependencies>
+        <dependency>
+          <groupId>org.openhab.core.bom</groupId>
+          <artifactId>org.openhab.core.bom.test</artifactId>
+          <type>pom</type>
+          <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>org.openhab.core.bom</groupId>
+          <artifactId>org.openhab.core.bom.test-index</artifactId>
+          <version>${project.version}</version>
+          <type>pom</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.openhab.core.bom</groupId>
+          <artifactId>org.openhab.core.bom.openhab-core-index</artifactId>
+          <version>${project.version}</version>
+          <type>pom</type>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.openhab.core.bom</groupId>
+          <artifactId>org.openhab.core.bom.runtime-index</artifactId>
+          <version>${project.version}</version>
+          <type>pom</type>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>biz.aQute.bnd</groupId>
+            <artifactId>bnd-maven-plugin</artifactId>
+            <configuration>
+              <bndfile>itest.bndrun</bndfile>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>biz.aQute.bnd</groupId>
+            <artifactId>bnd-indexer-maven-plugin</artifactId>
+            <configuration>
+              <includeJar>true</includeJar>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>biz.aQute.bnd</groupId>
+            <artifactId>bnd-testing-maven-plugin</artifactId>
+            <configuration>
+              <bndruns>
+                <bndrun>itest.bndrun</bndrun>
+              </bndruns>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>biz.aQute.bnd</groupId>
+            <artifactId>bnd-resolver-maven-plugin</artifactId>
+            <configuration>
+              <bndruns>
+                <bndrun>itest.bndrun</bndrun>
+              </bndruns>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+    <!-- END: itests common -->
+  </profiles>
+
+</project>

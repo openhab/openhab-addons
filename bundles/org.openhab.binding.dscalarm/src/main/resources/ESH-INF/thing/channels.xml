@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dscalarm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+	<!-- bridge -->
+	<channel-type id="reset">
+		<item-type>Switch</item-type>
+		<label>Reset</label>
+		<description>Reset Switch</description>
+	</channel-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Send Command</label>
+		<description>Sends a DSC Alarm Command</description>
+	</channel-type>
+
+	<!-- keypad -->
+	<channel-type id="led">
+		<item-type>Number</item-type>
+		<label>Keypad LED</label>
+		<description>Keypad LED (0=Off, 1=On, 2=Flashing)</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+				<option value="2">Flashing</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- panel -->
+	<channel-type id="panel_command">
+		<item-type>Number</item-type>
+		<label>Panel Command</label>
+		<description>Send Command</description>
+		<state pattern="%d">
+			<options>
+				<option value="-1">None</option>
+				<option value="0">Poll</option>
+				<option value="1">Status Report</option>
+				<option value="2">Labels Request (Serial Only)</option>
+				<option value="8">Dump Zone Timers (TCP Only)</option>
+				<option value="10">Set Time/Date</option>
+				<option value="200">Send User Code</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="time">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>Time</description>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<description>State (On/Off)</description>
+	</channel-type>
+
+	<!-- partition -->
+	<channel-type id="arm_mode">
+		<item-type>Number</item-type>
+		<label>Arm Mode</label>
+		<description>Arm Mode</description>
+		<state pattern="%d">
+			<options>
+				<option value="0">Disarm</option>
+				<option value="1">Away</option>
+				<option value="2">Stay</option>
+				<option value="3">Zero</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- zone -->
+	<channel-type id="zone_status">
+		<item-type>Contact</item-type>
+		<label>Zone Status</label>
+		<description>Zone Status (Open/Closed)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="bypass_mode">
+		<item-type>Switch</item-type>
+		<label>Bypass Mode</label>
+		<description>Bypass Mode (OFF=Armed, ON=Bypassed)</description>
+	</channel-type>
+
+	<!-- common -->
+	<channel-type id="message">
+		<item-type>String</item-type>
+		<label>Message</label>
+		<description>Message Received</description>
+		<state pattern="%s" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="status">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<description>Status</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

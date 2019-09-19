@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dscalarm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="partition">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="envisalink" />
+			<bridge-type-ref id="it100" />
+			<bridge-type-ref id="tcpserver" />
+		</supported-bridge-type-refs>
+
+		<label>DSC Alarm Partition</label>
+		<description>Represents a controllable area within a DSC Alarm System.</description>
+
+		<channels>
+			<channel id="partition_status" typeId="message">
+				<label>Partition Status</label>
+				<description>Partition Status</description>
+			</channel>
+			<channel id="partition_arm_mode" typeId="arm_mode">
+				<label>Partition Arm Mode</label>
+				<description>Partition Arm Mode</description>
+			</channel>
+			<channel id="partition_armed" typeId="status">
+				<label>Partition Armed Status</label>
+				<description>Partition Armed Status (ON=Armed, OFF=Disarmed)</description>
+			</channel>
+			<channel id="partition_entry_delay" typeId="status">
+				<label>Partition Entry Delay</label>
+				<description>Partition In Entry Delay Mode</description>
+			</channel>
+			<channel id="partition_exit_delay" typeId="status">
+				<label>Partition Exit Delay</label>
+				<description>Partition In Exit Delay Mode</description>
+			</channel>
+			<channel id="partition_in_alarm" typeId="status">
+				<label>Partition In Alarm</label>
+				<description>Partition In Alarm</description>
+			</channel>
+			<channel id="partition_opening_closing_mode" typeId="message">
+				<label>Partition Opening/Closing Mode</label>
+				<description>Partition Opening/Closing Mode ("User Closing", "Special Closing", "Partial Closing", "User Opening", "Special Opening")</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="partitionNumber" type="integer" required="true" min="1" max="8">
+				<label>Partition Number</label>
+				<description>The Partition Number (1-8).</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

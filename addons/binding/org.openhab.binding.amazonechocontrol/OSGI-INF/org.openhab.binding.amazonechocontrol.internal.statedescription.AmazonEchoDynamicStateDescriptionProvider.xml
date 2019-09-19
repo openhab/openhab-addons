@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.0.0" name="org.openhab.binding.amazonechocontrol.internal.statedescription.AmazonEchoDynamicStateDescriptionProvider">
+    <service servicefactory="false">
+        <provide interface="org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider"/>
+        <provide interface="org.openhab.binding.amazonechocontrol.internal.statedescription.AmazonEchoDynamicStateDescriptionProvider"/>
+    </service>
+    <reference name="ThingRegistry" interface="org.eclipse.smarthome.core.thing.ThingRegistry" cardinality="1..1" policy="dynamic" bind="setThingRegistry" unbind="unsetThingRegistry"/>
+    <implementation class="org.openhab.binding.amazonechocontrol.internal.statedescription.AmazonEchoDynamicStateDescriptionProvider"/>
+</scr:component>

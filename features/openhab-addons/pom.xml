@@ -1,24 +1,24 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.openhab</groupId>
-    <artifactId>features</artifactId>
+    <groupId>org.openhab.addons.features.karaf</groupId>
+    <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
     <version>2.5.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.openhab.addons</groupId>
-  <artifactId>openhab2-addons</artifactId>
+  <artifactId>org.openhab.addons.features.karaf.openhab-addons</artifactId>
   <packaging>feature</packaging>
 
-  <name>openHAB 2 Feature Addons</name>
-  <description>openHAB 2 Addons</description>
+  <name>openHAB Add-ons :: Features :: Karaf :: Add-ons</name>
+  <description>openHAB Add-ons Features</description>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>openhab2-addons-external</artifactId>
+      <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
@@ -28,18 +28,55 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>create-karaf-features</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <target>
+                <concat destfile="src/main/feature/feature.xml">
+                  <header file="src/main/resources/header.xml" filtering="no"></header>
+                  <fileset dir="${basedirRoot}/bundles">
+                    <include name="*/src/main/feature/feature.xml"></include>
+                    <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"></exclude>
+                    <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"></exclude>
+                    <!-- temporarily disabled due to malfunction -->
+                    <exclude name="**/org.openhab.io.azureiothub/**/feature.xml"></exclude>
+                  </fileset>
+                  <filterchain>
+                    <linecontainsRegExp>
+                      <regexp pattern="(feature&gt;)|(feature\s)|(bundle&gt;)|(bundle\s)"></regexp>
+                    </linecontainsRegExp>
+                  </filterchain>
+                  <footer file="src/main/resources/footer.xml" filtering="no"></footer>
+                </concat>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <startLevel>80</startLevel>
-          <aggregateFeatures>true</aggregateFeatures>
-          <!--  <resolver>(obr)</resolver> -->
-          <checkDependencyChange>true</checkDependencyChange>
-          <failOnDependencyChange>false</failOnDependencyChange>
-          <logDependencyChanges>true</logDependencyChanges>
-          <overwriteChangedDependencies>true</overwriteChangedDependencies>
-        </configuration>
+        <executions>
+          <execution>
+            <id>karaf-feature-verification</id>
+            <configuration>
+              <features>
+                <feature>openhab-binding-bluetooth</feature>
+                <feature>openhab-binding-mqtt</feature>
+                <feature>openhab-misc-ruleengine</feature>
+              </features>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

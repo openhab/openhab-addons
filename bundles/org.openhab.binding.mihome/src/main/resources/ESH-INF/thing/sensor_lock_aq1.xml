@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mihome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sensor_lock_aq1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Aqara Fingerprint Door Lock</label>
+		<description>Live fingerprint unlock, password unlock, proximity card unlock, key unlock.</description>
+		<channels>
+			<channel id="status" typeId="status"></channel>
+			<channel id="id" typeId="idNumber"></channel>
+			<channel id="isOpen" typeId="alarm">
+				<label>Open Alarm</label>
+			</channel>
+			<channel id="wrongAccess" typeId="alarm">
+				<label>Wrong Access Alarm</label>
+			</channel>
+			<channel id="lastOpened" typeId="lastOpened"></channel>
+			<channel id="batteryLevel" typeId="system.battery-level" />
+			<channel id="lowBattery" typeId="system.low-battery" />
+		</channels>
+		<config-description-ref uri="thing-type:mihome:device" />
+	</thing-type>
+</thing:thing-descriptions>

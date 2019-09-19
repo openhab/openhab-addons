@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="volvooncall"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Volvo Vehicle -->
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="vocapi" />
+		</supported-bridge-type-refs>
+
+		<label>Volvo Vehicle</label>
+
+		<channel-groups>
+			<channel-group typeId="doors" id="doors" />
+			<channel-group typeId="windows" id="windows" />
+			<channel-group typeId="odometer" id="odometer" />
+			<channel-group typeId="tank" id="tank" />
+			<channel-group typeId="position" id="position" />
+			<channel-group typeId="other" id="other" />
+			<channel-group typeId="lasttrip" id="lasttrip" />
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+
+		<config-description>
+			<parameter name="vin" type="text" required="true">
+				<label>Vehicle Identification Number</label>
+				<description>VIN of the vehicle associated with this Thing</description>
+			</parameter>
+
+			<parameter name="refresh" type="integer" min="5" required="false">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in minutes.</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="other">
+		<label>Other</label>
+		<channels>
+			<channel id="engineRunning" typeId="engineRunning" />
+			<channel id="remoteHeater" typeId="remoteHeater" />
+			<channel id="washerFluidLevel" typeId="washerFluidLevel" />
+			<channel id="serviceWarningStatus" typeId="serviceWarningStatus" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="lasttrip">
+		<label>Last Trip</label>
+		<channels>
+			<channel id="tripConsumption" typeId="fuelQuantity">
+				<label>Consumption</label>
+				<description>Indicates the quantity of fuel consumed by the trip</description>
+			</channel>
+			<channel id="tripDistance" typeId="odometer">
+				<label>Distance</label>
+				<description>Distance traveled</description>
+			</channel>
+			<channel id="tripStartTime" typeId="timestamp">
+				<label>Start Time</label>
+				<description>Trip start time</description>
+			</channel>
+			<channel id="tripEndTime" typeId="timestamp">
+				<label>End Time</label>
+				<description>Trip end time</description>
+			</channel>
+			<channel id="tripDuration" typeId="tripDuration"/>
+			<channel id="tripStartOdometer" typeId="odometer">
+				<label>Start Odometer</label>
+			</channel>
+			<channel id="tripStopOdometer" typeId="odometer">
+				<label>Stop Odometer</label>
+			</channel>
+			<channel id="startPosition" typeId="location">
+				 <label>From</label>
+				 <description>Starting location of the car</description>
+			</channel>
+			<channel id="endPosition" typeId="location">
+				 <label>To</label>
+				 <description>Stopping location of the car</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="doors">
+		<label>Doors Opening Status</label>
+		<channels>
+			<channel id="tailgate" typeId="door" >
+				<label>Tailgate</label>
+			</channel>
+			<channel id="rearRight" typeId="door" >
+				<label>Rear right</label>
+			</channel>
+			<channel id="rearLeft" typeId="door" >
+				<label>Rear left</label>
+			</channel>
+			<channel id="frontRight" typeId="door" >
+				<label>Front right</label>
+			</channel>
+			<channel id="frontLeft" typeId="door" >
+				<label>Front left</label>
+			</channel>
+			<channel id="hood" typeId="door" >
+				<label>Hood</label>
+			</channel>
+			<channel id="carLocked" typeId="carLocked" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="windows">
+		<label>Windows Opening Status</label>
+		<channels>
+			<channel id="rearRightWnd" typeId="window">
+				<label>Rear Right</label>
+			</channel>
+			<channel id="rearLeftWnd" typeId="window" >
+				<label>Rear Left</label>
+			</channel>
+			<channel id="frontRightWnd" typeId="window" >
+				<label>Front Right</label>
+			</channel>
+			<channel id="frontLeftWnd" typeId="window" >
+				<label>Front Left</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="odometer">
+		<label>Trip Meters</label>
+		<channels>
+			<channel id="odometer" typeId="odometer" />
+			<channel id="tripmeter1" typeId="odometer">
+				<label>Tripmeter 1</label>
+			</channel>
+			<channel id="tripmeter2" typeId="odometer">
+				<label>Tripmeter 2</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="tank">
+		<label>Tank info</label>
+		<channels>
+			<channel id="fuelAmount" typeId="fuelQuantity">
+				<label>Fuel Amount</label>
+				<description>Indicates the quantity of fuel available in the tank</description>
+			</channel>
+			<channel id="fuelLevel" typeId="fuelLevel" />
+			<channel id="fuelConsumption" typeId="fuelConsumption" />
+			<channel id="fuelAlert" typeId="fuelAlert" />
+			<channel id="distanceToEmpty" typeId="odometer">
+				<label>Distance Left</label>
+				<description>Distance left with given quantity of fuel</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="position">
+		<label>Location Info</label>
+		<channels>
+			<channel id="location" typeId="location">
+				 <label>Location</label>
+				 <description>The position of the vehicle</description>
+			</channel>	 
+			<channel id="calculatedLocation" typeId="calculatedLocation" />
+			<channel id="heading" typeId="heading" />
+			<channel id="locationTimestamp" typeId="timestamp">
+				<label>Location Timestamp</label>
+				<description>Timestamp of location value update</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="door">
+		<item-type>Contact</item-type>
+		<label>Door</label>
+		<description>Indicates if the door is opened</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="tripDuration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Trip Duration</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="window">
+		<item-type>Contact</item-type>
+		<label>Window Status</label>
+		<description>Indicates if the window is opened</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="odometer">
+		<item-type>Number:Length</item-type>
+		<label>Odometer</label>
+		<description>Odometer of the vehicle</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fuelQuantity">
+		<item-type>Number:Volume</item-type>
+		<label>Fuel Quantity</label>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fuelLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fuel Level</label>
+		<description>Indicates the level of fuel in the tank</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fuelConsumption" advanced="true">
+		<item-type>Number</item-type>
+		<label>Average Consumption</label>
+		<description>Indicates the average fuel consumption in L/100km</description>
+		<state pattern="%.1f L/100km" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<category>Location</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="calculatedLocation" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Calculated Location</label>
+		<description>Indicates if the location is actual or calculated</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="heading" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Heading</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Data timestamp</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="engineStart">
+		<item-type>Switch</item-type>
+		<label>Start Engine</label>
+		<description>Starts the vehicle engine</description>
+	</channel-type>
+
+	<channel-type id="carLocked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>Car locking status</description>
+	</channel-type>
+
+	<channel-type id="engineRunning">
+		<item-type>Switch</item-type>
+		<label>Engine Started</label>
+		<description>Engine status (running or not)</description>
+	</channel-type>
+
+	<channel-type id="preclimatization">
+		<item-type>Switch</item-type>
+		<label>Preclimatization</label>
+		<description>Starts pre-climatization</description>
+	</channel-type>
+
+	<channel-type id="remoteHeater">
+		<item-type>Switch</item-type>
+		<label>Remote Heater</label>
+	<description>(De)Activates remote heater</description>
+	</channel-type>
+	
+    <channel-type id="washerFluidLevel">
+        <item-type>String</item-type>
+        <label>Washer Fluid</label>
+        <description>“VeryLow”,"Low", "Normal"</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="serviceWarningStatus">
+        <item-type>String</item-type>
+        <label>Service Warning</label>
+        <description>Is car service needed ?</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="fuelAlert">
+        <item-type>Switch</item-type>
+        <label>Fuel Alarm</label>
+        <description>set to 'ON' when the tank level is low</description>
+        <state readOnly="true" />
+    </channel-type>	
+
+</thing:thing-descriptions>

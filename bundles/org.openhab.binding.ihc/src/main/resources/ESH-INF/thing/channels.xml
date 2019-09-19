@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ihc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="controller-state" advanced="true">
+		<item-type>String</item-type>
+		<label>Controller State</label>
+		<description>Displays IHC / ELKO controller state</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="controller-uptime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Controller Uptime</label>
+		<description>Displays IHC / ELKO controller uptime in seconds</description>
+		<state readOnly="true" pattern="%.3f sec"></state>
+	</channel-type>
+	<channel-type id="controller-time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Controller Date and Time</label>
+		<description>Displays IHC / ELKO controller date and time</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Generic Switch</label>
+		<description>Generic switch channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel Direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+				<label>Command To React</label>
+				<description>Command to react. If not defined, channel react to all commands.</description>
+			</parameter>
+			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+				<label>Pulse Width</label>
+				<description>Pulse width in milliseconds. If defined, binding send pulse rather than command value to IHC controller.</description>
+			</parameter>
+			<parameter name="inverted" type="boolean" required="false">
+				<label>Inverted Signal</label>
+				<description>OpenHAB state is inverted compared to IHC output/input signal</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Generic Contact</label>
+		<description>Generic contact channel</description>
+		<state readOnly="true"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="inverted" type="boolean" required="false">
+				<label>Inverted Signal</label>
+				<description>OpenHAB state is inverted compared to IHC output/input signal</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Generic Number</label>
+		<description>Generic number channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel Direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+				<label>Command To React</label>
+				<description>Command to react. If not defined, channel react to all commands.</description>
+			</parameter>
+			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+				<label>Pulse Width</label>
+				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Generic Dimmer</label>
+		<description>Generic dimmer channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel Direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+				<label>Command To React</label>
+				<description>Command to react. If not defined, channel react to all commands.</description>
+			</parameter>
+			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+				<label>Pulse Width</label>
+				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
+			</parameter>
+			<parameter name="onLevel" type="integer" required="false" min="0" max="100" step="1">
+				<label>ON Command Level</label>
+				<description>If defined, binding use this level when ON command is received rather than resource maximum value. Level is anyhow limited to resource maximum value.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Generic Datetime</label>
+		<description>Generic datetime channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel Direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+				<label>Command To React</label>
+				<description>Command to react. If not defined, channel react to all commands.</description>
+			</parameter>
+			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+				<label>Pulse Width</label>
+				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>Generic String</label>
+		<description>Generic string channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel Direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+				<label>Command To React</label>
+				<description>Command to react. If not defined, channel react to all commands.</description>
+			</parameter>
+			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+				<label>Pulse Width</label>
+				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="rollershutter">
+		<item-type>RollerShutter</item-type>
+		<label>Generic Roller Shutter</label>
+		<description>Generic roller shutter channel</description>
+		<state readOnly="false"></state>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="direction" type="text" required="false">
+				<label>Channel Direction</label>
+				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
+				<default>ReadWrite</default>
+				<options>
+					<option value="ReadWrite">Read Write</option>
+					<option value="WriteOnly">Write only</option>
+					<option value="ReadOnly">Read only</option>
+				</options>
+			</parameter>
+			<parameter name="commandToReact" type="text" required="false">
+				<label>Command To React</label>
+				<description>Command to react. If not defined, channel react to all commands.</description>
+			</parameter>
+			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
+				<label>Pulse Width</label>
+				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="rf-device-low-battery">
+		<item-type>Switch</item-type>
+		<label>RF Device Low Battery Warning</label>
+		<description>RF device low battery warning.</description>
+		<category>Battery</category>
+		<state readOnly="true"></state>
+		<config-description>
+			<parameter name="serialNumber" type="integer" required="true">
+				<label>RF Device Serial Number</label>
+				<description>Serial Number of RF device in decimal format.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="rf-device-signal-strength">
+		<item-type>String</item-type>
+		<label>RF Device Signal Strength</label>
+		<description>RF device signal strength.</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" min="0" max="4">
+			<options>
+				<option value="0">No signal</option>
+				<option value="1">Weak</option>
+				<option value="2">Average</option>
+				<option value="3">Good</option>
+				<option value="4">Excellent</option>
+			</options>
+		</state>
+		<config-description>
+			<parameter name="serialNumber" type="integer" required="true">
+				<label>RF Device Serial Number</label>
+				<description>Serial number of RF device in decimal format.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="push-button-trigger">
+		<kind>trigger</kind>
+		<label>Push Button Trigger Channel</label>
+		<event>
+			<options>
+				<option value="PRESSED">Pressed</option>
+				<option value="RELEASED">Released</option>
+				<option value="SHORT_PRESS">Short press</option>
+				<option value="LONG_PRESS">Long press</option>
+			</options>
+		</event>
+		<config-description>
+			<parameter name="resourceId" type="integer" required="true">
+				<label>Resource Id</label>
+				<description></description>
+			</parameter>
+			<parameter name="longPressTime" type="integer" required="true" step="1000" min="0" max="5000" unit="ms">
+				<label>Long Press Time</label>
+				<description>Long press time in milliseconds.</description>
+				<default>1000</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>

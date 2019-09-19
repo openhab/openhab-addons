@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="xmppclient"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="xmppBridge" extensible="publishTrigger">
+		<label>XMPP Client</label>
+		<description>A connection to a XMPP server</description>
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>The XMPP Username (the left side of JID, e.g. user for JID user@example.com)</description>
+			</parameter>
+			<parameter name="domain" type="text" required="true">
+				<label>Domain</label>
+				<description>The XMPP Domain (the right side of JID, e.g. example.com for JID user@example.com)</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The XMPP Password</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="host" type="text">
+				<label>Server Hostname/IP</label>
+				<description>The IP/Hostname of the XMPP server (if not specified, the Domain will be used)</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>XMPP server Port</label>
+				<description>The default port is 5222.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="publishTrigger">
+		<kind>trigger</kind>
+		<label>Publish Trigger</label>
+		<description>This channel is triggered when a message is received on the configured XMPP account. The event payload will be the received text.</description>
+		<event></event>
+		<config-description>
+			<parameter name="payload" type="text" required="false">
+				<label>Payload condition</label>
+				<description>An optional condition on the value</description>
+			</parameter>
+			<parameter name="separator" type="text" required="false">
+				<label>Separator character</label>
+				<description>The trigger channel payload usually only contains the received text. If you define a separator character, for example '#', the sender UID and received text will be in the trigger channel payload. For example: pavel@example.com#My Message Text.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>

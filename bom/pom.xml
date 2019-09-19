@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons</groupId>
+    <artifactId>org.openhab.addons.reactor</artifactId>
+    <version>2.5.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.openhab.addons.bom</groupId>
+  <artifactId>org.openhab.addons.reactor.bom</artifactId>
+  <packaging>pom</packaging>
+
+  <name>openHAB Add-ons :: BOM</name>
+
+  <modules>
+    <module>runtime-index</module>
+    <module>test-index</module>
+    <module>openhab-core-index</module>
+    <module>openhab-addons</module>
+  </modules>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.8</version>
+          <inherited>false</inherited>
+          <executions>
+            <execution>
+              <id>create-bom</id>
+              <goals>
+                <goal>run</goal>
+              </goals>
+              <configuration>
+                <target>
+                  <copy file="${basedirRoot}/../../bundles/pom.xml" overwrite="true" tofile="${basedirRoot}/../../bom/openhab-addons/pom.xml"></copy>
+                  <!-- rewrite footer -->
+                  <replaceregexp file="${basedirRoot}/../../bom/openhab-addons/pom.xml" match="/modules[\s\S]*dependencies&gt;" replace="/dependencies&gt;"></replaceregexp>
+                  <!-- rewrite header -->
+                  <replaceregexp file="${basedirRoot}/../../bom/openhab-addons/pom.xml" match="\S*parent[\s\S]*modules&gt;\S*" replace="header"></replaceregexp>
+                  <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
+                    <replacetoken>header</replacetoken>
+                    <replacevalue><![CDATA[<parent>
+    <groupId>org.openhab.addons.bom</groupId>
+    <artifactId>org.openhab.addons.reactor.bom</artifactId>
+    <version>${project.version}</version>
+  </parent>
+
+  <artifactId>org.openhab.addons.bom.openhab-addons</artifactId>
+  <packaging>pom</packaging>
+
+  <name>openHAB Add-ons :: BOM :: openHAB Add-ons</name>
+
+  <dependencies>]]></replacevalue>
+                  </replace>
+                  <!-- rewrite content -->
+                  <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
+                    <replacetoken><![CDATA[<module>]]></replacetoken>
+                    <replacevalue><![CDATA[<dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>]]></replacevalue>
+                  </replace>
+                  <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
+                    <replacetoken><![CDATA[</module>]]></replacetoken>
+                    <replacevalue><![CDATA[</artifactId>
+      <version>@dollar{project.version}</version>
+    </dependency>]]></replacevalue>
+                  </replace>
+                  <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
+                    <replacetoken>@dollar</replacetoken>
+                    <replacevalue>$</replacevalue>
+                  </replace>
+                </target>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>
