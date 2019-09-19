@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Luca Calcaterra - Initial Contribution
  * @author Pauli Anttila - Refactoring
+ * @author Wietse van Buitenen - Check device type
  */
 public class MelCloudDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
@@ -110,23 +111,28 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
                     ThingUID bridgeUID = melCloudHandler.getThing().getUID();
 
                     deviceList.forEach(device -> {
-                        ThingUID deviceThing = new ThingUID(THING_TYPE_ACDEVICE, melCloudHandler.getThing().getUID(),
-                                device.getDeviceID().toString());
+                        if (device.getType() == 0) {
+                            ThingUID deviceThing = new ThingUID(THING_TYPE_ACDEVICE,
+                                    melCloudHandler.getThing().getUID(), device.getDeviceID().toString());
 
-                        Map<String, Object> deviceProperties = new HashMap<>();
-                        deviceProperties.put("deviceID", device.getDeviceID().toString());
-                        deviceProperties.put("serialNumber", device.getSerialNumber().toString());
-                        deviceProperties.put("macAddress", device.getMacAddress().toString());
-                        deviceProperties.put("deviceName", device.getDeviceName().toString());
-                        deviceProperties.put("buildingID", device.getBuildingID().toString());
+                            Map<String, Object> deviceProperties = new HashMap<>();
+                            deviceProperties.put("deviceID", device.getDeviceID().toString());
+                            deviceProperties.put("serialNumber", device.getSerialNumber().toString());
+                            deviceProperties.put("macAddress", device.getMacAddress().toString());
+                            deviceProperties.put("deviceName", device.getDeviceName().toString());
+                            deviceProperties.put("buildingID", device.getBuildingID().toString());
 
-                        String label = createLabel(device);
-                        logger.debug("Found device: {} : {}", label, deviceProperties);
+                            String label = createLabel(device);
+                            logger.debug("Found device: {} : {}", label, deviceProperties);
 
-                        thingDiscovered(DiscoveryResultBuilder.create(deviceThing).withLabel(label)
-                                .withProperties(deviceProperties)
-                                .withRepresentationProperty(device.getDeviceID().toString()).withBridge(bridgeUID)
-                                .build());
+                            thingDiscovered(DiscoveryResultBuilder.create(deviceThing).withLabel(label)
+                                    .withProperties(deviceProperties)
+                                    .withRepresentationProperty(device.getDeviceID().toString()).withBridge(bridgeUID)
+                                    .build());
+                        } else {
+                            logger.debug("Unsupported device found: name {} : type: {}", device.getDeviceName(),
+                                    device.getType());
+                        }
                     });
                 }
             } catch (MelCloudCommException e) {
