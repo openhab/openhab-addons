@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.melcloud.internal.api.MelCloudConnection;
 import org.openhab.binding.melcloud.internal.api.json.Device;
 import org.openhab.binding.melcloud.internal.api.json.DeviceStatus;
+import org.openhab.binding.melcloud.internal.api.json.HeatpumpDeviceStatus;
 import org.openhab.binding.melcloud.internal.config.AccountConfig;
 import org.openhab.binding.melcloud.internal.discovery.MelCloudDiscoveryService;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Luca Calcaterra - Initial contribution
  * @author Pauli Anttila - Refactoring
- * @author Wietse van Buitenen - Return all devices
+ * @author Wietse van Buitenen - Return all devices, added heatpump device
  */
 public class MelCloudAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(MelCloudAccountHandler.class);
@@ -152,6 +153,36 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
             logger.debug("Sending failed, retry once with relogin");
             connect();
             return connection.fetchDeviceStatus(deviceId, bid);
+        }
+    }
+
+    public HeatpumpDeviceStatus sendHeatpumpDeviceStatus(HeatpumpDeviceStatus heatpumpDeviceStatus)
+            throws MelCloudCommException, MelCloudLoginException {
+        connectIfNotConnected();
+        try {
+            return connection.sendHeatpumpDeviceStatus(heatpumpDeviceStatus);
+        } catch (MelCloudLoginException e) {
+            throw e;
+        } catch (MelCloudCommException e) {
+            logger.debug("Sending failed, retry once with relogin");
+            connect();
+            return connection.sendHeatpumpDeviceStatus(heatpumpDeviceStatus);
+        }
+    }
+
+    public HeatpumpDeviceStatus fetchHeatpumpDeviceStatus(int deviceId, Optional<Integer> buildingId)
+            throws MelCloudCommException, MelCloudLoginException {
+        connectIfNotConnected();
+        int bid = buildingId.orElse(findBuildingId(deviceId));
+
+        try {
+            return connection.fetchHeatpumpDeviceStatus(deviceId, bid);
+        } catch (MelCloudLoginException e) {
+            throw e;
+        } catch (MelCloudCommException e) {
+            logger.debug("Sending failed, retry once with relogin");
+            connect();
+            return connection.fetchHeatpumpDeviceStatus(deviceId, bid);
         }
     }
 

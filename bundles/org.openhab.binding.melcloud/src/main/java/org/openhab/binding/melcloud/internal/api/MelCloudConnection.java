@@ -24,6 +24,7 @@ import java.util.Properties;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.melcloud.internal.api.json.Device;
 import org.openhab.binding.melcloud.internal.api.json.DeviceStatus;
+import org.openhab.binding.melcloud.internal.api.json.HeatpumpDeviceStatus;
 import org.openhab.binding.melcloud.internal.api.json.ListDevicesResponse;
 import org.openhab.binding.melcloud.internal.api.json.LoginClientResponse;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
@@ -42,7 +43,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Luca Calcaterra - Initial Contribution
  * @author Pauli Anttila - Refactoring
- * @author Wietse van Buitenen - Return all devices
+ * @author Wietse van Buitenen - Return all devices, added heatpump device
  */
 public class MelCloudConnection {
 
@@ -157,6 +158,42 @@ public class MelCloudConnection {
             } catch (IOException | JsonSyntaxException e) {
                 setConnected(false);
                 throw new MelCloudCommException("Error occured during device command sending", e);
+            }
+        }
+        throw new MelCloudCommException("Not connected to MELCloud");
+    }
+
+    public HeatpumpDeviceStatus fetchHeatpumpDeviceStatus(int deviceId, int buildingId) throws MelCloudCommException {
+        if (isConnected()) {
+            String url = DEVICE_URL + String.format("/Get?id=%d&buildingID=%d", deviceId, buildingId);
+            try {
+                String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null,
+                        TIMEOUT_MILLISECONDS);
+                logger.debug("Device heatpump status response: {}", response);
+                HeatpumpDeviceStatus heatpumpDeviceStatus = gson.fromJson(response, HeatpumpDeviceStatus.class);
+                return heatpumpDeviceStatus;
+            } catch (IOException | JsonSyntaxException e) {
+                setConnected(false);
+                throw new MelCloudCommException("Error occured during heatpump device status fetch", e);
+            }
+        }
+        throw new MelCloudCommException("Not connected to MELCloud");
+    }
+
+    public HeatpumpDeviceStatus sendHeatpumpDeviceStatus(HeatpumpDeviceStatus heatpumpDeviceStatus)
+            throws MelCloudCommException {
+        if (isConnected()) {
+            String content = gson.toJson(heatpumpDeviceStatus, HeatpumpDeviceStatus.class);
+            logger.debug("Sending heatpump device status: {}", content);
+            InputStream data = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+            try {
+                String response = HttpUtil.executeUrl("POST", DEVICE_URL + "/SetAtw", getHeaderProperties(), data,
+                        "application/json", TIMEOUT_MILLISECONDS);
+                logger.debug("Device heatpump status sending response: {}", response);
+                return gson.fromJson(response, HeatpumpDeviceStatus.class);
+            } catch (IOException | JsonSyntaxException e) {
+                setConnected(false);
+                throw new MelCloudCommException("Error occured during heatpump device command sending", e);
             }
         }
         throw new MelCloudCommException("Not connected to MELCloud");

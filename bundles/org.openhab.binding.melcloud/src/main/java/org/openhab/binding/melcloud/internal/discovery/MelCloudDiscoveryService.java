@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.melcloud.internal.discovery;
 
-import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_ACDEVICE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Luca Calcaterra - Initial Contribution
  * @author Pauli Anttila - Refactoring
- * @author Wietse van Buitenen - Check device type
+ * @author Wietse van Buitenen - Check device type, added heatpump device
  */
 public class MelCloudDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
@@ -111,28 +112,33 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
                     ThingUID bridgeUID = melCloudHandler.getThing().getUID();
 
                     deviceList.forEach(device -> {
+                        ThingTypeUID thingTypeUid = null;
                         if (device.getType() == 0) {
-                            ThingUID deviceThing = new ThingUID(THING_TYPE_ACDEVICE,
-                                    melCloudHandler.getThing().getUID(), device.getDeviceID().toString());
-
-                            Map<String, Object> deviceProperties = new HashMap<>();
-                            deviceProperties.put("deviceID", device.getDeviceID().toString());
-                            deviceProperties.put("serialNumber", device.getSerialNumber().toString());
-                            deviceProperties.put("macAddress", device.getMacAddress().toString());
-                            deviceProperties.put("deviceName", device.getDeviceName().toString());
-                            deviceProperties.put("buildingID", device.getBuildingID().toString());
-
-                            String label = createLabel(device);
-                            logger.debug("Found device: {} : {}", label, deviceProperties);
-
-                            thingDiscovered(DiscoveryResultBuilder.create(deviceThing).withLabel(label)
-                                    .withProperties(deviceProperties)
-                                    .withRepresentationProperty(device.getDeviceID().toString()).withBridge(bridgeUID)
-                                    .build());
+                            thingTypeUid = THING_TYPE_ACDEVICE;
+                        } else if (device.getType() == 1) {
+                            thingTypeUid = THING_TYPE_HEATPUMPDEVICE;
                         } else {
                             logger.debug("Unsupported device found: name {} : type: {}", device.getDeviceName(),
                                     device.getType());
+                            return;
                         }
+                        ThingUID deviceThing = new ThingUID(thingTypeUid, melCloudHandler.getThing().getUID(),
+                                device.getDeviceID().toString());
+
+                        Map<String, Object> deviceProperties = new HashMap<>();
+                        deviceProperties.put("deviceID", device.getDeviceID().toString());
+                        deviceProperties.put("serialNumber", device.getSerialNumber().toString());
+                        deviceProperties.put("macAddress", device.getMacAddress().toString());
+                        deviceProperties.put("deviceName", device.getDeviceName().toString());
+                        deviceProperties.put("buildingID", device.getBuildingID().toString());
+
+                        String label = createLabel(device);
+                        logger.debug("Found device: {} : {}", label, deviceProperties);
+
+                        thingDiscovered(DiscoveryResultBuilder.create(deviceThing).withLabel(label)
+                                .withProperties(deviceProperties)
+                                .withRepresentationProperty(device.getDeviceID().toString()).withBridge(bridgeUID)
+                                .build());
                     });
                 }
             } catch (MelCloudCommException e) {
@@ -143,7 +149,11 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
 
     private String createLabel(Device device) {
         StringBuilder sb = new StringBuilder();
-        sb.append("A.C. Device - ");
+        if (device.getType() == 0) {
+            sb.append("A.C. Device - ");
+        } else if (device.getType() == 1) {
+            sb.append("Heatpump Device - ");
+        }
         if (device.getBuildingName() != null && device.getBuildingName() instanceof String) {
             sb.append(device.getBuildingName()).append(" - ");
         }
