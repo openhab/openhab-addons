@@ -4,46 +4,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.openhab.addons.bundles</groupId>
-    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <groupId>org.openhab.transform</groupId>
+    <artifactId>pom</artifactId>
     <version>2.5.0-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.openhab.transform</groupId>
   <artifactId>org.openhab.transform.jinja</artifactId>
+  <packaging>eclipse-plugin</packaging>
 
-  <name>openHAB Add-ons :: Bundles :: Transformation Service :: Jinja</name>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.hubspot.jinjava.jinjava</artifactId>
-      <version>2.5.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
-      <version>1.8.3</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>21.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.google.re2j.re2j</artifactId>
-      <version>1.2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.4</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+  <name>Jinja Transformation Service</name>
 
 </project>

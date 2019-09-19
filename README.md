@@ -1,5 +1,6 @@
 # openHAB 2 Add-ons
 
+<<<<<<< HEAD
 <img align="right" width="220" src="./logo.png" />
 
 [![Build Status](https://travis-ci.org/openhab/openhab2-addons.svg)](https://travis-ci.org/openhab/openhab2-addons)
@@ -11,6 +12,13 @@ Add-ons that got accepted in here will be maintained (e.g. adapted to new core A
 by the [openHAB 2 maintainers](https://github.com/orgs/openhab/teams/2-x-add-ons-maintainers).
 
 To get started with binding development, follow our guidelines and tutorials over at https://www.openhab.org/docs/developer.
+=======
+This repository contains the official set of add-ons that are implemented on top of openHAB 2 Core APIs.
+Add-ons that got accepted in here will be maintained (e.g. adapted to new core APIs)
+by the [openHAB 2 maintainers](https://github.com/orgs/openhab/teams/2-x-add-ons-maintainers).
+
+To get started with binding development, follow our guidelines and tutorials over at https://www.openhab.org/docs/developer/.
+>>>>>>> 6d93a4bfde8353d852a1ef55a2f02a2ca9720560
 
 If you are interested in openHAB 2 Core development, we invite you to come by on https://github.com/openhab/openhab-core.
 
@@ -23,6 +31,7 @@ An incomplete list of other repositories follows below:
 * https://github.com/openhab/org.openhab.binding.zigbee
 * https://github.com/openhab/openhab-webui
 
+<<<<<<< HEAD
 ## Development / Repository Organization
 
 openHAB 2 add-ons are [Java](https://en.wikipedia.org/wiki/Java_(programming_language)) `.jar` files.
@@ -78,3 +87,16 @@ We have assembled some step-by-step guides for different IDEs on our developer d
 https://www.openhab.org/docs/developer/#setup-the-development-environment
 
 Happy coding!
+=======
+## Build
+
+openHAB 2 add-ons are [Java](https://en.wikipedia.org/wiki/Java_(programming_language)) `.jar` files.
+
+The openHAB 2 build system is based on [maven](https://maven.apache.org/what-is-maven.html).
+The official IDE (Integrated development environment) is Eclipse.
+
+To build all add-ons from the command-line, type in:
+`mvn clean install`
+
+If you prefer an IDE, follow the instructions on https://www.openhab.org/docs/developer/development/ide.html
+>>>>>>> 6d93a4bfde8353d852a1ef55a2f02a2ca9720560

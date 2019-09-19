@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nibeuplink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="base-type-10012">
+		<item-type>Switch</item-type>
+		<label>Compressor blocked</label>
+		<description>states if the compressor is blocked</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="base-type-10033">
+		<item-type>Switch</item-type>
+		<label>Int. el.add. blocked</label>
+		<description>states if internal electric additional heater is blocked</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="base-type-40004">
+		<item-type>Number:Temperature</item-type>
+		<label>BT1 Outdoor Temperature</label>
+		<description>Current outdoor temperature</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40008">
+		<item-type>Number:Temperature</item-type>
+		<label>BT2 Supply temp S1</label>
+		<description>Supply temperature for system 1</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40012">
+		<item-type>Number:Temperature</item-type>
+		<label>EB100-EP14-BT3 Return temp</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40013">
+		<item-type>Number:Temperature</item-type>
+		<label>BT7 HW Top</label>
+		<description>Hot water top temperature, BT7</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40014">
+		<item-type>Number:Temperature</item-type>
+		<label>BT6 HW Load</label>
+		<description>Hot water load temperature, BT6</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40033">
+		<item-type>Number:Temperature</item-type>
+		<label>BT50 Room Temp S1</label>
+		<description></description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40067">
+		<item-type>Number:Temperature</item-type>
+		<label>BT1 Average</label>
+		<description>EB100-BT1 Outdoor temperature average</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40071">
+		<item-type>Number:Temperature</item-type>
+		<label>BT25 Ext. Supply</label>
+		<description>External supply temperature, BT25</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40072">
+		<item-type>Number:Dimensionless</item-type>
+		<label>BF1 EP14 Flow</label>
+		<description>Current flow EP14|Current flow EP15</description>
+		<state pattern="%.1f l/m" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40079">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EB100-BE3 Current</label>
+		<description></description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40081">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EB100-BE2 Current</label>
+		<description></description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-40083">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EB100-BE1 Current</label>
+		<description></description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-43005">
+		<item-type>Number</item-type>
+		<label>Degree Minutes (16 bit)</label>
+		<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the closest valid value.</description>
+		<state min="-30000" max="30000" step="1" pattern="%d °*min" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-43009">
+		<item-type>Number:Temperature</item-type>
+		<label>Calc. Supply S1</label>
+		<description>Calculated supply temperature for the climate system</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-43081">
+		<item-type>Number:Time</item-type>
+		<label>Tot. op.time add.</label>
+		<description>Total electric additive operation time</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-43084">
+		<item-type>Number:Power</item-type>
+		<label>Int. el.add. Power</label>
+		<description>Current power from the internal electrical addition</description>
+		<state pattern="%.2f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-43161">
+		<item-type>Switch</item-type>
+		<label>External adjustment activated via input S1</label>
+		<description></description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="base-type-43437">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Supply Pump Speed EP14</label>
+		<description>Supply Pump Speed, EP14 (GP6)</description>
+		<state pattern="%d %%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-44298">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Meter - HW Cpr and Add EP14</label>
+		<description>Accumulated energy production as calculated by the heat meter</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-44300">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Meter - Heat Cpr and Add EP14</label>
+		<description>Accumulated energy production as calculated by the heat meter</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-44304">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Meter - Pool Cpr EP14</label>
+		<description>Accumulated energy production as calculated by the heat meter</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-44306">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Meter - HW Cpr EP14</label>
+		<description>Accumulated energy production as calculated by the heat meter</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-44308">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Meter - Heat Cpr EP14</label>
+		<description>Accumulated energy production as calculated by the heat meter</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47041">
+		<item-type>Number</item-type>
+		<label>Hot water mode</label>
+		<description>The currently active hotwater mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Economy</option>
+				<option value="1">Normal</option>
+				<option value="2">Luxury</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47043">
+		<item-type>Number:Temperature</item-type>
+		<label>Start temperature HW Luxury</label>
+		<description>Start temperature for heating water in Luxury mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47044">
+		<item-type>Number:Temperature</item-type>
+		<label>Start temperature HW Normal</label>
+		<description>Start temperature for heating water in Normal mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47045">
+		<item-type>Number:Temperature</item-type>
+		<label>Start temperature HW Economy</label>
+		<description>Start temperature for heating water in Economy mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47046">
+		<item-type>Number:Temperature</item-type>
+		<label>Stop temperature Periodic HW</label>
+		<description>Stop temperature for heating water in periodic heating</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47047">
+		<item-type>Number:Temperature</item-type>
+		<label>Stop temperature HW Luxury</label>
+		<description>Stop temperature for heating water in Luxory mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47048">
+		<item-type>Number:Temperature</item-type>
+		<label>Stop temperature HW Normal</label>
+		<description>Stop temperature for heating water in Normal mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47049">
+		<item-type>Number:Temperature</item-type>
+		<label>Stop temperature HW Economy</label>
+		<description>Stop temperature for heating water in Economy mode</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-47212">
+		<item-type>Number:Power</item-type>
+		<label>Max int add. power</label>
+		<description></description>
+		<state min="0" max="4500" step="1" pattern="%.2f %unit%" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-48043">
+		<item-type>Switch</item-type>
+		<label>Holiday</label>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="base-type-48132">
+		<item-type>Number</item-type>
+		<label>Temporary Lux</label>
+		<description>Temporary hot water lux mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">3h</option>
+				<option value="2">6h</option>
+				<option value="3">12h</option>
+				<option value="4">One time</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="base-type-48914">
+		<item-type>Number:Power</item-type>
+		<label>Max int add. power, SG Ready</label>
+		<description></description>
+		<state min="0" max="4500" step="1" pattern="%.2f %unit%" readOnly="false">
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
