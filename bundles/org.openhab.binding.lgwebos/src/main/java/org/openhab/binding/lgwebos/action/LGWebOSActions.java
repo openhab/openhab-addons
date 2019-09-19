@@ -71,6 +71,16 @@ public class LGWebOSActions implements ThingActions {
         return this.handler;
     }
 
+    // a NonNull getter for handler
+    private LGWebOSHandler getLGWebOSHandler() {
+        LGWebOSHandler lgWebOSHandler = this.handler;
+        if (lgWebOSHandler == null) {
+            throw new IllegalStateException(
+                    "ThingHandler must be set before any action may be invoked on LGWebOSActions.");
+        }
+        return lgWebOSHandler;
+    }
+
     private enum Button {
         UP,
         DOWN,
@@ -110,22 +120,18 @@ public class LGWebOSActions implements ThingActions {
     }
 
     private List<AppInfo> getAppInfos() {
-        LGWebOSHandler lgWebOSHandler = this.handler;
-        if (lgWebOSHandler == null) {
-            throw new IllegalStateException(
-                    "ThingHandler must be set before any action may be invoked on LGWebOSActions.");
-        }
+        LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
 
         final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
         if (!socket.isConnected()) {
-            logger.warn("Device not connected.");
+            logger.warn("Device with ThingID {} is currently not connected.", lgWebOSHandler.getThing().getUID());
             return Collections.emptyList();
         }
 
         List<AppInfo> appInfos = lgWebOSHandler.getLauncherApplication()
                 .getAppInfos(lgWebOSHandler.getThing().getUID());
         if (appInfos == null) {
-            logger.warn("No AppInfos found for this device.");
+            logger.warn("No AppInfos found for device with ThingID {}.", lgWebOSHandler.getThing().getUID());
             return Collections.emptyList();
         }
         return appInfos;
@@ -144,7 +150,8 @@ public class LGWebOSActions implements ThingActions {
         if (appInfo.isPresent()) {
             getSocket().ifPresent(control -> control.launchAppWithInfo(appInfo.get(), createResponseListener()));
         } else {
-            logger.warn("TV does not support any app with id: {}.", appId);
+            logger.warn("Device with ThingID {} does not support any app with id: {}.",
+                    getLGWebOSHandler().getThing().getUID(), appId);
         }
 
     }
@@ -153,7 +160,6 @@ public class LGWebOSActions implements ThingActions {
     public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
             @ActionInput(name = "params", label = "@text/actionLaunchApplicationInputParamsLabel", description = "@text/actionLaunchApplicationInputParamsDesc") String params) {
-
         try {
             JsonParser parser = new JsonParser();
             JsonObject payload = (JsonObject) parser.parse(params);
@@ -163,7 +169,8 @@ public class LGWebOSActions implements ThingActions {
                 getSocket().ifPresent(
                         control -> control.launchAppWithInfo(appInfo.get(), payload, createResponseListener()));
             } else {
-                logger.warn("TV does not support any app with id: {}.", appId);
+                logger.warn("Device with ThingID {} does not support any app with id: {}.",
+                        getLGWebOSHandler().getThing().getUID(), appId);
             }
 
         } catch (JsonParseException ex) {
@@ -232,15 +239,10 @@ public class LGWebOSActions implements ThingActions {
     }
 
     private Optional<LGWebOSTVSocket> getSocket() {
-        LGWebOSHandler lgWebOSHandler = this.handler;
-        if (lgWebOSHandler == null) {
-            throw new IllegalStateException(
-                    "ThingHandler must be set before any action may be invoked on LGWebOSActions.");
-        }
-
+        LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
         final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
         if (!socket.isConnected()) {
-            logger.warn("Device not online.");
+            logger.warn("Device with ThingID {} is currently not connected.", lgWebOSHandler.getThing().getUID());
             return Optional.empty();
         }
 

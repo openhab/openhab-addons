@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.lgwebos.action.LGWebOSActions;
 import org.openhab.binding.lgwebos.internal.ChannelHandler;
+import org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants;
 import org.openhab.binding.lgwebos.internal.LauncherApplication;
 import org.openhab.binding.lgwebos.internal.MediaControlPlayer;
 import org.openhab.binding.lgwebos.internal.MediaControlStop;
@@ -43,7 +44,6 @@ import org.openhab.binding.lgwebos.internal.TVControlChannelName;
 import org.openhab.binding.lgwebos.internal.ToastControlToast;
 import org.openhab.binding.lgwebos.internal.VolumeControlMute;
 import org.openhab.binding.lgwebos.internal.VolumeControlVolume;
-import org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket.WebOSTVSocketListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +113,6 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void dispose() {
-        super.dispose();
         stopReconnectJob();
         if (this.socket != null) {
             this.socket.setListener(null);
@@ -121,6 +120,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
             this.socket = null;
             this.scheduler.execute(() -> oldSocket.disconnect()); // dispose should be none-blocking
         }
+        super.dispose();
     }
 
     private void startReconnectJob() {
