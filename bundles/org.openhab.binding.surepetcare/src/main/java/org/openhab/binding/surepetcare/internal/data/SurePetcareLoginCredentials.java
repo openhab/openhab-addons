@@ -34,11 +34,11 @@ public class SurePetcareLoginCredentials {
         this.deviceId = deviceId;
     }
 
-    public String getEmail_address() {
+    public String getEmailAddress() {
         return emailAddress;
     }
 
-    public void setEmail_address(String emailAddress) {
+    public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
 
