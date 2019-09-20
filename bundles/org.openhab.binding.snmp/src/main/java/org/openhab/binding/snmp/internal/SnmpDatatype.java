@@ -24,5 +24,6 @@ public enum SnmpDatatype {
     COUNTER64,
     FLOAT,
     STRING,
+    HEXSTRING,
     IPADDRESS
 }
