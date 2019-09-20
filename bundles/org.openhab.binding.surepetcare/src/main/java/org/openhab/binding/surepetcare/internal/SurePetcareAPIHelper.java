@@ -62,9 +62,8 @@ public class SurePetcareAPIHelper {
 
     private SurePetcareTopology topologyCache = new SurePetcareTopology();
 
-    synchronized public void login(String username, String password)
+    public synchronized void login(String username, String password)
             throws JsonSyntaxException, AuthenticationException {
-
         try {
             URL object = new URL(LOGIN_URL);
             HttpURLConnection con = (HttpURLConnection) object.openConnection();
@@ -102,7 +101,7 @@ public class SurePetcareAPIHelper {
                         "HTTP response " + con.getResponseCode() + " - " + con.getResponseMessage());
             }
         } catch (Exception e) {
-            logger.warn("Exception caught during login", e.getMessage());
+            logger.warn("Exception caught during login: {}", e.getMessage());
             throw new AuthenticationException(e);
         }
     }
@@ -113,7 +112,7 @@ public class SurePetcareAPIHelper {
                 topologyCache = gson.fromJson(getDataFromApi(TOPOLOGY_URL), SurePetcareTopology.class);
             }
         } catch (JsonSyntaxException | SurePetcareApiException e) {
-            logger.warn("Exception caught during topology cache update", e.getMessage());
+            logger.warn("Exception caught during topology cache update: {}", e.getMessage());
         }
     }
 
@@ -126,7 +125,7 @@ public class SurePetcareAPIHelper {
                 }
             }
         } catch (JsonSyntaxException | SurePetcareApiException e) {
-            logger.warn("Exception caught during topology cache update", e.getMessage());
+            logger.warn("Exception caught during topology cache update: {}", e.getMessage());
         }
     }
 
@@ -194,8 +193,8 @@ public class SurePetcareAPIHelper {
                 con.setRequestMethod("GET");
 
                 StringBuilder sb = new StringBuilder();
-                int HttpResult = con.getResponseCode();
-                if (HttpResult == HttpURLConnection.HTTP_OK) {
+                int httpResult = con.getResponseCode();
+                if (httpResult == HttpURLConnection.HTTP_OK) {
                     BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
                     String line = null;
                     while ((line = br.readLine()) != null) {
@@ -218,7 +217,7 @@ public class SurePetcareAPIHelper {
                     }
                 }
             } catch (Exception e) {
-                logger.error("Exception caught during API execution", e.getMessage());
+                logger.error("Exception caught during API execution: {}", e.getMessage());
                 throw new SurePetcareApiException(e);
             }
         }

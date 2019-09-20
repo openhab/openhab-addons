@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SurePetcareUtils {
 
-    private final static Logger logger = LoggerFactory.getLogger(SurePetcareUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(SurePetcareUtils.class);
     private static final int DEFAULT_DEVICE_ID = 12344711;
 
     public static Integer getDeviceId() {
@@ -60,7 +60,7 @@ public class SurePetcareUtils {
                 }
             }
         } catch (SocketException e) {
-            logger.warn("Socket Exception: ", e.getMessage());
+            logger.warn("Socket Exception: {}", e.getMessage());
         }
         return decimal;
     }
