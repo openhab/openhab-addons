@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<thing:thing-descriptions bindingId="surepetcare"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+
+		<label>Sure Petcare API Bridge</label>
+		<description>The Sure Petcare Cloud API Bridge</description>
+
+        <config-description>
+
+            <parameter name="username" type="text" required="true">
+                <label>Username (Email)</label>
+                <description>The username to access the Sure Petcare API</description>
+            </parameter>
+            <parameter name="password" type="text" required="true">
+                <label>Password</label>
+                <description>The password to access the Sure Petcare API</description>
+                <context>password</context>
+            </parameter>
+            <parameter name="refresh_interval_topology" type="integer" required="false" min="300">
+                <label>Refresh Interval Topology</label>
+                <description>Query interval (in secs) for device topology</description>
+                <default>36000</default>
+            </parameter>
+            <parameter name="refresh_interval_location" type="integer" required="false" min="30">
+                <label>Refresh Interval Location Key</label>
+                <description>Query interval (in secs) for pet locations</description>
+                <default>300</default>
+            </parameter>
+            
+        </config-description>
+
+	</bridge-type>
+
+</thing:thing-descriptions>
