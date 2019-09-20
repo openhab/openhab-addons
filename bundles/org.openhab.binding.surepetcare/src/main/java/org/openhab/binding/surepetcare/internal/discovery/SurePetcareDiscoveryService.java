@@ -157,7 +157,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
 
     private void createDeviceThing(SurePetcareDevice device) {
         ThingTypeUID typeUID = null;
-        switch (ProductType.findByTypeId(device.getProduct_id())) {
+        switch (ProductType.findByTypeId(device.getProductId())) {
             case HUB:
                 typeUID = SurePetcareConstants.THING_TYPE_HUB_DEVICE;
                 break;

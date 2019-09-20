@@ -86,14 +86,14 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
     public class Control {
         public class Curfew {
             public Boolean enabled;
-            public String unlock_time;
-            public String lock_time;
+            public String unlockTime;
+            public String lockTime;
         }
 
         public Integer locking;
-        public Boolean fast_polling;
-        public Integer led_mode;
-        public Integer pairing_mode;
+        public Boolean fastPolling;
+        public Integer ledMode;
+        public Integer pairingMode;
         public List<Curfew> curfew = new ArrayList<Curfew>();
     }
 
@@ -112,12 +112,12 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         }
 
         public class Signal {
-            public Float device_rssi;
-            public Float hub_rssi;
+            public Float deviceRssi;
+            public Float hubRssi;
         }
 
-        public Integer led_mode;
-        public Integer pairing_mode;
+        public Integer ledMode;
+        public Integer pairingMode;
         public Locking locking;
         public Version version;
         public Float battery;
@@ -126,40 +126,40 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         public Signal signal = new Signal();
     }
 
-    private Integer parent_device_id;
-    private Integer product_id;
-    private Integer household_id;
+    private Integer parentDeviceId;
+    private Integer productId;
+    private Integer householdId;
     private String name;
-    private String serial_number;
-    private String mac_address;
+    private String serialNumber;
+    private String macAddress;
     private Integer index;
-    private Date pairing_at;
+    private Date pairingAt;
     private Control control = new Control();
     private SurePetcareDevice parent;
     private Status status = new Status();
 
-    public Integer getProduct_id() {
-        return product_id;
+    public Integer getProductId() {
+        return productId;
     }
 
-    public Integer getParent_device_id() {
-        return parent_device_id;
+    public Integer getParentDeviceId() {
+        return parentDeviceId;
     }
 
-    public void setParent_device_id(Integer parent_device_id) {
-        this.parent_device_id = parent_device_id;
+    public void setParentDeviceId(Integer parentDeviceId) {
+        this.parentDeviceId = parentDeviceId;
     }
 
-    public void setProduct_id(Integer product_id) {
-        this.product_id = product_id;
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 
-    public Integer getHousehold_id() {
-        return household_id;
+    public Integer getHouseholdId() {
+        return householdId;
     }
 
-    public void setHousehold_id(Integer household_id) {
-        this.household_id = household_id;
+    public void setHouseholdId(Integer householdId) {
+        this.householdId = householdId;
     }
 
     public String getName() {
@@ -170,20 +170,20 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         this.name = name;
     }
 
-    public String getSerial_number() {
-        return serial_number;
+    public String getSerialNumber() {
+        return serialNumber;
     }
 
-    public void setSerial_number(String serial_number) {
-        this.serial_number = serial_number;
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
-    public String getMac_address() {
-        return mac_address;
+    public String getMacAddress() {
+        return macAddress;
     }
 
-    public void setMac_address(String mac_address) {
-        this.mac_address = mac_address;
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 
     public Integer getIndex() {
@@ -194,12 +194,12 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         this.index = index;
     }
 
-    public Date getPairing_at() {
-        return pairing_at;
+    public Date getPairingAt() {
+        return pairingAt;
     }
 
-    public void setPairing_at(Date pairing_at) {
-        this.pairing_at = pairing_at;
+    public void setPairingAt(Date pairingAt) {
+        this.pairingAt = pairingAt;
     }
 
     public Control getControl() {
@@ -229,15 +229,15 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
     @Override
     public @NonNull Map<String, Object> getThingProperties() {
         Map<String, Object> properties = super.getThingProperties();
-        properties.put("householdId", household_id.toString());
-        properties.put("productTypeId", product_id.toString());
-        properties.put("productName", ProductType.findByTypeId(product_id).getName());
+        properties.put("householdId", householdId.toString());
+        properties.put("productTypeId", productId.toString());
+        properties.put("productName", ProductType.findByTypeId(productId).getName());
         return properties;
     }
 
     @Override
     public String toString() {
-        return "Device [id=" + id + ", name=" + name + ",  product =" + ProductType.findByTypeId(product_id).getName()
+        return "Device [id=" + id + ", name=" + name + ",  product =" + ProductType.findByTypeId(productId).getName()
                 + "]";
     }
 

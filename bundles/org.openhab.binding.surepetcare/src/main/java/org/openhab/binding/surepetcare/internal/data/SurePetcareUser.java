@@ -47,57 +47,57 @@ public class SurePetcareUser extends SurePetcareBaseObject {
     // }
     // }
 
-    private String email_address;
-    private String first_name;
-    private String last_name;
-    private Integer country_id;
-    private Integer language_id;
+    private String emailAddress;
+    private String firstName;
+    private String lastName;
+    private Integer countryId;
+    private Integer languageId;
     // and various others not yet mapped
 
-    public String getEmail_address() {
-        return email_address;
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
-    public void setEmail_address(String email_address) {
-        this.email_address = email_address;
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLast_name() {
-        return last_name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public Integer getCountry_id() {
-        return country_id;
+    public Integer getCountryId() {
+        return countryId;
     }
 
-    public void setCountry_id(Integer country_id) {
-        this.country_id = country_id;
+    public void setCountryId(Integer countryId) {
+        this.countryId = countryId;
     }
 
-    public Integer getLanguage_id() {
-        return language_id;
+    public Integer getLanguageId() {
+        return languageId;
     }
 
-    public void setLanguage_id(Integer language_id) {
-        this.language_id = language_id;
+    public void setLanguageId(Integer languageId) {
+        this.languageId = languageId;
     }
 
     @Override
     public String toString() {
-        return "User [id=" + id + ", email_address=" + email_address + ", first_name=" + first_name + ", last_name="
-                + last_name + "]";
+        return "User [id=" + id + ", email_address=" + emailAddress + ", first_name=" + firstName + ", last_name="
+                + lastName + "]";
     }
 
 }

@@ -121,11 +121,11 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     private String name = "";
     private Integer gender = 0;
     private String comments = "";
-    private Integer household_id = 0;
-    private Integer breed_id = 0;
-    private Integer photo_id = 0;
-    private Integer species_id = 0;
-    private Integer tag_id = 0;
+    private Integer householdId = 0;
+    private Integer breedId = 0;
+    private Integer photoId = 0;
+    private Integer speciesId = 0;
+    private Integer tagId = 0;
     private SurePetcarePhoto photo = new SurePetcarePhoto();
     private SurePetcarePetLocation position = new SurePetcarePetLocation();
 
@@ -153,44 +153,44 @@ public class SurePetcarePet extends SurePetcareBaseObject {
         this.comments = comments;
     }
 
-    public Integer getHousehold_id() {
-        return household_id;
+    public Integer getHouseholdId() {
+        return householdId;
     }
 
-    public void setHousehold_id(Integer household_id) {
-        this.household_id = household_id;
+    public void setHouseholdId(Integer householdId) {
+        this.householdId = householdId;
     }
 
-    public Integer getBreed_id() {
-        return breed_id;
+    public Integer getBreedId() {
+        return breedId;
     }
 
-    public void setBreed_id(Integer breed_id) {
-        this.breed_id = breed_id;
+    public void setBreedId(Integer breedId) {
+        this.breedId = breedId;
     }
 
-    public Integer getPhoto_id() {
-        return photo_id;
+    public Integer getPhotoId() {
+        return photoId;
     }
 
-    public void setPhoto_id(Integer photo_id) {
-        this.photo_id = photo_id;
+    public void setPhotoId(Integer photoId) {
+        this.photoId = photoId;
     }
 
-    public Integer getSpecies_id() {
-        return species_id;
+    public Integer getSpeciesId() {
+        return speciesId;
     }
 
-    public void setSpecies_id(Integer species_id) {
-        this.species_id = species_id;
+    public void setSpeciesId(Integer speciesId) {
+        this.speciesId = speciesId;
     }
 
-    public Integer getTag_id() {
-        return tag_id;
+    public Integer getTagId() {
+        return tagId;
     }
 
-    public void setTag_id(Integer tag_id) {
-        this.tag_id = tag_id;
+    public void setTagId(Integer tagId) {
+        this.tagId = tagId;
     }
 
     public SurePetcarePhoto getPhoto() {
@@ -214,11 +214,11 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     }
 
     public String getSpeciesName() {
-        return PetSpecies.findByTypeId(species_id).getName();
+        return PetSpecies.findByTypeId(speciesId).getName();
     }
 
     public String getBreedName() {
-        return breed_id.toString();
+        return breedId.toString();
     }
 
     @Override
@@ -229,7 +229,7 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     @Override
     public Map<String, Object> getThingProperties() {
         Map<String, Object> properties = super.getThingProperties();
-        properties.put("householdId", household_id.toString());
+        properties.put("householdId", householdId.toString());
         return properties;
     }
 

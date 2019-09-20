@@ -16,8 +16,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ProtocolException;
+import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +36,9 @@ import org.openhab.binding.surepetcare.internal.data.SurePetcareTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -54,7 +60,9 @@ public class SurePetcareAPIHelper {
     private static final String PET_BASE_URL = "https://app.api.surehub.io/api/pet";
     private static final String LOGIN_URL = "https://app.api.surehub.io/api/auth/login";
 
-    private Gson gson = new Gson();
+    private static final int DEFAULT_DEVICE_ID = 12344711;
+
+    private Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     private String authenticationToken = "";
     private String username = "";
     private String password = "";
@@ -72,13 +80,12 @@ public class SurePetcareAPIHelper {
             con.setDoInput(true);
 
             OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
-            wr.write(gson.toJson(
-                    new SurePetcareLoginCredentials(username, password, SurePetcareUtils.getDeviceId().toString())));
+            wr.write(gson.toJson(new SurePetcareLoginCredentials(username, password, getDeviceId().toString())));
             wr.flush();
 
             StringBuilder sb = new StringBuilder();
-            int HttpResult = con.getResponseCode();
-            if (HttpResult == HttpURLConnection.HTTP_OK) {
+            int httpResult = con.getResponseCode();
+            if (httpResult == HttpURLConnection.HTTP_OK) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
                 String line = null;
                 while ((line = br.readLine()) != null) {
@@ -154,6 +161,43 @@ public class SurePetcareAPIHelper {
         }
     }
 
+    public boolean isOnline() {
+        return online;
+    }
+
+    public Integer getDeviceId() {
+        int decimal = 0;
+        try {
+            if (NetworkInterface.getNetworkInterfaces().hasMoreElements()) {
+                NetworkInterface netif = NetworkInterface.getNetworkInterfaces().nextElement();
+
+                byte[] mac = netif.getHardwareAddress();
+                if (mac != null) {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < mac.length; i++) {
+                        sb.append(String.format("%02x", mac[i]));
+                    }
+                    String hex = sb.toString();
+                    decimal = (int) (Long.parseLong(hex, 16) % Integer.MAX_VALUE);
+                    logger.debug("current MAC address: {}, device id: {}", hex, decimal);
+                } else {
+                    try {
+                        InetAddress ip = InetAddress.getLocalHost();
+                        String hostname = ip.getHostName();
+                        decimal = hostname.hashCode();
+                        logger.debug("current hostname: {}, device id: {}", hostname, decimal);
+                    } catch (UnknownHostException e) {
+                        decimal = DEFAULT_DEVICE_ID;
+                        logger.warn("unable to discover mac or hostname, assigning default device id {}", decimal);
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            logger.warn("Socket Exception: {}", e.getMessage());
+        }
+        return decimal;
+    }
+
     private void setConnectionHeaders(HttpURLConnection con) throws ProtocolException {
         // headers
         con.setRequestProperty("Connection", "keep-alive");
@@ -222,10 +266,6 @@ public class SurePetcareAPIHelper {
             }
         }
         return responseData;
-    }
-
-    public boolean isOnline() {
-        return online;
     }
 
 }

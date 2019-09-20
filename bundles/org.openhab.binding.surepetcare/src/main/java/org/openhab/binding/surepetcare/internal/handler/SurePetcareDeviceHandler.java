@@ -59,8 +59,8 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
             updateState("product", new StringType(productType.getName()));
             switch (productType) {
                 case HUB:
-                    updateState("ledMode", new StringType(device.getStatus().led_mode.toString()));
-                    updateState("pairingMode", new StringType(device.getStatus().pairing_mode.toString()));
+                    updateState("ledMode", new StringType(device.getStatus().ledMode.toString()));
+                    updateState("pairingMode", new StringType(device.getStatus().pairingMode.toString()));
                     updateState("hardwareVersion", new StringType(device.getStatus().version.device.hardware));
                     updateState("firmwareVersion", new StringType(device.getStatus().version.device.firmware));
                     updateState("online", OnOffType.from(device.getStatus().online));
@@ -71,8 +71,8 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                     for (int i = 0; (i < 4) && (i < numCurfews); i++) {
                         Curfew curfew = device.getControl().curfew.get(i);
                         updateState("curfewEnabled" + (i + 1), OnOffType.from(device.getStatus().online));
-                        updateState("curfewLockTime" + (i + 1), new StringType(curfew.lock_time));
-                        updateState("curfewUnlockTime" + (i + 1), new StringType(curfew.unlock_time));
+                        updateState("curfewLockTime" + (i + 1), new StringType(curfew.lockTime));
+                        updateState("curfewUnlockTime" + (i + 1), new StringType(curfew.unlockTime));
                     }
                     updateState("lockingMode", new StringType(device.getStatus().locking.mode.toString()));
                     updateState("hardwareVersion", new StringType(device.getStatus().version.device.hardware));
@@ -85,8 +85,8 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                     updateState("online", OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
 
                     updateState("online", OnOffType.from(device.getStatus().online));
-                    updateState("deviceRSSI", new DecimalType(device.getStatus().signal.device_rssi));
-                    updateState("hubRSSI", new DecimalType(device.getStatus().signal.hub_rssi));
+                    updateState("deviceRSSI", new DecimalType(device.getStatus().signal.deviceRssi));
+                    updateState("hubRSSI", new DecimalType(device.getStatus().signal.hubRssi));
                     break;
                 case UNKNOWN:
                 default:

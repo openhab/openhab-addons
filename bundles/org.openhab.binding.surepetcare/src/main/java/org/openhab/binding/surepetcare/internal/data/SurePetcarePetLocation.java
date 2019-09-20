@@ -57,34 +57,34 @@ public class SurePetcarePetLocation {
         }
     }
 
-    private Integer pet_id;
-    private Integer tag_id;
-    private Integer device_id;
+    private Integer petId;
+    private Integer tagId;
+    private Integer deviceId;
     private Integer where;
     private Date since;
 
-    public Integer getPet_id() {
-        return pet_id;
+    public Integer getPetId() {
+        return petId;
     }
 
-    public void setPet_id(Integer pet_id) {
-        this.pet_id = pet_id;
+    public void setPetId(Integer petId) {
+        this.petId = petId;
     }
 
-    public Integer getTag_id() {
-        return tag_id;
+    public Integer getTagId() {
+        return tagId;
     }
 
-    public void setTag_id(Integer tag_id) {
-        this.tag_id = tag_id;
+    public void setTagId(Integer tagId) {
+        this.tagId = tagId;
     }
 
-    public Integer getDevice_id() {
-        return device_id;
+    public Integer getDeviceId() {
+        return deviceId;
     }
 
-    public void setDevice_id(Integer device_id) {
-        this.device_id = device_id;
+    public void setDeviceId(Integer deviceId) {
+        this.deviceId = deviceId;
     }
 
     public Integer getWhere() {
@@ -105,7 +105,7 @@ public class SurePetcarePetLocation {
 
     @Override
     public String toString() {
-        return "Pet [id=" + pet_id + ", location=" + PetLocation.findByTypeId(where).getName() + "]";
+        return "Pet [id=" + petId + ", location=" + PetLocation.findByTypeId(where).getName() + "]";
     }
 
     public @NonNull String getLocationName() {

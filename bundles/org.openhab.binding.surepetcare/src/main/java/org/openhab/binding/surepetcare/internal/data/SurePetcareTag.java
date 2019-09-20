@@ -41,7 +41,7 @@ public class SurePetcareTag extends SurePetcareBaseObject {
     // }
 
     private String tag;
-    private List<Integer> supported_product_ids = new ArrayList<Integer>();
+    private List<Integer> supportedProductIds = new ArrayList<Integer>();
 
     public String getTag() {
         return tag;
@@ -51,19 +51,19 @@ public class SurePetcareTag extends SurePetcareBaseObject {
         this.tag = tag;
     }
 
-    public List<Integer> getSupported_product_ids() {
-        return supported_product_ids;
+    public List<Integer> getSupportedProductIds() {
+        return supportedProductIds;
     }
 
-    public void setSupported_product_ids(List<Integer> supported_product_ids) {
-        this.supported_product_ids = supported_product_ids;
+    public void setSupportedProductIds(List<Integer> supportedProductIds) {
+        this.supportedProductIds = supportedProductIds;
     }
 
-    public @NonNull ZonedDateTime getCreatedAt() {
-        return created_at.toInstant().atZone(ZoneId.systemDefault());
+    public @NonNull ZonedDateTime getCreatedAtAsZonedDateTime() {
+        return createdAt.toInstant().atZone(ZoneId.systemDefault());
     }
 
-    public @NonNull ZonedDateTime getUpdatedAt() {
-        return updated_at.toInstant().atZone(ZoneId.systemDefault());
+    public @NonNull ZonedDateTime getUpdatedAtAsZonedDateTime() {
+        return updatedAt.toInstant().atZone(ZoneId.systemDefault());
     }
 }

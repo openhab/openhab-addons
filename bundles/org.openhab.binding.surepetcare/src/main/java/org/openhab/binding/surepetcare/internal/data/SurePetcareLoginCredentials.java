@@ -20,34 +20,34 @@ package org.openhab.binding.surepetcare.internal.data;
  */
 public class SurePetcareLoginCredentials {
 
-    private String email_address;
+    private String emailAddress;
     private String password;
-    private String device_id;
+    private String deviceId;
 
     public SurePetcareLoginCredentials() {
     }
 
-    public SurePetcareLoginCredentials(String email_address, String password, String device_id) {
+    public SurePetcareLoginCredentials(String emailAddress, String password, String deviceId) {
         super();
-        this.email_address = email_address;
+        this.emailAddress = emailAddress;
         this.password = password;
-        this.device_id = device_id;
+        this.deviceId = deviceId;
     }
 
     public String getEmail_address() {
-        return email_address;
+        return emailAddress;
     }
 
-    public void setEmail_address(String email_address) {
-        this.email_address = email_address;
+    public void setEmail_address(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
-    public String getDevice_id() {
-        return device_id;
+    public String getDeviceId() {
+        return deviceId;
     }
 
-    public void setDevice_id(String device_id) {
-        this.device_id = device_id;
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getPassword() {

@@ -13,18 +13,20 @@
 package org.openhab.binding.surepetcare.internal.handler;
 
 import org.junit.Test;
-import org.openhab.binding.surepetcare.internal.SurePetcareUtils;
+import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 
 /**
- * The {@link SurePetcareUtilsTest} class implements unit test case for {@link SurePetcareUtils}
+ * The {@link SurePetcareAPIHelperTest} class implements unit test case for {@link SurePetcareUtils}
  *
  * @author Rene Scherer - Initial contribution
  */
-public class SurePetcareUtilsTest extends SurePetcareUtils {
+public class SurePetcareAPIHelperTest extends SurePetcareAPIHelper {
 
     @Test
     public void testGetDeviceId() {
-        SurePetcareUtils.getDeviceId();
+
+        SurePetcareAPIHelper api = new SurePetcareAPIHelper();
+        api.getDeviceId();
     }
 
 }

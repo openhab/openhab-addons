@@ -27,8 +27,8 @@ public class SurePetcareBaseObject {
 
     protected Integer id;
     protected String version;
-    protected Date created_at;
-    protected Date updated_at;
+    protected Date createdAt;
+    protected Date updatedAt;
 
     public SurePetcareBaseObject() {
         super();
@@ -50,20 +50,20 @@ public class SurePetcareBaseObject {
         this.version = version;
     }
 
-    public Date getCreated_at() {
-        return created_at;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Date getUpdated_at() {
-        return updated_at;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(Date updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public @NonNull Map<String, Object> getThingProperties() {

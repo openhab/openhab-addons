@@ -46,14 +46,14 @@ public class SurePetcareHousehold extends SurePetcareBaseObject {
         public Integer id;
         public String name;
         public String timezone;
-        public Integer utc_offset;
-        public Date created_at;
-        public Date updated_at;
+        public Integer utcOffset;
+        public Date createdAt;
+        public Date updatedAt;
     }
 
     private String name;
-    private String share_code;
-    private Integer timezone_id;
+    private String shareCode;
+    private Integer timezoneId;
     private Timezone timezone = new Timezone();
 
     public String getName() {
@@ -64,20 +64,20 @@ public class SurePetcareHousehold extends SurePetcareBaseObject {
         this.name = name;
     }
 
-    public String getShare_code() {
-        return share_code;
+    public String getShareCode() {
+        return shareCode;
     }
 
-    public void setShare_code(String share_code) {
-        this.share_code = share_code;
+    public void setShareCode(String shareCode) {
+        this.shareCode = shareCode;
     }
 
-    public Integer getTimezone_id() {
-        return timezone_id;
+    public Integer getTimezoneId() {
+        return timezoneId;
     }
 
-    public void setTimezone_id(Integer timezone_id) {
-        this.timezone_id = timezone_id;
+    public void setTimezoneId(Integer timezoneId) {
+        this.timezoneId = timezoneId;
     }
 
     public Timezone getTimezone() {

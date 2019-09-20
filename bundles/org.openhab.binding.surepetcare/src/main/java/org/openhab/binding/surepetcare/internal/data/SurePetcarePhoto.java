@@ -30,7 +30,7 @@ public class SurePetcarePhoto extends SurePetcareBaseObject {
     // }
 
     private String location;
-    private Integer uploading_user_id;
+    private Integer uploadingUserId;
 
     public String getLocation() {
         return location;
@@ -40,12 +40,12 @@ public class SurePetcarePhoto extends SurePetcareBaseObject {
         this.location = location;
     }
 
-    public Integer getUploading_user_id() {
-        return uploading_user_id;
+    public Integer getUploadingUserId() {
+        return uploadingUserId;
     }
 
-    public void setUploading_user_id(Integer uploading_user_id) {
-        this.uploading_user_id = uploading_user_id;
+    public void setUploadingUserId(Integer uploadingUserId) {
+        this.uploadingUserId = uploadingUserId;
     }
 
 }
