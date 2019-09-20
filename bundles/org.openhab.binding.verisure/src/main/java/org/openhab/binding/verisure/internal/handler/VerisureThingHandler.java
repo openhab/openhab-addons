@@ -67,8 +67,9 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                     bridgeHandler.handleCommand(channelUID, command);
                 }
             }
-            if (session != null && config.deviceId != null) {
-                VerisureThingJSON thing = session.getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
+            String deviceId = config.getDeviceId();
+            if (session != null && deviceId != null) {
+                VerisureThingJSON thing = session.getVerisureThing(deviceId);
                 update(thing);
             }
         } else {
@@ -110,7 +111,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         logger.debug("initialize on thing: {}", thing);
         // Do not go online
         config = getConfigAs(VerisureThingConfiguration.class);
-        if (config.deviceId == null) {
+        if (config.getDeviceId() == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Verisure device is missing deviceId");
         }
@@ -144,8 +145,9 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                 VerisureBridgeHandler vbh = (VerisureBridgeHandler) bridge.getHandler();
                 if (vbh != null) {
                     session = vbh.getSession();
-                    if (session != null && config.deviceId != null) {
-                        update(session.getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", "")));
+                    String deviceId = config.getDeviceId();
+                    if (session != null && deviceId != null) {
+                        update(session.getVerisureThing(deviceId));
                         session.registerDeviceStatusListener(this);
                     }
                 }
@@ -158,9 +160,10 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
     public void onDeviceStateChanged(@Nullable VerisureThingJSON thing) {
         logger.trace("onDeviceStateChanged on thing: {}", thing);
         if (thing != null) {
-            String id = thing.getDeviceId();
-            id.replaceAll("[^a-zA-Z0-9]+", "");
-            if (config.deviceId.replaceAll("[^a-zA-Z0-9]+", "").equalsIgnoreCase((id))) {
+            String deviceId = thing.getDeviceId();
+            // Make sure device id is normalized, i.e. replace all non character/digits with empty string
+            deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+            if (config.getDeviceId().equalsIgnoreCase((deviceId))) {
                 update(thing);
             }
         }

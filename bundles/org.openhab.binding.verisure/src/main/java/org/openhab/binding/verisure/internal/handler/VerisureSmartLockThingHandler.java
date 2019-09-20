@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLockJSON;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLockJSON.DoorLockVolumeSettings;
 import org.openhab.binding.verisure.internal.model.VerisureSmartLocksJSON;
+import org.openhab.binding.verisure.internal.model.VerisureSmartLocksJSON.Doorlock;
 import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
 
 /**
@@ -77,13 +78,12 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     private void handleSmartLockState(Command command) {
-        if (session != null && config.deviceId != null) {
-            VerisureSmartLocksJSON smartLock = (VerisureSmartLocksJSON) session
-                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
+        String deviceId = config.getDeviceId();
+        if (session != null && deviceId != null) {
+            VerisureSmartLocksJSON smartLock = (VerisureSmartLocksJSON) session.getVerisureThing(deviceId);
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
                 BigDecimal pinCode = session.getPinCode(installationId);
-                String deviceId = config.deviceId;
                 if (deviceId != null && pinCode != null && installationId != null) {
                     StringBuilder sb = new StringBuilder(deviceId);
                     sb.insert(4, " ");
@@ -123,12 +123,11 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     private void handleAutoRelock(Command command) {
-        if (session != null && config.deviceId != null) {
-            VerisureSmartLocksJSON smartLock = (VerisureSmartLocksJSON) session
-                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
+        String deviceId = config.getDeviceId();
+        if (session != null && deviceId != null) {
+            VerisureSmartLocksJSON smartLock = (VerisureSmartLocksJSON) session.getVerisureThing(deviceId);
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
-                String deviceId = config.deviceId;
                 if (installationId != null && deviceId != null) {
                     String csrf = session.getCsrfToken(installationId);
                     StringBuilder sb = new StringBuilder(deviceId);
@@ -169,9 +168,9 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     private void handleSmartLockVolume(Command command) {
-        if (session != null && config.deviceId != null) {
-            VerisureSmartLocksJSON smartLock = (VerisureSmartLocksJSON) session
-                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
+        String deviceId = config.getDeviceId();
+        if (session != null && deviceId != null) {
+            VerisureSmartLocksJSON smartLock = (VerisureSmartLocksJSON) session.getVerisureThing(deviceId);
             if (smartLock != null) {
                 DoorLockVolumeSettings settings = smartLock.getSmartLockJSON().getDoorLockVolumeSettings();
                 if (settings != null) {
@@ -212,9 +211,9 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     private void handleSmartLockVoiceLevel(Command command) {
-        if (session != null && config.deviceId != null) {
-            VerisureSmartLocksJSON smartLock = (VerisureSmartLocksJSON) session
-                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
+        String deviceId = config.getDeviceId();
+        if (session != null && deviceId != null) {
+            VerisureSmartLocksJSON smartLock = (VerisureSmartLocksJSON) session.getVerisureThing(deviceId);
             if (smartLock != null) {
                 DoorLockVolumeSettings settings = smartLock.getSmartLockJSON().getDoorLockVolumeSettings();
                 if (settings != null) {
@@ -269,7 +268,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     private void updateSmartLockState(VerisureSmartLocksJSON smartLocksJSON) {
-        String smartLockStatus = smartLocksJSON.getData().getInstallation().getDoorlocks().get(0).getCurrentLockState();
+        Doorlock doorlock = smartLocksJSON.getData().getInstallation().getDoorlocks().get(0);
+        String smartLockStatus = doorlock.getCurrentLockState();
         if (smartLockStatus != null) {
             ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_SMARTLOCK_STATUS);
             updateState(cuid, new StringType(smartLockStatus));
@@ -293,17 +293,17 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
             updateState(cuid, val);
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_BY_USER);
             updateState(cuid,
-                    new StringType(smartLocksJSON.getData().getInstallation().getDoorlocks().get(0).getUserString()));
+                    new StringType(doorlock.getUserString()));
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_VIA);
             updateState(cuid,
-                    new StringType(smartLocksJSON.getData().getInstallation().getDoorlocks().get(0).getMethod()));
+                    new StringType(doorlock.getMethod()));
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_MOTOR_JAM);
             updateState(cuid, new StringType(
-                    smartLocksJSON.getData().getInstallation().getDoorlocks().get(0).isMotorJam().toString()));
-            updateTimeStamp(smartLocksJSON.getData().getInstallation().getDoorlocks().get(0).getEventTime());
+                    doorlock.isMotorJam().toString()));
+            updateTimeStamp(doorlock.getEventTime());
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_LOCATION);
             updateState(cuid, new StringType(
-                    smartLocksJSON.getData().getInstallation().getDoorlocks().get(0).getDevice().getArea()));
+                    doorlock.getDevice().getArea()));
             // Fetch from "old JSON"
             VerisureSmartLockJSON smartLockJSON = smartLocksJSON.getSmartLockJSON();
             if (smartLockJSON != null) {

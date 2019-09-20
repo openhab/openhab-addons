@@ -180,8 +180,8 @@ public class VerisureSession {
     public void dispose() {
     }
 
-    public @Nullable VerisureThingJSON getVerisureThing(String key) {
-        return verisureThings.get(key);
+    public @Nullable VerisureThingJSON getVerisureThing(String deviceId) {
+        return verisureThings.get(deviceId);
     }
 
     public HashMap<String, org.openhab.binding.verisure.internal.model.VerisureThingJSON> getVerisureThings() {

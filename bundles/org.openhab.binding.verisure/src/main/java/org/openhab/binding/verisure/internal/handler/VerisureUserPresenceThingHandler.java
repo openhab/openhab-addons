@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
 import org.openhab.binding.verisure.internal.model.VerisureUserPresencesJSON;
+import org.openhab.binding.verisure.internal.model.VerisureUserPresencesJSON.UserTracking;
 
 /**
  * Handler for the User Presence Device thing type that Verisure provides.
@@ -63,19 +64,20 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler {
 
     private void updateUserPresenceState(VerisureUserPresencesJSON userPresenceJSON) {
         ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_USER_NAME);
+        UserTracking userTracking = userPresenceJSON.getData().getInstallation().getUserTrackings().get(0);
         updateState(cuid,
-                new StringType(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getName()));
+                new StringType(userTracking.getName()));
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_USER_LOCATION_NAME);
         updateState(cuid, new StringType(
-                userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getCurrentLocationName()));
+                userTracking.getCurrentLocationName()));
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_WEBACCOUNT);
         updateState(cuid,
-                new StringType(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getWebAccount()));
+                new StringType(userTracking.getWebAccount()));
         updateTimeStamp(
-                userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getCurrentLocationTimestamp());
+                userTracking.getCurrentLocationTimestamp());
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_USER_DEVICE_NAME);
         updateState(cuid,
-                new StringType(userPresenceJSON.getData().getInstallation().getUserTrackings().get(0).getDeviceName()));
+                new StringType(userTracking.getDeviceName()));
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
         BigDecimal siteId = userPresenceJSON.getSiteId();
         if (siteId != null) {

@@ -26,17 +26,21 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public interface VerisureThingJSON {
 
-    public @Nullable String getDeviceId();
+    @Nullable
+    String getDeviceId();
 
-    public void setDeviceId(@Nullable String deviceId);
+    void setDeviceId(@Nullable String deviceId);
 
-    public @Nullable String getLocation();
+    @Nullable
+    String getLocation();
 
-    public void setSiteName(@Nullable String siteName);
+    void setSiteName(@Nullable String siteName);
 
-    public @Nullable String getSiteName();
+    @Nullable
+    String getSiteName();
 
-    public void setSiteId(@Nullable BigDecimal siteId);
+    void setSiteId(@Nullable BigDecimal siteId);
 
-    public @Nullable BigDecimal getSiteId();
+    @Nullable
+    BigDecimal getSiteId();
 }

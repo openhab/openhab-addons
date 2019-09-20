@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.verisure.internal.model.VerisureSmartPlugsJSON;
+import org.openhab.binding.verisure.internal.model.VerisureSmartPlugsJSON.Smartplug;
 import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
 
 /**
@@ -65,12 +66,11 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
     }
 
     private void handleSmartPlugState(Command command) {
-        if (session != null && config.deviceId != null) {
-            VerisureSmartPlugsJSON smartPlug = (VerisureSmartPlugsJSON) session
-                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
+        String deviceId = config.getDeviceId();
+        if (session != null && deviceId != null) {
+            VerisureSmartPlugsJSON smartPlug = (VerisureSmartPlugsJSON) session.getVerisureThing(deviceId);
             if (smartPlug != null) {
                 BigDecimal installationId = smartPlug.getSiteId();
-                String deviceId = config.deviceId;
                 if (deviceId != null) {
                     StringBuilder sb = new StringBuilder(deviceId);
                     sb.insert(4, " ");
@@ -120,7 +120,8 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
     }
 
     private void updateSmartPlugState(VerisureSmartPlugsJSON smartPlugJSON) {
-        String smartPlugStatus = smartPlugJSON.getData().getInstallation().getSmartplugs().get(0).getCurrentState();
+        Smartplug smartplug = smartPlugJSON.getData().getInstallation().getSmartplugs().get(0);
+        String smartPlugStatus = smartplug.getCurrentState();
         if (smartPlugStatus != null) {
             ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_SMARTPLUG_STATUS);
             updateState(cuid, new StringType(smartPlugStatus));
@@ -131,17 +132,15 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
                 updateState(cuid, OnOffType.OFF);
             } else if ("PENDING".equals(smartPlugStatus)) {
                 // Schedule another refresh.
-                logger.debug("Issuing another immediate refresh since statis is stii PENDING ...");
+                logger.debug("Issuing another immediate refresh since status is still PENDING ...");
                 this.scheduleImmediateRefresh();
             } else {
                 logger.warn("Unknown SmartPlug status: {}", smartPlugStatus);
             }
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_LOCATION);
-            updateState(cuid, new StringType(
-                    smartPlugJSON.getData().getInstallation().getSmartplugs().get(0).getDevice().getArea()));
+            updateState(cuid, new StringType(smartplug.getDevice().getArea()));
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_HAZARDOUS);
-            updateState(cuid, new StringType(
-                    smartPlugJSON.getData().getInstallation().getSmartplugs().get(0).isHazardous().toString()));
+            updateState(cuid, new StringType(smartplug.isHazardous().toString()));
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
             BigDecimal siteId = smartPlugJSON.getSiteId();
             if (siteId != null) {

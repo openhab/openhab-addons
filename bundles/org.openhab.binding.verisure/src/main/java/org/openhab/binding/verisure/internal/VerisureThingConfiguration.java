@@ -26,5 +26,10 @@ import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
 public class VerisureThingConfiguration {
     public static final String DEVICE_ID_LABEL = "deviceId";
 
-    public @Nullable String deviceId;
+    private @Nullable String deviceId;
+
+    public @Nullable String getDeviceId() {
+        // Make sure device id is normalized, i.e. replace all non character/digits with empty string
+        return deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+    }
 }

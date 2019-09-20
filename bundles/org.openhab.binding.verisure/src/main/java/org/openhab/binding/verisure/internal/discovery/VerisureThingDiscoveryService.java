@@ -114,6 +114,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
             ThingUID bridgeUID = verisureBridgeHandler.getThing().getUID();
             String deviceId = thing.getDeviceId();
             if (deviceId != null) {
+                // Make sure device id is normalized, i.e. replace all non character/digits with empty string
                 deviceId.replaceAll("[^a-zA-Z0-9]+", "");
                 if (thing instanceof VerisureAlarmsJSON) {
                     thingUID = new ThingUID(THING_TYPE_ALARM, bridgeUID, deviceId);

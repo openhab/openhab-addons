@@ -123,7 +123,7 @@ public class VerisureAlarmJSON extends VerisureBaseThingJSON {
     }
 
     /*
-     * (non-Javadoc)
+     *
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
@@ -174,7 +174,7 @@ public class VerisureAlarmJSON extends VerisureBaseThingJSON {
     }
 
     /*
-     * (non-Javadoc)
+     *
      *
      * @see java.lang.Object#toString()
      */

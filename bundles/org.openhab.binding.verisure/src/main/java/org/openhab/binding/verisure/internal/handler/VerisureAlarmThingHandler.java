@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.verisure.internal.model.VerisureAlarmsJSON;
+import org.openhab.binding.verisure.internal.model.VerisureAlarmsJSON.ArmState;
 import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
 
 /**
@@ -64,13 +65,13 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
     }
 
     private void handleAlarmState(Command command) {
-        if (session != null && config.deviceId != null) {
-            VerisureAlarmsJSON alarm = (VerisureAlarmsJSON) session
-                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
+        String deviceId = config.getDeviceId();
+        if (session != null && deviceId != null) {
+            VerisureAlarmsJSON alarm = (VerisureAlarmsJSON) session.getVerisureThing(deviceId);
             if (alarm != null) {
                 BigDecimal installationId = alarm.getSiteId();
                 BigDecimal pinCode = session.getPinCode(installationId);
-                String deviceId = config.deviceId;
+
                 if (deviceId != null && pinCode != null && installationId != null) {
                     StringBuilder sb = new StringBuilder(deviceId);
                     sb.insert(4, " ");
@@ -130,7 +131,8 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
     }
 
     private void updateAlarmState(VerisureAlarmsJSON alarmsJSON) {
-        String alarmStatus = alarmsJSON.getData().getInstallation().getArmState().getStatusType();
+        ArmState armState = alarmsJSON.getData().getInstallation().getArmState();
+        String alarmStatus = armState.getStatusType();
         if (alarmStatus != null) {
             ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_ALARM_STATUS);
             updateState(cuid, new StringType(alarmStatus));
@@ -153,10 +155,10 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_SET_ALARM_STATUS);
             updateState(cuid, val);
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_BY_USER);
-            updateState(cuid, new StringType(alarmsJSON.getData().getInstallation().getArmState().getName()));
+            updateState(cuid, new StringType(armState.getName()));
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_VIA);
-            updateState(cuid, new StringType(alarmsJSON.getData().getInstallation().getArmState().getChangedVia()));
-            updateTimeStamp(alarmsJSON.getData().getInstallation().getArmState().getDate());
+            updateState(cuid, new StringType(armState.getChangedVia()));
+            updateTimeStamp(armState.getDate());
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
             BigDecimal siteId = alarmsJSON.getSiteId();
             if (siteId != null) {
