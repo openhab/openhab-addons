@@ -115,10 +115,18 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         BridgeInfoResponse bridgeInfoResponse = getNukiHttpClient().getBridgeInfo();
         if (bridgeInfoResponse.getStatus() == HttpStatus.OK_200) {
             if (manageCallbacks) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
                 manageNukiBridgeCallbacks();
             }
+            logger.debug("Bridge[{}] responded with status[{}]. Switching the bridge online.", bridgeIp,
+                    bridgeInfoResponse.getStatus());
             updateStatus(ThingStatus.ONLINE);
         } else {
+            logger.debug("Bridge[{}] responded with status[{}]. Switching the bridge offline!", bridgeIp,
+                    bridgeInfoResponse.getStatus());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, bridgeInfoResponse.getMessage());
         }
     }
@@ -126,17 +134,17 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
     private void checkBridgeOnline() {
         logger.debug("checkBridgeOnline():bridgeIp[{}] status[{}]", bridgeIp, getThing().getStatus());
         if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            logger.trace("Requesting BridgeInfo to ensure Bridge[{}] is online.", bridgeIp);
+            logger.debug("Requesting BridgeInfo to ensure Bridge[{}] is online.", bridgeIp);
             BridgeInfoResponse bridgeInfoResponse = getNukiHttpClient().getBridgeInfo();
             int status = bridgeInfoResponse.getStatus();
             if (status == HttpStatus.OK_200) {
-                logger.trace("Bridge[{}] responded with status[{}]. Bridge is online.", bridgeIp, status);
+                logger.debug("Bridge[{}] responded with status[{}]. Bridge is online.", bridgeIp, status);
             } else if (status == HttpStatus.SERVICE_UNAVAILABLE_503) {
-                logger.trace(
+                logger.debug(
                         "Bridge[{}] responded with status[{}]. REST service seems to be busy but Bridge is online.",
                         bridgeIp, status);
             } else {
-                logger.debug("Bridge[{}] responded with status[{}]. Bridge is offline!.", bridgeIp, status);
+                logger.debug("Bridge[{}] responded with status[{}]. Switching the bridge offline!", bridgeIp, status);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         bridgeInfoResponse.getMessage());
             }

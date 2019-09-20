@@ -85,7 +85,7 @@ public class NukiHttpClient {
         return contentResponse;
     }
 
-    private NukiBaseResponse handleException(Exception e) {
+    private NukiBaseResponse handleException(Throwable e) {
         if (e instanceof ExecutionException) {
             if (e.getCause() instanceof HttpResponseException) {
                 HttpResponseException cause = (HttpResponseException) e.getCause();
@@ -125,7 +125,7 @@ public class NukiHttpClient {
                 logger.debug("Could not get Bridge Info! Status[{}] - Response[{}]", status, response);
                 return new BridgeInfoResponse(status, contentResponse.getReason(), null);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.debug("Could not get Bridge Info! Exception[{}]", e.getMessage());
             return new BridgeInfoResponse(handleException(e));
         }
@@ -175,7 +175,7 @@ public class NukiHttpClient {
                 logger.debug("Could not execute Lock Action! Status[{}] - Response[{}]", status, response);
                 return new BridgeLockActionResponse(status, contentResponse.getReason(), null);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.debug("Could not execute Lock Action! Exception[{}]", e.getMessage());
             return new BridgeLockActionResponse(handleException(e));
         }
