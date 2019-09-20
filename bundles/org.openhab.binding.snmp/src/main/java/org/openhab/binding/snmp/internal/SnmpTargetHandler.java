@@ -22,6 +22,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -70,6 +72,9 @@ import org.snmp4j.smi.VariableBinding;
  */
 @NonNullByDefault
 public class SnmpTargetHandler extends BaseThingHandler implements ResponseListener, CommandResponder {
+    private static final Pattern HEXSTRING_VALIDITY = Pattern.compile("([a-f0-9]{2}[ :-]?)+");
+    private static final Pattern HEXSTRING_EXTRACTOR = Pattern.compile("[^a-f0-9]");
+
     private final Logger logger = LoggerFactory.getLogger(SnmpTargetHandler.class);
 
     private @NonNullByDefault({}) SnmpTargetConfiguration config;
@@ -231,7 +236,8 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         } else if (CHANNEL_TYPE_UID_STRING.equals(channel.getChannelTypeUID())) {
             if (config.datatype == null) {
                 datatype = SnmpDatatype.STRING;
-            } else if (config.datatype != SnmpDatatype.IPADDRESS && config.datatype != SnmpDatatype.STRING) {
+            } else if (config.datatype != SnmpDatatype.IPADDRESS && config.datatype != SnmpDatatype.STRING
+                    && config.datatype != SnmpDatatype.HEXSTRING) {
                 return null;
             } else {
                 datatype = config.datatype;
@@ -310,7 +316,12 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                         return;
                     }
                 } else if (CHANNEL_TYPE_UID_STRING.equals(channel.getChannelTypeUID())) {
-                    state = new StringType(value.toString());
+                    if (channelConfig.datatype == SnmpDatatype.HEXSTRING) {
+                        String rawString = ((OctetString) value).toHexString(' ');
+                        state = new StringType(rawString.toLowerCase());
+                    } else {
+                        state = new StringType(value.toString());
+                    }
                 } else if (CHANNEL_TYPE_UID_SWITCH.equals(channel.getChannelTypeUID())) {
                     if (value.equals(channelConfig.onValue)) {
                         state = OnOffType.ON;
@@ -360,6 +371,16 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                     return new OctetString(((DecimalType) command).toString());
                 } else if (command instanceof StringType) {
                     return new OctetString(((StringType) command).toString());
+                }
+                break;
+            case HEXSTRING:
+                if (command instanceof StringType) {
+                    String commandString = ((StringType) command).toString().toLowerCase();
+                    Matcher commandMatcher = HEXSTRING_VALIDITY.matcher(commandString);
+                    if (commandMatcher.matches()) {
+                        commandString = HEXSTRING_EXTRACTOR.matcher(commandString).replaceAll("");
+                        return OctetString.fromHexStringPairs(commandString);
+                    }
                 }
                 break;
             case IPADDRESS:
