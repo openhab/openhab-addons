@@ -184,7 +184,7 @@ String spotifyDevices       label="Active device [%s]"   {channel="spotify:playe
 Switch spotifyDeviceShuffle label="Shuffle mode"         {channel="spotify:player:user1:deviceShuffle"}
 String spotifyTrackRepeat   label="Repeat mode: [%s]"    {channel="spotify:player:user1:trackRepeat"}
 String spotifyTrackProgress label="Track progress: [%s]" {channel="spotify:player:user1:trackProgress"}
-String spotifyTrackDuration label="Track duration: [%s]" {channel="spotify:player:user1:tackDuration"}
+String spotifyTrackDuration label="Track duration: [%s]" {channel="spotify:player:user1:trackDuration"}
 String spotifyTrackName     label="Track Name: [%s]"     {channel="spotify:player:user1:trackName"}
 String spotifyAlbumName     label="Album Name: [%s]"     {channel="spotify:player:user1:albumName"}
 String spotifyArtistName    label="Artist Name: [%s]"    {channel="spotify:player:user1:artistName"}
@@ -218,8 +218,8 @@ sitemap spotify label="Spotify Sitemap" {
     Text      item=spotifyTrackName     label="Track Name: [%s]"
     Image     item=spotifyAlbumImage    label="Album Art"
     Text      item=spotifyAlbumName     label="Currently Played Album Name: [%s]"
-    Text      item=spotifyTrtistName    label="Currently Played Artist Name: [%s]"
-    Selection item=spotifyTrackPlay     label="Playlist" icon="music"
+    Text      item=spotifyArtistName    label="Currently Played Artist Name: [%s]"
+    Selection item=spotifyPlaylists     label="Playlist" icon="music"
   }
 
   Frame label="My Spotify Device 1" {
