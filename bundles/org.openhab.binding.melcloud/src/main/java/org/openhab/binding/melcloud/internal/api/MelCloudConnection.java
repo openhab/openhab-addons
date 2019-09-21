@@ -79,7 +79,7 @@ public class MelCloudConnection {
             if (resp.getErrorId() != null) {
                 String errorMsg = String.format("Login failed, error code: %s", resp.getErrorId());
                 if (resp.getErrorMessage() != null) {
-                    errorMsg.concat(String.format(" (%s)", resp.getErrorMessage()));
+                    errorMsg = String.format("%s (%s)", errorMsg, resp.getErrorMessage());
                 }
                 throw new MelCloudLoginException(errorMsg);
             }
