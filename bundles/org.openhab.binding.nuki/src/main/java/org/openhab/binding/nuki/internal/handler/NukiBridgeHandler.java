@@ -115,10 +115,6 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         BridgeInfoResponse bridgeInfoResponse = getNukiHttpClient().getBridgeInfo();
         if (bridgeInfoResponse.getStatus() == HttpStatus.OK_200) {
             if (manageCallbacks) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
                 manageNukiBridgeCallbacks();
             }
             logger.debug("Bridge[{}] responded with status[{}]. Switching the bridge online.", bridgeIp,

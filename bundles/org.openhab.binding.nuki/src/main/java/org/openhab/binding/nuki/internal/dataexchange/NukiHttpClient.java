@@ -80,6 +80,10 @@ public class NukiHttpClient {
 
     private synchronized ContentResponse executeRequest(String uri)
             throws InterruptedException, ExecutionException, TimeoutException {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+        }
         ContentResponse contentResponse = httpClient.GET(uri);
         logger.trace("contentResponseAsString[{}]", contentResponse.getContentAsString());
         return contentResponse;
