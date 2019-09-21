@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_POWER_STATE;
 import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_SWITCH;
 
 import java.io.IOException;
@@ -21,9 +20,11 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
@@ -38,6 +39,11 @@ import com.google.gson.JsonObject;
 public class HandlerPowerController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.PowerController";
+
+    // Channel types
+    private static final ChannelTypeUID CHANNEL_TYPE_POWER_STATE = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "powerState");
+
     // Channel definitions
     final static ChannelInfo powerState = new ChannelInfo("powerState" /* propertyName */ ,
             "powerState" /* ChannelId */, CHANNEL_TYPE_POWER_STATE /* Channel Type */ ,

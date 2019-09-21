@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_COLOR_TEMPERATURE_NAME;
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN;
 import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_NUMBER;
 import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_STRING;
 
@@ -25,9 +23,11 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
@@ -43,6 +43,14 @@ public class HandlerColorTemperatureController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.ColorTemperatureController";
     public static final String INTERFACE_COLOR_PROPERTIES = "Alexa.ColorPropertiesController";
+
+    // Channel types
+    private static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEMPERATURE_NAME = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureName");
+
+    private static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureInKelvin");
+
     // Channel and Properties
     final static ChannelInfo colorTemperatureInKelvin = new ChannelInfo("colorTemperatureInKelvin" /* propertyName */ ,
             "colorTemperatureInKelvin" /* ChannelId */, CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN /* Channel Type */ ,

@@ -28,50 +28,6 @@ public class Constants {
     public static final Set<String> SUPPORTED_INTERFACES = HandlerFactory.keySet();
 
     // channel types
-    public static final ChannelTypeUID CHANNEL_TYPE_POWER_STATE = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "powerState");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_BRIGHTNESS = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "brightness");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_PERCENTAGE = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "percentage");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_POWER_LEVEL = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "powerLevel");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureInKelvin");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_COLOR_TEMPERATURE_NAME = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureName");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_COLOR_NAME = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "colorName");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_COLOR = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "color");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_ARM_STATE = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "armState");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_BURGLARY_ALARM = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "burglaryAlarm");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_CARBON_MONOXIDE_ALARM = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "carbonMonoxideAlarm");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_FIRE_ALARM = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "fireAlarm");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_WATER_ALARM = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "waterAlarm");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_GLASS_BREAK_DETECTION_STATE = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "glassBreakDetectionState");
-
-    public static final ChannelTypeUID CHANNEL_TYPE_SMOKE_ALARM_DETECTION_STATE = new ChannelTypeUID(
-            AmazonEchoControlBindingConstants.BINDING_ID, "smokeAlarmDetectionState");
 
     public static final ChannelTypeUID CHANNEL_TYPE_TEMPERATURE = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "temperature");

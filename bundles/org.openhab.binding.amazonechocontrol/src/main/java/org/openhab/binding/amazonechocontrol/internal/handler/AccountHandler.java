@@ -973,10 +973,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             if (deviceFilterId != null) {
                 applianceIds.add(deviceFilterId);
             } else {
-
-                if (applianceIds.size() == 0) {
-                    return;
-                }
                 synchronized (this.smartHomeDeviceHandlers) {
                     if (this.smartHomeDeviceHandlers.size() == 0) {
                         return;
@@ -994,6 +990,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             }
                         }
                     }
+                }
+                if (applianceIds.size() == 0) {
+                    return;
                 }
             }
             Map<String, JsonArray> applianceIdToCapabilityStates = connection

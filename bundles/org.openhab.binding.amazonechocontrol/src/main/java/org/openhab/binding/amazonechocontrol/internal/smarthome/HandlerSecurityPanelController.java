@@ -12,11 +12,6 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_ARM_STATE;
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_BURGLARY_ALARM;
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_CARBON_MONOXIDE_ALARM;
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_FIRE_ALARM;
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_WATER_ALARM;
 import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_CONTACT;
 import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_STRING;
 
@@ -28,9 +23,11 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
@@ -45,6 +42,23 @@ import com.google.gson.JsonObject;
 public class HandlerSecurityPanelController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.SecurityPanelController";
+
+    // Channel types
+    private static final ChannelTypeUID CHANNEL_TYPE_ARM_STATE = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "armState");
+
+    private static final ChannelTypeUID CHANNEL_TYPE_BURGLARY_ALARM = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "burglaryAlarm");
+
+    private static final ChannelTypeUID CHANNEL_TYPE_CARBON_MONOXIDE_ALARM = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "carbonMonoxideAlarm");
+
+    private static final ChannelTypeUID CHANNEL_TYPE_FIRE_ALARM = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "fireAlarm");
+
+    private static final ChannelTypeUID CHANNEL_TYPE_WATER_ALARM = new ChannelTypeUID(
+            AmazonEchoControlBindingConstants.BINDING_ID, "waterAlarm");
+
     // Channel definitions
     final static ChannelInfo armState = new ChannelInfo("armState" /* propertyName */ , "armState" /* ChannelId */,
             CHANNEL_TYPE_ARM_STATE /* Channel Type */ , ITEM_TYPE_STRING /* Item Type */);
@@ -115,7 +129,6 @@ public class HandlerSecurityPanelController extends HandlerBase {
                     waterAlarmValue = "ALARM".equals(state.get("value").getAsString());
                 }
             }
-
         }
         updateState(armState.channelId, armStateValue == null ? UnDefType.UNDEF : new StringType(armStateValue));
         updateState(burglaryAlarm.channelId, burglaryAlarmValue == null ? UnDefType.UNDEF

@@ -199,7 +199,13 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
 
                 thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, entityId.replace(".", "-"));
 
-                if (shd.aliases != null && shd.aliases.length > 0 && shd.aliases[0].friendlyName != null) {
+                if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
+                        && "SonarCloudService".equals(driverIdentity.identifier)) {
+                    deviceName = "Alexa Guard on " + shd.friendlyName;
+                } else if ("Amazon".equals(shd.manufacturerName)
+                        && "OnGuardSmartHomeBridgeService".equals(driverIdentity.identifier)) {
+                    deviceName = "Alexa Guard";
+                } else if (shd.aliases != null && shd.aliases.length > 0 && shd.aliases[0].friendlyName != null) {
                     deviceName = shd.aliases[0].friendlyName;
                 } else {
                     deviceName = shd.friendlyName;
