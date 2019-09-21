@@ -60,16 +60,16 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
         logger.debug("handleCommand, channel: {}, command: {}", channelUID, command);
         if (command instanceof RefreshType) {
             super.handleCommand(channelUID, command);
-        } else if (channelUID.getId().equals(CHANNEL_SET_SMARTLOCK_STATUS)) {
+        } else if (channelUID.getId().equals(CHANNEL_SMARTLOCK_STATUS)) {
             handleSmartLockState(command);
             scheduleImmediateRefresh();
-        } else if (channelUID.getId().equals(CHANNEL_SET_AUTO_RELOCK)) {
+        } else if (channelUID.getId().equals(CHANNEL_AUTO_RELOCK)) {
             handleAutoRelock(command);
             scheduleImmediateRefresh();
-        } else if (channelUID.getId().equals(CHANNEL_SET_SMARTLOCK_VOLUME)) {
+        } else if (channelUID.getId().equals(CHANNEL_SMARTLOCK_VOLUME)) {
             handleSmartLockVolume(command);
             scheduleImmediateRefresh();
-        } else if (channelUID.getId().equals(CHANNEL_SET_SMARTLOCK_VOICE_LEVEL)) {
+        } else if (channelUID.getId().equals(CHANNEL_SMARTLOCK_VOICE_LEVEL)) {
             handleSmartLockVoiceLevel(command);
             scheduleImmediateRefresh();
         } else {
@@ -89,7 +89,6 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                     sb.insert(4, " ");
                     String url = START_GRAPHQL;
                     String queryQLSmartLockSetState;
-
                     if (command == OnOffType.OFF) {
                         queryQLSmartLockSetState = "[{\"operationName\":\"DoorUnlock\",\"variables\":{\"giid\":\""
                                 + installationId + "\",\"deviceLabel\":\"" + deviceId + "\",\"input\":{\"code\":\""
@@ -110,8 +109,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                     }
                     int httpResultCode = session.sendCommand(url, queryQLSmartLockSetState, installationId);
                     if (httpResultCode == HttpStatus.OK_200) {
-                        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_SMARTLOCK_STATUS);
-                        updateState(cuid, new StringType("PENDING"));
+                        logger.debug("SmartLock status successfully changed!");
                     } else {
                         logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
                     }
@@ -141,9 +139,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                         logger.debug("Trying to set Auto Relock ON with URL {} and data {}", url, data);
                         int httpResultCode = session.sendCommand(url, data, installationId);
                         if (httpResultCode == HttpStatus.OK_200) {
-                            ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_AUTO_RELOCK_ENABLED);
-                            updateState(cuid, new StringType("true"));
-                            smartLock.getSmartLockJSON().setAutoRelockEnabled(true);
+                            logger.debug("AutoRelock sucessfully changed to ON");
                         } else {
                             logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
                         }
@@ -153,9 +149,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                         logger.debug("Trying to set Auto Relock OFF with URL {} and data {}", url, data);
                         int httpResultCode = session.sendCommand(url, data, installationId);
                         if (httpResultCode == HttpStatus.OK_200) {
-                            ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_AUTO_RELOCK_ENABLED);
-                            updateState(cuid, new StringType("false"));
-                            smartLock.getSmartLockJSON().setAutoRelockEnabled(false);
+                            logger.debug("AutoRelock sucessfully changed to OFF");
                         } else {
                             logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
                         }
@@ -188,16 +182,13 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                         if (isVolumeSettingAllowed && installationId != null && csrf != null) {
                             String url = SMARTLOCK_VOLUME_COMMAND;
                             String data = "keypad.volume=MEDIUM&keypad.beepOnKeypress=true&_keypad.beepOnKeypress=on&siren.volume=MEDIUM&voiceDevice.volume=MEDIUM&doorLock.volume="
-                                    + command.toString() + "&doorLock.voiceLevel="
-                                    + smartLock.getSmartLockJSON().getDoorLockVolumeSettings().getVoiceLevel()
+                                    + command.toString() + "&doorLock.voiceLevel=" + settings.getVoiceLevel()
                                     + "&_devices%5B0%5D.on=on&devices%5B1%5D.on=true&_devices%5B1%5D.on=on&devices%5B2%5D.on=true&_devices%5B2%5D.on=on&_devices%5B3%5D.on=on&_keypad.keypadsPlayChime=on&_siren.sirensPlayChime=on&_csrf="
                                     + csrf;
                             logger.debug("Trying to set SmartLock volume with URL {} and data {}", url, data);
                             int httpResultCode = session.sendCommand(url, data, installationId);
                             if (httpResultCode == HttpStatus.OK_200) {
-                                ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_SMARTLOCK_VOLUME);
-                                updateState(cuid, new StringType(command.toString()));
-                                settings.setVolume(command.toString());
+                                logger.debug("SmartLock volume sucessfully changed!");
                             } else {
                                 logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
                             }
@@ -238,9 +229,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                             logger.debug("Trying to set SmartLock voice level with URL {} and data {}", url, data);
                             int httpResultCode = session.sendCommand(url, data, installationId);
                             if (httpResultCode == HttpStatus.OK_200) {
-                                ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_SMARTLOCK_VOICE_LEVEL);
-                                updateState(cuid, new StringType(command.toString()));
-                                settings.setVoiceLevel(command.toString());
+                                logger.debug("SmartLock volume sucessfully changed!");
                             } else {
                                 logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
                             }
@@ -272,8 +261,6 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
         String smartLockStatus = doorlock.getCurrentLockState();
         if (smartLockStatus != null) {
             ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_SMARTLOCK_STATUS);
-            updateState(cuid, new StringType(smartLockStatus));
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_SET_SMARTLOCK_STATUS);
             if ("LOCKED".equals(smartLockStatus)) {
                 updateState(cuid, OnOffType.ON);
             } else if ("UNLOCKED".equals(smartLockStatus)) {
@@ -283,41 +270,24 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                 logger.debug("Issuing another immediate refresh since statis is stii PENDING ...");
                 this.scheduleImmediateRefresh();
             }
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_NUMERIC_STATUS);
-            DecimalType val = new DecimalType(0);
-            if ("LOCKED".equals(smartLockStatus)) {
-                val = new DecimalType(1);
-            } else {
-                val = new DecimalType(0);
-            }
-            updateState(cuid, val);
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_BY_USER);
-            updateState(cuid,
-                    new StringType(doorlock.getUserString()));
+            updateState(cuid, new StringType(doorlock.getUserString()));
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_VIA);
-            updateState(cuid,
-                    new StringType(doorlock.getMethod()));
+            updateState(cuid, new StringType(doorlock.getMethod()));
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_MOTOR_JAM);
-            updateState(cuid, new StringType(
-                    doorlock.isMotorJam().toString()));
+            updateState(cuid, new StringType(doorlock.isMotorJam().toString()));
             updateTimeStamp(doorlock.getEventTime());
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_LOCATION);
-            updateState(cuid, new StringType(
-                    doorlock.getDevice().getArea()));
+            updateState(cuid, new StringType(doorlock.getDevice().getArea()));
             // Fetch from "old JSON"
             VerisureSmartLockJSON smartLockJSON = smartLocksJSON.getSmartLockJSON();
             if (smartLockJSON != null) {
-                cuid = new ChannelUID(getThing().getUID(), CHANNEL_SET_AUTO_RELOCK);
+                cuid = new ChannelUID(getThing().getUID(), CHANNEL_AUTO_RELOCK);
                 Boolean autoRelock = smartLockJSON.getAutoRelockEnabled();
                 if (autoRelock != null && autoRelock) {
                     updateState(cuid, OnOffType.ON);
                 } else {
                     updateState(cuid, OnOffType.OFF);
-                }
-                cuid = new ChannelUID(getThing().getUID(), CHANNEL_AUTO_RELOCK_ENABLED);
-                Boolean autoRelockEnabled = smartLockJSON.getAutoRelockEnabled();
-                if (autoRelockEnabled != null) {
-                    updateState(cuid, new StringType(autoRelockEnabled.toString()));
                 }
                 DoorLockVolumeSettings dlvs = smartLockJSON.getDoorLockVolumeSettings();
                 if (dlvs != null) {

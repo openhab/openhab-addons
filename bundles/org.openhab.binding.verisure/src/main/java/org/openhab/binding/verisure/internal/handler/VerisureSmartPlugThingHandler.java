@@ -57,7 +57,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
         logger.debug("handleCommand, channel: {}, command: {}", channelUID, command);
         if (command instanceof RefreshType) {
             super.handleCommand(channelUID, command);
-        } else if (channelUID.getId().equals(CHANNEL_SET_SMARTPLUG_STATUS)) {
+        } else if (channelUID.getId().equals(CHANNEL_SMARTPLUG_STATUS)) {
             handleSmartPlugState(command);
             scheduleImmediateRefresh();
         } else {
@@ -95,8 +95,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
                     }
                     int httpResultCode = session.sendCommand(url, queryQLSmartPlugSetState, installationId);
                     if (httpResultCode == HttpStatus.OK_200) {
-                        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
-                        updateState(cuid, new StringType("pending"));
+                        logger.debug("Smartplug state successfully changed!");
                     } else {
                         logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
                     }
@@ -124,8 +123,6 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
         String smartPlugStatus = smartplug.getCurrentState();
         if (smartPlugStatus != null) {
             ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_SMARTPLUG_STATUS);
-            updateState(cuid, new StringType(smartPlugStatus));
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_SET_SMARTPLUG_STATUS);
             if ("ON".equals(smartPlugStatus)) {
                 updateState(cuid, OnOffType.ON);
             } else if ("OFF".equals(smartPlugStatus)) {

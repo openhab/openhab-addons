@@ -77,13 +77,11 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 | Channel Type ID | Item Type | Description                                                                               |
 |-----------------|-----------|-------------------------------------------------------------------------------------------|
-| numericStatus   | Number    | This channel reports the alarm status as a number.                                        |
-| alarmStatus     | String    | This channel reports the specific alarm status ("DISARMED", "ARMED HOME" or "ARMED AWAY").|
 | timestamp       | String    | This channel reports the last time the alarm status was changed.                          |
 | changedByUser   | String    | This channel reports the user that last changed the state of the alarm.                   |
 | installationName| String    | This channel reports the installation name.                                                |
 | installationId  | Number    | This channel reports the installation ID.                                             |
-| setAlarmStatus  | Number    | This channel is used to arm/disarm the alarm. Available alarm status are 0 for "DISARMED", 1 for "ARMED HOME" and 2 for "ARMED AWAY".|               |
+| alarmStatus     | Number    | This channel is used to arm/disarm the alarm. Available alarm status are "DISARMED", "ARMED_HOME" and "ARMED_AWAY".|               |
 
 ### Verisure Smoke Detector
 
@@ -175,8 +173,6 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 | Channel Type ID        | Item Type | Description                                                                                              |
 |------------------------|-----------|----------------------------------------------------------------------------------------------------------|
-| numericStatus          | Number    | This channel reports the alarm status as a number.                                                       |
-| smartLockStatus        | String    | This channel reports the lock status.                                                                    |
 | changedByUser          | String    | This channel reports the user that last changed the state of the alarm.                                  |
 | timestamp              | String    | This channel reports the last time the alarm status was changed.                                         |
 | changedVia             | String    | This channel reports the method used to change the status.                                               |
@@ -187,10 +183,10 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | location               | String    | This channel reports the location.                                                                       |
 | installationName       | String    | This channel reports the installation name.                                                              |
 | installationId         | Number    | This channel reports the installation ID.                                                                |
-| setSmartLockStatus     | Switch    | This channel is used to lock/unlock.                                                                     |
-| setAutoRelock          | Switch    | This channel is used to configure auto-lock functionality. Only supported for users with Administrator rights.                                                |                
-| setSmartLockVolume     | String    | This channel is used to set the volume level. Available volume settings are "SILENCE", "LOW" and "HIGH". Only supported for users with Administrator rights.|  
-| setSmartLockVoiceLevel | String    | This channel is used to set the voice level. Available voice level settings are "ESSENTIAL" and "NORMAL". Only supported for users with Administrator rights.| 
+| smartLockStatus        | Switch    | This channel is used to lock/unlock.                                                                     |
+| autoRelock             | Switch    | This channel is used to configure auto-lock functionality. Only supported for users with Administrator rights.                                                |                
+| smartLockVolume        | String    | This channel is used to set the volume level. Available volume settings are "SILENCE", "LOW" and "HIGH". Only supported for users with Administrator rights.|  
+| smartLockVoiceLevel    | String    | This channel is used to set the voice level. Available voice level settings are "ESSENTIAL" and "NORMAL". Only supported for users with Administrator rights.| 
 
 ### Verisure SmartPlug
 
@@ -206,11 +202,10 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | Channel Type ID    | Item Type | Description                                                       | 
 |--------------------|-----------|-------------------------------------------------------------------|                                                                                                                                          
 | hazardous          | Number    | This channel reports if the smart plug is configured as hazardous.|
-| smartPlugStatus    | String    | This channel reports the lock status.                             |
 | location           | String    | This channel reports the location.                                |
 | installationName   | String    | This channel reports the installation name.                       |
 | installationId     | Number    | This channel reports the installation ID.                         |
-| setSmartPlugStatus | Switch    | This channel is used to turn smart plug on/off.                   |
+| smartPlugStatus    | Switch    | This channel is used to turn smart plug on/off.                   |
 
 ### Verisure DoorWindow Sensor
 
@@ -289,22 +284,16 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
 
 ````
 // SmartLock and Alarm
-Switch   SmartLock                     "Verisure SmartLock"  <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:setSmartLockStatus"}
-Number   AlarmHome                     "Alarm Home"          <alarm>                    {channel="verisure:alarm:myverisure:JannesAlarm:setAlarmStatus"}
-Switch   AlarmHomeVirtual              "Verisure Alarm"      <alarm>  [ "Switchable" ] 
-String   AlarmStatus                   "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:JannesAlarm:alarmStatus"}
-Number   AlarmNumericStatus            "Verisure Alarm Numeric Status"                  {channel="verisure:alarm:myverisure:JannesAlarm:numericStatus"}
+Switch   SmartLock                     "Verisure SmartLock"  <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockStatus"}
+String   AlarmHome                     "Alarm Home"          <alarm>                    {channel="verisure:alarm:myverisure:JannesAlarm:alarmStatus"}
 String   AlarmTimeStamp                "Verisure Alarm Time Stamp"                      {channel="verisure:alarm:myverisure:JannesAlarm:timestamp"}
 String   AlarmChangedByUser            "Verisure Alarm Changed By User"                 {channel="verisure:alarm:myverisure:JannesAlarm:changedByUser"}
-Switch   AutoLock                      "AutoLock"            <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:setAutoRelock"}
-String   SmartLockStatus               "SmartLock Status"                               {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockStatus"}
-Number   SmartLockNumericStatus        "SmartLock Numeric Status"                       {channel="verisure:smartLock:myverisure:JannesSmartLock:numericStatus"}
-String   SmartLockVolume               "SmartLock Volume"     <lock>                     {channel="verisure:smartLock:myverisure:JannesSmartLock:setSmartLockVolume"}
-String   SmartLockVolumes              "SmartLock Volumes"                              {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockVolume"}
+Switch   AutoLock                      "AutoLock"            <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:autoRelock"}
+String   SmartLockVolume               "SmartLock Volume"     <lock>                    {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockVolume"}
 
 // SmartPlugs         
-Switch   SmartPlugLamp                 "SmartPlug"               <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:4ED5ZXYC:setSmartPlugStatus"}
-Switch   SmartPlugGlavaRouter          "SmartPlug Glava Router"  <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:JannesSmartPlug:setSmartPlugStatus"}
+Switch   SmartPlugLamp                 "SmartPlug"               <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:4ED5ZXYC:smartPlugStatus"}
+Switch   SmartPlugGlavaRouter          "SmartPlug Glava Router"  <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:JannesSmartPlug:smartPlugStatus"}
 
 // DoorWindow
 String DoorWindowLocation              "Door Window Location"    {channel="verisure:doorWindowSensor:myverisure:1SG5GHGT:location"}
@@ -333,7 +322,7 @@ String CurrentBBStatus                 "Broadband Connection Status"       {chan
                 Switch item=SmartLock label="Yale Doorman SmartLock" icon="lock.png"
             }
             Frame label="Verisure Alarm" {
-                Switch  item=AlarmHome  icon="alarm" label="Verisure Alarm"  mappings=[0="Disarm", 1="Arm Home", 2="Arm Away"]
+                Switch  item=AlarmHome  icon="alarm" label="Verisure Alarm"  mappings=["DISARMED"="Disarm", "ARMED_HOME"="Arm Home", "ARMED_AWAY"="Arm Away"]
             }
             Frame label="Yale Doorman SmartLock AutoLock" {
                 Switch item=AutoLock label="Yale Doorman SmartLock AutoLock" icon="lock.png"
@@ -341,13 +330,10 @@ String CurrentBBStatus                 "Broadband Connection Status"       {chan
             Frame label="Yale Doorman SmartLock Volume"  {
                 Switch  item=SmartLockVolume  icon="lock" label="Yale Doorman SmartLock Volume"  mappings=["SILENCE"="Silence", "LOW"="Low", "HIGH"="High"]
             }
-            Text item=AlarmStatus label="Alarm Status [%s]"
-            Text item=AlarmNumericStatus label="Alarm Numeric Status [%d]"
             Text item=AlarmHomeInstallationName label="Alarm Installation [%s]"
             Text item=AlarmChangedByUser label="Changed by user [%s]"
             Text item=AlarmTimeStamp
             Text item=SmartLockStatus label="SmartLock status [%s]"
-            Text item=SmartLockNumericStatus label="Smart Lock Numeric Status [%d]"
             Text item=SmartLockLastUpdated
             Text item=SmartLockOperatedBy label="Changed by user [%s]"
             Text item=DoorWindowStatus label="Door State"

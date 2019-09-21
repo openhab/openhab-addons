@@ -56,7 +56,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
         logger.debug("handleCommand, channel: {}, command: {}", channelUID, command);
         if (command instanceof RefreshType) {
             super.handleCommand(channelUID, command);
-        } else if (channelUID.getId().equals(CHANNEL_SET_ALARM_STATUS)) {
+        } else if (channelUID.getId().equals(CHANNEL_ALARM_STATUS)) {
             handleAlarmState(command);
             scheduleImmediateRefresh();
         } else {
@@ -77,21 +77,21 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
                     sb.insert(4, " ");
                     String url = START_GRAPHQL;
                     String queryQLAlarmSetState;
-                    if (command.toString().equals("0")) {
+                    if (command.toString().equals("DISARMED")) {
                         queryQLAlarmSetState = "[{\"operationName\":\"disarm\",\"variables\":{\"giid\":\""
                                 + installationId + "\",\"code\":\"" + pinCode
                                 + "\"},\"query\":\"mutation disarm($giid: String!, $code: String!) {\\n  armStateDisarm(giid: $giid, code: $code)\\n}\\n\"}]\n"
                                 + "";
                         logger.debug("Trying to set alarm state to DISARMED with URL {} and data {}", url,
                                 queryQLAlarmSetState);
-                    } else if (command.toString().equals("1")) {
+                    } else if (command.toString().equals("ARMED_HOME")) {
                         queryQLAlarmSetState = "[{\"operationName\":\"armHome\",\"variables\":{\"giid\":\""
                                 + installationId + "\",\"code\":\"" + pinCode
                                 + "\"},\"query\":\"mutation armHome($giid: String!, $code: String!) {\\n  armStateArmHome(giid: $giid, code: $code)\\n}\\n\"}]\n"
                                 + "";
                         logger.debug("Trying to set alarm state to ARMED_HOME with URL {} and data {}", url,
                                 queryQLAlarmSetState);
-                    } else if (command.toString().equals("2")) {
+                    } else if (command.toString().equals("ARMED_AWAY")) {
                         queryQLAlarmSetState = "[{\"operationName\":\"armAway\",\"variables\":{\"giid\":\""
                                 + installationId + "\",\"code\":\"" + pinCode
                                 + "\"},\"query\":\"mutation armAway($giid: String!, $code: String!) {\\n  armStateArmAway(giid: $giid, code: $code)\\n}\\n\"}]\n"
@@ -104,8 +104,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
                     }
                     int httpResultCode = session.sendCommand(url, queryQLAlarmSetState, installationId);
                     if (httpResultCode == HttpStatus.OK_200) {
-                        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_ALARM_STATUS);
-                        updateState(cuid, new StringType("PENDING"));
+                        logger.debug("Alarm status successfully changed!");
                     } else {
                         logger.warn("Could not send command, HTTP result code: {}", httpResultCode);
                     }
@@ -136,24 +135,6 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
         if (alarmStatus != null) {
             ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_ALARM_STATUS);
             updateState(cuid, new StringType(alarmStatus));
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_NUMERIC_STATUS);
-            DecimalType val = new DecimalType(0);
-            if (alarmStatus.equals("DISARMED")) {
-                val = new DecimalType(0);
-            } else if (alarmStatus.equals("ARMED_HOME")) {
-                val = new DecimalType(1);
-            } else if (alarmStatus.equals("ARMED_AWAY")) {
-                val = new DecimalType(2);
-            } else if (alarmStatus.equals("PENDING")) {
-                // Schedule another refresh.
-                logger.debug("Issuing another immediate refresh since statis is stii PENDING ...");
-                this.scheduleImmediateRefresh();
-            } else {
-                logger.warn("Unknown alarmstatus: {}", alarmStatus);
-            }
-            updateState(cuid, val);
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_SET_ALARM_STATUS);
-            updateState(cuid, val);
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_BY_USER);
             updateState(cuid, new StringType(armState.getName()));
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_VIA);

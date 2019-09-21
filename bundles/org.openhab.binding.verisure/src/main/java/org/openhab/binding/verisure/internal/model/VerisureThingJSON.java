@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public interface VerisureThingJSON {
 
-    @Nullable
     String getDeviceId();
 
     void setDeviceId(@Nullable String deviceId);

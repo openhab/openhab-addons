@@ -49,14 +49,12 @@
 		<description>A Verisure Alarm.</description>
 
 		<channels>
-			<channel id="numericStatus" typeId="numericStatus" />
-			<channel id="alarmStatus" typeId="alarmStatus" />
 			<channel id="changedByUser" typeId="changedByUser" />
 			<channel id="changedVia" typeId="changedVia" />
 			<channel id="timestamp" typeId="timestamp" />
 			<channel id="installationName" typeId="installationName" />
 			<channel id="installationId" typeId="installationId" />
-			<channel id="setAlarmStatus" typeId="setAlarmStatus" />
+			<channel id="alarmStatus" typeId="alarmStatus" />
 		</channels>
 
 		<properties>
@@ -81,22 +79,17 @@
 		<description>Integrated Yale Doorman SmartLock.</description>
 
 		<channels>
-			<channel id="numericStatus" typeId="numericStatus" />
-			<channel id="smartLockStatus" typeId="smartLockStatus" />
 			<channel id="changedByUser" typeId="changedByUser" />
 			<channel id="timestamp" typeId="timestamp" />
 			<channel id="changedVia" typeId="changedVia" />
 			<channel id="motorJam" typeId="motorJam" />
-			<channel id="autoRelockEnabled" typeId="autoRelockEnabled" />
-			<channel id="smartLockVolume" typeId="smartLockVolume" />
-			<channel id="smartLockVoiceLevel" typeId="smartLockVoiceLevel" />
 			<channel id="location" typeId="location" />
 			<channel id="installationName" typeId="installationName" />
 			<channel id="installationId" typeId="installationId" />
-			<channel id="setSmartLockStatus" typeId="setSmartLockStatus" />
-			<channel id="setAutoRelock" typeId="setAutoRelock" />
-			<channel id="setSmartLockVolume" typeId="setSmartLockVolume" />
-			<channel id="setSmartLockVoiceLevel" typeId="setSmartLockVoiceLevel" />
+			<channel id="smartLockStatus" typeId="smartLockStatus" />
+			<channel id="autoRelock" typeId="autoRelock" />
+			<channel id="smartLockVolume" typeId="smartLockVolume" />
+			<channel id="smartLockVoiceLevel" typeId="smartLockVoiceLevel" />
 		</channels>
 
 		<properties>
@@ -122,11 +115,10 @@
 
 		<channels>
 			<channel id="hazardous" typeId="hazardous" />
-			<channel id="smartPlugStatus" typeId="smartPlugStatus" />
 			<channel id="location" typeId="location" />
 			<channel id="installationName" typeId="installationName" />
 			<channel id="installationId" typeId="installationId" />
-			<channel id="setSmartPlugStatus" typeId="setSmartPlugStatus" />
+			<channel id="smartPlugStatus" typeId="smartPlugStatus" />
 		</channels>
 
 		<properties>
@@ -392,13 +384,6 @@
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
 
-	<channel-type id="alarmStatus">
-		<item-type>String</item-type>
-		<label>Current Alarm Status</label>
-		<description>Information about current alarm status.</description>
-		<state readOnly="true" pattern="%s" />
-	</channel-type>
-
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Time Stamp</label>
@@ -427,35 +412,35 @@
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
-	<channel-type id="setAlarmStatus">
-		<item-type>Number</item-type>
+	<channel-type id="alarmStatus">
+		<item-type>String</item-type>
 		<label>Alarm Status</label>
-		<description>Method to change alarm status.</description>
+		<description>Verisure alarm status.</description>
 		<state>
 			<options>
-				<option value="0">DISARMED</option>
-				<option value="1">ARMED HOME</option>
-				<option value="2">ARMED AWAY</option>
+				<option value="DISARMED">DISARMED</option>
+				<option value="ARMED_HOME">ARMED HOME</option>
+				<option value="ARMED_AWAY">ARMED AWAY</option>
 			</options>
 		</state>
 	</channel-type>
 
-	<channel-type id="setSmartLockStatus">
+	<channel-type id="smartLockStatus">
 		<item-type>Switch</item-type>
 		<label>SmartLock Status</label>
-		<description>Channel to control smart lock status.</description>
+		<description>Verisure smart lock status.</description>
 	</channel-type>
 
-	<channel-type id="setAutoRelock">
+	<channel-type id="autoRelock">
 		<item-type>Switch</item-type>
-		<label>SmartLock Auto Re-lock setting</label>
-		<description>Method to change smart lock auto re-lock setting.</description>
+		<label>SmartLock Auto Re-lock</label>
+		<description>Verisure smart lock auto re-lock status.</description>
 	</channel-type>
 
-	<channel-type id="setSmartLockVolume">
+	<channel-type id="smartLockVolume">
 		<item-type>String</item-type>
-		<label>SmartLock Volume Setting</label>
-		<description>Method to change smart lock volume setting.</description>
+		<label>SmartLock Volume</label>
+		<description>Verisure smart lock volume status.</description>
 		<state>
 			<options>
 				<option value="SILENCE">SILENCE</option>
@@ -465,10 +450,10 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="setSmartLockVoiceLevel">
+	<channel-type id="smartLockVoiceLevel">
 		<item-type>String</item-type>
 		<label>SmartLock Voice Level Setting</label>
-		<description>Method to change smart lock voice level setting.</description>
+		<description>Verisure smart lock voice level status.</description>
 		<state>
 			<options>
 				<option value="ESSENTIAL">ESSENTIAL</option>
@@ -477,10 +462,10 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="setSmartPlugStatus">
+	<channel-type id="smartPlugStatus">
 		<item-type>Switch</item-type>
 		<label>SmartPlug Status</label>
-		<description>Method to change smart plug status.</description>
+		<description>Verisure smart plug status.</description>
 	</channel-type>
 
 	<channel-type id="state">
@@ -520,13 +505,6 @@
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
-	<channel-type id="smartLockStatus">
-		<item-type>String</item-type>
-		<label>SmartLock Status</label>
-		<description>The status of the smart lock.</description>
-		<state readOnly="true" pattern="%s" />
-	</channel-type>
-
 	<channel-type id="location">
 		<item-type>String</item-type>
 		<label>Location</label>
@@ -548,13 +526,6 @@
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
-	<channel-type id="smartPlugStatus">
-		<item-type>String</item-type>
-		<label>SmartPlug Status</label>
-		<description>Is Verisure smart plug On or Off.</description>
-		<state readOnly="true" pattern="%s" />
-	</channel-type>
-
 	<channel-type id="installationName">
 		<item-type>String</item-type>
 		<label>Installation Site Name</label>
@@ -568,27 +539,5 @@
 		<description>ID of the installation site.</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
-
-	<channel-type id="autoRelockEnabled">
-		<item-type>String</item-type>
-		<label>Auto Re-Lock Enabled</label>
-		<description>Is automatic re-lock enabled.</description>
-		<state readOnly="true" pattern="%s" />
-	</channel-type>
-
-	<channel-type id="smartLockVolume">
-		<item-type>String</item-type>
-		<label>SmartLock Volume Setting</label>
-		<description>Verisure smart lock volume setting.</description>
-		<state readOnly="true" pattern="%s" />
-	</channel-type>
-
-	<channel-type id="smartLockVoiceLevel">
-		<item-type>String</item-type>
-		<label>SmartLock Voice Level Setting</label>
-		<description>Verisure smart lock voice level setting.</description>
-		<state readOnly="true" pattern="%s" />
-	</channel-type>
-
 
 </thing:thing-descriptions>

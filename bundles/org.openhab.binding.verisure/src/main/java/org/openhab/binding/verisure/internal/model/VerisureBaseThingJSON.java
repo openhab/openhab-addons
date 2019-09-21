@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class VerisureBaseThingJSON implements VerisureThingJSON {
 
-    protected @Nullable String deviceId;
+    protected String deviceId = "";
     protected @Nullable String name;
     protected @Nullable String location;
     protected @Nullable String status;
@@ -73,7 +73,7 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
      * @return the deviceId
      */
     @Override
-    public @Nullable String getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
@@ -82,7 +82,8 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
      */
     @Override
     public void setDeviceId(@Nullable String deviceId) {
-        this.deviceId = deviceId;
+        // Make sure device id is normalized, i.e. replace all non character/digits with empty string
+        this.deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
     }
 
     /**

@@ -639,7 +639,6 @@ public class VerisureSession {
             if (thing != null) {
                 // Set unique deviceID
                 String deviceId = "alarm" + installationId.toString();
-                deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
                 thing.setDeviceId(deviceId);
                 VerisureThingJSON oldObj = verisureThings.get(thing.getDeviceId());
                 if (oldObj == null || !oldObj.equals(thing)) {
@@ -680,21 +679,22 @@ public class VerisureSession {
                     slThing.setData(data);
                     // Set unique deviceID
                     String deviceId = doorLock.getDevice().getDeviceLabel();
-                    deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
-                    slThing.setDeviceId(deviceId);
-                    // Set location
-                    slThing.setLocation(doorLock.getDevice().getArea());
-                    // Fetch more info from old endpoint
-                    VerisureSmartLockJSON smartLockThing = callJSONRest(SMARTLOCK_PATH + deviceId,
-                            VerisureSmartLockJSON.class);
-                    logger.debug("REST Response ({})", smartLockThing);
-                    slThing.setSmartLockJSON(smartLockThing);
-                    VerisureThingJSON oldObj = verisureThings.get(deviceId);
-                    if (oldObj == null || !oldObj.equals(slThing)) {
-                        slThing.setSiteId(installation.getInstallationId());
-                        slThing.setSiteName(installation.getInstallationName());
-                        verisureThings.put(deviceId, slThing);
-                        notifyListeners(slThing);
+                    if (deviceId != null) {
+                        slThing.setDeviceId(deviceId);
+                        // Set location
+                        slThing.setLocation(doorLock.getDevice().getArea());
+                        // Fetch more info from old endpoint
+                        VerisureSmartLockJSON smartLockThing = callJSONRest(SMARTLOCK_PATH + slThing.getDeviceId(),
+                                VerisureSmartLockJSON.class);
+                        logger.debug("REST Response ({})", smartLockThing);
+                        slThing.setSmartLockJSON(smartLockThing);
+                        VerisureThingJSON oldObj = verisureThings.get(slThing.getDeviceId());
+                        if (oldObj == null || !oldObj.equals(slThing)) {
+                            slThing.setSiteId(installation.getInstallationId());
+                            slThing.setSiteName(installation.getInstallationName());
+                            verisureThings.put(slThing.getDeviceId(), slThing);
+                            notifyListeners(slThing);
+                        }
                     }
                 }
             } else {
@@ -729,16 +729,17 @@ public class VerisureSession {
                     slThing.setData(data);
                     // Set unique deviceID
                     String deviceId = smartPlug.getDevice().getDeviceLabel();
-                    deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
-                    slThing.setDeviceId(deviceId);
-                    // Set location
-                    slThing.setLocation(smartPlug.getDevice().getArea());
-                    VerisureThingJSON oldObj = verisureThings.get(deviceId);
-                    if (oldObj == null || !oldObj.equals(slThing)) {
-                        slThing.setSiteId(installation.getInstallationId());
-                        slThing.setSiteName(installation.getInstallationName());
-                        verisureThings.put(deviceId, slThing);
-                        notifyListeners(slThing);
+                    if (deviceId != null) {
+                        slThing.setDeviceId(deviceId);
+                        // Set location
+                        slThing.setLocation(smartPlug.getDevice().getArea());
+                        VerisureThingJSON oldObj = verisureThings.get(slThing.getDeviceId());
+                        if (oldObj == null || !oldObj.equals(slThing)) {
+                            slThing.setSiteId(installation.getInstallationId());
+                            slThing.setSiteName(installation.getInstallationName());
+                            verisureThings.put(slThing.getDeviceId(), slThing);
+                            notifyListeners(slThing);
+                        }
                     }
                 }
             } else {
@@ -772,16 +773,17 @@ public class VerisureSession {
                     cThing.setData(data);
                     // Set unique deviceID
                     String deviceId = climate.getDevice().getDeviceLabel();
-                    deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
-                    cThing.setDeviceId(deviceId);
-                    // Set location
-                    cThing.setLocation(climate.getDevice().getArea());
-                    VerisureThingJSON oldObj = verisureThings.get(deviceId);
-                    if (oldObj == null || !oldObj.equals(cThing)) {
-                        cThing.setSiteId(installation.getInstallationId());
-                        cThing.setSiteName(installation.getInstallationName());
-                        verisureThings.put(deviceId, cThing);
-                        notifyListeners(cThing);
+                    if (deviceId != null) {
+                        cThing.setDeviceId(deviceId);
+                        // Set location
+                        cThing.setLocation(climate.getDevice().getArea());
+                        VerisureThingJSON oldObj = verisureThings.get(cThing.getDeviceId());
+                        if (oldObj == null || !oldObj.equals(cThing)) {
+                            cThing.setSiteId(installation.getInstallationId());
+                            cThing.setSiteName(installation.getInstallationName());
+                            verisureThings.put(cThing.getDeviceId(), cThing);
+                            notifyListeners(cThing);
+                        }
                     }
                 }
             } else {
@@ -817,16 +819,17 @@ public class VerisureSession {
                     dThing.setData(data);
                     // Set unique deviceID
                     String deviceId = doorWindow.getDevice().getDeviceLabel();
-                    deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
-                    dThing.setDeviceId(deviceId);
-                    // Set location
-                    dThing.setLocation(doorWindow.getDevice().getArea());
-                    VerisureThingJSON oldObj = verisureThings.get(deviceId);
-                    if (oldObj == null || !oldObj.equals(dThing)) {
-                        dThing.setSiteId(installation.getInstallationId());
-                        dThing.setSiteName(installation.getInstallationName());
-                        verisureThings.put(deviceId, dThing);
-                        notifyListeners(dThing);
+                    if (deviceId != null) {
+                        dThing.setDeviceId(deviceId);
+                        // Set location
+                        dThing.setLocation(doorWindow.getDevice().getArea());
+                        VerisureThingJSON oldObj = verisureThings.get(dThing.getDeviceId());
+                        if (oldObj == null || !oldObj.equals(dThing)) {
+                            dThing.setSiteId(installation.getInstallationId());
+                            dThing.setSiteName(installation.getInstallationName());
+                            verisureThings.put(dThing.getDeviceId(), dThing);
+                            notifyListeners(dThing);
+                        }
                     }
                 }
             } else {
@@ -851,7 +854,6 @@ public class VerisureSession {
             if (thing != null) {
                 // Set unique deviceID
                 String deviceId = "bc" + installationId.toString();
-                deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
                 thing.setDeviceId(deviceId);
                 VerisureThingJSON oldObj = verisureThings.get(deviceId);
                 if (oldObj == null || !oldObj.equals(thing)) {
@@ -893,13 +895,12 @@ public class VerisureSession {
                         upThing.setData(data);
                         // Set unique deviceID
                         String deviceId = "up" + userTracking.getWebAccount() + installationId.toString();
-                        deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
                         upThing.setDeviceId(deviceId);
-                        VerisureThingJSON oldObj = verisureThings.get(deviceId);
+                        VerisureThingJSON oldObj = verisureThings.get(upThing.getDeviceId());
                         if (oldObj == null || !oldObj.equals(upThing)) {
                             upThing.setSiteId(installation.getInstallationId());
                             upThing.setSiteName(installation.getInstallationName());
-                            verisureThings.put(deviceId, upThing);
+                            verisureThings.put(upThing.getDeviceId(), upThing);
                             notifyListeners(upThing);
                         }
                     }

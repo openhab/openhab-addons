@@ -31,7 +31,7 @@ public class VerisureAlarmJSON extends VerisureBaseThingJSON {
     private @Nullable String type;
 
     @Override
-    public @Nullable String getDeviceId() {
+    public String getDeviceId() {
         if ("ARM_STATE".equals(type)) {
             return "alarm" + deviceId;
         } else {
