@@ -21,8 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link SurePetcareConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link SurePetcareConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Rene Scherer - Initial contribution
  */
@@ -31,7 +30,7 @@ public class SurePetcareConstants {
 
     public static final String BINDING_ID = "surepetcare";
 
-    // List all Thing Type UIDs, related to the WeatherUnderground Binding
+    // List all Thing Type UIDs, related to the binding
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_HOUSEHOLD = new ThingTypeUID(BINDING_ID, "household");
     public static final ThingTypeUID THING_TYPE_PET = new ThingTypeUID(BINDING_ID, "pet");

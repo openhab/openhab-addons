@@ -35,12 +35,10 @@ public abstract class SurePetcareBaseObjectHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcareBaseObjectHandler.class);
 
-    protected String id;
     protected SurePetcareAPIHelper petcareAPI;
 
     public SurePetcareBaseObjectHandler(Thing thing, SurePetcareAPIHelper petcareAPI) {
         super(thing);
-        id = thing.getProperties().get("id");
         this.petcareAPI = petcareAPI;
     }
 

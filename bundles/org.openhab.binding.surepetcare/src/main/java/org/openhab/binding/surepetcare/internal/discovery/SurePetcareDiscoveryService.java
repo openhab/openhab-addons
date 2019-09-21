@@ -66,6 +66,8 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
 
     public SurePetcareDiscoveryService(ThingUID bridgeUID, SurePetcareAPIHelper petcareAPI) {
         super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS, true);
+        logger.debug("Setting BridgeUID to: {}", bridgeUID.getAsString());
+
         this.bridgeUID = bridgeUID;
         this.petcareAPI = petcareAPI;
     }
@@ -142,14 +144,15 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void createHouseholdThing(SurePetcareHousehold household) {
-        ThingUID thingsUID = new ThingUID(SurePetcareConstants.THING_TYPE_HOUSEHOLD, household.getId().toString());
+        ThingUID thingsUID = new ThingUID(SurePetcareConstants.THING_TYPE_HOUSEHOLD, bridgeUID,
+                household.getId().toString());
         Map<String, Object> properties = household.getThingProperties();
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(household.getName())
                 .withProperties(properties).withBridge(bridgeUID).build());
     }
 
     private void createPetThing(SurePetcarePet pet) {
-        ThingUID thingsUID = new ThingUID(SurePetcareConstants.THING_TYPE_PET, pet.getId().toString());
+        ThingUID thingsUID = new ThingUID(SurePetcareConstants.THING_TYPE_PET, bridgeUID, pet.getId().toString());
         Map<String, Object> properties = pet.getThingProperties();
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(pet.getName()).withProperties(properties)
                 .withBridge(bridgeUID).build());
@@ -172,7 +175,8 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
                 break;
         }
         if (typeUID != null) {
-            ThingUID thingsUID = new ThingUID(typeUID, device.getId().toString());
+            ThingUID thingsUID = new ThingUID(typeUID, bridgeUID, device.getId().toString());
+            logger.debug("BridgeUID: {}, ThingsUID: {}", bridgeUID.getAsString(), thingsUID.getAsString());
             Map<String, Object> properties = device.getThingProperties();
             thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(device.getName())
                     .withProperties(properties).withBridge(bridgeUID).build());

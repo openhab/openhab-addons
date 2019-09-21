@@ -64,7 +64,6 @@ public class SurePetcareHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        logger.debug("supportsThingType - check for thing type: {}", thingTypeUID);
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 

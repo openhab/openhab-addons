@@ -38,7 +38,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
 
     @Override
     public void updateThing() {
-        SurePetcarePet pet = petcareAPI.retrievePet(id);
+        SurePetcarePet pet = petcareAPI.retrievePet(thing.getUID().getId());
         if (pet != null) {
             logger.debug("updating all thing channels for pet : {}", pet.toString());
             updateState("id", new DecimalType(pet.getId()));
@@ -54,7 +54,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
     }
 
     public void updatePetLocation() {
-        SurePetcarePet pet = petcareAPI.retrievePet(id);
+        SurePetcarePet pet = petcareAPI.retrievePet(thing.getUID().getId());
         if (pet != null) {
             updateState("location", new StringType(pet.getLocation().getLocationName()));
             updateState("locationChanged", new DateTimeType(pet.getLocation().getLocationChanged()));

@@ -10,6 +10,10 @@
 		<label>Sure Petcare API Bridge</label>
 		<description>The Sure Petcare Cloud API Bridge</description>
 
+        <channels>
+            <channel id="online" typeId="onlineType" />
+        </channels>
+
         <config-description>
 
             <parameter name="username" type="text" required="true">

@@ -36,7 +36,7 @@ public class SurePetcareHouseholdHandler extends SurePetcareBaseObjectHandler {
 
     @Override
     public void updateThing() {
-        SurePetcareHousehold household = petcareAPI.retrieveHousehold(id);
+        SurePetcareHousehold household = petcareAPI.retrieveHousehold(thing.getUID().getId());
         if (household != null) {
             updateState("id", new DecimalType(household.getId()));
             updateState("name", new StringType(household.getName()));

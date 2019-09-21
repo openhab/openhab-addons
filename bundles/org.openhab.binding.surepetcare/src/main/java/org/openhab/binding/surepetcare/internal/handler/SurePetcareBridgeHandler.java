@@ -64,7 +64,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Sure Petcare bridge handler.");
         Configuration config = getThing().getConfiguration();
-
+        updateState("online", OnOffType.OFF);
         // Check if username and password have been provided during the bridge creation
         if ((StringUtils.trimToNull((String) config.get(SurePetcareConstants.PASSWORD)) == null)
                 || (StringUtils.trimToNull((String) config.get(SurePetcareConstants.USERNAME)) == null)) {
@@ -83,6 +83,8 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 petcareAPI.updateTopologyCache();
                 logger.debug("Cache update successful, setting bridge status to ONLINE");
                 updateStatus(ThingStatus.ONLINE);
+                updateState("online", OnOffType.ON);
+
             } catch (AuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE);
             }
@@ -119,6 +121,8 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     @SuppressWarnings("null")
     @Override
     public void dispose() {
+        updateState("online", OnOffType.OFF);
+
         if (topologyPollingJob != null && !topologyPollingJob.isCancelled()) {
             topologyPollingJob.cancel(true);
             topologyPollingJob = null;
@@ -145,7 +149,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         petcareAPI.updateTopologyCache();
         // update existing things
         for (Thing th : ((Bridge) thing).getThings()) {
-            logger.debug("  Thing: {}, id: {}", th.getThingTypeUID().getAsString(), th.getProperties().get("id"));
+            logger.debug("  Thing: {}, id: {}", th.getThingTypeUID().getAsString(), th.getUID().getId());
             if (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_PET)) {
                 ThingHandler handler = th.getHandler();
                 if (handler != null) {
@@ -160,7 +164,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         petcareAPI.updatePetLocations();
         for (Thing th : ((Bridge) thing).getThings()) {
             if (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_PET)) {
-                logger.debug("updating pet location for: {}", th.getProperties().get("id"));
+                logger.debug("updating pet location for: {}", th.getUID().getId());
                 ThingHandler handler = th.getHandler();
                 if (handler != null) {
                     ((SurePetcarePetHandler) handler).updatePetLocation();
