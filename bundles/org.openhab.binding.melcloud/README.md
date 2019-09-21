@@ -82,19 +82,19 @@ A.C. device configuration:
 
 A.C. device channels
 
-| Channel             | Type     | Description                                                                | Read Only |
-|---------------------|----------|----------------------------------------------------------------------------|-----------|
-| power               | Switch   | Power Status of Device.                                                    | False     |
-| operationMode       | Number   | Operation mode: 1 = Heat, 2 = Dry, 3 = Cool, 7 = Fan, 8 = Auto.            | False     |
-| setTemperature      | Number   | Set Temperature: Min = 10, Max = 40.                                       | False     |
-| fanSpeed            | Number   | Fan speed: 0 = Auto, 1 = 1, 2 = 2, 3 = 3, 4 = 4, 5 = 5.                    | False     |
-| vaneHorizontal      | Number   | Vane Horizontal: 0 = Auto, 1 = 1, 2 = 2, 3 = 3, 4 = 4, 5 = 5, 12 = Swing.  | False     |
-| vaneVertical        | Number   | Vane Vertical: 0 = Auto, 1 = 1, 2 = 2, 3 = 3, 4 = 4, 5 = 5, 7 = Swing.     | False     |
-| roomTemperature     | Number   | Room temperature.                                                          | True      |
-| lastCommunication   | DateTime | Last Communication time when MELCloud communicated to the device.          | True      |
-| nextCommunication   | DateTime | Next communication time when MELCloud will communicate to the device.      | True      |
-| offline             | Switch   | Is device in offline state.                                                | True      |
-| hasPendingCommand   | Switch   | Device has a pending command(s).                                           | True      |
+| Channel             | Type               | Description                                                                | Read Only |
+|---------------------|--------------------|----------------------------------------------------------------------------|-----------|
+| power               | Switch             | Power Status of Device.                                                    | False     |
+| operationMode       | Number             | Operation mode: 1 = Heat, 2 = Dry, 3 = Cool, 7 = Fan, 8 = Auto.            | False     |
+| setTemperature      | Number:Temperature | Set Temperature: Min = 10, Max = 40.                                       | False     |
+| fanSpeed            | Number             | Fan speed: 0 = Auto, 1 = 1, 2 = 2, 3 = 3, 4 = 4, 5 = 5.                    | False     |
+| vaneHorizontal      | Number             | Vane Horizontal: 0 = Auto, 1 = 1, 2 = 2, 3 = 3, 4 = 4, 5 = 5, 12 = Swing.  | False     |
+| vaneVertical        | Number             | Vane Vertical: 0 = Auto, 1 = 1, 2 = 2, 3 = 3, 4 = 4, 5 = 5, 7 = Swing.     | False     |
+| roomTemperature     | Number:Temperature | Room temperature.                                                          | True      |
+| lastCommunication   | DateTime           | Last Communication time when MELCloud communicated to the device.          | True      |
+| nextCommunication   | DateTime           | Next communication time when MELCloud will communicate to the device.      | True      |
+| offline             | Switch             | Is device in offline state.                                                | True      |
+| hasPendingCommand   | Switch             | Device has a pending command(s).                                           | True      |
 
 
 ## Full Example for items configuration
@@ -102,7 +102,7 @@ A.C. device channels
 **melcloud.things**
 
 ```
-Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user.name@email.com", password="xxxxxx", language="0" ] {
+Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user.name@example.com", password="xxxxxx", language="0" ] {
     Thing acdevice livingroom "Livingroom A.C. device" [ deviceID=123456, pollingInterval=60 ]
 }
 ```
