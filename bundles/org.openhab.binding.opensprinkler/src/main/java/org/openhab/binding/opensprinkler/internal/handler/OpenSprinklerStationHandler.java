@@ -116,7 +116,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         if (nextDuration != null && isLinked(nextDuration.getUID()) && nextDurationItemValue != null) {
             return nextDurationItemValue;
         }
-        return config.duration;
+        return new BigDecimal(64800);
     }
 
     /**

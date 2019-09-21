@@ -79,11 +79,6 @@
 				<label>Station Index</label>
 				<description>The index of the station, starting with 0, of the station.</description>
 			</parameter>
-			<parameter name="duration" type="integer" required="false" min="1" max="64800">
-			     <label>Duration to open</label>
-			     <description>The duration in seconds the station should be remaining open when switched on.</description>
-			     <default>64800</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 

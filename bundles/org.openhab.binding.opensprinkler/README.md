@@ -51,13 +51,12 @@ Bridge opensprinkler:pi:pi [stations=8, refresh=60] {
 The `station` thing can be used with both bridge and has the following configuration properties:
 
 -   stationIndex: The index of the station to communicate with, starting with 0 for the first station
--   duration: The time in seconds the station should be kept open when turned on the next time
 
 Be aware, that not all features of a station may be supported by the Pi interface bridge.
 
 ## Channels
 
-The following channel is supported by the station thing.
+The following channel is supported by the `station` thing.
 
 | Channel Type ID    | Item Type   |    | Description                                             |
 |--------------------|-------------|----|---------------------------------------------------------|
@@ -69,9 +68,9 @@ The following channel is supported by the station thing.
 |                    |             |    | linked to this channel, the binding does not persist    |
 |                    |             |    | values of it.
 
+When using the `nextDuration` channel, it is advised to setup persistence (e.g. MapDB) in order to persist the value through restarts.
 
-
-The following is supported by the device thing, but only when connected using the http interface.
+The following is supported by the `device` thing, but only when connected using the http interface.
 
 | Channel Type ID | Item Type |    | Description                                                           |
 |-----------------|-----------|----|-----------------------------------------------------------------------|

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.opensprinkler.internal.config;
 
-import java.math.BigDecimal;
-
 /**
  * The {@link OpenSprinklerStationConfig} class defines the configuration options
  * for the OpenSprinkler Thing.
@@ -25,6 +23,4 @@ public class OpenSprinklerStationConfig {
      * The index of the station the thing is configured to control, starting with 0.
      */
     public int stationIndex = -1;
-
-    public BigDecimal duration;
 }
