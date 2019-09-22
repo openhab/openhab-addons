@@ -2360,8 +2360,21 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         if (currentURI == null) {
             return false;
         }
-        return currentURI.contains(ANALOG_LINE_IN_URI)
-                || (currentURI.startsWith(OPTICAL_LINE_IN_URI) && currentURI.endsWith(SPDIF));
+        return isPlayingAnalogLineIn(currentURI) || isPlayingOpticalLineIn(currentURI);
+    }
+
+    private boolean isPlayingAnalogLineIn(String currentURI) {
+        if (currentURI == null) {
+            return false;
+        }
+        return currentURI.contains(ANALOG_LINE_IN_URI);
+    }
+
+    private boolean isPlayingOpticalLineIn(String currentURI) {
+        if (currentURI == null) {
+            return false;
+        }
+        return currentURI.startsWith(OPTICAL_LINE_IN_URI) && currentURI.endsWith(SPDIF);
     }
 
     /**
@@ -2434,14 +2447,22 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
      */
     private void handleNotificationSound(Command notificationURL, ZonePlayerHandler coordinator) {
+        boolean sourceStoppable = !isPlayingOpticalLineIn(coordinator.getCurrentURI());
         String originalVolume = (isAdHocGroup() || isStandalonePlayer()) ? getVolume() : coordinator.getVolume();
-        coordinator.stop();
-        coordinator.waitForNotTransportState(STATE_PLAYING);
-        applyNotificationSoundVolume();
+        if (sourceStoppable) {
+            coordinator.stop();
+            coordinator.waitForNotTransportState(STATE_PLAYING);
+            applyNotificationSoundVolume();
+        }
         long notificationPosition = coordinator.getQueueSize() + 1;
         coordinator.addURIToQueue(notificationURL.toString(), "", notificationPosition, false);
         coordinator.setCurrentURI(QUEUE_URI + coordinator.getUDN() + "#0", "");
         coordinator.setPositionTrack(notificationPosition);
+        if (!sourceStoppable) {
+            coordinator.stop();
+            coordinator.waitForNotTransportState(STATE_PLAYING);
+            applyNotificationSoundVolume();
+        }
         coordinator.play();
         coordinator.waitForFinishedNotification();
         if (originalVolume != null) {
