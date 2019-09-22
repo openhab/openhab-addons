@@ -108,6 +108,7 @@ Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX"
     sensor_plug 158d0001XXXXXX "Xiaomi Plug" [itemId="158d0001XXXXXX"]
     sensor_magnet 158d0001XXXXXX "Xiaomi Door Sensor" [itemId="158d0001XXXXXX"]
     sensor_switch 158d0001XXXXXX "Xiaomi Mi Wireless Switch" [itemId="158d0001XXXXXX"]
+    sensor_switch_aq2 158d0001XXXXXX "Xiaomi Wireless Switch with acceleration sensor" [itemId="158d0001XXXXXX"]
     86sw2 158d0001XXXXXX "Aqara Wireless Wall Switch" [itemId="158d0001XXXXXX"]
 }
 ```
@@ -192,6 +193,10 @@ Switch Vibration_BatteryLow <energy> { channel="mihome:sensor_vibration:<GwID>:<
 Number Switch_Battery <battery> { channel="mihome:sensor_switch:<GwID>:<ID>:batteryLevel" }
 Switch Switch_BatteryLow <energy> { channel="mihome:sensor_switch:<GwID>:<ID>:lowBattery" }
 
+// Aqara Wireless Switch with acceleration sensor - see "xiaomi.rules" for action triggers
+Number SwitchA_Battery <battery> { channel="mihome:sensor_switch_aq2:<GwID>:<ID>:batteryLevel" }
+Switch SwitchA_BatteryLow <energy> { channel="mihome:sensor_switch_aq2:<GwID>:<ID>:lowBattery" }
+
 // Aqara Wirelss Light Control (1 Button) - see "xiaomi.rules" for action triggers
 Number AqaraSwitch1_Battery <battery> { channel="mihome:86sw1:<GwID>:<ID>:batteryLevel" }
 Switch AqaraSwitch1_BatteryLow <energy> { channel="mihome:86sw1:<GwID>:<ID>:lowBattery" }
@@ -237,6 +242,30 @@ then
             <ACTION>
         }
         case "LONG_RELEASED": {
+            <ACTION>
+        }
+    }
+end
+
+rule "Aqara Wireless Switch with acceleration sensor"
+when
+    Channel "mihome:sensor_switch_aq2:<GwID>:<ID>:button" triggered
+then
+    var actionName = receivedEvent.getEvent()
+    switch(actionName) {
+        case "SHORT_PRESSED": {
+            <ACTION>
+        }
+        case "DOUBLE_PRESSED": {
+            <ACTION>
+        }
+        case "LONG_PRESSED": {
+            <ACTION>
+        }
+        case "LONG_RELEASED": {
+            <ACTION>
+        }
+	case "SHAKE": {
             <ACTION>
         }
     }
