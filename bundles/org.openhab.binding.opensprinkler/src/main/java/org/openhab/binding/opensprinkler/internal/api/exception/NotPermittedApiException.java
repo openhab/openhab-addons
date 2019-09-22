@@ -18,7 +18,7 @@ package org.openhab.binding.opensprinkler.internal.api.exception;
  *
  * @author Chris Graham - Initial contribution
  */
-public class NotPermittedApiException extends Exception {
+public class NotPermittedApiException extends GeneralApiException {
     /**
      * Serial ID of this error class.
      */

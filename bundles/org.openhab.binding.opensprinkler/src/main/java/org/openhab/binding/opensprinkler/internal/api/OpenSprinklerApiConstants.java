@@ -38,8 +38,6 @@ public class OpenSprinklerApiConstants {
     public static final String CMD_STATION = "sid=";
     public static final String CMD_STATION_ENABLE = "en=1";
     public static final String CMD_STATION_DISABLE = "en=0";
-    public static final String CMD_STATION_ENABLE_TIME = "t=64800";
-    public static final String CMD_STATION_ENABLE_TIME_UNLIMITED = "t=0";
 
     public static final String CMD_STATUS_INFO = "jc";
     public static final String CMD_OPTIONS_INFO = "jo";
