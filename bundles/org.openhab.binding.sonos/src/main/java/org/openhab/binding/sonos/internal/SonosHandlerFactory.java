@@ -53,6 +53,8 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SonosHandlerFactory.class);
 
+    // Bindings should not use the ThingRegistry! See https://github.com/openhab/openhab2-addons/pull/6080 and
+    // https://github.com/eclipse/smarthome/issues/5182
     private final ThingRegistry thingRegistry;
     private final UpnpIOService upnpIOService;
     private final AudioHTTPServer audioHTTPServer;
