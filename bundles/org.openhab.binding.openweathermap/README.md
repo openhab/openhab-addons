@@ -46,7 +46,7 @@ Once the system location will be changed, the background discovery updates the c
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | apikey          | API key to access the OpenWeatherMap API. **Mandatory**                                                                                                                                                                                                                           |
 | refreshInterval | Specifies the refresh interval (in minutes). Optional, the default value is 60, the minimum value is 10.                                                                                                                                                                          |
-| language        | Language to be used by the OpenWeatherMap API. Optional, valid values are: `ar`, `bg`, `ca`, `de`, `el`, `en`, `es`, `fa`, `fi`, `fr`, `gl`, `hr`, `hu`, `it`, `ja`, `kr`, `la`, `lt`, `mk`,  `nl`, `pl`, `pt`, `ro`, `ru`, `sk`, `sl`, `sw`, `tr`, `ua`, `vi`, `zh_cn`, `zh_tw`. |
+| language        | Language to be used by the OpenWeatherMap API. Optional, valid values are: `ar`, `bg`, `ca`, `de`, `el`, `en`, `es`, `fa`, `fi`, `fr`, `gl`, `hr`, `hu`, `it`, `ja`, `kr`, `la`, `lt`, `mk`,  `nl`, `pl`, `pt`, `ro`, `ru`, `se`, `sk`, `sl`, `tr`, `ua`, `vi`, `zh_cn`, `zh_tw`. |
 
 ### Current Weather And Forecast
 
