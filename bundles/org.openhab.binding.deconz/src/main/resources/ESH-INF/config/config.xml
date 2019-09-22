@@ -8,7 +8,12 @@
 		<parameter name="host" type="text" required="true">
 			<label>Host Address</label>
 			<context>network-address</context>
-			<description>IP address or host name and port.</description>
+			<description>IP address or host name of deCONZ interface.</description>
+		</parameter>
+		<parameter name="port" type="integer" required="false" min="0" max="65335">
+			<label>Port</label>
+			<description>Port of the deCONZ interface.</description>
+			<default>80</default>
 		</parameter>
 		<parameter name="apikey" type="text" required="false">
 			<label>API Key</label>

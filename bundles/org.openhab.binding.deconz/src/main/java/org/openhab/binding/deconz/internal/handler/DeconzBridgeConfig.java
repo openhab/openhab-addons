@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class DeconzBridgeConfig {
     public String host = "";
+    public int port = 80;
     public @Nullable String apikey;
     int timeout = 2000;
 }

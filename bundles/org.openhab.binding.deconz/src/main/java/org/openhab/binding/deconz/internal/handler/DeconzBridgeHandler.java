@@ -159,8 +159,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         if (config.apikey == null) {
             return;
         }
-        String url = url(config.host, config.apikey, null, null);
-
+        String url = url(config.host, config.port, config.apikey, null, null);
         http.get(url, config.timeout).thenApply(this::parseBridgeFullStateResponse).exceptionally(e -> {
             if (!(e instanceof SocketTimeoutException) && !(e instanceof TimeoutException)
                     && !(e instanceof CompletionException)) {
@@ -240,7 +239,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private CompletableFuture<?> requestApiKey() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Requesting API Key");
         stopTimer();
-        String url = url(config.host, null, null, null);
+        String url = url(config.host, config.port, null, null, null);
         return http.post(url, "{\"devicetype\":\"openHAB\"}", config.timeout).thenAccept(this::parseAPIKeyResponse)
                 .exceptionally(e -> {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

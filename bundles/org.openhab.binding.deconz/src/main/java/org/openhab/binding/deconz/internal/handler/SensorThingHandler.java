@@ -160,8 +160,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
 
-        String url = url(bridgeConfig.host, bridgeConfig.apikey, "sensors", config.id);
-
+        String url = url(bridgeConfig.host, bridgeConfig.port, bridgeConfig.apikey, "sensors", config.id);
         // Get initial data
         handler.getHttp().get(url.toString(), bridgeConfig.timeout).thenApply(this::parseStateResponse) //
                 .exceptionally(e -> {

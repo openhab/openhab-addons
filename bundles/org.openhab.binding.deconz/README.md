@@ -39,11 +39,13 @@ These configuration parameters are available:
 
 | Parameter | Description                                                   | Type      | Default   |
 | :-------- | :------------------------------------------------------------ | :-------: | :-------: |
-| host      | Host address (hostname/ip:port) of deCONZ interface           | string    | n/a       |
+| host      | Host address (hostname/ip) of deCONZ interface                | string    | n/a       |
+| port      | Port of deCONZ interface (default: 80)                        | string    | n/a       |
 | apikey    | Authorization API key (optional, can be filled automatically) | string    | n/a       |
 | timeout   | Timeout for asynchronous HTTP requests (in milliseconds)      | integer   | 2000      |
 
 The deCONZ bridge requires the IP address or hostname as a configuration value in order for the binding to know where to access it.
+If needed you can specify an optional port.
 
 The API key is an optional value.
 If a deCONZ API key is available because it has already been created manually, it can also be entered as a configuration value.
