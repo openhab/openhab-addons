@@ -24,7 +24,7 @@ OpenSprinkler using the HTTP interface
 
 ```
 Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, pasword="opendoor", refresh=60] {
-    Thing station 01 [stationIndex=1, duration=300]
+    Thing station 01 [stationIndex=1]
 }
 ```
 
@@ -39,7 +39,7 @@ OpenSprinkler using the Pi interface
 
 ```
 Bridge opensprinkler:pi:pi [stations=8, refresh=60] {
-    Thing station 01 [stationIndex=1, duration=300]
+    Thing station 01 [stationIndex=1]
 }
 ```
 
@@ -82,8 +82,8 @@ demo.Things:
 
 ```
 Bridge opensprinkler:http:http [hostname="127.0.0.1", port=81, password="opendoor"] {
-    Thing station 01 [stationIndex=0, duration=300]
-    Thing station 02 [stationIndex=1, duration=600]
+    Thing station 01 [stationIndex=0]
+    Thing station 02 [stationIndex=1]
     Thing station 03 [stationIndex=2]
     Thing station 04 [stationIndex=3]
     Thing station 05 [stationIndex=4]

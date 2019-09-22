@@ -156,8 +156,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
      * @param stationId Int of the station to control. Starts at 0.
      * @return State representation for the channel.
      */
-    @Nullable
-    private State getRemainingWaterTime(int stationId) {
+    private @Nullable State getRemainingWaterTime(int stationId) {
         long remainingWaterTime = 0;
         OpenSprinklerApi api = getApi();
         if (api == null) {
