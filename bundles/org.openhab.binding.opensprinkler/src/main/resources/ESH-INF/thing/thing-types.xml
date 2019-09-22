@@ -71,6 +71,7 @@
 		<channels>
 			<channel id="stationState" typeId="stationState"></channel>
 			<channel id="remainingWaterTime" typeId="remainingWaterTime"></channel>
+			<channel id="nextDuration" typeId="nextDuration"></channel>
 		</channels>
 
 		<config-description>
@@ -113,5 +114,12 @@
 		<label>Remaining Water Time</label>
 		<description>Read-only property of the remaining water time of the station.</description>
 		<state readOnly="true" pattern="%.0f min"/>
+	</channel-type>
+	
+	<channel-type id="nextDuration">
+		<item-type>Number:Time</item-type>
+		<label>Next Open Duration</label>
+		<description>The duration the station will be opened the next time it is switched on.</description>
+		<state readOnly="true" pattern="%.0f s"/>
 	</channel-type>
 </thing:thing-descriptions>
