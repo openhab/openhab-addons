@@ -8,9 +8,9 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
-		<label>Xiaomi Aqara Wireless Switch</label>
-		<description>Square-shaped mini wireless switch that allows to trigger four types of event: single click, double
-			click, long click press and long click release.</description>
+		<label>Xiaomi Aqara Wireless Switch (optionally with acceleration sensor)</label>
+		<description>Square-shaped mini wireless switch that allows to trigger four (or five) types of event: single click, double
+			click, long click press and long click release (and shake).</description>
 		<channels>
 			<channel id="button" typeId="button" />
 			<channel id="batteryLevel" typeId="system.battery-level" />
