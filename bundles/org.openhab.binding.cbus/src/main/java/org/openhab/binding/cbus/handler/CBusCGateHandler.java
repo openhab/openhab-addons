@@ -198,7 +198,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                 }
             } catch (CGateConnectException e) {
                 updateStatus();
-                if (e.getMessage().equals("Connection refused")) {
+                if (e.getMessage().startsWith("Connection refused")) {
                     logger.error("Failed to connect to CGate: Connection refused");
                 } else {
                     logger.error("Failed to connect to CGate: {}", e);
