@@ -44,7 +44,7 @@ public class HeliosVentilationBindingConstants {
     private static final Logger LOGGER;
     static {
         /* logger is used by readChannelProperties() so we need to initialize logger first. */
-        LOGGER = LoggerFactory.getLogger(HeliosVentilationHandler.class);
+        LOGGER = LoggerFactory.getLogger(HeliosVentilationBindingConstants.class);
         DATAPOINTS = readChannelProperties();
     }
     // List of all Channel ids
