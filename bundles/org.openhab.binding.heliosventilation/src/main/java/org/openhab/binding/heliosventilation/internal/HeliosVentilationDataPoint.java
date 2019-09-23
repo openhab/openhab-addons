@@ -286,11 +286,12 @@ public class HeliosVentilationDataPoint {
      * @param link is the sister datapoint
      */
     public void append(HeliosVentilationDataPoint link) {
+        HeliosVentilationDataPoint existing = this.link;
         if (this == link) {
             // this datapoint is already there, so we do nothing and return
             return;
-        } else if (this.link != null) {
-            this.link.append(link);
+        } else if (existing != null) {
+            existing.append(link);
         } else {
             this.link = link;
         }
