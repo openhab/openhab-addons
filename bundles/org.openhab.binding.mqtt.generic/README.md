@@ -189,7 +189,7 @@ Once this action instance is retrieved, you can invoke the `publishMQTT(String t
 mqttActions.publishMQTT("mytopic","myvalue", true)
 ```
 
-The retained argument is options and if not supplied defaults to `false`.
+The retained argument is optional and if not supplied defaults to `false`.
 
 ## Limitations
 
