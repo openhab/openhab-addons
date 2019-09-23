@@ -99,4 +99,10 @@ public class ServiceCommand<T> {
         return responseListener;
     }
 
+    @Override
+    public String toString() {
+        return "ServiceCommand [requestId=" + requestId + ", type=" + type + ", target=" + target + ", payload="
+                + payload + "]";
+    }
+
 }

@@ -200,10 +200,7 @@ public class LGWebOSTVSocket {
     public void onError(Throwable cause) {
         Optional.ofNullable(this.listener).ifPresent(l -> l.onError(cause.getMessage()));
         logger.trace("Connection Error.", cause);
-        if (State.CONNECTING == this.state) { // failed connection attempt.
-            // TODO: if onClosed is called if connection was established
-            // check if this gets called on our connection attempts simply to search if TV is available.
-            // In this case don't want to update the state
+        if (State.CONNECTING == this.state) { // only a failed connection attempt.
             setState(State.DISCONNECTED);
         }
     }
@@ -372,7 +369,16 @@ public class LGWebOSTVSocket {
                     logger.debug("No payload in response message: {}", message);
                     break;
                 }
-                request.processResponse(response.getPayload().getAsJsonObject());
+                try {
+                    request.processResponse(response.getPayload().getAsJsonObject());
+                } catch (RuntimeException ex) {
+                    // An uncaught runtime exception in @OnWebSocketMessage annotated method will cause the web socket
+                    // implementation to call @OnWebSocketError callback in which we would reset the connection.
+                    // Users have the ability to create miss-configurations in which IllegalArgumentException could be
+                    // thrown
+                    logger.warn("Error while processing message: {} - in response to request: {} - Error Message: {}",
+                            message, request, ex.getMessage());
+                }
                 break;
             case "error":
                 logger.debug("Error: {}", message);
@@ -385,9 +391,17 @@ public class LGWebOSTVSocket {
                     logger.warn("No payload in error message: {}", message);
                     break;
                 }
-                request.processError(response.getError());
+                try {
+                    request.processError(response.getError());
+                } catch (RuntimeException ex) {
+                    // An uncaught runtime exception in @OnWebSocketMessage annotated method will cause the web socket
+                    // implementation to call @OnWebSocketError callback in which we would reset the connection.
+                    // Users have the ability to create miss-configurations in which IllegalArgumentException could be
+                    // thrown
+                    logger.warn("Error while processing error: {} - in response to request: {} - Error Message: {}",
+                            message, request, ex.getMessage());
+                }
                 break;
-
             case "hello":
                 if (response.getPayload() == null) {
                     logger.warn("No payload in error message: {}", message);
