@@ -52,8 +52,8 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
             updateState("name", new StringType(device.getName()));
             updateState("product", new StringType(ProductType.findByTypeId(device.getProductId()).getName()));
             if (thing.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_HUB_DEVICE)) {
-                updateState("ledMode", new StringType(device.getStatus().ledMode.toString()));
-                updateState("pairingMode", new StringType(device.getStatus().pairingMode.toString()));
+                updateState("ledMode", new DecimalType(device.getStatus().ledMode));
+                updateState("pairingMode", new DecimalType(device.getStatus().pairingMode));
                 updateState("hardwareVersion", new StringType(device.getStatus().version.device.hardware));
                 updateState("firmwareVersion", new StringType(device.getStatus().version.device.firmware));
                 updateState("online", OnOffType.from(device.getStatus().online));
@@ -65,7 +65,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                     updateState("curfewLockTime" + (i + 1), new StringType(curfew.lockTime));
                     updateState("curfewUnlockTime" + (i + 1), new StringType(curfew.unlockTime));
                 }
-                updateState("lockingMode", new StringType(device.getStatus().locking.mode.toString()));
+                updateState("lockingMode", new DecimalType(device.getStatus().locking.mode));
                 updateState("hardwareVersion", new StringType(device.getStatus().version.device.hardware));
                 updateState("firmwareVersion", new StringType(device.getStatus().version.device.firmware));
 
