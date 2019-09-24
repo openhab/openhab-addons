@@ -49,7 +49,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Sure Petcare Flap Device</label>
-		<description>A Sure Petcare car or pet flap device</description>
+		<description>A Sure Petcare cat or pet flap device</description>
 
 		<channels>
 			<channel id="id" typeId="idType" />
