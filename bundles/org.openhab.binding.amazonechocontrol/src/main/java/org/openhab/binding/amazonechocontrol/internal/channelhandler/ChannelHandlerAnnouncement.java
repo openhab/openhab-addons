@@ -32,7 +32,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial contribution
  */
 public class ChannelHandlerAnnouncement extends ChannelHandler {
-    public static final String CHANNEL_NAME = "announcement";
+    private static final String CHANNEL_NAME = "announcement";
 
     public ChannelHandlerAnnouncement(IAmazonThingHandler thingHandler, Gson gson) {
         super(thingHandler, gson);

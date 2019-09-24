@@ -7,6 +7,9 @@
 	<bridge-type id="account">
 		<label>Amazon Account</label>
 		<description>Amazon Account where the amazon echo devices are registered.</description>
+		<channels>
+			<channel id="sendMessage" typeId="sendMessage" />
+		</channels>
 	</bridge-type>
 	<thing-type id="echo">
 		<supported-bridge-type-refs>
@@ -40,7 +43,7 @@
 			<channel id="amazonMusicPlayListId"
 				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
-			<channel id="announcement" typeId="announcement" />			
+			<channel id="announcement" typeId="announcement" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
@@ -383,6 +386,11 @@
 		<item-type>String</item-type>
 		<label>Music Voice Command</label>
 		<description>Voice command as text. E.g. 'Yesterday from the Beatles' (Write only)</description>
+	</channel-type>
+	<channel-type id="sendMessage" advanced="false">
+		<item-type>String</item-type>
+		<label>Send Message</label>
+		<description>Sends a message to the Echo devices (Write only).</description>
 	</channel-type>
 	<channel-type id="announcement" advanced="true">
 		<item-type>String</item-type>
