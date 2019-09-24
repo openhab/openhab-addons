@@ -108,12 +108,12 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 ### Things configuration
 
 ```
-Bridge surepetcare:bridge:MyBridge [ username="<USERNAME>", password="<PASSWORD>", refresh_interval_topology=36000, refresh_interval_location=300 ]
+Bridge surepetcare:bridge:bridge1 [ username="<USERNAME>", password="<PASSWORD>", refresh_interval_topology=36000, refresh_interval_location=300 ]
 {
-	Thing hub MyHub
-	Thing household MyHousehold
-	Thing flapDevice MyCatFlap
-	Thing pet MyCat
+  Thing household  41121  "My Household"
+  Thing hubDevice  752464 "My SurePetcare Hub"
+  Thing flapDevice 123166 "My Backdoor Cat Flap"
+  Thing pet        72317  "My Cat"
 }
 ```
 
@@ -123,28 +123,74 @@ Bridge surepetcare:bridge:MyBridge [ username="<USERNAME>", password="<PASSWORD>
 /* *****************************************
  * Bridge
  * *****************************************/
-Switch bridge_Online 		"Sure Petcare Bridge Online [%s]"		<switch>	{channel="surepetcare:bridge:MyBridge:online"}
+Group      dgPet
+Switch     UR_1a_Online             "Bridge Online [%s]"                                                (dgPet)  { channel="surepetcare:bridge:bridge1:online" }
 
 /* *****************************************
  * Household
  * *****************************************/
-TODO
+Number     UR_1b_Id                 "Household Id [%d]"                                                 (dgPet)  { channel="surepetcare:household:bridge1:41121:id" }
+String     UR_1b_Name               "Household Name [%s]"                                               (dgPet)  { channel="surepetcare:household:bridge1:41121:name" }
+String     UR_1b_Timezone           "Household Timezone [%s]"                                           (dgPet)  { channel="surepetcare:household:bridge1:41121:timezone" }
+Number     UR_1b_UTCOffset          "Household Timezone UTC Office"                                     (dgPet)  { channel="surepetcare:household:bridge1:41121:timezoneUTCOffset" }
+
 
 /* *****************************************
  * Hub
  * *****************************************/
-TODO
+Number     UR_1c_Id                 "Hub Id [%d]"                                                       (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:id" }
+String     UR_1c_Name               "Hub Name [%s]"                                                     (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:name" }
+String     UR_1c_Product            "Hub Product [%s]"                                                  (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:product" }
+Number     UR_1c_LEDMode            "Hub LED Mode [%d]"                                                 (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:ledMode" }
+Number     UR_1c_PairingMode        "Hub Pairing Mode [%d]"                                             (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:pairingMode" }
+String     UR_1c_HardwareVersion    "Hub Hardware Version [%s]"                                         (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:hardwareVersion" }
+String     UR_1c_FirmwareVersion    "Hub Firmware Version [%s]"                                         (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:firmwareVersion" }
+Switch     UR_1c_Online             "Hub Online [%s]"                                                   (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:online" }
+
  
 /* *****************************************
  * Cat Flap
  * *****************************************/
-TODO
+Number     UR_1d_Id                 "Cat Flap Id [%d]"                                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:id" }
+String     UR_1d_Name               "Cat Flap Name [%s]"                                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:name" }
+String     UR_1d_Product            "Cat Flap Product [%s]"                                             (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:product" }
+Switch     UR_1d_CurfewEnabled1     "Cat Flap Curfew 1 Enabled [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewEnabled1" }
+String     UR_1d_CurfewLockTime1    "Cat Flap Curfew 1 Lock Time [%s]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewLockTime1" }
+String     UR_1d_CurfewUnlockTime1  "Cat Flap Curfew 1 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewUnlockTime1" }
+Switch     UR_1d_CurfewEnabled2     "Cat Flap Curfew 2 Enabled [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewEnabled2" }
+String     UR_1d_CurfewLockTime2    "Cat Flap Curfew 2 Lock Time [%s]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewLockTime2" }
+String     UR_1d_CurfewUnlockTime2  "Cat Flap Curfew 2 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewUnlockTime2" }
+Switch     UR_1d_CurfewEnabled3     "Cat Flap Curfew 3 Enabled [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewEnabled3" }
+String     UR_1d_CurfewLockTime3    "Cat Flap Curfew 3 Lock Time [%s]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewLockTime3" }
+String     UR_1d_CurfewUnlockTime3  "Cat Flap Curfew 3 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewUnlockTime3" }
+Switch     UR_1d_CurfewEnabled4     "Cat Flap Curfew 4 Enabled [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewEnabled4" }
+String     UR_1d_CurfewLockTime4    "Cat Flap Curfew 4 Lock Time [%s]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewLockTime4" }
+String     UR_1d_CurfewUnlockTime5  "Cat Flap Curfew 4 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewUnlockTime4" }
+Number     UR_1d_LEDMode            "Cat Flap LED Mode [%d]"                                            (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:ledMode" }
+Number     UR_1d_LockingMode        "Cat Flap Locking Mode [%d]"                                        (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:lockingMode" }
+String     UR_1d_HardwareVersion    "Cat Flap Hardware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:hardwareVersion" }
+String     UR_1d_FirmwareVersion    "Cat Flap Firmware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:firmwareVersion" }
+Switch     UR_1d_LowBattery         "Cat Flap Low Battery [%s]"                                         (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:lowBattery" }
+Number     UR_1d_BatteryLevel       "Cat Flap Battery Level [%f]"                                       (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:batteryLevel" }
+Number     UR_1d_BatteryVoltage     "Cat Flap Battery Voltage [%f]"                                     (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:batteryVoltage" }
+Switch     UR_1d_Online             "Cat Flap Online [%s]"                                              (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:online" }
+Number     UR_1d_DeviceRSSI         "Cat Flap Device RSSI [%f]"                                         (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:deviceRSSI" }
+Number     UR_1d_HubRSSI            "Cat Flap Hub RSSI [%f]"                                            (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:hubRSSI" }
+
 
 /* *****************************************
  * Pet
  * *****************************************/
-TODO
-
+Number     UR_1e_Id                 "Pet Id [%d]"                                                       (dgPet)  { channel="surepetcare:pet:bridge1:70347:id" }
+String     UR_1e_Name               "Pet Name [%s]"                                                     (dgPet)  { channel="surepetcare:pet:bridge1:72317:name" }
+String     UR_1e_Comment            "Pet Comment [%s]"                                                  (dgPet)  { channel="surepetcare:pet:bridge1:72317:comment" }
+String     UR_1e_Gender             "Pet Gender [%s]"                                                   (dgPet)  { channel="surepetcare:pet:bridge1:72317:gender" }
+String     UR_1e_Breed              "Pet Breed [%s]"                                                    (dgPet)  { channel="surepetcare:pet:bridge1:72317:breed" }
+String     UR_1e_Species            "Pet Species [%s]"                                                  (dgPet)  { channel="surepetcare:pet:bridge1:72317:species" }
+String     UR_1e_PhotoURL           "Pet Photo URL [%s]"                                                (dgPet)  { channel="surepetcare:pet:bridge1:72317:photoURL" }
+String     UR_1e_TagIdentifier      "Pet Tag Identifier [%s]"                                           (dgPet)  { channel="surepetcare:pet:bridge1:72317:tagIdentifier" }
+String     UR_1e_Location           "Pet Location [%s]"                                                 (dgPet)  { channel="surepetcare:pet:bridge1:72317:location" }
+DateTime   UR_1e_LocationChanged    "Pet Location Last Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM:%1$tS]"   (dgPet)  { channel="surepetcare:pet:bridge1:72317:locationChanged" }
 ```
 
 ### Sitemap Configuration
