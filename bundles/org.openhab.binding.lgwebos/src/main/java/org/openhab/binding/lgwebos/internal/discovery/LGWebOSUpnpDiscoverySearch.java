@@ -65,7 +65,8 @@ public class LGWebOSUpnpDiscoverySearch extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start LGWebOS device background discovery");
-        if (searchJob == null || searchJob.isCancelled()) {
+        ScheduledFuture<?> job = searchJob;
+        if (job == null || job.isCancelled()) {
             searchJob = scheduler.scheduleWithFixedDelay(() -> search(), SEARCH_START_UP_DELAY_SECONDS,
                     SEARCH_INTERVAL_SECONDS, TimeUnit.SECONDS);
         }
@@ -74,8 +75,9 @@ public class LGWebOSUpnpDiscoverySearch extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop LGWebOS device background discovery");
-        if (searchJob != null && !searchJob.isCancelled()) {
-            searchJob.cancel(false);
+        ScheduledFuture<?> job = searchJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(false);
             searchJob = null;
         }
     }

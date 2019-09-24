@@ -49,8 +49,11 @@ public class ChannelInfo {
     private String channelNumber;
     private String channelType;
 
+    public ChannelInfo() {
+        // no-argument constructor for gson
+    }
+
     public ChannelInfo(String channelName, String channelId, String channelNumber, String channelType) {
-        super();
         this.channelId = channelId;
         this.channelNumber = channelNumber;
         this.channelName = channelName;

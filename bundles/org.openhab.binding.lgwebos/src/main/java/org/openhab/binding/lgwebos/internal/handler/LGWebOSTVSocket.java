@@ -134,7 +134,7 @@ public class LGWebOSTVSocket {
         try {
             this.destUri = new URI("ws://" + host + ":" + port);
         } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("IP Address or Host provided is invalid: " + host);
+            throw new IllegalArgumentException("IP address or hostname provided is invalid: " + host);
         }
     }
 
@@ -170,7 +170,7 @@ public class LGWebOSTVSocket {
         try {
             this.client.connect(this, this.destUri);
             logger.debug("Connecting to: {}", this.destUri);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.debug("Unable to connect.", e);
             setState(State.DISCONNECTED);
         }
@@ -178,11 +178,7 @@ public class LGWebOSTVSocket {
 
     public void disconnect() {
         setState(State.DISCONNECTING);
-        try {
-            Optional.ofNullable(this.session).ifPresent(s -> s.close());
-        } catch (Exception e) {
-            logger.warn("Error while closing session.", e);
-        }
+        Optional.ofNullable(this.session).ifPresent(s -> s.close());
         setState(State.DISCONNECTED);
     }
     /*

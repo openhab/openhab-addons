@@ -21,6 +21,10 @@ package org.openhab.binding.lgwebos.internal.handler.core;
 public class CommandConfirmation {
     private boolean returnValue;
 
+    public CommandConfirmation() {
+        // no-argument constructor for gson
+    }
+
     public CommandConfirmation(boolean returnValue) {
         this.returnValue = returnValue;
     }

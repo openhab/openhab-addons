@@ -52,6 +52,10 @@ public class AppInfo {
     @SerializedName(value = "name", alternate = { "appName", "title" })
     private String name;
 
+    public AppInfo() {
+        // no-argument constructor for gson
+    }
+
     public AppInfo(String id, String name) {
         this.id = id;
         this.name = name;

@@ -30,6 +30,10 @@ public class Response {
      */
     private Integer id;
 
+    public Response() {
+        // no-argument constructor for gson
+    }
+
     /** Optional error message. */
     private String error;
 

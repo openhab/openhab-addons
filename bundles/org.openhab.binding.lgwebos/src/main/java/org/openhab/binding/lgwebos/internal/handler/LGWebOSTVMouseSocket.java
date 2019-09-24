@@ -98,7 +98,7 @@ public class LGWebOSTVMouseSocket {
         try {
             this.client.connect(this, destUri);
             logger.debug("Connecting to: {}", destUri);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Unable to connect.", e);
             setState(State.DISCONNECTED);
         }
