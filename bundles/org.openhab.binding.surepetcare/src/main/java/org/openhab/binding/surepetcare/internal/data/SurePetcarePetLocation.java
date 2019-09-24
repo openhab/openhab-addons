@@ -63,6 +63,14 @@ public class SurePetcarePetLocation {
     private Integer where;
     private Date since;
 
+    public SurePetcarePetLocation() {
+    }
+
+    public SurePetcarePetLocation(PetLocation location, Date since) {
+        this.where = location.getLocationId();
+        this.since = since;
+    }
+
     public Integer getPetId() {
         return petId;
     }

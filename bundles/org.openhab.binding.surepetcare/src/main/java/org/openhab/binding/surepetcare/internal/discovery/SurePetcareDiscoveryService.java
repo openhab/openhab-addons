@@ -120,15 +120,15 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("I'm discovering the Sure Petcare topology ...");
                 SurePetcareTopology topology = petcareAPI.retrieveTopology();
                 for (SurePetcareHousehold household : topology.getHouseholds()) {
-                    logger.debug("Creating new thing for household: {}", household.toString());
+                    logger.debug("Found new household thing: {}", household.toString());
                     createHouseholdThing(household);
                 }
                 for (SurePetcareDevice device : topology.getDevices()) {
-                    logger.debug("Creating new thing for device: {}", device.toString());
+                    logger.debug("Found new device thing: {}", device.toString());
                     createDeviceThing(device);
                 }
                 for (SurePetcarePet pet : topology.getPets()) {
-                    logger.debug("Creating new thing for pet: {}", pet.toString());
+                    logger.debug("Found new pet thing: {}", pet.toString());
                     createPetThing(pet);
                 }
                 retryCount = 0;

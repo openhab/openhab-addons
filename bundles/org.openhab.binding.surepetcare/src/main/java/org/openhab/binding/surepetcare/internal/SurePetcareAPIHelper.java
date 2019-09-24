@@ -22,6 +22,7 @@ import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,7 +63,8 @@ public class SurePetcareAPIHelper {
 
     private static final int DEFAULT_DEVICE_ID = 12344711;
 
-    private Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+    private Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .registerTypeAdapter(Date.class, new GsonColonDateTypeAdapter()).create();
     private String authenticationToken = "";
     private String username = "";
     private String password = "";
@@ -161,6 +163,15 @@ public class SurePetcareAPIHelper {
         }
     }
 
+    public @Nullable SurePetcarePetLocation retrievePetLocation(String id, SurePetcarePetLocation location) {
+        SurePetcarePet pet = topologyCache.getPetById(id);
+        if (pet != null) {
+            return pet.getLocation();
+        } else {
+            return null;
+        }
+    }
+
     public boolean isOnline() {
         return online;
     }
@@ -226,6 +237,18 @@ public class SurePetcareAPIHelper {
         return object.get("data");
     }
 
+    /**
+     * Return the "data" element of the API result as a JsonElement.
+     *
+     * @param url The URL of the API call.
+     * @return The "data" element of the API result.
+     * @throws SurePetcareApiException
+     */
+    private void setDataThroughApi(String url, Object payload) throws SurePetcareApiException {
+        String jsonPayload = gson.toJson(payload);
+        postDataThroughAPI(url, jsonPayload);
+    }
+
     private String getResultFromApi(String url) throws SurePetcareApiException {
         boolean success = false;
         String responseData = "";
@@ -266,6 +289,36 @@ public class SurePetcareAPIHelper {
             }
         }
         return responseData;
+    }
+
+    private void postDataThroughAPI(String url, String jsonPayload) throws SurePetcareApiException {
+        boolean success = false;
+        while (!success) {
+            try {
+                URL object = new URL(url);
+                HttpURLConnection con = (HttpURLConnection) object.openConnection();
+                setConnectionHeaders(con);
+                con.setRequestMethod("POST");
+                con.getOutputStream().write(jsonPayload.getBytes());
+                int httpResult = con.getResponseCode();
+                if (httpResult == HttpURLConnection.HTTP_OK) {
+                    logger.debug("API execution successful");
+                    success = true;
+                } else {
+                    logger.warn("HTTP Response Code: {}", con.getResponseCode());
+                    logger.warn("HTTP Response Msg: {}", con.getResponseMessage());
+                    if (con.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                        // authentication token has expired, login again and retry
+                        login(username, password);
+                    } else {
+                        throw new SurePetcareApiException();
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Exception caught during API execution: {}", e.getMessage());
+                throw new SurePetcareApiException(e);
+            }
+        }
     }
 
 }
