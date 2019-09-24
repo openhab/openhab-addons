@@ -161,9 +161,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         }
         String url = url(config.host, config.port, config.apikey, null, null);
         http.get(url, config.timeout).thenApply(this::parseBridgeFullStateResponse).exceptionally(e -> {
-            if (!(e instanceof SocketTimeoutException) && !(e instanceof TimeoutException)
-                    && !(e instanceof CompletionException)) {
-                logger.warn("Get full state failed", e);
+            if (e instanceof SocketTimeoutException || e instanceof TimeoutException
+                    || e instanceof CompletionException) {
+                logger.debug("Get full state failed", e);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -174,10 +174,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
                 thingDiscoveryService.stateRequestFinished(value != null ? value.sensors : null);
             }
         }).thenAccept(fullState -> {
-            // Auth failed
             if (fullState == null) {
-                // requestApiKey();
-                logger.warn("Full state is 'null'");
                 return;
             }
             if (fullState.config.name.isEmpty()) {

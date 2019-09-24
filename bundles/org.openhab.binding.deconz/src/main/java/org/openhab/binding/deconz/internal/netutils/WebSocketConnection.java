@@ -44,7 +44,7 @@ public class WebSocketConnection {
 
     private final WebSocketClient client;
     private final WebSocketConnectionListener connectionListener;
-    private final Map<String, ValueUpdateListener> valueListener = new HashMap<>();
+    private final Map<String, WebSocketValueUpdateListener> valueListener = new HashMap<>();
     private final Gson gson = new Gson();
     private boolean connected = false;
 
@@ -79,7 +79,7 @@ public class WebSocketConnection {
         client.destroy();
     }
 
-    public void registerValueListener(String sensorID, ValueUpdateListener listener) {
+    public void registerValueListener(String sensorID, WebSocketValueUpdateListener listener) {
         valueListener.put(sensorID, listener);
     }
 
@@ -98,7 +98,7 @@ public class WebSocketConnection {
     @OnWebSocketMessage
     public void onMessage(String message) {
         SensorMessage changedMessage = gson.fromJson(message, SensorMessage.class);
-        ValueUpdateListener listener = valueListener.get(changedMessage.id);
+        WebSocketValueUpdateListener listener = valueListener.get(changedMessage.id);
         if (listener != null) {
             listener.websocketUpdate(changedMessage.id, changedMessage.state);
         }
