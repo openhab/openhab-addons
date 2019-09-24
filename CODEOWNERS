@@ -7,7 +7,7 @@
 # Add-on maintainers:
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
-/bundles/org.openhab.binding.allplay/ @dominicdesun
+/bundles/org.openhab.binding.allplay/ @dominicdesu
 /bundles/org.openhab.binding.amazondashbutton/ @OLibutzki
 /bundles/org.openhab.binding.amazonechocontrol/ @mgeramb
 /bundles/org.openhab.binding.ambientweather/ @mhilbush
@@ -58,6 +58,7 @@
 /bundles/org.openhab.binding.hdanywhere/ @kgoderis
 /bundles/org.openhab.binding.hdpowerview/ @beowulfe
 /bundles/org.openhab.binding.helios/ @kgoderis
+/bundles/org.openhab.binding.heos/ @Wire82
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.hpprinter/ @cossey
 /bundles/org.openhab.binding.hue/ @cweitkamp
@@ -113,8 +114,8 @@
 /bundles/org.openhab.binding.ntp/ @marcelrv
 /bundles/org.openhab.binding.nuki/ @mkatter
 /bundles/org.openhab.binding.oceanic/ @kgoderis
-/bundles/org.openhab.binding.onebusaway/ @sdwilsh
 /bundles/org.openhab.binding.omnikinverter/ @hansbogert
+/bundles/org.openhab.binding.onebusaway/ @sdwilsh
 /bundles/org.openhab.binding.onewiregpio/ @aogorek
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.onkyo/ @pail23 @paulianttila
@@ -191,7 +192,6 @@
 /bundles/org.openhab.io.azureiothub/ @nikotanghe
 /bundles/org.openhab.io.homekit/ @beowulfe
 /bundles/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
-/bundles/org.openhab.io.hueemulation.test/ @davidgraeff @digitaldan
 /bundles/org.openhab.io.imperihome/ @pdegeus
 /bundles/org.openhab.io.javasound/ @kaikreuzer
 /bundles/org.openhab.io.mqttembeddedbroker/ @davidgraeff
@@ -217,7 +217,6 @@
 /bundles/org.openhab.voice.voicerss/ @JochenHiller
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
-/itests/org.openhab.binding.dmx.tests/ @J-N-K
 /itests/org.openhab.binding.feed.tests/ @svilenvul
 /itests/org.openhab.binding.hue.tests/ @cweitkamp
 /itests/org.openhab.binding.max.tests/ @marcelrv
@@ -228,6 +227,8 @@
 /itests/org.openhab.binding.systeminfo.tests/ @svilenvul
 /itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
 /itests/org.openhab.binding.wemo.tests/ @hmerk
+/itests/org.openhab.io.hueemulation.tests/ @davidgraeff @digitaldan
+/itests/org.openhab.io.mqttembeddedbroker.tests/ @J-N-K 
 /itests/org.openhab.persistence.mapdb.tests/ @mkhl
 
 # PLEASE HELP ADDING FURTHER LINES HERE!

@@ -12,7 +12,6 @@
  */
 package org.openhab.io.hueemulation.internal.rest;
 
-import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;

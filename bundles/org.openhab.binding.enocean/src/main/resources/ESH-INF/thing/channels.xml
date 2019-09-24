@@ -242,6 +242,14 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<channel-type id="vibration">
+		<item-type>Switch</item-type>
+		<label>Vibration Alarm</label>
+		<description>Vibration alarm state.</description>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
 	<channel-type id="illumination">
 		<item-type>Number:Illuminance</item-type>
 		<label>Lux</label>

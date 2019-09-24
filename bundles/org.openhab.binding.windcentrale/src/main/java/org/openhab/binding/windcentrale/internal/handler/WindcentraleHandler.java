@@ -40,9 +40,10 @@ import org.openhab.binding.windcentrale.internal.config.MillConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link WindcentraleHandler} is responsible for handling commands, which are
@@ -92,7 +93,7 @@ public class WindcentraleHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Windcentrale handler '{}'", getThing().getUID());
 
-        MillConfig config = getConfig().as(MillConfig.class);
+        final MillConfig config = getConfig().as(MillConfig.class);
 
         millConfig = config;
         millUrl = String.format(URL_FORMAT, config.millId);
@@ -116,18 +117,22 @@ public class WindcentraleHandler extends BaseThingHandler {
     }
 
     private synchronized void updateData() {
-        logger.debug("Update windmill data '{}'", getThing().getUID());
-
-        MillConfig config = millConfig;
-        String getMillData = windcentraleCache.getValue();
-
-        if (config == null || getMillData == null) {
-            return;
-        }
-
         try {
-            JsonObject millData = (JsonObject) parser.parse(getMillData);
-            logger.trace("Retrieved updated mill data: {}", millData);
+            logger.debug("Update windmill data '{}'", getThing().getUID());
+
+            final MillConfig config = millConfig;
+            final String rawMillData = windcentraleCache.getValue();
+
+            if (config == null || rawMillData == null) {
+                return;
+            }
+            logger.trace("Retrieved updated mill data: {}", rawMillData);
+            final JsonElement jsonElement = parser.parse(rawMillData);
+
+            if (!(jsonElement instanceof JsonObject)) {
+                throw new JsonParseException("Could not parse windmill json data");
+            }
+            final JsonObject millData = (JsonObject) jsonElement;
 
             updateState(CHANNEL_WIND_SPEED, new DecimalType(millData.get(CHANNEL_WIND_SPEED).getAsString()));
             updateState(CHANNEL_WIND_DIRECTION, new StringType(millData.get(CHANNEL_WIND_DIRECTION).getAsString()));
@@ -152,7 +157,7 @@ public class WindcentraleHandler extends BaseThingHandler {
             if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.ONLINE);
             }
-        } catch (JsonSyntaxException e) {
+        } catch (final RuntimeException e) {
             logger.debug("Failed to process windmill data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Failed to process mill data");

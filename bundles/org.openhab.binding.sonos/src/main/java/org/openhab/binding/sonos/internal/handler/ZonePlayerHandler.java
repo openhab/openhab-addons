@@ -46,6 +46,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -78,7 +79,6 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Karel Goderis - Initial contribution
- *
  */
 public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOParticipant {
 
@@ -100,6 +100,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String STATE_PAUSED_PLAYBACK = "PAUSED_PLAYBACK";
     private static final String STATE_STOPPED = "STOPPED";
 
+    private final ThingRegistry localThingRegistry;
     private UpnpIOService service;
     private ScheduledFuture<?> pollingJob;
     private SonosZonePlayerState savedState = null;
@@ -143,7 +144,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private final Object stateLock = new Object();
 
-    private SonosStateDescriptionOptionProvider stateDescriptionProvider;
+    private final SonosStateDescriptionOptionProvider stateDescriptionProvider;
 
     private final Runnable pollingRunnable = () -> {
         try {
@@ -180,9 +181,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private final String opmlUrl;
 
-    public ZonePlayerHandler(Thing thing, UpnpIOService upnpIOService, String opmlUrl,
+    public ZonePlayerHandler(ThingRegistry thingRegistry, Thing thing, UpnpIOService upnpIOService, String opmlUrl,
             SonosStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
+        this.localThingRegistry = thingRegistry;
         this.opmlUrl = opmlUrl;
         logger.debug("Creating a ZonePlayerHandler for thing '{}'", getThing().getUID());
         if (upnpIOService != null) {
@@ -349,8 +351,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     private void restoreAllPlayerState() {
-        Collection<Thing> allThings = thingRegistry.getAll();
-        for (Thing aThing : allThings) {
+        for (Thing aThing : localThingRegistry.getAll()) {
             if (SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(aThing.getThingTypeUID())) {
                 ZonePlayerHandler handler = (ZonePlayerHandler) aThing.getHandler();
                 if (handler != null) {
@@ -361,8 +362,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     private void saveAllPlayerState() {
-        Collection<Thing> allThings = thingRegistry.getAll();
-        for (Thing aThing : allThings) {
+        for (Thing aThing : localThingRegistry.getAll()) {
             if (SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(aThing.getThingTypeUID())) {
                 ZonePlayerHandler handler = (ZonePlayerHandler) aThing.getHandler();
                 if (handler != null) {
@@ -1971,19 +1971,16 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     protected ZonePlayerHandler getHandlerByName(String remotePlayerName) throws IllegalStateException {
-        if (thingRegistry != null) {
-            for (ThingTypeUID supportedThingType : SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS) {
-                Thing thing = thingRegistry.get(new ThingUID(supportedThingType, remotePlayerName));
-                if (thing != null) {
-                    return (ZonePlayerHandler) thing.getHandler();
-                }
+        for (ThingTypeUID supportedThingType : SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS) {
+            Thing thing = localThingRegistry.get(new ThingUID(supportedThingType, remotePlayerName));
+            if (thing != null) {
+                return (ZonePlayerHandler) thing.getHandler();
             }
-            Collection<Thing> allThings = thingRegistry.getAll();
-            for (Thing aThing : allThings) {
-                if (SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(aThing.getThingTypeUID())
-                        && aThing.getConfiguration().get(ZonePlayerConfiguration.UDN).equals(remotePlayerName)) {
-                    return (ZonePlayerHandler) aThing.getHandler();
-                }
+        }
+        for (Thing aThing : localThingRegistry.getAll()) {
+            if (SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(aThing.getThingTypeUID())
+                    && aThing.getConfiguration().get(ZonePlayerConfiguration.UDN).equals(remotePlayerName)) {
+                return (ZonePlayerHandler) aThing.getHandler();
             }
         }
         throw new IllegalStateException("Could not find handler for " + remotePlayerName);
@@ -2360,8 +2357,21 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         if (currentURI == null) {
             return false;
         }
-        return currentURI.contains(ANALOG_LINE_IN_URI)
-                || (currentURI.startsWith(OPTICAL_LINE_IN_URI) && currentURI.endsWith(SPDIF));
+        return isPlayingAnalogLineIn(currentURI) || isPlayingOpticalLineIn(currentURI);
+    }
+
+    private boolean isPlayingAnalogLineIn(String currentURI) {
+        if (currentURI == null) {
+            return false;
+        }
+        return currentURI.contains(ANALOG_LINE_IN_URI);
+    }
+
+    private boolean isPlayingOpticalLineIn(String currentURI) {
+        if (currentURI == null) {
+            return false;
+        }
+        return currentURI.startsWith(OPTICAL_LINE_IN_URI) && currentURI.endsWith(SPDIF);
     }
 
     /**
@@ -2434,14 +2444,22 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      * @param coordinator - {@link ZonePlayerHandler} coordinator for the SONOS device(s)
      */
     private void handleNotificationSound(Command notificationURL, ZonePlayerHandler coordinator) {
+        boolean sourceStoppable = !isPlayingOpticalLineIn(coordinator.getCurrentURI());
         String originalVolume = (isAdHocGroup() || isStandalonePlayer()) ? getVolume() : coordinator.getVolume();
-        coordinator.stop();
-        coordinator.waitForNotTransportState(STATE_PLAYING);
-        applyNotificationSoundVolume();
+        if (sourceStoppable) {
+            coordinator.stop();
+            coordinator.waitForNotTransportState(STATE_PLAYING);
+            applyNotificationSoundVolume();
+        }
         long notificationPosition = coordinator.getQueueSize() + 1;
         coordinator.addURIToQueue(notificationURL.toString(), "", notificationPosition, false);
         coordinator.setCurrentURI(QUEUE_URI + coordinator.getUDN() + "#0", "");
         coordinator.setPositionTrack(notificationPosition);
+        if (!sourceStoppable) {
+            coordinator.stop();
+            coordinator.waitForNotTransportState(STATE_PLAYING);
+            applyNotificationSoundVolume();
+        }
         coordinator.play();
         coordinator.waitForFinishedNotification();
         if (originalVolume != null) {
