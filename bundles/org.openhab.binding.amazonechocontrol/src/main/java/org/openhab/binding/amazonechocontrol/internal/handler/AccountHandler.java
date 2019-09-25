@@ -185,7 +185,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 return;
             }
         }
-        forceCheckDataHandler();
+        forceCheckData();
     }
 
     public void forceCheckData() {
