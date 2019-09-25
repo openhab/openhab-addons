@@ -45,12 +45,14 @@ public class WebSocketConnection {
     private final WebSocketClient client;
     private final WebSocketConnectionListener connectionListener;
     private final Map<String, WebSocketValueUpdateListener> valueListener = new HashMap<>();
-    private final Gson gson = new Gson();
+    private final Gson gson;
     private boolean connected = false;
 
-    public WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client) {
+    public WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client, Gson gson) {
         this.connectionListener = listener;
         this.client = client;
+        this.client.setMaxIdleTimeout(0);
+        this.gson = gson;
     }
 
     public void start(String ip) {

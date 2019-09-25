@@ -63,7 +63,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private final WebSocketConnection websocket;
     private final AsyncHttpClient http;
     private DeconzBridgeConfig config = new DeconzBridgeConfig();
-    private final Gson gson = new Gson();
+    private final Gson gson;
     private @Nullable ScheduledFuture<?> scheduledFuture;
     private int websocketport = 0;
     /** Prevent a dispose/init cycle while this flag is set. Use for property updates */
@@ -72,12 +72,13 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     /** The poll frequency for the API Key verification */
     private static final int POLL_FREQUENCY_SEC = 10;
 
-    public DeconzBridgeHandler(Bridge thing, WebSocketFactory webSocketFactory, AsyncHttpClient http) {
+    public DeconzBridgeHandler(Bridge thing, WebSocketFactory webSocketFactory, AsyncHttpClient http, Gson gson) {
         super(thing);
         this.http = http;
+        this.gson = gson;
         String websocketID = thing.getUID().getAsString().replace(':', '-');
         websocketID = websocketID.length() < 3 ? websocketID : websocketID.substring(websocketID.length() - 20);
-        this.websocket = new WebSocketConnection(this, webSocketFactory.createWebSocketClient(websocketID));
+        this.websocket = new WebSocketConnection(this, webSocketFactory.createWebSocketClient(websocketID), gson);
     }
 
     @Override

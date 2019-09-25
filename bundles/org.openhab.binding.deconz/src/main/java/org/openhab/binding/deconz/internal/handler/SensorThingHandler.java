@@ -90,7 +90,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
     private final Logger logger = LoggerFactory.getLogger(SensorThingHandler.class);
     private SensorThingConfig config = new SensorThingConfig();
     private DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
-    private final Gson gson = new Gson();
+    private final Gson gson;
     private @Nullable ScheduledFuture<?> scheduledFuture;
     private @Nullable WebSocketConnection connection;
     private @Nullable AsyncHttpClient http;
@@ -99,8 +99,9 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
     /** Prevent a dispose/init cycle while this flag is set. Use for property updates */
     private boolean ignoreConfigurationUpdate;
 
-    public SensorThingHandler(Thing thing) {
+    public SensorThingHandler(Thing thing, Gson gson) {
         super(thing);
+        this.gson = gson;
     }
 
     @Override
