@@ -72,7 +72,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                 float batVol = device.getStatus().battery;
                 updateState("batteryVoltage", new DecimalType(batVol));
                 updateState("batteryLevel", new DecimalType(Math.min(batVol / BATTERY_FULL_VOLTAGE * 100.0f, 100.0f)));
-                updateState("online", OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
+                updateState("lowBattery", OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
 
                 updateState("online", OnOffType.from(device.getStatus().online));
                 updateState("deviceRSSI", new DecimalType(device.getStatus().signal.deviceRssi));
