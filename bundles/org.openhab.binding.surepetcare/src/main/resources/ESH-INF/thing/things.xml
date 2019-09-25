@@ -74,8 +74,8 @@
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="batteryVoltage" typeId="batteryVoltageType" />
 			<channel id="online" typeId="onlineType" />
-			<channel id="deviceRSSI" typeId="rssiType" />
-			<channel id="hubRSSI" typeId="rssiType" />
+			<channel id="deviceRSSI" typeId="rssiDeviceType" />
+			<channel id="hubRSSI" typeId="rssiHubType" />
 		</channels>
 	</thing-type>
 
@@ -216,7 +216,7 @@
 
 	<channel-type id="hardwareVersionType" advanced="true">
 		<item-type>String</item-type>
-		<label>Location</label>
+		<label>Hardware Version</label>
 		<description>The version of the hardware</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -270,10 +270,17 @@
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="rssiType" advanced="true">
+	<channel-type id="rssiDeviceType" advanced="true">
 		<item-type>Number</item-type>
-		<label>Signal Strength (RSSI)</label>
-		<description>The received signal strength (RSSI).</description>
+		<label>Signal Strength Device (RSSI)</label>
+		<description>The received device signal strength (RSSI).</description>
+		<state readOnly="true" pattern="%d"></state>
+	</channel-type>
+
+	<channel-type id="rssiHubType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Signal Strength Hub (RSSI)</label>
+		<description>The received hub signal strength (RSSI).</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
