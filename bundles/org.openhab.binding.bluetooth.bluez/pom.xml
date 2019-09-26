@@ -13,12 +13,6 @@
 
   <name>openHAB Add-ons :: Bundles :: BlueZ Bluetooth Adapter</name>
 
-  <properties>
-    <embedDependency.groupId>org.openhab.osgiify</embedDependency.groupId>
-    <embedDependency.artifactId>intel-iot-devkit.tinyb</embedDependency.artifactId>
-    <embedDependency.version>0.5.1</embedDependency.version>
-  </properties>
-  
   <dependencies>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
@@ -30,7 +24,7 @@
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>intel-iot-devkit.tinyb</artifactId>
       <version>0.5.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   

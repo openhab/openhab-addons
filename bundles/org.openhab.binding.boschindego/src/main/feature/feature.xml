@@ -7,7 +7,7 @@
         <feature dependency="true">openhab.tp-jackson</feature>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.5</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/de.zazaz.iot.bosch.indego.bosch-indego-controller-lib/0.8</bundle>
+        <bundle dependency="true">mvn:commons-codec/commons-codec/1.10</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.boschindego/${project.version}</bundle>
     </feature>
 </features>
