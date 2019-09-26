@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.util.Collection;
 import java.util.Collections;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SomfyTahomaGetEventsResponse} holds information about response to getEvents

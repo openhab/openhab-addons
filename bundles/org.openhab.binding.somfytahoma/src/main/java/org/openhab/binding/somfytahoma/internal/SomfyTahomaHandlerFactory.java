@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.somfytahoma.internal;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -28,10 +34,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaHandlerFactory} is responsible for creating things and thing
@@ -119,8 +121,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaDockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SIREN)) {
             return new SomfyTahomaSirenHandler(thing);
-        } else
+        } else {
             return null;
+        }
     }
 
     @Override

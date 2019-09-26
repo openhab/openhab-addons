@@ -12,6 +12,15 @@
  */
 package org.openhab.binding.somfytahoma.internal.discovery;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -27,12 +36,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaItemDiscoveryService} discovers rollershutters and
@@ -287,7 +290,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     private boolean hasCommmand(SomfyTahomaDevice device, String command) {
         SomfyTahomaDeviceDefinition def = device.getDefinition();
         for (SomfyTahomaDeviceDefinitionCommand cmd : def.getCommands()) {
-            if (cmd.getCommandName().equals(command)) {
+            if (command.equals(cmd.getCommandName())) {
                 return true;
             }
         }

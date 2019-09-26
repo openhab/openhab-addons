@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.somfytahoma.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
  * The {@link SomfyTahomaBindingConstants} class defines common constants, which are

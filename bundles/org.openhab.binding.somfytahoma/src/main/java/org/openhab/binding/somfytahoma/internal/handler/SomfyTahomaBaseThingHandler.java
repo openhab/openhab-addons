@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -24,12 +30,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * The {@link SomfyTahomaBaseThingHandler} is base thing handler for all things.
@@ -152,7 +152,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private @Nullable State getChannelState(Channel channel,
-                                  List<SomfyTahomaState> channelStates) {
+                                            List<SomfyTahomaState> channelStates) {
         ChannelTypeUID channelUID = channel.getChannelTypeUID();
         if (channelUID == null) {
             return null;

@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
+import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -21,10 +25,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaDockHandler} is responsible for handling commands,
@@ -39,13 +39,9 @@ public class SomfyTahomaDockHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaDockHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {
-            {
-                put(BATTERY_STATUS, BATTERY_STATUS_STATE);
-                put(BATTERY_LEVEL, "core:BatteryLevelState");
-                put(SIREN_STATUS, "internal:SirenStatusState");
-            }
-        };
+        stateNames.put(BATTERY_STATUS, BATTERY_STATUS_STATE);
+        stateNames.put(BATTERY_LEVEL, "core:BatteryLevelState");
+        stateNames.put(SIREN_STATUS, "internal:SirenStatusState");
     }
 
     @Override

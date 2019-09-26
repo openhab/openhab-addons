@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
+import java.util.HashMap;
+
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaElectricitySensorHandler} is responsible for handling commands,
@@ -35,11 +35,8 @@ public class SomfyTahomaElectricitySensorHandler extends SomfyTahomaBaseThingHan
 
     public SomfyTahomaElectricitySensorHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {
-            {
-                put(ENERGY_CONSUMPTION, ENERGY_CONSUMPTION_STATE);
-            }
-        };
+        stateNames.put(ENERGY_CONSUMPTION, ENERGY_CONSUMPTION_STATE);
+
         //override state type because the cloud sends consumption in percent
         cacheStateType(ENERGY_CONSUMPTION_STATE, TYPE_DECIMAL);
     }

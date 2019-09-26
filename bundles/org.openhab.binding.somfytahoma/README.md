@@ -150,7 +150,7 @@ Switch TahomaZwaveSwitch "Switch" { channel="somfytahoma:onoff:237dbae7:095d6c49
 Switch TahomaLightSwitch "Light Switch" { channel="somfytahoma:light:237dbae7:1b8e7d29-bf1e-4ae1-9432-3dfef52ef14d:switch" }
 
 Number LightSensor "Light Sensor [%.1f lux]" { channel="somfytahoma:lightsensor:237dbae7:2c90808c3a0c193f013a743f2f660f12:luminance" }
-Number EnergyConsumptionSensor "Energy Consumption [%.1f W]" { channel="somfytahoma:electricitysensor:237dbae7:9998e6ff-c17e-40d7-a4b4-3e797eca5bf7:energy_consumption" }
+Number:Energy EnergyConsumptionSensor "Energy Consumption [%.1f W]" { channel="somfytahoma:electricitysensor:237dbae7:9998e6ff-c17e-40d7-a4b4-3e797eca5bf7:energy_consumption" }
 
 Contact OccupancySensor "Occupancy Sensor is [%s]" { channel="somfytahoma:occupancysensor:237dbae7:995e16ca-07c4-4111-9cda-504cb5120f82:contact" }
 Contact SmokeSensor "Smoke Sensor is [%s]" { channel="somfytahoma:smokesensor:237dbae7:9438e6ff-c17e-40d7-a4b4-3e797eca5bf7:contact" }
