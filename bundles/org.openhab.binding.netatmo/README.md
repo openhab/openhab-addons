@@ -73,7 +73,10 @@ Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h
 The IDs for the modules can be extracted from the developer documentation on the netatmo site.
 First login with your user.
 Then some examples of the documentation contain the **real results** of your weather station.
-Get the IDs of your devices (indoor, outdoor, rain gauge) [here](https://dev.netatmo.com/doc/methods/devicelist).
+In order to try the examples, you need the `device_id` of your Netatmo station.
+You can find it in the configuration menu of the app (android or apple).
+Get the IDs of your devices (indoor, outdoor, rain gauge) 
+[here](https://dev.netatmo.com/resources/technical/reference/weather/getstationsdata).
 
 `main_device` is the ID of the "main device", the indoor sensor.
 This is equal to the MAC address of the Netatmo.
