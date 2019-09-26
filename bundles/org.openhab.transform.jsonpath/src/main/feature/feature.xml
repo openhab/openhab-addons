@@ -4,10 +4,7 @@
 
     <feature name="openhab-transformation-jsonpath" description="JSONPath Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:com.jayway.jsonpath/json-path/2.4.0</bundle>
-        <bundle dependency="true">mvn:org.ow2.asm/asm/5.0.4</bundle>
-        <bundle dependency="true">mvn:net.minidev/accessors-smart/1.2</bundle>
-        <bundle dependency="true">mvn:net.minidev/json-smart/2.3</bundle>
+        <feature>openhab.tp-jackson</feature>
         <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.jsonpath/${project.version}</bundle>
     </feature>
 </features>

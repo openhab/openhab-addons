@@ -13,18 +13,22 @@
 
   <name>openHAB Add-ons :: Bundles :: IO :: Modbus Transport</name>
 
+  <properties>
+    <dep.noembedding>commons-pool2</dep.noembedding>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-pool2</artifactId>
       <version>2.4.3</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>net.wimpi.jamod</artifactId>
+      <groupId>net.wimpi</groupId>
+      <artifactId>jamod</artifactId>
       <version>1.2.3.OH</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
