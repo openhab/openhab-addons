@@ -18,31 +18,31 @@
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>com.google.api.api-common</artifactId>
       <version>1.7.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>com.google.auth.google-auth-library-credentials</artifactId>
       <version>0.13.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>com.google.auth.google-auth-library-oauth2-http</artifactId>
       <version>0.13.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>com.google.api.gax</artifactId>
       <version>1.42.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.http-client</groupId>
       <artifactId>google-http-client</artifactId>
       <version>1.27.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

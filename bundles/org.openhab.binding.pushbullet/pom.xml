@@ -13,12 +13,16 @@
 
   <name>openHAB Add-ons :: Bundles :: Pushbullet Binding</name>
 
+  <properties>
+    <bnd.importpackage>sun.security.util;resolution:=optional</bnd.importpackage>
+  </properties>
+  
   <dependencies>
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <version>1.4.7</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

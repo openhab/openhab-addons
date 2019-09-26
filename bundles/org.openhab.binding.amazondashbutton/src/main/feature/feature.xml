@@ -4,9 +4,7 @@
 
     <feature name="openhab-binding-amazondashbutton" description="Amazon Dash Button Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:net.java.dev.jna/jna/4.2.1</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/org.pcap4j.pcap4j-core/1.6.6</bundle>
-        <bundle>mvn:org.openhab.osgiify/org.pcap4j.pcap4j-packetfactory-static/1.6.6</bundle>
+        <bundle dependency="true">mvn:net.java.dev.jna/jna/5.4.0</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.amazondashbutton/${project.version}</bundle>
     </feature>
 </features>
