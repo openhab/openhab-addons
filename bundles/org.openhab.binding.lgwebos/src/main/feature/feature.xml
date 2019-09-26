@@ -4,11 +4,8 @@
 
     <feature name="openhab-binding-lgwebos" description="LG webOS Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.4</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.2</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/1.1.4c_7</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.json/20140107_1</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/org.java-websocket.java-websocket/1.3.2</bundle>
+        <feature>openhab-transport-upnp</feature>
+        <feature>openhab.tp-httpclient</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.lgwebos/${project.version}</bundle>
     </feature>
 </features>
