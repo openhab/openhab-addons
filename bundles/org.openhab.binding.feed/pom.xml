@@ -13,24 +13,34 @@
 
   <name>openHAB Add-ons :: Bundles :: Feed Binding</name>
 
+  <properties>
+    <bnd.importpackage>org.jaxen.*;resolution:=optional</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.rometools</groupId>
       <artifactId>rome</artifactId>
       <version>1.12.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.jdom</artifactId>
-      <version>2.0.6_1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.rometools</groupId>
+      <artifactId>rome-utils</artifactId>
+      <version>1.12.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
+      <version>2.0.6</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

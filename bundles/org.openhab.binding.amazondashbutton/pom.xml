@@ -13,24 +13,29 @@
 
   <name>openHAB Add-ons :: Bundles :: Amazon Dash Button Binding</name>
 
+  <properties>
+    <bnd.importpackage>!org.slf4j.impl.*</bnd.importpackage>
+    <dep.noembedding>jna</dep.noembedding>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>4.2.1</version>
-      <scope>provided</scope>
+      <version>5.4.0</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.pcap4j.pcap4j-core</artifactId>
-      <version>1.6.6</version>
-      <scope>provided</scope>
+      <groupId>org.pcap4j</groupId>
+      <artifactId>pcap4j-core</artifactId>
+      <version>1.8.2</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.pcap4j.pcap4j-packetfactory-static</artifactId>
-      <version>1.6.6</version>
-      <scope>provided</scope>
+      <groupId>org.pcap4j</groupId>
+      <artifactId>pcap4j-packetfactory-static</artifactId>
+      <version>1.8.2</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
