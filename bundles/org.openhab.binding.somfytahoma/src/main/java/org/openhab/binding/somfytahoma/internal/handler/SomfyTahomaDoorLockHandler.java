@@ -15,8 +15,6 @@ package org.openhab.binding.somfytahoma.internal.handler;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.LOCK;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.OPEN;
 
-import java.util.HashMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;

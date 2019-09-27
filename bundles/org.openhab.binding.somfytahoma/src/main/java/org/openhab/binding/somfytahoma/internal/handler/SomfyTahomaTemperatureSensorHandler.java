@@ -15,8 +15,6 @@ package org.openhab.binding.somfytahoma.internal.handler;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.TEMPERATURE;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.TYPE_DECIMAL;
 
-import java.util.HashMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 
