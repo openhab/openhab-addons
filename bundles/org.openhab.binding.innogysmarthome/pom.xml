@@ -23,13 +23,13 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
-      <version>4.5.2</version>
+      <version>4.5.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>20.0</version>
+      <version>24.1.1-android</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -41,13 +41,13 @@
     <dependency>
       <groupId>com.google.http-client</groupId>
       <artifactId>google-http-client</artifactId>
-      <version>1.27.0</version>
+      <version>1.28.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.oauth-client</groupId>
       <artifactId>google-oauth-client</artifactId>
-      <version>1.27.0</version>
+      <version>1.28.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
