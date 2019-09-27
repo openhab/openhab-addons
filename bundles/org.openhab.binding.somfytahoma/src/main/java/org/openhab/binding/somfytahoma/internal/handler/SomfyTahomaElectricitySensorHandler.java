@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.CONTACT;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import java.util.HashMap;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -25,28 +24,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SomfyTahomaContactSensorHandler} is responsible for handling commands,
- * which are sent to one of the channels of the contact sensors.
+ * The {@link SomfyTahomaElectricitySensorHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the electricity sensor thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-@NonNullByDefault
-public class SomfyTahomaContactSensorHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaElectricitySensorHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaContactSensorHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaElectricitySensorHandler.class);
 
-    public SomfyTahomaContactSensorHandler(Thing thing) {
+    public SomfyTahomaElectricitySensorHandler(Thing thing) {
         super(thing);
-        stateNames.put(CONTACT, "core:ContactState");
+        stateNames.put(ENERGY_CONSUMPTION, ENERGY_CONSUMPTION_STATE);
+
+        //override state type because the cloud sends consumption in percent
+        cacheStateType(ENERGY_CONSUMPTION_STATE, TYPE_DECIMAL);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!CONTACT.equals(channelUID.getId())) {
+        if (!ENERGY_CONSUMPTION.equals(channelUID.getId())) {
             return;
         }
-
         if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         }
