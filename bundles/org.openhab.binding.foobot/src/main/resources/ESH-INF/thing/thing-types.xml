@@ -7,7 +7,7 @@
 	<!-- Foobot Account -->
 	<bridge-type id="account">
 		<label>Foobot Account</label>
-		<description>Retrieves your Foobot account and all the devices associated with.</description>
+		<description>Your Foobot account.</description>
 
 		<channels>
 			<channel id="apiKeyLimitRemaining" typeId="api-key-limit-remaining" />
@@ -40,7 +40,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Foobot</label>
-		<description>Shows the air quality data from the Foobot device.</description>
+		<description>A Foobot device.</description>
 
 		<channels>
 			<channel id="time" typeId="time" />

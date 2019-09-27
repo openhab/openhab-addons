@@ -41,7 +41,7 @@ The bridge has one channel:
 | apiKeyLimitRemaining | Number    | The remaining number of API requests for today
 
 
-The AirQuality senors information that is retrieved is available as these channels:
+The AirQuality sensors information that is retrieved is available as these channels:
 
 | Channel ID        | Item Type            | Description
 |-------------------|----------------------|---------------------------------------------
@@ -59,29 +59,13 @@ demo.things:
 
 ```
 // Bridge configuration:
-foobotbinding:foobot:account [apiKey="XXXXXX", username="XXXXXX", refreshInterval=7]
+Bridge foobot:account:myfoobotaccount "Foobot Account" [apiKey="XXXXXX", username="XXXXXX", refreshInterval=8] {
+  Things:
+    device myfoobot "Foobot sensor" [uuid="XXXXXXXXXXXXXXXX"]
 ```
 
 demo.items:
 
 ```
-Number:Temperature Temperature "Temperature" <temperature> { channel= "foobotbinding:foobot:mac:temperature" }
-```
-
-demo.sitemap:
-
-```
-sitemap demo label="Main Menu"
-{
-    Frame label="mac1"  {
-                Text item=Foobot_mac1_Temp label="Temperature"
-                Text item=Foobot_mac1_Hum label="Humidity"
-                Text item=Foobot_mac1_GPI label="Global Pollution Index"
-    }
-    Frame label="mac2"  {
-                Text item=Foobot_mac2_VOC label="Volatile Compounds"
-                Text item=Foobot_mac2_CO2 label="Carbon Dioxide"
-                Text item=Foobot_mac2_GPI label="Global Pollution Index"
-    }
-}
+Number:Temperature Temperature "Temperature" <temperature> { channel="foobot:myfoobotaccount:device:myfoobot:temperature" }
 ```

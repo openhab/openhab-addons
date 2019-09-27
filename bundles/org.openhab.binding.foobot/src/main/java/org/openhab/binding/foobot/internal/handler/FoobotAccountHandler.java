@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.foobot.internal.handler;
 
-import static org.openhab.binding.foobot.internal.FoobotBindingConstants.DEFAULT_REFRESH_PERIOD_MINUTES;
+import static org.openhab.binding.foobot.internal.FoobotBindingConstants.*;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -115,16 +115,16 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
         username = accountConfig.username;
         connector.setApiKey(accountConfig.apiKey);
         refreshInterval = accountConfig.refreshInterval;
-        if (this.refreshInterval < 5) {
+        if (this.refreshInterval < MINIMUM_REFRESH_PERIOD_MINUTES) {
             logger.warn(
-                    "Refresh interval time [{}] is not valid. Refresh interval time must be at least 5 minutes. Setting to 7 minutes",
-                    accountConfig.refreshInterval);
+                    "Refresh interval time [{}] is not valid. Refresh interval time must be at least {} minutes. Setting to {} minutes",
+                    accountConfig.refreshInterval, MINIMUM_REFRESH_PERIOD_MINUTES, DEFAULT_REFRESH_PERIOD_MINUTES);
             refreshInterval = DEFAULT_REFRESH_PERIOD_MINUTES;
         }
         logger.debug("Foobot Account bridge starting... user: {}, refreshInterval: {}", accountConfig.username,
                 refreshInterval);
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait to get associated devices");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Wait to get associated devices");
 
         dataCache = new ExpiringCache<>(Duration.ofMinutes(refreshInterval), this::retrieveDeviceList);
         this.refreshDeviceListJob = scheduler.scheduleWithFixedDelay(this::refreshDeviceList, 0,

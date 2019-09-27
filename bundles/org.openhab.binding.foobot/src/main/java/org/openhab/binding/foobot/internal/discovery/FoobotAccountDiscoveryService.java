@@ -53,12 +53,7 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
     public FoobotAccountDiscoveryService() {
-        super(FoobotHandlerFactory.DISCOVERABLE_THING_TYPE_UIDS, TIMEOUT_SECONDS);
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        retrieveFoobots();
+        super(FoobotHandlerFactory.DISCOVERABLE_THING_TYPE_UIDS, TIMEOUT_SECONDS, false);
     }
 
     @Override
