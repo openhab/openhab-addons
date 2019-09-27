@@ -12,6 +12,17 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang.StringUtils;
@@ -33,17 +44,6 @@ import org.openhab.binding.somfytahoma.internal.config.SomfyTahomaConfig;
 import org.openhab.binding.somfytahoma.internal.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * The {@link SomfyTahomaBridgeHandler} is responsible for handling commands, which are
@@ -128,7 +128,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             return;
         }
 
-        if (tooManyRequests || ThingStatus.ONLINE == thing.getStatus()) {
+        if (tooManyRequests) {
+            logger.debug("Skipping login due to too many requests");
             return;
         }
 
@@ -341,7 +342,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
 
-    public @Nullable synchronized List<SomfyTahomaState> getAllStates(Collection<String> stateNames, String deviceUrl) {
+    public @Nullable
+    synchronized List<SomfyTahomaState> getAllStates(Collection<String> stateNames, String deviceUrl) {
         String url;
         String line = "";
 
