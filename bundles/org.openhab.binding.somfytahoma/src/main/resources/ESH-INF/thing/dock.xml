@@ -3,15 +3,17 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="pod">
+	<thing-type id="dock">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
-		<label>Somfy Pod</label>
+		<label>Somfy Dock</label>
 		<channels>
-			<channel id="cyclic_button" typeId="cyclic_button"></channel>
 			<channel id="battery_status" typeId="battery_status"></channel>
-			<channel id="lighting_led_pod_mode" typeId="lighting_led_pod_mode"></channel>
+			<channel id="battery_level" typeId="system.battery-level"></channel>
+			<channel id="siren_status" typeId="siren_status"></channel>
+			<channel id="short_beep" typeId="short_beep"></channel>
+			<channel id="long_beep" typeId="long_beep"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
