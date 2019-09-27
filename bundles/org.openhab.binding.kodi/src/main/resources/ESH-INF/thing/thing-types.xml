@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Kodi Thing Type -->
-	<thing-type id="kodi">
+	<thing-type id="kodi" extensible="shownotification">
 		<label>Kodi Mediacenter</label>
 		<description>Kodi Mediacenter Binding</description>
 
@@ -24,6 +24,7 @@
 			<channel id="inputaction" typeId="inputaction" />
 			<channel id="systemcommand" typeId="systemcommand" />
 			<channel id="title" typeId="system.media-title" />
+			<channel id="originaltitle" typeId="system.media-title" />
 			<channel id="showtitle" typeId="showtitle" />
 			<channel id="album" typeId="album" />
 			<channel id="artist" typeId="system.media-artist" />
@@ -33,17 +34,81 @@
 			<channel id="fanart" typeId="fanart" />
 			<channel id="playfavorite" typeId="playfavorite" />
 			<channel id="playnotification" typeId="playnotification" />
+            <channel id="profile" typeId="profile" />
+			<channel id="audio-name" typeId="name">
+				<label>Audio Name</label>
+			</channel>
+			<channel id="audio-channels" typeId="channels">
+				<label>Audio Channels</label>
+			</channel>
+			<channel id="audio-index" typeId="index">
+				<label>Audio Index</label>
+			</channel>
+			<channel id="audio-language" typeId="language">
+				<label>Audio language</label>
+			</channel>
 			<channel id="audio-codec" typeId="codec">
 				<label>Audio Codec</label>
 				<description>Audio codec of currently playing media</description>
+			</channel>
+			<channel id="video-width" typeId="width" />
+			<channel id="video-height" typeId="height" />
+			<channel id="video-index" typeId="index">
+				<label>Video Index</label>
 			</channel>
 			<channel id="video-codec" typeId="codec">
 				<label>Video Codec</label>
 				<description>Video codec of currently playing media</description>
 			</channel>
+			<channel id="subtitle-enabled" typeId="enabled">
+				<label>Subtitle Enabled</label>
+			</channel>
+			<channel id="subtitle-name" typeId="name">
+				<label>Subtitle Name</label>
+			</channel>
+			<channel id="subtitle-index" typeId="index">
+				<label>Subtitle Index</label>
+			</channel>
+			<channel id="subtitle-language" typeId="language">
+				<label>Subtitle Language</label>
+			</channel>
 			<channel id="currenttime" typeId="currenttime" />
 			<channel id="currenttimepercentage" typeId="currenttimepercentage" />
 			<channel id="duration" typeId="duration" />
+			<channel id="mediafile" typeId="file" />
+			<channel id="mediaid" typeId="id">
+				<label>Kodi Media ID</label>
+				<description>media_id in kodi database</description>
+			</channel>
+			<channel id="uniqueid-douban" typeId="uniqueid">
+				<label>Douban ID</label>
+				<description>example usage - http://www.douban.com/subject/3036644/</description>
+			</channel>
+			<channel id="uniqueid-imdb" typeId="uniqueid">
+				<label>IMDB ID</label>
+				<description>example usage - http://www.imdb.com/title/tt7207268/</description>
+			</channel>
+			<channel id="uniqueid-imdbtvshow" typeId="uniqueid">
+				<label>IMDB TVSHOW ID</label>
+				<description>example usage - http://www.imdb.com/title/tt0426769/</description>
+			</channel>
+			<channel id="uniqueid-tmdb" typeId="uniqueid">
+				<label>TMDB ID</label>
+				<description>example usage - http://www.themoviedb.org/movie/123456789</description>
+			</channel>
+			<channel id="uniqueid-tmdbepisode" typeId="uniqueid">
+				<label>TMDB EPISODE ID</label>
+				<description>example usage - http://www.themoviedb.org/tv/12225/season/5/episode/15/</description>
+			</channel>
+			<channel id="uniqueid-tmdbtvshow" typeId="uniqueid">
+				<label>TMDB TVSHOW ID</label>
+				<description>example usage - http://www.themoviedb.org/tv/12225/</description>
+			</channel>
+			<channel id="mpaa" typeId="mpaa" />
+			<channel id="rating" typeId="rating" />
+			<channel id="userrating" typeId="rating">
+				<label>User Rating</label>
+			</channel>
 		</channels>
 
 		<properties>
@@ -89,6 +154,23 @@
 		<item-type>String</item-type>
 		<label>Show Notification</label>
 		<description>Shows a notification on the UI</description>
+		<config-description>
+			<parameter name="title" type="text" required="false">
+				<label>Notification Title</label>
+				<description>Title to show for the notification</description>
+				<default>openHAB</default>
+			</parameter>
+			<parameter name="displayTime" type="integer" required="false" min="100">
+				<label>Display Time</label>
+				<description>Time the notification is displayed in milliseconds.</description>
+				<default>5000</default>
+				<unitLabel>ms</unitLabel>
+			</parameter>
+			<parameter name="icon" type="text" required="false">
+				<label>Icon</label>
+				<description>Icon name to show with the notification</description>
+			</parameter>
+		</config-description>
 	</channel-type>
 	<channel-type id="playnotification" advanced="true">
 		<item-type>String</item-type>
@@ -373,7 +455,7 @@
 		<item-type>String</item-type>
 		<label>Genres</label>
 		<description>Comma-separated list of genres of the current file</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%s" />
 	</channel-type>
 	<channel-type id="thumbnail">
 		<item-type>Image</item-type>
@@ -397,7 +479,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state pattern="%d %unit%" />
 	</channel-type>
 	<channel-type id="currenttimepercentage" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
@@ -410,5 +492,82 @@
 		<label>Duration</label>
 		<description>Length of currently playing media</description>
 		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+	<channel-type id="id" advanced="true">
+		<item-type>Number</item-type>
+		<label>Id</label>
+		<description>id in kodi database</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="enabled">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>enabled</description>
+	</channel-type>
+	<channel-type id="channels" advanced="true">
+		<item-type>Number</item-type>
+		<label>Channels</label>
+		<description>Channels</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="width" advanced="true">
+		<item-type>Number</item-type>
+		<label>Video Width</label>
+		<description>Video Width</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="height" advanced="true">
+		<item-type>Number</item-type>
+		<label>Video Height</label>
+		<description>Video Height</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="index" advanced="true">
+		<item-type>Number</item-type>
+		<label>Index</label>
+		<description>stream index</description>
+		<state pattern="%d" />
+	</channel-type>
+	<channel-type id="name" advanced="true">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="uniqueid" advanced="true">
+		<item-type>String</item-type>
+		<label>UniqueID</label>
+		<description>UniqueID</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="language" advanced="false">
+		<item-type>String</item-type>
+		<label>Language</label>
+		<description>stream Language</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="file" advanced="true">
+		<item-type>String</item-type>
+		<label>File</label>
+		<description>file path and name</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="rating" advanced="true">
+		<item-type>Number</item-type>
+		<label>Rating</label>
+		<description>Rating</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="mpaa" advanced="true">
+		<item-type>String</item-type>
+		<label>MPAA Rating</label>
+		<description>MPAA Rating</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="profile" advanced="true">
+		<item-type>String</item-type>
+		<label>Profile</label>
+		<description>Profile of Kodi</description>
+		<state pattern="%s" />
 	</channel-type>
 </thing:thing-descriptions>

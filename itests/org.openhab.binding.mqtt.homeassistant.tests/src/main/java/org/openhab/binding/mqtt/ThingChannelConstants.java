@@ -12,17 +12,9 @@
  */
 package org.openhab.binding.mqtt;
 
-import static org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants.*;
+import static org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants.HOMEASSISTANT_MQTT_THING;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 /**
  * Static test definitions, like thing, bridge and channel definitions

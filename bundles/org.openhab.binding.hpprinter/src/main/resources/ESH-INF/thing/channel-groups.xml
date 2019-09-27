@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hpprinter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel Groups -->
+
+	<channel-group-type id="ink">
+		<label>Ink/Toner Levels</label>
+		<channels>
+			<channel typeId="inkLevel" id="blackLevel"><label>Black Level</label></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="usageInfo">
+		<label>Usage Information</label>
+		<channels>
+			<channel typeId="totals" id="totalCount"><label>Total Pages</label></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="printerStatus">
+		<label>Status</label>
+		<channels>
+			<channel id="status" typeId="status" />
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

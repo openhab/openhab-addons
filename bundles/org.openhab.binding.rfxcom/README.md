@@ -154,11 +154,13 @@ This binding currently supports following channel types:
 |-----------------|---------------|------------------------------------------------------------------------------------|
 | chimesound      | Number        | Id of the chime sound                                                              |
 | command         | Switch        | Command channel.                                                                   |
- | commandId       | Number        | Id of the command (between 0 and 255).                                             |
+| commandId       | Number        | Id of the command (between 0 and 255).                                             |
 | commandString   | String        | Id of the command.                                                                 |
 | contact         | Contact       | Contact channel.                                                                   |
 | datetime        | DateTime      | DateTime channel.                                                                  |
 | dimminglevel    | Dimmer        | Dimming level channel.                                                             |
+| fanspeedstring  | String        | Set the speed of the device, values could be device specific                       |
+| fanlight        | Switch        | Enable light of Fan                                                                |
 | forecast        | String        | Weather forecast from device: NO\_INFO\_AVAILABLE/SUNNY/PARTLY\_CLOUDY/CLOUDY/RAIN |
 | tempcontrol     | Rollershutter | Global control for temperature also setting ON, OFF, UP, DOWN                      |
 | humidity        | Number        | Relative humidity level in percentages.                                            |
@@ -224,6 +226,7 @@ This binding currently supports the following things / message types:
 *   [curtain1 - RFXCOM Curtain1 Actuator](#curtain1---rfxcom-curtain1-actuator)
 *   [datetime - RFXCOM Date/time sensor](#datetime---rfxcom-datetime-sensor)
 *   [energy - RFXCOM Energy Sensor](#energy---rfxcom-energy-sensor)
+*   [fan - RFXCOM Fan Actuator](#fan---rfxcom-fan-actuator)
 *   [humidity - RFXCOM Humidity Sensor](#humidity---rfxcom-humidity-sensor)
 *   [lighting1 - RFXCOM Lighting1 Actuator](#lighting1---rfxcom-lighting1-actuator)
 *   [lighting2 - RFXCOM Lighting2 Actuator](#lighting2---rfxcom-lighting2-actuator)
@@ -423,6 +426,45 @@ A DateTime device
 
         *   RTGR328N - Oregon RTGR328N
 
+### fan - RFXCOM Fan Actuator
+
+A group of fan devices
+
+#### Standard Fan
+
+A Fan device
+
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type | Remarks                      |
+|--------------|-------------------------------------|-----------|------------------------------|
+| command      | [command](#channels)                | Switch    |                              |
+| fanSpeed     | [fanspeedstring](#channels)         | String    | Options: HI, MED, LOW, OFF   |
+| fanLight     | [fanlight](#channels)               | Switch    |                              |
+| signalLevel  | [system.signal-strength](#channels) | Number    |                              |
+
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360    
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   LUCCI_AIR_FAN - Lucci Air fan
+        *   CASAFAN - Casafan
+        *   WESTINGHOUSE_7226640 - Westinghouse 7226640
+
+##### Example
+
+Sitemap:
+
+```java
+Switch item=FanSwitch label="Fan"
+Switch item=FanLightSwitch label="Light" mappings=[ON="On"]
+Switch item=FanSpeedSwitch label="Speed" mappings=[LOW=Low, MED=Medium, HI=High]
+```
+
 ### energy - RFXCOM Energy Sensor
 
 An Energy device
@@ -483,11 +525,22 @@ A Lighting1 device
 
 #### Channels
 
-| Name        | Channel Type                        | Item Type | Remarks  |
-|-------------|-------------------------------------|-----------|----------|
-| command     | [command](#channels)                | Switch    |          |
-| contact     | [contact](#channels)                | Contact   |          |
-| signalLevel | [system.signal-strength](#channels) | Number    |          |
+| Name              | Channel Type                        | Item Type | Remarks  |
+|-------------------|-------------------------------------|-----------|----------|
+| command           | [command](#channels)                | Switch    |          |
+| commandString\*\* | [commandString](#channels)          | String    |          |
+| contact           | [contact](#channels)                | Contact   |          |
+| signalLevel       | [system.signal-strength](#channels) | Number    |          |
+
+\*\* `commandString` supports:
+
+* OFF
+* ON
+* DIM
+* BRIGHT
+* GROUP_OFF
+* GROUP_ON
+* CHIME
 
 #### Configuration Options
 
@@ -655,13 +708,39 @@ A Lighting5 device
 
 #### Channels
 
-| Name         | Channel Type                        | Item Type | Remarks  |
-|--------------|-------------------------------------|-----------|----------|
-| command      | [command](#channels)                | Switch    |          |
-| contact      | [command](#channels)                | Contact   |          |
-| dimmingLevel | [dimminglevel](#channels)           | Dimmer    |          |
-| mood         | [mood](#channels)                   | Number    |          |
-| signalLevel  | [system.signal-strength](#channels) | Number    |          |
+| Name              | Channel Type                        | Item Type | Remarks  |
+|-------------------|-------------------------------------|-----------|----------|
+| command           | [command](#channels)                | Switch    |          |
+| commandString\*\* | [commandString](#channels)          | String    |          |
+| contact           | [command](#channels)                | Contact   |          |
+| dimmingLevel      | [dimminglevel](#channels)           | Dimmer    |          |
+| mood              | [mood](#channels)                   | Number    |          |
+| signalLevel       | [system.signal-strength](#channels) | Number    |          |
+
+\*\* `commandString` supports:
+
+* OFF
+* ON
+* GROUP_OFF
+* LEARN
+* GROUP_ON
+* MOOD1
+* MOOD2
+* MOOD3
+* MOOD4
+* MOOD5
+* RESERVED1
+* RESERVED2
+* UNLOCK
+* LOCK
+* ALL_LOCK
+* CLOSE_RELAY
+* STOP_RELAY
+* OPEN_RELAY
+* SET_LEVEL
+* COLOUR_PALETTE
+* COLOUR_TONE
+* COLOUR_CYCLE
 
 #### Configuration Options
 

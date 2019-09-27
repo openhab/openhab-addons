@@ -15,6 +15,8 @@ package org.openhab.binding.loxone.internal.controls;
 import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -114,13 +116,17 @@ class LxControlJalousie extends LxControl {
     @Override
     public void initialize(LxControlConfig config) {
         super.initialize(config);
+        Set<String> blindsTags = new HashSet<>(tags);
+        Set<String> switchTags = new HashSet<>(tags);
+        blindsTags.add("Blinds");
+        switchTags.add("Switchable");
         addChannel("Rollershutter", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER),
-                defaultChannelLabel, "Rollershutter", tags, this::handleOperateCommands, this::getOperateState);
+                defaultChannelLabel, "Rollershutter", blindsTags, this::handleOperateCommands, this::getOperateState);
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH),
-                defaultChannelLabel + " / Shade", "Rollershutter shading", null, this::handleShadeCommands,
+                defaultChannelLabel + " / Shade", "Rollershutter shading", switchTags, this::handleShadeCommands,
                 () -> OnOffType.OFF);
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH),
-                defaultChannelLabel + " / Auto Shade", "Rollershutter automatic shading", null,
+                defaultChannelLabel + " / Auto Shade", "Rollershutter automatic shading", switchTags,
                 this::handleAutoShadeCommands, this::getAutoShadeState);
     }
 
@@ -138,7 +144,7 @@ class LxControlJalousie extends LxControl {
                 sendAction(CMD_STOP);
             }
         }
-    };
+    }
 
     private PercentType getOperateState() {
         Double value = getStateDoubleValue(STATE_POSITION);
@@ -153,7 +159,7 @@ class LxControlJalousie extends LxControl {
             return new PercentType((int) Math.round(value * 100.0));
         }
         return null;
-    };
+    }
 
     private void handleShadeCommands(Command command) throws IOException {
         if (command instanceof OnOffType) {
@@ -161,7 +167,7 @@ class LxControlJalousie extends LxControl {
                 sendAction(CMD_SHADE);
             }
         }
-    };
+    }
 
     private void handleAutoShadeCommands(Command command) throws IOException {
         if (command instanceof OnOffType) {
@@ -171,7 +177,7 @@ class LxControlJalousie extends LxControl {
                 sendAction(CMD_NO_AUTO);
             }
         }
-    };
+    }
 
     private OnOffType getAutoShadeState() {
         Double value = getStateDoubleValue(STATE_AUTO_ACTIVE);
@@ -179,7 +185,7 @@ class LxControlJalousie extends LxControl {
             return value == 1.0 ? OnOffType.ON : OnOffType.OFF;
         }
         return null;
-    };
+    }
 
     /**
      * Monitor jalousie position against desired target position and stop it if target position is reached.

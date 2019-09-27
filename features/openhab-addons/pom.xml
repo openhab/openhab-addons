@@ -35,25 +35,27 @@
         <executions>
           <execution>
             <id>create-karaf-features</id>
-            <phase>generate-sources</phase>
             <goals>
               <goal>run</goal>
             </goals>
+            <phase>generate-sources</phase>
             <configuration>
               <target>
-                <concat destfile="src/main/feature/feature.xml"> 
-                  <header file="src/main/resources/header.xml" filtering="no"/>
+                <concat destfile="src/main/feature/feature.xml">
+                  <header file="src/main/resources/header.xml" filtering="no"></header>
                   <fileset dir="${basedirRoot}/bundles">
-                    <include name="*/src/main/feature/feature.xml"/>
-                    <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
-                    <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
+                    <include name="*/src/main/feature/feature.xml"></include>
+                    <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"></exclude>
+                    <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"></exclude>
+                    <!-- temporarily disabled due to malfunction -->
+                    <exclude name="**/org.openhab.io.azureiothub/**/feature.xml"></exclude>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>
-                      <regexp pattern="(feature>)|(feature\s)|(bundle>)|(bundle\s)"/>
+                      <regexp pattern="(feature&gt;)|(feature\s)|(bundle&gt;)|(bundle\s)"></regexp>
                     </linecontainsRegExp>
                   </filterchain>
-                  <footer file="src/main/resources/footer.xml" filtering="no"/>
+                  <footer file="src/main/resources/footer.xml" filtering="no"></footer>
                 </concat>
               </target>
             </configuration>
@@ -63,18 +65,18 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>karaf-feature-verification</id>
-              <configuration>
-                <features>
-                  <feature>openhab-binding-bluetooth</feature>
-                  <feature>openhab-binding-mqtt</feature>
-                  <feature>openhab-misc-ruleengine</feature>
-                </features>
-              </configuration>
-            </execution>
-          </executions>
+        <executions>
+          <execution>
+            <id>karaf-feature-verification</id>
+            <configuration>
+              <features>
+                <feature>openhab-binding-bluetooth</feature>
+                <feature>openhab-binding-mqtt</feature>
+                <feature>openhab-misc-ruleengine</feature>
+              </features>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

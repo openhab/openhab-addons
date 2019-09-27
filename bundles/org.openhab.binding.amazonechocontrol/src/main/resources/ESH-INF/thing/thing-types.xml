@@ -1,22 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="amazonechocontrol"
+<thing:thing-descriptions
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	bindingId="amazonechocontrol"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="account">
 		<label>Amazon Account</label>
 		<description>Amazon Account where the amazon echo devices are registered.</description>
 		<config-description>
-            <parameter name="pollingIntervalSmartHome" type="integer">
-                <default>20</default>
-                <description>Defines the time in seconds for openHAB to pull the state of the bulbs.</description></parameter>
-            <parameter name="discoverSmartHome" type="boolean">
-                <default>true</default>
-                <description>Defines if openHAB should discover bulbs connected to the Amazon Echo.</description></parameter>
-            <parameter name="discoverOpenHabSmartHomeDevices" type="boolean">
-                <default>false</default>
-                <advanced>true</advanced>
-                <description>Defines, if openHAB smart home devices should be discovered. This option is for development and testing purpose only.</description></parameter>
-        </config-description>
+			<parameter name="discoverSmartHome" type="integer">
+				<default>0</default>
+				<description>Defines if openHAB should discover devices connected to the Amazon Echo.</description>
+				<options>
+					<option value="0">No Discover</option>
+					<option value="1">Direct connected</option>
+					<option value="2">Direct and over Alexa skill</option>
+				</options>
+			</parameter>
+			<parameter name="pollingIntervalSmartHome" type="decimal"
+				min="10">
+				<default>10</default>
+				<description>
+					Defines the time in minutes for openHAB to pull the
+					state of the connected devices. The minimum is 10 minutes.
+				</description>
+			</parameter>
+			<parameter name="discoverOpenHabSmartHomeDevices"
+				type="boolean">
+				<default>false</default>
+				<advanced>true</advanced>
+				<description>Defines, if smart home devices of the openHAB skill should be discovered. This option is for development and testing purpose only.</description>
+			</parameter>
+		</config-description>
 	</bridge-type>
 	<thing-type id="echo">
 		<supported-bridge-type-refs>
@@ -50,6 +65,7 @@
 			<channel id="amazonMusicPlayListId"
 				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
+			<channel id="announcement" typeId="announcement" />			
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
@@ -237,19 +253,33 @@
 			<channel id="playOnDevice" typeId="playOnDevice" />
 		</channels>
 	</thing-type>
-	<thing-type id="light">
+	<thing-type id="smartHomeDevice">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
-		<label>Amazon Echo Light</label>
-		<description>Represents a light in your amazon account</description>
+		<label>Smart Home Device</label>
+		<description>Smart home device connected to Alexa</description>
+		<representation-property>id</representation-property>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Device Id</label>
+				<description>The id of the device (Please use the discover function to get a configured Thing)</description>
+			</parameter>
+		</config-description>
 	</thing-type>
-	<thing-type id="lightGroup">
+	<thing-type id="smartHomeDeviceGroup">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
-		<label>Amazon Echo Light Group</label>
-		<description>Group of light bulbs in your amazon account</description>
+		<label>Smart Home Device Group</label>
+		<description>Group of smart home devices in your amazon account</description>
+		<representation-property>id</representation-property>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Group Id</label>
+				<description>The id of the device group (Please use the discover function to get a configured Thing)</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 	<channel-type id="save">
 		<item-type>Switch</item-type>
@@ -498,9 +528,15 @@
 		<description>Next timer</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="lightColor" advanced="false">
+	<channel-type id="color" advanced="false">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>The color of a smart bulb</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="colorName" advanced="false">
 		<item-type>String</item-type>
-		<label>Color of your bulb</label>
+		<label>Color Name</label>
 		<description>The color of a smart bulb</description>
 		<state pattern="String" readOnly="false">
 			<options>
@@ -522,9 +558,9 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="whiteTemperature" advanced="false">
+	<channel-type id="colorTemperatureName" advanced="false">
 		<item-type>String</item-type>
-		<label>White temperature</label>
+		<label>White Temperature Name</label>
 		<description>The temperature of white</description>
 		<state pattern="String" readOnly="false">
 			<options>
@@ -536,21 +572,85 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="lightBrightness" advanced="false">
+	<channel-type id="colorTemperatureInKelvin" advanced="false">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<description>The color temperature of the light</description>
+		<state min="1000" max="10000" step="100" pattern="%.1f K" readOnly="true" />
+	</channel-type>
+	<channel-type id="brightness" advanced="false">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>The brightness of the light</description>
 	</channel-type>
-	<thing-type id="smartPlug">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
-		</supported-bridge-type-refs>
-		<label>Amazon Echo Smart Plug</label>
-		<description>Smart plug in your amazon account</description>
-	</thing-type>
-	<channel-type id="state" advanced="false">
+	<channel-type id="powerLevel" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Power Level</label>
+		<description>The power level</description>
+	</channel-type>
+	<channel-type id="percentage" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Percentage</label>
+		<description>Percentage value</description>
+	</channel-type>
+	<channel-type id="powerState" advanced="false">
 		<item-type>Switch</item-type>
 		<label>State</label>
 		<description>State (ON/OFF)</description>
 	</channel-type>
+	<channel-type id="armState" advanced="false">
+		<item-type>String</item-type>
+		<label>Alarm State</label>
+		<description>State (Active/Stay/Night/Deactivated)</description>
+		<state pattern="String" readOnly="false">
+			<options>
+				<option value="ARMED_AWAY">Active</option>
+				<option value="ARMED_STAY">Present</option>
+				<option value="ARMED_NIGHT">Night</option>
+				<option value="DISARMED">Deactivated</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="burglaryAlarm" advanced="false">
+		<item-type>Contact</item-type>
+		<label>Burglary Alarm</label>
+		<description>Burglary alarm</description>
+	</channel-type>
+	<channel-type id="carbonMonoxideAlarm" advanced="false">
+		<item-type>Carbon Monoxid Alarm</item-type>
+		<label>Carbon Monoxid Alarm</label>
+		<description>Carbon monoxid alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="fireAlarm" advanced="false">
+		<item-type>Contact</item-type>
+		<label>Fire Alarm</label>
+		<description>Fire alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="waterAlarm" advanced="false">
+		<item-type>Contact</item-type>
+		<label>Water Alarm</label>
+		<description>Water alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="glassBreakDetectionState" advanced="false">
+		<item-type>Contact</item-type>
+		<label>Glass Break</label>
+		<description>Glass break alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="smokeAlarmDetectionState" advanced="false">
+		<item-type>Contact</item-type>
+		<label>Smoke Alarm</label>
+		<description>Smoke alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="temperature" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>	
+	
 </thing:thing-descriptions>

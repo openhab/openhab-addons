@@ -172,7 +172,7 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl<RFXComRfyMessage.S
                     this.command = (type == UpDownType.DOWN ? Commands.DOWN : Commands.UP);
 
                 } else if (type instanceof StopMoveType) {
-                    this.command = RFXComRfyMessage.Commands.STOP;
+                    this.command = Commands.STOP;
 
                 } else {
                     throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);

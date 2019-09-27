@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
+import java.util.Collections;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -41,7 +43,7 @@ public class LxControlPushbuttonTest extends LxControlSwitchTest {
     @Override
     @Test
     public void testChannels() {
-        testChannel("Switch");
+        testChannel("Switch", Collections.singleton("Switchable"));
     }
 
     @Override

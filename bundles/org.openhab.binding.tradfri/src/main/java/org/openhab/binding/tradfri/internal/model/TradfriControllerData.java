@@ -14,6 +14,8 @@ package org.openhab.binding.tradfri.internal.model;
 
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.SWITCH;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.JsonElement;
 
 /**
@@ -21,6 +23,7 @@ import com.google.gson.JsonElement;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class TradfriControllerData extends TradfriWirelessDeviceData {
 
     public TradfriControllerData(JsonElement json) {

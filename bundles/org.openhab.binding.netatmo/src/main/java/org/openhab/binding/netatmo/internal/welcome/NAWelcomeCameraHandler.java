@@ -34,10 +34,6 @@ import io.swagger.client.model.NAWelcomeCamera;
  */
 public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
-    private String livePictureURL;
-    private String vpnUrl;
-    private boolean isLocal = false;
-    private String liveStreamURL;
 
     public NAWelcomeCameraHandler(@NonNull Thing thing) {
         super(thing);
@@ -76,12 +72,12 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
      *
      * @return Url of the live snapshot
      */
-    @SuppressWarnings("null")
     private String getLivePictureURL() {
-        if (livePictureURL == null && module != null && module.getVpnUrl() != null) {
-            livePictureURL = module.getVpnUrl() + LIVE_PICTURE;
+        String result = getVpnUrl();
+        if (result != null) {
+            result += LIVE_PICTURE;
         }
-        return livePictureURL;
+        return result;
     }
 
     /**
@@ -90,36 +86,33 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
      * @return Url of the live stream
      */
     private String getLiveStreamURL() {
-        if (liveStreamURL == null && module != null) {
-            liveStreamURL = getVpnUrl();
-            if (liveStreamURL != null) {
-                liveStreamURL += "/live/index";
-                liveStreamURL += isLocal ? "_local" : "";
-                liveStreamURL += ".m3u8";
-            }
+        String result = getVpnUrl();
+        if (result != null) {
+            result += "/live/index";
+            result += isLocal() ? "_local" : "";
+            result += ".m3u8";
         }
-        return liveStreamURL;
+        return result;
     }
 
     @SuppressWarnings("null")
     private String getVpnUrl() {
-        if (vpnUrl == null && module != null) {
-            vpnUrl = module.getVpnUrl();
-            if (vpnUrl != null) {
-                isLocal = module.getIsLocal();
-            }
-        }
-        return vpnUrl;
+        return (module == null) ? null : module.getVpnUrl();
     }
 
     public String getStreamURL(String videoId) {
         String result = getVpnUrl();
         if (result != null) {
             result += "/vod/" + videoId + "/index";
-            result += isLocal ? "_local" : "";
+            result += isLocal() ? "_local" : "";
             result += ".m3u8";
         }
         return result;
+    }
+
+    @SuppressWarnings("null")
+    private boolean isLocal() {
+        return (module == null || module.getIsLocal() == null) ? false : module.getIsLocal().booleanValue();
     }
 
 }

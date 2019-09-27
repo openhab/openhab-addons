@@ -19,6 +19,11 @@
       <artifactId>org.openhab.io.hueemulation</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.jupnp</groupId>
+      <artifactId>org.jupnp</artifactId>
+      <version>2.5.2</version>
+    </dependency>
   </dependencies>
 
 </project>

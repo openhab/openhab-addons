@@ -50,4 +50,14 @@ public class ByteEnumUtil {
             throw new RFXComUnsupportedValueException(typeClass, subType);
         }
     }
+
+    public static <T extends ByteEnumWrapperWithSupportedSubTypes> T fromByte(Class<T> typeClass, int input, Object subType) throws RFXComUnsupportedValueException {
+        for (T enumValue : typeClass.getEnumConstants()) {
+            if (enumValue.toByte() == input && enumValue.supportedBySubTypes().contains(subType)) {
+                return enumValue;
+            }
+        }
+
+        throw new RFXComUnsupportedValueException(RFXComLighting5Message.Commands.class, input, subType);
+    }
 }

@@ -254,7 +254,7 @@ public class FritzAhaWebInterface {
             logger.debug("Response complete: {}", content);
             return content;
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            logger.debug("Failed to GET url '{}': ", url, e.getLocalizedMessage(), e);
+            logger.debug("Failed to GET url '{}': {}", url, e.getLocalizedMessage(), e);
             return null;
         }
     }

@@ -333,7 +333,6 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
                         break;
                     case "description":
                         isDescription = true;
-                        ;
                         break;
                     case "thing":
                         isThing = true;
@@ -376,7 +375,6 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
             switch (localName) {
                 case "description":
                     isDescription = false;
-                    ;
                     break;
                 case "thing":
                     if (isDefine) {

@@ -39,7 +39,7 @@ public class TankerkoenigService {
             new CustomTankerkoenigListResultDeserializer());
     private final Gson gson = gsonBuilder.create();
     private final GsonBuilder gsonBuilderDetail = new GsonBuilder().registerTypeAdapter(TankerkoenigDetailResult.class,
-            new CustomTankerkoenigDetailResultDeserializer());;
+            new CustomTankerkoenigDetailResultDeserializer());
     private final Gson gsonDetail = gsonBuilderDetail.create();
     private static final int REQUEST_TIMEOUT = 5000;
 

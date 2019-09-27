@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_ECHO_THING_TYPES_UIDS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_SMART_HOME_THING_TYPES_UIDS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_ACCOUNT;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_FLASH_BRIEFING_PROFILE;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -31,11 +34,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
-import org.openhab.binding.amazonechocontrol.internal.discovery.SmartHomeDevicesDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.EchoHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.FlashBriefingProfileHandler;
-import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.SmartHomeDeviceHandler;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.SmartHomeDevicesDiscovery;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
@@ -69,7 +72,8 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_ECHO_THING_TYPES_UIDS.contains(thingTypeUID)
+                || SUPPORTED_SMART_HOME_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
@@ -125,13 +129,10 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
                     String.class.getClassLoader());
             return new FlashBriefingProfileHandler(thing, storage);
         }
-        if (thingTypeUID.equals(THING_TYPE_LIGHT) || thingTypeUID.equals(THING_TYPE_LIGHT_GROUP)
-                || thingTypeUID.equals(THING_TYPE_SMART_PLUG)) {
-            Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
-                    String.class.getClassLoader());
-            return new SmartHomeDeviceHandler(thing, storage);
+        if (SUPPORTED_SMART_HOME_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return new SmartHomeDeviceHandler(thing, gson);
         }
-        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        if (SUPPORTED_ECHO_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new EchoHandler(thing, gson);
         }
         return null;

@@ -104,7 +104,6 @@
 		<channels>
 			<channel id="name" typeId="name" />
 			<channel id="description" typeId="description" />
-			<channel id="load" typeId="load" />
 			<channel id="load1" typeId="loadAverage" />
 			<channel id="load5" typeId="loadAverage" />
 			<channel id="load15" typeId="loadAverage" />
@@ -267,14 +266,6 @@
 		<description>Remaining capacity in percent</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:mediumpriority" />
-	</channel-type>
-
-	<channel-type id="load">
-		<item-type>Number</item-type>
-		<label>Load</label>
-		<description>Load in percent</description>
-		<state readOnly="true" pattern="%.1f %%" />
-		<config-description-ref uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
 	<channel-type id="load_process">

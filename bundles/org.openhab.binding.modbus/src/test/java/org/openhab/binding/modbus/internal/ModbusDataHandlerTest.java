@@ -127,14 +127,12 @@ public class ModbusDataHandlerTest extends JavaTest {
         }
 
         public ItemChannelLinkRegistryTestImpl() {
-            super();
-            this.setThingRegistry(thingRegistry);
-            setItemRegistry(itemRegistry);
+            super(thingRegistry, itemRegistry);
             ManagedItemChannelLinkProviderExtension provider = new ManagedItemChannelLinkProviderExtension();
             addProvider(provider);
             setManagedProvider(provider);
         }
-    };
+    }
 
     private class ItemRegisteryTestImpl extends AbstractRegistry<Item, String, ItemProvider> implements ItemRegistry {
 
@@ -225,7 +223,7 @@ public class ModbusDataHandlerTest extends JavaTest {
             throw new IllegalStateException();
         }
 
-    };
+    }
 
     private static final Map<String, Class<? extends Item>> CHANNEL_TO_ITEM_CLASS = new HashMap<>();
     static {

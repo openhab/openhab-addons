@@ -248,12 +248,12 @@ public class FeedHandlerTest extends JavaOSGiTest {
         StateChangeListener updateListener = new StateChangeListener() {
             @Override
             public void stateChanged(Item item, State oldState, State newState) {
-            };
+            }
 
             @Override
             public void stateUpdated(Item item, State state) {
                 currentItemState = (StringType) state;
-            };
+            }
         };
 
         newItem.addStateChangeListener(updateListener);

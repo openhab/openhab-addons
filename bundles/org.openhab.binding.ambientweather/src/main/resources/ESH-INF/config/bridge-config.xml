@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:ambientweather:bridge">
+		<parameter name="applicationKey" type="text" required="true">
+			<label>Application Key</label>
+			<description>Enter the application key</description>
+		</parameter>
+		<parameter name="apiKey" type="text" required="true">
+			<label>API Key</label>
+			<description>Enter the API key</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

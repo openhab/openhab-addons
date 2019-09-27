@@ -145,7 +145,7 @@ public class ServerConnection {
                         public void onClose() {
                             logger.info("Connection to Minecraft server stopped");
                             subscriber.onCompleted();
-                        };
+                        }
                     };
 
                     URI destUri = null;

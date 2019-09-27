@@ -27,7 +27,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 class WebSocketArt extends WebSocketBase {
-    private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
+    private final Logger logger = LoggerFactory.getLogger(WebSocketArt.class);
 
     /**
      * @param remoteControllerWebSocket
@@ -45,7 +45,7 @@ class WebSocketArt extends WebSocketBase {
             String event;
             String status;
             String value;
-        };
+        }
 
         // data is sometimes a json object, sometimes a string representation of a json object for d2d_service_message
         @Nullable

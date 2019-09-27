@@ -62,6 +62,7 @@ The AirQuality information that is retrieved is available as these channels:
 | o3              | Number               | Ozone level (O3)                             |
 | no2             | Number               | Nitrogen Dioxide level (NO2)                 |
 | co              | Number               | Carbon monoxide level (CO)                   |
+| so2             | Number               | Sulfur dioxide level (SO2)                   |
 | observationTime | DateTime             | Observation date and time                    |
 | temperature     | Number:Temperature   | Temperature in Celsius degrees               |
 | pressure        | Number:Pressure      | Pressure level                               |
@@ -70,7 +71,7 @@ The AirQuality information that is retrieved is available as these channels:
 
 `AQI Description` item provides a human-readable output that can be interpreted e.g. by MAP transformation.
 
-*Note that channels like* `pm25`, `pm10`, `o3`, `no2`, `co` *can sometimes return* `UNDEF` *value due to the fact that some stations don't provide measurements for them.*
+*Note that channels like* `pm25`, `pm10`, `o3`, `no2`, `co`, `so2` *can sometimes return* `UNDEF` *value due to the fact that some stations don't provide measurements for them.*
 
 ## Full Example
 
@@ -110,6 +111,7 @@ Number   Aqi_Pm10            "PM\u2081\u2080 Level" <line> (AirQuality) { channe
 Number   Aqi_O3              "O\u2083 Level" <line> (AirQuality) { channel="airquality:aqi:home:o3" }
 Number   Aqi_No2             "NO\u2082 Level" <line> (AirQuality) { channel="airquality:aqi:home:no2" }
 Number   Aqi_Co              "CO Level" <line> (AirQuality) { channel="airquality:aqi:home:co" }
+Number   Aqi_So2             "SO\u2082 Level" <line> (AirQuality) { channel="airquality:aqi:home:so2" }
 
 String   Aqi_LocationName    "Measuring Location" <settings> (AirQuality) { channel="airquality:aqi:home:locationName" }
 Location Aqi_StationGeo      "Station Location" <office> (AirQuality) { channel="airquality:aqi:home:stationLocation" }
@@ -151,6 +153,7 @@ sitemap airquality label="Air Quality" {
         Text item=Aqi_O3
         Text item=Aqi_No2
         Text item=Aqi_Co
+        Text item=Aqi_So2
     }
 
     Frame {

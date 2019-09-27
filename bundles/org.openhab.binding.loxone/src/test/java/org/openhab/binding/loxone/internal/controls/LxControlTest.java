@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.thing.Channel;
@@ -78,7 +80,7 @@ class LxControlTest {
     }
 
     void testChannel(LxControl ctrl, String itemType, String namePostFix, BigDecimal min, BigDecimal max,
-            BigDecimal step, String format, Boolean readOnly, List<StateOption> options) {
+            BigDecimal step, String format, Boolean readOnly, List<StateOption> options, Set<String> tags) {
         assertNotNull(ctrl);
         Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
         assertNotNull(c);
@@ -111,24 +113,46 @@ class LxControlTest {
         } else {
             assertNull(d);
         }
+        if (tags != null) {
+            assertThat(c.getDefaultTags(), hasItems(tags.toArray(new String[0])));
+        } else {
+            assertThat(c.getDefaultTags(), empty());
+        }
+    }
+
+    void testChannel(String itemType, String namePostFix, BigDecimal min, BigDecimal max, BigDecimal step,
+            String format, Boolean readOnly, List<StateOption> options, Set<String> tags) {
+        LxControl ctrl = getControl(controlUuid);
+        testChannel(ctrl, itemType, namePostFix, min, max, step, format, readOnly, options, tags);
+    }
+
+    void testChannel(String itemType) {
+        testChannel(itemType, null, null, null, null, null, null, null, null);
+    }
+
+    void testChannel(String itemType, Set<String> tags) {
+        testChannel(itemType, null, null, null, null, null, null, null, tags);
+    }
+
+    void testChannel(LxControl ctrl, String itemType) {
+        testChannel(ctrl, itemType, null, null, null, null, null, null, null, null);
+    }
+
+    void testChannel(LxControl ctrl, String itemType, Set<String> tags) {
+        testChannel(ctrl, itemType, null, null, null, null, null, null, null, tags);
+    }
+
+    void testChannel(String itemType, String namePostFix) {
+        testChannel(itemType, namePostFix, null, null, null, null, null, null, null);
+    }
+
+    void testChannel(String itemType, String namePostFix, Set<String> tags) {
+        testChannel(itemType, namePostFix, null, null, null, null, null, null, tags);
     }
 
     void testChannel(String itemType, String namePostFix, BigDecimal min, BigDecimal max, BigDecimal step,
             String format, Boolean readOnly, List<StateOption> options) {
-        LxControl ctrl = getControl(controlUuid);
-        testChannel(ctrl, itemType, namePostFix, min, max, step, format, readOnly, options);
-    }
-
-    void testChannel(String itemType) {
-        testChannel(itemType, null, null, null, null, null, null, null);
-    }
-
-    void testChannel(LxControl ctrl, String itemType) {
-        testChannel(ctrl, itemType, null, null, null, null, null, null, null);
-    }
-
-    void testChannel(String itemType, String namePostFix) {
-        testChannel(itemType, namePostFix, null, null, null, null, null, null);
+        testChannel(itemType, namePostFix, min, max, step, format, readOnly, options, null);
     }
 
     State getChannelState(LxControl ctrl, String namePostFix) {

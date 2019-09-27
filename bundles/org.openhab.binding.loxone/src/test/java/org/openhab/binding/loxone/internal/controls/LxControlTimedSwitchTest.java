@@ -13,6 +13,7 @@
 package org.openhab.binding.loxone.internal.controls;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -41,7 +42,7 @@ public class LxControlTimedSwitchTest extends LxControlTest {
 
     @Test
     public void testChannels() {
-        testChannel("Switch");
+        testChannel("Switch", Collections.singleton("Switchable"));
         testChannel("Number", DELAY_CHANNEL, new BigDecimal(-1), null, null, null, true, null);
     }
 

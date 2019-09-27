@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="satel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="device_nocomm">
+		<item-type>Switch</item-type>
+		<label>No Communication</label>
+		<description>Indicates communication troubles with the wireless device</description>
+		<state readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>
