@@ -308,14 +308,13 @@
 
 	<!-- Litre Channel -->
 	<channel-type id="amrLitre">
-		<item-type>Number:Litre</item-type>
+		<item-type>Number:Volume</item-type>
 		<label>Litre per second</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
-	<!-- Litre Channel -->
 	<channel-type id="amrCubicMetre">
-		<item-type>Number:Litre</item-type>
+		<item-type>Number:Volume</item-type>
 		<label>Cubic metre</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>

@@ -36,7 +36,6 @@ import org.openhab.binding.enocean.internal.handler.EnOceanBridgeHandler;
 import org.openhab.binding.enocean.internal.handler.EnOceanClassicDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 
 /**
