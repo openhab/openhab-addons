@@ -7,7 +7,7 @@
         <feature>openhab-transport-mdns</feature>
         <bundle dependency="true">mvn:org.glassfish/javax.json/1.0.4</bundle>
         <bundle dependency="true">mvn:javax.json/javax.json-api/1.0</bundle>
-        <bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk15on/1.51</bundle>
+        <bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk15on/1.60</bundle>
         <bundle dependency="true">mvn:io.netty/netty-common/4.1.34.Final</bundle>
         <bundle dependency="true">mvn:io.netty/netty-buffer/4.1.34.Final</bundle>
         <bundle dependency="true">mvn:io.netty/netty-transport/4.1.34.Final</bundle>
