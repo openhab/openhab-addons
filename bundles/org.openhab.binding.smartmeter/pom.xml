@@ -13,34 +13,30 @@
 
   <name>openHAB Add-ons :: Bundles :: Smartmeter Binding</name>
 
-  <properties>
-    <bnd.exportpackage>org.openmuc.jrxtx;version="1.1.2"</bnd.exportpackage>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>io.reactivex.rxjava2</groupId>
       <artifactId>rxjava</artifactId>
       <version>2.2.3</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.reactivestreams</groupId>
       <artifactId>reactive-streams</artifactId>
       <version>1.0.2</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jsml</artifactId>
       <version>1.1.2</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>j62056</artifactId>
       <version>2.1.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

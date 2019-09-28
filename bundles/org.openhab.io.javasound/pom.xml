@@ -15,10 +15,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>javazoom.jlayer</artifactId>
+      <groupId>javazoom</groupId>
+      <artifactId>jlayer</artifactId>
       <version>1.0.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

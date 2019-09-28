@@ -12,13 +12,8 @@
  */
 package org.openhab.io.hueemulation.internal;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.ApplicationPath;
@@ -92,18 +87,10 @@ public class HueEmulationService implements EventHandler {
         @NonNullByDefault({})
         @Override
         public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
-
             if (!logger.isDebugEnabled()) {
                 return;
             }
 
-            // InputStream stream = requestContext.getEntityStream();
-            // String body = stream != null
-            //         ? new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"))
-            //         : "";
-
-            // logger.debug("REST request {} {}: {}", requestContext.getMethod(), requestContext.getUriInfo().getPath(),
-            //         body);
             logger.debug("REST request {} {}", requestContext.getMethod(), requestContext.getUriInfo().getPath());
             logger.debug("REST response: {}", responseContext.getEntity());
         }

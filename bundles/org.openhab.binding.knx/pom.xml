@@ -13,12 +13,16 @@
 
   <name>openHAB Add-ons :: Bundles :: KNX Binding</name>
 
+  <properties>
+    <bnd.importpackage>javax.microedition.io.*;resolution:="optional",javax.usb.*;resolution:="optional",org.usb4java.*;resolution:="optional"</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.github.calimero.calimero-core</artifactId>
+      <groupId>com.github.calimero</groupId>
+      <artifactId>calimero-core</artifactId>
       <version>2.4</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
@@ -27,10 +31,10 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.github.calimero.calimero-device</artifactId>
+      <groupId>com.github.calimero</groupId>
+      <artifactId>calimero-device</artifactId>
       <version>2.4</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
@@ -39,10 +43,10 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.github.calimero.calimero-rxtx</artifactId>
+      <groupId>com.github.calimero</groupId>
+      <artifactId>calimero-rxtx</artifactId>
       <version>2.4</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>

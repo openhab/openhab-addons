@@ -13,12 +13,40 @@
 
   <name>openHAB Add-ons :: Bundles :: Chromecast Binding</name>
 
+  <properties>
+    <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>su.litvak.chromecast</groupId>
       <artifactId>api-v2</artifactId>
       <version>0.11.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>2.6.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.9.9</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.9.9</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.9</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

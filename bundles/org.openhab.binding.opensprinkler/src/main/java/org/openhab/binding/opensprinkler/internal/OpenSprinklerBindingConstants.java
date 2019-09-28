@@ -50,4 +50,5 @@ public class OpenSprinklerBindingConstants {
     public static final String SENSOR_RAIN = "rainsensor";
     public static final String STATION_STATE = "stationState";
     public static final String REMAINING_WATER_TIME = "remainingWaterTime";
+    public static final String NEXT_DURATION = "nextDuration";
 }

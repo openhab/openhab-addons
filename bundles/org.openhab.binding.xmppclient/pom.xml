@@ -22,31 +22,31 @@
       <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-java7</artifactId>
       <version>${smack.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-extensions</artifactId>
       <version>${smack.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-im</artifactId>
       <version>${smack.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-tcp</artifactId>
       <version>${smack.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.minidns</groupId>
       <artifactId>minidns-core</artifactId>
       <version>0.3.3</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
