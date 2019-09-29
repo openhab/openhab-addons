@@ -46,7 +46,11 @@
 
 			<channel typeId="operationMode" id="operationMode"></channel>
 			
-			<channel typeId="batteryLowAlarm" id="batteryLowAlarm"></channel>
+			<channel typeId="system.low-battery" id="batteryLowAlarm">
+				<label>Battery Low Alarm</label>
+				<description>ON if one or more devices in the zone have a low battery</description>
+			</channel>
+
 			<channel typeId="acPower" id="acPower"></channel>
 			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
 		</channels>
@@ -202,14 +206,6 @@
 		<item-type>Switch</item-type>
 		<label>At home</label>
 		<description>ON if at home, OFF if away</description>
-	</channel-type>
-
-	<channel-type id="batteryLowAlarm">
-		<item-type>Switch</item-type>
-		<label>Battery Low Alarm</label>
-		<description>ON if one or more devices in the zone have a low battery</description>
-		<category>lowbattery</category>
-		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="acPower">
