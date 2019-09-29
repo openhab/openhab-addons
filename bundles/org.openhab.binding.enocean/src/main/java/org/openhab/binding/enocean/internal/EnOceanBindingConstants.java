@@ -94,6 +94,8 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_CURRENTNUMBER = "currentNumber";
 
     public final static String CHANNEL_PUSHBUTTON = "pushButton";
+    public final static String CHANNEL_DOUBLEPRESS = "doublePress";
+    public final static String CHANNEL_LONGPRESS = "longPress";
 
     public final static String CHANNEL_ROCKERSWITCH_CHANNELA = "rockerswitchA";
     public final static String CHANNEL_ROCKERSWITCH_CHANNELB = "rockerswitchB";
@@ -114,6 +116,7 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_TOTALCUBICMETRE = "amrCubicMetre";
     public final static String CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
     public final static String CHANNEL_ENERGY_STORAGE = "energyStorage";
+    public final static String CHANNEL_BATTERY_LEVEL = "batteryLevel";
 
     public final static String CHANNEL_AUTOOFF = "autoOFF";
     public final static String CHANNEL_DELAYRADIOOFF = "delayRadioOFF";
@@ -192,12 +195,20 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_BATTERY_VOLTAGE), CoreItemFactory.NUMBER));
                     put(CHANNEL_ENERGY_STORAGE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ENERGY_STORAGE), CoreItemFactory.NUMBER));
+                    put(CHANNEL_BATTERY_LEVEL, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_BATTERY_LEVEL), CoreItemFactory.NUMBER));
                     put(CHANNEL_TEACHINCMD, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_TEACHINCMD), CoreItemFactory.SWITCH));
 
                     put(CHANNEL_PUSHBUTTON,
                             new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(),
                                     null, "Push button", false, true));
+                    put(CHANNEL_DOUBLEPRESS,
+                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(),
+                                    null, "Double press", false, true));
+                    put(CHANNEL_LONGPRESS,
+                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(),
+                                    null, "Long press", false, true));
 
                     put(CHANNEL_ROCKERSWITCH_CHANNELA,
                             new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(),
