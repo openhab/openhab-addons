@@ -352,7 +352,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         for (NhcDevice2 device : deviceList) {
             String location;
             try {
-                location = device.parameters.stream().filter(p -> (p.locationId != null)).findFirst()
+                location = device.parameters.stream().filter(p -> (p.locationName != null)).findFirst()
                         .get().locationName;
             } catch (NoSuchElementException e) {
                 location = null;
