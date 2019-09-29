@@ -78,8 +78,6 @@ public class RdsCloudHandler extends BaseBridgeHandler {
                             LAZY_POLL_INTERVAL));
             return;
         }
-
-        refreshToken();
     }
 
     @Override

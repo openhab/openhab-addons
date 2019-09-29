@@ -65,6 +65,10 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        // note: calling cloud.getToken() forces a refresh of the cloud handler's online status 
+        if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
+            cloud.getToken();
+        }
         if (cloud.getThing().getStatus() == ThingStatus.ONLINE) {
             discoverPlants();
         }
