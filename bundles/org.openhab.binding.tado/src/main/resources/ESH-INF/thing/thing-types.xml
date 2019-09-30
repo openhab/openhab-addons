@@ -45,6 +45,14 @@
 			<channel typeId="timerDuration" id="timerDuration"></channel>
 
 			<channel typeId="operationMode" id="operationMode"></channel>
+			
+			<channel typeId="system.low-battery" id="batteryLowAlarm">
+				<label>Battery Low Alarm</label>
+				<description>ON if one or more devices in the zone have a low battery</description>
+			</channel>
+
+			<channel typeId="acPower" id="acPower"></channel>
+			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
 		</channels>
 
 		<config-description>
@@ -198,6 +206,21 @@
 		<item-type>Switch</item-type>
 		<label>At home</label>
 		<description>ON if at home, OFF if away</description>
+	</channel-type>
+
+	<channel-type id="acPower">
+		<item-type>Switch</item-type>
+		<label>AirCon Power State</label>
+		<description>Indicates if the air-conditioning is Off or On</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	
+	<channel-type id="openWindowDetected">
+		<item-type>Switch</item-type>
+		<label>Open Window Detected</label>
+		<description>Indicates if an open window has been detected</description>
+		<category>window</category>
+		<state readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>
