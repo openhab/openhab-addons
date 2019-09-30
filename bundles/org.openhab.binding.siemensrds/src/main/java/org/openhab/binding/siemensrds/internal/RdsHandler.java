@@ -108,8 +108,6 @@ public class RdsHandler extends BaseThingHandler {
             int pollInterval = cloud.getPollInterval();
 
             if (pollInterval > 0) {
-                logger.info("creating polling timers..");
-
                 // create a "lazy" polling scheduler
                 if (lazyPollingScheduler == null || lazyPollingScheduler.isCancelled()) {
                     lazyPollingScheduler = scheduler.scheduleWithFixedDelay(this::lazyPollingSchedulerExecute,
@@ -139,8 +137,6 @@ public class RdsHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.info("disposing polling timers..");
-
         // clean up the lazy polling scheduler
         if (lazyPollingScheduler != null && !lazyPollingScheduler.isCancelled()) {
             lazyPollingScheduler.cancel(true);
@@ -196,6 +192,8 @@ public class RdsHandler extends BaseThingHandler {
             return;
         }
 
+        String token = cloud.getToken();
+
         if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "cloud handler offline, status => offline!");
@@ -203,7 +201,6 @@ public class RdsHandler extends BaseThingHandler {
         }
 
         String apiKey = cloud.getApiKey();
-        String token = cloud.getToken();
 
         if (points == null || (!points.refresh(apiKey, token))) {
             points = RdsDataPoints.create(apiKey, token, config.plantId);
