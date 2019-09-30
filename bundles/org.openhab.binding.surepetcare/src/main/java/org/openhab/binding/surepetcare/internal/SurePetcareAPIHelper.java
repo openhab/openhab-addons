@@ -130,7 +130,7 @@ public class SurePetcareAPIHelper {
             synchronized (topologyCache) {
                 for (SurePetcarePet pet : topologyCache.getPets()) {
                     String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
-                    pet.setPosition(gson.fromJson(getDataFromApi(url), SurePetcarePetLocation.class));
+                    pet.setLocation(gson.fromJson(getDataFromApi(url), SurePetcarePetLocation.class));
                 }
             }
         } catch (JsonSyntaxException | SurePetcareApiException e) {
@@ -163,13 +163,10 @@ public class SurePetcareAPIHelper {
         }
     }
 
-    public @Nullable SurePetcarePetLocation retrievePetLocation(String id, SurePetcarePetLocation location) {
-        SurePetcarePet pet = topologyCache.getPetById(id);
-        if (pet != null) {
-            return pet.getLocation();
-        } else {
-            return null;
-        }
+    public synchronized void setPetLocation(SurePetcarePet pet, Integer newLocationId) throws SurePetcareApiException {
+        pet.getLocation().setWhere(newLocationId);
+        String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
+        setDataThroughApi(url, pet.getLocation());
     }
 
     public boolean isOnline() {

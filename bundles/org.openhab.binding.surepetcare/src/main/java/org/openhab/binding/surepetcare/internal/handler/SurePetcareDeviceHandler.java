@@ -21,7 +21,6 @@ import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice.Control.Curfew;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice.ProductType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,40 +47,53 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
     public void updateThing() {
         SurePetcareDevice device = petcareAPI.retrieveDevice(thing.getUID().getId());
         if (device != null) {
-            updateState("id", new DecimalType(device.getId()));
-            updateState("name", new StringType(device.getName()));
-            updateState("product", new StringType(ProductType.findByTypeId(device.getProductId()).getName()));
+            updateState(SurePetcareConstants.DEVICE_CHANNEL_ID, new DecimalType(device.getId()));
+            updateState(SurePetcareConstants.DEVICE_CHANNEL_NAME, new StringType(device.getName()));
+            updateState(SurePetcareConstants.DEVICE_CHANNEL_PRODUCT_ID, new DecimalType(device.getProductId()));
             if (thing.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_HUB_DEVICE)) {
-                updateState("ledMode", new DecimalType(device.getStatus().ledMode));
-                updateState("pairingMode", new DecimalType(device.getStatus().pairingMode));
-                updateState("hardwareVersion", new StringType(device.getStatus().version.device.hardware));
-                updateState("firmwareVersion", new StringType(device.getStatus().version.device.firmware));
-                updateState("online", OnOffType.from(device.getStatus().online));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_LED_MODE, new DecimalType(device.getStatus().ledMode));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_PAIRING_MODE,
+                        new DecimalType(device.getStatus().pairingMode));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_HARDWARE_VERSION,
+                        new StringType(device.getStatus().version.device.hardware));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_FIRMWARE_VERSION,
+                        new StringType(device.getStatus().version.device.firmware));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_ONLINE, OnOffType.from(device.getStatus().online));
             } else if (thing.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_FLAP_DEVICE)) {
                 int numCurfews = device.getControl().curfew.size();
                 for (int i = 0; (i < 4) && (i < numCurfews); i++) {
                     Curfew curfew = device.getControl().curfew.get(i);
-                    updateState("curfewEnabled" + (i + 1), OnOffType.from(device.getStatus().online));
-                    updateState("curfewLockTime" + (i + 1), new StringType(curfew.lockTime));
-                    updateState("curfewUnlockTime" + (i + 1), new StringType(curfew.unlockTime));
+                    updateState(SurePetcareConstants.DEVICE_CHANNEL_CURFEW_ENABLED + (i + 1),
+                            OnOffType.from(device.getStatus().online));
+                    updateState(SurePetcareConstants.DEVICE_CHANNEL_CURFEW_LOCK_TIME + (i + 1),
+                            new StringType(curfew.lockTime));
+                    updateState(SurePetcareConstants.DEVICE_CHANNEL_CURFEW_UNLOCK_TIME + (i + 1),
+                            new StringType(curfew.unlockTime));
                 }
-                updateState("lockingMode", new DecimalType(device.getStatus().locking.mode));
-                updateState("hardwareVersion", new StringType(device.getStatus().version.device.hardware));
-                updateState("firmwareVersion", new StringType(device.getStatus().version.device.firmware));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_LOCKING_MODE,
+                        new DecimalType(device.getStatus().locking.mode));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_HARDWARE_VERSION,
+                        new StringType(device.getStatus().version.device.hardware));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_FIRMWARE_VERSION,
+                        new StringType(device.getStatus().version.device.firmware));
 
                 float batVol = device.getStatus().battery;
-                updateState("batteryVoltage", new DecimalType(batVol));
-                updateState("batteryLevel", new DecimalType(Math.min(batVol / BATTERY_FULL_VOLTAGE * 100.0f, 100.0f)));
-                updateState("lowBattery", OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_BATTERY_VOLTAGE, new DecimalType(batVol));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_BATTERY_LEVEL,
+                        new DecimalType(Math.min(batVol / BATTERY_FULL_VOLTAGE * 100.0f, 100.0f)));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_LOW_BATTERY,
+                        OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
 
-                updateState("online", OnOffType.from(device.getStatus().online));
-                updateState("deviceRSSI", new DecimalType(device.getStatus().signal.deviceRssi));
-                updateState("hubRSSI", new DecimalType(device.getStatus().signal.hubRssi));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_ONLINE, OnOffType.from(device.getStatus().online));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_DEVICE_RSSI,
+                        new DecimalType(device.getStatus().signal.deviceRssi));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_HUB_RSSI,
+                        new DecimalType(device.getStatus().signal.hubRssi));
             } else {
                 logger.warn("Unknown product type for device {}", thing.getUID().getAsString());
             }
-            logger.debug("updating all thing channels for device : {}", device.toString());
-            updateState("name", new StringType(device.getName()));
+            logger.debug("Updating all thing channels for device : {}", device.toString());
+            updateState(SurePetcareConstants.DEVICE_CHANNEL_NAME, new StringType(device.getName()));
         }
     }
 

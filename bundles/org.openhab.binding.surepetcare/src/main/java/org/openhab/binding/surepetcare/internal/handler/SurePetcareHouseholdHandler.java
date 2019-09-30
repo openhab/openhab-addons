@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
+import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
 
 /**
@@ -38,10 +39,12 @@ public class SurePetcareHouseholdHandler extends SurePetcareBaseObjectHandler {
     public void updateThing() {
         SurePetcareHousehold household = petcareAPI.retrieveHousehold(thing.getUID().getId());
         if (household != null) {
-            updateState("id", new DecimalType(household.getId()));
-            updateState("name", new StringType(household.getName()));
-            updateState("timezone", new StringType(household.getTimezone().timezone));
-            updateState("timezoneUTCOffset", new DecimalType(household.getTimezone().utcOffset));
+            updateState(SurePetcareConstants.HOUSEHOLD_CHANNEL_ID, new DecimalType(household.getId()));
+            updateState(SurePetcareConstants.HOUSEHOLD_CHANNEL_NAME, new StringType(household.getName()));
+            updateState(SurePetcareConstants.HOUSEHOLD_CHANNEL_TIMEZONE,
+                    new StringType(household.getTimezone().timezone));
+            updateState(SurePetcareConstants.HOUSEHOLD_CHANNEL_TIMEZONE_UTC_OFFSET,
+                    new DecimalType(household.getTimezone().utcOffset));
         }
     }
 

@@ -35,25 +35,24 @@ public class SurePetcarePetLocation {
         INSIDE(1, "Inside"),
         OUTSIDE(2, "Outside");
 
-        private final Integer locationId;
+        private final Integer id;
         private final String name;
 
-        private PetLocation(int locationId, String name) {
-            this.locationId = locationId;
+        private PetLocation(int id, String name) {
+            this.id = id;
             this.name = name;
         }
 
-        public Integer getLocationId() {
-            return locationId;
+        public Integer getId() {
+            return id;
         }
 
         public String getName() {
             return name;
         }
 
-        public static @NonNull PetLocation findByTypeId(final int locationId) {
-            return Arrays.stream(values()).filter(value -> value.locationId.equals(locationId)).findFirst()
-                    .orElse(UNKNONWN);
+        public static @NonNull PetLocation findByTypeId(final int id) {
+            return Arrays.stream(values()).filter(value -> value.id.equals(id)).findFirst().orElse(UNKNONWN);
         }
     }
 
@@ -67,7 +66,7 @@ public class SurePetcarePetLocation {
     }
 
     public SurePetcarePetLocation(PetLocation location, Date since) {
-        this.where = location.getLocationId();
+        this.where = location.getId();
         this.since = since;
     }
 
@@ -114,10 +113,6 @@ public class SurePetcarePetLocation {
     @Override
     public String toString() {
         return "Pet [id=" + petId + ", location=" + PetLocation.findByTypeId(where).getName() + "]";
-    }
-
-    public @NonNull String getLocationName() {
-        return PetLocation.findByTypeId(where).getName();
     }
 
     public @NonNull ZonedDateTime getLocationChanged() {

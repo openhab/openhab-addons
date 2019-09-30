@@ -60,7 +60,7 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 |-------------------|----------|--------------------------------------------------------------------------------------------|
 | id                | Number   | A unique id assigned by the Sure Petcare API                                               |
 | name              | Text     | The name of the hub                                                                        |
-| product           | Switch   | The type of product (i.e. Hub)                                                             |
+| productId         | Number   | The type of product (1=hub)                                                                |
 | ledMode           | Number   | The numerical mode of the hub's LED ears                                                   |
 | pairingMode       | Number   | The state of pairing                                                                       |
 | hardwareVersion   | Text     | The hub's hardware version number                                                          |
@@ -73,7 +73,7 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 |-------------------|----------|--------------------------------------------------------------------------------------------|
 | id                | Number   | A unique id assigned by the Sure Petcare API                                               |
 | name              | Text     | The name of the flap                                                                       |
-| product           | Text     | The type of product (i.e. Cat Flap or Dog Flap)                                            |
+| productId         | Number   | The type of product (3=pet flap, 6=cat flap)                                               |
 | curfewEnabled1    | Switch   | Indicator if this curfew configuration is enabled                                          |
 | curfewLockTime1   | Text     | The curfew locking time (HH:MM)                                                            |
 | curfewUnlockTime1 | Text     | The curfew unlocking time (HH:MM)                                                          |
@@ -94,12 +94,12 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 | id                | Number   | A unique id assigned by the Sure Petcare API                                               |
 | name              | Text     | The name of the pet                                                                        |
 | comment           | Text     | A user provided comment/description                                                        |
-| gender            | Text     | The pet's gender                                                                           |
-| breed             | Text     | The pet's breed                                                                            |
-| species           | Text     | The pet's species (cat or dog)                                                             |
+| genderId          | Number   | The pet's gender id (0=female, 1=male)                                                     |
+| breedId           | Number   | The pet's breed id (see related mapping table)                                             |
+| speciesId         | Number   | The pet's species id (0=unknown, 1=cat, 2=dog)                                             |
 | photoURL          | Text     | The URL of the pet's photo                                                                 |
 | tagIdentifier     | Text     | The unique identifier of the pet's micro chip or collar tag                                |
-| location          | Text     | The current location of the pet (inside or outside)                                        |
+| locationId        | Number   | The current location id of the pet (0=unknown, 1=inside, 2=outside)                        |
 | locationChanged   | DateTime | The time when the location was last changed                                                |
 
 

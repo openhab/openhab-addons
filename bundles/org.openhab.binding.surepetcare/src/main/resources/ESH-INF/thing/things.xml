@@ -34,7 +34,7 @@
 		<channels>
 			<channel id="id" typeId="idType" />
 			<channel id="name" typeId="nameType" />
-			<channel id="product" typeId="productType" />
+			<channel id="productId" typeId="productIdType" />
 			<channel id="ledMode" typeId="ledModeType" />
 			<channel id="pairingMode" typeId="pairingModeType" />
 			<channel id="hardwareVersion" typeId="hardwareVersionType" />
@@ -54,7 +54,7 @@
 		<channels>
 			<channel id="id" typeId="idType" />
 			<channel id="name" typeId="nameType" />
-			<channel id="product" typeId="productType" />
+            <channel id="productId" typeId="productIdType" />
 			<channel id="curfewEnabled1" typeId="curfewEnabledType" />
 			<channel id="curfewLockTime1" typeId="curfewLockTimeType" />
 			<channel id="curfewUnlockTime1" typeId="curfewUnlockTimeType" />
@@ -91,12 +91,12 @@
 			<channel id="id" typeId="idType" />
 			<channel id="name" typeId="nameType" />
 			<channel id="comment" typeId="commentType" />
-			<channel id="gender" typeId="genderType" />
-			<channel id="breed" typeId="breedType" />
-			<channel id="species" typeId="speciesType" />
+			<channel id="genderId" typeId="genderIdType" />
+			<channel id="breedId" typeId="breedIdType" />
+			<channel id="speciesId" typeId="speciesIdType" />
 			<channel id="photoURL" typeId="photoURLType" />
 			<channel id="tagIdentifier" typeId="tagIdentifierType" />
-			<channel id="location" typeId="locationType" />
+			<channel id="locationId" typeId="locationIdType" />
 			<channel id="locationChanged" typeId="locationChangedType" />
 		</channels>
 
@@ -137,11 +137,11 @@
         <state readOnly="true" pattern="%d"></state>
     </channel-type>
 
-	<channel-type id="productType" advanced="true">
-		<item-type>String</item-type>
-		<label>Product</label>
-		<description>The type of product this device represents</description>
-		<state readOnly="true" pattern="%s"></state>
+	<channel-type id="productIdType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Product Id</label>
+		<description>The type of product this device represents (0=unknown, 1=Hub, 3=Pet Flap, 6=Cat Flap)</description>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
 	<channel-type id="shareCodeType" advanced="true">
@@ -151,25 +151,25 @@
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="genderType" advanced="true">
-		<item-type>String</item-type>
-		<label>Gender</label>
-		<description>The pet's gender</description>
-		<state readOnly="true" pattern="%s"></state>
+	<channel-type id="genderIdType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Gender Id</label>
+		<description>The pet's gender id</description>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="breedType" advanced="true">
-		<item-type>String</item-type>
-		<label>Breed</label>
-		<description>The pet's breed</description>
-		<state readOnly="true" pattern="%s"></state>
+	<channel-type id="breedIdType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Breed Id</label>
+		<description>The pet's breed id</description>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="speciesType" advanced="true">
-		<item-type>String</item-type>
-		<label>Species</label>
-		<description>The pet's species</description>
-		<state readOnly="true" pattern="%s"></state>
+	<channel-type id="speciesIdType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Species Id</label>
+		<description>The pet's species id</description>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
 	<channel-type id="photoURLType" advanced="true">
@@ -186,11 +186,11 @@
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="locationType" advanced="true">
-		<item-type>String</item-type>
-		<label>Location</label>
-		<description>The current location of the pet (inside or outside)</description>
-		<state readOnly="true" pattern="%s"></state>
+	<channel-type id="locationIdType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Location Id</label>
+		<description>The current location identifier of the pet (inside or outside)</description>
+		<state readOnly="false" pattern="%d"></state>
 	</channel-type>
 
 	<channel-type id="locationChangedType" advanced="true">

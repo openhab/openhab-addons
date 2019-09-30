@@ -64,7 +64,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Sure Petcare bridge handler.");
         Configuration config = getThing().getConfiguration();
-        updateState("online", OnOffType.OFF);
+        updateState(SurePetcareConstants.BRIDGE_CHANNEL_ONLINE, OnOffType.OFF);
         // Check if username and password have been provided during the bridge creation
         if ((StringUtils.trimToNull((String) config.get(SurePetcareConstants.PASSWORD)) == null)
                 || (StringUtils.trimToNull((String) config.get(SurePetcareConstants.USERNAME)) == null)) {
@@ -83,7 +83,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 petcareAPI.updateTopologyCache();
                 logger.debug("Cache update successful, setting bridge status to ONLINE");
                 updateStatus(ThingStatus.ONLINE);
-                updateState("online", OnOffType.ON);
+                updateState(SurePetcareConstants.BRIDGE_CHANNEL_ONLINE, OnOffType.ON);
 
             } catch (AuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE);
@@ -121,7 +121,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     @SuppressWarnings("null")
     @Override
     public void dispose() {
-        updateState("online", OnOffType.OFF);
+        updateState(SurePetcareConstants.BRIDGE_CHANNEL_ONLINE, OnOffType.OFF);
 
         if (topologyPollingJob != null && !topologyPollingJob.isCancelled()) {
             topologyPollingJob.cancel(true);
@@ -139,7 +139,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("SurePetcareBridgeHandler handleCommand called with command: {}", command.toString());
         if (command instanceof RefreshType) {
-            updateState("online", OnOffType.from(petcareAPI.isOnline()));
+            updateState(SurePetcareConstants.BRIDGE_CHANNEL_ONLINE, OnOffType.from(petcareAPI.isOnline()));
         }
     }
 

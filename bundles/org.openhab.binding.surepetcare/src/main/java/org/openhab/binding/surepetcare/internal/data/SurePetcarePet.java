@@ -17,6 +17,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link SurePetcarePet} is a DTO class used to represent a pet. It's used to deserialize JSON API results.
  *
@@ -25,68 +27,30 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SurePetcarePet extends SurePetcareBaseObject {
 
-    // {
-    // "id":34675,
-    // "name":"Cat",
-    // "gender":0,
-    // "comments":"",
-    // "household_id":87435,
-    // "breed_id":382,
-    // "photo_id":23412,
-    // "species_id":1,
-    // "tag_id":234523,
-    // "version":"MQ==",
-    // "created_at":"2019-09-02T09:27:17+00:00",
-    // "updated_at":"2019-09-02T09:31:08+00:00",
-    // "photo":{
-    // "id":23412,
-    // "location":"https:\/\/surehub.s3.amazonaws.com\/user-photos\/thm\/56231\/z70LUtqLKJGKJHgjkGLyhuiykfKJhgkjghfptCgeZU.jpg",
-    // "uploading_user_id":52815,
-    // "version":"MA==",
-    // "created_at":"2019-09-02T09:31:07+00:00",
-    // "updated_at":"2019-09-02T09:31:07+00:00"
-    // },
-    // "position":{
-    // "tag_id":234523,
-    // "device_id":876348,
-    // "where":2,
-    // "since":"2019-09-11T09:24:13+00:00"
-    // },
-    // "status":{
-    // "activity":{
-    // "tag_id":234523,
-    // "device_id":318966,
-    // "where":2,
-    // "since":"2019-09-11T09:24:13+00:00"
-    // }
-    // }
-    // }
-
     public enum PetGender {
 
         UNKNONWN(-1, "Unknown"),
         FEMALE(0, "Female"),
         MALE(1, "Male");
 
-        private final Integer genderId;
+        private final Integer id;
         private final String name;
 
-        private PetGender(int locationId, String name) {
-            this.genderId = locationId;
+        private PetGender(int id, String name) {
+            this.id = id;
             this.name = name;
         }
 
-        public Integer getGenderId() {
-            return genderId;
+        public Integer getId() {
+            return id;
         }
 
         public String getName() {
             return name;
         }
 
-        public static PetGender findByTypeId(final int genderId) {
-            return Arrays.stream(values()).filter(value -> value.genderId.equals(genderId)).findFirst()
-                    .orElse(UNKNONWN);
+        public static PetGender findByTypeId(final int id) {
+            return Arrays.stream(values()).filter(value -> value.id.equals(id)).findFirst().orElse(UNKNONWN);
         }
     }
 
@@ -96,25 +60,24 @@ public class SurePetcarePet extends SurePetcareBaseObject {
         CAT(1, "Cat"),
         DOG(2, "Dog");
 
-        private final Integer speciesId;
+        private final Integer id;
         private final String name;
 
-        private PetSpecies(int speciesId, String name) {
-            this.speciesId = speciesId;
+        private PetSpecies(int id, String name) {
+            this.id = id;
             this.name = name;
         }
 
-        public Integer getGenderId() {
-            return speciesId;
+        public Integer getId() {
+            return id;
         }
 
         public String getName() {
             return name;
         }
 
-        public static PetSpecies findByTypeId(final int speciesId) {
-            return Arrays.stream(values()).filter(value -> value.speciesId.equals(speciesId)).findFirst()
-                    .orElse(UNKNONWN);
+        public static PetSpecies findByTypeId(final int id) {
+            return Arrays.stream(values()).filter(value -> value.id.equals(id)).findFirst().orElse(UNKNONWN);
         }
     }
 
@@ -127,7 +90,9 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     private Integer speciesId = 0;
     private Integer tagId = 0;
     private SurePetcarePhoto photo = new SurePetcarePhoto();
-    private SurePetcarePetLocation position = new SurePetcarePetLocation();
+
+    @SerializedName("position")
+    private SurePetcarePetLocation location = new SurePetcarePetLocation();
 
     public String getName() {
         return name;
@@ -202,11 +167,11 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     }
 
     public SurePetcarePetLocation getLocation() {
-        return position;
+        return location;
     }
 
-    public void setPosition(SurePetcarePetLocation position) {
-        this.position = position;
+    public void setLocation(SurePetcarePetLocation position) {
+        this.location = position;
     }
 
     public String getGenderName() {

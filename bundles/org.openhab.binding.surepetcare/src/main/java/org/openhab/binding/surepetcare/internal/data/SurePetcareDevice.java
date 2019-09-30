@@ -57,29 +57,29 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
 
     public enum ProductType {
 
-        UNKNOWN(-1, "Unknown"),
+        UNKNOWN(0, "Unknown"),
         HUB(1, "Hub"),
         PET_FLAP(3, "Pet Flap"),
         CAT_FLAP(6, "Cat Flap");
 
-        private final Integer typeId;
+        private final Integer id;
         private final String name;
 
-        private ProductType(int typeId, String name) {
-            this.typeId = typeId;
+        private ProductType(int id, String name) {
+            this.id = id;
             this.name = name;
         }
 
-        public Integer getTypeId() {
-            return typeId;
+        public Integer getId() {
+            return id;
         }
 
         public String getName() {
             return name;
         }
 
-        public static @NonNull ProductType findByTypeId(final int typeId) {
-            return Arrays.stream(values()).filter(value -> value.typeId.equals(typeId)).findFirst().orElse(UNKNOWN);
+        public static @NonNull ProductType findByTypeId(final int id) {
+            return Arrays.stream(values()).filter(value -> value.id.equals(id)).findFirst().orElse(UNKNOWN);
         }
     }
 
