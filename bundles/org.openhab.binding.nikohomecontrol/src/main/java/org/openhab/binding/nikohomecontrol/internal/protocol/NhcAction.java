@@ -164,12 +164,23 @@ public abstract class NhcAction {
     }
 
     /**
+     * Method called when action is removed from the Niko Home Control Controller.
+     */
+    public void actionRemoved() {
+        logger.warn("Niko Home Control: action removed {}, {}", id, name);
+        NhcActionEvent eventHandler = this.eventHandler;
+        if (eventHandler != null) {
+            eventHandler.actionRemoved();
+        }
+    }
+
+    /**
      * Sets state of action. This method is implemented in {@link NhcAction1} and {@link NhcAction2}.
      *
      * @param state - The allowed values depend on the action type.
-     *                  switch action: 0 or 100
-     *                  dimmer action: between 0 and 100
-     *                  rollershutter action: between 0 and 100
+     *            switch action: 0 or 100
+     *            dimmer action: between 0 and 100
+     *            rollershutter action: between 0 and 100
      */
     public abstract void setState(int state);
 
@@ -177,9 +188,9 @@ public abstract class NhcAction {
      * Sends action to Niko Home Control. This method is implemented in {@link NhcAction1} and {@link NhcAction2}.
      *
      * @param command - The allowed values depend on the action type.
-     *                    switch action: On or Off
-     *                    dimmer action: between 0 and 100, On or Off
-     *                    rollershutter action: between 0 and 100, Up, Down or Stop
+     *            switch action: On or Off
+     *            dimmer action: between 0 and 100, On or Off
+     *            rollershutter action: between 0 and 100, Up, Down or Stop
      */
     public abstract void execute(String command);
 }

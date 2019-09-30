@@ -90,4 +90,8 @@ public interface NhcControllerEvent {
      */
     public void noticeEvent(String noticeText);
 
+    /**
+     * This method is called when properties are updated from from the Niko Home Control controller.
+     */
+    public void updatePropertiesEvent();
 }

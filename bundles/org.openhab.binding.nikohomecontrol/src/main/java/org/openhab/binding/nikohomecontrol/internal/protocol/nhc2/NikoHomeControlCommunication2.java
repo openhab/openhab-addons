@@ -71,7 +71,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     private final List<NhcProfile2> profiles = new CopyOnWriteArrayList<>();
     private final List<NhcService2> services = new CopyOnWriteArrayList<>();
-    private final List<NhcLocation2> locations = new CopyOnWriteArrayList<>();
 
     private volatile @Nullable NhcSystemInfo2 nhcSystemInfo;
     private volatile @Nullable NhcTimeInfo2 nhcTimeInfo;
@@ -233,14 +232,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         handler.controllerOffline();
     }
 
-    private void timePublishEvt(String response) {
+    private void systemEvt(String response) {
         Type messageType = new TypeToken<NhcMessage2>() {
         }.getType();
         List<NhcTimeInfo2> timeInfo = null;
+        List<NhcSystemInfo2> systemInfo = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
             if (message.params != null) {
                 timeInfo = message.params.stream().filter(p -> (p.timeInfo != null)).findFirst().get().timeInfo;
+                systemInfo = message.params.stream().filter(p -> (p.systemInfo != null)).findFirst().get().systemInfo;
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
@@ -249,6 +250,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
         if (timeInfo != null) {
             nhcTimeInfo = timeInfo.get(0);
+        }
+        if (systemInfo != null) {
+            nhcSystemInfo = systemInfo.get(0);
+            handler.updatePropertiesEvent();
         }
     }
 
@@ -311,26 +316,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
     }
 
-    private void locationsListRsp(String response) {
-        Type messageType = new TypeToken<NhcMessage2>() {
-        }.getType();
-        List<NhcLocation2> locationList = null;
-        try {
-            NhcMessage2 message = gson.fromJson(response, messageType);
-            if (message.params != null) {
-                locationList = message.params.stream().filter(p -> (p.locations != null)).findFirst().get().locations;
-            }
-        } catch (JsonSyntaxException e) {
-            logger.debug("Niko Home Control: unexpected json {}", response);
-        } catch (NoSuchElementException ignore) {
-            // Ignore if locations not present in response, this should not happen in a locations response
-        }
-        locations.clear();
-        if (locationList != null) {
-            locations.addAll(locationList);
-        }
-    }
-
     private void devicesListRsp(String response) {
         Type messageType = new TypeToken<NhcMessage2>() {
         }.getType();
@@ -350,63 +335,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
 
         for (NhcDevice2 device : deviceList) {
-            String location;
-            try {
-                location = device.parameters.stream().filter(p -> (p.locationName != null)).findFirst()
-                        .get().locationName;
-            } catch (NoSuchElementException e) {
-                location = null;
-            }
-
-            if ("action".equals(device.type)) {
-                ActionType actionType = ActionType.GENERIC;
-                switch (device.model) {
-                    case "generic":
-                    case "pir":
-                    case "simulation":
-                    case "comfort":
-                    case "alarms":
-                    case "alloff":
-                        actionType = ActionType.TRIGGER;
-                        break;
-                    case "light":
-                    case "socket":
-                    case "switched-generic":
-                        actionType = ActionType.RELAY;
-                        break;
-                    case "dimmer":
-                        actionType = ActionType.DIMMER;
-                        break;
-                    case "rolldownshutter":
-                    case "sunblind":
-                    case "venetianblind":
-                        actionType = ActionType.ROLLERSHUTTER;
-                        break;
-                }
-
-                if (!actions.containsKey(device.uuid)) {
-                    logger.debug("Niko Home Control: adding action device {}, {}", device.uuid, device.name);
-
-                    NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
-                            actionType, location, this);
-                    actions.put(device.uuid, nhcAction);
-                }
-
-                updateActionState((NhcAction2) actions.get(device.uuid), device);
-            } else if ("thermostat".equals(device.type)) {
-                if (!thermostats.containsKey(device.uuid)) {
-                    logger.debug("Niko Home Control: adding thermostatdevice {}, {}", device.uuid, device.name);
-
-                    NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.model,
-                            device.technology, location, this);
-                    thermostats.put(device.uuid, nhcThermostat);
-                }
-
-                updateThermostatState((NhcThermostat2) thermostats.get(device.uuid), device);
-            } else {
-                logger.debug("Niko Home Control: device type {} not supported for {}, {}", device.type, device.uuid,
-                        device.name);
-            }
+            addDevice(device);
+            updateState(device);
         }
 
         // Once a devices list response is received, we know the communication is fully started.
@@ -418,12 +348,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
     }
 
-    private void devicesStatusEvt(String response) {
+    private void devicesEvt(String response) {
         Type messageType = new TypeToken<NhcMessage2>() {
         }.getType();
         List<NhcDevice2> deviceList = null;
+        String method = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
+            method = message.method;
             if (message.params != null) {
                 deviceList = message.params.stream().filter(p -> (p.devices != null)).findFirst().get().devices;
             }
@@ -436,12 +368,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             return;
         }
 
-        for (NhcDevice2 device : deviceList) {
-            if (actions.containsKey(device.uuid)) {
-                updateActionState((NhcAction2) actions.get(device.uuid), device);
-            } else if (thermostats.containsKey(device.uuid)) {
-                updateThermostatState((NhcThermostat2) thermostats.get(device.uuid), device);
+        if ("devices.removed".equals(method)) {
+            for (NhcDevice2 device : deviceList) {
+                removeDevice(device);
             }
+            return;
+        } else if ("devices.added".equals(method)) {
+            for (NhcDevice2 device : deviceList) {
+                addDevice(device);
+            }
+        }
+
+        for (NhcDevice2 device : deviceList) {
+            updateState(device);
         }
     }
 
@@ -479,6 +418,79 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         logger.debug("Niko Home Control: unexpected message type {}", notification.type);
                 }
             }
+        }
+    }
+
+    private void addDevice(NhcDevice2 device) {
+        String location;
+        try {
+            location = device.parameters.stream().filter(p -> (p.locationName != null)).findFirst().get().locationName;
+        } catch (NoSuchElementException e) {
+            location = null;
+        }
+
+        if ("action".equals(device.type)) {
+            if (!actions.containsKey(device.uuid)) {
+                logger.debug("Niko Home Control: adding action device {}, {}", device.uuid, device.name);
+
+                ActionType actionType = ActionType.GENERIC;
+                switch (device.model) {
+                    case "generic":
+                    case "pir":
+                    case "simulation":
+                    case "comfort":
+                    case "alarms":
+                    case "alloff":
+                        actionType = ActionType.TRIGGER;
+                        break;
+                    case "light":
+                    case "socket":
+                    case "switched-generic":
+                        actionType = ActionType.RELAY;
+                        break;
+                    case "dimmer":
+                        actionType = ActionType.DIMMER;
+                        break;
+                    case "rolldownshutter":
+                    case "sunblind":
+                    case "venetianblind":
+                        actionType = ActionType.ROLLERSHUTTER;
+                        break;
+                }
+
+                NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
+                        actionType, location, this);
+                actions.put(device.uuid, nhcAction);
+            }
+        } else if ("thermostat".equals(device.type)) {
+            if (!thermostats.containsKey(device.uuid)) {
+                logger.debug("Niko Home Control: adding thermostatdevice {}, {}", device.uuid, device.name);
+
+                NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.model,
+                        device.technology, location, this);
+                thermostats.put(device.uuid, nhcThermostat);
+            }
+        } else {
+            logger.debug("Niko Home Control: device type {} not supported for {}, {}", device.type, device.uuid,
+                    device.name);
+        }
+    }
+
+    private void removeDevice(NhcDevice2 device) {
+        if (actions.containsKey(device.uuid)) {
+            actions.get(device.uuid).actionRemoved();
+            actions.remove(device.uuid);
+        } else if (thermostats.containsKey(device.uuid)) {
+            thermostats.get(device.uuid).thermostatRemoved();
+            thermostats.remove(device.uuid);
+        }
+    }
+
+    private void updateState(NhcDevice2 device) {
+        if (actions.containsKey(device.uuid)) {
+            updateActionState((NhcAction2) actions.get(device.uuid), device);
+        } else if (thermostats.containsKey(device.uuid)) {
+            updateThermostatState((NhcThermostat2) thermostats.get(device.uuid), device);
         }
     }
 
@@ -751,10 +763,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     @Override
     public void processMessage(String topic, byte[] payload) {
         String message = new String(payload);
-        if ("public/system/evt".equals(topic)) {
-            timePublishEvt(message);
-        } else if ((profileUuid + "/system/evt").equals(topic)) {
-            // ignore
+        if ("public/system/evt".equals(topic) || (profileUuid + "/system/evt").equals(topic)) {
+            systemEvt(message);
         } else if ("public/system/rsp".equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             systeminfoPublishRsp(message);
@@ -767,16 +777,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             notificationEvt(message);
         } else if ((profileUuid + "/control/devices/evt").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
-            devicesStatusEvt(message);
+            devicesEvt(message);
         } else if ((profileUuid + "/control/devices/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             devicesListRsp(message);
         } else if ((profileUuid + "/authentication/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             servicesListRsp(message);
-        } else if ((profileUuid + "/locations/rsp").equals(topic)) {
-            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
-            locationsListRsp(message);
+        } else if ("public/control/devices.error".equals(topic)
+                || (profileUuid + "/control/devices.error").equals(topic)) {
+            logger.warn("Niko Home Control: received error {}", message);
         } else {
             logger.trace("Niko Home Control: not acted on received message topic {}, payload {}", topic, message);
         }

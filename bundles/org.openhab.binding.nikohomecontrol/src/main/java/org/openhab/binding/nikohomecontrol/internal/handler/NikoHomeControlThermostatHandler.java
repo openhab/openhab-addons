@@ -85,7 +85,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         // This can be expensive, therefore do it in a job.
         scheduler.submit(() -> {
             if (nhcComm == null || !nhcComm.communicationActive()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: bridge communication not initialized when trying to execute thermostat command "
                                 + thermostatId);
                 return;
@@ -203,7 +203,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
             nhcThermostat = nhcComm.getThermostats().get(thermostatId);
             if (nhcThermostat == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: thermostatId does not match a thermostat in the controller "
                                 + thermostatId);
                 return;
@@ -289,5 +289,11 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
             timer.cancel(true);
         }
         refreshTimer = null;
+    }
+
+    @Override
+    public void thermostatRemoved() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "Niko Home Control: thermostat has been removed from the controller " + thermostatId);
     }
 }
