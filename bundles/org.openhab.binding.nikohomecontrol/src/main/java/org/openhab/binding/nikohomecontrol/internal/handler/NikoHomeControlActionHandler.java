@@ -236,7 +236,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
             nhcAction = nhcComm.getActions().get(actionId);
             if (nhcAction == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: actionId does not match an action in the controller " + actionId);
                 return;
             }
@@ -297,5 +297,11 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: unknown action type " + actionType);
         }
+    }
+
+    @Override
+    public void actionRemoved() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "Niko Home Control: action has been removed from the controller " + actionId);
     }
 }
