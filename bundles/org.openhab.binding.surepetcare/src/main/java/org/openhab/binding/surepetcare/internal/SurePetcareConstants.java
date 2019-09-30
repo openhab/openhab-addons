@@ -53,13 +53,14 @@ public class SurePetcareConstants {
     // Household Channel Names
     public static final String HOUSEHOLD_CHANNEL_ID = "id";
     public static final String HOUSEHOLD_CHANNEL_NAME = "name";
-    public static final String HOUSEHOLD_CHANNEL_TIMEZONE = "timezone";
-    public static final String HOUSEHOLD_CHANNEL_TIMEZONE_UTC_OFFSET = "timezoneUTCOffset";
+    public static final String HOUSEHOLD_CHANNEL_TIMEZONE_ID = "timezoneId";
+    // public static final String HOUSEHOLD_CHANNEL_TIMEZONE = "timezone";
+    // public static final String HOUSEHOLD_CHANNEL_TIMEZONE_UTC_OFFSET = "timezoneUTCOffset";
 
     // Device Channel Names
     public static final String DEVICE_CHANNEL_ID = "id";
     public static final String DEVICE_CHANNEL_NAME = "name";
-    public static final String DEVICE_CHANNEL_PRODUCT_ID = "product";
+    public static final String DEVICE_CHANNEL_PRODUCT_ID = "productId";
     public static final String DEVICE_CHANNEL_LED_MODE = "ledMode";
     public static final String DEVICE_CHANNEL_PAIRING_MODE = "pairingMode";
     public static final String DEVICE_CHANNEL_HARDWARE_VERSION = "hardwareVersion";
@@ -79,7 +80,7 @@ public class SurePetcareConstants {
     public static final String PET_CHANNEL_ID = "id";
     public static final String PET_CHANNEL_NAME = "name";
     public static final String PET_CHANNEL_COMMENT = "comment";
-    public static final String PET_CHANNEL_GENDER = "genderId";
+    public static final String PET_CHANNEL_GENDER_ID = "genderId";
     public static final String PET_CHANNEL_BREED_ID = "breedId";
     public static final String PET_CHANNEL_SPECIES_ID = "speciesId";
     public static final String PET_CHANNEL_PHOTO_URL = "photoURL";

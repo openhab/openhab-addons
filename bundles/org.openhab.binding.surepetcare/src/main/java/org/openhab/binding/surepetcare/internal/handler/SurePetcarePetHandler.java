@@ -82,9 +82,9 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
             updateState(SurePetcareConstants.PET_CHANNEL_ID, new DecimalType(pet.getId()));
             updateState(SurePetcareConstants.PET_CHANNEL_NAME, new StringType(pet.getName()));
             updateState(SurePetcareConstants.PET_CHANNEL_COMMENT, new StringType(pet.getComments()));
-            updateState(SurePetcareConstants.PET_CHANNEL_GENDER, new StringType(pet.getGenderName()));
-            updateState(SurePetcareConstants.PET_CHANNEL_BREED_ID, new StringType(pet.getBreedName()));
-            updateState(SurePetcareConstants.PET_CHANNEL_SPECIES_ID, new StringType(pet.getSpeciesName()));
+            updateState(SurePetcareConstants.PET_CHANNEL_GENDER_ID, new DecimalType(pet.getGenderId()));
+            updateState(SurePetcareConstants.PET_CHANNEL_BREED_ID, new DecimalType(pet.getBreedId()));
+            updateState(SurePetcareConstants.PET_CHANNEL_SPECIES_ID, new DecimalType(pet.getSpeciesId()));
             updateState(SurePetcareConstants.PET_CHANNEL_PHOTO_URL, new StringType(pet.getPhoto().getLocation()));
             updateState(SurePetcareConstants.PET_CHANNEL_LOCATION_ID, new DecimalType(pet.getLocation().getWhere()));
             updateState(SurePetcareConstants.PET_CHANNEL_LOCATION_CHANGED,

@@ -23,8 +23,8 @@ public class SurePetcareUser extends SurePetcareBaseObject {
     // "user":{
     // "id":23465,
     // "email_address":"rs@gugus.com",
-    // "first_name":"Rene",
-    // "last_name":"Scherer",
+    // "first_name":"Admin",
+    // "last_name":"User",
     // "country_id":77,
     // "language_id":37,
     // "marketing_opt_in":false,

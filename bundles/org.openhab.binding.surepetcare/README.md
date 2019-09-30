@@ -51,8 +51,7 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 |-------------------|----------|--------------------------------------------------------------------------------------------|
 | id                | Number   | A unique id assigned by the Sure Petcare API                                               |
 | name              | Text     | The name of the household                                                                  |
-| timezone          | Text     | The household's timezone                                                                   |
-| timezoneUTCOffset | Number   | The offset in secs between the household's timezone and UTC                                |
+| timezoneId        | Number   | The id of the household's timezone                                                         |
 
 ### Hub Device Thing
 

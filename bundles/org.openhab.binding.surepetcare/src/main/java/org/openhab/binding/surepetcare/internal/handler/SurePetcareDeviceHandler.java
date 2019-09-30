@@ -47,6 +47,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
     public void updateThing() {
         SurePetcareDevice device = petcareAPI.retrieveDevice(thing.getUID().getId());
         if (device != null) {
+            logger.debug("updating all thing channels for device : {}", device.toString());
             updateState(SurePetcareConstants.DEVICE_CHANNEL_ID, new DecimalType(device.getId()));
             updateState(SurePetcareConstants.DEVICE_CHANNEL_NAME, new StringType(device.getName()));
             updateState(SurePetcareConstants.DEVICE_CHANNEL_PRODUCT_ID, new DecimalType(device.getProductId()));

@@ -82,7 +82,9 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     }
 
     private String name = "";
-    private Integer gender = 0;
+
+    @SerializedName("gender")
+    private Integer genderId = 0;
     private String comments = "";
     private Integer householdId = 0;
     private Integer breedId = 0;
@@ -102,12 +104,12 @@ public class SurePetcarePet extends SurePetcareBaseObject {
         this.name = name;
     }
 
-    public Integer getGender() {
-        return gender;
+    public Integer getGenderId() {
+        return genderId;
     }
 
-    public void setGender(Integer gender) {
-        this.gender = gender;
+    public void setGenderId(Integer genderId) {
+        this.genderId = genderId;
     }
 
     public String getComments() {
@@ -172,18 +174,6 @@ public class SurePetcarePet extends SurePetcareBaseObject {
 
     public void setLocation(SurePetcarePetLocation position) {
         this.location = position;
-    }
-
-    public String getGenderName() {
-        return PetGender.findByTypeId(gender).getName();
-    }
-
-    public String getSpeciesName() {
-        return PetSpecies.findByTypeId(speciesId).getName();
-    }
-
-    public String getBreedName() {
-        return breedId.toString();
     }
 
     @Override

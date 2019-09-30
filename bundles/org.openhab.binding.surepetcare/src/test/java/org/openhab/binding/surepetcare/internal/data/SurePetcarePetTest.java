@@ -29,7 +29,7 @@ public class SurePetcarePetTest {
 
         assertEquals(new Integer(34675), response.getId());
         assertEquals("Cat", response.getName());
-        assertEquals(SurePetcarePet.PetGender.FEMALE.getId(), response.getGender());
+        assertEquals(SurePetcarePet.PetGender.FEMALE.getId(), response.getGenderId());
         assertEquals("", response.getComments());
         assertEquals(new Integer(87435), response.getHouseholdId());
         assertEquals(new Integer(23412), response.getPhotoId());

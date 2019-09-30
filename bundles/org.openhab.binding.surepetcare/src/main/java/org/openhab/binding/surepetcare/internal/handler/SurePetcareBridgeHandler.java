@@ -84,6 +84,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Cache update successful, setting bridge status to ONLINE");
                 updateStatus(ThingStatus.ONLINE);
                 updateState(SurePetcareConstants.BRIDGE_CHANNEL_ONLINE, OnOffType.ON);
+                updateThings();
 
             } catch (AuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE);
@@ -98,14 +99,15 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
 
             if (topologyPollingJob == null || topologyPollingJob.isCancelled()) {
                 topologyPollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                    pollAndUpdateThings();
-                }, 0, refreshIntervalTopology, TimeUnit.SECONDS);
+                    petcareAPI.updateTopologyCache();
+                    updateThings();
+                }, refreshIntervalTopology, refreshIntervalTopology, TimeUnit.SECONDS);
                 logger.debug("Bridge topology polling job every {} seconds", refreshIntervalTopology);
             }
             if (petLocationPollingJob == null || petLocationPollingJob.isCancelled()) {
                 petLocationPollingJob = scheduler.scheduleWithFixedDelay(() -> {
                     pollAndUpdatePetLocations();
-                }, 0, refreshIntervalLocation, TimeUnit.SECONDS);
+                }, refreshIntervalLocation, refreshIntervalLocation, TimeUnit.SECONDS);
                 logger.debug("Bridge location polling job every {} seconds", refreshIntervalLocation);
             }
         } catch (ArithmeticException e) {
@@ -143,24 +145,29 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void pollAndUpdateThings() {
+    private synchronized void updateThings() {
         logger.debug("Updating {} connected things", ((Bridge) thing).getThings().size());
-        // update API cache
-        petcareAPI.updateTopologyCache();
         // update existing things
         for (Thing th : ((Bridge) thing).getThings()) {
             logger.debug("  Thing: {}, id: {}", th.getThingTypeUID().getAsString(), th.getUID().getId());
-            if (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_PET)) {
-                ThingHandler handler = th.getHandler();
-                if (handler != null) {
+            ThingHandler handler = th.getHandler();
+            if (handler != null) {
+
+                if (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_PET)) {
                     ((SurePetcarePetHandler) handler).updateThing();
+                } else if (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_HOUSEHOLD)) {
+                    ((SurePetcareHouseholdHandler) handler).updateThing();
+                } else if ((th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_HUB_DEVICE))
+                        || (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_HUB_DEVICE))) {
+                    ((SurePetcareDeviceHandler) handler).updateThing();
                 }
             }
 
         }
+
     }
 
-    private void pollAndUpdatePetLocations() {
+    private synchronized void pollAndUpdatePetLocations() {
         petcareAPI.updatePetLocations();
         for (Thing th : ((Bridge) thing).getThings()) {
             if (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_PET)) {

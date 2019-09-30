@@ -21,25 +21,6 @@ import java.util.Date;
  */
 public class SurePetcareHousehold extends SurePetcareBaseObject {
 
-    // Example:
-    // {
-    // 'id':34452,
-    // 'name':'My Home',
-    // 'share_code':'HDghsHj7D22sG2sP',
-    // 'timezone_id':340,
-    // 'version':'MA==',
-    // 'created_at':'2019-09-02T08:20:45+00:00',
-    // 'updated_at':'2019-09-02T08:20:48+00:00',
-    // 'timezone':{
-    // 'id':340,
-    // 'name':'(UTC+01:00) Europe/London',
-    // 'timezone':'Europe/London',
-    // 'utc_offset':3600,
-    // 'created_at':'2017-08-03T08:35:34+00:00',
-    // 'updated_at':'2017-08-03T08:37:15+00:00'
-    // }
-    // }
-
     // Commented members indicate properties returned by the API not used by the binding
 
     public class Timezone {
@@ -54,7 +35,9 @@ public class SurePetcareHousehold extends SurePetcareBaseObject {
     private String name;
     private String shareCode;
     private Integer timezoneId;
-    private Timezone timezone = new Timezone();
+
+    // Timezone does seem to be included anymore
+    // private Timezone timezone = new Timezone();
 
     public String getName() {
         return name;
@@ -78,14 +61,6 @@ public class SurePetcareHousehold extends SurePetcareBaseObject {
 
     public void setTimezoneId(Integer timezoneId) {
         this.timezoneId = timezoneId;
-    }
-
-    public Timezone getTimezone() {
-        return timezone;
-    }
-
-    public void setTimezone(Timezone timezone) {
-        this.timezone = timezone;
     }
 
     @Override

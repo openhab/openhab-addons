@@ -41,10 +41,7 @@ public class SurePetcareHouseholdHandler extends SurePetcareBaseObjectHandler {
         if (household != null) {
             updateState(SurePetcareConstants.HOUSEHOLD_CHANNEL_ID, new DecimalType(household.getId()));
             updateState(SurePetcareConstants.HOUSEHOLD_CHANNEL_NAME, new StringType(household.getName()));
-            updateState(SurePetcareConstants.HOUSEHOLD_CHANNEL_TIMEZONE,
-                    new StringType(household.getTimezone().timezone));
-            updateState(SurePetcareConstants.HOUSEHOLD_CHANNEL_TIMEZONE_UTC_OFFSET,
-                    new DecimalType(household.getTimezone().utcOffset));
+            updateState(SurePetcareConstants.HOUSEHOLD_CHANNEL_TIMEZONE_ID, new DecimalType(household.getTimezoneId()));
         }
     }
 

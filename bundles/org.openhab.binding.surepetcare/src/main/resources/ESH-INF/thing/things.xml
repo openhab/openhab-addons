@@ -18,8 +18,7 @@
 		<channels>
 			<channel id="id" typeId="idType" />
             <channel id="name" typeId="nameType" />
-            <channel id="timezone" typeId="timezoneType" />
-            <channel id="timezoneUTCOffset" typeId="timezoneUTCOffsetType" />
+            <channel id="timezoneId" typeId="timezoneIdType" />
 		</channels>
 	</thing-type>
 
@@ -123,6 +122,13 @@
         <state readOnly="true" pattern="%s"></state>
     </channel-type>
 
+    <channel-type id="timezoneIdType" advanced="true">
+        <item-type>Number</item-type>
+        <label>Timezone Id</label>
+        <description>The identifier of the timezone</description>
+        <state readOnly="true" pattern="%d"></state>
+    </channel-type>
+<!-- 
     <channel-type id="timezoneType" advanced="true">
         <item-type>String</item-type>
         <label>Timezone</label>
@@ -136,6 +142,7 @@
         <description>The offset in seconds between current timezone and UTC</description>
         <state readOnly="true" pattern="%d"></state>
     </channel-type>
+-->
 
 	<channel-type id="productIdType" advanced="true">
 		<item-type>Number</item-type>
@@ -201,17 +208,17 @@
 	</channel-type>
 
 	<channel-type id="ledModeType" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>LED Mode</label>
 		<description>The current LED mode of the device</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
 	<channel-type id="pairingModeType" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Pairing Mode</label>
 		<description>The current pairing mode of the device</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
 	<channel-type id="hardwareVersionType" advanced="true">
