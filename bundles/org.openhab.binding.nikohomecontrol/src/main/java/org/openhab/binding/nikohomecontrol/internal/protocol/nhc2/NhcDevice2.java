@@ -39,6 +39,7 @@ class NhcDevice2 {
         String overruleTime;
         String ecoSave;
         String demand;
+        String operationMode;
         String ambientTemperature;
     }
 
