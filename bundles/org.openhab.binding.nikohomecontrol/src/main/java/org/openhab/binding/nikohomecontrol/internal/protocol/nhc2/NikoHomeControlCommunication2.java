@@ -441,11 +441,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     case "comfort":
                     case "alarms":
                     case "alloff":
+                    case "overallcomfort":
                         actionType = ActionType.TRIGGER;
                         break;
                     case "light":
                     case "socket":
                     case "switched-generic":
+                    case "switched-fan":
                         actionType = ActionType.RELAY;
                         break;
                     case "dimmer":
@@ -454,6 +456,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     case "rolldownshutter":
                     case "sunblind":
                     case "venetianblind":
+                    case "gate":
                         actionType = ActionType.ROLLERSHUTTER;
                         break;
                 }
@@ -462,7 +465,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         actionType, location, this);
                 actions.put(device.uuid, nhcAction);
             }
-        } else if ("thermostat".equals(device.type)) {
+        } else if ("thermostat".equals(device.type) || "hvac".contentEquals(device.type)) {
             if (!thermostats.containsKey(device.uuid)) {
                 logger.debug("Niko Home Control: adding thermostatdevice {}, {}", device.uuid, device.name);
 
@@ -561,7 +564,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         Optional<NhcProperty> ambientTemperatureProperty = device.properties.stream()
                 .filter(p -> (p.ambientTemperature != null)).findFirst();
 
-        Optional<NhcProperty> demandProperty = device.properties.stream().filter(p -> (p.demand != null)).findFirst();
+        Optional<NhcProperty> demandProperty = device.properties.stream()
+                .filter(p -> ((p.demand != null) || (p.operationMode != null))).findFirst();
 
         String modeString = programProperty.isPresent() ? programProperty.get().program : "";
         int mode = IntStream.range(0, THERMOSTATMODES.length).filter(i -> THERMOSTATMODES[i].equals(modeString))
