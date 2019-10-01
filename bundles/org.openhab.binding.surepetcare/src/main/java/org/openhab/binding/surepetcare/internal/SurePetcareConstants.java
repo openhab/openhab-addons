@@ -56,6 +56,8 @@ public class SurePetcareConstants {
     public static final String HOUSEHOLD_CHANNEL_TIMEZONE_ID = "timezoneId";
     // public static final String HOUSEHOLD_CHANNEL_TIMEZONE = "timezone";
     // public static final String HOUSEHOLD_CHANNEL_TIMEZONE_UTC_OFFSET = "timezoneUTCOffset";
+    public static final String HOUSEHOLD_CHANNEL_CREATED_AT = "createdAt";
+    public static final String HOUSEHOLD_CHANNEL_UPDATED_AT = "updatedAt";
 
     // Device Channel Names
     public static final String DEVICE_CHANNEL_ID = "id";
@@ -75,6 +77,11 @@ public class SurePetcareConstants {
     public static final String DEVICE_CHANNEL_LOW_BATTERY = "lowBattery";
     public static final String DEVICE_CHANNEL_DEVICE_RSSI = "deviceRSSI";
     public static final String DEVICE_CHANNEL_HUB_RSSI = "hubRSSI";
+    public static final String DEVICE_CHANNEL_CREATED_AT = "createdAt";
+    public static final String DEVICE_CHANNEL_UPDATED_AT = "updatedAt";
+    public static final String DEVICE_CHANNEL_PAIRING_AT = "pairingAt";
+    public static final String DEVICE_CHANNEL_SERIAL_NUMBER = "serialNumber";
+    public static final String DEVICE_CHANNEL_MAC_ADDRESS = "macAddress";
 
     // Pet Channel Names
     public static final String PET_CHANNEL_ID = "id";
@@ -86,5 +93,8 @@ public class SurePetcareConstants {
     public static final String PET_CHANNEL_PHOTO_URL = "photoURL";
     public static final String PET_CHANNEL_LOCATION_ID = "locationId";
     public static final String PET_CHANNEL_LOCATION_CHANGED = "locationChanged";
+    public static final String PET_CHANNEL_BIRTHDAY = "birthday";
+    public static final String PET_CHANNEL_WEIGHT = "weight";
+    public static final String PET_CHANNEL_TAG_IDENTIFIER = "tagIdentifier";
 
 }

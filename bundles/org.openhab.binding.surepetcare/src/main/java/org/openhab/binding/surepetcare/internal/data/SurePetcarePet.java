@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.surepetcare.internal.data;
 
+//import java.time.ZoneId;
+//import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Map;
+//import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+//import org.eclipse.jdt.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -85,6 +89,8 @@ public class SurePetcarePet extends SurePetcareBaseObject {
 
     @SerializedName("gender")
     private Integer genderId = 0;
+    //private Date dateOfBirth;
+    private String weight = "";
     private String comments = "";
     private Integer householdId = 0;
     private Integer breedId = 0;
@@ -95,6 +101,7 @@ public class SurePetcarePet extends SurePetcareBaseObject {
 
     @SerializedName("position")
     private SurePetcarePetLocation location = new SurePetcarePetLocation();
+    private SurePetcareTag tagIdentifier = new SurePetcareTag();
 
     public String getName() {
         return name;
@@ -110,6 +117,21 @@ public class SurePetcarePet extends SurePetcareBaseObject {
 
     public void setGenderId(Integer genderId) {
         this.genderId = genderId;
+    }
+
+    /*public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }*/
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 
     public String getComments() {
@@ -176,9 +198,21 @@ public class SurePetcarePet extends SurePetcareBaseObject {
         this.location = position;
     }
 
+    public SurePetcareTag getTagIdentifier() {
+        return tagIdentifier;
+    }
+
+    public void setTagIdentifier(SurePetcareTag tagIdentifier) {
+        this.tagIdentifier = tagIdentifier;
+    }
+
+    /*public @NonNull ZonedDateTime getBirthday() {
+        return dateOfBirth.toInstant().atZone(ZoneId.systemDefault());
+    }*/
+
     @Override
     public String toString() {
-        return "Pet [id=" + id + ", name=" + name + "]";
+        return "Pet [id=" + id + ", name=" + name + ", tagIdentifier=" + tagIdentifier + "]";
     }
 
     @Override

@@ -62,8 +62,8 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 | productId         | Number   | The type of product (1=hub)                                                                |
 | ledMode           | Number   | The numerical mode of the hub's LED ears                                                   |
 | pairingMode       | Number   | The state of pairing                                                                       |
-| hardwareVersion   | Text     | The hub's hardware version number                                                          |
-| firmwareVersion   | Text     | The hub's firmware number                                                                  |
+| hardwareVersion   | Number   | The hub's hardware version number                                                          |
+| firmwareVersion   | Number   | The hub's firmware number                                                                  |
 | online            | Switch   | Indicator if the hub is connected to the internet                                          |
 
 ### Flap Device Thing (Cat or Pet Flap)
@@ -77,8 +77,8 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 | curfewLockTime1   | Text     | The curfew locking time (HH:MM)                                                            |
 | curfewUnlockTime1 | Text     | The curfew unlocking time (HH:MM)                                                          |
 | lockingMode       | Number   | A numeric indicator of the locking mode (e.g. in/out, in-only, out-only etc.)              |
-| hardwareVersion   | Text     | The flap's hardware version number                                                         |
-| firmwareVersion   | Text     | The flap's firmware number                                                                 |
+| hardwareVersion   | Number   | The flap's hardware version number                                                         |
+| firmwareVersion   | Number   | The flap's firmware number                                                                 |
 | online            | Switch   | Indicator if the flap is connected to the hub                                              |
 | lowBattery        | Switch   | Indicator if the battery voltage is low                                                    |
 | batteryLevel      | Number   | The battery voltage percentage                                                             |
@@ -142,8 +142,8 @@ String     UR_1c_Name               "Hub Name [%s]"                             
 String     UR_1c_Product            "Hub Product [%s]"                                                  (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:product" }
 Number     UR_1c_LEDMode            "Hub LED Mode [%d]"                                                 (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:ledMode" }
 Number     UR_1c_PairingMode        "Hub Pairing Mode [%d]"                                             (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:pairingMode" }
-String     UR_1c_HardwareVersion    "Hub Hardware Version [%s]"                                         (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:hardwareVersion" }
-String     UR_1c_FirmwareVersion    "Hub Firmware Version [%s]"                                         (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:firmwareVersion" }
+Number     UR_1c_HardwareVersion    "Hub Hardware Version [%s]"                                         (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:hardwareVersion" }
+Number     UR_1c_FirmwareVersion    "Hub Firmware Version [%s]"                                         (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:firmwareVersion" }
 Switch     UR_1c_Online             "Hub Online [%s]"                                                   (dgPet)  { channel="surepetcare:hubDevice:bridge1:752464:online" }
 
  
@@ -167,8 +167,8 @@ String     UR_1d_CurfewLockTime4    "Cat Flap Curfew 4 Lock Time [%s]"          
 String     UR_1d_CurfewUnlockTime5  "Cat Flap Curfew 4 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:curfewUnlockTime4" }
 Number     UR_1d_LEDMode            "Cat Flap LED Mode [%d]"                                            (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:ledMode" }
 Number     UR_1d_LockingMode        "Cat Flap Locking Mode [%d]"                                        (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:lockingMode" }
-String     UR_1d_HardwareVersion    "Cat Flap Hardware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:hardwareVersion" }
-String     UR_1d_FirmwareVersion    "Cat Flap Firmware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:firmwareVersion" }
+Number     UR_1d_HardwareVersion    "Cat Flap Hardware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:hardwareVersion" }
+Number     UR_1d_FirmwareVersion    "Cat Flap Firmware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:firmwareVersion" }
 Switch     UR_1d_LowBattery         "Cat Flap Low Battery [%s]"                                         (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:lowBattery" }
 Number     UR_1d_BatteryLevel       "Cat Flap Battery Level [%f]"                                       (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:batteryLevel" }
 Number     UR_1d_BatteryVoltage     "Cat Flap Battery Voltage [%f]"                                     (dgPet)  { channel="surepetcare:flapDevice:bridge1:123166:batteryVoltage" }

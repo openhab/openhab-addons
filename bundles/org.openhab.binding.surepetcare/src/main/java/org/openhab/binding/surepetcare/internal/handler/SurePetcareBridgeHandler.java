@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.surepetcare.internal.handler;
 
+import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
+
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +34,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.surepetcare.internal.AuthenticationException;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
-import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,17 +65,17 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Sure Petcare bridge handler.");
         Configuration config = getThing().getConfiguration();
-        updateState(SurePetcareConstants.BRIDGE_CHANNEL_ONLINE, OnOffType.OFF);
+        updateState(BRIDGE_CHANNEL_ONLINE, OnOffType.OFF);
         // Check if username and password have been provided during the bridge creation
-        if ((StringUtils.trimToNull((String) config.get(SurePetcareConstants.PASSWORD)) == null)
-                || (StringUtils.trimToNull((String) config.get(SurePetcareConstants.USERNAME)) == null)) {
+        if ((StringUtils.trimToNull((String) config.get(PASSWORD)) == null)
+                || (StringUtils.trimToNull((String) config.get(USERNAME)) == null)) {
             logger.warn("Setting thing '{}' to OFFLINE: Parameter 'password' and 'username' must be configured.",
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-password");
         } else {
-            String username = (String) config.get(SurePetcareConstants.USERNAME);
-            String password = (String) config.get(SurePetcareConstants.PASSWORD);
+            String username = (String) config.get(USERNAME);
+            String password = (String) config.get(PASSWORD);
             updateStatus(ThingStatus.UNKNOWN);
             try {
                 logger.debug("Login to SurePetcare API with username: {}", username);
@@ -83,7 +84,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 petcareAPI.updateTopologyCache();
                 logger.debug("Cache update successful, setting bridge status to ONLINE");
                 updateStatus(ThingStatus.ONLINE);
-                updateState(SurePetcareConstants.BRIDGE_CHANNEL_ONLINE, OnOffType.ON);
+                updateState(BRIDGE_CHANNEL_ONLINE, OnOffType.ON);
                 updateThings();
 
             } catch (AuthenticationException e) {
@@ -92,9 +93,9 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         }
 
         try {
-            long refreshIntervalTopology = ((BigDecimal) config.get(SurePetcareConstants.REFRESH_INTERVAL_TOPOLOGY))
+            long refreshIntervalTopology = ((BigDecimal) config.get(REFRESH_INTERVAL_TOPOLOGY))
                     .longValueExact();
-            long refreshIntervalLocation = ((BigDecimal) config.get(SurePetcareConstants.REFRESH_INTERVAL_LOCATION))
+            long refreshIntervalLocation = ((BigDecimal) config.get(REFRESH_INTERVAL_LOCATION))
                     .longValueExact();
 
             if (topologyPollingJob == null || topologyPollingJob.isCancelled()) {
@@ -112,8 +113,8 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             }
         } catch (ArithmeticException e) {
             logger.warn("Invalid settings for refresh intervals [{},{}]",
-                    config.get(SurePetcareConstants.REFRESH_INTERVAL_TOPOLOGY),
-                    config.get(SurePetcareConstants.REFRESH_INTERVAL_LOCATION));
+                    config.get(REFRESH_INTERVAL_TOPOLOGY),
+                    config.get(REFRESH_INTERVAL_LOCATION));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-invalid-refresh-intervals");
         }
@@ -123,7 +124,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     @SuppressWarnings("null")
     @Override
     public void dispose() {
-        updateState(SurePetcareConstants.BRIDGE_CHANNEL_ONLINE, OnOffType.OFF);
+        updateState(BRIDGE_CHANNEL_ONLINE, OnOffType.OFF);
 
         if (topologyPollingJob != null && !topologyPollingJob.isCancelled()) {
             topologyPollingJob.cancel(true);
@@ -141,7 +142,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("SurePetcareBridgeHandler handleCommand called with command: {}", command.toString());
         if (command instanceof RefreshType) {
-            updateState(SurePetcareConstants.BRIDGE_CHANNEL_ONLINE, OnOffType.from(petcareAPI.isOnline()));
+            updateState(BRIDGE_CHANNEL_ONLINE, OnOffType.from(petcareAPI.isOnline()));
         }
     }
 
@@ -153,12 +154,12 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             ThingHandler handler = th.getHandler();
             if (handler != null) {
 
-                if (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_PET)) {
+                if (th.getThingTypeUID().equals(THING_TYPE_PET)) {
                     ((SurePetcarePetHandler) handler).updateThing();
-                } else if (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_HOUSEHOLD)) {
+                } else if (th.getThingTypeUID().equals(THING_TYPE_HOUSEHOLD)) {
                     ((SurePetcareHouseholdHandler) handler).updateThing();
-                } else if ((th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_HUB_DEVICE))
-                        || (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_HUB_DEVICE))) {
+                } else if ((th.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE))
+                        || (th.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE))) {
                     ((SurePetcareDeviceHandler) handler).updateThing();
                 }
             }
@@ -170,7 +171,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     private synchronized void pollAndUpdatePetLocations() {
         petcareAPI.updatePetLocations();
         for (Thing th : ((Bridge) thing).getThings()) {
-            if (th.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_PET)) {
+            if (th.getThingTypeUID().equals(THING_TYPE_PET)) {
                 logger.debug("updating pet location for: {}", th.getUID().getId());
                 ThingHandler handler = th.getHandler();
                 if (handler != null) {

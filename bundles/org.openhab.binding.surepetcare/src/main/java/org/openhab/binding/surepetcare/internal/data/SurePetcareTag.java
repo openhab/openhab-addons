@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.surepetcare.internal.data;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * The {@link SurePetcareTag} is the Java class used to represent the micro chip or collar tag of a pet. It's used to
@@ -59,11 +55,4 @@ public class SurePetcareTag extends SurePetcareBaseObject {
         this.supportedProductIds = supportedProductIds;
     }
 
-    public @NonNull ZonedDateTime getCreatedAtAsZonedDateTime() {
-        return createdAt.toInstant().atZone(ZoneId.systemDefault());
-    }
-
-    public @NonNull ZonedDateTime getUpdatedAtAsZonedDateTime() {
-        return updatedAt.toInstant().atZone(ZoneId.systemDefault());
-    }
 }

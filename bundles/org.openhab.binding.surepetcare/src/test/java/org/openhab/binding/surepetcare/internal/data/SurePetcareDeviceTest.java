@@ -36,8 +36,8 @@ public class SurePetcareDeviceTest {
         assertEquals(new Integer(0), response.getControl().pairingMode);
         assertEquals(new Integer(4), response.getStatus().ledMode);
         assertEquals(new Integer(0), response.getStatus().pairingMode);
-        assertEquals("3", response.getStatus().version.device.hardware);
-        assertEquals("1.772", response.getStatus().version.device.firmware);
+        assertEquals(new Integer(3), response.getStatus().version.device.hardware);
+        assertEquals(new Double(1.772), response.getStatus().version.device.firmware);
     }
 
 }

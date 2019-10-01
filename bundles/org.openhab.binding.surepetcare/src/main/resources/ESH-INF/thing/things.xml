@@ -19,6 +19,8 @@
 			<channel id="id" typeId="idType" />
             <channel id="name" typeId="nameType" />
             <channel id="timezoneId" typeId="timezoneIdType" />
+			<channel id="createdAt" typeId="createdAtType" />
+			<channel id="updatedAt" typeId="updatedAtType" />
 		</channels>
 	</thing-type>
 
@@ -36,9 +38,13 @@
 			<channel id="productId" typeId="productIdType" />
 			<channel id="ledMode" typeId="ledModeType" />
 			<channel id="pairingMode" typeId="pairingModeType" />
+			<channel id="serialNumber" typeId="serialNumberType" />
+			<channel id="macAddress" typeId="macAddressType" />
 			<channel id="hardwareVersion" typeId="hardwareVersionType" />
 			<channel id="firmwareVersion" typeId="firmwareVersionType" />
 			<channel id="online" typeId="onlineType" />
+			<channel id="createdAt" typeId="createdAtType" />
+			<channel id="updatedAt" typeId="updatedAtType" />
 		</channels>
 	</thing-type>
 
@@ -66,6 +72,8 @@
 			<channel id="curfewEnabled4" typeId="curfewEnabledType" />
 			<channel id="curfewLockTime4" typeId="curfewLockTimeType" />
 			<channel id="curfewUnlockTime4" typeId="curfewUnlockTimeType" />
+			<channel id="serialNumber" typeId="serialNumberType" />
+			<channel id="macAddress" typeId="macAddressType" />
 			<channel id="lockingMode" typeId="lockingModeType" />
 			<channel id="hardwareVersion" typeId="hardwareVersionType" />
 			<channel id="firmwareVersion" typeId="firmwareVersionType" />
@@ -75,6 +83,9 @@
 			<channel id="online" typeId="onlineType" />
 			<channel id="deviceRSSI" typeId="rssiDeviceType" />
 			<channel id="hubRSSI" typeId="rssiHubType" />
+			<channel id="createdAt" typeId="createdAtType" />
+			<channel id="updatedAt" typeId="updatedAtType" />
+			<channel id="pairingAt" typeId="pairingAtType" />
 		</channels>
 	</thing-type>
 
@@ -97,194 +108,234 @@
 			<channel id="tagIdentifier" typeId="tagIdentifierType" />
 			<channel id="locationId" typeId="locationIdType" />
 			<channel id="locationChanged" typeId="locationChangedType" />
+			<channel id="birthday" typeId="birthdayType" />
+			<channel id="weight" typeId="weightType" />
 		</channels>
 
 	</thing-type>
 
-	<channel-type id="idType" advanced="true">
+	<channel-type id="idType">
 		<item-type>Number</item-type>
 		<label>Id</label>
 		<description>A unique id of the thing</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="nameType" advanced="true">
+	<channel-type id="nameType">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>The name of the thing</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-    <channel-type id="commentType" advanced="true">
+    <channel-type id="commentType">
         <item-type>String</item-type>
         <label>Comment</label>
         <description>Comments about the thing</description>
         <state readOnly="true" pattern="%s"></state>
     </channel-type>
 
-    <channel-type id="timezoneIdType" advanced="true">
+    <channel-type id="timezoneIdType">
         <item-type>Number</item-type>
         <label>Timezone Id</label>
         <description>The identifier of the timezone</description>
         <state readOnly="true" pattern="%d"></state>
     </channel-type>
-<!-- 
-    <channel-type id="timezoneType" advanced="true">
-        <item-type>String</item-type>
-        <label>Timezone</label>
-        <description>The name of a timezone</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
 
-    <channel-type id="timezoneUTCOffsetType" advanced="true">
-        <item-type>Number</item-type>
-        <label>UTC Offset</label>
-        <description>The offset in seconds between current timezone and UTC</description>
-        <state readOnly="true" pattern="%d"></state>
-    </channel-type>
--->
-
-	<channel-type id="productIdType" advanced="true">
+	<channel-type id="productIdType">
 		<item-type>Number</item-type>
 		<label>Product Id</label>
 		<description>The type of product this device represents (0=unknown, 1=Hub, 3=Pet Flap, 6=Cat Flap)</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="shareCodeType" advanced="true">
+	<channel-type id="shareCodeType">
 		<item-type>String</item-type>
 		<label>Share Code</label>
 		<description>A unique code provided by Sure Petcare to access photos of pets</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="genderIdType" advanced="true">
+	<channel-type id="genderIdType">
 		<item-type>Number</item-type>
 		<label>Gender Id</label>
 		<description>The pet's gender id</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="breedIdType" advanced="true">
+	<channel-type id="breedIdType">
 		<item-type>Number</item-type>
 		<label>Breed Id</label>
 		<description>The pet's breed id</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="speciesIdType" advanced="true">
+	<channel-type id="speciesIdType">
 		<item-type>Number</item-type>
 		<label>Species Id</label>
 		<description>The pet's species id</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="photoURLType" advanced="true">
+	<channel-type id="photoURLType">
 		<item-type>String</item-type>
 		<label>Photo URL</label>
 		<description>The URL of the pet's photo</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="tagIdentifierType" advanced="true">
+	<channel-type id="tagIdentifierType">
 		<item-type>String</item-type>
 		<label>Micro Chip Tag Identifier</label>
 		<description>The unique identifier of the pet's micro chip tag</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="locationIdType" advanced="true">
+	<channel-type id="locationIdType">
 		<item-type>Number</item-type>
 		<label>Location Id</label>
 		<description>The current location identifier of the pet (inside or outside)</description>
 		<state readOnly="false" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="locationChangedType" advanced="true">
+	<channel-type id="locationChangedType">
 		<item-type>DateTime</item-type>
 		<label>Last Location Change Time</label>
 		<description>The time when the pet's location has last changed</description>
 		<state readOnly="true" pattern="%1$tF %1$tR"></state>
 	</channel-type>
 
-	<channel-type id="ledModeType" advanced="true">
+	<channel-type id="birthdayType">
+		<item-type>DateTime</item-type>
+		<label>Pet Birthday</label>
+		<description>The pet birthday.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="weightType">
+		<item-type>Number</item-type>
+		<label>Pet Weight</label>
+		<description>The pet weight</description>
+		<state readOnly="true" pattern="%d kg"></state>
+	</channel-type>
+
+	<channel-type id="ledModeType">
 		<item-type>Number</item-type>
 		<label>LED Mode</label>
 		<description>The current LED mode of the device</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="pairingModeType" advanced="true">
+	<channel-type id="pairingModeType">
 		<item-type>Number</item-type>
 		<label>Pairing Mode</label>
 		<description>The current pairing mode of the device</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="hardwareVersionType" advanced="true">
-		<item-type>String</item-type>
+	<channel-type id="hardwareVersionType">
+		<item-type>Number</item-type>
 		<label>Hardware Version</label>
 		<description>The version of the hardware</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="firmwareVersionType" advanced="true">
-		<item-type>String</item-type>
+	<channel-type id="firmwareVersionType">
+		<item-type>Number</item-type>
 		<label>Firmware Version</label>
 		<description>The version of the firmware</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="onlineType" advanced="true">
+	<channel-type id="onlineType">
 		<item-type>Switch</item-type>
 		<label>Online</label>
 		<description>Indicator if device is online or offline</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="curfewEnabledType" advanced="true">
+	<channel-type id="curfewEnabledType">
 		<item-type>Switch</item-type>
 		<label>Curfew Enabled</label>
 		<description>Indicator if the curfew is enabled</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="curfewLockTimeType" advanced="true">
+	<channel-type id="curfewLockTimeType">
 		<item-type>String</item-type>
 		<label>Curfew Lock Time</label>
 		<description>The time when the curfew starts</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="curfewUnlockTimeType" advanced="true">
+	<channel-type id="curfewUnlockTimeType">
 		<item-type>String</item-type>
 		<label>Curfew Unlock Time</label>
 		<description>The time when the curfew finishes</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="lockingModeType" advanced="true">
+	<channel-type id="createdAtType">
+		<item-type>DateTime</item-type>
+		<label>Created At</label>
+		<description>The Time when the device was created.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="updatedAtType">
+		<item-type>DateTime</item-type>
+		<label>Updated At</label>
+		<description>The Time when the device was updated.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="pairingAtType">
+		<item-type>DateTime</item-type>
+		<label>Pairing At</label>
+		<description>The Time when the device was paired.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="serialNumberType">
+		<item-type>String</item-type>
+		<label>Serial Number</label>
+		<description>The serial number of the device.</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="macAddressType">
+		<item-type>String</item-type>
+		<label>MAC Address</label>
+		<description>The mac address of the device.</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="lockingModeType">
 		<item-type>Number</item-type>
 		<label>Locking Mode</label>
 		<description>The locking mode the flap is currently set to (e.g. in/out, in only, out only, locked)</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="batteryVoltageType" advanced="true">
+	<channel-type id="batteryVoltageType">
 		<item-type>Number</item-type>
 		<label>Battery Voltage</label>
 		<description>The current battery voltage</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%d V"></state>
 	</channel-type>
 
-	<channel-type id="rssiDeviceType" advanced="true">
+	<channel-type id="rssiDeviceType">
 		<item-type>Number</item-type>
 		<label>Signal Strength Device (RSSI)</label>
 		<description>The received device signal strength (RSSI).</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
-	<channel-type id="rssiHubType" advanced="true">
+	<channel-type id="rssiHubType">
 		<item-type>Number</item-type>
 		<label>Signal Strength Hub (RSSI)</label>
 		<description>The received hub signal strength (RSSI).</description>

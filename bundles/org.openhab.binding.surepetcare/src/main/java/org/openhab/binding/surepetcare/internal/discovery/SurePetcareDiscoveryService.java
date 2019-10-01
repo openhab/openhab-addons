@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.surepetcare.internal.discovery;
 
+import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +28,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
-import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice.ProductType;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
@@ -47,7 +48,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(SurePetcareDiscoveryService.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .singleton(SurePetcareConstants.THING_TYPE_BRIDGE);
+            .singleton(THING_TYPE_BRIDGE);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
     private static final int DISCOVERY_REFRESH_INTERVAL = 12 * 3600; // 12 hours
@@ -144,7 +145,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void createHouseholdThing(SurePetcareHousehold household) {
-        ThingUID thingsUID = new ThingUID(SurePetcareConstants.THING_TYPE_HOUSEHOLD, bridgeUID,
+        ThingUID thingsUID = new ThingUID(THING_TYPE_HOUSEHOLD, bridgeUID,
                 household.getId().toString());
         Map<String, Object> properties = household.getThingProperties();
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(household.getName())
@@ -152,7 +153,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void createPetThing(SurePetcarePet pet) {
-        ThingUID thingsUID = new ThingUID(SurePetcareConstants.THING_TYPE_PET, bridgeUID, pet.getId().toString());
+        ThingUID thingsUID = new ThingUID(THING_TYPE_PET, bridgeUID, pet.getId().toString());
         Map<String, Object> properties = pet.getThingProperties();
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(pet.getName()).withProperties(properties)
                 .withBridge(bridgeUID).build());
@@ -162,13 +163,13 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
         ThingTypeUID typeUID = null;
         switch (ProductType.findByTypeId(device.getProductId())) {
             case HUB:
-                typeUID = SurePetcareConstants.THING_TYPE_HUB_DEVICE;
+                typeUID = THING_TYPE_HUB_DEVICE;
                 break;
             case CAT_FLAP:
-                typeUID = SurePetcareConstants.THING_TYPE_FLAP_DEVICE;
+                typeUID = THING_TYPE_FLAP_DEVICE;
                 break;
             case PET_FLAP:
-                typeUID = SurePetcareConstants.THING_TYPE_FLAP_DEVICE;
+                typeUID = THING_TYPE_FLAP_DEVICE;
                 break;
             case UNKNOWN:
             default:

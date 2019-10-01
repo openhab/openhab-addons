@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.surepetcare.internal.data;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -105,8 +107,8 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
 
         public class Version {
             public class Device {
-                public String hardware;
-                public String firmware;
+                public Integer hardware;
+                public Double firmware;
             }
 
             public Device device = new Device();
@@ -238,8 +240,12 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
 
     @Override
     public String toString() {
-        return "Device [id=" + id + ", name=" + name + ",  product =" + ProductType.findByTypeId(productId).getName()
+        return "Device [id=" + id + ", name=" + name + ", product=" + ProductType.findByTypeId(productId).getName()
                 + "]";
+    }
+
+    public @NonNull ZonedDateTime getPairingAtAsZonedDateTime() {
+        return pairingAt.toInstant().atZone(ZoneId.systemDefault());
     }
 
 }
