@@ -60,6 +60,7 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         UNKNOWN(0, "Unknown"),
         HUB(1, "Hub"),
         PET_FLAP(3, "Pet Flap"),
+        PET_FEEDER(4, "Pet Feeder"),
         CAT_FLAP(6, "Cat Flap");
 
         private final Integer id;
