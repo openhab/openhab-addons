@@ -793,7 +793,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             volume = textToSpeechVolume;
         }
         if (volume != null && volume < 0) {
-            volume = null;
+            volume = null; // the meaning of negative values is 'do not use'. The api requires null in this case.
         }
         if (volume != null) {
             startIgnoreVolumeChange();

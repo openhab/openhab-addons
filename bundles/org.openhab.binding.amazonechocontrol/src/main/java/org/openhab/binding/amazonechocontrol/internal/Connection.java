@@ -1151,25 +1151,20 @@ public class Connection {
             @Nullable Map<String, Object> parameters, @Nullable Integer ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
         if (ttsVolume != null) {
-
             JsonArray nodesToExecute = new JsonArray();
-
             Map<String, Object> volumeParameters = new HashMap<>();
             // add tts volume
             volumeParameters.clear();
             volumeParameters.put("value", ttsVolume);
             nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", volumeParameters));
-
             // add command
             nodesToExecute.add(createExecutionNode(device, command, parameters));
-
             // add volume
             volumeParameters.clear();
             volumeParameters.put("value", standardVolume);
             nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", volumeParameters));
 
             executeSequenceNodes(nodesToExecute);
-
         } else {
             executeSequenceCommand(device, command, parameters);
         }
