@@ -360,7 +360,7 @@ end
 ```
 
 Expert:
-You can use a json formatted string to control the title, sound and volume:
+You can use a json formatted string to control title, sound and volume:
 
 ```php
 { "sound": true, "speak":"<Speak>" "title": "<Title>", "body": "<Body Text>", "volume": 20}
