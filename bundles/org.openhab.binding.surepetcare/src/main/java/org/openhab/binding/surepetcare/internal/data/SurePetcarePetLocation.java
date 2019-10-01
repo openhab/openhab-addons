@@ -31,7 +31,7 @@ public class SurePetcarePetLocation {
 
     public enum PetLocation {
 
-        UNKNONWN(0, "Unknown"),
+        UNKNONWN(-1, "Unknown"),
         INSIDE(1, "Inside"),
         OUTSIDE(2, "Outside");
 
