@@ -61,6 +61,10 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                         if (pet != null) {
                             try {
                                 petcareAPI.setPetLocation(pet, newLocationId);
+                                updateState(SurePetcareConstants.PET_CHANNEL_LOCATION_ID,
+                                        new DecimalType(pet.getLocation().getWhere()));
+                                updateState(SurePetcareConstants.PET_CHANNEL_LOCATION_CHANGED,
+                                        new DateTimeType(pet.getLocation().getLocationChanged()));
                             } catch (SurePetcareApiException e) {
                                 logger.warn("Error from SurePetcare API. Can't update location {} for pet {}",
                                         newLocationId, pet.toString());

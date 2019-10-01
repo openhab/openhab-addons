@@ -164,7 +164,9 @@ public class SurePetcareAPIHelper {
     }
 
     public synchronized void setPetLocation(SurePetcarePet pet, Integer newLocationId) throws SurePetcareApiException {
+        pet.getLocation().setPetId(pet.getId());
         pet.getLocation().setWhere(newLocationId);
+        pet.getLocation().setSince(new Date());
         String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
         setDataThroughApi(url, pet.getLocation());
     }
@@ -290,6 +292,8 @@ public class SurePetcareAPIHelper {
 
     private void postDataThroughAPI(String url, String jsonPayload) throws SurePetcareApiException {
         boolean success = false;
+        logger.debug("postDataThroughAPI URL: {}", url);
+        logger.debug("postDataThroughAPI Payload: {}", jsonPayload);
         while (!success) {
             try {
                 URL object = new URL(url);
@@ -298,7 +302,7 @@ public class SurePetcareAPIHelper {
                 con.setRequestMethod("POST");
                 con.getOutputStream().write(jsonPayload.getBytes());
                 int httpResult = con.getResponseCode();
-                if (httpResult == HttpURLConnection.HTTP_OK) {
+                if ((httpResult == HttpURLConnection.HTTP_OK) || (httpResult == HttpURLConnection.HTTP_CREATED)) {
                     logger.debug("API execution successful");
                     success = true;
                 } else {
