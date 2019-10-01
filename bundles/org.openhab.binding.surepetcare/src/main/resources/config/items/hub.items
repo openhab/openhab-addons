@@ -1,0 +1,12 @@
+Number     UR_1c_Id                 "Hub Id [%d]"                                                       (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:id" }
+String     UR_1c_Name               "Hub Name [%s]"                                                     (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:name" }
+String     UR_1c_Product            "Hub Product [%s]"                                                  (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:productId" [profile="transform:MAP", function="surepetcare_product_en.map"] }
+Number     UR_1c_ProductId          "Hub Product Id [%d]"                                               (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:productId" }
+String     UR_1c_LEDMode            "Hub LED Mode [%s]"                                                 (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:ledModeId" [profile="transform:MAP", function="surepetcare_ledmode_en.map"] }
+Number     UR_1c_LEDModeId          "Hub LED Mode Id [%d]"                                              (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:ledModeId" }
+String     UR_1c_PairingMode        "Hub Pairing Mode [%s]"                                             (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:pairingModeId" [profile="transform:MAP", function="surepetcare_pairingmode_en.map"] }
+Number     UR_1c_PairingModeId      "Hub PairingMode Mode Id [%d]"                                      (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:pairingModeId" }
+String     UR_1c_HardwareVersion    "Hub Hardware Version [%s]"                                         (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:hardwareVersion" }
+String     UR_1c_FirmwareVersion    "Hub Firmware Version [%s]"                                         (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:firmwareVersion" }
+Switch     UR_1c_Online             "Hub Online [%s]"                                                   (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:online" }
+

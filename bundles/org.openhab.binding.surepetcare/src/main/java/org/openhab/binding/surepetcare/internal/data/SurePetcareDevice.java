@@ -22,6 +22,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link SurePetcareDevice} is the Java class used
  * as a DTO to represent a Sure Petcare device, such as a hub, a cat flap, a feeder etc.
@@ -95,14 +97,17 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
 
         public Integer locking;
         public Boolean fastPolling;
-        public Integer ledMode;
-        public Integer pairingMode;
+        @SerializedName("led_mode")
+        public Integer ledModeId;
+        @SerializedName("pairing_mode")
+        public Integer pairingModeId;
         public List<Curfew> curfew = new ArrayList<Curfew>();
     }
 
     public class Status {
         public class Locking {
-            public Integer mode;
+            @SerializedName("mode")
+            public Integer modeId;
         }
 
         public class Version {
@@ -119,8 +124,10 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
             public Float hubRssi;
         }
 
-        public Integer ledMode;
-        public Integer pairingMode;
+        @SerializedName("led_mode")
+        public Integer ledModeId;
+        @SerializedName("pairing_mode")
+        public Integer pairingModeId;
         public Locking locking;
         public Version version;
         public Float battery;

@@ -177,7 +177,6 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
         }
         if (typeUID != null) {
             ThingUID thingsUID = new ThingUID(typeUID, bridgeUID, device.getId().toString());
-            logger.debug("BridgeUID: {}, ThingsUID: {}", bridgeUID.getAsString(), thingsUID.getAsString());
             Map<String, Object> properties = device.getThingProperties();
             thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(device.getName())
                     .withProperties(properties).withBridge(bridgeUID).build());

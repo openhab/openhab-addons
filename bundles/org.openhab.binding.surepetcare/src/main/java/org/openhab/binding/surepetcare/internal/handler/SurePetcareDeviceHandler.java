@@ -50,21 +50,20 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
         SurePetcareDevice device = petcareAPI.retrieveDevice(thing.getUID().getId());
         if (device != null) {
             logger.debug("Updating all thing channels for device : {}", device.toString());
-            updateState(DEVICE_CHANNEL_ID, new DecimalType(device.getId()));
-            updateState(DEVICE_CHANNEL_NAME, new StringType(device.getName()));
-            updateState(DEVICE_CHANNEL_PRODUCT_ID, new DecimalType(device.getProductId()));
-            updateState(DEVICE_CHANNEL_NAME, new StringType(device.getName()));
-            if (thing.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE)) {
-                updateState(DEVICE_CHANNEL_LED_MODE, new DecimalType(device.getStatus().ledMode));
-                updateState(DEVICE_CHANNEL_PAIRING_MODE, new DecimalType(device.getStatus().pairingMode));
-                updateState(DEVICE_CHANNEL_HARDWARE_VERSION, new DecimalType(device.getStatus().version.device.hardware));
-                updateState(DEVICE_CHANNEL_FIRMWARE_VERSION, new DecimalType(device.getStatus().version.device.firmware));
-                updateState(DEVICE_CHANNEL_ONLINE, OnOffType.from(device.getStatus().online));
-                updateState(DEVICE_CHANNEL_CREATED_AT, new DateTimeType(device.getCreatedAtAsZonedDateTime()));
-                updateState(DEVICE_CHANNEL_UPDATED_AT, new DateTimeType(device.getUpdatedAtAsZonedDateTime()));
-                updateState(DEVICE_CHANNEL_SERIAL_NUMBER, new StringType(device.getSerialNumber()));
-                updateState(DEVICE_CHANNEL_MAC_ADDRESS, new StringType(device.getMacAddress()));
-            } else if (thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE)) {
+            updateState(SurePetcareConstants.DEVICE_CHANNEL_ID, new DecimalType(device.getId()));
+            updateState(SurePetcareConstants.DEVICE_CHANNEL_NAME, new StringType(device.getName()));
+            updateState(SurePetcareConstants.DEVICE_CHANNEL_PRODUCT_ID, new DecimalType(device.getProductId()));
+            if (thing.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_HUB_DEVICE)) {
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_LED_MODE_ID,
+                        new DecimalType(device.getStatus().ledModeId));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_PAIRING_MODE_ID,
+                        new DecimalType(device.getStatus().pairingModeId));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_HARDWARE_VERSION,
+                        new StringType(device.getStatus().version.device.hardware));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_FIRMWARE_VERSION,
+                        new StringType(device.getStatus().version.device.firmware));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_ONLINE, OnOffType.from(device.getStatus().online));
+            } else if (thing.getThingTypeUID().equals(SurePetcareConstants.THING_TYPE_FLAP_DEVICE)) {
                 int numCurfews = device.getControl().curfew.size();
                 for (int i = 0; (i < 4) && (i < numCurfews); i++) {
                     Curfew curfew = device.getControl().curfew.get(i);
@@ -72,9 +71,12 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                     updateState(DEVICE_CHANNEL_CURFEW_LOCK_TIME + (i + 1), new StringType(curfew.lockTime));
                     updateState(DEVICE_CHANNEL_CURFEW_UNLOCK_TIME + (i + 1), new StringType(curfew.unlockTime));
                 }
-                updateState(DEVICE_CHANNEL_LOCKING_MODE, new DecimalType(device.getStatus().locking.mode));
-                updateState(DEVICE_CHANNEL_HARDWARE_VERSION, new DecimalType(device.getStatus().version.device.hardware));
-                updateState(DEVICE_CHANNEL_FIRMWARE_VERSION, new DecimalType(device.getStatus().version.device.firmware));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_LOCKING_MODE_ID,
+                        new DecimalType(device.getStatus().locking.modeId));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_HARDWARE_VERSION,
+                        new StringType(device.getStatus().version.device.hardware));
+                updateState(SurePetcareConstants.DEVICE_CHANNEL_FIRMWARE_VERSION,
+                        new StringType(device.getStatus().version.device.firmware));
 
                 float batVol = device.getStatus().battery;
                 updateState(DEVICE_CHANNEL_BATTERY_VOLTAGE, new DecimalType(batVol));
