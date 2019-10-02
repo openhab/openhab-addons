@@ -130,21 +130,26 @@ public class SoulissT16Handler extends SoulissGenericHandler {
 
                         // memorizza i valori RGB partendo dal valore HSB
                         commandSEND_RGB(SoulissBindingProtocolConstants.Souliss_T1n_Set,
-                                (byte) _hsbState.getRed().intValue(), (byte) _hsbState.getGreen().intValue(),
-                                (byte) _hsbState.getBlue().intValue());
-
+                                (byte) (T1nRawState_hsb.getRed().intValue() * 255 / 100),
+                                (byte) (T1nRawState_hsb.getGreen().intValue() * 255 / 100),
+                                (byte) (T1nRawState_hsb.getBlue().intValue() * 255 / 100));
                         updateState(SoulissBindingConstants.LED_COLOR_CHANNEL, _hsbState);
                         updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL, _hsbState.getBrightness());
 
                     } else if (command instanceof PercentType) {
                         // slide brightness
                         setBrightness(command);
+                    } else if (command instanceof OnOffType) {
+                        if (command.equals(OnOffType.ON)) {
+                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OnCmd);
+
+                        } else if (command.equals(OnOffType.OFF)) {
+                            commandSEND(SoulissBindingProtocolConstants.Souliss_T1n_OffCmd);
+                        }
                     }
                     break;
-
             }
         }
-
     }
 
     private void setBrightness(Command command) {

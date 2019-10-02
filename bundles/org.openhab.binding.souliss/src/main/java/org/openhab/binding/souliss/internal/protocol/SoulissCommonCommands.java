@@ -87,11 +87,11 @@ public class SoulissCommonCommands {
         MACACOframe.add(shortCommand);// PAYLOAD
 
         if (byte1 != null && byte2 != null && byte3 != null) {
-            MACACOframe.add(byte1.byteValue());// PAYLOAD RED
-            MACACOframe.add(byte2.byteValue());// PAYLOAD GREEN
-            MACACOframe.add(byte3.byteValue());// PAYLOAD BLUE
+            MACACOframe.add((byte) (byte1 & 0xFF));// PAYLOAD RED
+            MACACOframe.add((byte) (byte2 & 0xFF));// PAYLOAD GREEN
+            MACACOframe.add((byte) (byte3 & 0xFF));// PAYLOAD BLUE
         } else if (byte1 != null) {
-            MACACOframe.add(byte1.byteValue());// PAYLOAD DIMMER
+            MACACOframe.add((byte) (byte1 & 0xFF));// PAYLOAD DIMMER
         }
 
         logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", MaCacoToString(MACACOframe),
@@ -122,8 +122,8 @@ public class SoulissCommonCommands {
                                         // slot da modificare
         }
         // PAYLOAD
-        MACACOframe.add(byte1.byteValue());// first byte Setpoint Value
-        MACACOframe.add(byte2.byteValue());// second byte Setpoint Value
+        MACACOframe.add((byte) (byte1 & 0xFF));// first byte Setpoint Value
+        MACACOframe.add((byte) (byte2 & 0xFF));// second byte Setpoint Value
 
         logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", MaCacoToString(MACACOframe),
                 soulissNodeIPAddressOnLAN);
