@@ -129,9 +129,9 @@ class RdsDataPoints {
                 LOGGER.trace("create: response={}", json);
             }
 
-            return GSON.fromJson(json, RdsDataPoints.class);
+            return GSON.fromJson(json, RdsDataPoints.class); 
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("point list creation error \"{}\"", e.getMessage(), e);
+            LOGGER.warn("create {}: \"{}\"", e.getClass().getName(), e.getMessage());
             return null;
         }
     }
@@ -324,6 +324,15 @@ class RdsDataPoints {
                         set.add(String.format("\"%s\"", pointId));
                     }
                 }
+
+                for (Map.Entry<String, BasePoint> entry : points.entrySet()) {
+                    BasePoint point = entry.getValue();
+                    if (point != null && point.memberName != null && point.memberName.equals("Online")) {
+                        set.add(String.format("\"%s\"", entry.getKey()));
+                        break;
+                    }
+                }
+
                 valueFilter = String.join(",", set);
             }
 
@@ -371,7 +380,7 @@ class RdsDataPoints {
 
             return true;
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("refresh: error \"{}\"", e.getMessage());
+            LOGGER.warn("refresh {}: \"{}\"", e.getClass().getName(), e.getMessage());
             return false;
         }
     }
