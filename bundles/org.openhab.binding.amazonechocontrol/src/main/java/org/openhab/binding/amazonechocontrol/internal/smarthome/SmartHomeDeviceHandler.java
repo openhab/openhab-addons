@@ -66,6 +66,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
     private @Nullable SmartHomeBaseDevice smartHomeBaseDevice;
     private Gson gson;
     private Map<String, HandlerBase> handlers = new HashMap<>();
+    private Map<String, JsonArray> lastStates = new HashMap<>();
 
     @Nullable
     AccountHandler accountHandler;
@@ -197,10 +198,18 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         SmartHomeDevice firstDevice = null;
         for (SmartHomeDevice shd : GetSupportedSmartHomeDevices(smartHomeBaseDevice, allDevices)) {
             JsonArray states = applianceIdToCapabilityStates.get(shd.applianceId);
-            if (states == null) {
-                continue;
+            if (states != null) {
+                stateFound = true;
+                if (smartHomeBaseDevice.isGroup()) {
+                    // for groups, store the last state of all devices
+                    lastStates.put(shd.applianceId, states);
+                }
+            } else {
+                states = lastStates.get(shd.applianceId);
+                if (states == null) {
+                    continue;
+                }
             }
-            stateFound = true;
             if (firstDevice == null) {
                 firstDevice = shd;
             }

@@ -70,6 +70,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWo
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.SmartHomeDeviceHandler;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.SmartHomeDeviceStateGroupUpdateCalculator;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,6 +110,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private final Gson gson;
     int checkDataCounter;
     private @Nullable Set<String> requestedDeviceUpdates;
+    private @Nullable SmartHomeDeviceStateGroupUpdateCalculator smartHomeDeviceStateGroupUpdateCalculator;
 
     public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage, Gson gson) {
         super(bridge);
@@ -137,12 +139,19 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         checkDataJob = scheduler.scheduleWithFixedDelay(this::checkData, 4, 60, TimeUnit.SECONDS);
 
         Configuration config = getThing().getConfiguration();
-        float pollingInterval = ((BigDecimal) config.getProperties().get("pollingIntervalSmartHome")).floatValue();
-        if (pollingInterval < 10) {
-            pollingInterval = 10;
+        int pollingIntervalAlexa = ((BigDecimal) config.getProperties().get("pollingIntervalSmartHomeAlexa"))
+                .intValue();
+        if (pollingIntervalAlexa < 10) {
+            pollingIntervalAlexa = 10;
         }
-        updateSmartHomeStateJob = scheduler.scheduleWithFixedDelay(() -> updateSmartHomeState(null), 60,
-                (long) (pollingInterval * 60f), TimeUnit.SECONDS);
+        int pollingIntervalSkills = ((BigDecimal) config.getProperties().get("pollingIntervalSmartSkills")).intValue();
+        if (pollingIntervalSkills < 60) {
+            pollingIntervalSkills = 60;
+        }
+        smartHomeDeviceStateGroupUpdateCalculator = new SmartHomeDeviceStateGroupUpdateCalculator(pollingIntervalAlexa,
+                pollingIntervalSkills);
+        updateSmartHomeStateJob = scheduler.scheduleWithFixedDelay(() -> updateSmartHomeState(null), 20, 10,
+                TimeUnit.SECONDS);
         logger.debug("amazon account bridge handler started.");
     }
 
@@ -180,7 +189,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     public void addSmartHomeDeviceHandler(SmartHomeDeviceHandler smartHomeDeviceHandler) {
-        synchronized (smartHomeDeviceHandler) {
+        synchronized (smartHomeDeviceHandlers) {
             if (!smartHomeDeviceHandlers.add(smartHomeDeviceHandler)) {
                 return;
             }
@@ -947,7 +956,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             Connection connection = this.connection;
             if (connection == null || !connection.getIsLoggedIn()) {
                 this.refreshSmartHomeAfterCommandJob = scheduler.schedule(this::updateSmartHomeStateJob, 1000,
-                        TimeUnit.SECONDS);
+                        TimeUnit.MILLISECONDS);
                 return;
             }
             requestedDeviceUpdates = this.requestedDeviceUpdates;
@@ -973,26 +982,36 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             if (deviceFilterId != null) {
                 applianceIds.add(deviceFilterId);
             } else {
+                SmartHomeDeviceStateGroupUpdateCalculator smartHomeDeviceStateGroupUpdateCalculator = this.smartHomeDeviceStateGroupUpdateCalculator;
+                if (smartHomeDeviceStateGroupUpdateCalculator == null) {
+                    return;
+                }
                 synchronized (this.smartHomeDeviceHandlers) {
                     if (this.smartHomeDeviceHandlers.size() == 0) {
                         return;
                     }
+                    List<SmartHomeDevice> devicesToUpdate = new ArrayList<>();
                     for (SmartHomeDeviceHandler device : smartHomeDeviceHandlers) {
                         String id = device.findId();
                         if (id != null) {
                             SmartHomeBaseDevice baseDevice = jsonIdSmartHomeDeviceMapping.get(id);
                             for (SmartHomeDevice shd : SmartHomeDeviceHandler.GetSupportedSmartHomeDevices(baseDevice,
                                     allDevices)) {
-                                String applianceId = shd.applianceId;
-                                if (applianceId != null) {
-                                    applianceIds.add(applianceId);
-                                }
+
+                                devicesToUpdate.add(shd);
                             }
                         }
                     }
-                }
-                if (applianceIds.size() == 0) {
-                    return;
+                    smartHomeDeviceStateGroupUpdateCalculator.RemoveDevicesWithNoUpdate(devicesToUpdate);
+                    for (SmartHomeDevice shd : devicesToUpdate) {
+                        String applianceId = shd.applianceId;
+                        if (applianceId != null) {
+                            applianceIds.add(applianceId);
+                        }
+                    }
+                    if (applianceIds.size() == 0) {
+                        return;
+                    }
                 }
             }
             Map<String, JsonArray> applianceIdToCapabilityStates = connection
@@ -1016,7 +1035,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
             logger.debug("updateSmartHomeState finished");
 
-        } catch (HttpException | JsonSyntaxException | ConnectionException e) {
+        } catch (HttpException | JsonSyntaxException |
+
+                ConnectionException e) {
             logger.debug("updateSmartHomeState fails", e);
         } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
             logger.error("updateSmartHomeState fails with unexpected error", e);
