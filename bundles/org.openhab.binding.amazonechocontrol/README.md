@@ -106,8 +106,8 @@ You will find the required serial number in settings of the device in the alexa 
 | Configuration name              | Default | Description                                                                           |
 |---------------------------------|---------|---------------------------------------------------------------------------------------|
 | discoverSmartHome               | 0       | 0...No discover, 1...Discover direct connected, 2...Discover direct and skill devices |
-| pollingIntervalSmartHome        | 10      | Defines the time in minutes for openHAB to pull the
-					state of the connected devices. The minimum is 10 minutes.                              |
+| pollingIntervalSmartHomeAlexa   | 30      | Defines the time in seconds for openHAB to pull the state of the Alexa connected devices. The minimum is 10 seconds. | 
+| pollingIntervalSmartSkills      | 120     | Defines the time in seconds for openHAB to pull the state of the over a skill connected devices. The minimum is 60 seconds. |
 | discoverOpenHabSmartHomeDevices | false   | Defines, if smart home devices of the openHAB skill should be discovered. This option is for development and testing purpose only. ||
 
 #### echo, echospot, echoshow, wha Things
@@ -320,7 +320,7 @@ It will be configured at runtime by using the save channel to store the current 
 #### flashbriefings.things
 
 ```
-Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2 pollingIntervalSmartHome=20]
+Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2]
 {
     Thing flashbriefingprofile flashbriefing1 "Flash Briefing Technical" @ "Flash Briefings" 
     Thing flashbriefingprofile flashbriefing2 "Flash Briefing Life Style" @ "Flash Briefings"
@@ -401,7 +401,7 @@ The only possibility to find out the id is by using the discover function in the
 #### smarthome.things
 
 ```
-Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2, pollingIntervalSmartHome=20]
+Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2, pollingIntervalSmartHomeAlexa=30, pollingIntervalSmartSkills=120]
 {
     Thing smartHomeDevice      smartHomeDevice1 "Smart Home Device 1" @ "Living Room" [id="ID"]
     Thing smartHomeDevice      smartHomeDevice2 "Smart Home Device 2" @ "Living Room" [id="ID"]
