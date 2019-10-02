@@ -46,7 +46,6 @@ public class DoorbirdBindingConstants {
     public static final String CHANNEL_LIGHT = "light";
     public static final String CHANNEL_OPENDOOR1 = "openDoor1";
     public static final String CHANNEL_OPENDOOR2 = "openDoor2";
-    public static final String CHANNEL_GETIMAGE = "getImage";
     public static final String CHANNEL_IMAGE = "image";
     public static final String CHANNEL_IMAGE_TIMESTAMP = "imageTimestamp";
     public static final String CHANNEL_DOORBELL_HISTORY_INDEX = "doorbellHistoryIndex";
@@ -55,16 +54,12 @@ public class DoorbirdBindingConstants {
     public static final String CHANNEL_MOTION_HISTORY_INDEX = "motionHistoryIndex";
     public static final String CHANNEL_MOTION_HISTORY_IMAGE = "motionHistoryImage";
     public static final String CHANNEL_MOTION_HISTORY_TIMESTAMP = "motionHistoryTimestamp";
-    public static final String CHANNEL_GET_DOORBELL_MONTAGE = "getDoorbellMontage";
     public static final String CHANNEL_DOORBELL_IMAGE_MONTAGE = "doorbellMontage";
-    public static final String CHANNEL_GET_MOTION_MONTAGE = "getMotionMontage";
     public static final String CHANNEL_MOTION_IMAGE_MONTAGE = "motionMontage";
     public static final String CHANNEL_SIP_HANGUP = "sipHangup";
     public static final String CHANNEL_RESTART = "restart";
 
     // List of trigger events
-    public static final String EVENT_PRESSED = "PRESSED";
-    public static final String EVENT_RELEASED = "RELEASED";
     public static final String EVENT_TRIGGERED = "TRIGGERED";
     public static final String EVENT_UNTRIGGERED = "UNTRIGGERED";
 }

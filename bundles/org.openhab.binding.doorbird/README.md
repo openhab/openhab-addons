@@ -17,47 +17,46 @@ Auto-discovery is not supported at this time.
 
 The following configuration parameters are available on the Doorbird thing:
 
-| Parameter | Required/Optional | Description |
-|-----------|-------------------|-------------|
-| ID | Required | The ID number of the Doorbird device. This is usually a single digit (e.g. 1). |
-| Hostname | Required | The ID number of the Doorbird device. This is usually a single digit (e.g. 1). |
-| User ID | Required | User Id of a Doorbird user that has permissions to access the camera, motion sensor, etc. The User ID and Password must be created using the Doorbird smart phone application.
-| Password | Required | Password of a Doorbird user. |
-| Image Refresh Rate | Optional | Rate at which image channel should be automatically updated. Leave field blank (default) to disable refresh. |
-| Doorbell Off Delay | Optional | Number of seconds to wait before setting doorbell channel OFF after a doorbell event. Leave field blank to disable. |
-| Motion Off Delay | Optional | Number of seconds to wait before setting motion channel OFF after a motion event. Leave field blank to disable. |
-| Montage Number of Images | Required | Number of images to include in the doorbell and motion montage images. Default is 0. |
-| Montage Scale Factor | Required | Percent scaling factor for montage image. Default is 100. |
+| Parameter                | Required/Optional | Description                                                                                                                                                                    |
+|--------------------------|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ID                       | Required          | The ID number of the Doorbird device. This is usually a single digit (e.g. 1).                                                                                                 |
+| Hostname                 | Required          | The hostname or IP address of the Doorbird device.                                                                                                 |
+| User ID                  | Required          | User Id of a Doorbird user that has permissions to access the camera, motion sensor, etc. The User ID and Password must be created using the Doorbird smart phone application. |
+| Password                 | Required          | Password of a Doorbird user.                                                                                                                                                   |
+| Image Refresh Rate       | Optional          | Rate at which image channel should be automatically updated. Leave field blank (default) to disable refresh.                                                                   |
+| Doorbell Off Delay       | Optional          | Number of seconds to wait before setting doorbell channel OFF after a doorbell event. Leave field blank to disable.                                                            |
+| Motion Off Delay         | Optional          | Number of seconds to wait before setting motion channel OFF after a motion event. Leave field blank to disable.                                                                |
+| Montage Number of Images | Required          | Number of images to include in the doorbell and motion montage images. Default is 0.                                                                                           |
+| Montage Scale Factor     | Required          | Percent scaling factor for montage image. Default is 100.                                                                                                                      |
 
 
 ## Channels
 
 The following channels are supported by the binding.
 
-| Channel ID | Item Type | Description |
-|------------|-----------|-------------|
-| doorbell | Trigger | Generated PRESSED event when doorbell is pressed |
-| doorbellTimestamp | DateTime | Timestamp when doorbell was pressed |
-| doorbellImage | Image | Image captured when the doorbell was pressed |
-| motion | Trigger | Generated TRIGGERED event when motion is detected |
-| motionTimestamp | DateTime | Timestamp when motion sensor was triggered |
-| motionImage | Image | Image captured when motion was detected |
-| light | Switch | Activates the light relay |
-| openDoor1 | Switch | Activates the door 1 relay |
-| openDoor2 | Switch | Activates the door 2 relay (D210x only) |
-| getImage | Switch | Force an update to the Image channel |
-| image | Image | Image from the doorbird camera |
-| imageTimestamp | DateTime | Time when image was captured from device |
-| doorbellHistoryIndex | Number | Index of historical image for doorbell press |
-| doorbellHistoryTimestamp | DateTime | Time when doorbell was pressed for history image |
-| doorbellHistoryImage | Image | Historical image for doorbell press |
-| motionHistoryIndex | Number | Index of Historical image for motion |
-| motionHistoryTimestamp | DateTime | Time when motion was detected for history image |
-| motionHistoryImage | Image | Historical image for motion sensor |
-| doorbellMontage | Image | Concatenation of first n doorbell history images |
-| motionMontage | Image | Concatenation of first n motion history images |
-| sipHangup | Switch | Hangup SIP call |
-| restart | Switch | Restart the doorbird |
+| Channel ID               | Item Type | Description                                       |
+|--------------------------|-----------|---------------------------------------------------|
+| doorbell                 | Trigger   | Generated PRESSED event when doorbell is pressed  |
+| doorbellTimestamp        | DateTime  | Timestamp when doorbell was pressed               |
+| doorbellImage            | Image     | Image captured when the doorbell was pressed      |
+| motion                   | Trigger   | Generated TRIGGERED event when motion is detected |
+| motionTimestamp          | DateTime  | Timestamp when motion sensor was triggered        |
+| motionImage              | Image     | Image captured when motion was detected           |
+| light                    | Switch    | Activates the light relay                         |
+| openDoor1                | Switch    | Activates the door 1 relay                        |
+| openDoor2                | Switch    | Activates the door 2 relay (D210x only)           |
+| image                    | Image     | Image from the doorbird camera                    |
+| imageTimestamp           | DateTime  | Time when image was captured from device          |
+| doorbellHistoryIndex     | Number    | Index of historical image for doorbell press      |
+| doorbellHistoryTimestamp | DateTime  | Time when doorbell was pressed for history image  |
+| doorbellHistoryImage     | Image     | Historical image for doorbell press               |
+| motionHistoryIndex       | Number    | Index of Historical image for motion              |
+| motionHistoryTimestamp   | DateTime  | Time when motion was detected for history image   |
+| motionHistoryImage       | Image     | Historical image for motion sensor                |
+| doorbellMontage          | Image     | Concatenation of first n doorbell history images  |
+| motionMontage            | Image     | Concatenation of first n motion history images    |
+| sipHangup                | Switch    | Hangup SIP call                                   |
+| restart                  | Switch    | Restart the doorbird                              |
 
 ## Profiles
 
@@ -137,12 +136,6 @@ Switch                      Doorbell_OpenDoor1
                             ["Switch"]
                             { channel="doorbird:d101:doorbell:openDoor1", expire="5s,command=OFF" }
 
-Switch                      Doorbell_GetImage
-                            "Doorbell Get Image [%s]"
-                            <switch>
-                            ["Switch"]
-                            { channel="doorbird:d101:doorbell:getImage", expire="1s,command=OFF" }
-
 Image                       Doorbell_Image
                             "Doorbell Image [%s]"
                             { channel="doorbird:d101:doorbell:image" }
@@ -202,7 +195,6 @@ Switch                      Doorbell_Restart
 Frame {
     Text label="Doorbird" {
         Frame label="Image" {
-            Switch item=Doorbell_GetImage
             Image item=Doorbell_Image
         }
         Frame label="Events" {

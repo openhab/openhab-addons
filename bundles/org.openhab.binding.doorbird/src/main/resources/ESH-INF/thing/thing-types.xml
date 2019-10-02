@@ -15,7 +15,6 @@
 			<channel id="motionImage" typeId="motionImage" />
 			<channel id="light" typeId="light" />
 			<channel id="openDoor1" typeId="openDoor1" />
-			<channel id="getImage" typeId="getImage" />
 			<channel id="image" typeId="image" />
 			<channel id="imageTimestamp" typeId="imageTimestamp" />
 			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
@@ -24,9 +23,7 @@
 			<channel id="motionHistoryIndex" typeId="motionHistoryIndex" />
 			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp" />
 			<channel id="motionHistoryImage" typeId="motionHistoryImage" />
-			<channel id="getDoorbellMontage" typeId="getDoorbellMontage" />
 			<channel id="doorbellMontage" typeId="doorbellMontage" />
-			<channel id="getMotionMontage" typeId="getMotionMontage" />
 			<channel id="motionMontage" typeId="motionMontage" />
 			<channel id="sipHangup" typeId="sipHangup" />
 			<channel id="restart" typeId="restart" />
@@ -47,7 +44,6 @@
 			<channel id="light" typeId="light" />
 			<channel id="openDoor1" typeId="openDoor1" />
 			<channel id="openDoor2" typeId="openDoor2" />
-			<channel id="getImage" typeId="getImage" />
 			<channel id="image" typeId="image" />
 			<channel id="imageTimestamp" typeId="imageTimestamp" />
 			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
@@ -56,9 +52,7 @@
 			<channel id="motionHistoryIndex" typeId="motionHistoryIndex" />
 			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp" />
 			<channel id="motionHistoryImage" typeId="motionHistoryImage" />
-			<channel id="getDoorbellMontage" typeId="getDoorbellMontage" />
 			<channel id="doorbellMontage" typeId="doorbellMontage" />
-			<channel id="getMotionMontage" typeId="getMotionMontage" />
 			<channel id="motionMontage" typeId="motionMontage" />
 			<channel id="sipHangup" typeId="sipHangup" />
 			<channel id="restart" typeId="restart" />
@@ -70,12 +64,12 @@
 		<kind>trigger</kind>
 		<label>Doorbell</label>
 		<description>Doorbell pressed</description>
-        <event>
-            <options>
-                <option value="PRESSED">Pressed</option>
-                <option value="RELEASED">Released</option>
-            </options>
-        </event>
+		<event>
+			<options>
+				<option value="PRESSED">Pressed</option>
+				<option value="RELEASED">Released</option>
+			</options>
+		</event>
 	</channel-type>
 	<channel-type id="doorbellTimestamp">
 		<item-type>DateTime</item-type>
@@ -90,15 +84,15 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="motion">
-        <kind>trigger</kind>
+		<kind>trigger</kind>
 		<label>Motion</label>
 		<description>Motion detected</description>
-        <event>
-            <options>
-                <option value="TRIGGERED">Triggered</option>
-                <option value="UNTRIGGERED">Untriggered</option>
-            </options>
-        </event>
+		<event>
+			<options>
+				<option value="TRIGGERED">Triggered</option>
+				<option value="UNTRIGGERED">Untriggered</option>
+			</options>
+		</event>
 	</channel-type>
 	<channel-type id="motionTimestamp">
 		<item-type>DateTime</item-type>
@@ -130,12 +124,6 @@
 		<description>Energize opendoor / alarm output relay 2</description>
 		<state pattern="%s"></state>
 	</channel-type>
-	<channel-type id="getImage">
-		<item-type>Switch</item-type>
-		<label>Get Image</label>
-		<description>Get an image</description>
-		<state pattern="%s"></state>
-	</channel-type>
 	<channel-type id="imageTimestamp">
 		<item-type>DateTime</item-type>
 		<label>Image Timestamp</label>
@@ -146,7 +134,6 @@
 		<item-type>Image</item-type>
 		<label>Image</label>
 		<description>Image from device</description>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="doorbellHistoryIndex">
 		<item-type>Number</item-type>
@@ -184,29 +171,15 @@
 		<description>Historical image for motion sensor</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="getDoorbellMontage" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Get Doorbell Montage</label>
-		<description>Refresh the doorbell montage</description>
-		<state pattern="%s"></state>
-	</channel-type>
 	<channel-type id="doorbellMontage">
 		<item-type>Image</item-type>
 		<label>Doorbell Montage Image</label>
 		<description>Montage of multiple doorbell history images</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="getMotionMontage" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Get Motion Montage</label>
-		<description>Refresh the motion montage</description>
-		<state pattern="%s"></state>
 	</channel-type>
 	<channel-type id="motionMontage">
 		<item-type>Image</item-type>
 		<label>Motion Montage Image</label>
 		<description>Montage of multiple motion history images</description>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="sipHangup">
 		<item-type>Switch</item-type>

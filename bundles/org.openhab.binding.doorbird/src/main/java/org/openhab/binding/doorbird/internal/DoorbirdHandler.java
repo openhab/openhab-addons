@@ -49,6 +49,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -81,7 +82,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     // Get a dedicated threadpool for the long-running listener thread
     private final ScheduledExecutorService doorbirdScheduler = ThreadPoolManager.getScheduledPool("doorbirdHandler");
     private @Nullable ScheduledFuture<?> listenerJob;
-    private DoorbirdUdpListener udpListener;
+    private final DoorbirdUdpListener udpListener;
 
     private @Nullable ScheduledFuture<?> imageRefreshJob;
     private @Nullable ScheduledFuture<?> doorbellOffJob;
@@ -91,8 +92,8 @@ public class DoorbirdHandler extends BaseThingHandler {
 
     private @Nullable String authorization;
 
-    private TimeZoneProvider timeZoneProvider;
-    private HttpClient httpClient;
+    private final TimeZoneProvider timeZoneProvider;
+    private final HttpClient httpClient;
 
     public DoorbirdHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient) {
         super(thing);
@@ -167,7 +168,7 @@ public class DoorbirdHandler extends BaseThingHandler {
             updateState(CHANNEL_DOORBELL_IMAGE, image != null ? image : UnDefType.UNDEF);
             updateState(CHANNEL_DOORBELL_TIMESTAMP, getLocalDateTimeType(dbImage.getTimestamp()));
         }
-        triggerChannel(CHANNEL_DOORBELL, EVENT_PRESSED);
+        triggerChannel(CHANNEL_DOORBELL, CommonTriggerEvents.PRESSED);
         startDoorbellOffJob();
         updateDoorbellMontage();
     }
@@ -213,8 +214,10 @@ public class DoorbirdHandler extends BaseThingHandler {
             case CHANNEL_RESTART:
                 handleRestart(command);
                 break;
-            case CHANNEL_GETIMAGE:
-                handleGetImage(command);
+            case CHANNEL_IMAGE:
+                if (command instanceof RefreshType) {
+                    handleGetImage(command);
+                }
                 break;
             case CHANNEL_DOORBELL_HISTORY_INDEX:
             case CHANNEL_MOTION_HISTORY_INDEX:
@@ -222,13 +225,13 @@ public class DoorbirdHandler extends BaseThingHandler {
                     handleHistoryImage(channelUID, command);
                 }
                 break;
-            case CHANNEL_GET_DOORBELL_MONTAGE:
-                if (command instanceof RefreshType || (command instanceof OnOffType && command.equals(OnOffType.ON))) {
+            case CHANNEL_DOORBELL_IMAGE_MONTAGE:
+                if (command instanceof RefreshType) {
                     updateDoorbellMontage();
                 }
                 break;
-            case CHANNEL_GET_MOTION_MONTAGE:
-                if (command instanceof RefreshType || (command instanceof OnOffType && command.equals(OnOffType.ON))) {
+            case CHANNEL_MOTION_IMAGE_MONTAGE:
+                if (command instanceof RefreshType) {
                     updateMotionMontage();
                 }
                 break;
@@ -396,7 +399,7 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
         doorbellOffJob = scheduler.schedule(() -> {
             logger.debug("Update channel 'doorbell' to OFF for thing {}", getThing().getUID());
-            triggerChannel(CHANNEL_DOORBELL, EVENT_RELEASED);
+            triggerChannel(CHANNEL_DOORBELL, CommonTriggerEvents.RELEASED);
         }, offDelay, TimeUnit.SECONDS);
     }
 
@@ -522,11 +525,9 @@ public class DoorbirdHandler extends BaseThingHandler {
 
     private byte @Nullable [] convertImageToByteArray(BufferedImage image) {
         byte[] data = null;
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", out);
             data = out.toByteArray();
-            out.close();
         } catch (IOException ioe) {
             logger.debug("IOException occurred converting image to byte array", ioe);
         }
@@ -594,6 +595,7 @@ public class DoorbirdHandler extends BaseThingHandler {
             errorMsg = String.format("ExecutionException: %s", e.getMessage());
         } catch (InterruptedException e) {
             errorMsg = String.format("InterruptedException: %s", e.getMessage());
+            Thread.currentThread().interrupt();
         }
         logger.debug(errorMsg);
         return null;
@@ -614,9 +616,6 @@ public class DoorbirdHandler extends BaseThingHandler {
     }
 
     private DateTimeType getLocalDateTimeType(long dateTimeSeconds) {
-        Instant instant = Instant.ofEpochMilli(dateTimeSeconds * 1000);
-        ZonedDateTime localDateTime = instant.atZone(timeZoneProvider.getTimeZone());
-        DateTimeType dateTimeType = new DateTimeType(localDateTime);
-        return dateTimeType;
+        return new DateTimeType(Instant.ofEpochSecond(dateTimeSeconds).atZone(timeZoneProvider.getTimeZone()));
     }
 }

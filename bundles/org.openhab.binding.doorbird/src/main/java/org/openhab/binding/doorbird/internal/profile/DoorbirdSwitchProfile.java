@@ -16,6 +16,7 @@ import static org.openhab.binding.doorbird.internal.DoorbirdBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.profiles.ProfileCallback;
 import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.TriggerProfile;
@@ -52,9 +53,9 @@ public class DoorbirdSwitchProfile implements TriggerProfile {
     @Override
     public void onTriggerFromHandler(String event) {
         logger.debug("DoorbirdSwitchProfile handling trigger event {} ", event);
-        if (EVENT_PRESSED.equals(event)) {
+        if (CommonTriggerEvents.PRESSED.equals(event)) {
             callback.sendCommand(OnOffType.ON);
-        } else if (EVENT_RELEASED.equals(event)) {
+        } else if (CommonTriggerEvents.RELEASED.equals(event)) {
             callback.sendCommand(OnOffType.OFF);
         } else if (EVENT_TRIGGERED.equals(event)) {
             callback.sendCommand(OnOffType.ON);

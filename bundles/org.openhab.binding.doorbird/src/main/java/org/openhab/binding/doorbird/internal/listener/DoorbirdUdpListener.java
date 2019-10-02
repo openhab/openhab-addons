@@ -46,7 +46,7 @@ public class DoorbirdUdpListener extends Thread {
     private final DoorbirdEvent event = new DoorbirdEvent();
 
     // Used for callbacks to handler
-    private DoorbirdHandler thingHandler;
+    private final DoorbirdHandler thingHandler;
 
     // UDP socket used to receive status events from doorbell
     private @Nullable DatagramSocket socket;

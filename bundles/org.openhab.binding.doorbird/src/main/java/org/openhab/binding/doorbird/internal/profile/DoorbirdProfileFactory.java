@@ -16,8 +16,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,12 +40,12 @@ public class DoorbirdProfileFactory implements ProfileFactory, ProfileTypeProvid
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Collections
             .singleton(DoorbirdProfiles.DOORBELL_COMMAND_TYPE);
 
-    private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Stream
-            .of(DoorbirdProfiles.DOORBELL_SWITCH_UID).collect(Collectors.toSet());
+    private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Collections
+            .singleton(DoorbirdProfiles.DOORBELL_SWITCH_UID);
 
-    @Nullable
     @Override
-    public Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback, ProfileContext context) {
+    public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback,
+            ProfileContext context) {
         if (DoorbirdProfiles.DOORBELL_SWITCH_UID.equals(profileTypeUID)) {
             return new DoorbirdSwitchProfile(callback);
         } else {
