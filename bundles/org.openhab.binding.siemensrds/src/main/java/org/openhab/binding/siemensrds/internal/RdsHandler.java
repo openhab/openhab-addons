@@ -74,7 +74,7 @@ public class RdsHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "pending..");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
 
         config = getConfigAs(RdsConfiguration.class);
 
@@ -209,7 +209,7 @@ public class RdsHandler extends BaseThingHandler {
         if (points == null) {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        String.format("cloud server has no info this device"));
+                        "cloud server has no info this device");
             }
             return;
         }
@@ -217,14 +217,14 @@ public class RdsHandler extends BaseThingHandler {
         if (!points.isOnline()) {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        String.format("cloud server reports device offline"));
+                        "cloud server reports device offline");
             }
             return;
         }
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                    String.format("received info from cloud server"));
+                    "received info from cloud server");
         }
 
         for (ChannelMap chan : CHAN_MAP) {
