@@ -192,13 +192,6 @@
 		<state pattern="%f %unit%" readOnly="true" />
 	</channel-type>
 
-	<channel-type id="batteryLevel">
-		<item-type>Number</item-type>
-		<label>Battery level</label>
-		<description>Current battery level in percent</description>
-		<state pattern="%d %%" readOnly="true" />
-	</channel-type>
-
 	<!-- Teach in Channel -->
 	<channel-type id="teachInCMD" advanced="true">
 		<item-type>Switch</item-type>
