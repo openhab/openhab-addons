@@ -223,9 +223,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         message.method = "devices.list";
         mqttConnection.profileConnectionPublish(profileUuid + "/control/devices/cmd", gson.toJson(message));
 
-        message.method = "locations.list";
-        mqttConnection.profileConnectionPublish(profileUuid + "/control/locations/cmd", gson.toJson(message));
-
         message.method = "notifications.list";
         mqttConnection.profileConnectionPublish(profileUuid + "/notification/cmd", gson.toJson(message));
     }
@@ -798,7 +795,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     /**
      * Method called from the {@link NhcEnergyMeter2} object to send message to Niko Home Control.
-     * 
+     *
      * @param topic
      * @param gsonMessage
      */
