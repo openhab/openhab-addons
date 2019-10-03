@@ -22,18 +22,20 @@ These are:
 | Non-Colour Controller           | 0x0820           | 0820       |
 | Non-Colour Scene Controller     | 0x0830           | 0830       |
 | Control Outlet                  | 0x0010           | 0010       |
+| Blind                           | 0x0999           | 0999       |
 
 The following matrix lists the capabilities (channels) for each of the supported lighting device types:
 
-| Thing type  | Brightness | Color | Color Temperature | Battery Level | Battery Low | Power |
-|-------------|:----------:|:-----:|:-----------------:|:-------------:|:-----------:|:-----:|
-|  0010       |            |       |                   |               |             |   X   |
-|  0100       |     X      |       |                   |               |             |       |
-|  0220       |     X      |       |         X         |               |             |       |
-|  0210       |            |   X   |         X         |               |             |       |
-|  0107       |            |       |                   |       X       |      X      |       |
-|  0820       |            |       |                   |       X       |      X      |       |
-|  0830       |            |       |                   |       X       |      X      |       |
+| Thing type  | Brightness | Color | Color Temperature | Battery Level | Battery Low | Power | Position |
+|-------------|:----------:|:-----:|:-----------------:|:-------------:|:-----------:|:-----:|:---------|
+|  0010       |            |       |                   |               |             |   X   |          |
+|  0100       |     X      |       |                   |               |             |       |          |
+|  0220       |     X      |       |         X         |               |             |       |          |
+|  0210       |            |   X   |         X         |               |             |       |          |
+|  0107       |            |       |                   |       X       |      X      |       |          |
+|  0820       |            |       |                   |       X       |      X      |       |          |
+|  0830       |            |       |                   |       X       |      X      |       |          |
+|  0999       |            |       |                   |       X       |      X      |       |     X    |
 
 ## Thing Configuration
 
@@ -60,14 +62,15 @@ The control outlet supports the `power` channel.
 
 Refer to the matrix above.
 
-| Channel Type ID   | Item Type | Description                                      |
-|-------------------|-----------|--------------------------------------------------|
-| brightness        | Dimmer    | The brightness of the bulb in percent            |
-| color_temperature | Dimmer    | color temperature from 0% = cold to 100% = warm  |
-| color             | Color     | full color                                       |
-| battery_level     | Number    | battery level (in %)                             |
-| battery_low       | Switch    | battery low warning (<=10% = ON, >10% = OFF)     |
-| power             | Switch    | power switch                                     |
+| Channel Type ID   | Item Type     | Description                                      |
+|-------------------|---------------|--------------------------------------------------|
+| brightness        | Dimmer        | The brightness of the bulb in percent            |
+| color_temperature | Dimmer        | color temperature from 0% = cold to 100% = warm  |
+| color             | Color         | full color                                       |
+| battery_level     | Number        | battery level (in %)                             |
+| battery_low       | Switch        | battery low warning (<=10% = ON, >10% = OFF)     |
+| power             | Switch        | power switch                                     |
+| position          | Rollershutter | position of the blind in percent                 |
 
 ## Full Example
 

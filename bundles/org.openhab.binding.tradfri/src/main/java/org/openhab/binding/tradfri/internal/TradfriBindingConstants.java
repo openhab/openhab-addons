@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
+ * @author Manuel Raffel - Added support for blinds
  */
 public class TradfriBindingConstants {
 
@@ -40,6 +41,7 @@ public class TradfriBindingConstants {
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "0820");
     public static final ThingTypeUID THING_TYPE_REMOTE_CONTROL = new ThingTypeUID(BINDING_ID, "0830");
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "0107");
+    public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "0999");
 
     public static final Set<ThingTypeUID> SUPPORTED_LIGHT_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_TEMP_LIGHT, THING_TYPE_COLOR_LIGHT)
@@ -47,6 +49,10 @@ public class TradfriBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_PLUG_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_ONOFF_PLUG).collect(Collectors.toSet()));
+
+        public static final Set<ThingTypeUID> SUPPORTED_BLIND_TYPES_UIDS = Collections
+                .unmodifiableSet(Stream.of(THING_TYPE_BLIND).collect(Collectors.toSet()));
+
 
     // List of all Gateway Configuration Properties
     public static final String GATEWAY_CONFIG_HOST = "host";
@@ -64,12 +70,14 @@ public class TradfriBindingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR_TEMPERATURE = "color_temperature";
     public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_POSITION = "position";
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
 
     // IPSO Objects
     public static final String DEVICES = "15001";
     public static final String AUTH_PATH = "9063";
+    public static final String BLIND = "15015";
     public static final String CLIENT_IDENTITY_PROPOSED = "9090";
     public static final String COLOR = "5706";
     public static final String COLOR_X = "5709";
@@ -135,6 +143,7 @@ public class TradfriBindingConstants {
     public static final String OTA_UPDATE_STATE = "9054";
     public static final String PLUG = "3312";
     public static final String POWER_FACTOR = "5820";
+    public static final String POSITION = "5536";
     public static final String REACHABILITY_STATE = "9019";
     public static final String REBOOT = "9030";
     public static final String REPEAT_DAYS = "9041";
@@ -175,6 +184,7 @@ public class TradfriBindingConstants {
     public static final String TYPE_LIGHT = "2";
     public static final String TYPE_PLUG = "3";
     public static final String TYPE_SENSOR = "4";
+    public static final String TYPE_BLIND = "7";
     public static final String DEVICE_VENDOR = "0";
     public static final String DEVICE_MODEL = "1";
     public static final String DEVICE_FIRMWARE = "3";

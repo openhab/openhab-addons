@@ -35,6 +35,7 @@ import org.openhab.binding.tradfri.internal.discovery.TradfriDiscoveryService;
 import org.openhab.binding.tradfri.internal.handler.TradfriControllerHandler;
 import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 import org.openhab.binding.tradfri.internal.handler.TradfriLightHandler;
+import org.openhab.binding.tradfri.internal.handler.TradfriBlindHandler;
 import org.openhab.binding.tradfri.internal.handler.TradfriPlugHandler;
 import org.openhab.binding.tradfri.internal.handler.TradfriSensorHandler;
 import org.osgi.framework.ServiceRegistration;
@@ -45,6 +46,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
+ * @author Manuel Raffel - Added support for blinds
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tradfri")
 @NonNullByDefault
@@ -52,7 +54,7 @@ public class TradfriHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(Stream.of(GATEWAY_TYPE_UID), SUPPORTED_LIGHT_TYPES_UIDS.stream(),
-                    SUPPORTED_CONTROLLER_TYPES_UIDS.stream(), SUPPORTED_PLUG_TYPES_UIDS.stream())
+                    SUPPORTED_CONTROLLER_TYPES_UIDS.stream(), SUPPORTED_PLUG_TYPES_UIDS.stream(), SUPPORTED_BLIND_TYPES_UIDS.stream())
             .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet());
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -74,6 +76,8 @@ public class TradfriHandlerFactory extends BaseThingHandlerFactory {
             return new TradfriControllerHandler(thing);
         } else if (THING_TYPE_MOTION_SENSOR.equals(thingTypeUID)) {
             return new TradfriSensorHandler(thing);
+        } else if (THING_TYPE_BLIND.equals(thingTypeUID)) {
+            return new TradfriBlindHandler(thing);
         } else if (SUPPORTED_LIGHT_TYPES_UIDS.contains(thingTypeUID)) {
             return new TradfriLightHandler(thing);
         } else if (SUPPORTED_PLUG_TYPES_UIDS.contains(thingTypeUID)) {

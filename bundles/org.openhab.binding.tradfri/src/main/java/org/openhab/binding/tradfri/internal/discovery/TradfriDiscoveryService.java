@@ -43,6 +43,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Kai Kreuzer - Initial contribution
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
  * @author Andre Fuechsel - fixed the results removal
+ * @author Manuel Raffel - Added support for blinds
  */
 @NonNullByDefault
 public class TradfriDiscoveryService extends AbstractDiscoveryService implements DeviceUpdateListener {
@@ -118,6 +119,9 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
                     if (thingType == null) {
                         thingType = THING_TYPE_DIMMABLE_LIGHT;
                     }
+                    thingId = new ThingUID(thingType, bridge, Integer.toString(id));
+                } else if(TYPE_BLIND.equals(type) && data.has(BLIND)) {
+                    ThingTypeUID thingType = THING_TYPE_BLIND;
                     thingId = new ThingUID(thingType, bridge, Integer.toString(id));
                 } else if (TYPE_PLUG.equals(type) && data.has(PLUG)) {
                     // Smart plug
