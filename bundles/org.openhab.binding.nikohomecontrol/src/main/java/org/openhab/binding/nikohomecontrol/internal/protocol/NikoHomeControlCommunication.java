@@ -134,7 +134,6 @@ public abstract class NikoHomeControlCommunication {
      *
      */
     public void startEnergyMeter(String energyMeterId) {
-
     };
 
     /**
@@ -142,6 +141,5 @@ public abstract class NikoHomeControlCommunication {
      *
      */
     public void stopEnergyMeter(String energyMeterId) {
-
     };
 }
