@@ -14,6 +14,7 @@ package org.openhab.binding.nikobus.internal.protocol;
 
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nikobus.internal.protocol.NikobusCommand.Result;
 import org.openhab.binding.nikobus.internal.utils.CRCUtil;
 
@@ -23,6 +24,7 @@ import org.openhab.binding.nikobus.internal.utils.CRCUtil;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class SwitchModuleCommandFactory {
     public static NikobusCommand createReadCommand(String address, SwitchModuleGroup group,
             Consumer<Result> resultConsumer) {

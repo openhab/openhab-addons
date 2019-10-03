@@ -14,6 +14,7 @@ package org.openhab.binding.nikobus.internal.protocol;
 
 import static org.openhab.binding.nikobus.internal.NikobusBindingConstants.CHANNEL_OUTPUT_PREFIX;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 
 /**
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public enum SwitchModuleGroup {
 
     FIRST("12", "15", 1),

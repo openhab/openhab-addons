@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.nikobus.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 abstract class NikobusBaseThingHandler extends BaseThingHandler {
 
     protected NikobusBaseThingHandler(Thing thing) {

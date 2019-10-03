@@ -16,7 +16,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" max="65535" min="10" required="false">
 				<default>60</default>
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Refresh interval in seconds.</description>
 			</parameter>
 		</config-description>
@@ -27,7 +27,7 @@
 			<bridge-type-ref id="pc-link" />
 		</supported-bridge-type-refs>
 
-		<label>Push button</label>
+		<label>Push Button</label>
 		<description>A single push button</description>
 
 		<channels>
@@ -36,7 +36,7 @@
 
 		<config-description>
 			<parameter name="impactedModules" type="text">
-				<label>List of impacted modules</label>
+				<label>Impacted Modules</label>
 				<description>Comma separated list of impacted modules, i.e. 4C6C-1,4C6C-2</description>
 			</parameter>
 		</config-description>
@@ -54,7 +54,7 @@
 			<bridge-type-ref id="pc-link" />
 		</supported-bridge-type-refs>
 
-		<label>Switch module</label>
+		<label>Switch Module</label>
 		<description>Nikobus Switch module</description>
 
 		<channels>
@@ -102,7 +102,7 @@
 			<bridge-type-ref id="pc-link" />
 		</supported-bridge-type-refs>
 
-		<label>Dimmer module</label>
+		<label>Dimmer Module</label>
 		<description>Nikobus Dimmer module</description>
 
 		<channels>
@@ -150,7 +150,7 @@
 			<bridge-type-ref id="pc-link" />
 		</supported-bridge-type-refs>
 
-		<label>Rollershutter module</label>
+		<label>Rollershutter Module</label>
 		<description>Nikobus Rollershutter module</description>
 
 		<channels>

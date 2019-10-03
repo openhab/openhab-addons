@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -324,6 +325,12 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
     private synchronized void connectIfNeeded(NikobusConnection connection) throws IOException {
         if (!connection.isConnected()) {
             connection.connect();
+
+            // Send connection sequence, mimicking the Nikobus software. If this is not send, PC-Link
+            // sometimes does not forward button presses via serial interface.
+            Stream.of(new String[] { "++++", "ATH0", "ATZ", "$10110000B8CF9D", "#L0", "#E0", "#L0", "#E1" })
+                    .map(NikobusCommand::new).forEach(this::sendCommand);
+
             updateStatus(ThingStatus.ONLINE);
         }
     }

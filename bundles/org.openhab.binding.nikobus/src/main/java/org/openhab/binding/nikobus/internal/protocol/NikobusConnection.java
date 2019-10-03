@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.util.TooManyListenersException;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class NikobusConnection implements SerialPortEventListener {
     private final Logger logger = LoggerFactory.getLogger(NikobusConnection.class);
     private final SerialPortManager serialPortManager;
@@ -114,7 +116,7 @@ public class NikobusConnection implements SerialPortEventListener {
     /**
      * Returns an output stream for this connection.
      */
-    public OutputStream getOutputStream() throws IOException {
+    public @Nullable OutputStream getOutputStream() throws IOException {
         SerialPort serialPort = this.serialPort;
         if (serialPort == null) {
             return null;

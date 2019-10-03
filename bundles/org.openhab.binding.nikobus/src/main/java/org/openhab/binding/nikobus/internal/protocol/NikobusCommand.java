@@ -16,6 +16,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class NikobusCommand {
     public static class Result {
         private final Callable<String> callable;
@@ -99,7 +102,7 @@ public class NikobusCommand {
     }
 
     private final String payload;
-    private final ResponseHandler responseHandler;
+    private final @Nullable ResponseHandler responseHandler;
 
     public NikobusCommand(String payload) {
         this.payload = payload + '\r';
@@ -116,7 +119,7 @@ public class NikobusCommand {
         return payload;
     }
 
-    public ResponseHandler getResponseHandler() {
+    public @Nullable ResponseHandler getResponseHandler() {
         return responseHandler;
     }
 }
