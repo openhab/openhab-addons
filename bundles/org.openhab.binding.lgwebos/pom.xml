@@ -13,25 +13,4 @@
 
   <name>openHAB Add-ons :: Bundles :: LG webOS Binding</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>xpp3</groupId>
-      <artifactId>xpp3</artifactId>
-      <version>1.1.4c</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>20140107</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.java-websocket.java-websocket</artifactId>
-      <version>1.3.2</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-
 </project>

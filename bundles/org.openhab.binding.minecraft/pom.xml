@@ -13,18 +13,22 @@
 
   <name>openHAB Add-ons :: Bundles :: Minecraft Binding</name>
 
+  <properties>
+    <bnd.importpackage>org.apache.http.conn.ssl;resolution:="optional"</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.reactivex</groupId>
       <artifactId>rxjava</artifactId>
       <version>1.1.7</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.firebase.tubesock</artifactId>
+      <groupId>com.firebase</groupId>
+      <artifactId>tubesock</artifactId>
       <version>0.0.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

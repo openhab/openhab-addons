@@ -5,9 +5,9 @@
     <feature name="openhab-binding-ipp" description="IPP Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
-        <bundle dependency="true">mvn:org.openhab.osgiify/org.cups4j.cups4j/0.7.6</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.4</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.2</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.3</bundle>
+        <bundle dependency="true">mvn:commons-io/commons-io/2.6</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.ipp/${project.version}</bundle>
     </feature>
 </features>

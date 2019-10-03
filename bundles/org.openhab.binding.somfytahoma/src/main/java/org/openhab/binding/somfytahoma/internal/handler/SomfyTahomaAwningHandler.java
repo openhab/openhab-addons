@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
+import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -19,10 +23,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
-
-import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaAwningHandler} is responsible for handling commands,
@@ -37,9 +37,7 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaAwningHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put(CONTROL, "core:DeploymentState");
-        }};
+        stateNames.put(CONTROL, "core:DeploymentState");
     }
 
     @Override

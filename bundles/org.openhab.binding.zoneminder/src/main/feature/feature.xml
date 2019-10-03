@@ -4,7 +4,6 @@
 
     <feature name="openhab-binding-zoneminder" description="ZoneMinder Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:org.jsoup/jsoup/1.10.1</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.zoneminder/${project.version}</bundle>
     </feature>
 </features>

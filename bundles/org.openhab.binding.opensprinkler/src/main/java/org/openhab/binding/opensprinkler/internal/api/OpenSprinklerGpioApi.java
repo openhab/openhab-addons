@@ -14,6 +14,8 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
+import java.math.BigDecimal;
+
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
@@ -88,10 +90,10 @@ class OpenSprinklerGpioApi implements OpenSprinklerApi {
     }
 
     @Override
-    public void openStation(int station) throws Exception {
+    public void openStation(int station, BigDecimal duration) throws CommunicationApiException, GeneralApiException {
         if (station < 0 || station >= numberOfStations) {
-            throw new Exception("This OpenSprinkler PI device only has " + this.numberOfStations + " but station "
-                    + station + " was requested to be opened.");
+            throw new GeneralApiException("This OpenSprinkler PI device only has " + this.numberOfStations
+                    + " but station " + station + " was requested to be opened.");
         }
 
         stationState[station] = false;
@@ -100,10 +102,10 @@ class OpenSprinklerGpioApi implements OpenSprinklerApi {
     }
 
     @Override
-    public void closeStation(int station) throws Exception {
+    public void closeStation(int station) throws CommunicationApiException, GeneralApiException {
         if (station < 0 || station >= numberOfStations) {
-            throw new Exception("This OpenSprinkler device only has " + this.numberOfStations + " but station "
-                    + station + " was requested to be closed.");
+            throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
+                    + " but station " + station + " was requested to be closed.");
         }
 
         stationState[station] = false;

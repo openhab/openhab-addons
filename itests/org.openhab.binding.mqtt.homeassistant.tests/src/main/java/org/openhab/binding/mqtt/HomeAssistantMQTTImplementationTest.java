@@ -174,16 +174,16 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
             latch.countDown();
         };
 
-        // Start the discovery for 100ms. Forced timeout after 300ms.
+        // Start the discovery for 500ms. Forced timeout after 1500ms.
         HaID haID = new HaID(testObjectTopic + "/config");
-        CompletableFuture<Void> future = discover.startDiscovery(connection, 500, Collections.singleton(haID), cd)
+        CompletableFuture<Void> future = discover.startDiscovery(connection, 1000, Collections.singleton(haID), cd)
                 .thenRun(() -> {
                 }).exceptionally(e -> {
                     failure = e;
                     return null;
                 });
 
-        assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(1500, TimeUnit.MILLISECONDS));
         future.get(800, TimeUnit.MILLISECONDS);
 
         // No failure expected and one discovered result

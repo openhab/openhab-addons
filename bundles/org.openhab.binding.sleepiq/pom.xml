@@ -13,12 +13,22 @@
 
   <name>openHAB Add-ons :: Bundles :: SleepIQ Binding</name>
 
+  <properties>
+    <dep.noembedding>provider-gson</dep.noembedding>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.syphr</groupId>
       <artifactId>sleepiq-api</artifactId>
       <version>0.3.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.eclipsesource.jaxrs</groupId>
+      <artifactId>provider-gson</artifactId>
+      <version>2.3</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
