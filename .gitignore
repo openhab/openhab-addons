@@ -20,3 +20,4 @@ features/**/src/main/feature
 
 .vscode
 .factorypath
+org.openhab.binding.knx*.jar

@@ -13,43 +13,8 @@
 
   <name>openHAB Add-ons :: Bundles :: KNX Binding</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.github.calimero.calimero-core</artifactId>
-      <version>2.4</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.github.calimero.calimero-device</artifactId>
-      <version>2.4</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.github.calimero.calimero-rxtx</artifactId>
-      <version>2.4</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-  </dependencies>
+<properties>
+    <bnd.importpackage>org.slf4j.impl.*;resolution:=optional,com.github.calimero.*,tuwien.auto.calimero.*</bnd.importpackage>
+  </properties>
 
 </project>
