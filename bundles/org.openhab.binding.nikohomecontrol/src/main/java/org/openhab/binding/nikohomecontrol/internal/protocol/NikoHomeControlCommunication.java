@@ -41,6 +41,7 @@ public abstract class NikoHomeControlCommunication {
 
     protected final Map<String, NhcAction> actions = new ConcurrentHashMap<>();
     protected final Map<String, NhcThermostat> thermostats = new ConcurrentHashMap<>();
+    protected final Map<String, NhcEnergyMeter> energyMeters = new ConcurrentHashMap<>();
 
     protected final NhcControllerEvent handler;
 
@@ -95,6 +96,15 @@ public abstract class NikoHomeControlCommunication {
     }
 
     /**
+     * Return all energyMeters meters in the Niko Home Control Controller.
+     *
+     * @return <code>Map&ltString, {@link NhcEnergyMeter}></code>
+     */
+    public Map<String, NhcEnergyMeter> getEnergyMeters() {
+        return energyMeters;
+    }
+
+    /**
      * Execute an action command by sending it to Niko Home Control.
      *
      * @param actionId
@@ -118,4 +128,20 @@ public abstract class NikoHomeControlCommunication {
      * @param overruleTime
      */
     public abstract void executeThermostat(String thermostatId, int overruleTemp, int overruleTime);
+
+    /**
+     * Start retrieving energy meter data from Niko Home Control.
+     *
+     */
+    public void startEnergyMeter(String energyMeterId) {
+
+    };
+
+    /**
+     * Stop retrieving energy meter data from Niko Home Control.
+     *
+     */
+    public void stopEnergyMeter(String energyMeterId) {
+
+    };
 }

@@ -14,13 +14,13 @@ For Niko Home Control I, the binding exposes all actions from the Niko Home Cont
 For Niko Home Control II, the binding exposes all actions made visible in a touch profile, as configured in the Niko Home Control II programming software.
 No actual Niko Touchscreen is required in the installation.
 
-Supported device types are switches, dimmers and rollershutters or blinds and thermostats.
+Supported device types are switches, dimmers and rollershutters or blinds, thermostats and energy meters (Niko Home Control II only).
 Niko Home Control alarm and notice messages are retrieved and made available in the binding.
 
 ## Supported Things
 
 The Niko Home Control Controller is represented as a bridge in the binding.
-Connected to a bridge, the Niko Home Control Binding supports alloff actions, on/off actions (e.g. for lights or groups of lights), dimmers, rollershutters or blinds and thermostats.
+Connected to a bridge, the Niko Home Control Binding supports alloff actions, on/off actions (e.g. for lights or groups of lights), dimmers, rollershutters or blinds, thermostats and energy meters (only Niko Home Control II).
 
 ## Binding Configuration
 
@@ -164,11 +164,34 @@ The `thermostatId` parameter is the unique ip Interface Object ID as automatical
 It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery.
 For textual configuration, it can be retrieved from the .nhcp configuration file.
 
-For Niko Home Control II, the `thermostatId` parameter is a unique ID for the action in the controller. It can only be auto-discovered.
-If you want to define the action through textual configuration, you may first need to do discovery on the bridge to get the correct `thermostatId` to use in the textual configuration.
+For Niko Home Control II, the `thermostatId` parameter is a unique ID for the thermostat in the controller. It can only be auto-discovered.
+If you want to define the thermostat through textual configuration, you may first need to do discovery on the bridge to get the correct `thermostatId` to use in the textual configuration.
 
 The `overruleTime` parameter is used to set the standard overrule duration when you set a new setpoint without providing an overrule duration.
 The default value is 60 minutes.
+
+The Thing configuration for **Niko Home Control energy meters** has the following syntax:
+
+```
+Thing nikohomecontrol:energymeter:<bridgeId>:<thingId> "Label" @ "Location"
+                        [ energyMeterId="<Niko Home Control energy meter ID>" ]
+```
+
+or nested in the bridge configuration:
+
+```
+energymeter <thingId> "Label" @ "Location" [ energyMeterId="<Niko Home Control energy meter ID>" ]
+```
+
+`thingId` can have any value, but will be set to the same value as the thermostatId parameter if discovery is used.
+
+`"Label"` is an optional label for the Thing.
+
+`@ "Location"` is optional, and represents the location of the thing. Auto-discovery would have assigned a value automatically.
+
+Energy meters can only be configured for Niko Home Control II.
+The `energyMeterId` parameter is a unique ID for the energy meter in the controller. It can only be auto-discovered.
+If you want to define the energy meter through textual configuration, you may first need to do discovery on the bridge to get the correct `energyMeterId` to use in the textual configuration.
 
 ## Channels
 
@@ -191,13 +214,17 @@ For thing type `thermostat` the supported channels are `measured`, `mode`, `setp
 `measured` gives the current temperature in QuantityType<Temperature>, allowing for different temperature units.
 This channel is read only.
 `mode` can be set and shows the current thermostat mode.
-Allowed values are 0 (day), 1 (night), 2 (eco), 3 (off), 4 (cool), 5 (prog 1), 6 (prog 2), 7 (prog 3). If mode is set, the `setpoint` temperature will return to its standard value from the mode.
+Allowed values are 0 (day), 1 (night), 2 (eco), 3 (off), 4 (cool), 5 (prog 1), 6 (prog 2), 7 (prog 3).
+If mode is set, the `setpoint` temperature will return to its standard value from the mode.
 `setpoint` can be set and shows the current thermostat setpoint value in QuantityType<Temperature>.
 When updating `setpoint`, it will overrule the temperature setpoint defined by the thermostat mode for `overruletime` duration.
 `overruletime` is used to set the total duration to apply the setpoint temperature set in the setpoint channel before the thermostat returns to the setting in its mode.
 `demand` is a number indicating of the system is actively heating/cooling.
 The value will be 1 for heating, -1 for cooling and 0 if not heating or cooling.
 Note that cooling in NHC I is set by the binding, and will incorrectly show cooling demand when the system does not have cooling capabilities.
+
+For thing type `energymeter`the only supported channel is `power`.
+This channel is read only and give a current power consumption/production reading (positive for consumption) every 2 seconds.
 
 The bridge has two trigger channels `alarm` and `notice`.
 It can be used as a trigger to rules.
@@ -211,9 +238,10 @@ The action events implemented are limited to onOff, dimmer, allOff, scenes, PIR 
 Other actions have not been implemented.
 It is not possible to tilt the slates of venetian blinds.
 
-Beyond action and thermostat events, the Niko Home Control communication also supports electricity, gas and water usage data.
+Beyond action, thermostat and electricity usage events, the Niko Home Control communication also supports gas and water usage data.
 Niko Home Control II also supports 3rd party devices.
 All of this has not been implemented.
+Electricity power consumption/production has only been implemented for Niko Home Control II.
 
 ## Example
 
@@ -234,6 +262,7 @@ Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8883, profile="o
     dimmer 3 "DiningRoom" [ actionId="abcdef01-abcd-1234-ab98-abcdef012345", step=5 ]
     blind 4 [ actionId="abcdef01-abcd-1234-ab98-abcdefabcdef" ]
     thermostat 5 [ thermostatId="abcdef01-abcd-1234-ab98-012345abcdef", overruleTime=10 ]
+    electricitymeter 5 [ electricityMeterId="abcdef01-abcd-1234-cd56-ffee34567890" ]
 }
 
 Bridge nikohomecontrol:bridge:nhc3 [ addr="192.168.0.110" ] {
@@ -256,6 +285,7 @@ Number ThermostatMode   {channel="nikohomecontrol:thermostat:nhc1:5:mode"}      
 Number:Temperature SetTemperature   "[%.1f °C]"  {channel="nikohomecontrol:thermostat:nhc1:5:setpoint"}   # Get and set target temperature in °C
 Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:5:overruletime} # Get and set the overrule time
 Number ThermostatDemand {channel="nikohomecontrol:thermostat:nhc1:5:demand}       # Get the current heating/cooling demand
+Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:electricitymeter:nhc2:6:power"}   # Get current power consumption
 ```
 
 .sitemap:
@@ -270,6 +300,7 @@ Text item=CurTemperature
 Selection item=ThermostatMode mappings="[0="day", 1="night", 2="eco", 3="off", 4="cool", 5="prog 1", 6="prog 2", 7="prog 3"]
 Setpoint item=SetTemperature minValue=0 maxValue=30
 Slider item=OverruleDuration minValue=0 maxValue=120
+Text item=Power
 ```
 
 Example trigger rule:
