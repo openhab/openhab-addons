@@ -42,8 +42,8 @@ class NhcDevice2 {
         String operationMode;
         String ambientTemperature;
         String protectMode;
-        String ThermostatOn;
-        String HvacOn;
+        String thermostatOn;
+        String hvacOn;
         // fields for fans and ventilation
         String fanSpeed;
         // fields for electricity metering
