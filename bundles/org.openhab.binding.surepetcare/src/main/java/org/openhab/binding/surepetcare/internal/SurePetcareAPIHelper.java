@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceStatus;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginCredentials;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginResponse;
@@ -53,6 +54,10 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class SurePetcareAPIHelper {
+
+    private static final String HTTP_REQUEST_METHOD_POST = "POST";
+    private static final String HTTP_REQUEST_METHOD_PUT = "PUT";
+    private static final String HTTP_REQUEST_METHOD_GET = "GET";
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcareAPIHelper.class);
 
@@ -81,7 +86,7 @@ public class SurePetcareAPIHelper {
             URL object = new URL(LOGIN_URL);
             HttpURLConnection con = (HttpURLConnection) object.openConnection();
             setConnectionHeaders(con);
-            con.setRequestMethod("POST");
+            con.setRequestMethod(HTTP_REQUEST_METHOD_POST);
             con.setDoInput(true);
 
             OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
@@ -167,7 +172,7 @@ public class SurePetcareAPIHelper {
         pet.getLocation().setWhere(newLocationId);
         pet.getLocation().setSince(new Date());
         String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
-        setDataThroughApi(url, pet.getLocation());
+        setDataThroughApi(url, HTTP_REQUEST_METHOD_POST, pet.getLocation());
     }
 
     public synchronized void setDeviceLockingMode(SurePetcareDevice device, Integer newLockingModeId)
@@ -176,12 +181,26 @@ public class SurePetcareAPIHelper {
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
         control.setLockingModeId(newLockingModeId);
         String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
-        setDataThroughApi(ctrlurl, control);
+        setDataThroughApi(ctrlurl, HTTP_REQUEST_METHOD_PUT, control);
 
         // now we're fetching the new state back for the cache
-        String devurl = DEVICE_BASE_URL + "/" + device.getId().toString();
-        SurePetcareDevice newdev = gson.fromJson(getDataFromApi(devurl), SurePetcareDevice.class);
-        device.assign(newdev);
+        String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/status";
+        SurePetcareDeviceStatus newStatus = gson.fromJson(getDataFromApi(devurl), SurePetcareDeviceStatus.class);
+        device.getStatus().assign(newStatus);
+    }
+
+    public synchronized void setDeviceLedMode(SurePetcareDevice device, Integer newLedModeId)
+            throws SurePetcareApiException {
+        // post new JSON control structure to API
+        SurePetcareDeviceControl control = new SurePetcareDeviceControl();
+        control.setLedModeId(newLedModeId);
+        String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
+        setDataThroughApi(ctrlurl, HTTP_REQUEST_METHOD_PUT, control);
+
+        // now we're fetching the new state back for the cache
+        String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/status";
+        SurePetcareDeviceStatus newStatus = gson.fromJson(getDataFromApi(devurl), SurePetcareDeviceStatus.class);
+        device.getStatus().assign(newStatus);
     }
 
     public final boolean isOnline() {
@@ -256,9 +275,9 @@ public class SurePetcareAPIHelper {
      * @return The "data" element of the API result.
      * @throws SurePetcareApiException
      */
-    private void setDataThroughApi(String url, Object payload) throws SurePetcareApiException {
+    private void setDataThroughApi(String url, String requestMethod, Object payload) throws SurePetcareApiException {
         String jsonPayload = gson.toJson(payload);
-        postDataThroughAPI(url, jsonPayload);
+        postDataThroughAPI(url, requestMethod, jsonPayload);
     }
 
     private String getResultFromApi(String url) throws SurePetcareApiException {
@@ -269,7 +288,7 @@ public class SurePetcareAPIHelper {
                 URL object = new URL(url);
                 HttpURLConnection con = (HttpURLConnection) object.openConnection();
                 setConnectionHeaders(con);
-                con.setRequestMethod("GET");
+                con.setRequestMethod(HTTP_REQUEST_METHOD_GET);
 
                 StringBuilder sb = new StringBuilder();
                 int httpResult = con.getResponseCode();
@@ -303,7 +322,8 @@ public class SurePetcareAPIHelper {
         return responseData;
     }
 
-    private void postDataThroughAPI(String url, String jsonPayload) throws SurePetcareApiException {
+    private void postDataThroughAPI(String url, String requestMethod, String jsonPayload)
+            throws SurePetcareApiException {
         boolean success = false;
         logger.debug("postDataThroughAPI URL: {}", url);
         logger.debug("postDataThroughAPI Payload: {}", jsonPayload);
@@ -312,7 +332,7 @@ public class SurePetcareAPIHelper {
                 URL object = new URL(url);
                 HttpURLConnection con = (HttpURLConnection) object.openConnection();
                 setConnectionHeaders(con);
-                con.setRequestMethod("POST");
+                con.setRequestMethod(requestMethod);
                 con.getOutputStream().write(jsonPayload.getBytes());
                 int httpResult = con.getResponseCode();
                 if ((httpResult == HttpURLConnection.HTTP_OK) || (httpResult == HttpURLConnection.HTTP_CREATED)) {

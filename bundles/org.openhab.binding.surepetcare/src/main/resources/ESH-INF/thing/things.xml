@@ -288,7 +288,7 @@
 		<item-type>String</item-type>
 		<label>LED Mode</label>
 		<description>The current LED mode of the device</description>
-		<state readOnly="true">
+		<state readOnly="false">
 			<options>
 				<option value="0">0</option>
 				<option value="1">1</option>
@@ -334,21 +334,21 @@
 		<item-type>Switch</item-type>
 		<label>Curfew Enabled</label>
 		<description>Indicator if the curfew is enabled</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="false" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="curfewLockTimeType">
 		<item-type>String</item-type>
 		<label>Curfew Lock Time</label>
 		<description>The time when the curfew starts</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="false" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="curfewUnlockTimeType">
 		<item-type>String</item-type>
 		<label>Curfew Unlock Time</label>
 		<description>The time when the curfew finishes</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="false" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="createdAtType">

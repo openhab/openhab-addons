@@ -2,18 +2,23 @@
 
 This binding offers integration to the Sure Petcare API, supporting cloud-connected cat flaps and feeders.
 
+### Features
+
+1. Read access to all attributes for households, devices (hubs, flaps) and pets through individual things/channels.
+2. Manual setting of pet location.
+3. Setting of LED Mode (hub) and Locking Mode (flaps).
+
 ### Restrictions / TODO
 
 1. The Sure Petcare API is not publicly available and this binding has been based on observed interactions between their mobile phone app and the cloud API.
    If the Sure Petcare API changes, this binding might stop working.
 2. The current version of the binding supports only cat/pet flaps. Feeders are not yet supported as I don't own one yet.
-3. The binding has limited support for writable channels. At the moment, only the manual setting of the pet location is supported.
 
 ### Credits
 
 The binding code is based on a lot of work done by other developers:
 
-- HoLLe (https://github.com/HerzScheisse) - Python use in OpenHAB and various PRs (https://github.com/HerzScheisse/SurePetcare-openHAB-JSR223-Rules)
+- Holger Eisold (https://github.com/HerzScheisse) - Python use in OpenHAB and various PRs (https://github.com/HerzScheisse/SurePetcare-openHAB-JSR223-Rules)
 - Alex Toft (https://github.com/alextoft) - PHP implementation (https://github.com/alextoft/sureflap)
 - rcastberg (https://github.com/rcastberg) - Python implementation (https://github.com/rcastberg/sure_petcare)
 

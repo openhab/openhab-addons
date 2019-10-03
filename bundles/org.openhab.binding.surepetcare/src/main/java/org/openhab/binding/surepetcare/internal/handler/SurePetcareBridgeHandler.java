@@ -141,6 +141,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         if (command instanceof RefreshType) {
             updateState(BRIDGE_CHANNEL_ONLINE, OnOffType.from(petcareAPI.isOnline()));
         }
+
     }
 
     private synchronized void updateThings() {

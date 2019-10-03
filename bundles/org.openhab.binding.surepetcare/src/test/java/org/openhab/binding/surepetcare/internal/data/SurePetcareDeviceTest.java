@@ -34,10 +34,10 @@ public class SurePetcareDeviceTest {
         assertEquals("NjA=", response.getVersion());
         assertEquals(new Integer(4), response.getControl().getLedModeId());
         assertEquals(new Integer(0), response.getControl().getPairingModeId());
-        assertEquals(new Integer(4), response.getStatus().ledModeId);
-        assertEquals(new Integer(0), response.getStatus().pairingModeId);
-        assertEquals("3", response.getStatus().version.device.hardware);
-        assertEquals("1.772", response.getStatus().version.device.firmware);
+        assertEquals(new Integer(4), response.getStatus().getLedModeId());
+        assertEquals(new Integer(0), response.getStatus().getPairingModeId());
+        assertEquals(new BigDecimal("3"), response.getStatus().getVersion().device.hardware);
+        assertEquals(new BigDecimal("1.772"), response.getStatus().getVersion().device.firmware);
     }
 
     @Test
@@ -52,7 +52,7 @@ public class SurePetcareDeviceTest {
         assertEquals("N005-0089709", response.getSerialNumber());
         assertEquals("6D5E01CFF9D5B370", response.getMacAddress());
         assertEquals("MTE5", response.getVersion());
-        assertEquals(new Integer(0), response.getStatus().locking.modeId);
+        assertEquals(new Integer(0), response.getStatus().getLocking().modeId);
     }
 
 }
