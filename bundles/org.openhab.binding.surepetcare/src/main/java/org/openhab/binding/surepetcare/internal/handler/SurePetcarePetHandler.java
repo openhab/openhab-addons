@@ -121,6 +121,8 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                 if (pet.getTagIdentifier() != null) {
                     updateState(PET_CHANNEL_TAG_IDENTIFIER, new StringType(pet.getTagIdentifier().getTag()));
                 }
+            } else {
+                logger.debug("Trying to update unknown pet: {}", thing.getUID().getId());
             }
         }
     }

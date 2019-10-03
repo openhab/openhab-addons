@@ -45,11 +45,14 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 
 ## Things and their channels
 
+Channel names in **bold** are read/write, everything else is read-only
+
 ### Bridge Thing
 
 | Channel           | Type     | Description                                                                                |
 |-------------------|----------|--------------------------------------------------------------------------------------------|
 | online            | Switch   | Parameter indicating if the bridge has a valid connection to the Sure Petcare API          |
+| **refresh**       | Switch   | Trigger switch to force a full cache update                                                |
 
 ### Household Thing
 
@@ -66,7 +69,7 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 | id                | Number   | A unique id assigned by the Sure Petcare API                                               |
 | name              | Text     | The name of the hub                                                                        |
 | product           | Text     | The type of product (1=hub)                                                                |
-| ledMode           | Text     | The mode of the hub's LED ears                                                             |
+| **ledMode**       | Text     | The mode of the hub's LED ears                                                             |
 | pairingMode       | Text     | The state of pairing                                                                       |
 | hardwareVersion   | Number   | The hub's hardware version number                                                          |
 | firmwareVersion   | Number   | The hub's firmware number                                                                  |
@@ -74,24 +77,24 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 
 ### Flap Device Thing (Cat or Pet Flap)
 
-| Channel           | Type     | Description                                                                                |
-|-------------------|----------|--------------------------------------------------------------------------------------------|
-| id                | Number   | A unique id assigned by the Sure Petcare API                                               |
-| name              | Text     | The name of the flap                                                                       |
-| product           | Text     | The type of product (3=pet flap, 6=cat flap)                                               |
-| curfewEnabled1    | Switch   | Indicator if this curfew configuration is enabled                                          |
-| curfewLockTime1   | Text     | The curfew locking time (HH:MM)                                                            |
-| curfewUnlockTime1 | Text     | The curfew unlocking time (HH:MM)                                                          |
-| hardwareVersion   | Text     | The flap's hardware version number                                                         |
-| lockingMode       | Text     | The locking mode (e.g. in/out, in-only, out-only etc.)                                     |
-| hardwareVersion   | Number   | The flap's hardware version number                                                         |
-| firmwareVersion   | Number   | The flap's firmware number                                                                 |
-| online            | Switch   | Indicator if the flap is connected to the hub                                              |
-| lowBattery        | Switch   | Indicator if the battery voltage is low                                                    |
-| batteryLevel      | Number   | The battery voltage percentage                                                             |
-| batteryVoltage    | Number   | The absolute battery voltage measurement                                                   |
-| deviceRSSI        | Number   | The received device signal strength in dB                                                  |
-| hubRSSI           | Number   | The received hub signal strength in dB                                                     |
+| Channel               | Type     | Description                                                                                |
+|-----------------------|----------|--------------------------------------------------------------------------------------------|
+| id                    | Number   | A unique id assigned by the Sure Petcare API                                               |
+| name                  | Text     | The name of the flap                                                                       |
+| product               | Text     | The type of product (3=pet flap, 6=cat flap)                                               |
+| **curfewEnabled1**    | Switch   | Indicator if this curfew configuration is enabled                                          |
+| **curfewLockTime1**   | Text     | The curfew locking time (HH:MM)                                                            |
+| **curfewUnlockTime1** | Text     | The curfew unlocking time (HH:MM)                                                          |
+| hardwareVersion       | Text     | The flap's hardware version number                                                         |
+| **lockingMode**       | Text     | The locking mode (e.g. in/out, in-only, out-only etc.)                                     |
+| hardwareVersion       | Number   | The flap's hardware version number                                                         |
+| firmwareVersion       | Number   | The flap's firmware number                                                                 |
+| online                | Switch   | Indicator if the flap is connected to the hub                                              |
+| lowBattery            | Switch   | Indicator if the battery voltage is low                                                    |
+| batteryLevel          | Number   | The battery voltage percentage                                                             |
+| batteryVoltage        | Number   | The absolute battery voltage measurement                                                   |
+| deviceRSSI            | Number   | The received device signal strength in dB                                                  |
+| hubRSSI               | Number   | The received hub signal strength in dB                                                     |
 
 ### Pet Thing
 
@@ -105,7 +108,7 @@ After adding the Bridge, it will go ONLINE, and after a short while, the discove
 | species           | Text     | The pet's species                                                                          |
 | photoURL          | Text     | The URL of the pet's photo                                                                 |
 | tagIdentifier     | Text     | The unique identifier of the pet's micro chip or collar tag                                |
-| location          | Text     | The current location of the pet (0=unknown, 1=inside, 2=outside)                           |
+| **location**      | Text     | The current location of the pet (0=unknown, 1=inside, 2=outside)                           |
 | locationChanged   | DateTime | The time when the location was last changed                                                |
 
 

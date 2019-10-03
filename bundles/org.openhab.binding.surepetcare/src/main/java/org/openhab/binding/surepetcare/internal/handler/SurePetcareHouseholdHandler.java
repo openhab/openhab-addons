@@ -21,6 +21,8 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SurePetcareHouseholdHandler} is responsible for handling things created to represent Sure Petcare
@@ -31,7 +33,7 @@ import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
 @NonNullByDefault
 public class SurePetcareHouseholdHandler extends SurePetcareBaseObjectHandler {
 
-    // private final Logger logger = LoggerFactory.getLogger(SurePetcareHouseholdHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SurePetcareHouseholdHandler.class);
 
     public SurePetcareHouseholdHandler(Thing thing, SurePetcareAPIHelper petcareAPI) {
         super(thing, petcareAPI);
@@ -41,11 +43,14 @@ public class SurePetcareHouseholdHandler extends SurePetcareBaseObjectHandler {
     public void updateThing() {
         SurePetcareHousehold household = petcareAPI.retrieveHousehold(thing.getUID().getId());
         if (household != null) {
+            logger.debug("Updating all thing channels for household : {}", household.toString());
             updateState(HOUSEHOLD_CHANNEL_ID, new DecimalType(household.getId()));
             updateState(HOUSEHOLD_CHANNEL_NAME, new StringType(household.getName()));
             updateState(HOUSEHOLD_CHANNEL_TIMEZONE_ID, new DecimalType(household.getTimezoneId()));
             updateState(HOUSEHOLD_CHANNEL_CREATED_AT, new DateTimeType(household.getCreatedAtAsZonedDateTime()));
             updateState(HOUSEHOLD_CHANNEL_UPDATED_AT, new DateTimeType(household.getUpdatedAtAsZonedDateTime()));
+        } else {
+            logger.debug("Trying to update unknown household: {}", thing.getUID().getId());
         }
     }
 

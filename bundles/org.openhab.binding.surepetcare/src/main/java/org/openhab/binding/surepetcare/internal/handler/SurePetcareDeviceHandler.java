@@ -66,7 +66,6 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                                 String newLockingModeIdStr = ((StringType) command).toString();
                                 try {
                                     Integer newLockingModeId = Integer.valueOf(newLockingModeIdStr);
-                                    logger.debug("new lockingModeId: {}", newLockingModeId);
                                     petcareAPI.setDeviceLockingMode(device, newLockingModeId);
                                     updateState(DEVICE_CHANNEL_LOCKING_MODE,
                                             new StringType(device.getStatus().getLocking().modeId.toString()));
@@ -89,7 +88,6 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                                 String newLedModeIdStr = ((StringType) command).toString();
                                 try {
                                     Integer newLedModeId = Integer.valueOf(newLedModeIdStr);
-                                    logger.debug("new ledModeId: {}", newLedModeId);
                                     petcareAPI.setDeviceLedMode(device, newLedModeId);
                                     updateState(DEVICE_CHANNEL_LOCKING_MODE,
                                             new StringType(device.getStatus().getLedModeId().toString()));
@@ -116,6 +114,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
             logger.debug("Updating all thing channels for device : {}", device.toString());
             updateState(DEVICE_CHANNEL_ID, new DecimalType(device.getId()));
             updateState(DEVICE_CHANNEL_NAME, new StringType(device.getName()));
+            logger.debug("setting product type to: {}", device.getProductId().toString());
             updateState(DEVICE_CHANNEL_PRODUCT, new StringType(device.getProductId().toString()));
             if (thing.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE)) {
                 updateState(DEVICE_CHANNEL_LED_MODE, new StringType(device.getStatus().getLedModeId().toString()));
@@ -164,6 +163,8 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
             } else {
                 logger.warn("Unknown product type for device {}", thing.getUID().getAsString());
             }
+        } else {
+            logger.debug("Trying to update unknown device: {}", thing.getUID().getId());
         }
     }
 

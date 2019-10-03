@@ -49,6 +49,7 @@ public class SurePetcareConstants {
 
     // Bridge Channel Names
     public static final String BRIDGE_CHANNEL_ONLINE = "online";
+    public static final String BRIDGE_CHANNEL_REFRESH = "refresh";
 
     // Household Channel Names
     public static final String HOUSEHOLD_CHANNEL_ID = "id";

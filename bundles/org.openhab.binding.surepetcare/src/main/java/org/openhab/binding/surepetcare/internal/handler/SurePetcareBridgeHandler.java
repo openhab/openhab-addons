@@ -140,15 +140,25 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         logger.debug("SurePetcareBridgeHandler handleCommand called with command: {}", command.toString());
         if (command instanceof RefreshType) {
             updateState(BRIDGE_CHANNEL_ONLINE, OnOffType.from(petcareAPI.isOnline()));
+            updateState(BRIDGE_CHANNEL_REFRESH, OnOffType.OFF);
+        } else {
+            switch (channelUID.getId()) {
+                case BRIDGE_CHANNEL_REFRESH:
+                    if ("ON".equals(command.toString())) {
+                        petcareAPI.updateTopologyCache();
+                        updateThings();
+                        updateState(BRIDGE_CHANNEL_REFRESH, OnOffType.OFF);
+                    }
+                    break;
+            }
         }
-
     }
 
     private synchronized void updateThings() {
         logger.debug("Updating {} connected things", ((Bridge) thing).getThings().size());
         // update existing things
         for (Thing th : ((Bridge) thing).getThings()) {
-            logger.debug("  Thing: {}, id: {}", th.getThingTypeUID().getAsString(), th.getUID().getId());
+            logger.debug("Thing: {}, id: {}", th.getThingTypeUID().getAsString(), th.getUID().getId());
             ThingHandler handler = th.getHandler();
             if (handler != null) {
                 if (th.getThingTypeUID().equals(THING_TYPE_PET)) {
@@ -156,7 +166,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 } else if (th.getThingTypeUID().equals(THING_TYPE_HOUSEHOLD)) {
                     ((SurePetcareHouseholdHandler) handler).updateThing();
                 } else if ((th.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE))
-                        || (th.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE))) {
+                        || (th.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE))) {
                     ((SurePetcareDeviceHandler) handler).updateThing();
                 }
             }
