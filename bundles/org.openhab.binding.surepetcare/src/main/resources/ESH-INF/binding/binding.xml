@@ -5,7 +5,7 @@
 		xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Sure PetCare Binding</name>
-	<description>This binding interacts with the Sure Petcare Connect range of cat flaps and feeders XXX</description>
+	<description>This binding interacts with the Sure Petcare Connect range of cat flaps and feeders</description>
 	<author>Rene Scherer</author>
 
 </binding:binding>

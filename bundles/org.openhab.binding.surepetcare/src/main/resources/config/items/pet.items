@@ -1,15 +1,12 @@
 Number     UR_1e_Id                 "Pet Id [%d]"                                                       (dgPet)  { channel="surepetcare:pet:bridge1:60487:id" }
 String     UR_1e_Name               "Pet Name [%s]"                                                     (dgPet)  { channel="surepetcare:pet:bridge1:60487:name" }
 String     UR_1e_Comment            "Pet Comment [%s]"                                                  (dgPet)  { channel="surepetcare:pet:bridge1:60487:comment" }
-String     UR_1e_Gender             "Pet Gender [%s]"                                                   (dgPet)  { channel="surepetcare:pet:bridge1:60487:genderId" [profile="transform:MAP", function="surepetcare_gender_en.map"] }
-Number     UR_1e_GenderId           "Pet Gender Id [%d]"                                                (dgPet)  { channel="surepetcare:pet:bridge1:60487:genderId" }
-String     UR_1e_Breed              "Pet Breed [%s]"                                                    (dgPet)  { channel="surepetcare:pet:bridge1:60487:breedId" [profile="transform:MAP", function="surepetcare_breed_en.map"] }
-Number     UR_1e_BreedId            "Pet Breed Id [%d]"                                                 (dgPet)  { channel="surepetcare:pet:bridge1:60487:breedId" }
-String     UR_1e_Species            "Pet Species [%s]"                                                  (dgPet)  { channel="surepetcare:pet:bridge1:60487:speciesId" [profile="transform:MAP", function="surepetcare_species_en.map"] }
-Number     UR_1e_SpeciesId          "Pet Species Id [%d]"                                               (dgPet)  { channel="surepetcare:pet:bridge1:60487:speciesId" }
+String     UR_1e_Gender             "Pet Gender [%s]"                                                   (dgPet)  { channel="surepetcare:pet:bridge1:60487:gender" }
+String     UR_1e_Breed              "Pet Breed [%s]"                                                    (dgPet)  { channel="surepetcare:pet:bridge1:60487:breed" }
+String     UR_1e_Species            "Pet Species [%s]"                                                  (dgPet)  { channel="surepetcare:pet:bridge1:60487:species" }
 String     UR_1e_PhotoURL           "Pet Photo URL [%s]"                                                (dgPet)  { channel="surepetcare:pet:bridge1:60487:photoURL" }
 String     UR_1e_TagIdentifier      "Pet Tag Identifier [%s]"                                           (dgPet)  { channel="surepetcare:pet:bridge1:60487:tagIdentifier" }
-String     UR_1e_Location           "Pet Location [%s]"                                                 (dgPet)  { channel="surepetcare:pet:bridge1:60487:locationId" [profile="transform:MAP", function="surepetcare_location_en.map"] }
-Number     UR_1e_LocationId         "Pet Location Id [%d]"                                              (dgPet)  { channel="surepetcare:pet:bridge1:60487:locationId" }
+String     UR_1e_Location           "Pet Location [%s]"                                                 (dgPet)  { channel="surepetcare:pet:bridge1:60487:location" }
 DateTime   UR_1e_LocationChanged    "Pet Location Last Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM:%1$tS]"   (dgPet)  { channel="surepetcare:pet:bridge1:60487:locationChanged" }
-
+Number     UR_1e_Weight             "Pet Weight [%.1f kg]"                                              (dgPet)  { channel="surepetcare:pet:bridge1:60487:weight" }
+DateTime   UR_1e_DateOfBirth        "Pet Date of Birth [%1$td.%1$tm.%1$tY]"                             (dgPet)  { channel="surepetcare:pet:bridge1:60487:dateOfBirth" }

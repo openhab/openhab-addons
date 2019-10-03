@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.surepetcare.internal.data;
 
+import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 //import java.time.ZoneId;
 //import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 //import java.util.Date;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-//import org.eclipse.jdt.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,7 +29,6 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Rene Scherer - Initial contribution
  */
-@NonNullByDefault
 public class SurePetcarePet extends SurePetcareBaseObject {
 
     public enum PetGender {
@@ -88,16 +88,16 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     private String name = "";
 
     @SerializedName("gender")
-    private Integer genderId = 0;
-    //private Date dateOfBirth;
-    private String weight = "";
-    private String comments = "";
-    private Integer householdId = 0;
-    private Integer breedId = 0;
-    private Integer photoId = 0;
-    private Integer speciesId = 0;
-    private Integer tagId = 0;
-    private SurePetcarePhoto photo = new SurePetcarePhoto();
+    private Integer genderId;
+    private Date dateOfBirth;
+    private BigDecimal weight;
+    private String comments;
+    private Integer householdId;
+    private Integer breedId;
+    private Integer photoId;
+    private Integer speciesId;
+    private Integer tagId;
+    private SurePetcarePhoto photo;
 
     @SerializedName("position")
     private SurePetcarePetLocation location = new SurePetcarePetLocation();
@@ -119,18 +119,19 @@ public class SurePetcarePet extends SurePetcareBaseObject {
         this.genderId = genderId;
     }
 
-    /*public Date getDateOfBirth() {
+    public Date getDateOfBirth() {
         return dateOfBirth;
     }
+
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
-    }*/
+    }
 
-    public String getWeight() {
+    public BigDecimal getWeight() {
         return weight;
     }
 
-    public void setWeight(String weight) {
+    public void setWeight(BigDecimal weight) {
         this.weight = weight;
     }
 
@@ -206,9 +207,13 @@ public class SurePetcarePet extends SurePetcareBaseObject {
         this.tagIdentifier = tagIdentifier;
     }
 
-    /*public @NonNull ZonedDateTime getBirthday() {
-        return dateOfBirth.toInstant().atZone(ZoneId.systemDefault());
-    }*/
+    public ZonedDateTime getDateOfBirthAsZonedDateTime() {
+        if (dateOfBirth != null) {
+            return dateOfBirth.toInstant().atZone(ZoneId.systemDefault());
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public String toString() {

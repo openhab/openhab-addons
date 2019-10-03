@@ -62,16 +62,16 @@ public class SurePetcareConstants {
     // Device Channel Names
     public static final String DEVICE_CHANNEL_ID = "id";
     public static final String DEVICE_CHANNEL_NAME = "name";
-    public static final String DEVICE_CHANNEL_PRODUCT_ID = "productId";
-    public static final String DEVICE_CHANNEL_LED_MODE_ID = "ledModeId";
-    public static final String DEVICE_CHANNEL_PAIRING_MODE_ID = "pairingModeId";
+    public static final String DEVICE_CHANNEL_PRODUCT = "product";
+    public static final String DEVICE_CHANNEL_LED_MODE = "ledMode";
+    public static final String DEVICE_CHANNEL_PAIRING_MODE = "pairingMode";
     public static final String DEVICE_CHANNEL_HARDWARE_VERSION = "hardwareVersion";
     public static final String DEVICE_CHANNEL_FIRMWARE_VERSION = "firmwareVersion";
     public static final String DEVICE_CHANNEL_ONLINE = "online";
     public static final String DEVICE_CHANNEL_CURFEW_ENABLED = "curfewEnabled";
     public static final String DEVICE_CHANNEL_CURFEW_LOCK_TIME = "curfewLockTime";
     public static final String DEVICE_CHANNEL_CURFEW_UNLOCK_TIME = "curfewUnlockTime";
-    public static final String DEVICE_CHANNEL_LOCKING_MODE_ID = "lockingModeId";
+    public static final String DEVICE_CHANNEL_LOCKING_MODE = "lockingMode";
     public static final String DEVICE_CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
     public static final String DEVICE_CHANNEL_BATTERY_LEVEL = "batteryLevel";
     public static final String DEVICE_CHANNEL_LOW_BATTERY = "lowBattery";
@@ -87,13 +87,13 @@ public class SurePetcareConstants {
     public static final String PET_CHANNEL_ID = "id";
     public static final String PET_CHANNEL_NAME = "name";
     public static final String PET_CHANNEL_COMMENT = "comment";
-    public static final String PET_CHANNEL_GENDER_ID = "genderId";
-    public static final String PET_CHANNEL_BREED_ID = "breedId";
-    public static final String PET_CHANNEL_SPECIES_ID = "speciesId";
+    public static final String PET_CHANNEL_GENDER = "gender";
+    public static final String PET_CHANNEL_BREED = "breed";
+    public static final String PET_CHANNEL_SPECIES = "species";
     public static final String PET_CHANNEL_PHOTO_URL = "photoURL";
-    public static final String PET_CHANNEL_LOCATION_ID = "locationId";
+    public static final String PET_CHANNEL_LOCATION = "location";
     public static final String PET_CHANNEL_LOCATION_CHANGED = "locationChanged";
-    public static final String PET_CHANNEL_BIRTHDAY = "birthday";
+    public static final String PET_CHANNEL_DATE_OF_BIRTH = "dateOfBirth";
     public static final String PET_CHANNEL_WEIGHT = "weight";
     public static final String PET_CHANNEL_TAG_IDENTIFIER = "tagIdentifier";
 

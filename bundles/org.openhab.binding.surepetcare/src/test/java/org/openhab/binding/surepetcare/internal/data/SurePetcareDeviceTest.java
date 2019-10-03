@@ -32,8 +32,8 @@ public class SurePetcareDeviceTest {
         assertEquals("H008-0296432", response.getSerialNumber());
         assertEquals("00000491630A0D64", response.getMacAddress());
         assertEquals("NjA=", response.getVersion());
-        assertEquals(new Integer(4), response.getControl().ledModeId);
-        assertEquals(new Integer(0), response.getControl().pairingModeId);
+        assertEquals(new Integer(4), response.getControl().getLedModeId());
+        assertEquals(new Integer(0), response.getControl().getPairingModeId());
         assertEquals(new Integer(4), response.getStatus().ledModeId);
         assertEquals(new Integer(0), response.getStatus().pairingModeId);
         assertEquals("3", response.getStatus().version.device.hardware);

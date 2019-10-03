@@ -31,7 +31,7 @@
                 <default>36000</default>
             </parameter>
             <parameter name="refresh_interval_location" type="integer" required="false" min="30">
-                <label>Refresh Interval Location Key</label>
+                <label>Refresh Interval Location</label>
                 <description>Query interval (in secs) for pet locations</description>
                 <default>300</default>
             </parameter>

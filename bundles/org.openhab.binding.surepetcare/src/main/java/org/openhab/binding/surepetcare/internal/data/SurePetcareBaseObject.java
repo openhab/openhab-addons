@@ -27,7 +27,8 @@ import org.eclipse.jdt.annotation.NonNull;
  */
 public class SurePetcareBaseObject {
 
-    protected Integer id;
+    @NonNull
+    protected Integer id = 0;
     protected String version;
     protected Date createdAt;
     protected Date updatedAt;
@@ -68,19 +69,37 @@ public class SurePetcareBaseObject {
         this.updatedAt = updatedAt;
     }
 
-    public @NonNull ZonedDateTime getCreatedAtAsZonedDateTime() {
-        return createdAt.toInstant().atZone(ZoneId.systemDefault());
+    public ZonedDateTime getCreatedAtAsZonedDateTime() {
+        if (createdAt != null) {
+            return createdAt.toInstant().atZone(ZoneId.systemDefault());
+        } else {
+            return null;
+        }
     }
 
-    public @NonNull ZonedDateTime getUpdatedAtAsZonedDateTime() {
-        return updatedAt.toInstant().atZone(ZoneId.systemDefault());
+    public ZonedDateTime getUpdatedAtAsZonedDateTime() {
+        if (updatedAt != null) {
+            return updatedAt.toInstant().atZone(ZoneId.systemDefault());
+        } else {
+            return null;
+        }
     }
 
     public @NonNull Map<String, Object> getThingProperties() {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("id", id.toString());
-        properties.put("version", version);
+        if (version != null) {
+            properties.put("version", version);
+        }
         return properties;
+    }
+
+    public @NonNull SurePetcareBaseObject assign(SurePetcareBaseObject newdev) {
+        this.id = newdev.id;
+        this.version = newdev.version;
+        this.createdAt = newdev.createdAt;
+        this.updatedAt = newdev.updatedAt;
+        return this;
     }
 
 }

@@ -1,7 +1,6 @@
 Number     UR_1d_Id                 "Cat Flap Id [%d]"                                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:id" }
 String     UR_1d_Name               "Cat Flap Name [%s]"                                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:name" }
-String     UR_1d_Product            "Cat Flap Product [%s]"                                             (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:productId" [profile="transform:MAP", function="surepetcare_product_en.map"] }
-Number     UR_1d_ProductId          "Cat Flap Product Id [%d]"                                          (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:productId" }
+String     UR_1d_Product            "Cat Flap Product [%s]"                                             (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:product" }
 Switch     UR_1d_CurfewEnabled1     "Cat Flap Curfew 1 Enabled [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewEnabled1" }
 String     UR_1d_CurfewLockTime1    "Cat Flap Curfew 1 Lock Time [%s]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewLockTime1" }
 String     UR_1d_CurfewUnlockTime1  "Cat Flap Curfew 1 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewUnlockTime1" }
@@ -14,13 +13,12 @@ String     UR_1d_CurfewUnlockTime3  "Cat Flap Curfew 3 Unlock Time [%s]"        
 Switch     UR_1d_CurfewEnabled4     "Cat Flap Curfew 4 Enabled [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewEnabled4" }
 String     UR_1d_CurfewLockTime4    "Cat Flap Curfew 4 Lock Time [%s]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewLockTime4" }
 String     UR_1d_CurfewUnlockTime5  "Cat Flap Curfew 4 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewUnlockTime4" }
-String     UR_1d_LockingModex        "Cat Flap Locking Mode [%s]"                                        (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:lockingModeId" [profile="transform:MAP", function="surepetcare_lockingmode_en.map"] }
-Number     UR_1d_LockingModeId      "Cat Flap Locking Mode Id [%d]"                                     (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:lockingModeId" }
-String     UR_1d_HardwareVersion    "Cat Flap Hardware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:hardwareVersion" }
-String     UR_1d_FirmwareVersion    "Cat Flap Firmware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:firmwareVersion" }
+String     UR_1d_LockingMode        "Cat Flap Locking Mode [%s]"                                        (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:lockingMode" }
+Number     UR_1d_HardwareVersion    "Cat Flap Hardware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:hardwareVersion" }
+Number     UR_1d_FirmwareVersion    "Cat Flap Firmware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:firmwareVersion" }
 Switch     UR_1d_LowBattery         "Cat Flap Low Battery [%s]"                                         (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:lowBattery" }
 Number     UR_1d_BatteryLevel       "Cat Flap Battery Level [%f]"                                       (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:batteryLevel" }
-Number     UR_1d_BatteryVoltage     "Cat Flap Battery Voltage [%f]"                                     (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:batteryVoltage" }
+Number     UR_1d_BatteryVoltage     "Cat Flap Battery Voltage [%.1f V]"                                 (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:batteryVoltage" }
 Switch     UR_1d_Online             "Cat Flap Online [%s]"                                              (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:online" }
-Number     UR_1d_DeviceRSSI         "Cat Flap Device RSSI [%f]"                                         (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:deviceRSSI" }
-Number     UR_1d_HubRSSI            "Cat Flap Hub RSSI [%f]"                                            (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:hubRSSI" }
+Number     UR_1d_DeviceRSSI         "Cat Flap Device RSSI [%.2f dB]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:deviceRSSI" }
+Number     UR_1d_HubRSSI            "Cat Flap Hub RSSI [%.2f dB]"                                       (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:hubRSSI" }

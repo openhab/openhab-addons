@@ -35,9 +35,11 @@
 		<channels>
 			<channel id="id" typeId="idType" />
 			<channel id="name" typeId="nameType" />
-			<channel id="productId" typeId="productIdType" />
-			<channel id="ledModeId" typeId="ledModeIdType" />
-			<channel id="pairingModeId" typeId="pairingModeIdType" />
+			<channel id="product" typeId="productType" />
+			<channel id="ledMode" typeId="ledModeType" />
+			<channel id="pairingMode" typeId="pairingModeType" />
+			<channel id="serialNumber" typeId="serialNumberType" />
+			<channel id="macAddress" typeId="macAddressType" />
 			<channel id="hardwareVersion" typeId="hardwareVersionType" />
 			<channel id="firmwareVersion" typeId="firmwareVersionType" />
 			<channel id="online" typeId="onlineType" />
@@ -57,7 +59,7 @@
 		<channels>
 			<channel id="id" typeId="idType" />
 			<channel id="name" typeId="nameType" />
-            <channel id="productId" typeId="productIdType" />
+			<channel id="product" typeId="productType" />
 			<channel id="curfewEnabled1" typeId="curfewEnabledType" />
 			<channel id="curfewLockTime1" typeId="curfewLockTimeType" />
 			<channel id="curfewUnlockTime1" typeId="curfewUnlockTimeType" />
@@ -70,7 +72,9 @@
 			<channel id="curfewEnabled4" typeId="curfewEnabledType" />
 			<channel id="curfewLockTime4" typeId="curfewLockTimeType" />
 			<channel id="curfewUnlockTime4" typeId="curfewUnlockTimeType" />
-			<channel id="lockingModeId" typeId="lockingModeIdType" />
+			<channel id="lockingMode" typeId="lockingModeType" />
+			<channel id="serialNumber" typeId="serialNumberType" />
+			<channel id="macAddress" typeId="macAddressType" />
 			<channel id="hardwareVersion" typeId="hardwareVersionType" />
 			<channel id="firmwareVersion" typeId="firmwareVersionType" />
 			<channel id="lowBattery" typeId="system.low-battery" />
@@ -97,14 +101,14 @@
 			<channel id="id" typeId="idType" />
 			<channel id="name" typeId="nameType" />
 			<channel id="comment" typeId="commentType" />
-			<channel id="genderId" typeId="genderIdType" />
-			<channel id="breedId" typeId="breedIdType" />
-			<channel id="speciesId" typeId="speciesIdType" />
+			<channel id="gender" typeId="genderType" />
+			<channel id="breed" typeId="breedType" />
+			<channel id="species" typeId="speciesType" />
 			<channel id="photoURL" typeId="photoURLType" />
 			<channel id="tagIdentifier" typeId="tagIdentifierType" />
-			<channel id="locationId" typeId="locationIdType" />
+			<channel id="location" typeId="locationType" />
 			<channel id="locationChanged" typeId="locationChangedType" />
-			<channel id="birthday" typeId="birthdayType" />
+			<channel id="dateOfBirth" typeId="dateOfBirthType" />
 			<channel id="weight" typeId="weightType" />
 		</channels>
 
@@ -138,11 +142,19 @@
         <state readOnly="true" pattern="%d"></state>
     </channel-type>
 
-	<channel-type id="productIdType">
-		<item-type>Number</item-type>
-		<label>Product Id</label>
+	<channel-type id="productType">
+		<item-type>String</item-type>
+		<label>Product Type</label>
 		<description>The type of product this device represents (0=unknown, 1=Hub, 3=Pet Flap, 6=Cat Flap)</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true">
+			<options>
+				<option value="0">0</option>
+				<option value="1">1</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="6">6</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="shareCodeType">
@@ -152,81 +164,163 @@
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="genderIdType">
-		<item-type>Number</item-type>
-		<label>Gender Id</label>
-		<description>The pet's gender id</description>
-		<state readOnly="true" pattern="%d"></state>
+	<channel-type id="genderType">
+		<item-type>String</item-type>
+		<label>Gender</label>
+		<description>The gender of the pet</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">0</option>
+				<option value="1">1</option>
+			</options>
+		</state>
 	</channel-type>
 
-	<channel-type id="breedIdType">
-		<item-type>Number</item-type>
-		<label>Breed Id</label>
-		<description>The pet's breed id</description>
-		<state readOnly="true" pattern="%d"></state>
+	<channel-type id="breedType">
+		<item-type>String</item-type>
+		<label>Breed</label>
+		<description>The breed of the pet</description>
+		<state readOnly="true">
+			<options>
+				<option value="333">333</option>
+				<option value="334">334</option>
+				<option value="335">335</option>
+				<option value="336">336</option>
+				<option value="337">337</option>
+				<option value="338">338</option>
+				<option value="339">339</option>
+				<option value="340">340</option>
+				<option value="341">341</option>
+				<option value="342">342</option>
+				<option value="343">343</option>
+				<option value="344">344</option>
+				<option value="345">345</option>
+				<option value="346">346</option>
+				<option value="347">347</option>
+				<option value="348">348</option>
+				<option value="349">349</option>
+				<option value="350">350</option>
+				<option value="351">351</option>
+				<option value="352">352</option>
+				<option value="353">353</option>
+				<option value="354">354</option>
+				<option value="355">355</option>
+				<option value="356">356</option>
+				<option value="357">357</option>
+				<option value="358">358</option>
+				<option value="359">359</option>
+				<option value="360">360</option>
+				<option value="361">361</option>
+				<option value="362">362</option>
+				<option value="363">363</option>
+				<option value="364">364</option>
+				<option value="365">365</option>
+				<option value="366">366</option>
+				<option value="367">367</option>
+				<option value="368">368</option>
+				<option value="369">369</option>
+				<option value="370">370</option>
+				<option value="371">371</option>
+				<option value="372">372</option>
+				<option value="373">373</option>
+				<option value="374">374</option>
+				<option value="375">375</option>
+				<option value="376">376</option>
+				<option value="377">377</option>
+				<option value="378">378</option>
+				<option value="379">379</option>
+				<option value="380">380</option>
+				<option value="381">381</option>
+				<option value="382">382</option>
+				<option value="383">383</option>
+				<option value="384">384</option>
+			</options>
+		</state>
 	</channel-type>
 
-	<channel-type id="speciesIdType">
-		<item-type>Number</item-type>
-		<label>Species Id</label>
-		<description>The pet's species id</description>
-		<state readOnly="true" pattern="%d"></state>
+	<channel-type id="speciesType">
+		<item-type>String</item-type>
+		<label>Species</label>
+		<description>The species of the pet</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">0</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="photoURLType">
 		<item-type>String</item-type>
 		<label>Photo URL</label>
-		<description>The URL of the pet's photo</description>
+		<description>The URL of the pet photo</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="tagIdentifierType">
 		<item-type>String</item-type>
 		<label>Micro Chip Tag Identifier</label>
-		<description>The unique identifier of the pet's micro chip tag</description>
+		<description>The unique identifier of the pet micro chip tag</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="locationIdType">
-		<item-type>Number</item-type>
-		<label>Location Id</label>
-		<description>The current location identifier of the pet (inside or outside)</description>
-		<state readOnly="false" pattern="%d"></state>
+	<channel-type id="locationType">
+		<item-type>String</item-type>
+		<label>Location</label>
+		<description>The current location of the pet (inside or outside)</description>
+		<state readOnly="false">
+			<options>
+				<option value="1">1</option>
+				<option value="2">2</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="locationChangedType">
 		<item-type>DateTime</item-type>
 		<label>Last Location Change Time</label>
-		<description>The time when the pet's location has last changed</description>
+		<description>The time when the pet location has last changed</description>
 		<state readOnly="true" pattern="%1$tF %1$tR"></state>
 	</channel-type>
 
-	<channel-type id="ledModeIdType" advanced="true">
-		<item-type>Number</item-type>
-		<label>LED Mode Id</label>
-		<description>The if of the current LED mode of the device</description>
-		<state readOnly="true" pattern="%d"></state>
+	<channel-type id="ledModeType" advanced="true">
+		<item-type>String</item-type>
+		<label>LED Mode</label>
+		<description>The current LED mode of the device</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">0</option>
+				<option value="1">1</option>
+				<option value="4">4</option>
+			</options>
+		</state>
 	</channel-type>
 
-	<channel-type id="pairingModeIdType" advanced="true">
-		<item-type>Number</item-type>
-		<label>Pairing Mode Id</label>
-		<description>The id of the current pairing mode of the device</description>
-		<state readOnly="true" pattern="%d"></state>
+	<channel-type id="pairingModeType" advanced="true">
+		<item-type>String</item-type>
+		<label>Pairing Mode</label>
+		<description>The current pairing mode of the device</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">0</option>
+				<option value="1">1</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="hardwareVersionType">
 		<item-type>Number</item-type>
 		<label>Hardware Version</label>
 		<description>The version of the hardware</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="firmwareVersionType">
 		<item-type>Number</item-type>
 		<label>Firmware Version</label>
 		<description>The version of the firmware</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="onlineType">
@@ -257,32 +351,93 @@
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="lockingModeIdType" advanced="true">
+	<channel-type id="createdAtType">
+		<item-type>DateTime</item-type>
+		<label>Created At</label>
+		<description>The Time when the device was created.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="updatedAtType">
+		<item-type>DateTime</item-type>
+		<label>Updated At</label>
+		<description>The Time when the device was updated.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="pairingAtType">
+		<item-type>DateTime</item-type>
+		<label>Pairing At</label>
+		<description>The Time when the device was paired.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="serialNumberType">
+		<item-type>String</item-type>
+		<label>Serial Number</label>
+		<description>The serial number of the device.</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="macAddressType">
+		<item-type>String</item-type>
+		<label>MAC Address</label>
+		<description>The MAC address of the device.</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="dateOfBirthType">
+		<item-type>DateTime</item-type>
+		<label>Pet Date of Birth</label>
+		<description>The pet's date of birth.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td" />
+	</channel-type>
+
+	<channel-type id="weightType">
 		<item-type>Number</item-type>
-		<label>Locking Mode Id</label>
+		<label>Pet Weight</label>
+		<description>The pet weight</description>
+		<state readOnly="true" pattern="%.1f kg"></state>
+	</channel-type>
+
+	<channel-type id="lockingModeType">
+		<item-type>String</item-type>
+		<label>Locking Mode</label>
 		<description>The id of the locking mode the flap is currently set to (e.g. in/out, in only, out only, locked)</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="false">
+			<options>
+				<option value="0">0</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="batteryVoltageType">
 		<item-type>Number</item-type>
 		<label>Battery Voltage</label>
 		<description>The current battery voltage</description>
-		<state readOnly="true" pattern="%d V"></state>
+		<state readOnly="true" pattern="%.1f V"></state>
 	</channel-type>
 
 	<channel-type id="rssiDeviceType">
 		<item-type>Number</item-type>
 		<label>Signal Strength Device (RSSI)</label>
 		<description>The received device signal strength (RSSI).</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%.2f dB"></state>
 	</channel-type>
 
 	<channel-type id="rssiHubType">
 		<item-type>Number</item-type>
 		<label>Signal Strength Hub (RSSI)</label>
 		<description>The received hub signal strength (RSSI).</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%.2f dB"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginCredentials;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginResponse;
@@ -57,9 +58,11 @@ public class SurePetcareAPIHelper {
 
     private static final String API_USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36";
 
-    private static final String TOPOLOGY_URL = "https://app.api.surehub.io/api/me/start";
-    private static final String PET_BASE_URL = "https://app.api.surehub.io/api/pet";
-    private static final String LOGIN_URL = "https://app.api.surehub.io/api/auth/login";
+    private static final String API_URL = "https://app.api.surehub.io/api";
+    private static final String TOPOLOGY_URL = API_URL + "/me/start";
+    private static final String PET_BASE_URL = API_URL + "/pet";
+    private static final String DEVICE_BASE_URL = API_URL + "/device";
+    private static final String LOGIN_URL = API_URL + "/auth/login";
 
     private static final int DEFAULT_DEVICE_ID = 12344711;
 
@@ -115,46 +118,42 @@ public class SurePetcareAPIHelper {
         }
     }
 
-    public void updateTopologyCache() {
+    public synchronized void updateTopologyCache() {
         try {
-            synchronized (topologyCache) {
-                topologyCache = gson.fromJson(getDataFromApi(TOPOLOGY_URL), SurePetcareTopology.class);
+            topologyCache = gson.fromJson(getDataFromApi(TOPOLOGY_URL), SurePetcareTopology.class);
+        } catch (JsonSyntaxException | SurePetcareApiException e) {
+            logger.warn("Exception caught during topology cache update: {}", e.getMessage());
+        }
+    }
+
+    public synchronized void updatePetLocations() {
+        try {
+            for (SurePetcarePet pet : topologyCache.getPets()) {
+                String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
+                pet.setLocation(gson.fromJson(getDataFromApi(url), SurePetcarePetLocation.class));
             }
         } catch (JsonSyntaxException | SurePetcareApiException e) {
             logger.warn("Exception caught during topology cache update: {}", e.getMessage());
         }
     }
 
-    public void updatePetLocations() {
-        try {
-            synchronized (topologyCache) {
-                for (SurePetcarePet pet : topologyCache.getPets()) {
-                    String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
-                    pet.setLocation(gson.fromJson(getDataFromApi(url), SurePetcarePetLocation.class));
-                }
-            }
-        } catch (JsonSyntaxException | SurePetcareApiException e) {
-            logger.warn("Exception caught during topology cache update: {}", e.getMessage());
-        }
-    }
-
-    public SurePetcareTopology retrieveTopology() {
+    public final SurePetcareTopology retrieveTopology() {
         return topologyCache;
     }
 
-    public @Nullable SurePetcareHousehold retrieveHousehold(String id) {
+    public final @Nullable SurePetcareHousehold retrieveHousehold(String id) {
         return topologyCache.getHouseholdById(id);
     }
 
-    public @Nullable SurePetcareDevice retrieveDevice(String id) {
+    public final @Nullable SurePetcareDevice retrieveDevice(String id) {
         return topologyCache.getDeviceById(id);
     }
 
-    public @Nullable SurePetcarePet retrievePet(String id) {
+    public final @Nullable SurePetcarePet retrievePet(String id) {
         return topologyCache.getPetById(id);
     }
 
-    public @Nullable SurePetcarePetLocation retrievePetLocation(String id) {
+    public final @Nullable SurePetcarePetLocation retrievePetLocation(String id) {
         SurePetcarePet pet = topologyCache.getPetById(id);
         if (pet != null) {
             return pet.getLocation();
@@ -171,11 +170,25 @@ public class SurePetcareAPIHelper {
         setDataThroughApi(url, pet.getLocation());
     }
 
-    public boolean isOnline() {
+    public synchronized void setDeviceLockingMode(SurePetcareDevice device, Integer newLockingModeId)
+            throws SurePetcareApiException {
+        // post new JSON control structure to API
+        SurePetcareDeviceControl control = new SurePetcareDeviceControl();
+        control.setLockingModeId(newLockingModeId);
+        String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
+        setDataThroughApi(ctrlurl, control);
+
+        // now we're fetching the new state back for the cache
+        String devurl = DEVICE_BASE_URL + "/" + device.getId().toString();
+        SurePetcareDevice newdev = gson.fromJson(getDataFromApi(devurl), SurePetcareDevice.class);
+        device.assign(newdev);
+    }
+
+    public final boolean isOnline() {
         return online;
     }
 
-    public Integer getDeviceId() {
+    public final Integer getDeviceId() {
         int decimal = 0;
         try {
             if (NetworkInterface.getNetworkInterfaces().hasMoreElements()) {

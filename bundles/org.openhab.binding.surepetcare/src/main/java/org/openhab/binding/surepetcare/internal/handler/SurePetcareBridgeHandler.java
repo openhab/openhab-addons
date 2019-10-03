@@ -93,10 +93,8 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         }
 
         try {
-            long refreshIntervalTopology = ((BigDecimal) config.get(REFRESH_INTERVAL_TOPOLOGY))
-                    .longValueExact();
-            long refreshIntervalLocation = ((BigDecimal) config.get(REFRESH_INTERVAL_LOCATION))
-                    .longValueExact();
+            long refreshIntervalTopology = ((BigDecimal) config.get(REFRESH_INTERVAL_TOPOLOGY)).longValueExact();
+            long refreshIntervalLocation = ((BigDecimal) config.get(REFRESH_INTERVAL_LOCATION)).longValueExact();
 
             if (topologyPollingJob == null || topologyPollingJob.isCancelled()) {
                 topologyPollingJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -112,8 +110,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Bridge location polling job every {} seconds", refreshIntervalLocation);
             }
         } catch (ArithmeticException e) {
-            logger.warn("Invalid settings for refresh intervals [{},{}]",
-                    config.get(REFRESH_INTERVAL_TOPOLOGY),
+            logger.warn("Invalid settings for refresh intervals [{},{}]", config.get(REFRESH_INTERVAL_TOPOLOGY),
                     config.get(REFRESH_INTERVAL_LOCATION));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-invalid-refresh-intervals");
@@ -153,7 +150,6 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             logger.debug("  Thing: {}, id: {}", th.getThingTypeUID().getAsString(), th.getUID().getId());
             ThingHandler handler = th.getHandler();
             if (handler != null) {
-
                 if (th.getThingTypeUID().equals(THING_TYPE_PET)) {
                     ((SurePetcarePetHandler) handler).updateThing();
                 } else if (th.getThingTypeUID().equals(THING_TYPE_HOUSEHOLD)) {
@@ -163,9 +159,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                     ((SurePetcareDeviceHandler) handler).updateThing();
                 }
             }
-
         }
-
     }
 
     private synchronized void pollAndUpdatePetLocations() {
@@ -178,7 +172,6 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                     ((SurePetcarePetHandler) handler).updatePetLocation();
                 }
             }
-
         }
     }
 

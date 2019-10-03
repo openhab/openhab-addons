@@ -124,8 +124,12 @@ public class SurePetcarePetLocation {
         return "Pet [id=" + petId + ", location=" + PetLocation.findByTypeId(where).getName() + "]";
     }
 
-    public @NonNull ZonedDateTime getLocationChanged() {
-        return since.toInstant().atZone(ZoneId.systemDefault());
+    public ZonedDateTime getLocationChanged() {
+        if (since != null) {
+            return since.toInstant().atZone(ZoneId.systemDefault());
+        } else {
+            return null;
+        }
     }
 
 }
