@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -79,6 +80,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     private volatile @Nullable CompletableFuture<Boolean> communicationStarted;
 
+    private ScheduledExecutorService scheduler;
+
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
 
     /**
@@ -89,10 +92,11 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      * @throws UnknownHostException when the IP address is not provided
      *
      */
-    public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId, String persistencePath)
-            throws CertificateException {
+    public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId, String persistencePath,
+            ScheduledExecutorService scheduler) throws CertificateException {
         super(handler);
         mqttConnection = new NhcMqttConnection2(clientId, persistencePath, this, this);
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -442,6 +446,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     case "alarms":
                     case "alloff":
                     case "overallcomfort":
+                    case "garagedoor":
                         actionType = ActionType.TRIGGER;
                         break;
                     case "light":
@@ -467,12 +472,17 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             }
         } else if ("thermostat".equals(device.type) || "hvac".contentEquals(device.type)) {
             if (!thermostats.containsKey(device.uuid)) {
-                logger.debug("Niko Home Control: adding thermostatdevice {}, {}", device.uuid, device.name);
+                logger.debug("Niko Home Control: adding thermostat device {}, {}", device.uuid, device.name);
 
                 NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.model,
                         device.technology, location, this);
                 thermostats.put(device.uuid, nhcThermostat);
             }
+        } else if ("centralmeter".equals(device.type)) {
+            logger.debug("Niko Home Control: adding centralmeter device {}, {}", device.uuid, device.name);
+            NhcEnergyMeter2 nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.model,
+                    device.technology, this, scheduler);
+            energyMeters.put(device.uuid, nhcEnergyMeter);
         } else {
             logger.debug("Niko Home Control: device type {} not supported for {}, {}", device.type, device.uuid,
                     device.name);
@@ -486,6 +496,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         } else if (thermostats.containsKey(device.uuid)) {
             thermostats.get(device.uuid).thermostatRemoved();
             thermostats.remove(device.uuid);
+        } else if (energyMeters.containsKey(device.uuid)) {
+            energyMeters.get(device.uuid).energyMeterRemoved();
+            energyMeters.remove(device.uuid);
         }
     }
 
@@ -494,6 +507,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             updateActionState((NhcAction2) actions.get(device.uuid), device);
         } else if (thermostats.containsKey(device.uuid)) {
             updateThermostatState((NhcThermostat2) thermostats.get(device.uuid), device);
+        } else if (energyMeters.containsKey(device.uuid)) {
+            updateEnergyMeterState((NhcEnergyMeter2) energyMeters.get(device.uuid), device);
         }
     }
 
@@ -610,6 +625,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 "Niko Home Control: setting thermostat {} with measured {}, setpoint {}, mode {}, overrule {}, overruletime {}, ecosave {}, demand {}",
                 thermostat.getId(), measured, setpoint, mode, overrule, overruletime, ecosave, demand);
         thermostat.updateState(measured, setpoint, mode, overrule, overruletime, ecosave, demand);
+    }
+
+    private void updateEnergyMeterState(NhcEnergyMeter2 energyMeter, NhcDevice2 device) {
+        Optional<NhcProperty> electricalPowerProperty = device.properties.stream()
+                .filter(p -> (p.electricalPower != null)).findFirst();
+        energyMeter.setPower(Integer.parseInt(electricalPowerProperty.get().electricalPower));
+        logger.debug("Niko Home Control: setting energy meter {} power to {}", energyMeter.getId(),
+                electricalPowerProperty.get().position);
     }
 
     @Override
@@ -739,6 +762,47 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
         String topic = profileUuid + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
+        sendDeviceMessage(topic, gsonMessage);
+    }
+
+    @Override
+    public void startEnergyMeter(String energyMeterId) {
+        NhcMessage2 message = new NhcMessage2();
+
+        message.method = "devices.control";
+        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        NhcMessageParam param = new NhcMessageParam();
+        params.add(param);
+        message.params = params;
+        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        NhcDevice2 device = new NhcDevice2();
+        devices.add(device);
+        param.devices = devices;
+        device.uuid = energyMeterId;
+        device.properties = new ArrayList<>();
+
+        NhcProperty reportInstantUsageProp = new NhcProperty();
+        device.properties.add(reportInstantUsageProp);
+        reportInstantUsageProp.reportInstantUsage = "True";
+
+        String topic = profileUuid + "/control/devices/cmd";
+        String gsonMessage = gson.toJson(message);
+
+        ((NhcEnergyMeter2) energyMeters.get(energyMeterId)).startEnergyMeter(topic, gsonMessage);
+    }
+
+    @Override
+    public void stopEnergyMeter(String energyMeterId) {
+        ((NhcEnergyMeter2) energyMeters.get(energyMeterId)).stopEnergyMeter();
+    }
+
+    /**
+     * Method called from the {@link NhcEnergyMeter2} object to send message to Niko Home Control.
+     * 
+     * @param topic
+     * @param gsonMessage
+     */
+    public void executeEnergyMeter(String topic, String gsonMessage) {
         sendDeviceMessage(topic, gsonMessage);
     }
 

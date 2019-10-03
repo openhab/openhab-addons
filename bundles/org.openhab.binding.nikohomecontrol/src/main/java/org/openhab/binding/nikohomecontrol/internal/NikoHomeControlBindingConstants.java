@@ -43,6 +43,7 @@ public class NikoHomeControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_DIMMABLE_LIGHT = new ThingTypeUID(BINDING_ID, "dimmer");
     public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+    public static final ThingTypeUID THING_TYPE_ENERGYMETER = new ThingTypeUID(BINDING_ID, "energyMeter");
 
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections
@@ -52,7 +53,7 @@ public class NikoHomeControlBindingConstants {
                     .collect(Collectors.toSet()));
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_PUSHBUTTON, THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT,
-                    THING_TYPE_BLIND, THING_TYPE_THERMOSTAT).collect(Collectors.toSet()));
+                    THING_TYPE_BLIND, THING_TYPE_THERMOSTAT, THING_TYPE_ENERGYMETER).collect(Collectors.toSet()));
 
     // List of all Channel ids
     public static final String CHANNEL_BUTTON = "button";
@@ -65,6 +66,8 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_OVERRULETIME = "overruletime";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_DEMAND = "demand";
+
+    public static final String CHANNEL_POWER = "power";
 
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_NOTICE = "notice";
@@ -82,4 +85,6 @@ public class NikoHomeControlBindingConstants {
 
     public static final String CONFIG_THERMOSTAT_ID = "thermostatId";
     public static final String CONFIG_OVERRULETIME = "overruleTime";
+
+    public static final String CONFIG_ENERGYMETER_ID = "energyMeterId";
 }
