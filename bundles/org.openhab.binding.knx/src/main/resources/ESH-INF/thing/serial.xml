@@ -19,6 +19,10 @@
 				<description>Set to "true" when having a ft1.2 serial device that uses CEMI (such as the kBerry)</description>
 				<default>false</default>
 			</parameter>
+            <parameter name="deviceType" type="text">
+                <label>Device Type</label>
+                <description>The device type changes the commands send to switch modes on the serial device</description>
+            </parameter>
 			<parameter name="readingPause" type="integer">
 				<label>Reading Pause</label>
 				<description>Time in milliseconds of how long should be paused between two read requests to the bus during

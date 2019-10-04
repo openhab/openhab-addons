@@ -22,13 +22,18 @@ public class SerialBridgeConfiguration extends BridgeConfiguration {
 
     private String serialPort;
     private boolean useCEMI;
+    private String deviceType;
 
     public String getSerialPort() {
         return serialPort;
     }
-    
+
     public Boolean getUseCEMI() {
         return useCEMI;
+    }
+
+    public String getDeviceType() {
+        return deviceType;
     }
 
 }

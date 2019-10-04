@@ -25,9 +25,8 @@ import gnu.io.RXTXVersion;
 import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.KNXNetworkLinkFT12;
-import tuwien.auto.calimero.link.medium.TPSettings;
 import tuwien.auto.calimero.link.medium.KNXMediumSettings;
-import tuwien.auto.calimero.serial.FT12Connection;
+import tuwien.auto.calimero.link.medium.TPSettings;
 
 /**
  * Serial specific {@link AbstractKNXClient} implementation.
@@ -41,14 +40,16 @@ public class SerialClient extends AbstractKNXClient {
 
     private final String serialPort;
     private final boolean useCEMI;
+    private final String deviceType;
 
     public SerialClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort, boolean useCEMI,
-            StatusUpdateCallback statusUpdateCallback) {
+            String deviceType, StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
                 statusUpdateCallback);
         this.serialPort = serialPort;
         this.useCEMI = useCEMI;
+        this.deviceType = deviceType;
     }
 
     @Override
@@ -58,7 +59,7 @@ public class SerialClient extends AbstractKNXClient {
             logger.debug("Establishing connection to KNX bus through FT1.2 on serial port {}.", serialPort);
             KNXMediumSettings settings = new TPSettings();
             if (useCEMI) {
-                return KNXNetworkLinkFT12.newCemiLink(serialPort, settings);
+                return KNXNetworkLinkFT12.newCemiLink(serialPort, settings, deviceType);
             } else {
                 return new KNXNetworkLinkFT12(serialPort, settings);
             }
