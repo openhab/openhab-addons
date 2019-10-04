@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:broadlink:floureonandhysenthermostat">
+		<parameter name="host" type="text">
+			<label>Hostname</label>
+			<description>The hostname/IP address the device is bound to, e.g. 192.168.0.2</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="mac" type="text">
+			<label>MAC Address</label>
+			<description>The unique MAC address of the device, e.g. 00:10:FA:6E:38:4A</description>
+			<required>false</required>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

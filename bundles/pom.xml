@@ -58,6 +58,7 @@
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.bosesoundtouch</module>
+    <module>org.openhab.binding.broadlink</module>
     <module>org.openhab.binding.buienradar</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.cm11a</module>
