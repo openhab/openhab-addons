@@ -35,6 +35,7 @@ import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginCredentials
 import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginResponse;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePet;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePetLocation;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareTag;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,6 +157,10 @@ public class SurePetcareAPIHelper {
 
     public final @Nullable SurePetcarePet retrievePet(String id) {
         return topologyCache.getPetById(id);
+    }
+
+    public final @Nullable SurePetcareTag retrieveTag(String id) {
+        return topologyCache.getTagById(id);
     }
 
     public final @Nullable SurePetcarePetLocation retrievePetLocation(String id) {

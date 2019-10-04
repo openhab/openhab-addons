@@ -101,7 +101,6 @@ public class SurePetcarePet extends SurePetcareBaseObject {
 
     @SerializedName("position")
     private SurePetcarePetLocation location = new SurePetcarePetLocation();
-    private SurePetcareTag tagIdentifier = new SurePetcareTag();
 
     public String getName() {
         return name;
@@ -199,14 +198,6 @@ public class SurePetcarePet extends SurePetcareBaseObject {
         this.location = position;
     }
 
-    public SurePetcareTag getTagIdentifier() {
-        return tagIdentifier;
-    }
-
-    public void setTagIdentifier(SurePetcareTag tagIdentifier) {
-        this.tagIdentifier = tagIdentifier;
-    }
-
     public ZonedDateTime getDateOfBirthAsZonedDateTime() {
         if (dateOfBirth != null) {
             return dateOfBirth.toInstant().atZone(ZoneId.systemDefault());
@@ -217,7 +208,7 @@ public class SurePetcarePet extends SurePetcareBaseObject {
 
     @Override
     public String toString() {
-        return "Pet [id=" + id + ", name=" + name + ", tagIdentifier=" + tagIdentifier + "]";
+        return "Pet [id=" + id + ", name=" + name + ", tagId=" + tagId + "]";
     }
 
     @Override

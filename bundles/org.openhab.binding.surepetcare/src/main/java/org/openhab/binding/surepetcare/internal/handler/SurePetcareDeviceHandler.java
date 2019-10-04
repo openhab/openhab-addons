@@ -114,7 +114,6 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
             logger.debug("Updating all thing channels for device : {}", device.toString());
             updateState(DEVICE_CHANNEL_ID, new DecimalType(device.getId()));
             updateState(DEVICE_CHANNEL_NAME, new StringType(device.getName()));
-            logger.debug("setting product type to: {}", device.getProductId().toString());
             updateState(DEVICE_CHANNEL_PRODUCT, new StringType(device.getProductId().toString()));
             if (thing.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE)) {
                 updateState(DEVICE_CHANNEL_LED_MODE, new StringType(device.getStatus().getLedModeId().toString()));

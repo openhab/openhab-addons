@@ -28,6 +28,7 @@ import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareApiException;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePet;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePetLocation;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,8 +119,11 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                 if (pet.getWeight() != null) {
                     updateState(PET_CHANNEL_WEIGHT, new DecimalType(pet.getWeight()));
                 }
-                if (pet.getTagIdentifier() != null) {
-                    updateState(PET_CHANNEL_TAG_IDENTIFIER, new StringType(pet.getTagIdentifier().getTag()));
+                if (pet.getTagId() != null) {
+                    SurePetcareTag tag = petcareAPI.retrieveTag(pet.getTagId().toString());
+                    if (tag != null) {
+                        updateState(PET_CHANNEL_TAG_IDENTIFIER, new StringType(tag.getTag()));
+                    }
                 }
             } else {
                 logger.debug("Trying to update unknown pet: {}", thing.getUID().getId());
