@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.sonos.internal;
 
+import static org.openhab.binding.sonos.internal.SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.sonos.internal.config.ZonePlayerConfiguration.UDN;
 
 import java.util.Dictionary;
@@ -25,6 +26,7 @@ import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -34,6 +36,7 @@ import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.sonos.internal.handler.ZonePlayerHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -50,10 +53,13 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SonosHandlerFactory.class);
 
-    private UpnpIOService upnpIOService;
-    private AudioHTTPServer audioHTTPServer;
-    private NetworkAddressService networkAddressService;
-    private SonosStateDescriptionOptionProvider stateDescriptionProvider;
+    // Bindings should not use the ThingRegistry! See https://github.com/openhab/openhab2-addons/pull/6080 and
+    // https://github.com/eclipse/smarthome/issues/5182
+    private final ThingRegistry thingRegistry;
+    private final UpnpIOService upnpIOService;
+    private final AudioHTTPServer audioHTTPServer;
+    private final NetworkAddressService networkAddressService;
+    private final SonosStateDescriptionOptionProvider stateDescriptionProvider;
 
     private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
@@ -62,6 +68,18 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
 
     // url (scheme+server+port) to use for playing notification sounds
     private String callbackUrl = null;
+
+    @Activate
+    public SonosHandlerFactory(final @Reference ThingRegistry thingRegistry,
+            final @Reference UpnpIOService upnpIOService, final @Reference AudioHTTPServer audioHTTPServer,
+            final @Reference NetworkAddressService networkAddressService,
+            final @Reference SonosStateDescriptionOptionProvider stateDescriptionProvider) {
+        this.thingRegistry = thingRegistry;
+        this.upnpIOService = upnpIOService;
+        this.audioHTTPServer = audioHTTPServer;
+        this.networkAddressService = networkAddressService;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
 
     @Override
     protected void activate(ComponentContext componentContext) {
@@ -74,7 +92,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
             ThingUID bridgeUID) {
-        if (SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             ThingUID sonosDeviceUID = getPlayerUID(thingTypeUID, thingUID, configuration);
             logger.debug("Creating a sonos thing with ID '{}'", sonosDeviceUID);
             return super.createThing(thingTypeUID, configuration, sonosDeviceUID, null);
@@ -85,18 +103,19 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (SonosBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("Creating a ZonePlayerHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get(UDN));
 
-            ZonePlayerHandler handler = new ZonePlayerHandler(thing, upnpIOService, opmlUrl, stateDescriptionProvider);
+            ZonePlayerHandler handler = new ZonePlayerHandler(thingRegistry, thing, upnpIOService, opmlUrl,
+                    stateDescriptionProvider);
 
             // register the speaker as an audio sink
             String callbackUrl = createCallbackUrl();
@@ -150,39 +169,4 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    @Reference
-    protected void setUpnpIOService(UpnpIOService upnpIOService) {
-        this.upnpIOService = upnpIOService;
-    }
-
-    protected void unsetUpnpIOService(UpnpIOService upnpIOService) {
-        this.upnpIOService = null;
-    }
-
-    @Reference
-    protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
-        this.audioHTTPServer = audioHTTPServer;
-    }
-
-    protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
-        this.audioHTTPServer = null;
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(SonosStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = stateDescriptionProvider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(SonosStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = null;
-    }
 }

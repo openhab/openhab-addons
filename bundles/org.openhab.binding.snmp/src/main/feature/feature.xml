@@ -4,7 +4,6 @@
 
     <feature name="openhab-binding-snmp" description="SNMP Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.snmp4j/2.6.3_1</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.snmp/${project.version}</bundle>
     </feature>
 </features>

@@ -13,12 +13,35 @@
 
   <name>openHAB Add-ons :: Bundles :: IPP Binding</name>
 
+  <properties>
+    <dep.noembedding>httpcore-osgi,httpclient-osgi,commons-io</dep.noembedding>
+    <bnd.importpackage>!org.simpleframework.xml.*</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>org.cups4j.cups4j</artifactId>
+      <groupId>org.cups4j</groupId>
+      <artifactId>cups4j</artifactId>
       <version>0.7.6</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore-osgi</artifactId>
+      <version>4.4.4</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient-osgi</artifactId>
+      <version>4.5.3</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

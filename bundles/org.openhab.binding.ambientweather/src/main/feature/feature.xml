@@ -5,11 +5,11 @@
 
 	<feature name="openhab-binding-ambientweather" description="Ambient Weather Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.okhttp/3.8.1_1</bundle>
+		<bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.okio/1.13.0_1</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/io.socket.socket.io-client/1.0.0</bundle>
+		<bundle dependency="true">mvn:org.openhab.osgiify/io.socket.engine.io-client/1.0.0</bundle>
+		<bundle dependency="true">mvn:org.json/json/20180813</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.ambientweather/${project.version}</bundle>
-		<bundle dependency="true">wrap:mvn:io.socket/socket.io-client/1.0.0$Bundle-Name=SocketIo%20Client&amp;Bundle-SymbolicName=io.socket.socket.io-client&amp;Bundle-Version=1.0.0</bundle>
-		<bundle dependency="true">wrap:mvn:io.socket/engine.io-client/1.0.0$Bundle-Name=EngineIo%20Client&amp;Bundle-SymbolicName=io.socket.engine.io-client&amp;Bundle-Version=1.0.0</bundle>
-		<bundle dependency="true">wrap:mvn:com.squareup.okhttp3/okhttp/3.12.1$Bundle-Name=OkHttp&amp;Bundle-SymbolicName=com.squareup.okhttp3.okhttp&amp;Bundle-Version=3.12.1</bundle>
-		<bundle dependency="true">wrap:mvn:com.squareup.okio/okio/1.15.0$Bundle-Name=Okio&amp;Bundle-SymbolicName=com.squareup.okio.okio&amp;Bundle-Version=1.15.0</bundle>
-		<bundle dependency="true">wrap:mvn:org.json/json/20180813$Bundle-Name=Json&amp;Bundle-SymbolicName=org.json.json&amp;Bundle-Version=20180813</bundle>
 	</feature>
 </features>

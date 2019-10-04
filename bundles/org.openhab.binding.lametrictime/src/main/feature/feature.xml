@@ -6,7 +6,6 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
         <bundle dependency="true">mvn:com.eclipsesource.jaxrs/provider-gson/2.3</bundle>
-        <bundle dependency="true">mvn:org.syphr/lametrictime-api/0.1.0</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.lametrictime/${project.version}</bundle>
     </feature>
 </features>

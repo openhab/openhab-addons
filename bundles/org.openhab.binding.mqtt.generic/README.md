@@ -175,7 +175,7 @@ You can connect this channel to a Rollershutter or Dimmer item.
 
 ## Rule Actions
 
-This binding includes a rule action, which allows to publish MQTT messages from within rules.
+This binding includes a rule action, which allows one to publish MQTT messages from within rules.
 There is a separate instance for each MQTT broker (i.e. bridge), which can be retrieved through
 
 ```
@@ -183,11 +183,13 @@ val mqttActions = getActions("mqtt","mqtt:systemBroker:embedded-mqtt-broker")
 ```
 
 where the first parameter always has to be `mqtt` and the second (`mqtt:systemBroker:embedded-mqtt-broker`) is the Thing UID of the broker that should be used.
-Once this action instance is retrieved, you can invoke the `publishMQTT(String topic, String value)` method on it:
+Once this action instance is retrieved, you can invoke the `publishMQTT(String topic, String value, Boolean retained)` method on it:
 
 ```
-mqttActions.publishMQTT("mytopic","myvalue")
+mqttActions.publishMQTT("mytopic","myvalue", true)
 ```
+
+The retained argument is optional and if not supplied defaults to `false`.
 
 ## Limitations
 

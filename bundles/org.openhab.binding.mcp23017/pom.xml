@@ -18,13 +18,13 @@
       <groupId>com.pi4j</groupId>
       <artifactId>pi4j-core</artifactId>
       <version>1.2</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.pi4j.pi4j-gpio-extension</artifactId>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-gpio-extension</artifactId>
       <version>1.2</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

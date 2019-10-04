@@ -16,15 +16,20 @@ import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.lgwebos.internal.discovery.LGWebOSDiscovery;
+import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LGWebOSHandlerFactory} is responsible for creating things and thing
@@ -35,32 +40,62 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.lgwebos")
 public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
-    private @Nullable LGWebOSDiscovery discovery;
+    private final Logger logger = LoggerFactory.getLogger(LGWebOSHandlerFactory.class);
+
+    private final WebSocketClient webSocketClient;
+
+    @Activate
+    public LGWebOSHandlerFactory(final @Reference WebSocketFactory webSocketFactory) {
+        /*
+         * Cannot use openHAB's shared web socket client (webSocketFactory.getCommonWebSocketClient()) as we have to
+         * change client settings.
+         */
+        this.webSocketClient = webSocketFactory.createWebSocketClient("lgwebos");
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    @Reference
-    protected void bindDiscovery(LGWebOSDiscovery discovery) {
-        this.discovery = discovery;
-    }
-
-    protected void unbindDiscovery(LGWebOSDiscovery discovery) {
-        this.discovery = null;
-    }
-
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        LGWebOSDiscovery lgWebOSDiscovery = discovery;
-        if (lgWebOSDiscovery == null) {
-            throw new IllegalStateException("LGWebOSDiscovery must be bound before ThingHandlers can be created");
-        }
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_WEBOSTV)) {
-            return new LGWebOSHandler(thing, lgWebOSDiscovery.getDiscoveryManager());
+            return new LGWebOSHandler(thing, webSocketClient);
         }
         return null;
     }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        // LGWebOS TVs only uses WEAK cipher suites, thus not using SSL.
+        // SslContextFactory sslContextFactory = new SslContextFactory(true);
+        // sslContextFactory.addExcludeProtocols("tls/1.3");
+
+        // reduce timeout from default 15sec
+        this.webSocketClient.setConnectTimeout(1000);
+
+        // channel and app listing are json docs up to 2MB
+        this.webSocketClient.getPolicy().setMaxTextMessageSize(2097152);
+
+        // since this is not using openHAB's shared web socket client we need to start and stop
+        try {
+            this.webSocketClient.start();
+        } catch (Exception e) {
+            logger.warn("Unable to to start websocket client.", e);
+        }
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        try {
+            this.webSocketClient.stop();
+        } catch (Exception e) {
+            logger.warn("Unable to to stop websocket client.", e);
+        }
+    }
+
 }

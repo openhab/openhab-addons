@@ -155,14 +155,15 @@ public class OpenWeatherMapUVIndexHandler extends AbstractOpenWeatherMapHandler 
     private void updateUVIndexChannel(ChannelUID channelUID) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (uvindexData != null) {
+        OpenWeatherMapJsonUVIndexData localUVIndexData = uvindexData;
+        if (localUVIndexData != null) {
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case CHANNEL_TIME_STAMP:
-                    state = getDateTimeTypeState(uvindexData.getDate());
+                    state = getDateTimeTypeState(localUVIndexData.getDate());
                     break;
                 case CHANNEL_UVINDEX:
-                    state = getDecimalTypeState(uvindexData.getValue());
+                    state = getDecimalTypeState(localUVIndexData.getValue());
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
