@@ -176,7 +176,7 @@ String     UR_1d_LockingMode        "Cat Flap Locking Mode [%s]"                
 Number     UR_1d_HardwareVersion    "Cat Flap Hardware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:hardwareVersion" }
 Number     UR_1d_FirmwareVersion    "Cat Flap Firmware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:firmwareVersion" }
 Switch     UR_1d_LowBattery         "Cat Flap Low Battery [%s]"                                         (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:lowBattery" }
-Number     UR_1d_BatteryLevel       "Cat Flap Battery Level [%f]"                                       (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:batteryLevel" }
+Number     UR_1d_BatteryLevel       "Cat Flap Battery Level [%.0f %%]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:batteryLevel" }
 Number     UR_1d_BatteryVoltage     "Cat Flap Battery Voltage [%.1f V]"                                 (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:batteryVoltage" }
 Switch     UR_1d_Online             "Cat Flap Online [%s]"                                              (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:online" }
 Number     UR_1d_DeviceRSSI         "Cat Flap Device RSSI [%.2f dB]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:deviceRSSI" }
