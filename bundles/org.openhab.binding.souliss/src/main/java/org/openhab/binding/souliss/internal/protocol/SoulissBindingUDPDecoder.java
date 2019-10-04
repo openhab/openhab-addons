@@ -587,8 +587,8 @@ public class SoulissBindingUDPDecoder {
     }
 
     private float getFloatAtSlot(ArrayList<Byte> mac, int slot) {
-        int iOutput = mac.get(5 + slot);
-        int iOutput2 = mac.get(5 + slot + 1);
+        int iOutput = mac.get(5 + slot) & 0xFF;
+        int iOutput2 = mac.get(5 + slot + 1) & 0xFF;
         // ora ho i due bytes, li converto
         int shifted = iOutput2 << 8;
         float ret = HalfFloatUtils.toFloat(shifted + iOutput);
