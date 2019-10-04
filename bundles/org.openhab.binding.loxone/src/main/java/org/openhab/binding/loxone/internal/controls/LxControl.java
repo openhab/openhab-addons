@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragment;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
@@ -121,12 +121,15 @@ public class LxControl {
         Double max;
         Double step;
         String format;
+        String actualFormat;
+        String totalFormat;
         Boolean increaseOnly;
         String allOff;
         String url;
         String urlHd;
         Map<String, String> outputs;
         Boolean presenceConnected;
+        Integer connectedInputs;
     }
 
     /**
@@ -254,7 +257,7 @@ public class LxControl {
      * A method that executes commands by the control. It delegates command execution to a registered callback method.
      *
      * @param channelId channel Id for the command
-     * @param command   value of the command to perform
+     * @param command value of the command to perform
      * @throws IOException in case of communication error with the Miniserver
      */
     public final void handleCommand(ChannelUID channelId, Command command) throws IOException {
@@ -395,6 +398,8 @@ public class LxControl {
 
         if (subControls == null) {
             subControls = new HashMap<>();
+        } else {
+            subControls.values().removeIf(Objects::isNull);
         }
 
         if (config.room != null) {
@@ -525,7 +530,7 @@ public class LxControl {
     /**
      * Changes the channel state in the framework.
      *
-     * @param id    channel ID
+     * @param id channel ID
      * @param state new state value
      */
     void setChannelState(ChannelUID id, State state) {
@@ -631,13 +636,13 @@ public class LxControl {
      * Create a new channel and add it to the control. Channel ID is assigned automatically in the order of calls to
      * this method, see (@link LxControl#getChannelId}.
      *
-     * @param itemType           item type for the channel
-     * @param typeId             channel type ID for the channel
-     * @param channelLabel       channel label
+     * @param itemType item type for the channel
+     * @param typeId channel type ID for the channel
+     * @param channelLabel channel label
      * @param channelDescription channel description
-     * @param tags               tags for the channel or null if no tags needed
-     * @param commandCallback    {@link LxControl} child class method that will be called when command is received
-     * @param stateCallback      {@link LxControl} child class method that will be called to get state value
+     * @param tags tags for the channel or null if no tags needed
+     * @param commandCallback {@link LxControl} child class method that will be called when command is received
+     * @param stateCallback {@link LxControl} child class method that will be called to get state value
      * @return channel ID of the added channel (can be used to later set state description to it)
      */
     ChannelUID addChannel(String itemType, ChannelTypeUID typeId, String channelLabel, String channelDescription,
@@ -660,17 +665,19 @@ public class LxControl {
     }
 
     /**
-     * Adds a new {@link StateDescription} for a channel that has multiple options to select from or a custom format
-     * string.
+     * Adds a new {@link StateDescriptionFragment} for a channel that has multiple options to select from or a custom
+     * format string.
      *
-     * @param channelId   channel ID to add the description for
-     * @param description channel state description
+     * @param channelId channel ID to add the description for
+     * @param descriptionFragment channel state description fragment
      */
-    void addChannelStateDescription(ChannelUID channelId, StateDescription description) {
+    void addChannelStateDescriptionFragment(ChannelUID channelId, StateDescriptionFragment descriptionFragment) {
         if (config == null) {
             logger.error("Attempt to set channel state description with not finalized configuration!: {}", channelId);
         } else {
-            config.thingHandler.setChannelStateDescription(channelId, description);
+            if (channelId != null && descriptionFragment != null) {
+                config.thingHandler.setChannelStateDescription(channelId, descriptionFragment.toStateDescription());
+            }
         }
     }
 
@@ -715,7 +722,7 @@ public class LxControl {
      * Build channel ID for the control, based on control's UUID, thing's UUID and index of the channel for the control
      *
      * @param index index of a channel within control (0 for primary channel) all indexes greater than 0 will have
-     *                  -index added to the channel ID
+     *            -index added to the channel ID
      * @return channel ID for the control and index
      */
     private ChannelUID getChannelId(int index) {
