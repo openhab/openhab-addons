@@ -27,10 +27,11 @@ public class IPBridgeConfig {
     public String discoveryFile;
     public int reconnect;
     public int heartbeat;
+    public int delay = 0;
 
     public boolean sameConnectionParameters(IPBridgeConfig config) {
         return StringUtils.equals(ipAddress, config.ipAddress) && StringUtils.equals(user, config.user)
                 && StringUtils.equals(password, config.password) && (reconnect == config.reconnect)
-                && (heartbeat == config.heartbeat);
+                && (heartbeat == config.heartbeat) && (delay == config.delay);
     }
 }
