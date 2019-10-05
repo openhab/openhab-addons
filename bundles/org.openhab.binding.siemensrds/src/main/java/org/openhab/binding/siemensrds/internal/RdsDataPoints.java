@@ -300,7 +300,7 @@ class RdsDataPoints {
             try {
                 httpSetPointValueJson(apiKey, token, pointId, json);
             } catch (RdsCloudException | IOException e) {
-                LOGGER.warn("setValue: error \"{}\"", e.getMessage(), e);
+                LOGGER.warn("setValue {} {}: \"{}\"", hierarchyName, e.getClass().getName(), e.getMessage());
                 return;
             }
         } else {
