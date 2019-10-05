@@ -359,7 +359,8 @@ You can also read the current shade level from the channel.
 It is specified as a percentage, where 0% = closed and 100% = fully open. Movement delays are not currently supported.
 The shade handler should be compatible with all Lutron devices which appear to the system as shades, including roller shades, honeycomb shades, pleated shades, roman shades, tension roller shades, drapes, and Kirbe vertical drapes.
 
-**Note:** While a shade is moving, the Lutron system will report the target level for the shade rather than the actual current level.
+**Note:** While a shade is moving to a specific level because of a Percent command, the system will report the target level for the shade rather than the actual current level.
+While a shade is moving because of an Up or Down command, it will report the previous level until it stops moving.
 
 Thing configuration file example:
 
