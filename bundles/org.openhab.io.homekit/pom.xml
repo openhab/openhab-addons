@@ -13,7 +13,17 @@
 
   <name>openHAB Add-ons :: Bundles :: IO :: Homekit</name>
 
+  <properties>
+    <dep.noembedding>javax.json,javax.json-api,netty-common,netty-buffer,netty-transport,netty-handler,netty-codec,netty-codec-http,netty-resolver</dep.noembedding>
+  </properties>
+
   <dependencies>
+    <dependency>
+      <groupId>com.beowulfe</groupId>
+      <artifactId>hap</artifactId>
+      <version>1.1.5.OH</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.json</artifactId>
