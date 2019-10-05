@@ -59,11 +59,14 @@ import org.openhab.binding.lifx.internal.fields.MACAddress;
 import org.openhab.binding.lifx.internal.protocol.GetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.protocol.GetLightPowerRequest;
 import org.openhab.binding.lifx.internal.protocol.GetRequest;
+import org.openhab.binding.lifx.internal.protocol.GetTileEffectRequest;
 import org.openhab.binding.lifx.internal.protocol.GetWifiInfoRequest;
 import org.openhab.binding.lifx.internal.protocol.Packet;
 import org.openhab.binding.lifx.internal.protocol.PowerState;
 import org.openhab.binding.lifx.internal.protocol.Product;
 import org.openhab.binding.lifx.internal.protocol.SignalStrength;
+import org.openhab.binding.lifx.internal.protocol.TileEffect;
+import org.openhab.binding.lifx.internal.protocol.TileEffect.TileEffectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -198,6 +201,23 @@ public class LifxLightHandler extends BaseThingHandler {
             super.setSignalStrength(signalStrength);
         }
 
+        @Override
+        public void setTileEffect(TileEffect effect) {
+            updateStateIfChanged(CHANNEL_TILE_EFFECT_TYPE, new DecimalType(effect.getEffectType().value()));
+            DecimalType speed = new DecimalType(effect.getSpeedInSeconds());
+            switch (effect.getEffectType()) {
+                case MORPH:
+                    updateStateIfChanged(CHANNEL_TILE_MORPH_SPEED, speed);
+                    break;
+                case FLAME:
+                    updateStateIfChanged(CHANNEL_TILE_FLAME_SPEED, speed);
+                    break;
+                default:
+                    break;
+            }
+            super.setTileEffect(effect);
+        }
+
         private void updateZoneChannels(@Nullable PowerState powerState, HSBK[] colors) {
             if (!product.hasFeature(MULTIZONE) || colors.length == 0) {
                 return;
@@ -217,7 +237,6 @@ public class LifxLightHandler extends BaseThingHandler {
                         kelvinToPercentType(updateColor.getKelvin(), product.getTemperatureRange()));
             }
         }
-
     }
 
     public LifxLightHandler(Thing thing, LifxChannelFactory channelFactory) {
@@ -235,7 +254,7 @@ public class LifxLightHandler extends BaseThingHandler {
             logId = getLogId(configuration.getMACAddress(), configuration.getHost());
             product = getProduct();
 
-            logger.debug("{} : Initializing handler", logId);
+            logger.debug("{} : Initializing handler for product {}", logId, product.getName());
 
             powerOnBrightness = getPowerOnBrightness();
             powerOnColor = getPowerOnColor();
@@ -266,6 +285,8 @@ public class LifxLightHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Configure a Device ID or Host");
             }
+            updateState(CHANNEL_TILE_MORPH_SPEED, new DecimalType(TileEffect.TILE_MORPH.getSpeedInSeconds()));
+            updateState(CHANNEL_TILE_FLAME_SPEED, new DecimalType(TileEffect.TILE_FLAME.getSpeedInSeconds()));
         } catch (Exception e) {
             logger.debug("{} : Error occurred while initializing handler: {}", logId, e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -372,9 +393,13 @@ public class LifxLightHandler extends BaseThingHandler {
     }
 
     private Product getProduct() {
-        String propertyValue = getThing().getProperties().get(LifxBindingConstants.PROPERTY_PRODUCT_ID);
+        Object propertyValue = getThing().getProperties().get(LifxBindingConstants.PROPERTY_PRODUCT_ID);
         try {
-            long productID = Long.parseLong(propertyValue);
+            // Without first conversion to double, on a very first thing creation from discovery inbox,
+            // the product type is incorrectly parsed, as framework passed it as a floting point number
+            // (e.g. 50.0 instead of 50)
+            Double d = Double.parseDouble((String) propertyValue);
+            long productID = d.longValue();
             return Product.getProductFromProductID(productID);
         } catch (IllegalArgumentException e) {
             return Product.getLikelyProduct(getThing().getThingTypeUID());
@@ -443,6 +468,11 @@ public class LifxLightHandler extends BaseThingHandler {
                 case CHANNEL_SIGNAL_STRENGTH:
                     sendPacket(new GetWifiInfoRequest());
                     break;
+                case CHANNEL_TILE_EFFECT_TYPE:
+                case CHANNEL_TILE_MORPH_SPEED:
+                case CHANNEL_TILE_FLAME_SPEED:
+                    sendPacket(new GetTileEffectRequest());
+                    break;
                 default:
                     break;
             }
@@ -487,6 +517,29 @@ public class LifxLightHandler extends BaseThingHandler {
                         handleInfraredCommand((PercentType) command);
                     } else if (command instanceof IncreaseDecreaseType) {
                         handleIncreaseDecreaseInfraredCommand((IncreaseDecreaseType) command);
+                    } else {
+                        supportedCommand = false;
+                    }
+                    break;
+                case CHANNEL_TILE_EFFECT_TYPE:
+                    if (command instanceof DecimalType) {
+                        handleTileEffectTypeCommand((DecimalType) command);
+                    } else {
+                        supportedCommand = false;
+                    }
+                    break;
+                case CHANNEL_TILE_MORPH_SPEED:
+                    if (command instanceof DecimalType) {
+                        handleTileSpeedCommand((DecimalType) command, TileEffectType.MORPH.value());
+                        channelStates.put(channelUID.getId(), (State) command);
+                    } else {
+                        supportedCommand = false;
+                    }
+                    break;
+                case CHANNEL_TILE_FLAME_SPEED:
+                    if (command instanceof DecimalType) {
+                        handleTileSpeedCommand((DecimalType) command, TileEffectType.FLAME.value());
+                        channelStates.put(channelUID.getId(), (State) command);
                     } else {
                         supportedCommand = false;
                     }
@@ -625,6 +678,41 @@ public class LifxLightHandler extends BaseThingHandler {
         if (baseInfrared != null) {
             PercentType newInfrared = increaseDecreasePercentType(increaseDecrease, baseInfrared);
             handleInfraredCommand(newInfrared);
+        }
+    }
+
+    private void handleTileEffectTypeCommand(DecimalType mode) {
+        logger.debug("handleTileEffectTypeCommand mode={}", mode);
+        TileEffect effect;
+        State speed;
+        switch (TileEffectType.fromValue(mode.intValue())) {
+            case MORPH:
+                effect = new TileEffect(TileEffect.TILE_MORPH);
+                speed = channelStates.get(CHANNEL_TILE_MORPH_SPEED);
+                break;
+            case FLAME:
+                effect = new TileEffect(TileEffect.TILE_FLAME);
+                speed = channelStates.get(CHANNEL_TILE_FLAME_SPEED);
+                break;
+            default:
+                effect = TileEffect.TILE_OFF;
+                speed = null;
+                break;
+        }
+        if (speed instanceof DecimalType) {
+            effect.setSpeedInSeconds(((DecimalType) speed).longValue());
+        }
+        getLightStateForCommand().setTileEffect(effect);
+    }
+
+    private void handleTileSpeedCommand(DecimalType command, Integer type) {
+        Long speed = command.longValue();
+        TileEffect effect = getLightStateForCommand().getTileEffect();
+        if (effect != null && effect.getEffectType().value().equals(type)
+                && !effect.getSpeedInSeconds().equals(speed)) {
+            TileEffect newEffect = new TileEffect(effect);
+            newEffect.setSpeedInSeconds(speed.longValue());
+            getLightStateForCommand().setTileEffect(newEffect);
         }
     }
 

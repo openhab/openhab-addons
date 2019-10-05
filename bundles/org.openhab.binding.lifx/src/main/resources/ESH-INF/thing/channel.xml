@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="lifx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="lifx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -54,6 +55,33 @@
 		<label>Temperature zone</label>
 		<description>Sets the zone temperature of the light</description>
 		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="tileeffecttype">
+		<item-type>Number</item-type>
+		<label>Tile effect</label>
+		<description>Sets the effect of the tiles</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="2">Morph</option>
+				<option value="3">Flame</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tilemorphspeed">
+		<item-type>Number</item-type>
+		<label>Tile morph effect speed</label>
+		<description>Sets the speed of the tile morph effect</description>
+		<state min="0" max="25" step="1" pattern="%.1fs" />
+	</channel-type>
+
+	<channel-type id="tileflamespeed">
+		<item-type>Number</item-type>
+		<label>Tile flame effect speed</label>
+		<description>Sets the speed of the tile flame effect</description>
+		<state min="0" max="25" step="1" pattern="%.1fs" />
 	</channel-type>
 
 </thing:thing-descriptions>

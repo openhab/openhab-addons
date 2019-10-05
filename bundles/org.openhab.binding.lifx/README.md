@@ -20,7 +20,7 @@ The following table lists the thing types of the supported LIFX devices:
 | LIFX Downlight               | colorlight   |
 | LIFX GU10                    | colorlight   |
 | LIFX Mini Color              | colorlight   |
-| LIFX Tile                    | colorlight   |
+| LIFX Tile                    | tile         |
 |                              |              |
 | LIFX+ A19                    | colorirlight |
 | LIFX+ BR30                   | colorirlight |
@@ -37,12 +37,13 @@ The following table lists the thing types of the supported LIFX devices:
 The thing type determines the capability of a device and with that the possible ways of interacting with it.
 The following matrix lists the capabilities (channels) for each type:
 
-| Thing Type   | On/Off | Brightness | Color | Color Zone | Color Temperature | Color Temperature Zone | Infrared |
-|--------------|:------:|:----------:|:-----:|:----------:|:-----------------:|:----------------------:|:--------:|
-| colorlight   | X      |            | X     |            | X                 |                        |          |
-| colorirlight | X      |            | X     |            | X                 |                        | X        |
-| colormzlight | X      |            | X     | X          | X                 | X                      |          |
-| whitelight   | X      | X          |       |            | X                 |                        |          |
+| Thing Type   | On/Off | Brightness | Color | Color Zone | Color Temperature | Color Temperature Zone | Infrared | Tile Effects |
+|--------------|:------:|:----------:|:-----:|:----------:|:-----------------:|:----------------------:|:--------:|:------------:|
+| colorlight   | X      |            | X     |            | X                 |                        |          |              |
+| colorirlight | X      |            | X     |            | X                 |                        | X        |              |
+| colormzlight | X      |            | X     | X          | X                 | X                      |          |              |
+| whitelight   | X      | X          |       |            | X                 |                        |          |              |
+| tile         | X      | X          | X     |            | X                 |                        |          | X            |
 
 ## Discovery
 
@@ -77,15 +78,18 @@ Thing lifx:colorirlight:porch [ host="10.120.130.4", fadetime=0 ]
 
 All devices support some of the following channels:
 
-| Channel Type ID | Item Type | Description                                                                                                                                                      | Thing Types                                        |
-|-----------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
-| brightness      | Dimmer    | This channel supports adjusting the brightness value.                                                                                                            | whitelight                                         |
-| color           | Color     | This channel supports full color control with hue, saturation and brightness values.                                                                             | colorlight, colorirlight, colormzlight             |
-| colorzone       | Color     | This channel supports full zone color control with hue, saturation and brightness values.                                                                        | colormzlight                                       |
-| infrared        | Dimmer    | This channel supports adjusting the infrared value. *Note:* IR capable lights only activate their infrared LEDs when the brightness drops below a certain level. | colorirlight                                       |
-| signalstrength  | Number    | This channel represents signal strength with values 0, 1, 2, 3 or 4; 0 being worst strength and 4 being best strength.                                           | colorlight, colorirlight, colormzlight, whitelight |
-| temperature     | Dimmer    | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                                             | colorlight, colorirlight, colormzlight, whitelight |
-| temperaturezone | Dimmer    | This channel supports adjusting the zone color temperature from cold (0%) to warm (100%).                                                                        | colormzlight                                       |
+| Channel Type ID | Item Type | Description                                                                                                                                                      | Thing Types                                              |
+|-----------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| brightness      | Dimmer    | This channel supports adjusting the brightness value.                                                                                                            | whitelight                                               |
+| color           | Color     | This channel supports full color control with hue, saturation and brightness values.                                                                             | colorlight, colorirlight, colormzlight, tile             |
+| colorzone       | Color     | This channel supports full zone color control with hue, saturation and brightness values.                                                                        | colormzlight                                             |
+| infrared        | Dimmer    | This channel supports adjusting the infrared value. *Note:* IR capable lights only activate their infrared LEDs when the brightness drops below a certain level. | colorirlight                                             |
+| signalstrength  | Number    | This channel represents signal strength with values 0, 1, 2, 3 or 4; 0 being worst strength and 4 being best strength.                                           | colorlight, colorirlight, colormzlight, whitelight, tile |
+| temperature     | Dimmer    | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                                             | colorlight, colorirlight, colormzlight, whitelight, tile |
+| temperaturezone | Dimmer    | This channel supports adjusting the zone color temperature from cold (0%) to warm (100%).                                                                        | colormzlight                                             |
+| tileeffecttype  | Number    | This channel represents a type of tile effect (off, morph, flame)                                                                                                | tile                                                     |
+| tilemorphspeed  | Number    | This channel supports adjusting the speed of tile morph effect.                                                                                                  | tile                                                     |
+| tileflamespeed  | Number    | This channel supports adjusting the speed of tile flame effect.                                                                                                  | tile                                                     |
 
 The *color* and *brightness* channels have a "Power on brightness" configuration option that is used to determine the brightness when a light is switched on.
 When it is left empty, the brightness of a light remains unchanged when a light is switched on or off.
@@ -101,6 +105,7 @@ MultiZone lights (*colormzlight*) have serveral channels (e.g. *colorzone0*, *te
 Changing the *color* and *temperature* channels will update the states of all zones.
 The *color* and *temperature* channels of MultiZone lights always return the same state as *colorzone0*, *temperaturezone0*.
 
+LIFX Tile (*tile*) supports special tile effects: morph and flame. These effects are predefined to their appearance using LIFX application. Each effect has a separate speed configurable.
 
 ## Full Example
 
