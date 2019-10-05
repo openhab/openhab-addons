@@ -66,7 +66,7 @@ class RdsPlants {
             String json = RdsDataPoints.httpGenericGetJson(apiKey, token, URL_PLANTS);
             return GSON.fromJson(json, RdsPlants.class);
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("plant list creation error \"{}\"", e.getMessage(), e);
+            LOGGER.warn("create {}: \"{}\"", e.getClass().getName(), e.getMessage());
             return null;
         }
     }
