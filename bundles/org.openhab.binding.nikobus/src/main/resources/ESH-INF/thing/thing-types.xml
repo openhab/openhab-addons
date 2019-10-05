@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nikobus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="pc-link">
+		<label>PC-Link</label>
+		<description>PC-Link via serial connection</description>
+
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Port</label>
+				<context>serial-port</context>
+				<description>The serial port used to connect to the Nikobus PC Link.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" max="65535" min="10" required="false">
+				<default>60</default>
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="push-button">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pc-link" />
+		</supported-bridge-type-refs>
+
+		<label>Push Button</label>
+		<description>A single push button</description>
+
+		<channels>
+			<channel id="button" typeId="button" />
+		</channels>
+
+		<config-description>
+			<parameter name="impactedModules" type="text">
+				<label>Impacted Modules</label>
+				<description>Comma separated list of impacted modules, i.e. 4C6C-1,4C6C-2</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="button">
+		<item-type>Switch</item-type>
+		<label>Button Event</label>
+		<description>Fires when the button is pressed</description>
+	</channel-type>
+
+	<thing-type id="switch-module">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pc-link" />
+		</supported-bridge-type-refs>
+
+		<label>Switch Module</label>
+		<description>Nikobus Switch module</description>
+
+		<channels>
+			<channel id="output-1" typeId="switch-output">
+				<label>Output 1</label>
+			</channel>
+			<channel id="output-2" typeId="switch-output">
+				<label>Output 2</label>
+			</channel>
+			<channel id="output-3" typeId="switch-output">
+				<label>Output 3</label>
+			</channel>
+			<channel id="output-4" typeId="switch-output">
+				<label>Output 4</label>
+			</channel>
+			<channel id="output-5" typeId="switch-output">
+				<label>Output 5</label>
+			</channel>
+			<channel id="output-6" typeId="switch-output">
+				<label>Output 6</label>
+			</channel>
+			<channel id="output-7" typeId="switch-output">
+				<label>Output 7</label>
+			</channel>
+			<channel id="output-8" typeId="switch-output">
+				<label>Output 8</label>
+			</channel>
+			<channel id="output-9" typeId="switch-output">
+				<label>Output 9</label>
+			</channel>
+			<channel id="output-10" typeId="switch-output">
+				<label>Output 10</label>
+			</channel>
+			<channel id="output-11" typeId="switch-output">
+				<label>Output 11</label>
+			</channel>
+			<channel id="output-12" typeId="switch-output">
+				<label>Output 12</label>
+			</channel>
+		</channels>
+	</thing-type>
+
+	<thing-type id="dimmer-module">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pc-link" />
+		</supported-bridge-type-refs>
+
+		<label>Dimmer Module</label>
+		<description>Nikobus Dimmer module</description>
+
+		<channels>
+			<channel id="output-1" typeId="dimmer-output">
+				<label>Output 1</label>
+			</channel>
+			<channel id="output-2" typeId="dimmer-output">
+				<label>Output 2</label>
+			</channel>
+			<channel id="output-3" typeId="dimmer-output">
+				<label>Output 3</label>
+			</channel>
+			<channel id="output-4" typeId="dimmer-output">
+				<label>Output 4</label>
+			</channel>
+			<channel id="output-5" typeId="dimmer-output">
+				<label>Output 5</label>
+			</channel>
+			<channel id="output-6" typeId="dimmer-output">
+				<label>Output 6</label>
+			</channel>
+			<channel id="output-7" typeId="dimmer-output">
+				<label>Output 7</label>
+			</channel>
+			<channel id="output-8" typeId="dimmer-output">
+				<label>Output 8</label>
+			</channel>
+			<channel id="output-9" typeId="dimmer-output">
+				<label>Output 9</label>
+			</channel>
+			<channel id="output-10" typeId="dimmer-output">
+				<label>Output 10</label>
+			</channel>
+			<channel id="output-11" typeId="dimmer-output">
+				<label>Output 11</label>
+			</channel>
+			<channel id="output-12" typeId="dimmer-output">
+				<label>Output 12</label>
+			</channel>
+		</channels>
+	</thing-type>
+
+	<thing-type id="rollershutter-module">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pc-link" />
+		</supported-bridge-type-refs>
+
+		<label>Rollershutter Module</label>
+		<description>Nikobus Rollershutter module</description>
+
+		<channels>
+			<channel id="output-1" typeId="rollershutter-output">
+				<label>Output 1</label>
+			</channel>
+			<channel id="output-2" typeId="rollershutter-output">
+				<label>Output 2</label>
+			</channel>
+			<channel id="output-3" typeId="rollershutter-output">
+				<label>Output 3</label>
+			</channel>
+			<channel id="output-4" typeId="rollershutter-output">
+				<label>Output 4</label>
+			</channel>
+			<channel id="output-5" typeId="rollershutter-output">
+				<label>Output 5</label>
+			</channel>
+			<channel id="output-6" typeId="rollershutter-output">
+				<label>Output 6</label>
+			</channel>
+		</channels>
+	</thing-type>
+
+	<channel-type id="switch-output">
+		<item-type>Switch</item-type>
+		<label>Output</label>
+		<description>Switch Module's Output</description>
+	</channel-type>
+
+	<channel-type id="dimmer-output">
+		<item-type>Dimmer</item-type>
+		<label>Output</label>
+		<description>Dimmer Module's Output</description>
+	</channel-type>
+
+	<channel-type id="rollershutter-output">
+		<item-type>Rollershutter</item-type>
+		<label>Output</label>
+		<description>Rollershutter Module's Output</description>
+	</channel-type>
+
+</thing:thing-descriptions>
