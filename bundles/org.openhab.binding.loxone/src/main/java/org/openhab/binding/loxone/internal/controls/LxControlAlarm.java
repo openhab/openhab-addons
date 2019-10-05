@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -171,7 +171,8 @@ class LxControlAlarm extends LxControl {
         ackChannelId = addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH),
                 defaultChannelLabel + " / Acknowledge", "Acknowledge alarm", tags, this::handleQuitAlarm,
                 () -> OnOffType.OFF);
-        addChannelStateDescription(ackChannelId, new StateDescription(null, null, null, null, true, null));
+        addChannelStateDescriptionFragment(ackChannelId,
+                StateDescriptionFragmentBuilder.create().withReadOnly(true).build());
 
         if (presenceConnected) {
             // this channel has reversed logic - we show state of enabled option, but receive state updates if disabled
@@ -199,8 +200,8 @@ class LxControlAlarm extends LxControl {
             setChannelState(startTimeId, startTime);
         } else if (STATE_LEVEL.equals(stateName)) {
             Object obj = state.getStateValue();
-            addChannelStateDescription(ackChannelId, new StateDescription(null, null, null, null,
-                    (obj instanceof Double && ((Double) obj) == 0.0), null));
+            addChannelStateDescriptionFragment(ackChannelId, StateDescriptionFragmentBuilder.create()
+                    .withReadOnly(obj instanceof Double && ((Double) obj) == 0.0).build());
             super.onStateChange(state);
         } else {
             super.onStateChange(state);
