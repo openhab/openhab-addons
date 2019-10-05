@@ -114,7 +114,7 @@ class RdsAccessToken {
             String json = httpGetTokenJson(apiKey, user, password);
             return GSON.fromJson(json, RdsAccessToken.class);
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("token creation error \"{}\"", e.getMessage(), e);
+            LOGGER.warn("create {}: \"{}\"", e.getClass().getName(), e.getMessage());
             return null;
         }
     }
