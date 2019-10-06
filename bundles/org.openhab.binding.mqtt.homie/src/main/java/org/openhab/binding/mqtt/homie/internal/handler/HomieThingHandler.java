@@ -119,7 +119,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         if (connection.getQos() != 1) {
             // QoS 1 is required.
             logger.warn(
-                    "Homie devices require QoS 1 but Qos 0/2 is configured. Using override. Please ccheck the configuration");
+                    "Homie devices require QoS 1 but Qos 0/2 is configured. Using override. Please check the configuration");
             connection.setQos(1);
         }
         return device.subscribe(connection, scheduler, attributeReceiveTimeout).thenCompose((Void v) -> {
