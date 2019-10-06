@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.util.UIDUtils;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.homie.internal.handler.HomieThingHandler;
@@ -198,6 +199,11 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
         this.deviceID = deviceID;
         nodes.clear();
         for (Channel channel : channels) {
+            final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
+            if (!channelConfig.commandTopic.isEmpty() && channelConfig.retained != true) {
+                logger.warn("Channel {} in device {} is missing the 'retained' flag. Check your configuration.",
+                        channel.getUID(), deviceID);
+            }
             final String channelGroupId = channel.getUID().getGroupId();
             if (channelGroupId == null) {
                 continue;
