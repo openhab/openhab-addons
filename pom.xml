@@ -489,6 +489,7 @@ Import-Package: \\
                     <versionRange>[3.0.0,)</versionRange>
                     <goals>
                       <goal>unpack</goal>
+                      <goal>unpack-dependencies</goal>
                     </goals>
                   </pluginExecutionFilter>
                   <action>
