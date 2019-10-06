@@ -185,10 +185,10 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
         if(hostname.matches(broadlinkRegex)) {
             String[] dotSeparatedString = hostname.split("\\.");
             logger.debug("Found original broadlink DNS name {}, removing domain",hostname);
-            return dotSeparatedString[0];
+            return dotSeparatedString[0].replaceAll("\\.","-");
         }else{
             logger.debug("DNS name does not match original broadlink name: {}, using it without modification. ",hostname);
-            return hostname;
+            return hostname.replaceAll("\\.","-");
         }
     }
 
