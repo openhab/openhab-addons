@@ -116,9 +116,12 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
     @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
         logger.debug("About to start Homie device {}", device.attributes.name);
-        // We have mostly retained messages for Homie. QoS 1 is required.
-        connection.setRetain(true);
-        connection.setQos(1);
+        if (connection.getQos() != 1) {
+            // QoS 1 is required.
+            logger.warn(
+                    "Homie devices require QoS 1 but Qos 0/2 is configured. Using override. Please check the configuration");
+            connection.setQos(1);
+        }
         return device.subscribe(connection, scheduler, attributeReceiveTimeout).thenCompose((Void v) -> {
             return device.startChannels(connection, scheduler, attributeReceiveTimeout, this);
         }).thenRun(() -> {
