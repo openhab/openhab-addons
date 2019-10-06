@@ -68,7 +68,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 |Thing type                       | EEP family  | EEP Types     | Channels¹                    |  Devices²                      | Pairing   |
 |---------------------------------|-------------|---------------|------------------------------|--------------------------------|-----------|
 | bridge                          | -           | -             | repeaterMode, setBaseId      | USB300, EnOceanPi              | -         |
-| pushButton                      | F6-01       | 0x01          | pushButton                   |                                | Manually  |
+| pushButton                      | F6-01/D2-03 | 0x01/0x0A     | pushButton, doublePress,<br/>longPress, batteryLevel | NodOn soft button | Manually/Discovery  |
 | rockerSwitch                    | F6-02       | 0x01-02       | rockerswitchA, rockerswitchB | Eltako FT55                    | Discovery |
 | mechanicalHandle                | F6-10       | 0x00-01       | windowHandleState, contact   | Hoppe SecuSignal handles, Eltako TF-FGB | Discovery |
 | contact                         | D5-00       | 0x01          | contact                      | Eltako FTK(E) & TF-FKB            | Discovery |
@@ -146,7 +146,7 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |---------------------------------|-------------------|-----------------------------|---|
 | bridge                          | path              | Path to the EnOcean Gateway | COM3, /dev/ttyAMA0, rfc2217://x.x.x.x:3001 |
 |                                 | nextSenderId      | Set SenderId of next created thing.<br/>If omitted, the next unused SenderId is taken | 1-127 |
-| pushButton                      | receivingEEPId    | EEP used for receiving msg  | F6_01_01 |
+| pushButton                      | receivingEEPId    | EEP used for receiving msg  | F6_01_01, D2_03_0A |
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 | rockerSwitch                    | receivingEEPId    |                             | F6_02_01, F6_02_02 |
 |                                 | enoceanId         | | |
@@ -206,6 +206,8 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | repeaterMode        | String             | Set repeater level to 1, 2 or disable |
 | setBaseId           | String             | Changes the BaseId of your gateway. This can only be done 10 times! So use it with care. |
 | pushButton          | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
+| doublePress         | Trigger            | Channel type system:rawbutton, emits PRESSED |
+| longPress           | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
 | rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
 | windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED) |
 | contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
@@ -230,6 +232,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | virtualRockerswitchB | String             | Used to send plain rocker switch messages (channel B used) |
 | batteryVoltage       | Number:ElectricPotential | Battery voltage for things with battery |
 | energyStorage        | Number:ElectricPotential | Energy storage, don't know what this means... |
+| batterLevel          | Number             | Battery level in percent |
 | rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
 | repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
 | lastReceived         | DateTime                 | Date and time the last telegram was received |
