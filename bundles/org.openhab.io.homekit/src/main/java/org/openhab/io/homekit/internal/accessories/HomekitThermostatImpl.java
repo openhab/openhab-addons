@@ -35,9 +35,9 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.beowulfe.hap.accessories.properties.ThermostatMode;
-import com.beowulfe.hap.accessories.thermostat.BasicThermostat;
+import io.github.hapjava.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.accessories.properties.ThermostatMode;
+import io.github.hapjava.accessories.thermostat.BasicThermostat;
 
 /**
  * Implements Thermostat as a GroupedAccessory made up of multiple items:

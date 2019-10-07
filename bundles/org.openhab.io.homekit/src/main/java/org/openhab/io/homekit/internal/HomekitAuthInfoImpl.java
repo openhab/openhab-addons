@@ -23,8 +23,8 @@ import org.eclipse.smarthome.core.storage.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitAuthInfo;
-import com.beowulfe.hap.HomekitServer;
+import io.github.hapjava.HomekitAuthInfo;
+import io.github.hapjava.HomekitServer;
 
 /**
  * Provides a mechanism to store authenticated homekit client details inside the

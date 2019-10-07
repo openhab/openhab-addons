@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.HomekitCharacteristicChangeCallback;
 
 /**
  *
