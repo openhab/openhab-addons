@@ -36,10 +36,10 @@ The following channels are supported by the binding.
 
 | Channel ID               | Item Type | Description                                       |
 |--------------------------|-----------|---------------------------------------------------|
-| doorbell                 | Trigger   | Generated PRESSED event when doorbell is pressed  |
+| doorbell                 | Trigger   | Generates PRESSED event when doorbell is pressed  |
 | doorbellTimestamp        | DateTime  | Timestamp when doorbell was pressed               |
 | doorbellImage            | Image     | Image captured when the doorbell was pressed      |
-| motion                   | Trigger   | Generated TRIGGERED event when motion is detected |
+| motion                   | Switch    | Changes to ON when the device detects motion      |
 | motionTimestamp          | DateTime  | Timestamp when motion sensor was triggered        |
 | motionImage              | Image     | Image captured when motion was detected           |
 | light                    | Switch    | Activates the light relay                         |
@@ -60,10 +60,9 @@ The following channels are supported by the binding.
 
 ## Profiles
 
-A Switch profile is available for the doorbell and motion channels that will cause ON/OFF 
-states to be set for items linked to the `doorbell` and `motion` channels.
+A Switch profile is available for the doorbell channel that will cause ON/OFF 
+states to be set for items linked to the `doorbell` channels.
 See *Items* example below.
-
 
 ## Known Issues
 
@@ -113,7 +112,7 @@ Switch                      Doorbell_Motion
                             "Doorbell Motion [%s]"
                             <switch>
                             ["Switch"]
-                            { channel="doorbird:d101:doorbell:motion" [profile="doorbird:switch"] }
+                            { channel="doorbird:d101:doorbell:motion" }
 
 DateTime                    Doorbell_MotionTimestamp
                             "Doorbell Motion Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]"

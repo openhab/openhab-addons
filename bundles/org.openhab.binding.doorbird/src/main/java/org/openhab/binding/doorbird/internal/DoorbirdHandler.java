@@ -182,7 +182,7 @@ public class DoorbirdHandler extends BaseThingHandler {
             updateState(CHANNEL_MOTION_IMAGE, image != null ? image : UnDefType.UNDEF);
             updateState(CHANNEL_MOTION_TIMESTAMP, getLocalDateTimeType(dbImage.getTimestamp()));
         }
-        triggerChannel(CHANNEL_MOTION, EVENT_TRIGGERED);
+        updateState(CHANNEL_MOTION, OnOffType.ON);
         startMotionOffJob();
         updateMotionMontage();
     }
@@ -421,7 +421,7 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
         motionOffJob = scheduler.schedule(() -> {
             logger.debug("Update channel 'motion' to OFF for thing {}", getThing().getUID());
-            triggerChannel(CHANNEL_MOTION, EVENT_UNTRIGGERED);
+            updateState(CHANNEL_MOTION, OnOffType.OFF);
         }, offDelay, TimeUnit.SECONDS);
     }
 

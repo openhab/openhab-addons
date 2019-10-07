@@ -84,15 +84,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="motion">
-		<kind>trigger</kind>
+		<item-type>Switch</item-type>
 		<label>Motion</label>
 		<description>Motion detected</description>
-		<event>
-			<options>
-				<option value="TRIGGERED">Triggered</option>
-				<option value="UNTRIGGERED">Untriggered</option>
-			</options>
-		</event>
+		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="motionTimestamp">
 		<item-type>DateTime</item-type>
