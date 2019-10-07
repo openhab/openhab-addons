@@ -87,7 +87,7 @@ public class MelCloudConnection {
             sessionKey = resp.getLoginData().getContextKey();
             setConnected(true);
         } catch (IOException | JsonSyntaxException e) {
-            throw new MelCloudCommException(String.format("Login error, reason: %s", e.getMessage(), e));
+            throw new MelCloudCommException(String.format("Login error, reason: %s", e.getMessage()), e);
         }
     }
 
