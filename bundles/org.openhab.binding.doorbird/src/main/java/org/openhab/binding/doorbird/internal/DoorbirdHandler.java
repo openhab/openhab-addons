@@ -25,6 +25,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -54,11 +56,13 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpRequestBuilder;
+import org.openhab.binding.doorbird.action.DoorbirdActions;
 import org.openhab.binding.doorbird.internal.listener.DoorbirdUdpListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -211,9 +215,6 @@ public class DoorbirdHandler extends BaseThingHandler {
             case CHANNEL_OPENDOOR2:
                 handleOpenDoor(command, "2");
                 break;
-            case CHANNEL_RESTART:
-                handleRestart(command);
-                break;
             case CHANNEL_IMAGE:
                 if (command instanceof RefreshType) {
                     handleGetImage(command);
@@ -234,9 +235,6 @@ public class DoorbirdHandler extends BaseThingHandler {
                 if (command instanceof RefreshType) {
                     updateMotionMontage();
                 }
-                break;
-            case CHANNEL_SIP_HANGUP:
-                handleSipHangup(command);
                 break;
         }
     }
@@ -295,16 +293,14 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
     }
 
-    private void handleRestart(Command command) {
-        if (command instanceof OnOffType && command.equals(OnOffType.ON)) {
-            String url = buildUrl("/bha-api/restart.cgi");
-            logger.debug("Restart device using url={}", url);
-            try {
-                String response = executeGetRequest(url);
-                logger.debug("Response={}", response);
-            } catch (IOException e) {
-                logger.debug("IOException restarting device: {}", e.getMessage());
-            }
+    public void actionRestart() {
+        String url = buildUrl("/bha-api/restart.cgi");
+        logger.debug("Restart device using url={}", url);
+        try {
+            String response = executeGetRequest(url);
+            logger.debug("Response={}", response);
+        } catch (IOException e) {
+            logger.debug("IOException restarting device: {}", e.getMessage());
         }
     }
 
@@ -340,16 +336,14 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
     }
 
-    private void handleSipHangup(Command command) {
-        if (command instanceof OnOffType && command.equals(OnOffType.ON)) {
-            String url = buildUrl("/bha-api/sip.cgi", "?action=hangup");
-            logger.debug("Hang up SIP call using url={}", url);
-            try {
-                String response = executeGetRequest(url);
-                logger.debug("Response={}", response);
-            } catch (IOException e) {
-                logger.debug("IOException hanging up SIP call: {}", e.getMessage());
-            }
+    public void actionSIPHangup() {
+        String url = buildUrl("/bha-api/sip.cgi", "?action=hangup");
+        logger.debug("Hang up SIP call using url={}", url);
+        try {
+            String response = executeGetRequest(url);
+            logger.debug("Response={}", response);
+        } catch (IOException e) {
+            logger.debug("IOException hanging up SIP call: {}", e.getMessage());
         }
     }
 
@@ -617,5 +611,10 @@ public class DoorbirdHandler extends BaseThingHandler {
 
     private DateTimeType getLocalDateTimeType(long dateTimeSeconds) {
         return new DateTimeType(Instant.ofEpochSecond(dateTimeSeconds).atZone(timeZoneProvider.getTimeZone()));
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(DoorbirdActions.class);
     }
 }

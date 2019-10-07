@@ -55,14 +55,36 @@ The following channels are supported by the binding.
 | motionHistoryImage       | Image     | Historical image for motion sensor                |
 | doorbellMontage          | Image     | Concatenation of first n doorbell history images  |
 | motionMontage            | Image     | Concatenation of first n motion history images    |
-| sipHangup                | Switch    | Hangup SIP call                                   |
-| restart                  | Switch    | Restart the doorbird                              |
 
 ## Profiles
 
 A Switch profile is available for the doorbell channel that will cause ON/OFF 
 states to be set for items linked to the `doorbell` channels.
 See *Items* example below.
+
+## Rule Actions
+
+The binding supports the following actions.
+In classic rules these are accessible as shown in this example (adjust getActions with your ThingId):
+ 
+### restart()
+ 
+Restarts the Doorbird device.
+
+### sipHangup()
+
+Hangs up a SIP all.
+
+Example
+
+```
+val actions = getActions("doorbird","doorbird:d101:doorbell")
+if(actions === null) {
+    logInfo("actions", "Actions not found, check thing ID")
+    return
+ }
+ actions.sipHangup()
+ ```
 
 ## Known Issues
 
@@ -174,18 +196,6 @@ Image                       Doorbell_DoorbellMontage
 Image                       Doorbell_MotionMontage
                             "Motion History Montage [%s]"
                             { channel="doorbird:d101:doorbell:motionMontage" }
-
-Switch                      Doorbell_SIP_Hangup
-                            "Doorbell Hangup SIP Call [%s]"
-                            <switch>
-                            ["Switch"]
-                            { channel="doorbird:d101:doorbell:sipHangup" }
-
-Switch                      Doorbell_Restart
-                            "Doorbell Restart [%s]"
-                            <switch>
-                            ["Switch"]
-                            { channel="doorbird:d101:doorbell:restart" }
 ```
 
 ### Sitemap
@@ -207,7 +217,6 @@ Frame {
         Frame label="Actions" {
             Switch item=Doorbell_OpenDoor1
             Switch item=Doorbell_Light
-            Switch item=Doorbell_SIP_Hangup
         }
         Frame label="History" {
             Setpoint item=Doorbell_DoorbellHistoryIndex minValue=1 maxValue=50 step=1

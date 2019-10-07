@@ -56,6 +56,4 @@ public class DoorbirdBindingConstants {
     public static final String CHANNEL_MOTION_HISTORY_TIMESTAMP = "motionHistoryTimestamp";
     public static final String CHANNEL_DOORBELL_IMAGE_MONTAGE = "doorbellMontage";
     public static final String CHANNEL_MOTION_IMAGE_MONTAGE = "motionMontage";
-    public static final String CHANNEL_SIP_HANGUP = "sipHangup";
-    public static final String CHANNEL_RESTART = "restart";
 }
