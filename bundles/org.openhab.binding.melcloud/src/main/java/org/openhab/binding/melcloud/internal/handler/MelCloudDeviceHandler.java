@@ -157,7 +157,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_POWER:
-                cmdtoSend.setPower((OnOffType) command == OnOffType.ON ? true : false);
+                cmdtoSend.setPower(command == OnOffType.ON);
                 cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_POWER);
                 break;
             case CHANNEL_OPERATION_MODE:
