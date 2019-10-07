@@ -72,7 +72,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
         Map<String, Object> properties = new TreeMap<>();
 
         properties.put(CONFIG_HOST, host);
-        properties.put(CONFIG_PORT, port);
+        properties.put(CONFIG_HTTP_PORT, port);
 
         return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(name)
                 .withRepresentationProperty(UDN).build();

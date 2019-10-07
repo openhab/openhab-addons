@@ -65,7 +65,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private DeconzBridgeConfig config = new DeconzBridgeConfig();
     private final Gson gson;
     private @Nullable ScheduledFuture<?> scheduledFuture;
-    private int websocketport = 0;
+    private int websocketPort = 0;
     /** Prevent a dispose/init cycle while this flag is set. Use for property updates */
     private boolean ignoreConfigurationUpdate;
 
@@ -160,7 +160,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         if (config.apikey == null) {
             return;
         }
-        String url = url(config.host, config.port, config.apikey, null, null);
+        String url = url(config.getHostWithoutPort(), config.httpPort, config.apikey, null, null);
         http.get(url, config.timeout).thenApply(this::parseBridgeFullStateResponse).exceptionally(e -> {
             if (e instanceof SocketTimeoutException || e instanceof TimeoutException
                     || e instanceof CompletionException) {
@@ -201,7 +201,8 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             updateProperties(editProperties);
             ignoreConfigurationUpdate = false;
 
-            websocketport = fullState.config.websocketport;
+            // Use requested websocket port if no specific port is given
+            websocketPort = config.port == 0 ? fullState.config.websocketport : config.port;
             startWebsocket();
         }).exceptionally(e -> {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
@@ -215,18 +216,14 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * {@link #requestFullState} need to be called first to obtain the websocket port.
      */
     private void startWebsocket() {
-        if (websocket.isConnected() || websocketport == 0) {
+        if (websocket.isConnected() || websocketPort == 0) {
             return;
         }
 
-        String host = config.host;
-        if (host.indexOf(':') > 0) {
-            host = host.substring(0, host.indexOf(':'));
-        }
         stopTimer();
         scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
 
-        websocket.start(host + ":" + String.valueOf(websocketport));
+        websocket.start(config.getHostWithoutPort() + ":" + String.valueOf(websocketPort));
     }
 
     /**
@@ -237,7 +234,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private CompletableFuture<?> requestApiKey() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Requesting API Key");
         stopTimer();
-        String url = url(config.host, config.port, null, null, null);
+        String url = url(config.getHostWithoutPort(), config.httpPort, null, null, null);
         return http.post(url, "{\"devicetype\":\"openHAB\"}", config.timeout).thenAccept(this::parseAPIKeyResponse)
                 .exceptionally(e -> {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
