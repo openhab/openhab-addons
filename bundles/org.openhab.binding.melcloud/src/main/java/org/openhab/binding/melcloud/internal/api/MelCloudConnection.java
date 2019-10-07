@@ -49,7 +49,7 @@ public class MelCloudConnection {
     private static final String DEVICE_LIST_URL = "https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices";
     private static final String DEVICE_URL = "https://app.melcloud.com/Mitsubishi.Wifi.Client/Device";
 
-    private static final int TIMEOUT = 10000;
+    private static final int TIMEOUT_MILLISECONDS = 10000;
 
     // Gson objects are safe to share across threads and are somewhat expensive to construct. Use a single instance.
     private static final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -73,7 +73,8 @@ public class MelCloudConnection {
         InputStream data = new ByteArrayInputStream(jsonReq.toString().getBytes(StandardCharsets.UTF_8));
 
         try {
-            String loginResponse = HttpUtil.executeUrl("POST", LOGIN_URL, null, data, "application/json", TIMEOUT);
+            String loginResponse = HttpUtil.executeUrl("POST", LOGIN_URL, null, data, "application/json",
+                    TIMEOUT_MILLISECONDS);
             logger.debug("Login response: {}", loginResponse);
             LoginClientResponse resp = gson.fromJson(loginResponse, LoginClientResponse.class);
             if (resp.getErrorId() != null) {
@@ -94,7 +95,7 @@ public class MelCloudConnection {
         if (isConnected()) {
             try {
                 String response = HttpUtil.executeUrl("GET", DEVICE_LIST_URL, getHeaderProperties(), null, null,
-                        TIMEOUT);
+                        TIMEOUT_MILLISECONDS);
                 logger.debug("Device list response: {}", response);
                 List<Device> devices = new ArrayList<Device>();
                 ListDevicesResponse[] buildings = gson.fromJson(response, ListDevicesResponse[].class);
@@ -128,7 +129,8 @@ public class MelCloudConnection {
         if (isConnected()) {
             String url = DEVICE_URL + String.format("/Get?id=%d&buildingID=%d", deviceId, buildingId);
             try {
-                String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null, TIMEOUT);
+                String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null,
+                        TIMEOUT_MILLISECONDS);
                 logger.debug("Device status response: {}", response);
                 DeviceStatus deviceStatus = gson.fromJson(response, DeviceStatus.class);
                 return deviceStatus;
@@ -147,7 +149,7 @@ public class MelCloudConnection {
             InputStream data = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
             try {
                 String response = HttpUtil.executeUrl("POST", DEVICE_URL + "/SetAta", getHeaderProperties(), data,
-                        "application/json", TIMEOUT);
+                        "application/json", TIMEOUT_MILLISECONDS);
                 logger.debug("Device status sending response: {}", response);
                 return gson.fromJson(response, DeviceStatus.class);
             } catch (IOException | JsonSyntaxException e) {
