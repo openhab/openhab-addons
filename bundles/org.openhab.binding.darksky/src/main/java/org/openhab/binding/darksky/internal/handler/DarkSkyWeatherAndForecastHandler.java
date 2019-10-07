@@ -425,6 +425,9 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                 case CHANNEL_TEMPERATURE:
                     state = getQuantityTypeState(currentData.getTemperature(), CELSIUS);
                     break;
+                case CHANNEL_APPARENT_TEMPERATURE:
+                    state = getQuantityTypeState(currentData.getApparentTemperature(), CELSIUS);
+                    break;
                 case CHANNEL_PRESSURE:
                     state = getQuantityTypeState(currentData.getPressure(), HECTO(PASCAL));
                     break;
@@ -512,6 +515,9 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                 case CHANNEL_TEMPERATURE:
                     state = getQuantityTypeState(forecastData.getTemperature(), CELSIUS);
                     break;
+                case CHANNEL_APPARENT_TEMPERATURE:
+                    state = getQuantityTypeState(forecastData.getApparentTemperature(), CELSIUS);
+                    break;
                 case CHANNEL_PRESSURE:
                     state = getQuantityTypeState(forecastData.getPressure(), HECTO(PASCAL));
                     break;
@@ -598,6 +604,12 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_MAX_TEMPERATURE:
                     state = getQuantityTypeState(forecastData.getTemperatureMax(), CELSIUS);
+                    break;
+                case CHANNEL_MIN_APPARENT_TEMPERATURE:
+                    state = getQuantityTypeState(forecastData.getApparentTemperatureMin(), CELSIUS);
+                    break;
+                case CHANNEL_MAX_APPARENT_TEMPERATURE:
+                    state = getQuantityTypeState(forecastData.getApparentTemperatureMax(), CELSIUS);
                     break;
                 case CHANNEL_PRESSURE:
                     state = getQuantityTypeState(forecastData.getPressure(), HECTO(PASCAL));

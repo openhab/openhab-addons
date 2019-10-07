@@ -49,76 +49,80 @@ Once one of the parameters `forecastHours`, `forecastDays` or `numberOfAlerts` w
 
 ### Current Weather
 
-| Channel Group ID | Channel ID         | Item Type            | Description                                                             |
-|------------------|--------------------|----------------------|-------------------------------------------------------------------------|
-| current          | time-stamp         | DateTime             | Time of data observation.                                               |
-| current          | condition          | String               | Current weather condition.                                              |
-| current          | icon               | Image                | Icon representing the current weather condition.                        |
-| current          | icon-id            | String               | Id of the icon representing the current weather condition. **Advanced** |
-| current          | temperature        | Number:Temperature   | Current temperature.                                                    |
-| current          | pressure           | Number:Pressure      | Current barometric pressure.                                            |
-| current          | humidity           | Number:Dimensionless | Current atmospheric humidity.                                           |
-| current          | wind-speed         | Number:Speed         | Current wind speed.                                                     |
-| current          | wind-direction     | Number:Angle         | Current wind direction.                                                 |
-| current          | gust-speed         | Number:Speed         | Current gust speed. **Advanced**                                        |
-| current          | cloudiness         | Number:Dimensionless | Current cloudiness.                                                     |
-| current          | visibility         | Number:Length        | Current visibility.                                                     |
-| current          | rain               | Number:Speed         | Current rain intensity.                                                 |
-| current          | snow               | Number:Speed         | Current snow intensity.                                                 |
-| current          | precip-intensity   | Number:Speed         | Current precipitation intensity.                                        |
-| current          | precip-probability | Number:Dimensionless | Current precipitation probability.                                      |
-| current          | precip-type        | String               | Current precipitation type (Rain, Snow or Sleet).                       |
-| current          | uvindex            | Number               | Current UV index.                                                       |
-| current          | ozone              | Number:ArealDensity  | Current ozone.                                                          |
+| Channel Group ID | Channel ID           | Item Type            | Description                                                             |
+|------------------|----------------------|----------------------|-------------------------------------------------------------------------|
+| current          | time-stamp           | DateTime             | Time of data observation.                                               |
+| current          | condition            | String               | Current weather condition.                                              |
+| current          | icon                 | Image                | Icon representing the current weather condition.                        |
+| current          | icon-id              | String               | Id of the icon representing the current weather condition. **Advanced** |
+| current          | temperature          | Number:Temperature   | Current temperature.                                                    |
+| current          | apparent-temperature | Number:Temperature   | Current apparent temperature.                                           |
+| current          | pressure             | Number:Pressure      | Current barometric pressure.                                            |
+| current          | humidity             | Number:Dimensionless | Current atmospheric humidity.                                           |
+| current          | wind-speed           | Number:Speed         | Current wind speed.                                                     |
+| current          | wind-direction       | Number:Angle         | Current wind direction.                                                 |
+| current          | gust-speed           | Number:Speed         | Current gust speed. **Advanced**                                        |
+| current          | cloudiness           | Number:Dimensionless | Current cloudiness.                                                     |
+| current          | visibility           | Number:Length        | Current visibility.                                                     |
+| current          | rain                 | Number:Speed         | Current rain intensity.                                                 |
+| current          | snow                 | Number:Speed         | Current snow intensity.                                                 |
+| current          | precip-intensity     | Number:Speed         | Current precipitation intensity.                                        |
+| current          | precip-probability   | Number:Dimensionless | Current precipitation probability.                                      |
+| current          | precip-type          | String               | Current precipitation type (Rain, Snow or Sleet).                       |
+| current          | uvindex              | Number               | Current UV index.                                                       |
+| current          | ozone                | Number:ArealDensity  | Current ozone.                                                          |
 
 ### Hourly Forecast
 
-| Channel Group ID                                      | Channel ID         | Item Type            | Description                                          |
-|-------------------------------------------------------|--------------------|----------------------|------------------------------------------------------|
-| forecastHours01, forecastHours02, ... forecastHours48 | time-stamp         | DateTime             | Time of data forecasted.                             |
-| forecastHours01, forecastHours02, ... forecastHours48 | condition          | String               | Forecast weather condition.                          |
-| forecastHours01, forecastHours02, ... forecastHours48 | icon               | Image                | Icon representing the forecasted weather condition.  |
-| forecastHours01, forecastHours02, ... forecastHours48 | icon-id            | String               | Id of the forecasted weather condition. **Advanced** |
-| forecastHours01, forecastHours02, ... forecastHours48 | temperature        | Number:Temperature   | Forecasted temperature.                              |
-| forecastHours01, forecastHours02, ... forecastHours48 | pressure           | Number:Pressure      | Forecasted barometric pressure.                      |
-| forecastHours01, forecastHours02, ... forecastHours48 | humidity           | Number:Dimensionless | Forecasted atmospheric humidity.                     |
-| forecastHours01, forecastHours02, ... forecastHours48 | wind-speed         | Number:Speed         | Forecasted wind speed.                               |
-| forecastHours01, forecastHours02, ... forecastHours48 | wind-direction     | Number:Angle         | Forecasted wind direction.                           |
-| forecastHours01, forecastHours02, ... forecastHours48 | gust-speed         | Number:Speed         | Forecasted gust speed. **Advanced**                  |
-| forecastHours01, forecastHours02, ... forecastHours48 | cloudiness         | Number:Dimensionless | Forecasted cloudiness.                               |
-| forecastHours01, forecastHours02, ... forecastHours48 | visibility         | Number:Length        | Forecasted visibility.                               |
-| forecastHours01, forecastHours02, ... forecastHours48 | rain               | Number:Speed         | Forecasted rain intensity.                           |
-| forecastHours01, forecastHours02, ... forecastHours48 | snow               | Number:Speed         | Forecasted snow intensity.                           |
-| forecastHours01, forecastHours02, ... forecastHours48 | precip-intensity   | Number:Speed         | Forecasted precipitation intensity.                  |
-| forecastHours01, forecastHours02, ... forecastHours48 | precip-probability | Number:Dimensionless | Forecasted precipitation probability.                |
-| forecastHours01, forecastHours02, ... forecastHours48 | precip-type        | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
-| forecastHours01, forecastHours02, ... forecastHours48 | uvindex            | Number               | Forecasted UV index.                                 |
-| forecastHours01, forecastHours02, ... forecastHours48 | ozone              | Number:ArealDensity  | Forecasted ozone.                                    |
+| Channel Group ID                                      | Channel ID           | Item Type            | Description                                          |
+|-------------------------------------------------------|----------------------|----------------------|------------------------------------------------------|
+| forecastHours01, forecastHours02, ... forecastHours48 | time-stamp           | DateTime             | Time of data forecasted.                             |
+| forecastHours01, forecastHours02, ... forecastHours48 | condition            | String               | Forecast weather condition.                          |
+| forecastHours01, forecastHours02, ... forecastHours48 | icon                 | Image                | Icon representing the forecasted weather condition.  |
+| forecastHours01, forecastHours02, ... forecastHours48 | icon-id              | String               | Id of the forecasted weather condition. **Advanced** |
+| forecastHours01, forecastHours02, ... forecastHours48 | temperature          | Number:Temperature   | Forecasted temperature.                              |
+| forecastHours01, forecastHours02, ... forecastHours48 | apparent-temperature | Number:Temperature   | Forecasted apparent temperature.                     |
+| forecastHours01, forecastHours02, ... forecastHours48 | pressure             | Number:Pressure      | Forecasted barometric pressure.                      |
+| forecastHours01, forecastHours02, ... forecastHours48 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                     |
+| forecastHours01, forecastHours02, ... forecastHours48 | wind-speed           | Number:Speed         | Forecasted wind speed.                               |
+| forecastHours01, forecastHours02, ... forecastHours48 | wind-direction       | Number:Angle         | Forecasted wind direction.                           |
+| forecastHours01, forecastHours02, ... forecastHours48 | gust-speed           | Number:Speed         | Forecasted gust speed. **Advanced**                  |
+| forecastHours01, forecastHours02, ... forecastHours48 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                               |
+| forecastHours01, forecastHours02, ... forecastHours48 | visibility           | Number:Length        | Forecasted visibility.                               |
+| forecastHours01, forecastHours02, ... forecastHours48 | rain                 | Number:Speed         | Forecasted rain intensity.                           |
+| forecastHours01, forecastHours02, ... forecastHours48 | snow                 | Number:Speed         | Forecasted snow intensity.                           |
+| forecastHours01, forecastHours02, ... forecastHours48 | precip-intensity     | Number:Speed         | Forecasted precipitation intensity.                  |
+| forecastHours01, forecastHours02, ... forecastHours48 | precip-probability   | Number:Dimensionless | Forecasted precipitation probability.                |
+| forecastHours01, forecastHours02, ... forecastHours48 | precip-type          | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
+| forecastHours01, forecastHours02, ... forecastHours48 | uvindex              | Number               | Forecasted UV index.                                 |
+| forecastHours01, forecastHours02, ... forecastHours48 | ozone                | Number:ArealDensity  | Forecasted ozone.                                    |
 
 ### Daily Forecast
 
-| Channel Group ID                                                | Channel ID         | Item Type            | Description                                          |
-|-----------------------------------------------------------------|--------------------|----------------------|------------------------------------------------------|
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | time-stamp         | DateTime             | Time of data forecasted.                             |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | condition          | String               | Forecast weather condition.                          |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | icon               | Image                | Icon representing the forecasted weather condition.  |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | icon-id            | String               | Id of the forecasted weather condition. **Advanced** |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | min-temperature    | Number:Temperature   | Minimum forecasted temperature of a day.             |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | max-temperature    | Number:Temperature   | Maximum forecasted temperature of a day.             |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | pressure           | Number:Pressure      | Forecasted barometric pressure.                      |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | humidity           | Number:Dimensionless | Forecasted atmospheric humidity.                     |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | wind-speed         | Number:Speed         | Forecasted wind speed.                               |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | wind-direction     | Number:Angle         | Forecasted wind direction.                           |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | gust-speed         | Number:Speed         | Forecasted gust speed. **Advanced**                  |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | cloudiness         | Number:Dimensionless | Forecasted cloudiness.                               |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | visibility         | Number:Length        | Forecasted visibility.                               |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | rain               | Number:Speed         | Forecasted rain intensity.                           |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | snow               | Number:Speed         | Forecasted snow intensity.                           |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-intensity   | Number:Speed         | Forecasted precipitation intensity.                  |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-probability | Number:Dimensionless | Forecasted precipitation probability.                |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-type        | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex            | Number               | Forecasted UV index.                                 |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | ozone              | Number:ArealDensity  | Forecasted ozone.                                    |
+| Channel Group ID                                                | Channel ID               | Item Type            | Description                                          |
+|-----------------------------------------------------------------|--------------------------|----------------------|------------------------------------------------------|
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | time-stamp               | DateTime             | Time of data forecasted.                             |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | condition                | String               | Forecast weather condition.                          |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | icon                     | Image                | Icon representing the forecasted weather condition.  |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | icon-id                  | String               | Id of the forecasted weather condition. **Advanced** |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | min-temperature          | Number:Temperature   | Minimum forecasted temperature of a day.             |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | max-temperature          | Number:Temperature   | Maximum forecasted temperature of a day.             |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | min-apparent-temperature | Number:Temperature   | Minimum forecasted apparent temperature of a day.    |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | max-apparent-temperature | Number:Temperature   | Maximum forecasted apparent temperature of a day.    |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | pressure                 | Number:Pressure      | Forecasted barometric pressure.                      |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | humidity                 | Number:Dimensionless | Forecasted atmospheric humidity.                     |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | wind-speed               | Number:Speed         | Forecasted wind speed.                               |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | wind-direction           | Number:Angle         | Forecasted wind direction.                           |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | gust-speed               | Number:Speed         | Forecasted gust speed. **Advanced**                  |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | cloudiness               | Number:Dimensionless | Forecasted cloudiness.                               |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | visibility               | Number:Length        | Forecasted visibility.                               |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | rain                     | Number:Speed         | Forecasted rain intensity.                           |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | snow                     | Number:Speed         | Forecasted snow intensity.                           |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-intensity         | Number:Speed         | Forecasted precipitation intensity.                  |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-probability       | Number:Dimensionless | Forecasted precipitation probability.                |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-type              | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex                  | Number               | Forecasted UV index.                                 |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | ozone                    | Number:ArealDensity  | Forecasted ozone.                                    |
 
 ### Severe Weather Alerts
 
@@ -184,6 +188,7 @@ DateTime localLastMeasurement "Timestamp of last measurement [%1$tY-%1$tm-%1$tdT
 String localCurrentCondition "Current condition [%s]" <sun_clouds> { channel="darksky:weather-and-forecast:api:local:current#condition" }
 Image localCurrentConditionIcon "Icon" { channel="darksky:weather-and-forecast:api:local:current#icon" }
 Number:Temperature localCurrentTemperature "Current temperature [%.1f %unit%]" <temperature> { channel="darksky:weather-and-forecast:api:local:current#temperature" }
+Number:Temperature localCurrentApparentTemperature "Current apparent temperature [%.1f %unit%]" <temperature> { channel="darksky:weather-and-forecast:api:local:current#apparent-temperature" }
 Number:Pressure localCurrentPressure "Current barometric pressure [%.1f %unit%]" <pressure> { channel="darksky:weather-and-forecast:api:local:current#pressure" }
 Number:Dimensionless localCurrentHumidity "Current atmospheric humidity [%d %unit%]" <humidity> { channel="darksky:weather-and-forecast:api:local:current#humidity" }
 Number:Speed localCurrentWindSpeed "Current wind speed [%.1f km/h]" <wind> { channel="darksky:weather-and-forecast:api:local:current#wind-speed" }
@@ -205,6 +210,8 @@ String localDailyForecastTodayCondition "Condition for today [%s]" <sun_clouds> 
 Image localDailyForecastTodayConditionIcon "Icon" { channel="darksky:weather-and-forecast:api:local:forecastToday#icon" }
 Number:Temperature localDailyForecastTodayMinTemperature "Minimum temperature for today [%.1f %unit%]" <temperature> { channel="darksky:weather-and-forecast:api:local:forecastToday#min-temperature" }
 Number:Temperature localDailyForecastTodayMaxTemperature "Maximum temperature for today [%.1f %unit%]" <temperature> { channel="darksky:weather-and-forecast:api:local:forecastToday#max-temperature" }
+Number:Temperature localDailyForecastTodayMinApparentTemperature "Minimum apparent temperature for today [%.1f %unit%]" <temperature> { channel="darksky:weather-and-forecast:api:local:forecastToday#min-apparent-temperature" }
+Number:Temperature localDailyForecastTodayMaxApparentTemperature "Maximum apparent temperature for today [%.1f %unit%]" <temperature> { channel="darksky:weather-and-forecast:api:local:forecastToday#max-apparent-temperature" }
 Number:Pressure localDailyForecastTodayPressure "Barometric pressure for today [%.1f %unit%]" <pressure> { channel="darksky:weather-and-forecast:api:local:forecastToday#pressure" }
 Number:Dimensionless localDailyForecastTodayHumidity "Atmospheric humidity for today [%d %unit%]" <humidity> { channel="darksky:weather-and-forecast:api:local:forecastToday#humidity" }
 Number:Speed localDailyForecastTodayWindSpeed "Wind speed for today [%.1f km/h]" <wind> { channel="darksky:weather-and-forecast:api:local:forecastToday#wind-speed" }
@@ -264,6 +271,7 @@ sitemap demo label="Dark Sky" {
         Text item=localCurrentCondition
         Image item=localCurrentConditionIcon
         Text item=localCurrentTemperature
+        Text item=localCurrentApparentTemperature
         Text item=localCurrentPressure
         Text item=localCurrentHumidity
         Text item=localCurrentWindSpeed
@@ -286,6 +294,8 @@ sitemap demo label="Dark Sky" {
         Image item=localDailyForecastTodayConditionIcon
         Text item=localDailyForecastTodayMinTemperature
         Text item=localDailyForecastTodayMaxTemperature
+        Text item=localDailyForecastTodayMinApprentTemperature
+        Text item=localDailyForecastTodayMaxApprentTemperature
         Text item=localDailyForecastTodayPressure
         Text item=localDailyForecastTodayHumidity
         Text item=localDailyForecastTodayWindSpeed
