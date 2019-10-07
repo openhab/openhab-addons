@@ -254,11 +254,9 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
     }
 
     private synchronized void updateChannels(DeviceStatus newDeviceStatus) {
-        synchronized (this) {
-            deviceStatus = newDeviceStatus;
-            for (Channel channel : getThing().getChannels()) {
-                updateChannels(channel.getUID().getId(), deviceStatus);
-            }
+        deviceStatus = newDeviceStatus;
+        for (Channel channel : getThing().getChannels()) {
+            updateChannels(channel.getUID().getId(), deviceStatus);
         }
     }
 
