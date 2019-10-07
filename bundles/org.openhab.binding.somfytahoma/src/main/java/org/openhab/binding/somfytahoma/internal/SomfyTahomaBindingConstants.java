@@ -113,6 +113,9 @@ public class SomfyTahomaBindingConstants {
     // Gate
     public static final ThingTypeUID THING_TYPE_GATE = new ThingTypeUID(BINDING_ID, "gate");
 
+    // Curtains
+    public static final ThingTypeUID THING_TYPE_CURTAIN = new ThingTypeUID(BINDING_ID, "curtain");
+
     // Electricity sensor
     public static final ThingTypeUID THING_TYPE_ELECTRICITYSENSOR = new ThingTypeUID(BINDING_ID, "electricitysensor");
 
@@ -126,7 +129,7 @@ public class SomfyTahomaBindingConstants {
     // Gateway
     public static final String STATUS = "status";
 
-    // Roller shutter, Awning, Screen, Blind, Garage door, Window
+    // Roller shutter, Awning, Screen, Blind, Garage door, Window, Curtain
     public static final String CONTROL = "control";
 
     // Silent roller shutter
@@ -254,6 +257,7 @@ public class SomfyTahomaBindingConstants {
     public static final String WINDOWHANDLE = "WindowHandle";
     public static final String TEMPERATURESENSOR = "TemperatureSensor";
     public static final String GATE = "Gate";
+    public static final String CURTAIN = "Curtain";
     public static final String ELECTRICITYSENSOR = "ElectricitySensor";
     public static final String DOCK = "Dock";
     public static final String SIREN = "Siren";
@@ -274,6 +278,6 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_LIGHTSENSOR, THING_TYPE_SMOKESENSOR, THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR,
             THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM, THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD,
             THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA,
-            THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_ELECTRICITYSENSOR,
-            THING_TYPE_DOCK, THING_TYPE_SIREN));
+            THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_CURTAIN,
+            THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN));
 }
