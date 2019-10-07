@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * Device Structure.
  * Generated with jsonschema2pojo
  *
- * @author LucaCalcaterra - Initial contribution
+ * @author Luca Calcaterra - Initial contribution
  */
 
 public class Device {

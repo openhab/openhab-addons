@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * The {@link MelCloudDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author LucaCalcaterra - Initial contribution
+ * @author Luca Calcaterra - Initial contribution
  * @author Pauli Anttila - Refactoring
  */
 

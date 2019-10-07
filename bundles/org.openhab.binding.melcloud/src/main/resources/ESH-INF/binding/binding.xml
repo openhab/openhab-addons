@@ -5,6 +5,6 @@
 
 	<name>MELCloud Binding</name>
 	<description>Binding for Mitsubishi MELCloud connected A.C. devices.</description>
-	<author>LucaCalcaterra, Pauli Anttila</author>
+	<author>Luca Calcaterra, Pauli Anttila</author>
 
 </binding:binding>

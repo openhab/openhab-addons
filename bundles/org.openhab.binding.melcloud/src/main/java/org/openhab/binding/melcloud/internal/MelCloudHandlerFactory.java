@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
  * The {@link MelCloudHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author LucaCalcaterra - Initial contribution
+ * @author Luca Calcaterra - Initial contribution
  */
 @Component(configurationPid = "binding.melcloud", service = ThingHandlerFactory.class)
 public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
