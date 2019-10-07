@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="melcloud"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="acdevice">
 		<supported-bridge-type-refs>
@@ -137,13 +137,13 @@
 	</channel-type>
 	<channel-type id="offline-channel">
 		<item-type>Switch</item-type>
-		<label>Is Offline </label>
+		<label>Is Offline</label>
 		<description>Is device in offline state.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="hasPendingCommand-channel">
 		<item-type>Switch</item-type>
-		<label>PendingCommand</label>
+		<label>Pending Command</label>
 		<description>Device has a pending command(s)</description>
 		<state readOnly="true" />
 	</channel-type>
