@@ -135,6 +135,13 @@
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>Contact channel</description>
+		<config-description>
+			<parameter name="inverted" type="boolean">
+				<label>Invert Open/Closed</label>
+				<description>True for Eltako FPE-2, false otherwise.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="windowHandleState">
@@ -231,6 +238,14 @@
 		<item-type>Switch</item-type>
 		<label>Motion Detected</label>
 		<description>Motion detection sensor state.</description>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="vibration">
+		<item-type>Switch</item-type>
+		<label>Vibration Alarm</label>
+		<description>Vibration alarm state.</description>
 		<category>Switch</category>
 		<state readOnly="true" />
 	</channel-type>

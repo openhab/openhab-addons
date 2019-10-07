@@ -739,7 +739,8 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 2000, TimeUnit.MILLISECONDS);
         }
         if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
-            connection.sendAnnouncement(device, text, null, null, textToSpeechVolume, lastKnownVolume);
+            String bodyText = text.replaceAll("<[^>]+>", "");
+            connection.sendAnnouncement(device, text, bodyText, null, textToSpeechVolume, lastKnownVolume);
         } else {
             connection.textToSpeech(device, text, textToSpeechVolume, lastKnownVolume);
         }
@@ -881,7 +882,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                             if (StringUtils.containsIgnoreCase(musicProviderId, "Apple")
                                     && StringUtils.containsIgnoreCase(musicProviderId, "Music")) {
                                 musicProviderId = "APPLE_MUSIC";
-                            } 
+                            }
                         }
                     }
                     progress = playerInfo.progress;
@@ -1144,7 +1145,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             }
 
         } catch (Exception e) {
-            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID(), e);
+            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID(), e.getMessage(), e);
 
             disableUpdate = false;
             throw e; // Rethrow same exception

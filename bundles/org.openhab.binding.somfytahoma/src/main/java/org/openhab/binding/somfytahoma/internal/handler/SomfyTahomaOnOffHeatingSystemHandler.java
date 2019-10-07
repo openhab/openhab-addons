@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.COMMAND_SET_HEATINGLEVEL;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.TARGET_HEATING_LEVEL;
+
+import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -19,10 +24,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
-
-import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaOnOffHeatingSystemHandler} is responsible for handling commands,
@@ -37,11 +38,7 @@ public class SomfyTahomaOnOffHeatingSystemHandler extends SomfyTahomaBaseThingHa
 
     public SomfyTahomaOnOffHeatingSystemHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {
-            {
-                put(TARGET_HEATING_LEVEL, "io:TargetHeatingLevelState");
-            }
-        };
+        stateNames.put(TARGET_HEATING_LEVEL, "io:TargetHeatingLevelState");
     }
 
     @Override

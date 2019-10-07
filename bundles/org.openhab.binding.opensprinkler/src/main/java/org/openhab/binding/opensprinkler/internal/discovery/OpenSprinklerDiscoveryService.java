@@ -37,7 +37,10 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,17 +54,24 @@ import org.slf4j.LoggerFactory;
 public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(OPENSPRINKLER_THING));
+            Arrays.asList(OPENSPRINKLER_HTTP_BRIDGE));
 
     private ExecutorService discoverySearchPool;
+    private OpenSprinklerApiFactory apiFactory;
 
-    public OpenSprinklerDiscoveryService() {
+    @Activate
+    public OpenSprinklerDiscoveryService(@Reference OpenSprinklerApiFactory apiFactory) {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_DEFAULT_TIMEOUT_RATE, DISCOVERY_DEFAULT_AUTO_DISCOVER);
+        this.apiFactory = apiFactory;
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return SUPPORTED_THING_TYPES_UIDS;
+    }
+
+    OpenSprinklerApiFactory getApiFactory() {
+        return this.apiFactory;
     }
 
     @Override
@@ -92,7 +102,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
      * @param ip IP address of the OpenSprinkler device as a string.
      */
     public void submitDiscoveryResults(String ip) {
-        ThingUID uid = new ThingUID(OPENSPRINKLER_THING, ip.replace('.', '_'));
+        ThingUID uid = new ThingUID(OPENSPRINKLER_HTTP_BRIDGE, ip.replace('.', '_'));
 
         HashMap<String, Object> properties = new HashMap<>();
 

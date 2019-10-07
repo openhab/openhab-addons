@@ -15,10 +15,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.igormaznitsa.jbbp</artifactId>
+      <groupId>com.igormaznitsa</groupId>
+      <artifactId>jbbp</artifactId>
       <version>1.4.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

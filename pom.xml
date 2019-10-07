@@ -33,6 +33,7 @@
     <module>bom</module>
     <module>bundles</module>
     <module>features</module>
+    <module>itests</module>
   </modules>
 
   <scm>
@@ -68,7 +69,7 @@
 
     <bnd.version>4.2.0</bnd.version>
     <karaf.version>4.2.6</karaf.version>
-    <sat.version>0.6.1</sat.version>
+    <sat.version>0.7.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage></bnd.importpackage>
@@ -117,13 +118,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <repositories>
-    <repository>
-      <id>osgiify</id>
-      <url>https://dl.bintray.com/openhab/mvn/openhab-osgiify</url>
-    </repository>
-  </repositories>
 
   <build>
     <pluginManagement>
@@ -495,6 +489,7 @@ Import-Package: \\
                     <versionRange>[3.0.0,)</versionRange>
                     <goals>
                       <goal>unpack</goal>
+                      <goal>unpack-dependencies</goal>
                     </goals>
                   </pluginExecutionFilter>
                   <action>
@@ -505,6 +500,7 @@ Import-Package: \\
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.openhab.tools.sat</groupId>
           <artifactId>sat-plugin</artifactId>
@@ -551,6 +547,7 @@ Import-Package: \\
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -626,7 +623,7 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/;filter:=*.jar;lib:=true</bnd.includeresource>
         <feature.directory>../../src/main/feature/feature.xml</feature.directory>
       </properties>
       <build>
@@ -657,7 +654,6 @@ Import-Package: \\
         </plugins>
       </build>
     </profile>
-
     <profile>
       <id>add-libraries-eclipse</id>
       <activation>
@@ -669,20 +665,8 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/;filter:=*.jar;lib:=true</bnd.includeresource>
       </properties>
-    </profile>
-
-    <profile>
-      <id>skip-itest</id>
-      <activation>
-        <property>
-          <name>!skipTests</name>
-        </property>
-      </activation>
-      <modules>
-        <module>itests</module>
-      </modules>
     </profile>
     <profile>
       <id>with-bnd-resolver-resolve</id>
@@ -711,45 +695,6 @@ Import-Package: \\
         </pluginManagement>
       </build>
     </profile>
-
-    <profile>
-      <id>embedExternalDependency</id>
-      <activation>
-        <file>
-          <exists>embedExternalDependency.profile</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.0.0</version>
-            <executions>
-              <!-- unpack dependency -->
-              <execution>
-                <id>unpack-dependency</id>
-                <goals>  
-                  <goal>unpack</goal>
-                </goals>
-                <configuration>
-                  <artifactItems>
-                    <artifactItem>
-                      <groupId>${embedDependency.groupId}</groupId>
-                      <artifactId>${embedDependency.artifactId}</artifactId>
-                      <version>${embedDependency.version}</version>
-                      <type>jar</type>
-                      <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                      <overWrite>true</overWrite>
-                    </artifactItem>
-                  </artifactItems>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
   </profiles>
 
 </project>

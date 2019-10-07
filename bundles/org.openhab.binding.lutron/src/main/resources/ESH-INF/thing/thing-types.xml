@@ -7,6 +7,9 @@
 	<bridge-type id="ipbridge">
 		<label>Lutron IP Access Point</label>
 		<description>Ethernet access point to Lutron lighting control system</description>
+		<properties>
+			<property name="vendor">Lutron</property>
+		</properties>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -35,6 +38,18 @@
 				<description>The period in minutes between connection heartbeat checks</description>
 				<unitLabel>minutes</unitLabel>
 				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="delay" type="integer" min="0" max="250" unit="ms">
+				<label>Send delay</label>
+				<description>The delay in milliseconds between sending integration commands (for throttling)</description>
+				<unitLabel>ms</unitLabel>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="discoveryFile" type="text">
+				<label>Discovery Data File</label>
+				<description>File to read device discovery information from (for debugging)</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -297,6 +312,44 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="intlkeypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>International seeTouch Keypad</label>
+		<description>Lutron International seeTouch keypad (HomeWorks QS Only)</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of keypad in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>Keypad Model</label>
+				<description>Keypad/faceplate model number without the system prefix</description>
+				<options>
+					<option value="2B">2B</option>
+					<option value="3B">3B</option>
+					<option value="4B">4B</option>
+					<option value="5BRL">5BRL</option>
+					<option value="6BRL">6BRL</option>
+					<option value="7BRL">7BRL</option>
+					<option value="8BRL">8BRL</option>
+					<option value="10BRL">10BRL</option>
+					<option value="Generic">Generic</option>
+				</options>
+				<default>Generic</default>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
 	<thing-type id="pico">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
@@ -322,6 +375,38 @@
 					<option value="Generic">Generic</option>
 				</options>
 				<default>Generic</default>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="grafikeyekeypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>GRAFIK Eye QS</label>
+		<description>Lutron GRAFIK Eye QS for RadioRA 2/HomeWorks QS</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of GRAFIK Eye in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>GRAFIK Eye Keypad Layout</label>
+				<description>Number of shade button columns</description>
+				<options>
+					<option value="0COL">No shade button columns</option>
+					<option value="1COL">1 shade button column</option>
+					<option value="2COL">2 shade button columns</option>
+					<option value="3COL">3 shade button columns</option>
+				</options>
+				<default>3COL</default>
 			</parameter>
 			<parameter name="autorelease" type="boolean">
 				<label>Auto-release</label>
@@ -369,6 +454,22 @@
 				<label>Auto-release</label>
 				<description>Automatically release pressed buttons</description>
 				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="qsio">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>QS IO Interface</label>
+		<description>Lutron QS IO Interface</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of QS IO Interface in the HomeWorks QS system</description>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ambientweather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Ambient Weather WS-1400-IP -->
+	<thing-type id="ws1400ip">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>WS-1400-IP</label>
+		<description>Ambient Weather Station WS-1400-IP</description>
+		<channel-groups>
+			<channel-group id="station" typeId="station">
+				<label>Weather Station</label>
+				<description></description>
+			</channel-group>
+			<channel-group id="weatherDataWs1400ip" typeId="weatherDataWs1400ip">
+				<label>Weather Data</label>
+				<description></description>
+			</channel-group>
+			<channel-group id="indoorSensor" typeId="indoorSensor">
+				<label>Indoor Sensor</label>
+				<description></description>
+			</channel-group>
+			<channel-group id="remoteSensor1" typeId="remoteSensor">
+				<label>Remote Sensor 1</label>
+				<description></description>
+			</channel-group>
+			<channel-group id="remoteSensor2" typeId="remoteSensor">
+				<label>Remote Sensor 2</label>
+				<description></description>
+			</channel-group>
+			<channel-group id="remoteSensor3" typeId="remoteSensor">
+				<label>Remote Sensor 3</label>
+				<description></description>
+			</channel-group>
+			<channel-group id="remoteSensor4" typeId="remoteSensor">
+				<label>Remote Sensor 4</label>
+				<description></description>
+			</channel-group>
+			<channel-group id="remoteSensor5" typeId="remoteSensor">
+				<label>Remote Sensor 5</label>
+				<description></description>
+			</channel-group>
+			<channel-group id="remoteSensor6" typeId="remoteSensor">
+				<label>Remote Sensor 6</label>
+				<description></description>
+			</channel-group>
+			<channel-group id="remoteSensor7" typeId="remoteSensor">
+				<label>Remote Sensor 7</label>
+				<description></description>
+			</channel-group>
+			<channel-group id="remoteSensor8" typeId="remoteSensor">
+				<label>Remote Sensor 8</label>
+				<description></description>
+			</channel-group>
+		</channel-groups>
+		<config-description-ref uri="thing-type:ambientweather:station" />
+	</thing-type>
+
+	<!-- Channel group type specific to WS-1400-IP -->
+	<channel-group-type id="weatherDataWs1400ip">
+		<label>Weather Data</label>
+		<description>Weather Data</description>
+		<channels>
+			<channel id="observationTime" typeId="observationTime" />
+			<channel id="batteryIndicator" typeId="batteryIndicator" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="dewPoint" typeId="dewPoint" />
+			<channel id="feelingTemperature" typeId="feelingTemperature" />
+			<channel id="relativeHumidity" typeId="relativeHumidity" />
+			<channel id="pressureAbsolute" typeId="pressure" />
+			<channel id="pressureRelative" typeId="pressure" />
+			<channel id="pressureTrend" typeId="pressureTrend" />
+			<channel id="windDirectionDegrees" typeId="windDirectionDegrees" />
+			<channel id="windDirection" typeId="windDirection" />
+			<channel id="windSpeed" typeId="windSpeed" />
+			<channel id="windGust" typeId="windGust" />
+			<channel id="windGustMaxDaily" typeId="windGustMaxDaily" />
+			<channel id="rainHourlyRate" typeId="rainHourlyRate" />
+			<channel id="rainDay" typeId="rainDay" />
+			<channel id="rainWeek" typeId="rainWeek" />
+			<channel id="rainMonth" typeId="rainMonth" />
+			<channel id="rainYear" typeId="rainYear" />
+			<channel id="rainTotal" typeId="rainTotal" />
+			<channel id="rainEvent" typeId="rainEvent" />
+			<channel id="rainLastTime" typeId="rainLastTime" />
+			<channel id="solarRadiation" typeId="solarRadiation" />
+			<channel id="uvIndex" typeId="uvIndex" />
+			<channel id="uvDanger" typeId="uvDanger" />
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

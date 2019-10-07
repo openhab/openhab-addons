@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="hpprinter" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="inkLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Ink Level</label>
+		<description>Shows the amount of Ink/Toner remaining</description>
+		<state readOnly="true" pattern="%f %%"></state>
+	</channel-type>
+
+	<channel-type id="totals">
+		<item-type>Number</item-type>
+		<label>Totals</label>
+		<description>Amount of pages.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="pagesRemain">
+		<item-type>String</item-type>
+		<label>Pages Remaining</label>
+		<description>Shows the estimated amount of pages remaining</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="cumlMarkingUsed">
+		<item-type>Number:Volume</item-type>
+		<label>Cumulative Marking Used</label>
+		<description>Shows the amount of Ink/Toner used</description>
+		<state readOnly="true" pattern="%f mL"></state>
+	</channel-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Printer Status</description>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

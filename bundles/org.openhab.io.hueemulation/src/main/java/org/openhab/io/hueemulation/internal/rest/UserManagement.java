@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -69,7 +68,6 @@ import io.swagger.annotations.ApiResponses;
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWithSecrets, String> {
     private final Logger logger = LoggerFactory.getLogger(UserManagement.class);
 

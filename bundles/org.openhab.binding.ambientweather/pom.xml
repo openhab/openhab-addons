@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>2.5.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.binding.ambientweather</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: Ambient Weather Binding</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>io.socket.socket.io-client</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>io.socket.engine.io-client</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.okhttp</artifactId>
+      <version>3.8.1_1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.okio</artifactId>
+      <version>1.13.0_1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20180813</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <bnd.importpackage>android.*;resolution:=optional,com.android.org.*;resolution:=optional,dalvik.*;resolution:=optional,javax.annotation.meta.*;resolution:=optional,org.apache.harmony.*;resolution:=optional,org.conscrypt.*;resolution:=optional,sun.security.*;resolution:=optional</bnd.importpackage>
+  </properties>
+
+</project>

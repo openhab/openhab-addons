@@ -51,7 +51,7 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     protected void activate(ComponentContext componentContext, Map<String, Object> config) {
         super.activate(componentContext);
         modified(config);
-    };
+    }
 
     @Override
     @Deactivate

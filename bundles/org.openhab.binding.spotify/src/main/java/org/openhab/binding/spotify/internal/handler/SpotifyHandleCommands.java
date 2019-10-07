@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class SpotifyHandleCommands {
 
-    private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SpotifyHandleCommands.class);
 
     private final SpotifyApi spotifyApi;
 
@@ -110,12 +110,8 @@ class SpotifyHandleCommands {
                 }
             case CHANNEL_DEVICEVOLUME:
                 if (command instanceof DecimalType) {
-                    final PercentType volume = new PercentType(((DecimalType) command).intValue());
-
-                    spotifyApi.setVolume(deviceId, volume.intValue());
-                    commandRun = true;
-                } else if (command instanceof PercentType) {
-                    final PercentType volume = (PercentType) command;
+                    final PercentType volume = command instanceof PercentType ? (PercentType) command
+                            : new PercentType(((DecimalType) command).intValue());
 
                     spotifyApi.setVolume(deviceId, volume.intValue());
                     commandRun = true;

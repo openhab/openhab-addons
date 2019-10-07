@@ -19,7 +19,7 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.DeviceType;
 import org.openhab.binding.tplinksmarthome.internal.model.Sysinfo;
 
 /**
@@ -36,20 +36,21 @@ public final class PropertiesCollector {
     /**
      * Collect all properties of the thing from the {@link Sysinfo} object.
      *
-     * @param thingTypeUID thing to get the properties for
-     * @param ipAddress    ip address of the device
-     * @param sysinfo      system info data returned from the device
+     * @param thingType thing to get the properties for
+     * @param ipAddress ip address of the device
+     * @param sysinfo system info data returned from the device
      * @return map of properties
      */
-    public static Map<String, Object> collectProperties(ThingTypeUID thingTypeUID, String ipAddress, Sysinfo sysinfo) {
-        Map<String, Object> properties = new TreeMap<>();
+    public static Map<String, Object> collectProperties(TPLinkSmartHomeThingType thingType, String ipAddress,
+            Sysinfo sysinfo) {
+        final Map<String, Object> properties = new TreeMap<>();
 
         putNonNull(properties, CONFIG_IP, ipAddress);
-        if (TPLinkSmartHomeThingType.isRangeExtenderDevice(thingTypeUID)) {
+        if (thingType.getDeviceType() == DeviceType.RANGE_EXTENDER) {
             collectPropertiesRangeExtender(properties, sysinfo);
         } else {
             collectProperties(properties, sysinfo);
-            if (TPLinkSmartHomeThingType.isBulbDevice(thingTypeUID)) {
+            if (thingType.getDeviceType() == DeviceType.BULB) {
                 collectPropertiesBulb(properties, sysinfo);
             } else {
                 collectPropertiesOther(properties, sysinfo);
@@ -62,7 +63,7 @@ public final class PropertiesCollector {
      * Collect generic properties.
      *
      * @param properties properties object to store properties in
-     * @param sysinfo    system info data returned from the device
+     * @param sysinfo system info data returned from the device
      */
     private static void collectProperties(Map<String, Object> properties, Sysinfo sysinfo) {
         putNonNull(properties, CONFIG_DEVICE_ID, sysinfo.getDeviceId());
@@ -77,7 +78,7 @@ public final class PropertiesCollector {
      * Collect Smart Bulb specific properties.
      *
      * @param properties properties object to store properties in
-     * @param sysinfo    system info data returned from the device
+     * @param sysinfo system info data returned from the device
      */
     private static void collectPropertiesBulb(Map<String, Object> properties, Sysinfo sysinfo) {
         putNonNull(properties, PROPERTY_TYPE, sysinfo.getType());
@@ -90,10 +91,10 @@ public final class PropertiesCollector {
      * Collect Smart Range Extender specific properties.
      *
      * @param properties properties object to store properties in
-     * @param sysinfo    system info data returned from the device
+     * @param sysinfo system info data returned from the device
      */
     private static void collectPropertiesRangeExtender(Map<String, Object> properties, Sysinfo sysinfo) {
-        Sysinfo system = sysinfo.getSystem();
+        final Sysinfo system = sysinfo.getSystem();
         collectProperties(properties, system);
         putNonNull(properties, PROPERTY_TYPE, system.getType());
         putNonNull(properties, PROPERTY_MAC, system.getMac());
@@ -105,7 +106,7 @@ public final class PropertiesCollector {
      * Collect Smart Switch specific properties.
      *
      * @param properties properties object to store properties in
-     * @param sysinfo    system info data returned from the device
+     * @param sysinfo system info data returned from the device
      */
     private static void collectPropertiesOther(Map<String, Object> properties, Sysinfo sysinfo) {
         putNonNull(properties, PROPERTY_TYPE, sysinfo.getType());

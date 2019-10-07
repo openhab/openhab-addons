@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin S. Eskildsen - Initial contribution
  *
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.zoneminder")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.zoneminder")
 public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(ZoneMinderHandlerFactory.class);

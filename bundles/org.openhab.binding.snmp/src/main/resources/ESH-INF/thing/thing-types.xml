@@ -83,9 +83,21 @@
 					<option value="UINT32">Unsigned Integer (32 bit)</option>
 					<option value="INT32">Integer (32 bit)</option>
 					<option value="COUNTER64">Counter (64 bit)</option>
+					<option value="FLOAT">Float</option>
 				</options>
 				<default>UINT32</default>
 				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="doNotLogException" type="boolean">
+				<label>Don't Log Exception</label>
+				<description>If enabled, ignore faulty values/exceptions in this channel</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="exceptionValue" type="integer">
+				<label>Exception Value</label>
+				<description>Value to send if an SNMP exception occurs (default: UNDEF)</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -116,10 +128,22 @@
 				<description>Content data type</description>
 				<options>
 					<option value="STRING">String</option>
+					<option value="HEXSTRING">Hex-String</option>
 					<option value="IPADDRESS">IP Address</option>
 				</options>
 				<default>STRING</default>
 				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="doNotLogException" type="boolean">
+				<label>Don't Log Exception</label>
+				<description>If enabled, ignore faulty values/exceptions in this channel</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="exceptionValue" type="text">
+				<label>Exception Value</label>
+				<description>Value to send if an SNMP exception occurs (default: UNDEF)</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -153,6 +177,7 @@
 					<option value="INT32">Integer (32 bit)</option>
 					<option value="COUNTER64">Counter (64 bit)</option>
 					<option value="STRING">String</option>
+					<option value="HEXSTRING">Hex-String</option>
 					<option value="IPADDRESS">IP Address</option>
 				</options>
 				<default>UINT32</default>
@@ -165,6 +190,22 @@
 			<parameter name="offvalue" type="text">
 				<label>Off-Value</label>
 				<description>Value that equals OFF</description>
+			</parameter>
+			<parameter name="doNotLogException" type="boolean">
+				<label>Don't Log Exception</label>
+				<description>If enabled, faulty values/exceptions will not be logged in this channel</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="exceptionValue" type="text">
+				<label>Exception Value</label>
+				<description>Value to send if an SNMP exception occurs (ON, OFF, default: UNDEF)</description>
+				<options>
+					<option value="ON">ON</option>
+					<option value="OFF">OFF</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</channel-type>

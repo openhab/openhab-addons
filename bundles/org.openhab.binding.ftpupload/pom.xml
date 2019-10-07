@@ -13,24 +13,28 @@
 
   <name>openHAB Add-ons :: Bundles :: FTP Upload Binding</name>
 
+  <properties>
+    <bnd.importpackage>org.springframework.*;resolution:="optional"</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.ftpserver</groupId>
       <artifactId>ftplet-api</artifactId>
       <version>1.1.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.ftpserver</groupId>
       <artifactId>ftpserver-core</artifactId>
       <version>1.1.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.mina</groupId>
       <artifactId>mina-core</artifactId>
-      <version>2.0.16</version>
-      <scope>provided</scope>
+      <version>2.0.21</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

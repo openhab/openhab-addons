@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -98,7 +97,6 @@ import io.swagger.annotations.ApiResponses;
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class LightsAndGroups implements RegistryChangeListener<Item> {
     private final Logger logger = LoggerFactory.getLogger(LightsAndGroups.class);
     private static final String ITEM_TYPE_GROUP = "Group";

@@ -13,11 +13,16 @@
 package org.openhab.binding.groheondus.internal.handler;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.storage.Storage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -25,7 +30,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.grohe.ondus.api.OndusService;
+import org.openhab.binding.groheondus.internal.AccountServlet;
 import org.openhab.binding.groheondus.internal.GroheOndusAccountConfiguration;
+import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,12 +42,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
+    private static final String STORAGE_KEY_REFRESH_TOKEN = "refreshToken";
+
     private final Logger logger = LoggerFactory.getLogger(GroheOndusAccountHandler.class);
 
+    private HttpService httpService;
+    private Storage<String> storage;
+    private @Nullable AccountServlet accountServlet;
     private @Nullable OndusService ondusService;
+    private @Nullable ScheduledFuture<?> refreshTokenFuture;
 
-    public GroheOndusAccountHandler(Bridge bridge) {
+    public GroheOndusAccountHandler(Bridge bridge, HttpService httpService, Storage<String> storage) {
         super(bridge);
+        this.httpService = httpService;
+        this.storage = storage;
     }
 
     public OndusService getService() {
@@ -49,6 +64,43 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
             throw new IllegalStateException("OndusService requested, which is null (UNINITIALIZED)");
         }
         return ret;
+    }
+
+    public void deleteRefreshToken() {
+        this.storage.remove(STORAGE_KEY_REFRESH_TOKEN);
+        this.initialize();
+
+        if (refreshTokenFuture != null) {
+            refreshTokenFuture.cancel(true);
+        }
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.storage.put(STORAGE_KEY_REFRESH_TOKEN, refreshToken);
+        this.initialize();
+    }
+
+    private void scheduleTokenRefresh() {
+        if (ondusService != null) {
+            Instant expiresAt = ondusService.authorizationExpiresAt();
+            Duration between = Duration.between(Instant.now(), expiresAt);
+            refreshTokenFuture = scheduler.schedule(() -> {
+                OndusService ondusService = this.ondusService;
+                if (ondusService == null) {
+                    logger.warn("Trying to refresh Ondus account without a service being present.");
+                    return;
+                }
+                try {
+                    setRefreshToken(ondusService.refreshAuthorization());
+                } catch (Exception e) {
+                    logger.warn("Could not refresh authorization for GROHE ONDUS account, error {}", e);
+                }
+            }, between.getSeconds(), TimeUnit.SECONDS);
+        }
+    }
+
+    public boolean hasRefreshToken() {
+        return this.storage.containsKey(STORAGE_KEY_REFRESH_TOKEN);
     }
 
     @Override
@@ -62,15 +114,36 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
         if (ondusService != null) {
             ondusService = null;
         }
+        if (accountServlet != null) {
+            accountServlet.dispose();
+        }
+        if (refreshTokenFuture != null) {
+            refreshTokenFuture.cancel(true);
+        }
     }
 
     @Override
     public void initialize() {
         GroheOndusAccountConfiguration config = getConfigAs(GroheOndusAccountConfiguration.class);
 
+        if (this.accountServlet == null) {
+            this.accountServlet = new AccountServlet(httpService, this.getThing().getUID().getId(), this);
+        }
+
+        if ((config.username == null || config.password == null) && !this.hasRefreshToken()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Need username/password or refreshToken");
+            return;
+        }
+
         updateStatus(ThingStatus.UNKNOWN);
         try {
-            ondusService = OndusService.login(config.username, config.password);
+            if (storage.containsKey(STORAGE_KEY_REFRESH_TOKEN)) {
+                ondusService = OndusService.login(storage.get(STORAGE_KEY_REFRESH_TOKEN));
+                scheduleTokenRefresh();
+            } else {
+                ondusService = OndusService.login(config.username, config.password);
+            }
             updateStatus(ThingStatus.ONLINE);
 
             scheduler.submit(() -> getThing().getThings().forEach(thing -> {

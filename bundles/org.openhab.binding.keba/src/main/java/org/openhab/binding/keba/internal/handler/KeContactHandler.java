@@ -562,6 +562,14 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     break;
                 }
+                case CHANNEL_AUTHENTICATE: {
+                    if (command instanceof StringType) {
+                        String cmd = command.toString();
+                        // cmd must contain ID + CLASS (works only if the RFID TAG is in the whitelist of the Keba station) 
+                        transceiver.send("start " + cmd , this);
+                    }
+                    break;
+                }
             }
         }
     }

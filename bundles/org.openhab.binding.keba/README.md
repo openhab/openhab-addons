@@ -43,6 +43,7 @@ All devices support the following channels:
 | sessionrfidclass   | String    | yes       | RFID tag class used for the last charging session                      |
 | sessionid          | Number    | yes       | session ID of the last charging session                                |
 | setenergylimit     | Number    | no        | set an energy limit for an already running or the next charging session|
+| authenticate       | String    | no        | authenticate and start a session using RFID tag+RFID class             |
 
 
 ## Example

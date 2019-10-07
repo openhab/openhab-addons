@@ -181,7 +181,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         nhcEventsRunning = false;
         // this is a stop from outside the runnable, so just log it and stop
         logger.debug("Niko Home Control: event listener thread stopped");
-    };
+    }
 
     /**
      * After setting up the communication with the Niko Home Control IP-interface, send all initialization messages.

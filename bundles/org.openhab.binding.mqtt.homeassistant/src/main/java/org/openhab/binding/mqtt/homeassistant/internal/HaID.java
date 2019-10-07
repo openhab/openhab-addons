@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.util.UIDUtils;
 
 /**
  * HomeAssistant MQTT components use a specific MQTT topic layout,
@@ -41,7 +45,7 @@ public class HaID {
      * Creates a {@link HaID} object for a given HomeAssistant MQTT topic.
      *
      * @param mqttTopic A topic like "homeassistant/binary_sensor/garden/config" or
-     *     "homeassistant/binary_sensor/0/garden/config"
+     *            "homeassistant/binary_sensor/0/garden/config"
      */
     public HaID(String mqttTopic) {
         String[] strings = mqttTopic.split("/");
@@ -106,9 +110,9 @@ public class HaID {
      * @return newly created HaID
      */
     public static HaID fromConfig(String baseTopic, Configuration config) {
-        String objectID = (String) config.get("objectid");
-        String nodeID = (String) config.getProperties().getOrDefault("nodeid", "");
         String component = (String) config.get("component");
+        String nodeID = (String) config.getProperties().getOrDefault("nodeid", "");
+        String objectID = (String) config.get("objectid");
         return new HaID(baseTopic, objectID, nodeID, component);
     }
 
@@ -139,56 +143,66 @@ public class HaID {
      * @param config
      * @return newly created HaID
      */
-    public static HaID fromConfig(HandlerConfiguration config) {
-        String objectID = config.objectid;
-        String nodeID = "";
+    public static Collection<HaID> fromConfig(HandlerConfiguration config) {
+        Collection<HaID> result = new ArrayList<>();
 
-        if (StringUtils.contains(objectID, '/')) {
-            String[] parts = objectID.split("/");
+        for (String topic : config.topics) {
+            String[] parts = topic.split("/");
 
-            if (parts.length != 2) {
-                throw new IllegalArgumentException(
-                        "Bad configuration. objectid must be <objectId> or <nodeId>/<objectId>!");
+            switch (parts.length) {
+                case 2:
+                    result.add(new HaID(config.basetopic, parts[1], "", parts[0]));
+                    break;
+                case 3:
+                    result.add(new HaID(config.basetopic, parts[2], parts[1], parts[0]));
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                            "Bad configuration. topic must be <component>/<objectId> or <component>/<nodeId>/<objectId>!");
             }
-            nodeID = parts[0];
-            objectID = parts[1];
         }
-        return new HaID(config.basetopic, objectID, nodeID, "+");
+        return result;
     }
 
     /**
-     * Create a new thing configuration which contains the information from this HaID.
+     * Return the topic to put into the HandlerConfiguration for this component.
      * <p>
      * <code>objectid</code> in the thing configuration will be
      * <code>nodeID/objectID<code> from the HaID, if <code>nodeID</code> is not empty.
      * <p>
-     * <code>component</code> value will not be preserved.
      *
-     * @return the new thing configuration
+     * @return the short topic.
      */
-    public HandlerConfiguration toHandlerConfiguration() {
+    public String toShortTopic() {
         String objectID = this.objectID;
         if (StringUtils.isNotBlank(nodeID)) {
             objectID = nodeID + "/" + objectID;
         }
 
-        return new HandlerConfiguration(baseTopic, objectID);
+        return component + "/" + objectID;
     }
 
     /**
      * The default group id is the unique_id of the component, given in the config-json.
      * If the unique id is not set, then a fallback is constructed from the HaID information.
      *
-     * @return fallback group id
+     * @return group id
      */
-    public String getFallbackGroupId() {
-        StringBuilder str = new StringBuilder();
+    public String getGroupId(@Nullable final String uniqueId) {
+        String result = uniqueId;
 
-        if (StringUtils.isNotBlank(nodeID)) {
-            str.append(nodeID).append('_');
+        // the null test is only here so the compile knows, result is not null afterwards
+        if (result == null || StringUtils.isBlank(result)) {
+            StringBuilder str = new StringBuilder();
+
+            if (StringUtils.isNotBlank(nodeID)) {
+                str.append(nodeID).append('_');
+            }
+            str.append(objectID).append('_').append(component);
+            result = str.toString();
         }
-        str.append(objectID).append('_').append(component);
-        return str.toString();
+
+        return UIDUtils.encode(result);
     }
 
     /**

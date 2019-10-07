@@ -124,7 +124,9 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
         // Unbind oshiSystemInfo service and bind the mock service to make the systeminfobinding tests independent of
         // the external OSHI library
-        systeminfoHandlerFactory.unbindSystemInfo(oshiSystemInfo);
+        if (oshiSystemInfo != null) {
+            systeminfoHandlerFactory.unbindSystemInfo(oshiSystemInfo);
+        }
         systeminfoHandlerFactory.bindSystemInfo(mockedSystemInfo);
 
         managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
@@ -343,18 +345,6 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
         initializeThingWithChannel(channnelID, acceptedItemType);
         assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY, UnDefType.UNDEF);
-    }
-
-    @Test
-    public void assertChannelCpuLoadIsUpdated() {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD;
-        String acceptedItemType = "Number";
-
-        DecimalType mockedCpuLoadValue = new DecimalType(10.5);
-        when(mockedSystemInfo.getCpuLoad()).thenReturn(mockedCpuLoadValue);
-
-        initializeThingWithChannel(channnelID, acceptedItemType);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY, mockedCpuLoadValue);
     }
 
     @Test

@@ -11,3 +11,17 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+JDOM Version: 2.0.6
+* License: JDOM License (modified Apache)
+* Project: http://www.jdom.org
+* Source: https://github.com/hunterhacker/jdom
+
+Rome Version 1.12.0
+* License: Apache 2.0 License
+* Project: https://rometools.github.io/rome/
+* Source: https://github.com/rometools/rome
+
+

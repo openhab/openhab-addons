@@ -19,15 +19,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
+import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
+import org.openhab.binding.lgwebos.internal.handler.core.ChannelInfo;
+import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.connectsdk.core.ChannelInfo;
-import com.connectsdk.device.ConnectableDevice;
-import com.connectsdk.service.capability.TVControl;
-import com.connectsdk.service.capability.TVControl.ChannelListener;
-import com.connectsdk.service.command.ServiceCommandError;
-import com.connectsdk.service.command.ServiceSubscription;
 
 /**
  * Handles TV Control Channel State. This is read only.
@@ -36,41 +32,30 @@ import com.connectsdk.service.command.ServiceSubscription;
  * @author Sebastian Prehn - initial contribution
  */
 @NonNullByDefault
-public class TVControlChannelName extends BaseChannelHandler<ChannelListener, Object> {
+public class TVControlChannelName extends BaseChannelHandler<ChannelInfo> {
     private final Logger logger = LoggerFactory.getLogger(TVControlChannelName.class);
 
-    private TVControl getControl(ConnectableDevice device) {
-        return device.getCapability(TVControl.class);
-    }
-
     @Override
-    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
-            Command command) {
+    public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
         // nothing to do, this is read only.
     }
 
     @Override
-    protected Optional<ServiceSubscription<ChannelListener>> getSubscription(ConnectableDevice device, String channelId,
-            LGWebOSHandler handler) {
-        if (hasCapability(device, TVControl.Channel_Subscribe)) {
-            return Optional.of(getControl(device).subscribeCurrentChannel(new ChannelListener() {
+    protected Optional<ServiceSubscription<ChannelInfo>> getSubscription(String channelId, LGWebOSHandler handler) {
+        return Optional.of(handler.getSocket().subscribeCurrentChannel(new ResponseListener<ChannelInfo>() {
+            @Override
+            public void onError(@Nullable String error) {
+                logger.debug("Error in listening to channel name changes: {}.", error);
+            }
 
-                @Override
-                public void onError(@Nullable ServiceCommandError error) {
-                    logger.debug("Error in listening to channel name changes: {}.",
-                            error == null ? "" : error.getMessage());
+            @Override
+            public void onSuccess(@Nullable ChannelInfo channelInfo) {
+                if (channelInfo == null) {
+                    return;
                 }
+                handler.postUpdate(channelId, new StringType(channelInfo.getName()));
+            }
+        }));
 
-                @Override
-                public void onSuccess(@Nullable ChannelInfo channelInfo) {
-                    if (channelInfo == null) {
-                        return;
-                    }
-                    handler.postUpdate(channelId, new StringType(channelInfo.getName()));
-                }
-            }));
-        } else {
-            return Optional.empty();
-        }
     }
 }

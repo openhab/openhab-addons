@@ -20,7 +20,16 @@ package org.openhab.binding.network.internal;
  */
 public class SpeedTestConfiguration {
     public Integer refreshInterval = 20;
+    public Integer initialDelay = 5;
     public Integer uploadSize = 1000000;
-    public String url;
-    public String fileName;
+    private String url;
+    private String fileName;
+
+    public String getUploadURL() {
+        return url + (url.endsWith("/") ? "" : "/");
+    }
+
+    public String getDownloadURL() {
+        return getUploadURL() + fileName;
+    }
 }

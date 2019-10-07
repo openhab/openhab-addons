@@ -311,8 +311,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     public void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
             byte[] asdu) {
         // GroupValueResponses are treated the same as GroupValueWrite telegrams
-        logger.trace(
-                "onGroupReadResponse Thing '{}' processes a GroupValueResponse telegram for destination '{}' for channel '{}'",
+        logger.trace("onGroupReadResponse Thing '{}' processes a GroupValueResponse telegram for destination '{}'",
                 getThing().getUID(), destination);
         onGroupWrite(client, source, destination, asdu);
     }

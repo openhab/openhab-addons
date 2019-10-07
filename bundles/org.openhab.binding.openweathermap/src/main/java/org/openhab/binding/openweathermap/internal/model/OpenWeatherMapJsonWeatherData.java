@@ -35,7 +35,7 @@ public class OpenWeatherMapJsonWeatherData {
     private List<Weather> weather;
     private String base;
     private Main main;
-    private Integer visibility;
+    private @Nullable Integer visibility;
     private Wind wind;
     private Clouds clouds;
     private @Nullable Rain rain;
@@ -78,7 +78,7 @@ public class OpenWeatherMapJsonWeatherData {
         this.main = main;
     }
 
-    public Integer getVisibility() {
+    public @Nullable Integer getVisibility() {
         return visibility;
     }
 

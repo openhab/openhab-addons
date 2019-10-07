@@ -51,7 +51,7 @@ public class DwdWarningDataAccess {
             stringBuilder.append("&CQL_FILTER=");
             stringBuilder
                     .append(URLEncoder.encode("WARNCELLID LIKE '" + cellId + "'", StandardCharsets.UTF_8.toString()));
-            logger.debug("Refreshing Data: " + stringBuilder.toString());
+            logger.debug("Refreshing Data: {}", stringBuilder);
             String rawData = HttpUtil.executeUrl("GET", stringBuilder.toString(), 5000);
             return rawData;
         } catch (IOException e) {
