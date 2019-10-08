@@ -24,6 +24,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcEnergyMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.slf4j.Logger;
@@ -117,6 +118,17 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
             addThermostatDevice(new ThingUID(THING_TYPE_THERMOSTAT, handler.getThing().getUID(), thermostatId),
                     thermostatId, thingName, thingLocation);
         }
+
+        Map<String, NhcEnergyMeter> energyMeters = nhcComm.getEnergyMeters();
+
+        for (Map.Entry<String, NhcEnergyMeter> energyMeterEntry : energyMeters.entrySet()) {
+
+            String energyMeterId = energyMeterEntry.getKey();
+            NhcEnergyMeter nhcEnergyMeter = energyMeterEntry.getValue();
+            String thingName = nhcEnergyMeter.getName();
+            addEnergyMeterDevice(new ThingUID(THING_TYPE_ENERGYMETER, handler.getThing().getUID(), energyMeterId),
+                    energyMeterId, thingName);
+        }
     }
 
     private void addActionDevice(ThingUID uid, String actionId, String thingName, @Nullable String thingLocation) {
@@ -135,6 +147,12 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
         if (thingLocation != null) {
             discoveryResultBuilder.withProperty("Location", thingLocation);
         }
+        thingDiscovered(discoveryResultBuilder.build());
+    }
+
+    private void addEnergyMeterDevice(ThingUID uid, String energyMeterId, String thingName) {
+        DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+                .withLabel(thingName).withProperty(CONFIG_ENERGYMETER_ID, energyMeterId);
         thingDiscovered(discoveryResultBuilder.build());
     }
 
