@@ -1,32 +1,40 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.kvv.internal;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link KVVBindingConstants} class defines common constants, which are used across the whole binding.
+ * The {@link KVVBindingConstants} class defines common constants, which are
+ * used across the whole binding.
  *
  * @author Maximilian Hess - Initial contribution
  */
 @NonNullByDefault
 public class KVVBindingConstants {
 
-    /** the id of the binding */
+    /** ID of the binding */
     private static final String BINDING_ID = "kvv";
 
-    /** List of all Thing Type UIDs */
-    public static final ThingTypeUID THING_TYPE_KVVSTATION = new ThingTypeUID(BINDING_ID, "kvvstation");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
-    /** List of all Channel ids */
-    public static final String CHANNEL_1 = "channel1";
+    public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "station");
+
+    public static final List<ThingTypeUID> SUPPORTED_THING_TYPES = Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_STATION);
 
     /** URL of the KVV API */
     public static final String API_URL = "https://live.kvv.de/webapp";
