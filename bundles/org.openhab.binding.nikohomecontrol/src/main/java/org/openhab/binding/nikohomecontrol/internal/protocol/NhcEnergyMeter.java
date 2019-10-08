@@ -36,7 +36,8 @@ public abstract class NhcEnergyMeter {
 
     protected String id;
     protected String name;
-    protected volatile int power;
+    // This can be null as long as we do not receive power readings
+    protected volatile @Nullable Integer power = null;
 
     private @Nullable NhcEnergyMeterEvent eventHandler;
 
@@ -101,16 +102,18 @@ public abstract class NhcEnergyMeter {
     }
 
     /**
-     * @return the power in W (positive for consumption, negative for production)
+     * @return the power in W (positive for consumption, negative for production), return null if no reading received
+     *         yet
      */
-    public int getPower() {
+    public @Nullable Integer getPower() {
         return power;
     }
 
     /**
-     * @param power the power to set in W (positive for consumption, negative for production)
+     * @param power the power to set in W (positive for consumption, negative for production), null if an empty reading
+     *            was received
      */
-    public void setPower(int power) {
+    public void setPower(@Nullable Integer power) {
         this.power = power;
     }
 }
