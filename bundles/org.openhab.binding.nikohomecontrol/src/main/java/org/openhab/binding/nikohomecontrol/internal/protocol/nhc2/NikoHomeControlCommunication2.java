@@ -627,9 +627,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     private void updateEnergyMeterState(NhcEnergyMeter2 energyMeter, NhcDevice2 device) {
         Optional<NhcProperty> electricalPowerProperty = device.properties.stream()
                 .filter(p -> (p.electricalPower != null)).findFirst();
-        energyMeter.setPower(Integer.parseInt(electricalPowerProperty.get().electricalPower));
-        logger.debug("Niko Home Control: setting energy meter {} power to {}", energyMeter.getId(),
-                electricalPowerProperty.get().position);
+        try {
+            energyMeter.setPower(Integer.parseInt(electricalPowerProperty.get().electricalPower));
+            logger.debug("Niko Home Control: setting energy meter {} power to {}", energyMeter.getId(),
+                    electricalPowerProperty.get().position);
+        } catch (NumberFormatException e) {
+            energyMeter.setPower(null);
+            logger.trace("Niko Home Control: received empty energy meter {} power reading", energyMeter.getId());
+        }
     }
 
     @Override

@@ -13,6 +13,7 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link NhcEnergyMeterEvent} interface is used to pass energyMeters meter events received from the Niko Home
@@ -29,9 +30,9 @@ public interface NhcEnergyMeterEvent {
     /**
      * This method is called when an energyMeters meter event is received from the Niko Home Control controller.
      *
-     * @param power current power consumption/production in W (positive for consumption)
+     * @param power current power consumption/production in W (positive for consumption), null for an empty reading
      */
-    public void energyMeterEvent(int power);
+    public void energyMeterEvent(@Nullable Integer power);
 
     /**
      * Called to indicate the energyMeters meter has been removed from the Niko Home Control controller.

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.CHANNEL_POWER;
 
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Map;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -29,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcEnergyMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcEnergyMeterEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
@@ -120,8 +123,12 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     }
 
     @Override
-    public void energyMeterEvent(int power) {
-        updateState(CHANNEL_POWER, new QuantityType<Power>(nhcEnergyMeter.getPower(), SmartHomeUnits.WATT));
+    public void energyMeterEvent(@Nullable Integer power) {
+        if (power == null) {
+            updateState(CHANNEL_POWER, UnDefType.UNDEF);
+        } else {
+            updateState(CHANNEL_POWER, new QuantityType<Power>(power, SmartHomeUnits.WATT));
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -133,7 +140,9 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // nothing to do, read only
+        if (command == REFRESH) {
+            energyMeterEvent(nhcEnergyMeter.getPower());
+        }
     }
 
     @Override
@@ -156,16 +165,12 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
         // This can be expensive, therefore do it in a job.
         scheduler.submit(() -> {
-            if (nhcComm == null || !nhcComm.communicationActive()) {
+            if (nhcComm == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: bridge communication not initialized when trying to start energy meter "
                                 + energyMeterId);
                 return;
-            }
-
-            if (nhcComm.communicationActive()) {
-                nhcComm.startEnergyMeter(energyMeterId);
-            } else {
+            } else if (!nhcComm.communicationActive()) {
                 // We lost connection but the connection object is there, so was correctly started.
                 // Try to restart communication.
                 nhcComm.restartCommunication();
@@ -177,9 +182,11 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
                 }
                 // Also put the bridge back online
                 nhcBridgeHandler.bridgeOnline();
+            }
 
-                // And finally start the energy meter
+            if (nhcComm.communicationActive()) {
                 nhcComm.startEnergyMeter(energyMeterId);
+                updateStatus(ThingStatus.ONLINE);
             }
         });
     }
@@ -202,16 +209,12 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
         // This can be expensive, therefore do it in a job.
         scheduler.submit(() -> {
-            if (nhcComm == null || !nhcComm.communicationActive()) {
+            if (nhcComm == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: bridge communication not initialized when trying to stop energy meter "
                                 + energyMeterId);
                 return;
-            }
-
-            if (nhcComm.communicationActive()) {
-                nhcComm.stopEnergyMeter(energyMeterId);
-            } else {
+            } else if (!nhcComm.communicationActive()) {
                 // We lost connection but the connection object is there, so was correctly started.
                 // Try to restart communication.
                 nhcComm.restartCommunication();
@@ -223,9 +226,13 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
                 }
                 // Also put the bridge back online
                 nhcBridgeHandler.bridgeOnline();
+            }
 
-                // And finally stop the energy meter
+            if (nhcComm.communicationActive()) {
                 nhcComm.stopEnergyMeter(energyMeterId);
+                // as this is momentary power production/consumption, we set it UNDEF as we do not get readings anymore
+                updateState(CHANNEL_POWER, UnDefType.UNDEF);
+                updateStatus(ThingStatus.ONLINE);
             }
         });
     }
