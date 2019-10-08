@@ -67,14 +67,17 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
         }
     }
 
-    private String getTahomaCommand(String command) {
+    protected String getTahomaCommand(String command) {
         switch (command) {
             case "OFF":
             case "DOWN":
+            case "CLOSE":
                 return COMMAND_DOWN;
             case "ON":
             case "UP":
+            case "OPEN":
                 return COMMAND_UP;
+            case "MY":
             case "STOP":
                 return COMMAND_MY;
             default:
