@@ -100,6 +100,6 @@ public interface HueClient {
      *
      * @param sensor the sensor to be updated
      * @param stateUpdate the state update
-     */    
-	void updateSensorState(FullSensor sensor, StateUpdate stateUpdate);
+     */
+    void updateSensorState(FullSensor sensor, StateUpdate stateUpdate);
 }
