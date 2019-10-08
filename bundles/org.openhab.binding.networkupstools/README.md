@@ -13,10 +13,14 @@ The binding can connect to multiple NUT instances.
 The thing is a `ups` thing.
 The thing supports a number of nut features out-of-the-box.
 And supports the option to configure additional channels to get other NUT variables.
+The thing queries the NUT server for the status of the UPS approximate every 3 seconds.
+And updates the status when a change happens.
+When the UPS status changes it updates all other linked channels.
+Besides the UPS status change update the channels are updated at the user configured refresh time.
 
-Some nut variables are static in nature and should not match a channel.
+Some nut variables are static in nature and are not suited for a channel.
 Some of these could be updated, like of firmware version.
-Therefore the properties are updated wit a 1 hour frequency.
+Therefore the properties are updated with a 1 hour frequency.
 The following nut variables are are read and added to the thing as properties:
 
 | Property         | Description
@@ -47,7 +51,7 @@ Optional, port, username and password might need to be configured if required.
 | port      | 3493      |   No     | UPS server port, 3493 for example
 | username  |           |   No     | UPS server username
 | password  |           |   No     | UPS server password
-| refresh   | 60        |   No     | refresh interval for state updates in seconds
+| refresh   | 60        |   No     | Refresh interval for channel updates in seconds
 
 ## Channels
 
@@ -78,7 +82,7 @@ The following channels are standard supported:
 
 Because there is a lot of variation in ups features the binding supports dynamically adding channels for features not supported out-of-the-box.
 To get data from another nut variable the channel needs to configured.
-Channels can be created with as type: `Dimmer`, `Number`, `Number:<Quantity>`, `String` or `Switch`.
+Channels can be created with as type: `Number`, `Number:<Quantity>`, `String` or `Switch`.
 
 The following channel properties are needed:
 
@@ -111,7 +115,7 @@ Thing networkupstools:ups:ups2 [ device="ups", host="localhost", refresh=60 ] {
 ups.items
 
 ```
-Dimmer ups_battery_charge  "Battery Charge [%d %%]"  {channel="networkupstools:ups:ups1:batteryCharge"}
+Number:Dimensionless ups_battery_charge  "Battery Charge [%d %%]"  {channel="networkupstools:ups:ups1:batteryCharge"}
 Number:ElectricCurrent ups_current"Input Current [%d mA]"{channel="networkupstools:ups:ups1:inputCurrent"}
 
 String : test_result "Test Result" {channel="networkupstools:ups:ups2:testResult"}
