@@ -175,7 +175,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<thing-type id="energymeter">
+	<thing-type id="energyMeter">
         <supported-bridge-type-refs>
             <bridge-type-ref id="bridge2" />
         </supported-bridge-type-refs>
