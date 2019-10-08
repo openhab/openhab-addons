@@ -240,9 +240,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcSystemInfo2> systemInfo = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            if (message.params != null) {
-                timeInfo = message.params.stream().filter(p -> (p.timeInfo != null)).findFirst().get().timeInfo;
-                systemInfo = message.params.stream().filter(p -> (p.systemInfo != null)).findFirst().get().systemInfo;
+            List<NhcMessageParam> messageParams = message.params;
+            if (messageParams != null) {
+                timeInfo = messageParams.stream().filter(p -> (p.timeInfo != null)).findFirst().get().timeInfo;
+                systemInfo = messageParams.stream().filter(p -> (p.systemInfo != null)).findFirst().get().systemInfo;
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
@@ -264,8 +265,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcSystemInfo2> systemInfo = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            if (message.params != null) {
-                systemInfo = message.params.stream().filter(p -> (p.systemInfo != null)).findFirst().get().systemInfo;
+            List<NhcMessageParam> messageParams = message.params;
+            if (messageParams != null) {
+                systemInfo = messageParams.stream().filter(p -> (p.systemInfo != null)).findFirst().get().systemInfo;
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
@@ -283,8 +285,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcProfile2> profileList = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            if (message.params != null) {
-                profileList = message.params.stream().filter(p -> (p.profiles != null)).findFirst().get().profiles;
+            List<NhcMessageParam> messageParams = message.params;
+            if (messageParams != null) {
+                profileList = messageParams.stream().filter(p -> (p.profiles != null)).findFirst().get().profiles;
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
@@ -303,8 +306,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcService2> serviceList = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            if (message.params != null) {
-                serviceList = message.params.stream().filter(p -> (p.services != null)).findFirst().get().services;
+            List<NhcMessageParam> messageParams = message.params;
+            if (messageParams != null) {
+                serviceList = messageParams.stream().filter(p -> (p.services != null)).findFirst().get().services;
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
@@ -323,8 +327,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcDevice2> deviceList = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            if (message.params != null) {
-                deviceList = message.params.stream().filter(p -> (p.devices != null)).findFirst().get().devices;
+            List<NhcMessageParam> messageParams = message.params;
+            if (messageParams != null) {
+                deviceList = messageParams.stream().filter(p -> (p.devices != null)).findFirst().get().devices;
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
@@ -357,8 +362,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
             method = message.method;
-            if (message.params != null) {
-                deviceList = message.params.stream().filter(p -> (p.devices != null)).findFirst().get().devices;
+            List<NhcMessageParam> messageParams = message.params;
+            if (messageParams != null) {
+                deviceList = messageParams.stream().filter(p -> (p.devices != null)).findFirst().get().devices;
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
@@ -391,8 +397,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcNotification2> notificationList = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            if (message.params != null) {
-                notificationList = message.params.stream().filter(p -> (p.notifications != null)).findFirst()
+            List<NhcMessageParam> messageParams = message.params;
+            if (messageParams != null) {
+                notificationList = messageParams.stream().filter(p -> (p.notifications != null)).findFirst()
                         .get().notifications;
             }
         } catch (JsonSyntaxException e) {
