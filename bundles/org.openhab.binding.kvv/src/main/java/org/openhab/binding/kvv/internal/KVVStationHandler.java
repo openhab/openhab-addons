@@ -5,15 +5,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimerTask;
 
 import com.google.gson.Gson;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +49,22 @@ public class KVVStationHandler extends BaseThingHandler {
                 logger.warn("Failed to get departures for '" + this.thing.getUID().getAsString() + "'");
                 updateStatus(ThingStatus.OFFLINE);
                 return;
+            }
+
+            final List<Channel> channels = new ArrayList<Channel>();
+            for (int i = 0; i < this.config.maxTrains; i++) {
+                channels.add(ChannelBuilder.create(
+                    new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String").build());
+                channels.add(ChannelBuilder.create(
+                    new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String").build());
+                channels.add(ChannelBuilder.create(
+                    new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String").build());
+            }
+            this.updateThing(this.editThing().withChannels(channels).build());
+
+            logger.info("Listing channels...");
+            for (final Channel c : this.getThing().getChannels()) {
+                logger.info(c.getUID().getAsString());
             }
             
             this.setDepartures(departures);
