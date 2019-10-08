@@ -139,7 +139,6 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     logger.trace("Received command {} on channel {}", command, channelUID.getId());
     try {
       PJLinkDevice device = getDevice();
-      @Nullable
       String channelTypeId = getChannelTypeId(channelUID);
       if (channelTypeId == null) {
         logger.debug("unknown channel {}", channelUID);
@@ -251,7 +250,6 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   }
 
   private @Nullable String getChannelTypeId(ChannelUID channelUID) throws ConfigurationException {
-    @Nullable
     Channel channel = thing.getChannel(channelUID);
     if (channel == null) {
       logger.debug("channel is null");
