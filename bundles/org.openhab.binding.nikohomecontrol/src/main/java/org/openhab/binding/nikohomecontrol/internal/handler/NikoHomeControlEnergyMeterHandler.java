@@ -106,7 +106,8 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
                 nhcComm.startEnergyMeter(energyMeterId);
             }
 
-            logger.debug("Niko Home Control: thermostat intialized {}", energyMeterId);
+            updateStatus(ThingStatus.ONLINE);
+            logger.debug("Niko Home Control: energy meter intialized {}", energyMeterId);
         });
     }
 
