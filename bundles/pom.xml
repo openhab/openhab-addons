@@ -146,6 +146,7 @@
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>
     <module>org.openhab.binding.nibeuplink</module>
+    <module>org.openhab.binding.nikobus</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
@@ -380,6 +381,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.1</version>
         <executions>
           <execution>
             <id>embed-dependencies</id>

@@ -47,8 +47,9 @@ The following matrix lists the capabilities (channels) for each type:
 |  0220       |    X   |     X      |       |          X        |
 
 Beside bulbs and luminaires the Hue binding supports some ZigBee sensors.
-Currently only Hue specific sensors are tested successfully (e.g. Hue Motion Sensor, Hue Dimmer Switch, Hue Tap).
+Currently only Hue specific sensors are tested successfully (e.g. Hue Motion Sensor, Hue Dimmer Switch, Hue Tap, CLIP Sensor).
 The Hue Motion Sensor registers a `ZLLLightLevel` sensor (0106), a `ZLLPresence` sensor (0107) and a `ZLLTemperature` sensor (0302) in one device.
+The Hue CLIP Sensor saves scene states with status or flag for HUE rules. 
 They are presented by the following ZigBee Device ID and _Thing type_:
 
 | Device type                 | ZigBee Device ID | Thing type |
@@ -58,8 +59,12 @@ They are presented by the following ZigBee Device ID and _Thing type_:
 | Temperature Sensor          | 0x0302           | 0302       |
 | Non-Colour Controller       | 0x0820           | 0820       |
 | Non-Colour Scene Controller | 0x0830           | 0830       |
+| CLIP Generic Status Sensor  | 0x0840           | 0840       |
+| CLIP Generic Flag Sensor    | 0x0850           | 0850       |
 
 The Hue Dimmer Switch has 4 buttons and registers as a Non-Colour Controller switch, while the Hue Tap (also 4 buttons) registers as a Non-Colour Scene Controller in accordance with the ZLL standard.
+
+Also, Hue bridge support CLIP Generic Status Sensor and CLIP Generic Flag Sensor. These sensors save state for rules and calculate what actions to do. CLIP Sensor set or get by json through IP.
 
 The type of a specific device can be found in the configuration section for things in the PaperUI.
 It is part of the unique thing id which could look like:
@@ -152,7 +157,9 @@ The devices support some of the following channels:
 | daylight          | Switch             | This channel indicates whether the light level is below the daylight threshold or not.                                                  | 0106                                |
 | presence          | Switch             | This channel indicates whether a motion is detected by the sensor or not.                                                               | 0107                                |
 | temperature       | Number:Temperature | This channel shows the current temperature measured by the sensor.                                                                      | 0302                                |
-| last_updated      | DateTime           | This channel the date and time when the sensor was last updated.                                                                        | 0820, 0830, 0106, 0107, 0302        |
+| flag              | Switch             | This channel save flag state for a CLIP sensor.                                                                                         | 0850                                |
+| status            | Number             | This channel save status state for a CLIP sensor.                                                                                       | 0840                                |
+| last_updated      | DateTime           | This channel the date and time when the sensor was last updated.                                                                        | 0820, 0830, 0840, 0850, 0106, 0107, 0302|
 | battery_level     | Number             | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302             |
 | battery_low       | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302             |
 

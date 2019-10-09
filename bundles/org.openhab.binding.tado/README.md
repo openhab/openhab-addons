@@ -56,6 +56,7 @@ Name | Type | Description | Read/Write | Zone type
 `currentTemperature` | Number:Temperature | Current inside temperature | R | `HEATING`, `AC`
 `humidity` | Number | Current relative inside humidity in percent | R | `HEATING`, `AC`
 `heatingPower` | Number | Amount of heating power currently present | R | `HEATING`
+`acPower` | Switch | Indicates if the Air-Conditioning is Off or On | R | `AC`
 `hvacMode` | String | Active mode, one of `OFF`, `HEAT`, `COOL`, `DRY`, `FAN`, `AUTO` | RW | `HEATING` and `DHW` support `OFF` and `HEAT`, `AC` can support more
 `targetTemperature` | Number:Temperature | Set point | RW | `HEATING`, `AC`, `DHW`
 `fanspeed` | String | Fan speed, one of `AUTO`, `LOW`, `MIDDLE`, `HIGH` | RW | `AC`
@@ -63,6 +64,8 @@ Name | Type | Description | Read/Write | Zone type
 `overlayExpiry` | DateTime | End date and time of a timer | R | `HEATING`, `AC`, `DHW`
 `timerDuration` | Number | Timer duration in minutes | RW | `HEATING`, `AC`, `DHW`
 `operationMode` | String | Operation mode the zone is currently in. One of `SCHEDULE` (follow smart schedule), `MANUAL` (override until ended manually), `TIMER` (override for a given time), `UNTIL_CHANGE` (active until next smart schedule block or until AWAY mode becomes active) | RW | `HEATING`, `AC`, `DHW`
+`batteryLowAlarm` | Switch | A control device in the Zone has a low battery (if applicable) | R | Any Zone
+`openWindowDetected` | Switch | An open window has been detected in the Zone | R | Any Zone
 
 The `RW` items are used to either override the schedule or to return to it (if `hvacMode` is set to `SCHEDULE`).
 
@@ -148,12 +151,15 @@ Switch             AC_swing                   "Swing"                   { channe
 DateTime           AC_overlay_expiry          "Overlay Expiry"          { channel="tado:zone:demo:ac:overlayExpiry" }
 Number             AC_timer_duration          "Timer Duration"          { channel="tado:zone:demo:ac:timerDuration" }
 String             AC_operation_mode          "Operation Mode"          { channel="tado:zone:demo:ac:operationMode" }
+Switch             AC_power                   "Air-Con Power"           { channel="tado:zone:demo:ac:acPower" }
 
 String             DHW_hvac_mode              "HVAC Mode"               { channel="tado:zone:demo:hotwater:hvacMode" }
 Number:Temperature DHW_target_temperature     "Set Point"               { channel="tado:zone:demo:hotwater:targetTemperature" }
 DateTime           DHW_overlay_expiry         "Overlay Expiry"          { channel="tado:zone:demo:hotwater:overlayExpiry" }
 Number             DHW_timer_duration         "Timer Duration"          { channel="tado:zone:demo:hotwater:timerDuration" }
 String             DHW_operation_mode         "Operation Mode"          { channel="tado:zone:demo:hotwater:operationMode" }
+
+Switch             Battery_Low_Alarm          "Battery Low Alarm"       { channel="tado:zone:demo:heating:batteryLowAlarm" }
 
 Switch             Phone_atHome               "Phone location [MAP(presence.map):%s]" { channel="tado:mobiledevice:demo:phone:atHome" }
 ```
@@ -194,6 +200,10 @@ sitemap tado label="Tado"
         Selection item=DHW_operation_mode      mappings=[SCHEDULE=schedule, MANUAL=manual, UNTIL_CHANGE="until change", TIMER=timer]
         Setpoint  item=DHW_timer_duration      minValue=5 maxValue=60 step=1
         Text      item=DHW_overlay_expiry
+    }
+
+    Frame label="Battery Low Alarm" {
+        Text item=Battery_Low_Alarm valuecolor=[OFF="green", ON="red"]
     }
 
     Frame label="Mobile Devices" {

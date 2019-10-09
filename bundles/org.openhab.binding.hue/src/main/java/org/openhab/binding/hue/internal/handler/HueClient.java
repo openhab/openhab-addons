@@ -94,4 +94,12 @@ public interface HueClient {
      * @param configUpdate the config update
      */
     void updateSensorConfig(FullSensor sensor, ConfigUpdate configUpdate);
+
+    /**
+     * Updates the given sensor.
+     *
+     * @param sensor the sensor to be updated
+     * @param stateUpdate the state update
+     */
+    void updateSensorState(FullSensor sensor, StateUpdate stateUpdate);
 }

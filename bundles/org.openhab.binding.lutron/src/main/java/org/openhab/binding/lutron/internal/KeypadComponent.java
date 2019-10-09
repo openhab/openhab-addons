@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lutron.internal;
 
+import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
+
 /**
  * The {@link KeypadComponent} interface is used to access enums describing the possible components
  * in a given keypad model.
@@ -26,4 +28,6 @@ public interface KeypadComponent {
     public String channel();
 
     public String description();
+
+    public ComponentType type();
 }
