@@ -115,5 +115,10 @@ public abstract class NhcEnergyMeter {
      */
     public void setPower(@Nullable Integer power) {
         this.power = power;
+        NhcEnergyMeterEvent handler = eventHandler;
+        if (handler != null) {
+            logger.debug("Niko Home Control: update power channel for {} with {}", id, power);
+            handler.energyMeterEvent(power);
+        }
     }
 }
