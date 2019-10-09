@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.networkupstools.internal;
 
+import java.net.URI;
+
 import javax.measure.Unit;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 import tec.uom.se.format.SimpleUnitFormat;
 import tec.uom.se.unit.ProductUnit;
@@ -31,6 +34,18 @@ import tec.uom.se.unit.Units;
 @NonNullByDefault
 public class NUTBindingConstants {
 
+    public static final String BINDING_ID = "networkupstools";
+
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_UPS = new ThingTypeUID(BINDING_ID, "ups");
+
+    public static final String METADATA_NETWORKUPSTOOLS = "networkupstools";
+    public static final ChannelTypeUID CHANNEL_TYPE_DYNAMIC_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
+    public static final ChannelTypeUID CHANNEL_TYPE_DYNAMIC_STRING = new ChannelTypeUID(BINDING_ID, "string");
+    public static final ChannelTypeUID CHANNEL_TYPE_DYNAMIC_SWITCH = new ChannelTypeUID(BINDING_ID, "switch");
+    public static final URI DYNAMIC_CHANNEL_CONFIG_QUANTITY_TYPE = URI
+            .create("channel-type:ups:dynamic-channel-config-quantity-type");
+
     public static final Unit<Power> AMPERE_PER_HOUR = new ProductUnit<>(Units.AMPERE.divide(Units.HOUR));
     public static final Unit<Power> VOLT_AMPERE = new ProductUnit<>(Units.VOLT.multiply(Units.AMPERE));
 
@@ -38,11 +53,6 @@ public class NUTBindingConstants {
         SimpleUnitFormat.getInstance().label(AMPERE_PER_HOUR, "Ah");
         SimpleUnitFormat.getInstance().label(VOLT_AMPERE, "VA");
     }
-
-    public static final String BINDING_ID = "networkupstools";
-
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_UPS = new ThingTypeUID(BINDING_ID, "ups");
 
     /**
      * Enum with nut names which value will be set a parameter on the thing.

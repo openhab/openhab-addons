@@ -57,7 +57,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NUTHandler extends BaseThingHandler {
-    private static final String METADATA_NETWORKUPSTOOLS = "networkupstools";
     private static final int REFRESH_RATE_SECONDS = 3;
 
     private final Logger logger = LoggerFactory.getLogger(NUTHandler.class);
@@ -174,23 +173,35 @@ public class NUTHandler extends BaseThingHandler {
         boolean rebuildChannels = false;
 
         for (final Channel channel : thing.getChannels()) {
-            if (channel.getConfiguration().get(METADATA_NETWORKUPSTOOLS) == null) {
+            if (channel.getConfiguration().getProperties().isEmpty()) {
                 updatedChannels.add(channel);
             } else {
-                rebuildChannels = true;
+                // If the channel has a custom created channel type id the channel should be recreated.
+                // This is specific for Quantity type channels created in thing files.
+                final boolean customChannel = channel.getChannelTypeUID() == null;
                 final NUTDynamicChannelConfiguration channelConfig = channel.getConfiguration()
                         .as(NUTDynamicChannelConfiguration.class);
-                final Channel dynamicChannel = localDynamicChannelFactory.createChannel(channel, channelConfig);
+                final Channel dynamicChannel;
 
-                if (dynamicChannel == null) {
-                    logger.debug("Could not initialize the dynamic channel '{}'. This channel will be ignored ",
-                            channel.getUID());
+                rebuildChannels = customChannel;
+                if (customChannel) {
+                    dynamicChannel = localDynamicChannelFactory.createChannel(channel, channelConfig);
+
+                    if (dynamicChannel == null) {
+                        logger.debug("Could not initialize the dynamic channel '{}'. This channel will be ignored ",
+                                channel.getUID());
+                        continue;
+                    } else {
+                        logger.debug("Updating channel '{}' with dynamic channelType settings: {}", channel.getUID(),
+                                dynamicChannel.getChannelTypeUID());
+                    }
                 } else {
-                    logger.debug("Updating channel '{}' with dynamic channelType settings: {}", channel.getUID(),
-                            channel.getChannelTypeUID());
-                    updatedChannels.add(dynamicChannel);
-                    userChannelToNutMap.put(channel.getUID(), channelConfig);
+                    logger.debug("Mapping standard dynamic channel '{}' with dynamic channelType settings: {}",
+                            channel.getUID(), channel.getChannelTypeUID());
+                    dynamicChannel = channel;
                 }
+                userChannelToNutMap.put(channel.getUID(), channelConfig);
+                updatedChannels.add(dynamicChannel);
             }
         }
         if (rebuildChannels) {

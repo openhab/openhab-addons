@@ -14,8 +14,6 @@ package org.openhab.binding.networkupstools.internal;
 
 import static org.openhab.binding.networkupstools.internal.NUTBindingConstants.BINDING_ID;
 
-import java.net.URI;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
@@ -37,12 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class NUTDynamicChannelFactory {
-
-    private static final ChannelTypeUID CHANNEL_TYPE_DYNAMIC_NUMBER = new ChannelTypeUID(BINDING_ID, "dynamic-number");
-    private static final ChannelTypeUID CHANNEL_TYPE_DYNAMIC_STRING = new ChannelTypeUID(BINDING_ID, "dynamic-string");
-    private static final ChannelTypeUID CHANNEL_TYPE_DYNAMIC_SWITCH = new ChannelTypeUID(BINDING_ID, "dynamic-switch");
-    private static final URI DYNAMIC_CHANNEL_CONFIG_QUANTITY_TYPE = URI
-            .create("channel-type:ups:dynamic-channel-config-quantity-type");
 
     private final Logger logger = LoggerFactory.getLogger(NUTDynamicChannelFactory.class);
 
@@ -87,11 +79,11 @@ class NUTDynamicChannelFactory {
     private @Nullable ChannelTypeUID getChannelTypeUID(final String itemType, final ChannelUID channelUID) {
         switch (itemType) {
             case CoreItemFactory.NUMBER:
-                return CHANNEL_TYPE_DYNAMIC_NUMBER;
+                return NUTBindingConstants.CHANNEL_TYPE_DYNAMIC_NUMBER;
             case CoreItemFactory.STRING:
-                return CHANNEL_TYPE_DYNAMIC_STRING;
+                return NUTBindingConstants.CHANNEL_TYPE_DYNAMIC_STRING;
             case CoreItemFactory.SWITCH:
-                return CHANNEL_TYPE_DYNAMIC_SWITCH;
+                return NUTBindingConstants.CHANNEL_TYPE_DYNAMIC_SWITCH;
             default:
                 logger.info("Dynamic channel '{}' is ignore because the type '{}' is not supported.", channelUID,
                         itemType);
@@ -110,7 +102,7 @@ class NUTDynamicChannelFactory {
      */
     private @Nullable ChannelTypeUID createQuantityTypeChannel(final Channel channel, final String itemType,
             final NUTDynamicChannelConfiguration channelConfig) {
-        if (itemType.contains(":") && (channelConfig.unit == null || channelConfig.unit.isEmpty())) {
+        if (channelConfig.unit == null || channelConfig.unit.isEmpty()) {
             logger.info("Dynamic Channel '{}' is ignored because it's a QuantityType without a 'unit' property.",
                     channel.getUID());
             return null;
@@ -120,7 +112,7 @@ class NUTDynamicChannelFactory {
         final String label = channel.getLabel();
         final ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, label == null ? "" : label, itemType)
                 .withStateDescription(sdb.withReadOnly(Boolean.TRUE).build().toStateDescription())
-                .withConfigDescriptionURI(DYNAMIC_CHANNEL_CONFIG_QUANTITY_TYPE).build();
+                .withConfigDescriptionURI(NUTBindingConstants.DYNAMIC_CHANNEL_CONFIG_QUANTITY_TYPE).build();
         channelTypeProvider.addChannelType(channelType);
         return channelTypeUID;
     }
