@@ -31,32 +31,32 @@
 			<required>false</required>
 		</parameter>
 	</config-description>
-    <config-description uri="thing-type:onewire:mstxconfig">
-        <parameter name="id" type="text">
-            <label>Sensor ID</label>
-            <description>Sensor ID in format: xx.xxxxxxxxxxxx or a full path including hubs/branches</description>
-            <required>true</required>
-        </parameter>
-        <parameter name="refresh" type="integer" min="1">
-            <label>Refresh Time</label>
-            <description>Time in seconds after which the thing is refreshed</description>
-            <default>300</default>
-            <unitLabel>s</unitLabel>
-            <required>false</required>
-        </parameter>
-        <parameter name="manualsensor" type="text">
-                <label>Manual Sensor Type</label>
-                <description>Overrides detected sensor type</description>
-                <options>
-                    <option value="DS2438">Generic</option>
-                    <option value="MS_TH">MS-TH</option>
-                    <option value="MS_TV">MS-TV</option>
-                    <option value="MS_TL">MS-TL</option>
-                    <option value="MS_TC">MS-TC</option>
-                </options>
-                <limitToOptions>true</limitToOptions>
-                <required>false</required>
-                <advanced>true</advanced>
-            </parameter>
-    </config-description>	
+	<config-description uri="thing-type:onewire:mstxconfig">
+		<parameter name="id" type="text">
+			<label>Sensor ID</label>
+			<description>Sensor ID in format: xx.xxxxxxxxxxxx or a full path including hubs/branches</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="refresh" type="integer" min="1">
+			<label>Refresh Time</label>
+			<description>Time in seconds after which the thing is refreshed</description>
+			<default>300</default>
+			<unitLabel>s</unitLabel>
+			<required>false</required>
+		</parameter>
+		<parameter name="manualsensor" type="text">
+			<label>Manual Sensor Type</label>
+			<description>Overrides detected sensor type</description>
+			<options>
+				<option value="DS2438">Generic</option>
+				<option value="MS_TH">MS-TH</option>
+				<option value="MS_TV">MS-TV</option>
+				<option value="MS_TL">MS-TL</option>
+				<option value="MS_TC">MS-TC</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<required>false</required>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>
