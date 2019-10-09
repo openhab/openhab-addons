@@ -10,18 +10,16 @@ This binding lets you integrate NUT servers with openHAB.
 ## Supported Things
 
 The binding can connect to multiple NUT instances.
-The thing is a `ups` thing.
-The thing supports a number of nut features out-of-the-box.
-And supports the option to configure additional channels to get other NUT variables.
-The thing queries the NUT server for the status of the UPS approximate every 3 seconds.
-And updates the status when a change happens.
-When the UPS status changes it updates all other linked channels.
-Besides the UPS status change update the channels are updated at the user configured refresh time.
+The thing is an `ups` thing.
+The thing supports a number of NUT features out-of-the-box and supports the option to configure additional channels to get other NUT variables.
+The thing queries the NUT server for the status of the UPS approximate every 3 seconds and updates the status when a change happens.
+When a change of the UPS status happens it will query the NUT server to update all linked channels.
+Outside the status change updates, all linked channels are updated at the user configured refresh time.
 
-Some nut variables are static in nature and are not suited for a channel.
-Some of these could be updated, like of firmware version.
-Therefore the properties are updated with a 1 hour frequency.
-The following nut variables are are read and added to the thing as properties:
+Some NUT variables are static in nature and are not suited for a channel.
+Some of these could change, like of firmware version.
+Therefore these properties are updated with a 1 hour frequency.
+The following NUT variables are are read and added to the thing as properties:
 
 | Property         | Description
 |------------------|----------------------------------------
@@ -40,8 +38,8 @@ Discovery is not supported.
 
 ## Thing Configuration
 
-The thing configuration requires the name of the ups device as configured with the NUT.
-If the NUT service isn't running locally the ip address of the server running NUT must be configured.
+The thing configuration requires the name of the ups device as configured on the NUT server.
+If the NUT service isn't running locally the ip address or domain name (FDQN) of the server running NUT must be configured.
 Optional, port, username and password might need to be configured if required.
 
 | Parameter | Default   | Mandatory | Description
@@ -81,14 +79,14 @@ The following channels are standard supported:
 ### Dynamic Channels
 
 Because there is a lot of variation in ups features the binding supports dynamically adding channels for features not supported out-of-the-box.
-To get data from another nut variable the channel needs to configured.
+To get data from another NUT variable the channel needs to configured.
 Channels can be created with as type: `Number`, `Number:<Quantity>`, `String` or `Switch`.
 
 The following channel properties are needed:
 
 | Property        | Description                    | Example
 |-----------------|--------------------------------|-----------------
-| networkupstools | Links to nut variable          | `networkupstools="input.voltage.low.warning"`
+| networkupstools | Links to NUT variable          | `networkupstools="input.voltage.low.warning"`
 | unit            | The unit of Quantity Type data | `unit="V"`
 
 ## Full Example
