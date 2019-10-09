@@ -19,18 +19,18 @@
 			<channel id="mediaStop" typeId="mediaStopType" />
 			<channel id="appLauncher" typeId="appLauncherChannelType" />
 		</channels>
-        
-        <properties>
-          <property name="deviceId" />
-          <property name="lastConnected" /> 
-          <property name="modelName" /> 
-          <property name="manufacturer" /> 
-          <property name="deviceOS" /> 
-          <property name="deviceOSVersion" /> 
-          <property name="deviceOSReleaseVersion" /> 
-        </properties>
+
+		<properties>
+			<property name="deviceId" />
+			<property name="lastConnected" />
+			<property name="modelName" />
+			<property name="manufacturer" />
+			<property name="deviceOS" />
+			<property name="deviceOSVersion" />
+			<property name="deviceOSReleaseVersion" />
+		</properties>
 		<representation-property>deviceId</representation-property>
-		
+
 
 		<config-description-ref uri="thing-type:lgwebos:WebOSTV" />
 	</thing-type>
