@@ -122,6 +122,6 @@ final class NutResponseReader {
     }
 
     private String stripVariable(final String rawVariable) {
-        return rawVariable.replaceAll("\\\\\"", "\"").replaceAll("\\\\\\\\", "\\\\");
+        return rawVariable.replaceAll("\\\\\"", "\"").replaceAll("\\\\\\\\", "\\\\").trim();
     }
 }

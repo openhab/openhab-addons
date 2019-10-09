@@ -339,9 +339,13 @@ public class NUTHandler extends BaseThingHandler {
                 final Map<String, String> properties = editProperties();
 
                 for (final Parameters param : NUTBindingConstants.Parameters.values()) {
-                    final String value = deviceToString(variables, param.getNutName());
+                    final String value = variables.get(param.getNutName());
 
-                    if (value != null) {
+                    if (value == null) {
+                        logger.debug(
+                                "Variable '{}' intented as property for thing {}({}) is not available in the NUT data.",
+                                param.getNutName(), thing.getLabel(), thing.getUID());
+                    } else {
                         properties.put(param.getNutName(), value);
                     }
                 }
@@ -382,9 +386,11 @@ public class NUTHandler extends BaseThingHandler {
         if (variables == null || acceptedItemType == null || nutConfig == null) {
             return UnDefType.UNDEF;
         }
-        final String value = deviceToString(variables, nutConfig.networkupstools);
+        final String value = variables.get(nutConfig.networkupstools);
 
         if (value == null) {
+            logger.info("Variable '{}' queried for thing {}({}) is not available in the NUT data.",
+                    nutConfig.networkupstools, thing.getLabel(), thing.getUID());
             return UnDefType.UNDEF;
         }
         switch (acceptedItemType) {
@@ -401,15 +407,5 @@ public class NUTHandler extends BaseThingHandler {
                 }
                 return UnDefType.UNDEF;
         }
-    }
-
-    private @Nullable String deviceToString(final Map<String, String> variables, final String nut) {
-        final String value = variables.get(nut);
-
-        if (value == null) {
-            logger.info("Variabele '{}' was not available in the NUT data of thing {}({})", nut, thing.getLabel(),
-                    thing.getUID());
-        }
-        return value;
     }
 }

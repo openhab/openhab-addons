@@ -22,6 +22,8 @@
 			<channel id="inputLoad" typeId="input-load" />
 			<channel id="inputTransferReason" typeId="input-transfer-reason" />
 			<channel id="inputVoltage" typeId="input-voltage" />
+			<channel id="outputCurrent" typeId="output-current" />
+			<channel id="outputVoltage" typeId="output-voltage" />
 			<channel id="upsAlarm" typeId="ups-alarm" />
 			<channel id="upsLoad" typeId="ups-load" />
 			<channel id="upsPower" typeId="ups-power" />

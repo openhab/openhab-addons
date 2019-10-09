@@ -19,7 +19,7 @@ Outside the status change updates, all linked channels are updated at the user c
 Some NUT variables are static in nature and are not suited for a channel.
 Some of these could change, like of firmware version.
 Therefore these properties are updated with a 1 hour frequency.
-The following NUT variables are are read and added to the thing as properties:
+The following NUT variables are read and added to the thing as properties:
 
 | Property         | Description
 |------------------|----------------------------------------
@@ -72,6 +72,8 @@ The following channels are standard supported:
 | inputTransferReason        | String                   |      | Reason for last transfer to battery (*** opaque)                                   | yes           |
 | inputVoltage               | Number:ElectricPotential | V    | Input voltage (V)                                                                  | yes           |
 | inputVoltageStatus         | String                   |      | Status relative to the thresholds                                                  | yes           |
+| outputCurrent              | Number:ElectricCurrent   | A    | Output current (A)                                                                 | yes           |
+| outputVoltage              | Number:ElectricPotential | V    | Output voltage (V)                                                                 | yes           |
 | batteryCharge              | Number:Dimensionless     | %    | Battery charge (percent)                                                           | no            |
 | batteryRuntime             | Number:Time              | s    | Battery runtime (seconds)                                                          | no            |
 | batteryVoltage             | Number:ElectricPotential | V    | Battery voltage (V)                                                                | yes           |

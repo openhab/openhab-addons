@@ -55,6 +55,10 @@ enum NutName {
     INPUT_VOLTAGE("inputVoltage", "input.voltage", SmartHomeUnits.VOLT),
     INPUT_VOLTAGE_STATUS("inputVoltageStatus", "input.voltage.status", StringType.class),
 
+    // Output
+    OUTPUT_CURRENT("outputCurrent", "output.current", SmartHomeUnits.AMPERE),
+    OUTPUT_VOLTAGE("outputVoltage", "output.voltage", SmartHomeUnits.VOLT),
+
     // Battery
     BATTERY_CHARGE("batteryCharge", "battery.charge", SmartHomeUnits.PERCENT),
     BATTERY_RUNTIME("batteryRuntime", "battery.runtime", SmartHomeUnits.SECOND),

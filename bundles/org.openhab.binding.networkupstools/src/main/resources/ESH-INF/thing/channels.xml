@@ -108,6 +108,18 @@
 		<description>Status relative to the thresholds</description>
 		<state readOnly="true" />
 	</channel-type>
+	<channel-type id="output-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Output Current</label>
+		<description>Output current (A)</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="output-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Output Voltage</label>
+		<description>Output voltage (V)</description>
+		<state pattern="%.0f %unit%" readOnly="true" />
+	</channel-type>
 	<channel-type id="battery-charge">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge</label>

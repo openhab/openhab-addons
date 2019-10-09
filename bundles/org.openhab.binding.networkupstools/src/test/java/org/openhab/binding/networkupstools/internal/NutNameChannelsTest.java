@@ -41,8 +41,8 @@ public class NutNameChannelsTest {
     private static final String THING_TYPES_XML = "thing-types.xml";
     private static final String CHANNELS_XML = "channels.xml";
 
-    private static final int EXPECTED_NUMBER_OF_CHANNELS = 18;
-    private static final int EXPECTED_NUMMBER_OF_CHANNEL_XML_LINES = 108;
+    private static final int EXPECTED_NUMBER_OF_CHANNELS = 20;
+    private static final int EXPECTED_NUMMBER_OF_CHANNEL_XML_LINES = EXPECTED_NUMBER_OF_CHANNELS * 6;
 
     // README table is: | Channel Name | Item Type | Unit | Description | Advanced
     private static final Pattern README_PATTERN = Pattern
@@ -87,7 +87,9 @@ public class NutNameChannelsTest {
                 is(EXPECTED_NUMBER_OF_CHANNELS));
         final List<String> channelsFromXml = readThingsXml(CHANNEL_PATTERN, THING_TYPES_XML);
         final List<String> channelsFromReadme = list.stream().map(String::trim).sorted().collect(Collectors.toList());
-        assertThat(channelsFromReadme, is(channelsFromXml));
+        for (int i = 0; i < channelsFromXml.size(); i++) {
+            assertThat(channelsFromXml.get(i), is(channelsFromReadme.get(i)));
+        }
     }
 
     /**
@@ -108,7 +110,10 @@ public class NutNameChannelsTest {
                 is(EXPECTED_NUMMBER_OF_CHANNEL_XML_LINES));
         final List<String> channelsFromXml = readThingsXml(CHANNEL_TYPE_PATTERN, CHANNELS_XML);
         final List<String> channelsFromReadme = list.stream().map(String::trim).sorted().collect(Collectors.toList());
-        assertThat(channelsFromReadme, is(channelsFromXml));
+
+        for (int i = 0; i < channelsFromXml.size(); i++) {
+            assertThat(channelsFromXml.get(i), is(channelsFromReadme.get(i)));
+        }
     }
 
     private Map<NutName, String> readReadme() {
