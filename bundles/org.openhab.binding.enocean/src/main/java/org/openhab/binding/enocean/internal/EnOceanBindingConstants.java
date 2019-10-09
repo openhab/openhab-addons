@@ -30,6 +30,7 @@ import javax.measure.quantity.Volume;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.items.ItemUtil;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
+import org.eclipse.smarthome.core.library.dimension.VolumetricFlowRate;
 import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -121,8 +122,8 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_TEACHINCMD = "teachInCMD";
     public final static String CHANNEL_INSTANTPOWER = "instantpower";
     public final static String CHANNEL_TOTALUSAGE = "totalusage";
-    public final static String CHANNEL_INSTANTLITRE = "amrLitre";
-    public final static String CHANNEL_TOTALCUBICMETRE = "amrCubicMetre";
+    public final static String CHANNEL_CURRENTFLOW = "currentFlow";
+    public final static String CHANNEL_CUMULATIVEVALUE = "cumulativeValue";
     public final static String CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
     public final static String CHANNEL_ENERGY_STORAGE = "energyStorage";
     public final static String CHANNEL_BATTERY_LEVEL = "batteryLevel";
@@ -247,10 +248,10 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTPOWER), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Power.class.getSimpleName()));
                     put(CHANNEL_TOTALUSAGE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALUSAGE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Energy.class.getSimpleName()));
-                    put(CHANNEL_INSTANTLITRE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTLITRE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Volume.class.getSimpleName()));
-                    put(CHANNEL_TOTALCUBICMETRE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALCUBICMETRE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Volume.class.getSimpleName()));
+                    put(CHANNEL_CURRENTFLOW, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_CURRENTFLOW), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + VolumetricFlowRate.class.getSimpleName()));
+                    put(CHANNEL_CUMULATIVEVALUE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_CUMULATIVEVALUE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Volume.class.getSimpleName()));
                     put(CHANNEL_AUTOOFF, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AUTOOFF),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_DELAYRADIOOFF, new EnOceanChannelDescription(

@@ -107,15 +107,26 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
     @Override
     boolean validateConfig() {
         
+        EnOceanActuatorConfig config = getConfiguration();
+        if(config == null) {
+            configurationErrorDescription = "Configuration is not valid";
+            return false;
+        }
+
+        if(config.sendingEEPId == null || config.sendingEEPId.isEmpty()) {
+            configurationErrorDescription = "Sending EEP must be provided";
+            return false;
+        }
+
+
         try {
             sendingEEPType = EEPType.getType(getConfiguration().sendingEEPId);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             configurationErrorDescription = "Sending EEP is not supported";
             return false;
         }
         
         if (super.validateConfig()) {
-
             try {
                 
                 if (sendingEEPType.getSupportsRefresh()) {
