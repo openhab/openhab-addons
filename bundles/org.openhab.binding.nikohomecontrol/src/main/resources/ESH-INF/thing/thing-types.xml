@@ -151,7 +151,7 @@
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
-            <bridge-type-ref id="bridge2" />
+			<bridge-type-ref id="bridge2" />
 		</supported-bridge-type-refs>
 		<label>Thermostat</label>
 		<description>Thermostat in the Niko Home Control system</description>
@@ -176,21 +176,21 @@
 		</config-description>
 	</thing-type>
 	<thing-type id="energyMeter">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge2" />
-        </supported-bridge-type-refs>
-        <label>Energy Meter</label>
-        <description>Energy meter in the Niko Home Control system</description>
-        <channels>
-            <channel id="power" typeId="power" />
-        </channels>
-        <config-description>
-            <parameter name="energyMeterId" type="text" required="true">
-                <label>Energy Meter ID</label>
-                <description>Niko Home Control Energy Meter ID</description>
-                <advanced>false</advanced>
-            </parameter>
-        </config-description>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge2" />
+		</supported-bridge-type-refs>
+		<label>Energy Meter</label>
+		<description>Energy meter in the Niko Home Control system</description>
+		<channels>
+			<channel id="power" typeId="power" />
+		</channels>
+		<config-description>
+			<parameter name="energyMeterId" type="text" required="true">
+				<label>Energy Meter ID</label>
+				<description>Niko Home Control Energy Meter ID</description>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="button">
@@ -264,14 +264,14 @@
 			</options>
 		</state>
 	</channel-type>
-	   <channel-type id="power">
-        <item-type>Number:Power</item-type>
-        <label>Power</label>
-        <description>Momentary power consumption/production (positive is consumption)</description>
-        <category>Number</category>
-        <state readOnly="true" pattern="%.0f %unit%" />
-    </channel-type>
-	
+	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Momentary power consumption/production (positive is consumption)</description>
+		<category>Number</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+
 
 	<channel-type id="alarm">
 		<kind>trigger</kind>
