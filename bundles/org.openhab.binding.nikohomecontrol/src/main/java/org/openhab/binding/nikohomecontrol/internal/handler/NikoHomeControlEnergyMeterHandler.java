@@ -111,6 +111,27 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         });
     }
 
+    @Override
+    public void dispose() {
+        Bridge nhcBridge = getBridge();
+        if (nhcBridge == null) {
+            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "Niko Home Control: no bridge initialized when trying to stop energy meter " + energyMeterId);
+            return;
+        }
+        NikoHomeControlBridgeHandler nhcBridgeHandler = (NikoHomeControlBridgeHandler) nhcBridge.getHandler();
+        if (nhcBridgeHandler == null) {
+            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "Niko Home Control: no bridge initialized when trying to stop energy meter " + energyMeterId);
+            return;
+        }
+        NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
+
+        if (nhcComm != null) {
+            nhcComm.stopEnergyMeter(energyMeterId);
+        }
+    }
+
     private void updateProperties() {
         Map<String, String> properties = new HashMap<>();
 
