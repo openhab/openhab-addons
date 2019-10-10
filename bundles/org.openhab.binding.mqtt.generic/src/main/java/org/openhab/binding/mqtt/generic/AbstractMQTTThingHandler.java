@@ -99,7 +99,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (connection == null) {
+        if (connection == null || command instanceof RefreshType) {
             return;
         }
 
@@ -107,15 +107,6 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
 
         if (data == null) {
             logger.warn("Channel {} not supported!", channelUID);
-            return;
-        }
-
-        if (command instanceof RefreshType) {
-            if (data.config.retained==true) {
-                updateState(channelUID.getId(), data.getCache().getChannelState());
-            } else {
-                logger.trace("Refresh not supported on non-retained topics (channel {})", channelUID);
-            }
             return;
         }
 
