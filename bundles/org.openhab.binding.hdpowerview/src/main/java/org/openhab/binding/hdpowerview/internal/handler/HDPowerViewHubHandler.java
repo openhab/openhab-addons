@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
@@ -135,11 +136,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             logger.debug("Polling for state");
             pollShades();
             pollScenes();
-        } catch (IOException e) {
-            logger.debug("Could not connect to bridge", e);
+        } catch (ProcessingException e) {
+            logger.debug("Could not connect to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
-            logger.warn("Unexpected error connecting to bridge", e);
+            logger.warn("Unexpected error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
