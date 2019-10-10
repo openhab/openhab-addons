@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  * Structure Data
  * Generated with jsonschema2pojo
  *
- * @author LucaCalcaterra - Initial contribution
+ * @author Luca Calcaterra - Initial contribution
  * @author Wietse van Buitenen - Add Floor and Area
  */
 public class Structure {

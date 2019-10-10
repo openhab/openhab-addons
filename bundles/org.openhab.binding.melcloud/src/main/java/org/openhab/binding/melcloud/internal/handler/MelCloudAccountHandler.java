@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.melcloud.internal.handler;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,11 +25,13 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.melcloud.internal.api.MelCloudConnection;
 import org.openhab.binding.melcloud.internal.api.json.Device;
 import org.openhab.binding.melcloud.internal.api.json.DeviceStatus;
 import org.openhab.binding.melcloud.internal.config.AccountConfig;
+import org.openhab.binding.melcloud.internal.discovery.MelCloudDiscoveryService;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudLoginException;
 import org.slf4j.Logger;
@@ -53,6 +56,11 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
 
     public MelCloudAccountHandler(Bridge bridge) {
         super(bridge);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(MelCloudDiscoveryService.class);
     }
 
     @Override

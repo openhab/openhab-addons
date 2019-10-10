@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  * Device Properties.
  * Generated with jsonschema2pojo
  *
- * @author LucaCalcaterra - Initial contribution
+ * @author Luca Calcaterra - Initial contribution
  */
 public class DeviceProps {
 

@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  * Device Status data
  * Generated with jsonschema2pojo
  *
- * @author LucaCalcaterra - Initial contribution
+ * @author Luca Calcaterra - Initial contribution
  * @author Pauli Anttila - Fine tuned expose annotations
  */
 public class DeviceStatus {

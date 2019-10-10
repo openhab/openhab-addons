@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * The {@link MelCloudDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author LucaCalcaterra - Initial contribution
+ * @author Luca Calcaterra - Initial contribution
  * @author Pauli Anttila - Refactoring
  */
 
@@ -157,11 +158,11 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_POWER:
-                cmdtoSend.setPower((OnOffType) command == OnOffType.ON ? true : false);
+                cmdtoSend.setPower(command == OnOffType.ON);
                 cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_POWER);
                 break;
             case CHANNEL_OPERATION_MODE:
-                cmdtoSend.setOperationMode(((DecimalType) command).intValue());
+                cmdtoSend.setOperationMode(Integer.parseInt(command.toString()));
                 cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_OPERATION_MODE);
                 break;
             case CHANNEL_SET_TEMPERATURE:
@@ -185,15 +186,15 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_FAN_SPEED:
-                cmdtoSend.setSetFanSpeed(((DecimalType) command).intValue());
+                cmdtoSend.setSetFanSpeed(Integer.parseInt(command.toString()));
                 cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_FAN_SPEED);
                 break;
             case CHANNEL_VANE_VERTICAL:
-                cmdtoSend.setVaneVertical(((DecimalType) command).intValue());
+                cmdtoSend.setVaneVertical(Integer.parseInt(command.toString()));
                 cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_VANE_VERTICAL);
                 break;
             case CHANNEL_VANE_HORIZONTAL:
-                cmdtoSend.setVaneHorizontal(((DecimalType) command).intValue());
+                cmdtoSend.setVaneHorizontal(Integer.parseInt(command.toString()));
                 cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_VANE_HORIZONTAL);
                 break;
             default:
@@ -232,8 +233,8 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
 
     private void startAutomaticRefresh() {
         if (refreshTask == null || refreshTask.isCancelled()) {
-            Runnable runnable = () -> getDeviceDataAndUpdateChannels();
-            refreshTask = scheduler.scheduleWithFixedDelay(runnable, 1, config.pollingInterval, TimeUnit.SECONDS);
+            refreshTask = scheduler.scheduleWithFixedDelay(this::getDeviceDataAndUpdateChannels, 1,
+                    config.pollingInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -254,11 +255,9 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
     }
 
     private synchronized void updateChannels(DeviceStatus newDeviceStatus) {
-        synchronized (this) {
-            deviceStatus = newDeviceStatus;
-            for (Channel channel : getThing().getChannels()) {
-                updateChannels(channel.getUID().getId(), deviceStatus);
-            }
+        deviceStatus = newDeviceStatus;
+        for (Channel channel : getThing().getChannels()) {
+            updateChannels(channel.getUID().getId(), deviceStatus);
         }
     }
 
@@ -268,20 +267,20 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
                 updateState(CHANNEL_POWER, deviceStatus.getPower() ? OnOffType.ON : OnOffType.OFF);
                 break;
             case CHANNEL_OPERATION_MODE:
-                updateState(CHANNEL_OPERATION_MODE, new DecimalType(deviceStatus.getOperationMode()));
+                updateState(CHANNEL_OPERATION_MODE, new StringType(deviceStatus.getOperationMode().toString()));
                 break;
             case CHANNEL_SET_TEMPERATURE:
                 updateState(CHANNEL_SET_TEMPERATURE,
                         new QuantityType<Temperature>(deviceStatus.getSetTemperature(), SIUnits.CELSIUS));
                 break;
             case CHANNEL_FAN_SPEED:
-                updateState(CHANNEL_FAN_SPEED, new DecimalType(deviceStatus.getSetFanSpeed()));
+                updateState(CHANNEL_FAN_SPEED, new StringType(deviceStatus.getSetFanSpeed().toString()));
                 break;
             case CHANNEL_VANE_HORIZONTAL:
-                updateState(CHANNEL_VANE_HORIZONTAL, new DecimalType(deviceStatus.getVaneHorizontal()));
+                updateState(CHANNEL_VANE_HORIZONTAL, new StringType(deviceStatus.getVaneHorizontal().toString()));
                 break;
             case CHANNEL_VANE_VERTICAL:
-                updateState(CHANNEL_VANE_VERTICAL, new DecimalType(deviceStatus.getVaneVertical()));
+                updateState(CHANNEL_VANE_VERTICAL, new StringType(deviceStatus.getVaneVertical().toString()));
                 break;
             case CHANNEL_OFFLINE:
                 updateState(CHANNEL_OFFLINE, deviceStatus.getOffline() ? OnOffType.ON : OnOffType.OFF);

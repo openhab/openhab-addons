@@ -51,7 +51,7 @@
 		<description>Power status of device</description>
 	</channel-type>
 	<channel-type id="operationMode-channel">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<description>Operation mode</description>
 		<state readOnly="false">
@@ -71,7 +71,7 @@
 		<state min="10" max="40" step="0.5" pattern="%.1f %unit%" readOnly="false" />
 	</channel-type>
 	<channel-type id="fanSpeed-channel">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<description>Fan speed</description>
 		<state readOnly="false">
@@ -86,7 +86,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="vaneHorizontal-channel">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Vane Horizontal</label>
 		<description>Vane horizontal</description>
 		<state readOnly="false">
@@ -102,7 +102,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="vaneVertical-channel">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Vane Vertical</label>
 		<description>Vane vertical</description>
 		<state readOnly="false">

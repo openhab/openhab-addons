@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link MelCloudBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author LucaCalcaterra - Initial contribution
+ * @author Luca Calcaterra - Initial contribution
  */
 public class MelCloudBindingConstants {
 
