@@ -14,23 +14,15 @@ package org.openhab.binding.melcloud.internal;
 
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.melcloud.internal.discovery.MelCloudDiscoveryService;
 import org.openhab.binding.melcloud.internal.handler.MelCloudAccountHandler;
 import org.openhab.binding.melcloud.internal.handler.MelCloudDeviceHandler;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -41,7 +33,6 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(configurationPid = "binding.melcloud", service = ThingHandlerFactory.class)
 public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
-    private Map<ThingUID, ServiceRegistration<DiscoveryService>> discoveryServiceRegistrations = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -54,7 +45,6 @@ public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_MELCLOUD_ACCOUNT.equals(thingTypeUID)) {
             MelCloudAccountHandler handler = new MelCloudAccountHandler((Bridge) thing);
-            registerDiscoveryService(handler);
             return handler;
         } else if (THING_TYPE_ACDEVICE.equals(thingTypeUID)) {
             MelCloudDeviceHandler handler = new MelCloudDeviceHandler(thing);
@@ -64,22 +54,4 @@ public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    @Override
-    protected void removeHandler(@NonNull ThingHandler thingHandler) {
-        ServiceRegistration<DiscoveryService> serviceRegistration = discoveryServiceRegistrations
-                .get(thingHandler.getThing().getUID());
-
-        if (serviceRegistration != null) {
-            serviceRegistration.unregister();
-        }
-    }
-
-    private void registerDiscoveryService(MelCloudAccountHandler handler) {
-        MelCloudDiscoveryService discoveryService = new MelCloudDiscoveryService(handler);
-
-        ServiceRegistration<DiscoveryService> serviceRegistration = this.bundleContext
-                .registerService(DiscoveryService.class, discoveryService, null);
-
-        discoveryServiceRegistrations.put(handler.getThing().getUID(), serviceRegistration);
-    }
 }
