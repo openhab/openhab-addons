@@ -95,8 +95,14 @@ public class HDPowerViewWebTargets {
         }
 
         if (response.getStatus() != 200) {
-            logger.error("Bridge returned {} while invoking {} : {}", response.getStatus(), target.getUri(),
-                    response.readEntity(String.class));
+            if (response.getStatus() == 423) {
+                // bridge seems to return a 423 error (resource locked) once per day around midnight
+                // we assume this is a regular re-initialization process, so suppress the error log
+                logger.warn("Bridge returned '423' while invoking {}", target.getUri());
+            } else {
+                logger.error("Bridge returned '{}' while invoking {} : {}", response.getStatus(), target.getUri(),
+                        response.readEntity(String.class));
+            }
             return null;
         } else if (!response.hasEntity()) {
             logger.error("Bridge returned null response while invoking {}", target.getUri());
