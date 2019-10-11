@@ -96,11 +96,9 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (target.getAddress() == null) {
-            if (!renewTargetAddress()) {
-                logger.info("failed to renew target address, can't process '{}' to '{}'.", command, channelUID);
-                return;
-            }
+        if (target.getAddress() == null &&!renewTargetAddress()) {
+            logger.info("failed to renew target address, can't process '{}' to '{}'.", command, channelUID);
+            return;
         }
 
         try {
