@@ -1,6 +1,6 @@
 # Homematic Binding
 
-This is the binding for the [eQ-3 Homematic Solution](http://www.eq-3.de/).
+This is the binding for the [eQ-3 Homematic Solution](https://eq-3.de/).
 This binding allows you to integrate, view, control and configure all Homematic devices in openHAB.
 
 ## Configuration of the CCU
@@ -34,10 +34,10 @@ All gateways which provides the Homematic BIN- or XML-RPC API:
 
 - CCU 1, 2 and 3
 - [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic)
-- [Homegear](https://www.homegear.eu) (>= 0.8.0-1988)
+- [Homegear](https://homegear.eu) (>= 0.8.0-1988)
 - [piVCCU](https://github.com/alexreinert/piVCCU)
 - [YAHM](https://github.com/leonsio/YAHM)
-- [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
+- [Windows BidCos service](https://eq-3.de/service/downloads.html?kat=download&id=125) (included in "LAN Usersoftware" download)
 - [OCCU](https://github.com/eq-3/occu)
 
 The Homematic IP Access Point **does not support** this API and and can't be used with this binding.
