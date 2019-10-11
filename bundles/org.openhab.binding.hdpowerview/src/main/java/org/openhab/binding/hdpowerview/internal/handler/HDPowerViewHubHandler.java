@@ -137,7 +137,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             pollShades();
             pollScenes();
         } catch (ProcessingException e) {
-            logger.debug("Could not connect to bridge: {}", e.getMessage());
+            logger.debug("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.warn("Unexpected error connecting to bridge: {}", e.getMessage());
