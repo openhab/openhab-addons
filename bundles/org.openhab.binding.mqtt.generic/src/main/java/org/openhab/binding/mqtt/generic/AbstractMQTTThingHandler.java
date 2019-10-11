@@ -99,7 +99,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (connection == null || command instanceof RefreshType) {
+        if (connection == null) {
             return;
         }
 
@@ -110,8 +110,18 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
             return;
         }
 
+        if (command instanceof RefreshType) {
+            State state = data.getCache().getChannelState();
+            if (state instanceof UnDefType) {
+                logger.debug("Channel {} received REFRESH but no value cached, ignoring", channelUID);
+            } else {
+                updateState(channelUID, state);
+            }
+            return;
+        }
+
         if (data.isReadOnly()) {
-            logger.warn("Channel {} is a read-only channel!", channelUID);
+            logger.warn("Channel {} is a read-only channel, ignoring command {}", channelUID, command);
             return;
         }
 
