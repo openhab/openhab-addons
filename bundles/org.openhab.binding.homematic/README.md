@@ -1,6 +1,6 @@
 # Homematic Binding
 
-This is the binding for the [eQ-3 Homematic Solution](http://www.eq-3.de/).
+This is the binding for the [eQ-3 Homematic Solution](https://eq-3.de/).
 This binding allows you to integrate, view, control and configure all Homematic devices in openHAB.
 
 ## Configuration of the CCU
@@ -10,13 +10,13 @@ The CCU has to be configured to have "XML-RPC" set to "Full Access" or "Restrict
 Also the "Remote Homematic-Script API" has to be set to "Full Access" or "Restricted access".
 When the option "Restricted access" is used, some ports have to be added to the "Port opening" list.
 
-´´´
+```
 2000;
 2001;
 2010;
 8701;
 9292;
-´´´
+```
 
 Also the IP of the device running openHAB has to be set to the list of "IP addresses for restricted access".
 
@@ -34,10 +34,10 @@ All gateways which provides the Homematic BIN- or XML-RPC API:
 
 - CCU 1, 2 and 3
 - [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic)
-- [Homegear](https://www.homegear.eu) (>= 0.8.0-1988)
+- [Homegear](https://homegear.eu) (>= 0.8.0-1988)
 - [piVCCU](https://github.com/alexreinert/piVCCU)
 - [YAHM](https://github.com/leonsio/YAHM)
-- [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
+- [Windows BidCos service](https://eq-3.de/service/downloads.html?kat=download&id=125) (included in "LAN Usersoftware" download)
 - [OCCU](https://github.com/eq-3/occu)
 
 The Homematic IP Access Point **does not support** this API and and can't be used with this binding.
@@ -106,9 +106,9 @@ The difference is, that variables, scripts and device names are not supported, e
 
 Besides discovering devices that are already known by the gateway, it may be desired to connect new devices to your system - which requires your gateway to be in install mode. Starting the binding's DiscoveryService will automatically put your gateway(s) in install mode for a specified period of time (see installModeDuration).
 
-**Note:** Enabling / disabling of install mode is also available via GATEWAY_EXTRAS. You may use this if you prefer.
+**Note:** Enabling / disabling of install mode is also available via GATEWAY-EXTRAS. You may use this if you prefer.
 
-**Exception:** If a gateway is not ONLINE, the install mode will not be set automatically. _For instance during initialization of the binding its DiscoveryService is started and will discover devices that are already connected. However, the install mode is not automatically enabled in this situation because the gateway is in the status INITIALIZING._
+**Exception:** If a gateway is not ONLINE, the install mode will not be set automatically. For instance during initialization of the binding its DiscoveryService is started and will discover devices that are already connected. However, the install mode is not automatically enabled in this situation because the gateway is in the status INITIALIZING.
 
 ## Bridge Configuration
 
@@ -118,15 +118,15 @@ There are several settings for a bridge:
 Network address of the Homematic gateway
 
 -   **gatewayType**
-Hint for the binding to identify the gateway type (auto|ccu|noccu) (default = auto).
+Hint for the binding to identify the gateway type (auto|ccu|noccu) (default = "auto").
 
 -   **callbackHost**
 Callback network address of the system runtime, default is auto-discovery
 
 -   **bindAddress**
-The address the XML-/BINRPC server binds to, default is callbackHost
+The address the XML-/BINRPC server binds to, default is value of "callbackHost"
 
--   **callbackPort DEPRECATED, use binCallbackPort and xmlCallbackPort**
+-   **callbackPort** (DEPRECATED, use "binCallbackPort" resp. "xmlCallbackPort")
 Callback port of the binding's server, default is 9125 and counts up for each additional bridge
 
 -   **xmlCallbackPort**
@@ -135,13 +135,13 @@ Callback port of the binding's XML-RPC server, default is 9125 and counts up for
 -   **binCallbackPort**
 Callback port of the binding's BIN-RPC server, default is 9126 and counts up for each additional bridge
 
--   **aliveInterval DEPRECATED, not necessary anymore**
+-   **aliveInterval** (DEPRECATED, not necessary anymore)
 The interval in seconds to check if the communication with the Homematic gateway is still alive. If no message receives from the Homematic gateway, the RPC server restarts (default = 300)
 
--   **reconnectInterval DEPRECATED, not necessary anymore**
-The interval in seconds to force a reconnect to the Homematic gateway, disables aliveInterval! (0 = disabled, default = disabled).
-If you have no sensors which sends messages in regular intervals and/or you have low communication, the aliveInterval may restart the connection to the Homematic gateway to often.
-The reconnectInterval disables the aliveInterval and reconnects after a fixed period of time.
+-   **reconnectInterval** (DEPRECATED, not necessary anymore)
+The interval in seconds to force a reconnect to the Homematic gateway, disables "aliveInterval"! (0 = disabled, default = disabled).
+If you have no sensors which sends messages in regular intervals and/or you have low communication, the "aliveInterval" may restart the connection to the Homematic gateway to often.
+The "reconnectInterval" disables the "aliveInterval" and reconnects after a fixed period of time.
 Think in hours when configuring (one hour = 3600)
 
 -   **timeout**
@@ -188,19 +188,19 @@ homematic:bridge:NAME
 
 ### Example
 
-- minimum configuration
+**Minimum configuration**
 
 ```java
 Bridge homematic:bridge:ccu [ gatewayAddress="..."]
 ```
 
-- with callback settings
+**With callback settings**
 
 ```java
 Bridge homematic:bridge:ccu [ gatewayAddress="...", callbackHost="...", callbackPort=... ]
 ```
 
-- multiple bridges
+**Multiple bridges**
 
 ```java
 Bridge homematic:bridge:lxccu [ gatewayAddress="..."]
@@ -221,8 +221,8 @@ Bridge homematic:bridge:ccu [ gatewayAddress="..." ]
 ```
 
 The first parameter after Thing is the device type, the second the serial number.
-If you are using Homegear, you have to add the prefix ```HG-``` for each type.
-The ```HG-``` prefix is only needed for Things, not for Items or channel configs.
+If you are using Homegear, you have to add the prefix `HG-` for each type.
+The `HG-` prefix is only needed for Things, not for Items or channel configs.
 This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
 
 ```java
@@ -230,7 +230,7 @@ This is necessary, because the Homegear devices supports more datapoints than Ho
 ```
 
 As additional parameters you can define a name and a location for each thing.
-The Name will be used to identify the Thing in the Paper UI lists, the Location will be used in the Control section of PaperUI to sort the things.
+The `Name` will be used to identify the thing in the Paper UI lists, the `Location` will be used in the Control section of PaperUI to sort the things.
 
 ```java
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999  "Name"  @  "Location"
@@ -241,9 +241,9 @@ All channels have two configs:
 - **delay**: delays transmission of a command **to** the Homematic gateway, duplicate commands are filtered out
 - **receiveDelay**: delays a received event **from** the Homematic gateway, duplicate events are filtered out (OH 2.2)
 
-The receiveDelay is handy for dimmers and rollershutters for example.
+The `receiveDelay` is handy for dimmers and rollershutters for example.
 If you have a slider in a UI and you move this slider to a new position, it jumps around because the gateway sends multiple events with different positions until the final has been reached.
-If you set the ```receiveDelay``` to some seconds, these events are filtered out and only the last position is distributed to the binding.
+If you set the `receiveDelay` to some seconds, these events are filtered out and only the last position is distributed to the binding.
 The disadvantage is of course, that all events for this channel are delayed.
 
 ```java
@@ -256,10 +256,11 @@ The disadvantage is of course, that all events for this channel are delayed.
   }
 ```
 
-The Type is the device type, channel number and lowercase channel name separated with a underscore.
-Note that, for Homegear devices, in contrast to the specification of the Thing above no ```HG-``` prefix is needed for the specification of the Type of the Channel.
+The `Type` is the device type, channel number and lowercase channel name separated with a underscore.
+Note that, for Homegear devices, in contrast to the specification of the Rhing above no `HG-` prefix is needed for the specification of the Type of the Channel.
 
 The channel configs are optional.
+
 Example without channel configs
 ```java
   Thing HM-LC-Dim1T-Pl-2    JEQ0999999 "Name"  @  "Location" {
@@ -288,7 +289,7 @@ Switch  RC_1  "Remote Control Button 1" { channel="homematic:HM-RC-19-B:ccu:KEQ0
 Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:ccu:JEQ0555555:1#LEVEL" }
 ```
 
-**Note:** don't forget to add the ```HG-``` type prefix for Homegear devices
+**Note:** don't forget to add the `HG-` type prefix for Homegear devices
 
 ## Virtual device and datapoints
 
@@ -300,7 +301,8 @@ Virtual datapoints are generated by the binding and provides special functionali
 The GATEWAY-EXTRAS is a virtual device which contains a switch to reload all values from all devices and also a switch to put the gateway in the install mode to add new devices.
 If the gateway supports variables and scripts, you can handle them with this device too.
 The type is generated: GATEWAY-EXTRAS-&lsqb;BRIDGE_ID&rsqb;.
-Example: bridgeId=ccu, type=GATEWAY-EXTRAS-CCU
+
+**Example:** bridgeId=ccu, type=GATEWAY-EXTRAS-CCU
 Address: fixed GWE00000000
 
 ### RELOAD_ALL_FROM_GATEWAY
@@ -367,25 +369,25 @@ Assumed you mapped the virtual datapoint to a String item called Display_Options
 String Display_Options "Display_Options" { channel="homematic:HM-RC-19-B:ccu:KEQ0099999:18#DISPLAY_OPTIONS" }
 ```
 
-show message TEST:
+show message "TEST":
 
 ```shell
 smarthome send Display_Options "TEST"
 ```
 
-show message TEXT, beep once and turn backlight on:
+show message "TEXT", beep once and turn backlight on:
 
 ```shell
 smarthome send Display_Options "TEXT, TONE1, BACKLIGHT_ON"
 ```
 
-show message 15, beep once, turn backlight on and shows the celsius unit:
+show message "15", beep once, turn backlight on and shows the celsius unit:
 
 ```shell
 smarthome send Display_Options "15, TONE1, BACKLIGHT_ON, CELSIUS"
 ```
 
-show message ALARM, beep three times, let the backlight blink fast and shows a bell symbol:
+show message "ALARM", beep three times, let the backlight blink fast and shows a bell symbol:
 
 ```shell
 smarthome send Display_Options "ALARM, TONE3, BLINK_FAST, BELL"
@@ -403,9 +405,11 @@ Adds multiple virtual datapoints to the HM-Dis-WM55 and HM-Dis-EP-WM55 devices t
 
 **Note:** The HM-Dis-EP-WM55 has only a black and white display and therefore does not support datapoints for colored lines. In addition, only lines 1-3 can be set.
 
-Example: Display text at line 1,3 and 5 when the bottom button on the display is pressed
+#### Example ####
 
-- Items
+Display text at line 1,3 and 5 when the bottom button on the display is pressed
+
+**Items**
 
 ```java
 String Display_line_1   "Line 1"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_LINE_1" }
@@ -424,7 +428,7 @@ Switch Button_bottom    "Button"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123
 Switch Display_submit   "Submit"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_SUBMIT" }
 ```
 
-- Rule
+**Rule**
 
 ```javascript
 rule "Display Test"
@@ -450,12 +454,13 @@ end
 ### BUTTON
 
 A virtual datapoint (String) to simulate a key press, available on all channels that contains PRESS_ datapoints.
+
 Available values:
 * `SHORT_PRESS`: triggered on a short key press
 * `LONG_PRESS`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
 * `DOUBLE_PRESS`: triggered on a short key press but only if the latest `SHORT_PRESS` or `DOUBLE_PRESS` event is not older than 2.0 s (not related to `DBL_PRESS_TIME` configuration, which is more like a key lock because if it is other than `0.0` single presses are not notified anymore)
 
-Example: to capture a short key press on the 19 button remote control in a rule
+**Example:** to capture a short key press on the 19 button remote control in a rule
 
 ```javascript
 rule "example trigger rule"
@@ -465,7 +470,6 @@ then
     ...
 end
 ```
-
 
 ## Troubleshooting
 
@@ -539,7 +543,7 @@ Set the logging back to normal
 log:set INFO org.openhab.binding.homematic
 ```
 
-To identify problems, i need a full startup TRACE log
+To identify problems, a full startup TRACE log will be needed:
 
 ```shell
 stop org.openhab.binding.homematic
