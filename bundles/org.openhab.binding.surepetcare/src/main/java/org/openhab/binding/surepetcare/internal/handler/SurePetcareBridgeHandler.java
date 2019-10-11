@@ -105,7 +105,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             }
             if (petLocationPollingJob == null || petLocationPollingJob.isCancelled()) {
                 petLocationPollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                    pollAndUpdatePetLocations();
+                    pollAndUpdatePetStatus();
                 }, refreshIntervalLocation, refreshIntervalLocation, TimeUnit.SECONDS);
                 logger.debug("Bridge location polling job every {} seconds", refreshIntervalLocation);
             }
@@ -166,15 +166,16 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 } else if (th.getThingTypeUID().equals(THING_TYPE_HOUSEHOLD)) {
                     ((SurePetcareHouseholdHandler) handler).updateThing();
                 } else if ((th.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE))
-                        || (th.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE))) {
+                        || (th.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE))
+                        || (th.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE))) {
                     ((SurePetcareDeviceHandler) handler).updateThing();
                 }
             }
         }
     }
 
-    private synchronized void pollAndUpdatePetLocations() {
-        petcareAPI.updatePetLocations();
+    private synchronized void pollAndUpdatePetStatus() {
+        petcareAPI.updatePetStatus();
         for (Thing th : ((Bridge) thing).getThings()) {
             if (th.getThingTypeUID().equals(THING_TYPE_PET)) {
                 logger.debug("updating pet location for: {}", th.getUID().getId());

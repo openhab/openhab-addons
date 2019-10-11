@@ -36,10 +36,11 @@ public class SurePetcareConstants {
     public static final ThingTypeUID THING_TYPE_PET = new ThingTypeUID(BINDING_ID, "pet");
     public static final ThingTypeUID THING_TYPE_HUB_DEVICE = new ThingTypeUID(BINDING_ID, "hubDevice");
     public static final ThingTypeUID THING_TYPE_FLAP_DEVICE = new ThingTypeUID(BINDING_ID, "flapDevice");
+    public static final ThingTypeUID THING_TYPE_FEEDER_DEVICE = new ThingTypeUID(BINDING_ID, "feederDevice");
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BRIDGE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_TYPE_HOUSEHOLD, THING_TYPE_PET, THING_TYPE_HUB_DEVICE, THING_TYPE_FLAP_DEVICE));
+            Arrays.asList(THING_TYPE_HOUSEHOLD, THING_TYPE_PET, THING_TYPE_HUB_DEVICE, THING_TYPE_FLAP_DEVICE, THING_TYPE_FEEDER_DEVICE));
 
     // Bridge configuration property names
     public static final String USERNAME = "username";
@@ -83,6 +84,15 @@ public class SurePetcareConstants {
     public static final String DEVICE_CHANNEL_PAIRING_AT = "pairingAt";
     public static final String DEVICE_CHANNEL_SERIAL_NUMBER = "serialNumber";
     public static final String DEVICE_CHANNEL_MAC_ADDRESS = "macAddress";
+    public static final String DEVICE_CHANNEL_BOWLS_FOOD = "bowlsFood";
+    public static final String DEVICE_CHANNEL_BOWLS_TARGET = "bowlsTarget";
+    public static final String DEVICE_CHANNEL_BOWLS_FOOD_LEFT = "bowlsFoodLeft";
+    public static final String DEVICE_CHANNEL_BOWLS_TARGET_LEFT = "bowlsTargetLeft";
+    public static final String DEVICE_CHANNEL_BOWLS_FOOD_RIGHT = "bowlsFoodRight";
+    public static final String DEVICE_CHANNEL_BOWLS_TARGET_RIGHT = "bowlsTargetRight";
+    public static final String DEVICE_CHANNEL_BOWLS = "bowls";
+    public static final String DEVICE_CHANNEL_BOWLS_CLOSE_DELAY = "bowlsCloseDelay";
+    public static final String DEVICE_CHANNEL_BOWLS_TRAINING_MODE = "bowlsTrainingMode";
 
     // Pet Channel Names
     public static final String PET_CHANNEL_ID = "id";
@@ -97,5 +107,10 @@ public class SurePetcareConstants {
     public static final String PET_CHANNEL_DATE_OF_BIRTH = "dateOfBirth";
     public static final String PET_CHANNEL_WEIGHT = "weight";
     public static final String PET_CHANNEL_TAG_IDENTIFIER = "tagIdentifier";
+    public static final String PET_CHANNEL_FEEDER_DEVICE = "feederDevice";
+    public static final String PET_CHANNEL_FEEDER_LASTFEEDING = "feederLastFeeding";
+    public static final String PET_CHANNEL_FEEDER_LAST_CHANGE = "feederLastChange";
+    public static final String PET_CHANNEL_FEEDER_LAST_CHANGE_LEFT = "feederLastChangeLeft";
+    public static final String PET_CHANNEL_FEEDER_LAST_CHANGE_RIGHT = "feederLastChangeRight";
 
 }

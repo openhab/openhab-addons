@@ -35,6 +35,7 @@ import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginCredentials
 import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginResponse;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePet;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePetLocation;
+import org.openhab.binding.surepetcare.internal.data.SurePetcarePetStatus;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareTag;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareTopology;
 import org.slf4j.Logger;
@@ -132,11 +133,11 @@ public class SurePetcareAPIHelper {
         }
     }
 
-    public synchronized void updatePetLocations() {
+    public synchronized void updatePetStatus() {
         try {
             for (SurePetcarePet pet : topologyCache.getPets()) {
-                String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
-                pet.setLocation(gson.fromJson(getDataFromApi(url), SurePetcarePetLocation.class));
+                String url = PET_BASE_URL + "/" + pet.getId().toString() + "?with[]=status";
+                pet.setPetStatus(gson.fromJson(getDataFromApi(url), SurePetcarePetStatus.class));
             }
         } catch (JsonSyntaxException | SurePetcareApiException e) {
             logger.warn("Exception caught during topology cache update: {}", e.getMessage());
@@ -167,6 +168,15 @@ public class SurePetcareAPIHelper {
         SurePetcarePet pet = topologyCache.getPetById(id);
         if (pet != null) {
             return pet.getLocation();
+        } else {
+            return null;
+        }
+    }
+
+    public final @Nullable SurePetcarePetStatus retrievePetStatus(String id) {
+        SurePetcarePet pet = topologyCache.getPetById(id);
+        if (pet != null) {
+            return pet.getPetStatus();
         } else {
             return null;
         }

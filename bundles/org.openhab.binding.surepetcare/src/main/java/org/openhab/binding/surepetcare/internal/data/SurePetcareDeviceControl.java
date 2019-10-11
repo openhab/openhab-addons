@@ -21,6 +21,7 @@ import com.google.gson.annotations.SerializedName;
  * device (e.g. locking mode, curfew etc.).
  *
  * @author Rene Scherer - Initial contribution
+ * @author Holger Eisold - Added pet feeder status
  */
 public class SurePetcareDeviceControl {
 
@@ -36,6 +37,80 @@ public class SurePetcareDeviceControl {
         public String unlockTime;
     }
 
+    public class Bowls {
+        public class BowlSettings {
+            @SerializedName("food_type")
+            private Integer foodId;
+            @SerializedName("target")
+            private Integer targetId;
+        
+            public BowlSettings(Integer foodId, Integer targetId) {
+                this.foodId = foodId;
+                this.targetId = targetId;
+            }
+        
+            public Integer getFoodId() {
+                return foodId;
+            }
+        
+            public void setFoodId(Integer foodId) {
+                this.foodId = foodId;
+            }
+        
+            public Integer getTargetId() {
+                return targetId;
+            }
+        
+            public void setTargetId(Integer targetId) {
+                this.targetId = targetId;
+            }
+        }
+
+        @SerializedName("settings")
+        private List<BowlSettings> bowlSettings;
+        @SerializedName("type")
+        private Integer bowlId;
+    
+        public Bowls(List<BowlSettings> bowlSettings, Integer bowlId) {
+            this.bowlSettings = bowlSettings;
+            this.bowlId = bowlId;
+        }
+    
+        public List<BowlSettings> getBowlSettings() {
+            return bowlSettings;
+        }
+    
+        public void setBowlSettings(List<BowlSettings> bowlSettings) {
+            this.bowlSettings = bowlSettings;
+        }
+    
+        public Integer getBowlId() {
+            return bowlId;
+        }
+    
+        public void setBowlId(Integer bowlId) {
+            this.bowlId = bowlId;
+        }
+    }
+
+    public class Lid {
+        @SerializedName("close_delay")
+        private Integer closeDelayId;
+    
+        public Lid(Integer closeDelayId) {
+            this.closeDelayId = closeDelayId;
+        }
+    
+        public Integer getCloseDelayId() {
+            return closeDelayId;
+        }
+    
+        public void setCloseDelayId(Integer closeDelayId) {
+            this.closeDelayId = closeDelayId;
+        }
+    
+    }
+
     @SerializedName("locking")
     private Integer lockingModeId;
     private Boolean fastPolling;
@@ -44,6 +119,12 @@ public class SurePetcareDeviceControl {
     @SerializedName("pairing_mode")
     private Integer pairingModeId;
     private List<Curfew> curfew;
+    @SerializedName("bowls")
+    private Bowls bowls;
+    @SerializedName("lid")
+    private Lid lid;
+    @SerializedName("training_mode")
+    private Integer trainingModeId;
 
     public Integer getLockingModeId() {
         return lockingModeId;
@@ -83,5 +164,29 @@ public class SurePetcareDeviceControl {
 
     public void setCurfew(List<Curfew> curfew) {
         this.curfew = curfew;
+    }
+
+    public Bowls getBowls() {
+        return bowls;
+    }
+
+    public void setBowls(Bowls bowls) {
+        this.bowls = bowls;
+    }
+
+    public Lid getLid() {
+        return lid;
+    }
+
+    public void setLid(Lid lid) {
+        this.lid = lid;
+    }
+
+    public Integer getTrainingModeId() {
+        return trainingModeId;
+    }
+
+    public void setTrainingModeId(Integer trainingModeId) {
+        this.trainingModeId = trainingModeId;
     }
 }

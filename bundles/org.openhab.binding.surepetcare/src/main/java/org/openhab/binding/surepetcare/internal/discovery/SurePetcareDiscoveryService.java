@@ -171,6 +171,9 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
             case PET_FLAP:
                 typeUID = THING_TYPE_FLAP_DEVICE;
                 break;
+            case PET_FEEDER:
+                typeUID = THING_TYPE_FEEDER_DEVICE;
+                break;
             case UNKNOWN:
             default:
                 break;

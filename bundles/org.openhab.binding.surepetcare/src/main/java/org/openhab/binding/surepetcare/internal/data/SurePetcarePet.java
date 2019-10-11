@@ -101,6 +101,8 @@ public class SurePetcarePet extends SurePetcareBaseObject {
 
     @SerializedName("position")
     private SurePetcarePetLocation location = new SurePetcarePetLocation();
+    @SerializedName("status")
+    private SurePetcarePetStatus status = new SurePetcarePetStatus();
 
     public String getName() {
         return name;
@@ -196,6 +198,14 @@ public class SurePetcarePet extends SurePetcareBaseObject {
 
     public void setLocation(SurePetcarePetLocation position) {
         this.location = position;
+    }
+
+    public SurePetcarePetStatus getPetStatus() {
+        return status;
+    }
+
+    public void setPetStatus(SurePetcarePetStatus status) {
+        this.status = status;
     }
 
     public ZonedDateTime getDateOfBirthAsZonedDateTime() {

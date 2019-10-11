@@ -14,11 +14,15 @@ package org.openhab.binding.surepetcare.internal.handler;
 
 import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
+import javax.measure.quantity.Mass;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -27,6 +31,7 @@ import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareApiException;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl.Curfew;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl.Bowls.BowlSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * devices.
  *
  * @author Rene Scherer - Initial Contribution
+ * @author Holger Eisold - Added pet feeder status
  */
 @NonNullByDefault
 public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
@@ -115,10 +121,9 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
             updateState(DEVICE_CHANNEL_ID, new DecimalType(device.getId()));
             updateState(DEVICE_CHANNEL_NAME, new StringType(device.getName()));
             updateState(DEVICE_CHANNEL_PRODUCT, new StringType(device.getProductId().toString()));
-            if (thing.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE)) {
-                updateState(DEVICE_CHANNEL_LED_MODE, new StringType(device.getStatus().getLedModeId().toString()));
-                updateState(DEVICE_CHANNEL_PAIRING_MODE,
-                        new StringType(device.getStatus().getPairingModeId().toString()));
+            if ((thing.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE))
+                || (thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE))
+                || (thing.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE))) {
                 updateState(DEVICE_CHANNEL_HARDWARE_VERSION,
                         new DecimalType(device.getStatus().getVersion().device.hardware));
                 updateState(DEVICE_CHANNEL_FIRMWARE_VERSION,
@@ -128,6 +133,24 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                 updateState(DEVICE_CHANNEL_UPDATED_AT, new DateTimeType(device.getUpdatedAtAsZonedDateTime()));
                 updateState(DEVICE_CHANNEL_SERIAL_NUMBER, new StringType(device.getSerialNumber()));
                 updateState(DEVICE_CHANNEL_MAC_ADDRESS, new StringType(device.getMacAddress()));
+            }
+            if ((thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE))
+                || (thing.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE))) {
+                float batVol = device.getStatus().getBattery();
+                updateState(DEVICE_CHANNEL_BATTERY_VOLTAGE, new DecimalType(batVol));
+                updateState(DEVICE_CHANNEL_BATTERY_LEVEL, new DecimalType(Math.min(
+                        (batVol - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100.0f,
+                        100.0f)));
+                updateState(DEVICE_CHANNEL_LOW_BATTERY, OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
+                updateState(DEVICE_CHANNEL_PAIRING_AT, new DateTimeType(device.getPairingAtAsZonedDateTime()));
+                updateState(DEVICE_CHANNEL_DEVICE_RSSI, new DecimalType(device.getStatus().getSignal().deviceRssi));
+                updateState(DEVICE_CHANNEL_HUB_RSSI, new DecimalType(device.getStatus().getSignal().hubRssi)); 
+            }
+
+            if (thing.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE)) {
+                updateState(DEVICE_CHANNEL_LED_MODE, new StringType(device.getStatus().getLedModeId().toString()));
+                updateState(DEVICE_CHANNEL_PAIRING_MODE,
+                        new StringType(device.getStatus().getPairingModeId().toString()));
             } else if (thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE)) {
                 int numCurfews = device.getControl().getCurfew().size();
                 for (int i = 0; (i < 4) && (i < numCurfews); i++) {
@@ -139,26 +162,27 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                 }
                 updateState(DEVICE_CHANNEL_LOCKING_MODE,
                         new StringType(device.getStatus().getLocking().modeId.toString()));
-                updateState(DEVICE_CHANNEL_HARDWARE_VERSION,
-                        new DecimalType(device.getStatus().getVersion().device.hardware));
-                updateState(DEVICE_CHANNEL_FIRMWARE_VERSION,
-                        new DecimalType(device.getStatus().getVersion().device.firmware));
-
-                float batVol = device.getStatus().getBattery();
-                updateState(DEVICE_CHANNEL_BATTERY_VOLTAGE, new DecimalType(batVol));
-                updateState(DEVICE_CHANNEL_BATTERY_LEVEL, new DecimalType(Math.min(
-                        (batVol - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100.0f,
-                        100.0f)));
-                updateState(DEVICE_CHANNEL_LOW_BATTERY, OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
-
-                updateState(DEVICE_CHANNEL_ONLINE, OnOffType.from(device.getStatus().getOnline()));
-                updateState(DEVICE_CHANNEL_CREATED_AT, new DateTimeType(device.getCreatedAtAsZonedDateTime()));
-                updateState(DEVICE_CHANNEL_UPDATED_AT, new DateTimeType(device.getUpdatedAtAsZonedDateTime()));
-                updateState(DEVICE_CHANNEL_PAIRING_AT, new DateTimeType(device.getPairingAtAsZonedDateTime()));
-                updateState(DEVICE_CHANNEL_SERIAL_NUMBER, new StringType(device.getSerialNumber()));
-                updateState(DEVICE_CHANNEL_MAC_ADDRESS, new StringType(device.getMacAddress()));
-                updateState(DEVICE_CHANNEL_DEVICE_RSSI, new DecimalType(device.getStatus().getSignal().deviceRssi));
-                updateState(DEVICE_CHANNEL_HUB_RSSI, new DecimalType(device.getStatus().getSignal().hubRssi));
+            } else if (thing.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE)) {
+                int numBowls = device.getControl().getBowls().getBowlSettings().size();
+                for (int i = 0; (i < 2) && (i < numBowls); i++) {
+                    BowlSettings bowlSettings = device.getControl().getBowls().getBowlSettings().get(i);
+                    if (device.getControl().getBowls().getBowlId().equals(1)) {
+                        updateState(DEVICE_CHANNEL_BOWLS_FOOD, new StringType(bowlSettings.getFoodId().toString()));
+                        updateState(DEVICE_CHANNEL_BOWLS_TARGET, new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
+                    } else if (device.getControl().getBowls().getBowlId().equals(4)) {
+                        if ((i + 1) == 1) {
+                            updateState(DEVICE_CHANNEL_BOWLS_FOOD_LEFT, new StringType(bowlSettings.getFoodId().toString()));
+                            updateState(DEVICE_CHANNEL_BOWLS_TARGET_LEFT, new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
+                        }
+                        if ((i + 1) == 2) {
+                            updateState(DEVICE_CHANNEL_BOWLS_FOOD_RIGHT, new StringType(bowlSettings.getFoodId().toString()));
+                            updateState(DEVICE_CHANNEL_BOWLS_TARGET_RIGHT, new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
+                        }
+                    }
+                }
+                updateState(DEVICE_CHANNEL_BOWLS, new StringType(device.getControl().getBowls().getBowlId().toString()));
+                updateState(DEVICE_CHANNEL_BOWLS_CLOSE_DELAY, new StringType(device.getControl().getLid().getCloseDelayId().toString()));
+                updateState(DEVICE_CHANNEL_BOWLS_TRAINING_MODE, new StringType(device.getControl().getTrainingModeId().toString()));
             } else {
                 logger.warn("Unknown product type for device {}", thing.getUID().getAsString());
             }

@@ -16,19 +16,26 @@ import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
 import java.time.ZonedDateTime;
 
+import javax.measure.quantity.Mass;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareApiException;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePet;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePetLocation;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareTag;
+import org.openhab.binding.surepetcare.internal.data.SurePetcarePetStatus.Activity;
+import org.openhab.binding.surepetcare.internal.data.SurePetcarePetStatus.Feeding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * The {@link SurePetcarePetHandler} is responsible for handling the things created to represent Sure Petcare pets.
  *
  * @author Rene Scherer - Initial Contribution
+ * @author Holger Eisold - Added pet feeder status
  */
 @NonNullByDefault
 public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
@@ -105,7 +113,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                 if (pet.getPhoto() != null) {
                     updateState(PET_CHANNEL_PHOTO_URL, new StringType(pet.getPhoto().getLocation()));
                 }
-                SurePetcarePetLocation loc = pet.getLocation();
+                Activity loc = pet.getPetStatus().getActivity();
                 if (loc != null) {
                     updateState(PET_CHANNEL_LOCATION, new StringType(loc.getWhere().toString()));
                     if (loc.getLocationChanged() != null) {
@@ -123,6 +131,27 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                     SurePetcareTag tag = petcareAPI.retrieveTag(pet.getTagId().toString());
                     if (tag != null) {
                         updateState(PET_CHANNEL_TAG_IDENTIFIER, new StringType(tag.getTag()));
+                    }
+                }
+                Feeding feeding = pet.getPetStatus().getFeeding();
+                if (feeding != null) {
+                    SurePetcareDevice device = petcareAPI.retrieveDevice(feeding.getDeviceId().toString());
+                    if (device != null) {
+                        updateState(PET_CHANNEL_FEEDER_DEVICE, new StringType(device.getName()));
+                        int numBowls = feeding.getFeedChange().size();
+                        for (int i = 0; (i < 2) && (i < numBowls); i++) {
+                            if (device.getControl().getBowls().getBowlId().equals(1)) {
+                                updateState(PET_CHANNEL_FEEDER_LAST_CHANGE, new QuantityType<Mass>(feeding.getFeedChange().get(i), SIUnits.GRAM));
+                            } else if (device.getControl().getBowls().getBowlId().equals(4)) {
+                                if ((i + 1) == 1) {
+                                    updateState(PET_CHANNEL_FEEDER_LAST_CHANGE_LEFT, new QuantityType<Mass>(feeding.getFeedChange().get(i), SIUnits.GRAM));
+                                }
+                                if ((i + 1) == 2) {
+                                    updateState(PET_CHANNEL_FEEDER_LAST_CHANGE_RIGHT, new QuantityType<Mass>(feeding.getFeedChange().get(i), SIUnits.GRAM));
+                                }
+                            }
+                        }
+                        updateState(PET_CHANNEL_FEEDER_LASTFEEDING, new DateTimeType(feeding.getZonedFeedChangeAt()));
                     }
                 }
             } else {
