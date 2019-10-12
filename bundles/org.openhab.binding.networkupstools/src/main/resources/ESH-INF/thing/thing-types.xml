@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="networkupstools"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ups"
+		extensible="string,number,number-electric-current,number-electric-potential,number-frequency,number-power,number-time,switch">
+		<label>Network UPS Tool</label>
+		<description>Network UPS Tool Thing</description>
+
+		<channels>
+			<channel id="batteryCharge" typeId="battery-charge" />
+			<channel id="batteryRuntime" typeId="battery-runtime" />
+			<channel id="batteryVoltage" typeId="battery-voltage" />
+			<channel id="inputRealpower" typeId="input-realpower" />
+			<channel id="inputVoltageStatus" typeId="input-voltage-status" />
+			<channel id="inputQuality" typeId="input-quality" />
+			<channel id="inputCurrent" typeId="input-current" />
+			<channel id="inputCurrentStatus" typeId="input-current-status" />
+			<channel id="inputLoad" typeId="input-load" />
+			<channel id="inputTransferReason" typeId="input-transfer-reason" />
+			<channel id="inputVoltage" typeId="input-voltage" />
+			<channel id="outputCurrent" typeId="output-current" />
+			<channel id="outputVoltage" typeId="output-voltage" />
+			<channel id="upsAlarm" typeId="ups-alarm" />
+			<channel id="upsLoad" typeId="ups-load" />
+			<channel id="upsPower" typeId="ups-power" />
+			<channel id="upsRealpower" typeId="ups-realpower" />
+			<channel id="upsStatus" typeId="ups-status" />
+			<channel id="upsTemperature" typeId="ups-temperature" />
+			<channel id="upsTestResult" typeId="ups-test-result" />
+		</channels>
+
+		<config-description-ref uri="thing-type:ups:config" />
+	</thing-type>
+
+</thing:thing-descriptions>
