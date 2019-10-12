@@ -14,6 +14,8 @@ package org.openhab.binding.surepetcare.internal.data;
 
 import java.util.ArrayList;
 
+import org.openhab.binding.surepetcare.internal.SurePetcareConstants;
+
 /**
  * The {@link SurePetcareDeviceCurfewList} class is used to serialize a list of curfew parameters.
  *
@@ -51,9 +53,9 @@ public class SurePetcareDeviceCurfewList extends ArrayList<SurePetcareDeviceCurf
     }
 
     /**
-     * Creates a list of 4 curfews with enabled ones at the front of the list and disabled ones at the back.
+     * Creates a list of curfews with enabled ones at the front of the list and disabled ones at the back.
      *
-     * @return new ordered list
+     * @return new ordered list.
      */
     public SurePetcareDeviceCurfewList order() {
         SurePetcareDeviceCurfewList orderedList = new SurePetcareDeviceCurfewList();
@@ -63,12 +65,17 @@ public class SurePetcareDeviceCurfewList extends ArrayList<SurePetcareDeviceCurf
                 orderedList.add(curfew);
             }
         }
-        for (int i = orderedList.size(); i < 4; i++) {
+        for (int i = orderedList.size(); i < SurePetcareConstants.FLAP_MAX_NUMBER_OF_CURFEWS; i++) {
             orderedList.add(new SurePetcareDeviceCurfew());
         }
         return orderedList;
     }
 
+    /**
+     * Trims the list of curfews and removes any disabled ones.
+     *
+     * @return the new compact list of curfews.
+     */
     public SurePetcareDeviceCurfewList compact() {
         SurePetcareDeviceCurfewList compactList = new SurePetcareDeviceCurfewList();
         // remove any disabled curfews from the list

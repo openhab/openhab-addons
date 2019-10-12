@@ -55,6 +55,9 @@ public abstract class SurePetcareBaseObjectHandler extends BaseThingHandler {
         }
     }
 
-    public abstract void updateThing();
+    /**
+     * Updates all channels of a thing.
+     */
+    protected abstract void updateThing();
 
 }

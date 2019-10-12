@@ -6,7 +6,7 @@ This binding offers integration to the Sure Petcare API, supporting cloud-connec
 
 1. Read access to all attributes for households, devices (hubs, flaps) and pets through individual things/channels.
 2. Manual setting of pet location.
-3. Setting of LED Mode (hub) and Locking Mode (flaps).
+3. Setting of LED Mode (hub), Locking Mode (flaps) and Curfews.
 
 ### Restrictions / TODO
 
@@ -82,9 +82,18 @@ Channel names in **bold** are read/write, everything else is read-only
 | id                    | Number   | A unique id assigned by the Sure Petcare API                                               |
 | name                  | Text     | The name of the flap                                                                       |
 | product               | Text     | The type of product (3=pet flap, 6=cat flap)                                               |
-| **curfewEnabled1**    | Switch   | Indicator if this curfew configuration is enabled                                          |
-| **curfewLockTime1**   | Text     | The curfew locking time (HH:MM)                                                            |
-| **curfewUnlockTime1** | Text     | The curfew unlocking time (HH:MM)                                                          |
+| **curfewEnabled1**    | Switch   | Indicator if curfew #1 configuration is enabled                                            |
+| **curfewLockTime1**   | Text     | The curfew #1 locking time (HH:MM)                                                         |
+| **curfewUnlockTime1** | Text     | The curfew #1 unlocking time (HH:MM)                                                       |
+| **curfewEnabled2**    | Switch   | Indicator if curfew #2 configuration is enabled                                            |
+| **curfewLockTime2**   | Text     | The curfew #2 locking time (HH:MM)                                                         |
+| **curfewUnlockTime2** | Text     | The curfew #2 unlocking time (HH:MM)                                                       |
+| **curfewEnabled3**    | Switch   | Indicator if curfew #3 configuration is enabled                                            |
+| **curfewLockTime3**   | Text     | The curfew #3 locking time (HH:MM)                                                         |
+| **curfewUnlockTime3** | Text     | The curfew #3 unlocking time (HH:MM)                                                       |
+| **curfewEnabled4**    | Switch   | Indicator if curfew #4 configuration is enabled                                            |
+| **curfewLockTime4**   | Text     | The curfew #4 locking time (HH:MM)                                                         |
+| **curfewUnlockTime4** | Text     | The curfew #4 unlocking time (HH:MM)                                                       |
 | hardwareVersion       | Text     | The flap's hardware version number                                                         |
 | **lockingMode**       | Text     | The locking mode (e.g. in/out, in-only, out-only etc.)                                     |
 | hardwareVersion       | Number   | The flap's hardware version number                                                         |

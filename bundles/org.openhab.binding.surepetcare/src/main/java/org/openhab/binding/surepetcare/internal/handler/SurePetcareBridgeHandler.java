@@ -154,7 +154,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private synchronized void updateThings() {
+    protected synchronized void updateThings() {
         logger.debug("Updating {} connected things", ((Bridge) thing).getThings().size());
         // update existing things
         for (Thing th : ((Bridge) thing).getThings()) {

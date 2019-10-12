@@ -51,7 +51,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Helper class to retrieve Sure Petcare data from the API.
+ * The {@link SurePetcareAPIHelper} is a helper class to abstract the Sure Petcare API. It handles authentication and
+ * all JSON API calls. If an API call fails it automatically refreshes the authentication token and retries.
  *
  * @author Rene Scherer - Initial contribution
  */
@@ -83,8 +84,15 @@ public class SurePetcareAPIHelper {
 
     private SurePetcareTopology topologyCache = new SurePetcareTopology();
 
-    public synchronized void login(String username, String password)
-            throws JsonSyntaxException, AuthenticationException {
+    /**
+     * This method uses the provided username and password to obtain an authentication token used for subsequent API
+     * calls.
+     *
+     * @param username The Sure Petcare username (email address) to be used
+     * @param password The password
+     * @throws AuthenticationException
+     */
+    public synchronized void login(String username, String password) throws AuthenticationException {
         try {
             URL object = new URL(LOGIN_URL);
             HttpURLConnection con = (HttpURLConnection) object.openConnection();
@@ -126,6 +134,10 @@ public class SurePetcareAPIHelper {
         }
     }
 
+    /**
+     * Refreshes the whole topology, i.e. all devices, pets etc. through a call to the Sure Petcare API. The APi call is
+     * quite resource intensive and should be used very infrequently.
+     */
     public synchronized void updateTopologyCache() {
         try {
             topologyCache = gson.fromJson(getDataFromApi(TOPOLOGY_URL), SurePetcareTopology.class);
@@ -134,6 +146,10 @@ public class SurePetcareAPIHelper {
         }
     }
 
+    /**
+     * Refreshes only the pet status (location activity and feeding information). This API call can be used more
+     * frequently.
+     */
     public synchronized void updatePetStatus() {
         try {
             for (SurePetcarePet pet : topologyCache.getPets()) {
@@ -145,27 +161,62 @@ public class SurePetcareAPIHelper {
         }
     }
 
-    public final SurePetcareTopology retrieveTopology() {
+    /**
+     * Returns the whole topology.
+     *
+     * @return the topology
+     */
+    public final SurePetcareTopology getTopology() {
         return topologyCache;
     }
 
-    public final @Nullable SurePetcareHousehold retrieveHousehold(String id) {
+    /**
+     * Returns a household object if one exists with the given id, otherwise null.
+     *
+     * @param id the household id
+     * @return the household with the given id
+     */
+    public final @Nullable SurePetcareHousehold getHousehold(String id) {
         return topologyCache.getHouseholdById(id);
     }
 
-    public final @Nullable SurePetcareDevice retrieveDevice(String id) {
+    /**
+     * Returns a device object if one exists with the given id, otherwise null.
+     *
+     * @param id the device id
+     * @return the device with the given id
+     */
+    public final @Nullable SurePetcareDevice getDevice(String id) {
         return topologyCache.getDeviceById(id);
     }
 
-    public final @Nullable SurePetcarePet retrievePet(String id) {
+    /**
+     * Returns a pet object if one exists with the given id, otherwise null.
+     *
+     * @param id the pet id
+     * @return the pet with the given id
+     */
+    public final @Nullable SurePetcarePet getPet(String id) {
         return topologyCache.getPetById(id);
     }
 
-    public final @Nullable SurePetcareTag retrieveTag(String id) {
+    /**
+     * Returns a tag object if one exists with the given id, otherwise null.
+     *
+     * @param id the tag id
+     * @return the tag with the given id
+     */
+    public final @Nullable SurePetcareTag getTag(String id) {
         return topologyCache.getTagById(id);
     }
 
-    public final @Nullable SurePetcarePetLocation retrievePetLocation(String id) {
+    /**
+     * Returns the location object if a pet exists with the given id, otherwise null.
+     *
+     * @param id the pet id
+     * @return the location of the pet with the given id
+     */
+    public final @Nullable SurePetcarePetLocation getPetLocation(String id) {
         SurePetcarePet pet = topologyCache.getPetById(id);
         if (pet != null) {
             return pet.getLocation();
@@ -174,7 +225,13 @@ public class SurePetcareAPIHelper {
         }
     }
 
-    public final @Nullable SurePetcarePetStatus retrievePetStatus(String id) {
+    /**
+     * Returns the status object if a pet exists with the given id, otherwise null.
+     *
+     * @param id the pet id
+     * @return the status of the pet with the given id
+     */
+    public final @Nullable SurePetcarePetStatus getPetStatus(String id) {
         SurePetcarePet pet = topologyCache.getPetById(id);
         if (pet != null) {
             return pet.getPetStatus();
@@ -183,6 +240,13 @@ public class SurePetcareAPIHelper {
         }
     }
 
+    /**
+     * Updates the pet location through an API call to the Sure Petcare API.
+     *
+     * @param pet the pet
+     * @param newLocationId the id of the new location
+     * @throws SurePetcareApiException
+     */
     public synchronized void setPetLocation(SurePetcarePet pet, Integer newLocationId) throws SurePetcareApiException {
         pet.getLocation().setPetId(pet.getId());
         pet.getLocation().setWhere(newLocationId);
@@ -191,6 +255,13 @@ public class SurePetcareAPIHelper {
         setDataThroughApi(url, HTTP_REQUEST_METHOD_POST, pet.getLocation());
     }
 
+    /**
+     * Updates the device locking mode through an API call to the Sure Petcare API.
+     *
+     * @param device the device
+     * @param newLockingModeId the id of the new locking mode
+     * @throws SurePetcareApiException
+     */
     public synchronized void setDeviceLockingMode(SurePetcareDevice device, Integer newLockingModeId)
             throws SurePetcareApiException {
         // post new JSON control structure to API
@@ -205,6 +276,13 @@ public class SurePetcareAPIHelper {
         device.getStatus().assign(newStatus);
     }
 
+    /**
+     * Updates the device led mode through an API call to the Sure Petcare API.
+     *
+     * @param device the device
+     * @param newLedModeId the id of the new led mode
+     * @throws SurePetcareApiException
+     */
     public synchronized void setDeviceLedMode(SurePetcareDevice device, Integer newLedModeId)
             throws SurePetcareApiException {
         // post new JSON control structure to API
@@ -219,6 +297,13 @@ public class SurePetcareAPIHelper {
         device.getStatus().assign(newStatus);
     }
 
+    /**
+     * Updates all curfews through an API call to the Sure Petcare API.
+     *
+     * @param device the device
+     * @param curfewList the list of curfews
+     * @throws SurePetcareApiException
+     */
     public void setCurfews(SurePetcareDevice device, SurePetcareDeviceCurfewList curfewList)
             throws SurePetcareApiException {
         // post new JSON control structure to API
@@ -234,10 +319,19 @@ public class SurePetcareAPIHelper {
         device.setControl(newControl);
     }
 
+    /**
+     * @return true, if the API is connected and successfully authenticated.
+     */
     public final boolean isOnline() {
         return online;
     }
 
+    /**
+     * Returns a unique device id used during the authentication process with the Sure Petcare API. The id is derived
+     * from the local MAC address or hostname.
+     *
+     * @return a unique device id
+     */
     public final Integer getDeviceId() {
         int decimal = 0;
         try {
@@ -271,6 +365,12 @@ public class SurePetcareAPIHelper {
         return decimal;
     }
 
+    /**
+     * Sets a set of required HTTP headers for the JSON API calls.
+     *
+     * @param con the HTTP connection
+     * @throws ProtocolException
+     */
     private void setConnectionHeaders(HttpURLConnection con) throws ProtocolException {
         // headers
         con.setRequestProperty("Connection", "keep-alive");
@@ -300,10 +400,11 @@ public class SurePetcareAPIHelper {
     }
 
     /**
-     * Return the "data" element of the API result as a JsonElement.
+     * Sends a given object as a JSON payload to the API.
      *
-     * @param url The URL of the API call.
-     * @return The "data" element of the API result.
+     * @param url the URL
+     * @param requestMethod the request method (POST, PUT etc.)
+     * @param payload an object used for the payload
      * @throws SurePetcareApiException
      */
     private void setDataThroughApi(String url, String requestMethod, Object payload) throws SurePetcareApiException {
@@ -311,6 +412,13 @@ public class SurePetcareAPIHelper {
         postDataThroughAPI(url, requestMethod, jsonPayload);
     }
 
+    /**
+     * Returns the result of a GET API call as a string.
+     *
+     * @param url the URL
+     * @return a JSON string with the API result
+     * @throws SurePetcareApiException
+     */
     private String getResultFromApi(String url) throws SurePetcareApiException {
         boolean success = false;
         String responseData = "";
@@ -353,6 +461,14 @@ public class SurePetcareAPIHelper {
         return responseData;
     }
 
+    /**
+     * Uses the given request method to send a JSON string to an API.
+     *
+     * @param url the URL
+     * @param requestMethod the required request method (POST, PUT etc.)
+     * @param jsonPayload the JSON string
+     * @throws SurePetcareApiException
+     */
     private void postDataThroughAPI(String url, String requestMethod, String jsonPayload)
             throws SurePetcareApiException {
         boolean success = false;

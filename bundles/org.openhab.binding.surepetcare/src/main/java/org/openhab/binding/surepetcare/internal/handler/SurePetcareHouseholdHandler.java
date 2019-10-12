@@ -40,8 +40,8 @@ public class SurePetcareHouseholdHandler extends SurePetcareBaseObjectHandler {
     }
 
     @Override
-    public void updateThing() {
-        SurePetcareHousehold household = petcareAPI.retrieveHousehold(thing.getUID().getId());
+    protected void updateThing() {
+        SurePetcareHousehold household = petcareAPI.getHousehold(thing.getUID().getId());
         if (household != null) {
             logger.debug("Updating all thing channels for household : {}", household.toString());
             updateState(HOUSEHOLD_CHANNEL_ID, new DecimalType(household.getId()));

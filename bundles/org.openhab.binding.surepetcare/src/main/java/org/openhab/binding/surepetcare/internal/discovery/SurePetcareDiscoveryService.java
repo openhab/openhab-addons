@@ -119,7 +119,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
         while (retryCount-- > 0) {
             if (petcareAPI.isOnline()) {
                 logger.debug("I'm discovering the Sure Petcare topology ...");
-                SurePetcareTopology topology = petcareAPI.retrieveTopology();
+                SurePetcareTopology topology = petcareAPI.getTopology();
                 for (SurePetcareHousehold household : topology.getHouseholds()) {
                     logger.debug("Found new household thing: {}", household.toString());
                     createHouseholdThing(household);

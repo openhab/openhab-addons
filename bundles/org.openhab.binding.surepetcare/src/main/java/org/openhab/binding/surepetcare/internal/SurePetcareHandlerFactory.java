@@ -62,11 +62,17 @@ public class SurePetcareHandlerFactory extends BaseThingHandlerFactory {
             .of(BRIDGE_THING_TYPES_UIDS, SurePetcareConstants.SUPPORTED_THING_TYPES_UIDS).flatMap(x -> x.stream())
             .collect(Collectors.toSet());
 
+    /**
+     * Returns true if the factory supports the given thing type.
+     */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
+    /**
+     * Returns a newly created thing handler for the given thing.
+     */
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         logger.debug("createHandler - create handler for {}", thing.toString());
@@ -90,6 +96,9 @@ public class SurePetcareHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
+    /**
+     * Removed the thing handler.
+     */
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof SurePetcareBridgeHandler) {
