@@ -25,42 +25,30 @@ import com.google.gson.annotations.SerializedName;
  */
 public class SurePetcareDeviceControl {
 
-    public class Curfew {
-        public Curfew(boolean enabled, String lockTime, String unlockTime) {
-            this.enabled = enabled;
-            this.lockTime = lockTime;
-            this.unlockTime = unlockTime;
-        }
-
-        public Boolean enabled;
-        public String lockTime;
-        public String unlockTime;
-    }
-
     public class Bowls {
         public class BowlSettings {
             @SerializedName("food_type")
             private Integer foodId;
             @SerializedName("target")
             private Integer targetId;
-        
+
             public BowlSettings(Integer foodId, Integer targetId) {
                 this.foodId = foodId;
                 this.targetId = targetId;
             }
-        
+
             public Integer getFoodId() {
                 return foodId;
             }
-        
+
             public void setFoodId(Integer foodId) {
                 this.foodId = foodId;
             }
-        
+
             public Integer getTargetId() {
                 return targetId;
             }
-        
+
             public void setTargetId(Integer targetId) {
                 this.targetId = targetId;
             }
@@ -70,24 +58,24 @@ public class SurePetcareDeviceControl {
         private List<BowlSettings> bowlSettings;
         @SerializedName("type")
         private Integer bowlId;
-    
+
         public Bowls(List<BowlSettings> bowlSettings, Integer bowlId) {
             this.bowlSettings = bowlSettings;
             this.bowlId = bowlId;
         }
-    
+
         public List<BowlSettings> getBowlSettings() {
             return bowlSettings;
         }
-    
+
         public void setBowlSettings(List<BowlSettings> bowlSettings) {
             this.bowlSettings = bowlSettings;
         }
-    
+
         public Integer getBowlId() {
             return bowlId;
         }
-    
+
         public void setBowlId(Integer bowlId) {
             this.bowlId = bowlId;
         }
@@ -96,19 +84,19 @@ public class SurePetcareDeviceControl {
     public class Lid {
         @SerializedName("close_delay")
         private Integer closeDelayId;
-    
+
         public Lid(Integer closeDelayId) {
             this.closeDelayId = closeDelayId;
         }
-    
+
         public Integer getCloseDelayId() {
             return closeDelayId;
         }
-    
+
         public void setCloseDelayId(Integer closeDelayId) {
             this.closeDelayId = closeDelayId;
         }
-    
+
     }
 
     @SerializedName("locking")
@@ -118,13 +106,13 @@ public class SurePetcareDeviceControl {
     private Integer ledModeId;
     @SerializedName("pairing_mode")
     private Integer pairingModeId;
-    private List<Curfew> curfew;
-    @SerializedName("bowls")
     private Bowls bowls;
     @SerializedName("lid")
     private Lid lid;
     @SerializedName("training_mode")
     private Integer trainingModeId;
+    @SerializedName("curfew")
+    private SurePetcareDeviceCurfewList curfewList;
 
     public Integer getLockingModeId() {
         return lockingModeId;
@@ -158,12 +146,12 @@ public class SurePetcareDeviceControl {
         this.pairingModeId = pairingModeId;
     }
 
-    public List<Curfew> getCurfew() {
-        return curfew;
+    public SurePetcareDeviceCurfewList getCurfewList() {
+        return curfewList;
     }
 
-    public void setCurfew(List<Curfew> curfew) {
-        this.curfew = curfew;
+    public void setCurfewList(SurePetcareDeviceCurfewList curfewList) {
+        this.curfewList = curfewList;
     }
 
     public Bowls getBowls() {
@@ -189,4 +177,17 @@ public class SurePetcareDeviceControl {
     public void setTrainingModeId(Integer trainingModeId) {
         this.trainingModeId = trainingModeId;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("SurePetcareDeviceControl [");
+        builder.append("lockingModeId=").append(lockingModeId);
+        builder.append(", fastPolling=").append(fastPolling);
+        builder.append(", ledModeId=").append(ledModeId);
+        builder.append(", pairingModeId=").append(pairingModeId);
+        builder.append(", trainingModeId=").append(trainingModeId);
+        builder.append(", curfew=").append(curfewList);
+        return builder.toString();
+    }
+
 }

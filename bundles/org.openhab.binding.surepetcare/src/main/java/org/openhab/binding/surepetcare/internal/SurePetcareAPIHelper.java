@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceCurfewList;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceStatus;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginCredentials;
@@ -209,6 +210,20 @@ public class SurePetcareAPIHelper {
         // post new JSON control structure to API
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
         control.setLedModeId(newLedModeId);
+        String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
+        setDataThroughApi(ctrlurl, HTTP_REQUEST_METHOD_PUT, control);
+
+        // now we're fetching the new state back for the cache
+        String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/status";
+        SurePetcareDeviceStatus newStatus = gson.fromJson(getDataFromApi(devurl), SurePetcareDeviceStatus.class);
+        device.getStatus().assign(newStatus);
+    }
+
+    public void setCurfews(SurePetcareDevice device, SurePetcareDeviceCurfewList curfewList)
+            throws SurePetcareApiException {
+        // post new JSON control structure to API
+        SurePetcareDeviceControl control = new SurePetcareDeviceControl();
+        control.setCurfewList(curfewList);
         String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
         setDataThroughApi(ctrlurl, HTTP_REQUEST_METHOD_PUT, control);
 

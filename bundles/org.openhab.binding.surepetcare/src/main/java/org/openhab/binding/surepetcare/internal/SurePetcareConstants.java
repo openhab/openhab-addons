@@ -70,9 +70,10 @@ public class SurePetcareConstants {
     public static final String DEVICE_CHANNEL_HARDWARE_VERSION = "hardwareVersion";
     public static final String DEVICE_CHANNEL_FIRMWARE_VERSION = "firmwareVersion";
     public static final String DEVICE_CHANNEL_ONLINE = "online";
-    public static final String DEVICE_CHANNEL_CURFEW_ENABLED = "curfewEnabled";
-    public static final String DEVICE_CHANNEL_CURFEW_LOCK_TIME = "curfewLockTime";
-    public static final String DEVICE_CHANNEL_CURFEW_UNLOCK_TIME = "curfewUnlockTime";
+    public static final String DEVICE_CHANNEL_CURFEW_BASE = "curfew";
+    public static final String DEVICE_CHANNEL_CURFEW_ENABLED = DEVICE_CHANNEL_CURFEW_BASE + "Enabled";
+    public static final String DEVICE_CHANNEL_CURFEW_LOCK_TIME = DEVICE_CHANNEL_CURFEW_BASE + "LockTime";
+    public static final String DEVICE_CHANNEL_CURFEW_UNLOCK_TIME = DEVICE_CHANNEL_CURFEW_BASE + "UnlockTime";
     public static final String DEVICE_CHANNEL_LOCKING_MODE = "lockingMode";
     public static final String DEVICE_CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
     public static final String DEVICE_CHANNEL_BATTERY_LEVEL = "batteryLevel";
