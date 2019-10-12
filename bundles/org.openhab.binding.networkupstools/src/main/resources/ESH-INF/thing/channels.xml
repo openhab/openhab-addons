@@ -6,31 +6,31 @@
 
 	<channel-type id="ups-alarm">
 		<item-type>String</item-type>
-		<label>Ups Alarm</label>
+		<label>UPS Alarm</label>
 		<description>UPS alarms</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="ups-load" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Ups Load</label>
+		<label>UPS Load</label>
 		<description>Load on UPS (percent)</description>
 		<state pattern="%.1f %%" readOnly="true" />
 	</channel-type>
 	<channel-type id="ups-power" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>Ups Power</label>
+		<label>UPS Power</label>
 		<description>Current value of apparent power (Volt-Amps)</description>
 		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="ups-realpower">
 		<item-type>Number:Power</item-type>
-		<label>Ups Realpower</label>
+		<label>UPS Realpower</label>
 		<description>Current value of real power (Watts)</description>
 		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="ups-status">
 		<item-type>String</item-type>
-		<label>Ups Status</label>
+		<label>UPS Status</label>
 		<description>Status of the UPS: OFF, OL,OB,LB,RB,OVER,TRIM,BOOST,CAL,BYPASS,NULL</description>
 		<state readOnly="true">
 			<options>
@@ -50,13 +50,13 @@
 	</channel-type>
 	<channel-type id="ups-temperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Ups Temperature</label>
+		<label>UPS Temperature</label>
 		<description>UPS temperature (degrees C)</description>
 		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="ups-test-result" advanced="true">
 		<item-type>String</item-type>
-		<label>Ups Test Result</label>
+		<label>UPS Test Result</label>
 		<description>Results of last self test (opaque string)</description>
 		<state readOnly="true" />
 	</channel-type>

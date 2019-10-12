@@ -69,9 +69,9 @@ class NutConnector {
      *
      * @param <R> The type of the returned data
      * @param command The command to send to the NUT server
-     * @param readFunction
-     * @return
-     * @throws NutException
+     * @param readFunction Function called to handle the lines read from the NUT server
+     * @return the data read from the NUT server
+     * @throws NutException Exception thrown related to the NUT server connection and/or data.
      */
     public synchronized <R> R read(final String command, final NutFunction<NutSupplier<String>, R> readFunction)
             throws NutException {
@@ -79,17 +79,17 @@ class NutConnector {
 
         while (true) {
             try {
-                connectIfClose();
+                connectIfClosed();
                 final PrintWriter localWriter = writer;
                 final BufferedReader localReader = reader;
 
                 if (localWriter == null) {
-                    throw new NutException("Reader closed.");
+                    throw new NutException("Writer closed.");
                 } else {
                     localWriter.println(command);
                 }
                 if (localReader == null) {
-                    throw new NutException("Writer closed.");
+                    throw new NutException("Reader closed.");
                 } else {
                     return readFunction.apply(() -> readLine(localReader));
                 }
@@ -106,10 +106,12 @@ class NutConnector {
     }
 
     /**
+     * Opens a Socket connection if there is no connection or if the connection is closed. Authenticates if
+     * username/password is provided.
      *
-     * @throws NutException
+     * @throws NutException Exception thrown if no connection to NUT server could be made successfully.
      */
-    public void connectIfClose() throws NutException {
+    public void connectIfClosed() throws NutException {
         if (socket == null || socket.isClosed() || !socket.isConnected()) {
             try {
                 closeStreams();

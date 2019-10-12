@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="ups"
 		extensible="string,number,number-electric-current,number-electric-potential,number-frequency,number-power,number-time,switch">
 		<label>Network UPS Tool</label>

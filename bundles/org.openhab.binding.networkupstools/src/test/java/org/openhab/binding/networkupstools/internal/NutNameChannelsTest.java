@@ -180,7 +180,7 @@ public class NutNameChannelsTest {
     }
 
     private String nutNameToLabel(final NutName nn) {
-        final String[] labelWords = nn.getName().split("\\.");
+        final String[] labelWords = nn.getName().replace("ups", "UPS").split("\\.");
         return Stream.of(labelWords).map(w -> Character.toUpperCase(w.charAt(0)) + w.substring(1))
                 .collect(Collectors.joining(" "));
     }

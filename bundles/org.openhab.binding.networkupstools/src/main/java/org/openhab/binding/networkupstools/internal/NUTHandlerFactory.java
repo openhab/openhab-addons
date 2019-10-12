@@ -46,10 +46,6 @@ public class NUTHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(final Thing thing) {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_UPS.equals(thingTypeUID)) {
-            return new NUTHandler(thing);
-        }
-
-        return null;
+        return THING_TYPE_UPS.equals(thingTypeUID) ? new NUTHandler(thing) : null;
     }
 }

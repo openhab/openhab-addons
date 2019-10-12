@@ -38,7 +38,7 @@ Discovery is not supported.
 
 ## Thing Configuration
 
-The thing configuration requires the name of the ups device as configured on the NUT server.
+The thing configuration requires the name of the UPS device as configured on the NUT server.
 If the NUT service isn't running locally the ip address or domain name (FDQN) of the server running NUT must be configured.
 Optional, port, username and password might need to be configured if required.
 
@@ -53,7 +53,7 @@ Optional, port, username and password might need to be configured if required.
 
 ## Channels
 
-The following channels are standard supported:
+The following channels are available:
 
 | Channel Name               | Item Type                | Unit | Description                                                                        | Advanced      |
 |----------------------------|--------------------------|------|------------------------------------------------------------------------------------|---------------|
@@ -80,7 +80,7 @@ The following channels are standard supported:
 
 ### Dynamic Channels
 
-Because there is a lot of variation in ups features the binding supports dynamically adding channels for features not supported out-of-the-box.
+Because there is a lot of variation in UPS features, the binding supports dynamically adding channels for features, not supported out-of-the-box.
 To get data from another NUT variable the channel needs to configured.
 Channels can be created with as type: `Number`, `Number:<Quantity>`, `String` or `Switch`.
 
@@ -115,12 +115,12 @@ Thing networkupstools:ups:ups2 [ device="ups", host="localhost", refresh=60 ] {
 ups.items
 
 ```
-Number:Dimensionless ups_battery_charge  "Battery Charge [%d %%]"  {channel="networkupstools:ups:ups1:batteryCharge"}
-Number:ElectricCurrent ups_current"Input Current [%d mA]"{channel="networkupstools:ups:ups1:inputCurrent"}
+Number:Dimensionless ups_battery_charge "Battery Charge [%d %%]"  {channel="networkupstools:ups:ups1:batteryCharge"}
+Number:ElectricCurrent ups_current "Input Current [%d mA]"{channel="networkupstools:ups:ups1:inputCurrent"}
 
-String : test_result "Test Result" {channel="networkupstools:ups:ups2:testResult"}
-Number:Frequency : ups_out_freq "Output Frequency" {channel="networkupstools:ups:ups2:upsOutFreq"}
-Number:ElectricPotential : ups_low_voltage  "Low Voltage [%.1f V]" {channel="networkupstools:ups:ups2:upsLowVoltage"}
+String test_result "Test Result" {channel="networkupstools:ups:ups2:testResult"}
+Number:Frequency ups_out_freq "Output Frequency" {channel="networkupstools:ups:ups2:upsOutFreq"}
+Number:ElectricPotential ups_low_voltage  "Low Voltage [%.1f V]" {channel="networkupstools:ups:ups2:upsLowVoltage"}
 Number:ElectricCurrent ups_low_current "Input Current [%d A]" {channel="networkupstools:ups:ups2:upsLowCurrent"}
 
 

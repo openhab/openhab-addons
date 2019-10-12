@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class NUTDynamicChannelFactory {
 
+    private static final String QUANTITY_ITEM_TYPE_PREFIX = CoreItemFactory.NUMBER + ':';
+
     private final Logger logger = LoggerFactory.getLogger(NUTDynamicChannelFactory.class);
 
     private final NUTChannelTypeProvider channelTypeProvider;
@@ -60,7 +62,7 @@ class NUTDynamicChannelFactory {
         }
         final ChannelTypeUID channelTypeUID;
 
-        if (acceptedItemType.startsWith(CoreItemFactory.NUMBER + ':')) {
+        if (acceptedItemType.startsWith(QUANTITY_ITEM_TYPE_PREFIX)) {
             channelTypeUID = createQuantityTypeChannel(channel, acceptedItemType, channelConfig);
         } else {
             channelTypeUID = getChannelTypeUID(acceptedItemType, channel.getUID());
@@ -85,7 +87,7 @@ class NUTDynamicChannelFactory {
             case CoreItemFactory.SWITCH:
                 return NUTBindingConstants.CHANNEL_TYPE_DYNAMIC_SWITCH;
             default:
-                logger.info("Dynamic channel '{}' is ignore because the type '{}' is not supported.", channelUID,
+                logger.info("Dynamic channel '{}' is ignored because the type '{}' is not supported.", channelUID,
                         itemType);
                 return null;
         }

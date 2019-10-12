@@ -50,11 +50,11 @@ final class NutResponseReader {
 
             if (!ups.equals(matchedUps)) {
                 throw new NutException(
-                        String.format("Returned value '%s' didn't  match expected ups '{}'", matchedUps, ups));
+                        String.format("Returned value '%s' didn't match expected ups '%s'", matchedUps, ups));
             }
             if (!nut.equals(matchedNut)) {
                 throw new NutException(
-                        String.format("Returned value '%s' didn't  match expected nut '{}'", matchedNut, nut));
+                        String.format("Returned value '%s' didn't match expected nut '%s'", matchedNut, nut));
             }
             return value;
         }
