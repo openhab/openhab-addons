@@ -126,7 +126,7 @@ public class SurePetcarePetLocation {
 
     public ZonedDateTime getLocationChanged() {
         if (since != null) {
-            return since.toInstant().atZone(ZoneId.systemDefault());
+            return since.toInstant().atZone(ZoneId.systemDefault()).withNano(0);
         } else {
             return null;
         }
