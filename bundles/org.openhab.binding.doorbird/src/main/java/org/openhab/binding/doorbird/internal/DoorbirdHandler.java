@@ -143,11 +143,6 @@ public class DoorbirdHandler extends BaseThingHandler {
         stopMotionOffJob();
     }
 
-    // Callback used by listener to get Doorbird ID
-    public @Nullable String getDoorbirdId() {
-        return config.doorbirdId;
-    }
-
     // Callback used by listener to get Doorbird host name
     public @Nullable String getDoorbirdHost() {
         return config.doorbirdHost;

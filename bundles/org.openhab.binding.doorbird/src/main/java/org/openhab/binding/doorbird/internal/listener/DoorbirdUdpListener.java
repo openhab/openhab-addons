@@ -15,6 +15,7 @@ package org.openhab.binding.doorbird.internal.listener;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
@@ -74,8 +75,12 @@ public class DoorbirdUdpListener extends Thread {
 
     private void receivePackets() {
         try {
-            socket = new DatagramSocket(UDP_PORT);
-            socket.setSoTimeout(SOCKET_TIMEOUT);
+            DatagramSocket s = new DatagramSocket(null);
+            s.setSoTimeout(SOCKET_TIMEOUT);
+            s.setReuseAddress(true);
+            InetSocketAddress address = new InetSocketAddress(UDP_PORT);
+            s.bind(address);
+            socket = s;
             logger.debug("Listener got UDP socket on port {} with timeout {}", UDP_PORT, SOCKET_TIMEOUT);
         } catch (SocketException e) {
             logger.debug("Listener got SocketException: {}", e.getMessage(), e);
@@ -107,25 +112,30 @@ public class DoorbirdUdpListener extends Thread {
             return;
         }
 
+        String userId = thingHandler.getUserId();
+        String userPassword = thingHandler.getUserPassword();
+        if (userId == null || userPassword == null) {
+            logger.info("Doorbird user id and/or password is not set in configuration");
+            return;
+        }
         try {
-            String userPassword = thingHandler.getUserPassword();
-            if (userPassword != null) {
-                event.decrypt(packet, userPassword);
-            }
+            event.decrypt(packet, userPassword);
         } catch (RuntimeException e) {
             // The libsodium library might generate a runtime exception if the packet is malformed
             logger.info("DoorbirdEvent got unhandled exception: {}", e.getMessage(), e);
             return;
         }
 
-        String doorbirdId = thingHandler.getDoorbirdId();
-        if (event.isDoorbellEvent() && doorbirdId != null) {
+        if (event.isDoorbellEvent()) {
             if ("motion".equalsIgnoreCase(event.getEventId())) {
                 thingHandler.updateMotionChannel(event.getTimestamp());
-            } else if (doorbirdId.equalsIgnoreCase(event.getEventId())) {
-                thingHandler.updateDoorbellChannel(event.getTimestamp());
             } else {
-                logger.debug("Unknown doorbell event type: {}", event.getEventId());
+                String intercomId = event.getIntercomId();
+                if (intercomId != null && userId.toLowerCase().startsWith(intercomId.toLowerCase())) {
+                    thingHandler.updateDoorbellChannel(event.getTimestamp());
+                } else {
+                    logger.info("Received doorbell event for unknown device: {}", event.getIntercomId());
+                }
             }
         }
     }
