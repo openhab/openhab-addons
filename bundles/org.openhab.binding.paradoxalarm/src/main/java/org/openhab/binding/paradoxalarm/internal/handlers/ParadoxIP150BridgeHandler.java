@@ -34,7 +34,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.paradoxalarm.internal.communication.CommunicationState;
-import org.openhab.binding.paradoxalarm.internal.communication.EvoCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.GenericCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.IDataUpdateListener;
 import org.openhab.binding.paradoxalarm.internal.communication.IP150Command;
@@ -246,10 +245,6 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                             "Bringing bridge offline due to reinitialization of communicator.");
                     resetCommunicator();
-                } else if (commandAsString.equals("TEST")) {
-                    ISocketTimeOutListener stoListener = ((EvoCommunicator) communicator).getStoListener();
-                    logger.debug("Need to initialize socket Timeout. Listener={}", stoListener);
-                    stoListener.onSocketTimeOutOccurred(new IOException("Test socket timeout error..."));
                 } else {
                     communicator.executeCommand(commandAsString);
                 }
