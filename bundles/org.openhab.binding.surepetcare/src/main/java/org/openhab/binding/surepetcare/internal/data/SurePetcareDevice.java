@@ -187,7 +187,7 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         this.index = newdev.index;
         this.pairingAt = newdev.pairingAt;
         this.control = newdev.control;
-        this.parent = newdev.parent; // FIXME link to correct parent device
+        this.parent = newdev.parent;
         this.status = newdev.status;
         return this;
     }

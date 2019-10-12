@@ -86,7 +86,6 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
                 updateState(BRIDGE_CHANNEL_ONLINE, OnOffType.ON);
                 updateThings();
-
             } catch (AuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE);
             }
@@ -115,7 +114,6 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-invalid-refresh-intervals");
         }
-
     }
 
     @SuppressWarnings("null")

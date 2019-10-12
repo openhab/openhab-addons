@@ -96,7 +96,6 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
     @Override
     protected void updateThing() {
         synchronized (petcareAPI) {
-
             SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
             if (pet != null) {
                 logger.debug("Updating all thing channels for pet : {}", pet.toString());
