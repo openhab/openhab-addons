@@ -223,14 +223,15 @@ public class SurePetcareAPIHelper {
             throws SurePetcareApiException {
         // post new JSON control structure to API
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
-        control.setCurfewList(curfewList);
+        control.setCurfewList(curfewList.compact());
         String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
         setDataThroughApi(ctrlurl, HTTP_REQUEST_METHOD_PUT, control);
 
         // now we're fetching the new state back for the cache
-        String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/status";
-        SurePetcareDeviceStatus newStatus = gson.fromJson(getDataFromApi(devurl), SurePetcareDeviceStatus.class);
-        device.getStatus().assign(newStatus);
+        String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
+        SurePetcareDeviceControl newControl = gson.fromJson(getDataFromApi(devurl), SurePetcareDeviceControl.class);
+        newControl.setCurfewList(newControl.getCurfewList().order());
+        device.setControl(newControl);
     }
 
     public final boolean isOnline() {

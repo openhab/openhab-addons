@@ -23,9 +23,26 @@ public class SurePetcareDeviceCurfewList extends ArrayList<SurePetcareDeviceCurf
 
     private static final long serialVersionUID = -6947992959305282143L;
 
+    /**
+     * Return the list element with the given index. If the list if too short, it will grow automatically to the given
+     * index.
+     *
+     * @return element with given index
+     */
+    @Override
+    public SurePetcareDeviceCurfew get(int index) {
+        if (index >= size()) {
+            // grow list to required size
+            for (int i = size(); i <= index; i++) {
+                add(new SurePetcareDeviceCurfew());
+            }
+        }
+        return super.get(index);
+    }
+
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder(", curfew=[");
+        StringBuilder builder = new StringBuilder("[");
         for (SurePetcareDeviceCurfew c : this) {
             builder.append("(").append(c).append(")");
         }
@@ -33,4 +50,33 @@ public class SurePetcareDeviceCurfewList extends ArrayList<SurePetcareDeviceCurf
         return builder.toString();
     }
 
+    /**
+     * Creates a list of 4 curfews with enabled ones at the front of the list and disabled ones at the back.
+     *
+     * @return new ordered list
+     */
+    public SurePetcareDeviceCurfewList order() {
+        SurePetcareDeviceCurfewList orderedList = new SurePetcareDeviceCurfewList();
+        // remove any disabled curfews from the list
+        for (SurePetcareDeviceCurfew curfew : this) {
+            if (curfew.enabled) {
+                orderedList.add(curfew);
+            }
+        }
+        for (int i = orderedList.size(); i < 4; i++) {
+            orderedList.add(new SurePetcareDeviceCurfew());
+        }
+        return orderedList;
+    }
+
+    public SurePetcareDeviceCurfewList compact() {
+        SurePetcareDeviceCurfewList compactList = new SurePetcareDeviceCurfewList();
+        // remove any disabled curfews from the list
+        for (SurePetcareDeviceCurfew curfew : this) {
+            if (curfew.enabled) {
+                compactList.add(curfew);
+            }
+        }
+        return compactList;
+    }
 }

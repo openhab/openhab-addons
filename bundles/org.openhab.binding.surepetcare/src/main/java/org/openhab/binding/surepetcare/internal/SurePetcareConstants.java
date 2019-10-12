@@ -39,8 +39,10 @@ public class SurePetcareConstants {
     public static final ThingTypeUID THING_TYPE_FEEDER_DEVICE = new ThingTypeUID(BINDING_ID, "feederDevice");
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BRIDGE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_TYPE_HOUSEHOLD, THING_TYPE_PET, THING_TYPE_HUB_DEVICE, THING_TYPE_FLAP_DEVICE, THING_TYPE_FEEDER_DEVICE));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_HOUSEHOLD,
+            THING_TYPE_PET, THING_TYPE_HUB_DEVICE, THING_TYPE_FLAP_DEVICE, THING_TYPE_FEEDER_DEVICE));
+
+    public static final int FLAP_MAX_NUMBER_OF_CURFEWS = 4;
 
     // Bridge configuration property names
     public static final String USERNAME = "username";

@@ -30,10 +30,9 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareApiException;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl.Bowls.BowlSettings;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl.Bowls.BowlSettings;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceCurfew;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceCurfewList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,83 +123,65 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
         String channelUIDBase = channelUID.getIdWithoutGroup().substring(0,
                 channelUID.getIdWithoutGroup().length() - 1);
         Integer slot = new Integer(channelUID.getAsString().substring(channelUID.getAsString().length() - 1));
-        if (slot != 1) {
-            logger.warn(
-                    "Currently only one curfew slot is supported by this binding. Ignoring this command for channel {}",
-                    channelUID.getAsString());
-        } else {
-            synchronized (petcareAPI) {
-                boolean requiresUpdate = false;
-                SurePetcareDevice device = petcareAPI.retrieveDevice(thing.getUID().getId());
-                if (device != null) {
-                    SurePetcareDeviceControl existingControl = device.getControl();
-                    logger.debug("Old Curfew Control: {}", existingControl.toString());
 
-                    SurePetcareDeviceCurfew curfew = existingControl.getCurfewList().get(slot - 1);
-                    if (curfew == null) {
-                        curfew = new SurePetcareDeviceCurfew();
-                        requiresUpdate = true;
-                    }
-                    logger.debug("channelUIDBase: {}", channelUIDBase);
+        synchronized (petcareAPI) {
+            boolean requiresUpdate = false;
+            SurePetcareDevice device = petcareAPI.retrieveDevice(thing.getUID().getId());
+            if (device != null) {
+                SurePetcareDeviceControl existingControl = device.getControl();
+                logger.debug("Old Curfew Control: {}", existingControl.toString());
 
-                    switch (channelUIDBase) {
-                        case DEVICE_CHANNEL_CURFEW_ENABLED:
-                            if (command instanceof OnOffType) {
-                                logger.debug("old enables: {}, command: {}", curfew.enabled,
-                                        command.equals(OnOffType.ON));
-                                if (curfew.enabled != command.equals(OnOffType.ON)) {
-                                    requiresUpdate = true;
-                                }
-                                curfew.enabled = (command.equals(OnOffType.ON));
+                SurePetcareDeviceCurfew curfew = existingControl.getCurfewList().get(slot - 1);
+                logger.debug("channelUIDBase: {}", channelUIDBase);
+
+                switch (channelUIDBase) {
+                    case DEVICE_CHANNEL_CURFEW_ENABLED:
+                        if (command instanceof OnOffType) {
+                            logger.debug("old enables: {}, command: {}", curfew.enabled, command.equals(OnOffType.ON));
+                            if (curfew.enabled != command.equals(OnOffType.ON)) {
+                                requiresUpdate = true;
                             }
-                            break;
-                        case DEVICE_CHANNEL_CURFEW_LOCK_TIME:
-                            if ((command instanceof StringType) && (command.toString().matches(CURFEW_TIME_REGEXP))) {
-                                logger.debug("old locktime: {}, new locktime: {}", curfew.lockTime, command.toString());
-
-                                if (!(curfew.lockTime.equals(command.toString()))) {
-                                    requiresUpdate = true;
-                                }
-                                curfew.lockTime = command.toString();
-                            } else {
-                                logger.warn("Incorrect curfew time format HH:mm: {}", command.toString());
-                            }
-                            break;
-                        case DEVICE_CHANNEL_CURFEW_UNLOCK_TIME:
-                            if ((command instanceof StringType) && (command.toString().matches(CURFEW_TIME_REGEXP))) {
-                                if (!(curfew.unlockTime.equals(command.toString()))) {
-                                    requiresUpdate = true;
-                                }
-                                curfew.unlockTime = command.toString();
-                            } else {
-                                logger.warn("Incorrect curfew time format HH:mm: {}", command.toString());
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    logger.debug("requiresUpdate: {}", requiresUpdate);
-
-                    if (requiresUpdate) {
-                        // send curfew update
-                        SurePetcareDeviceCurfewList curfewList = new SurePetcareDeviceCurfewList();
-                        // add the update one first
-                        curfewList.add(curfew);
-                        // now populate existing slots 2-4
-                        int numCurfews = existingControl.getCurfewList().size();
-                        for (int i = 2; (i < 4) && (i < numCurfews); i++) {
-                            curfewList.add(existingControl.getCurfewList().get(i - 1));
+                            curfew.enabled = (command.equals(OnOffType.ON));
                         }
-                        try {
-                            petcareAPI.setCurfews(device, curfewList);
-                            updateThingCurfews(device);
-                        } catch (SurePetcareApiException e) {
-                            logger.warn("Error from SurePetcare API. Can't update curfews for device {}",
-                                    device.toString());
+                        break;
+                    case DEVICE_CHANNEL_CURFEW_LOCK_TIME:
+                        if ((command instanceof StringType) && (command.toString().matches(CURFEW_TIME_REGEXP))) {
+                            logger.debug("old locktime: {}, new locktime: {}", curfew.lockTime, command.toString());
+
+                            if (!(curfew.lockTime.equals(command.toString())) && curfew.enabled) {
+                                requiresUpdate = true;
+                            }
+                            curfew.lockTime = command.toString();
+                        } else {
+                            logger.warn("Incorrect curfew time format HH:mm: {}", command.toString());
                         }
+                        break;
+                    case DEVICE_CHANNEL_CURFEW_UNLOCK_TIME:
+                        if ((command instanceof StringType) && (command.toString().matches(CURFEW_TIME_REGEXP))) {
+                            if (!(curfew.unlockTime.equals(command.toString())) && curfew.enabled) {
+                                requiresUpdate = true;
+                            }
+                            curfew.unlockTime = command.toString();
+                        } else {
+                            logger.warn("Incorrect curfew time format HH:mm: {}", command.toString());
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                logger.debug("requiresUpdate: {}", requiresUpdate);
+
+                if (requiresUpdate) {
+                    try {
+                        petcareAPI.setCurfews(device, existingControl.getCurfewList());
+                        updateThingCurfews(device);
+                    } catch (SurePetcareApiException e) {
+                        logger.warn("Error from SurePetcare API. Can't update curfews for device {}",
+                                device.toString());
                     }
                 }
             }
+
         }
     }
 
@@ -212,21 +193,21 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
             updateState(DEVICE_CHANNEL_ID, new DecimalType(device.getId()));
             updateState(DEVICE_CHANNEL_NAME, new StringType(device.getName()));
             updateState(DEVICE_CHANNEL_PRODUCT, new StringType(device.getProductId().toString()));
-            if ((thing.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE))
-                || (thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE))
-                || (thing.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE))) {
-                updateState(DEVICE_CHANNEL_HARDWARE_VERSION,
-                        new DecimalType(device.getStatus().getVersion().device.hardware));
-                updateState(DEVICE_CHANNEL_FIRMWARE_VERSION,
-                        new DecimalType(device.getStatus().getVersion().device.firmware));
-                updateState(DEVICE_CHANNEL_ONLINE, OnOffType.from(device.getStatus().getOnline()));
-                updateState(DEVICE_CHANNEL_CREATED_AT, new DateTimeType(device.getCreatedAtAsZonedDateTime()));
-                updateState(DEVICE_CHANNEL_UPDATED_AT, new DateTimeType(device.getUpdatedAtAsZonedDateTime()));
-                updateState(DEVICE_CHANNEL_SERIAL_NUMBER, new StringType(device.getSerialNumber()));
-                updateState(DEVICE_CHANNEL_MAC_ADDRESS, new StringType(device.getMacAddress()));
-            }
-            if ((thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE))
-                || (thing.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE))) {
+            updateState(DEVICE_CHANNEL_HARDWARE_VERSION,
+                    new DecimalType(device.getStatus().getVersion().device.hardware));
+            updateState(DEVICE_CHANNEL_FIRMWARE_VERSION,
+                    new DecimalType(device.getStatus().getVersion().device.firmware));
+            updateState(DEVICE_CHANNEL_ONLINE, OnOffType.from(device.getStatus().getOnline()));
+            updateState(DEVICE_CHANNEL_CREATED_AT, new DateTimeType(device.getCreatedAtAsZonedDateTime()));
+            updateState(DEVICE_CHANNEL_UPDATED_AT, new DateTimeType(device.getUpdatedAtAsZonedDateTime()));
+            updateState(DEVICE_CHANNEL_SERIAL_NUMBER, new StringType(device.getSerialNumber()));
+            updateState(DEVICE_CHANNEL_MAC_ADDRESS, new StringType(device.getMacAddress()));
+
+            if (thing.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE)) {
+                updateState(DEVICE_CHANNEL_LED_MODE, new StringType(device.getStatus().getLedModeId().toString()));
+                updateState(DEVICE_CHANNEL_PAIRING_MODE,
+                        new StringType(device.getStatus().getPairingModeId().toString()));
+            } else {
                 float batVol = device.getStatus().getBattery();
                 updateState(DEVICE_CHANNEL_BATTERY_VOLTAGE, new DecimalType(batVol));
                 updateState(DEVICE_CHANNEL_BATTERY_LEVEL, new DecimalType(Math.min(
@@ -235,51 +216,53 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                 updateState(DEVICE_CHANNEL_LOW_BATTERY, OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
                 updateState(DEVICE_CHANNEL_PAIRING_AT, new DateTimeType(device.getPairingAtAsZonedDateTime()));
                 updateState(DEVICE_CHANNEL_DEVICE_RSSI, new DecimalType(device.getStatus().getSignal().deviceRssi));
-                updateState(DEVICE_CHANNEL_HUB_RSSI, new DecimalType(device.getStatus().getSignal().hubRssi)); 
-            }
+                updateState(DEVICE_CHANNEL_HUB_RSSI, new DecimalType(device.getStatus().getSignal().hubRssi));
 
-            if (thing.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE)) {
-                updateState(DEVICE_CHANNEL_LED_MODE, new StringType(device.getStatus().getLedModeId().toString()));
-                updateState(DEVICE_CHANNEL_PAIRING_MODE,
-                        new StringType(device.getStatus().getPairingModeId().toString()));
-            } else if (thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE)) {
-                updateThingCurfews(device);
-                updateState(DEVICE_CHANNEL_LOCKING_MODE,
-                        new StringType(device.getStatus().getLocking().modeId.toString()));
-            } else if (thing.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE)) {
-                int numBowls = device.getControl().getBowls().getBowlSettings().size();
-                for (int i = 0; (i < 2) && (i < numBowls); i++) {
-                    BowlSettings bowlSettings = device.getControl().getBowls().getBowlSettings().get(i);
-                    if (device.getControl().getBowls().getBowlId().equals(1)) {
-                        updateState(DEVICE_CHANNEL_BOWLS_FOOD, new StringType(bowlSettings.getFoodId().toString()));
-                        updateState(DEVICE_CHANNEL_BOWLS_TARGET, new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
-                    } else if (device.getControl().getBowls().getBowlId().equals(4)) {
-                        if ((i + 1) == 1) {
-                            updateState(DEVICE_CHANNEL_BOWLS_FOOD_LEFT, new StringType(bowlSettings.getFoodId().toString()));
-                            updateState(DEVICE_CHANNEL_BOWLS_TARGET_LEFT, new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
-                        }
-                        if ((i + 1) == 2) {
-                            updateState(DEVICE_CHANNEL_BOWLS_FOOD_RIGHT, new StringType(bowlSettings.getFoodId().toString()));
-                            updateState(DEVICE_CHANNEL_BOWLS_TARGET_RIGHT, new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
+                if (thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE)) {
+                    updateThingCurfews(device);
+                    updateState(DEVICE_CHANNEL_LOCKING_MODE,
+                            new StringType(device.getStatus().getLocking().modeId.toString()));
+                } else if (thing.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE)) {
+                    int numBowls = device.getControl().getBowls().getBowlSettings().size();
+                    for (int i = 0; (i < 2) && (i < numBowls); i++) {
+                        BowlSettings bowlSettings = device.getControl().getBowls().getBowlSettings().get(i);
+                        if (device.getControl().getBowls().getBowlId().equals(1)) {
+                            updateState(DEVICE_CHANNEL_BOWLS_FOOD, new StringType(bowlSettings.getFoodId().toString()));
+                            updateState(DEVICE_CHANNEL_BOWLS_TARGET,
+                                    new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
+                        } else if (device.getControl().getBowls().getBowlId().equals(4)) {
+                            if ((i + 1) == 1) {
+                                updateState(DEVICE_CHANNEL_BOWLS_FOOD_LEFT,
+                                        new StringType(bowlSettings.getFoodId().toString()));
+                                updateState(DEVICE_CHANNEL_BOWLS_TARGET_LEFT,
+                                        new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
+                            }
+                            if ((i + 1) == 2) {
+                                updateState(DEVICE_CHANNEL_BOWLS_FOOD_RIGHT,
+                                        new StringType(bowlSettings.getFoodId().toString()));
+                                updateState(DEVICE_CHANNEL_BOWLS_TARGET_RIGHT,
+                                        new QuantityType<Mass>(bowlSettings.getTargetId(), SIUnits.GRAM));
+                            }
                         }
                     }
+                    updateState(DEVICE_CHANNEL_BOWLS,
+                            new StringType(device.getControl().getBowls().getBowlId().toString()));
+                    updateState(DEVICE_CHANNEL_BOWLS_CLOSE_DELAY,
+                            new StringType(device.getControl().getLid().getCloseDelayId().toString()));
+                    updateState(DEVICE_CHANNEL_BOWLS_TRAINING_MODE,
+                            new StringType(device.getControl().getTrainingModeId().toString()));
+                } else {
+                    logger.warn("Unknown product type for device {}", thing.getUID().getAsString());
                 }
-                updateState(DEVICE_CHANNEL_BOWLS, new StringType(device.getControl().getBowls().getBowlId().toString()));
-                updateState(DEVICE_CHANNEL_BOWLS_CLOSE_DELAY, new StringType(device.getControl().getLid().getCloseDelayId().toString()));
-                updateState(DEVICE_CHANNEL_BOWLS_TRAINING_MODE, new StringType(device.getControl().getTrainingModeId().toString()));
-            } else {
-                logger.warn("Unknown product type for device {}", thing.getUID().getAsString());
             }
-        } else {
-            logger.debug("Trying to update unknown device: {}", thing.getUID().getId());
         }
     }
 
     public void updateThingCurfews(SurePetcareDevice device) {
-        int numCurfews = device.getControl().getCurfewList().size();
-        for (int i = 0; (i < 4) && (i < numCurfews); i++) {
+        for (int i = 0; i < FLAP_MAX_NUMBER_OF_CURFEWS; i++) {
             SurePetcareDeviceCurfew curfew = device.getControl().getCurfewList().get(i);
-            updateState(DEVICE_CHANNEL_CURFEW_ENABLED + (i + 1), OnOffType.from(device.getStatus().getOnline()));
+
+            updateState(DEVICE_CHANNEL_CURFEW_ENABLED + (i + 1), OnOffType.from(curfew.enabled));
             updateState(DEVICE_CHANNEL_CURFEW_LOCK_TIME + (i + 1), new StringType(curfew.lockTime));
             updateState(DEVICE_CHANNEL_CURFEW_UNLOCK_TIME + (i + 1), new StringType(curfew.unlockTime));
         }
