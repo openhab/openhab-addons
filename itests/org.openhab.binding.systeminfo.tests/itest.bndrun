@@ -47,12 +47,9 @@ Fragment-Host: org.openhab.binding.systeminfo
 	org.openhab.core.binding.xml;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.xml;version='[2.5.0,2.5.1)',\
 	org.openhab.core.thing.xml;version='[2.5.0,2.5.1)',\
-	net.bytebuddy.byte-buddy;version='[1.9.7,1.9.8)',\
-	net.bytebuddy.byte-buddy-agent;version='[1.9.7,1.9.8)',\
 	org.apache.servicemix.specs.activation-api-1.1;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.specs.jaxb-api-2.2;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.specs.stax-api-1.2;version='[2.9.0,2.9.1)',\
-	org.mockito.mockito-core;version='[2.25.0,2.25.1)',\
 	org.objenesis;version='[2.6.0,2.6.1)',\
 	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
 	slf4j.api;version='[1.7.25,1.7.26)',\
@@ -61,6 +58,8 @@ Fragment-Host: org.openhab.binding.systeminfo
 	tec.uom.se;version='[1.0.10,1.0.11)',\
 	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
 	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)',\
-	com.github.oshi.oshi-core;version='[4.0.0,4.0.1)',\
 	com.sun.jna;version='[5.4.0,5.4.1)',\
-	com.sun.jna.platform;version='[5.4.0,5.4.1)'
+	com.sun.jna.platform;version='[5.4.0,5.4.1)',\
+	net.bytebuddy.byte-buddy;version='[1.9.10,1.9.11)',\
+	net.bytebuddy.byte-buddy-agent;version='[1.9.10,1.9.11)',\
+	org.mockito.mockito-core;version='[3.1.0,3.1.1)'
