@@ -72,15 +72,16 @@ public class BindingConstants {
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";
+    public static final String CONFIG_HTTP_PORT = "httpPort";
     public static final String CONFIG_APIKEY = "apikey";
 
     public static final String UNIQUE_ID = "uid";
 
-    public static String url(String host, @Nullable String apikey, @Nullable String endpointType,
+    public static String url(String host, int port, @Nullable String apikey, @Nullable String endpointType,
             @Nullable String endpointID) {
         StringBuilder url = new StringBuilder();
         url.append("http://");
-        url.append(host);
+        url.append(host).append(":").append(port);
         url.append("/api/");
         if (apikey != null) {
             url.append(apikey);
