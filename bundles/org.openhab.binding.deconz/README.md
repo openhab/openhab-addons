@@ -1,12 +1,11 @@
 # Dresden Elektronik deCONZ Binding
 
 The Zigbee binding currently does not support the Dresden Elektronik Raspbee and Conbee Zigbee dongles.
-The manufacturer provides a companion app called deCONZ together with the mentioned hardware. deCONZ
-offers a documented real-time channel that this binding makes use of to bring support for all
-paired Zigbee sensors and switches.
+The manufacturer provides a companion app called deCONZ together with the mentioned hardware.
+deCONZ offers a documented real-time channel that this binding makes use of to bring support for all paired Zigbee sensors and switches.
 
-deCONZ also acts as a HUE bridge. This binding is meant to be used together with the HUE binding
-which makes the lights and plugs available.
+deCONZ also acts as a HUE bridge.
+This binding is meant to be used together with the HUE binding which makes the lights and plugs available.
 
 ## Supported Things
 
@@ -38,14 +37,22 @@ Sensors, switches are discovered as soon as a `deconz` bridge Thing comes online
 
 These configuration parameters are available:
 
-| Parameter | Description                                                   | Type      | Default   |
-| :-------- | :------------------------------------------------------------ | :-------: | :-------: |
-| host      | Host address (hostname/ip:port) of deCONZ interface           | string    | n/a       |
-| apikey    | Authorization API key (optional, can be filled automatically) | string    | n/a       |
+| Parameter | Description                                                                     | Type    | Default |
+|-----------|---------------------------------------------------------------------------------|---------|---------|
+| host      | Host address (hostname / ip) of deCONZ interface                                | string  | n/a     |
+| httpPort  | Port of deCONZ HTTP interface                                                   | string  | 80      |
+| port      | Port of deCONZ Websocket (optional, can be filled automatically) **(Advanced)** | string  | n/a     |
+| apikey    | Authorization API key (optional, can be filled automatically)                   | string  | n/a     |
+| timeout   | Timeout for asynchronous HTTP requests (in milliseconds)                        | integer | 2000    |
 
 The deCONZ bridge requires the IP address or hostname as a configuration value in order for the binding to know where to access it.
+If needed you can specify an optional port for the HTTP interface or the Websocket.
+The Websocket port can be filled automatically by requesting it via the HTTP interface - you only need to specify it if your deCONZ instance is running containerized.
 
-The API key is an optional value. If a deCONZ API key is available because it has already been created manually, it can also be entered as a configuration value. Otherwise the field can be left empty and the binding will generate the key automatically. For this process the deCONZ bridge must be unlocked in the deCONZ software so that third party applications can register. [See deCONZ documentation](http://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#unlock-the-gateway)
+The API key is an optional value.
+If a deCONZ API key is available because it has already been created manually, it can also be entered as a configuration value.
+Otherwise the field can be left empty and the binding will generate the key automatically.
+For this process the deCONZ bridge must be unlocked in the deCONZ software so that third party applications can register ([see deCONZ documentation](http://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#unlock-the-gateway)).
 
 ### Textual Thing Configuration - Retrieving an API Key
 
@@ -55,14 +62,16 @@ If you use the textual configuration, the thing file without an API key will loo
 Bridge deconz:deconz:homeserver [ host="192.168.0.10" ]
 ```
 
-In this case, the API key is generated automatically as described above (the deCONZ bridge has to be unlocked). Please note that the generated key cannot be written automatically to the `.thing` file, and has to be set manually.
-The generated key can be queried from the configuration using the openHAB console. To do this log into the [console](https://www.openhab.org/docs/administration/console.html) and use the command `things show` to display the configuration parameters, e.g:
+In this case, the API key is generated automatically as described above (the deCONZ bridge has to be unlocked).
+Please note that the generated key cannot be written automatically to the `.thing` file, and has to be set manually.
+The generated key can be queried from the configuration using the openHAB console.
+To do this log into the [console](https://www.openhab.org/docs/administration/console.html) and use the command `things show` to display the configuration parameters, e.g:
 
 ```
 things show deconz:deconz:homeserver
 ```
 
-Afterwards the displayed API key has to be inserted in the `.thing` file as `apikey` configuration value, e.g.:
+Afterwards the API key has to be inserted in the `.thing` file as `apikey` configuration value, e.g.:
 
 ```
 Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]

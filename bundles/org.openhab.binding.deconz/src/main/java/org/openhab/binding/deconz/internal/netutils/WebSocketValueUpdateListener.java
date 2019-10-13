@@ -21,7 +21,7 @@ import org.openhab.binding.deconz.internal.dto.SensorState;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public interface ValueUpdateListener {
+public interface WebSocketValueUpdateListener {
     /**
      * A sensor state was updated.
      *
