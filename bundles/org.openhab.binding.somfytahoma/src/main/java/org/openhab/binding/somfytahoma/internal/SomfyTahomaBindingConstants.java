@@ -123,12 +123,18 @@ public class SomfyTahomaBindingConstants {
     // Siren
     public static final ThingTypeUID THING_TYPE_SIREN = new ThingTypeUID(BINDING_ID, "siren");
 
+    // Adjustable slats roller shutter
+    public static final ThingTypeUID THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "adjustableslatsrollershutter");
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
 
     // Roller shutter, Awning, Screen, Blind, Garage door, Window, Curtain
     public static final String CONTROL = "control";
+
+    // Adjustable slats roller shutter
+    public static final String ROCKER = "rocker";
 
     // Silent roller shutter
     public static final String CONTROL_SILENT = "control_silent";
@@ -220,6 +226,7 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_SET_CLOSURESPEED = "setClosureAndLinearSpeed";
     public static final String COMMAND_SET_HEATINGLEVEL = "setHeatingLevel";
     public static final String COMMAND_SET_PEDESTRIANPOSITION = "setPedestrianPosition";
+    public static final String COMMAND_SET_ROCKERPOSITION = "setRockerPosition";
     public static final String COMMAND_UP = "up";
     public static final String COMMAND_DOWN = "down";
     public static final String COMMAND_OPEN = "open";
@@ -263,6 +270,7 @@ public class SomfyTahomaBindingConstants {
     public static final String ELECTRICITYSENSOR = "ElectricitySensor";
     public static final String DOCK = "Dock";
     public static final String SIREN = "Siren";
+    public static final String ADJUSTABLESLATSROLLERSHUTTER = "AdjustableSlatsRollerShutter";
 
     // unsupported uiClasses
     public static final String PROTOCOLGATEWAY = "ProtocolGateway";
@@ -281,7 +289,7 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM, THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD,
             THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA,
             THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_CURTAIN,
-            THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN));
+            THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER));
 
     //somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {

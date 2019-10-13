@@ -240,6 +240,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             case SIREN:
                 deviceDiscovered(device, THING_TYPE_SIREN);
                 break;
+            case ADJUSTABLESLATSROLLERSHUTTER:
+                deviceDiscovered(device, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER);
+                break;
             case PROTOCOLGATEWAY:
             case REMOTECONTROLLER:
             case NETWORKCOMPONENT:

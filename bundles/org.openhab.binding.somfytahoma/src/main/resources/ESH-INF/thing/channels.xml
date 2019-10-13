@@ -250,4 +250,10 @@
 		<label>Smoke Sensor Long Check Trigger</label>
 		<description>A channel for triggering the smoke sensor's long check</description>
 	</channel-type>
+
+	<channel-type id="rocker">
+		<item-type>Switch</item-type>
+		<label>Rocker position</label>
+		<description>A channel for controlling the rocker position</description>
+	</channel-type>
 </thing:thing-descriptions>

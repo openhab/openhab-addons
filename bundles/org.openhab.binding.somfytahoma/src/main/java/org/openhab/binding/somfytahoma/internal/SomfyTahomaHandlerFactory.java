@@ -134,7 +134,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaDockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SIREN)) {
             return new SomfyTahomaSirenHandler(thing);
-        } else {
+        } else if (thingTypeUID.equals(THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER)) {
+            return new SomfyTahomaAdjustableSlatsRollerShutterHandler(thing);
+        }else {
             return null;
         }
     }

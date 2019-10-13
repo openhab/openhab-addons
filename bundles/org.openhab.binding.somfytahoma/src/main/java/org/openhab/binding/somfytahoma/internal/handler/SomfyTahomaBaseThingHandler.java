@@ -87,6 +87,10 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         return isLinked(channel.getUID().getId());
     }
 
+    protected void sendCommand(String cmd) {
+        sendCommand(cmd, "[]");
+    }
+
     protected void sendCommand(String cmd, String param) {
         if (getBridgeHandler() != null) {
             getBridgeHandler().sendCommand(getURL(), cmd, param);
@@ -129,6 +133,10 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         if (type > 0 && !typeTable.containsKey(stateName)) {
             typeTable.put(stateName, type);
         }
+    }
+
+    protected  @Nullable State parseTahomaState(@Nullable SomfyTahomaState state) {
+        return parseTahomaState(null, state);
     }
 
     private @Nullable State parseTahomaState(@Nullable String acceptedState, @Nullable SomfyTahomaState state) {
