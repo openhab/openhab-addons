@@ -57,6 +57,8 @@ Type blaster : samsung [led="E", remote="samsung", command="*"]
 ```
 
 In the above example, the first channel will be updated when any IR command from any type of device is received. The second channel will only be updated if a "power" infrared command from the remote/device type "telenet" is received. The third channel can be used to feed any type of infrared command to a Samsung television by means of the "E" emitter of the IRtrans device.
+The led can be "E"-External, "I"-Internal, "B"-Both, and a numeric for a selected led.
+Depending on the number of remotes, the bufferSize must be adjusted. E.g. for 7 remotes and 47 commands a bufferSize of 2048 is needed.
 
 ```
 Bridge irtrans:ethernet:technicalfacilities [ ipAddress="192.168.0.58", portNumber=21000, bufferSize=1024, responseTimeOut=100, pingTimeOut=2000, reconnectInterval=10 ]
