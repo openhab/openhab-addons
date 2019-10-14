@@ -97,7 +97,7 @@ public class HDPowerViewWebTargets {
         if (response.getStatus() == 423) {
             // the hub seems to return a 423 error (resource locked) once per day around midnight
             // this is probably some kind of regular re-initialization process, so suppress the error log
-            logger.warn("Bridge returned '423' while invoking {}", target.getUri());
+            logger.debug("Bridge returned '423' while invoking {}", target.getUri());
             return null;
         } else if (response.getStatus() != 200) {
             logger.error("Bridge returned '{}' while invoking {} : {}", response.getStatus(), target.getUri(),
