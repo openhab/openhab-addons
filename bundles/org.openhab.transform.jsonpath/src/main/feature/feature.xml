@@ -4,7 +4,6 @@
 
     <feature name="openhab-transformation-jsonpath" description="JSONPath Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab.tp-jackson</feature>
         <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.jsonpath/${project.version}</bundle>
     </feature>
 </features>
