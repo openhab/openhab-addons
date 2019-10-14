@@ -19,8 +19,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Illuminance;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Volume;
+
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.items.ItemUtil;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
+import org.eclipse.smarthome.core.library.dimension.VolumetricFlowRate;
 import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -112,8 +122,8 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_TEACHINCMD = "teachInCMD";
     public final static String CHANNEL_INSTANTPOWER = "instantpower";
     public final static String CHANNEL_TOTALUSAGE = "totalusage";
-    public final static String CHANNEL_INSTANTLITRE = "amrLitre";
-    public final static String CHANNEL_TOTALCUBICMETRE = "amrCubicMetre";
+    public final static String CHANNEL_CURRENTFLOW = "currentFlow";
+    public final static String CHANNEL_CUMULATIVEVALUE = "cumulativeValue";
     public final static String CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
     public final static String CHANNEL_ENERGY_STORAGE = "energyStorage";
     public final static String CHANNEL_BATTERY_LEVEL = "batteryLevel";
@@ -166,9 +176,9 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_ROLLERSHUTTER, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ROLLERSHUTTER), CoreItemFactory.ROLLERSHUTTER));
                     put(CHANNEL_ANGLE, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ANGLE),
-                            CoreItemFactory.NUMBER));
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Angle.class.getSimpleName()));
                     put(CHANNEL_TEMPERATURE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
                     put(CHANNEL_HUMIDITY, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_HUMIDITY), CoreItemFactory.NUMBER));
                     put(CHANNEL_FANSPEEDSTAGE, new EnOceanChannelDescription(
@@ -180,7 +190,7 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_VIBRATION, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_VIBRATION), CoreItemFactory.SWITCH));
                     put(CHANNEL_ILLUMINATION, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATION), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATION), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
                     put(CHANNEL_COUNTER, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_COUNTER),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_CURRENTNUMBER, new EnOceanChannelDescription(
@@ -192,9 +202,9 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_WINDOWHANDLESTATE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWHANDLESTATE), CoreItemFactory.STRING));
                     put(CHANNEL_BATTERY_VOLTAGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_BATTERY_VOLTAGE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_BATTERY_VOLTAGE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + ElectricPotential.class.getSimpleName()));
                     put(CHANNEL_ENERGY_STORAGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ENERGY_STORAGE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ENERGY_STORAGE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + ElectricPotential.class.getSimpleName()));
                     put(CHANNEL_BATTERY_LEVEL, new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID(), 
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_TEACHINCMD, new EnOceanChannelDescription(
@@ -235,13 +245,13 @@ public class EnOceanBindingConstants {
                             CoreItemFactory.ROLLERSHUTTER, "Rocker Switch Listener (Rollershutter)", true, false));
 
                     put(CHANNEL_INSTANTPOWER, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTPOWER), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTPOWER), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Power.class.getSimpleName()));
                     put(CHANNEL_TOTALUSAGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALUSAGE), CoreItemFactory.NUMBER));
-                    put(CHANNEL_INSTANTLITRE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTLITRE), CoreItemFactory.NUMBER));
-                    put(CHANNEL_TOTALCUBICMETRE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALCUBICMETRE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALUSAGE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Energy.class.getSimpleName()));
+                    put(CHANNEL_CURRENTFLOW, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_CURRENTFLOW), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + VolumetricFlowRate.class.getSimpleName()));
+                    put(CHANNEL_CUMULATIVEVALUE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_CUMULATIVEVALUE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Volume.class.getSimpleName()));
                     put(CHANNEL_AUTOOFF, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AUTOOFF),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_DELAYRADIOOFF, new EnOceanChannelDescription(
@@ -283,9 +293,9 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_DISPLAY_ORIENTATION, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_DISPLAY_ORIENTATION), CoreItemFactory.NUMBER));
                     put(CHANNEL_TEMPERATURE_SETPOINT, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE_SETPOINT), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE_SETPOINT), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
                     put(CHANNEL_FEED_TEMPERATURE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_FEED_TEMPERATURE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_FEED_TEMPERATURE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
                     put(CHANNEL_MEASUREMENT_CONTROL, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_MEASUREMENT_CONTROL), CoreItemFactory.SWITCH));
                     put(CHANNEL_FAILURE_CODE, new EnOceanChannelDescription(

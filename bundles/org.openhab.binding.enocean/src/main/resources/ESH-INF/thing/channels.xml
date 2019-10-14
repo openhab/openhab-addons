@@ -306,17 +306,15 @@
 		<state pattern="%d %unit%" />
 	</channel-type>
 
-	<!-- Litre Channel -->
-	<channel-type id="amrLitre">
-		<item-type>Number:Litre</item-type>
-		<label>Litre per second</label>
+	<channel-type id="currentFlow">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Current flow</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
-	<!-- Litre Channel -->
-	<channel-type id="amrCubicMetre">
-		<item-type>Number:Litre</item-type>
-		<label>Cubic metre</label>
+	<channel-type id="cumulativeValue">
+		<item-type>Number:Volume</item-type>
+		<label>Cumulative value</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
