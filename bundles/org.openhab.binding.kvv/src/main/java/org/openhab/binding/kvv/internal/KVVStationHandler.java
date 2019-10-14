@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 
@@ -57,8 +58,7 @@ public class KVVStationHandler extends BaseThingHandler {
             this.updateThing(this.editThing().withChannels(channels).build());
 
             logger.info("Starting inital fetch");
-            final UpdateTask updateThread = new UpdateTask();
-            final DepartureResult departures = updateThread.get();
+            final DepartureResult departures = new UpdateTask().get();
             if (departures == null) {
                 logger.warn("Failed to get departures for '" + this.thing.getUID().getAsString() + "'");
                 updateStatus(ThingStatus.OFFLINE);
@@ -71,6 +71,8 @@ public class KVVStationHandler extends BaseThingHandler {
             }
             
             this.setDepartures(departures);
+            this.scheduler.scheduleWithFixedDelay(new UpdateTask(), 0, this.config.updateInterval,
+                        TimeUnit.MILLISECONDS);
             updateStatus(ThingStatus.ONLINE);
             logger.info("Thing is online");
         });
