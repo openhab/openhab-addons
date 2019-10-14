@@ -58,8 +58,8 @@ The following channels are supported by the binding.
 
 ## Profiles
 
-A Switch profile is available for the doorbell channel that will cause ON/OFF 
-states to be set for items linked to the `doorbell` channels.
+Using the system default switch profile *rawbutton-on-off-switch* in a *doorbell* channel item definition will cause ON/OFF 
+states to be set when the doorbell is pressed and released.
 See *Items* example below.
 
 ## Rule Actions
@@ -119,7 +119,7 @@ Switch                      Doorbell_Pressed
                             "Doorbell Pressed [%s]"
                             <switch>
                             ["Switch"]
-                            { channel="doorbird:d101:doorbell:doorbell" [profile="doorbird:switch"] }
+                            { channel="doorbird:d101:doorbell:doorbell" [profile="rawbutton-on-off-switch"] }
 
 DateTime                    Doorbell_PressedTimestamp
                             "Doorbell Pressed Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]"
