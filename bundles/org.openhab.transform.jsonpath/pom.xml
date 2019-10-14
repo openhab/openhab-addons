@@ -14,7 +14,7 @@
   <name>openHAB Add-ons :: Bundles :: Transformation Service :: JSonPath</name>
 
   <properties>
-    <bnd.importpackage>!org.apache.tapestry5.json.*,!org.codehaus.jettison.json.*,!org.json.*</bnd.importpackage>
+    <bnd.importpackage>!org.apache.tapestry5.json.*,!org.codehaus.jettison.json.*,!org.json.*,!com.fasterxml.jackson.*</bnd.importpackage>
   </properties>
 
   <dependencies>
