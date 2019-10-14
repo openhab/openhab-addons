@@ -58,7 +58,7 @@ public class KVVStationHandler extends BaseThingHandler {
             this.updateThing(this.editThing().withChannels(channels).build());
 
             logger.info("Starting inital fetch");
-            final DepartureResult departures = new UpdateTask().get();
+            final DepartureResult departures = ((KVVBridgeHandler) this.getBridge()).queryKVV(this.config);
             if (departures == null) {
                 logger.warn("Failed to get departures for '" + this.thing.getUID().getAsString() + "'");
                 updateStatus(ThingStatus.OFFLINE);
@@ -111,37 +111,9 @@ public class KVVStationHandler extends BaseThingHandler {
      */
     public class UpdateTask extends TimerTask {
 
-        /** the url of the KVV API */
-        private final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + config.stationId + "?key="
-                + KVVBindingConstants.API_KEY + "&maxInfos=" + config.maxTrains;
-
-        /**
-         * Returns the latest {@link DepartureResult}.
-         *
-         * @return the latest {@link DepartureResult}.
-         */
-        public @Nullable DepartureResult get() {
-            try {
-                final HttpURLConnection conn = (HttpURLConnection) new URL(this.url.toString()).openConnection();
-                conn.setRequestMethod("GET");
-                final BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-                final StringBuilder json = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) {
-                    json.append(line);
-                }
-
-                return new Gson().fromJson(json.toString(), DepartureResult.class);
-            } catch (IOException e) {
-                logger.error("Failed to connect to '" + this.url + "'", e);
-                return null;
-            }
-        }
-
         @Override
         public void run() {
-            final DepartureResult departures = this.get();
+            final DepartureResult departures = ((KVVBridgeHandler) getBridge()).queryKVV(config);
             if (departures != null) {
                 setDepartures(departures);
             }
