@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import com.google.gson.Gson;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -36,21 +37,14 @@ public class KVVStationHandler extends BaseThingHandler {
         super(thing);
         logger.info("stationhandler!");
         this.config = getConfigAs(KVVStationConfig.class);
-        this.departures = null;
     }
 
     @Override
     public void initialize() {
         scheduler.execute(() -> {
-            logger.info("Starting inital fetch");
-            final UpdateTask updateThread = new UpdateTask();
-            final DepartureResult departures = updateThread.get();
-            if (departures == null) {
-                logger.warn("Failed to get departures for '" + this.thing.getUID().getAsString() + "'");
-                updateStatus(ThingStatus.OFFLINE);
-                return;
-            }
 
+            // creating channels
+            logger.info("Creating channels...");
             final List<Channel> channels = new ArrayList<Channel>();
             for (int i = 0; i < this.config.maxTrains; i++) {
                 channels.add(ChannelBuilder.create(
@@ -62,6 +56,15 @@ public class KVVStationHandler extends BaseThingHandler {
             }
             this.updateThing(this.editThing().withChannels(channels).build());
 
+            logger.info("Starting inital fetch");
+            final UpdateTask updateThread = new UpdateTask();
+            final DepartureResult departures = updateThread.get();
+            if (departures == null) {
+                logger.warn("Failed to get departures for '" + this.thing.getUID().getAsString() + "'");
+                updateStatus(ThingStatus.OFFLINE);
+                return;
+            }
+
             logger.info("Listing channels...");
             for (final Channel c : this.getThing().getChannels()) {
                 logger.info(c.getUID().getAsString());
@@ -69,6 +72,7 @@ public class KVVStationHandler extends BaseThingHandler {
             
             this.setDepartures(departures);
             updateStatus(ThingStatus.ONLINE);
+            logger.info("Thing is online");
         });
     }
 
@@ -82,13 +86,19 @@ public class KVVStationHandler extends BaseThingHandler {
             return;
         }
 
-        this.departures = departures;
-        logger.info(this.departures.toString());
+        for (int i = 0; i < this.config.maxTrains; i++) {
+            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"),
+                    new StringType(departures.getDepartures().get(i).getRoute()));
+            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"),
+                    new StringType(departures.getDepartures().get(i).getDestination()));
+            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"),
+                    new StringType(departures.getDepartures().get(i).getTime()));
+        }
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
-        logger.info("handleCommand!!!!!!!!!!!!!");
+
     }
 
     /**
