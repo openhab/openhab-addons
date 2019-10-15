@@ -22,6 +22,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -72,6 +73,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private int maxrequests = 0;
 
     private ScheduledFuture<?> UDPserverJob_DefaultPort;
+
+    ThingRegistry thingRegistry;
 
     public SoulissGatewayHandler(Bridge _bridge) {
         super(_bridge);
