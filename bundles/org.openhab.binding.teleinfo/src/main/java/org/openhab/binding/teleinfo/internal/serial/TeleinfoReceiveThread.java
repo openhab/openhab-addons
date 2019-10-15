@@ -13,10 +13,9 @@
 package org.openhab.binding.teleinfo.internal.serial;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
@@ -36,12 +35,13 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
     private final Logger logger = LoggerFactory.getLogger(TeleinfoReceiveThread.class);
 
     private SerialPort serialPort;
-    private List<TeleinfoReceiveThreadListener> listeners = new ArrayList<>();
+    private TeleinfoReceiveThreadListener listener;
 
-    public TeleinfoReceiveThread(SerialPort serialPort) {
+    public TeleinfoReceiveThread(SerialPort serialPort, @NonNull final TeleinfoReceiveThreadListener listener) {
         super("TeleinfoReceiveThread");
 
         this.serialPort = serialPort;
+        this.listener = listener;
     }
 
     @Override
@@ -56,51 +56,34 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
     @Override
     public void run() {
         logger.debug("Starting Teleinfo thread: Receive");
-        try {
-            // // Initialise all the statistics channels
-            // updateState(new ChannelUID(getThing().getUID(), CHANNEL_SERIAL_SOF), new DecimalType(SOFCount));
-
-            TeleinfoInputStream teleinfoStream = new TeleinfoInputStream(serialPort.getInputStream(),
-                    TeleinfoInputStream.DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME * 10,
-                    TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME * 10);
+        try (TeleinfoInputStream teleinfoStream = new TeleinfoInputStream(serialPort.getInputStream(),
+                TeleinfoInputStream.DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME * 10,
+                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME * 10)) {
             while (!interrupted()) {
-                Frame nextFrame;
-
                 try {
-                    nextFrame = teleinfoStream.readNextFrame();
+                    Frame nextFrame = teleinfoStream.readNextFrame();
+                    listener.onFrameReceived(this, nextFrame);
                 } catch (TimeoutException e) {
-                    logger.error("Got timeout {} during receiving. exiting thread.", e.getLocalizedMessage());
-                    break;
+                    logger.error("Got timeout {} during receiving.", e.getLocalizedMessage());
+                    if (!listener.continueOnReadNextFrameTimeoutException(e)) {
+                        break;
+                    }
                 } catch (InvalidFrameException e) {
-                    logger.error("Got invalid frame {} during receiving. exiting thread.", e.getLocalizedMessage());
-                    break;
+                    listener.onInvalidFrameReceived(this, e);
+                    logger.error("Got invalid frame '{}' during receiving.", e.getLocalizedMessage());
                 } catch (IOException e) {
-                    logger.error("Got I/O exception {} during receiving. exiting thread.", e.getLocalizedMessage());
-                    break;
+                    logger.error("Got I/O exception '{}' during receiving.", e.getLocalizedMessage(), e);
+                    if (!listener.continueOnSerialPortInputStreamIOException(e)) {
+                        break;
+                    }
                 }
-
-                fireOnFrameReceivedEvent(nextFrame);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Exception during Teleinfo receive thread. ", e);
         }
 
         logger.debug("Stopped Teleinfo receive thread");
 
         serialPort.removeEventListener();
-    }
-
-    public void addListener(final TeleinfoReceiveThreadListener listener) {
-        listeners.add(listener);
-    }
-
-    public void removeListener(final TeleinfoReceiveThreadListener listener) {
-        listeners.remove(listener);
-    }
-
-    private void fireOnFrameReceivedEvent(final Frame frame) {
-        for (TeleinfoReceiveThreadListener listener : listeners) {
-            listener.onFrameReceived(this, frame);
-        }
     }
 }
