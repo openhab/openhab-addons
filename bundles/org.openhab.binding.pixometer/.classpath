@@ -28,23 +28,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Jerome/.m2/repository/org/openhab/core/bundles/org.openhab.core/2.5.0-SNAPSHOT/org.openhab.core-2.5.0-SNAPSHOT.jar" sourcepath="C:/Users/Jerome/.m2/repository/org/openhab/core/bundles/org.openhab.core/2.5.0-SNAPSHOT/org.openhab.core-2.5.0-SNAPSHOT-sources.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="org.openhab.core.bundles"/>
-			<attribute name="maven.artifactId" value="org.openhab.core"/>
-			<attribute name="maven.version" value="2.5.0-SNAPSHOT"/>
-			<attribute name="maven.scope" value="provided"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Jerome/.m2/repository/org/eclipse/jdt/org.eclipse.jdt.annotation/2.2.100/org.eclipse.jdt.annotation-2.2.100.jar" sourcepath="C:/Users/Jerome/.m2/repository/org/eclipse/jdt/org.eclipse.jdt.annotation/2.2.100/org.eclipse.jdt.annotation-2.2.100-sources.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="org.eclipse.jdt"/>
-			<attribute name="maven.artifactId" value="org.eclipse.jdt.annotation"/>
-			<attribute name="maven.version" value="2.2.100"/>
-			<attribute name="maven.scope" value="provided"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
