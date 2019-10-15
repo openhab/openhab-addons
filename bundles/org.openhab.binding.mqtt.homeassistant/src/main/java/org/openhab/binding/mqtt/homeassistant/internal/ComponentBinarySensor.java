@@ -51,7 +51,7 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
         }
 
         buildChannel(sensorChannelID, new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off),
-                channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                channelConfiguration.name, componentConfiguration.getUpdateListener())//
                         .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
                         .unit(channelConfiguration.unit_of_measurement)//
                         .build();
