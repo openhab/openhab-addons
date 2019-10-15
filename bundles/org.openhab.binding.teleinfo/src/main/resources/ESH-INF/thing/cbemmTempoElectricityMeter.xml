@@ -20,6 +20,8 @@
             <channel id="bbrhcjw" typeId="bbrhcjwType" />
             <channel id="bbrhpjb" typeId="bbrhpjbType" />
             <channel id="bbrhcjb" typeId="bbrhcjbType" />
+            <channel id="demain" typeId="couleurDemainType" />
+            <channel id="hhphc" typeId="hhphcType"/>
 			<channel id="lastUpdate" typeId="lastUpdateType" />
 		</channels>
 

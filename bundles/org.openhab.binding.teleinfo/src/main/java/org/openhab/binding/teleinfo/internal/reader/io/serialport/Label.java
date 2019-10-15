@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
-import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption.Hhphc;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.CouleurDemain;
+import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
 import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
 
 /**
@@ -57,7 +58,7 @@ public enum Label {
     BBRHCJR(Integer.class, 9),
     BBRHPJR(Integer.class, 9),
     PEJP(Integer.class, 2),
-    DEMAIN(String.class, 4);
+    DEMAIN(CouleurDemain.class, 4);
 
     private Class<?> type;
     private int size;

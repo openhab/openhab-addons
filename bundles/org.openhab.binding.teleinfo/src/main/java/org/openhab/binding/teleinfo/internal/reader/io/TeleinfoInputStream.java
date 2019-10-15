@@ -49,9 +49,11 @@ import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmShort;
 import org.openhab.binding.teleinfo.internal.reader.common.FrameBaseOption;
 import org.openhab.binding.teleinfo.internal.reader.common.FrameEjpOption;
 import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption.Hhphc;
 import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption;
 import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.CouleurDemain;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.ProgrammeCircuit1;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.ProgrammeCircuit2;
+import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
 import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConvertionException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.FrameUtil;
@@ -294,23 +296,20 @@ public class TeleinfoInputStream extends InputStream {
     private FrameCbetmLong buildFrameCbetmLong(final Map<Label, Object> frameValues) throws InvalidFrameException {
         logger.trace("buildFrameCbetmLong(Map<Label, Object>) [start]");
         final FrameCbetmLong frameCbetm;
-        String optionTarif = (String) frameValues.get(Label.OPTARIF);
-        switch (optionTarif) {
-            case "BASE":
-                frameCbetm = buildFrameCbetmLongBaseOption(frameValues);
-                break;
-            case "HC..":
-                frameCbetm = buildFrameCbetmLongHcOption(frameValues);
-                break;
-            case "EJP.":
-                frameCbetm = buildFrameCbetmLongEjpOption(frameValues);
-                break;
-            case "BBRx":
-                frameCbetm = buildFrameCbetmLongTempoOption(frameValues);
-                break;
-            default:
-                final String error = String.format("The option Tarif '%1$c' is not supported", optionTarif);
-                throw new InvalidFrameException(error);
+        String optionTarif = getRequiredLabelValue(Label.OPTARIF, String.class, frameValues);
+        if ("BASE".equals(optionTarif)) {
+            frameCbetm = buildFrameCbetmLongBaseOption(frameValues);
+        } else if ("HC..".equals(optionTarif)) {
+            frameCbetm = buildFrameCbetmLongHcOption(frameValues);
+        } else if ("EJP.".equals(optionTarif)) {
+            frameCbetm = buildFrameCbetmLongEjpOption(frameValues);
+        } else if (optionTarif.startsWith("BBR") && optionTarif.length() == 4) {
+            ProgrammeCircuit1 prgCircuit1 = convertProgrammeCircuit1(optionTarif.charAt(3));
+            ProgrammeCircuit2 prgCircuit2 = convertProgrammeCircuit2(optionTarif.charAt(3));
+            frameCbetm = buildFrameCbetmLongTempoOption(frameValues, prgCircuit1, prgCircuit2);
+        } else {
+            final String error = String.format("The option Tarif '%s' is not supported", optionTarif);
+            throw new InvalidFrameException(error);
         }
         logger.trace("buildFrameCbetmLong(Map<Label, Object>) [end]");
         return frameCbetm;
@@ -365,12 +364,12 @@ public class TeleinfoInputStream extends InputStream {
         return frame;
     }
 
-    private FrameCbetmLongTempoOption buildFrameCbetmLongTempoOption(final Map<Label, Object> frameValues)
-            throws InvalidFrameException {
+    private FrameCbetmLongTempoOption buildFrameCbetmLongTempoOption(final Map<Label, Object> frameValues,
+            ProgrammeCircuit1 prgCircuit1, ProgrammeCircuit2 prgCircuit2) throws InvalidFrameException {
         logger.trace("buildFrameCbetmTempoOption(Map<Label, Object>) [start]");
         FrameCbetmLongTempoOption frame = new FrameCbetmLongTempoOption();
         setCbetmCommonFrameFields(frame, frameValues);
-        setFrameTempoOptionFields(frame, frameValues);
+        setFrameTempoOptionFields(frame, frameValues, prgCircuit1, prgCircuit2);
         logger.trace("buildFrameCbetmTempoOption(Map<Label, Object>) [end]");
         return frame;
     }
@@ -392,23 +391,20 @@ public class TeleinfoInputStream extends InputStream {
     private FrameCbemm buildFrameCbemm(final Map<Label, Object> frameValues) throws InvalidFrameException {
         logger.trace("buildFrameCbemm(Map<Label, Object>) [start]");
         final FrameCbemm frameCbemm;
-        String optionTarif = (String) frameValues.get(Label.OPTARIF);
-        switch (optionTarif) {
-            case "BASE":
-                frameCbemm = buildFrameCbemmBaseOption(frameValues);
-                break;
-            case "HC..":
-                frameCbemm = buildFrameCbemmHcOption(frameValues);
-                break;
-            case "EJP.":
-                frameCbemm = buildFrameCbemmEjpOption(frameValues);
-                break;
-            case "BBRx":
-                frameCbemm = buildFrameCbemmTempoOption(frameValues);
-                break;
-            default:
-                final String error = String.format("The option Tarif '%1$c' is not supported", optionTarif);
-                throw new InvalidFrameException(error);
+        String optionTarif = getRequiredLabelValue(Label.OPTARIF, String.class, frameValues);
+        if ("BASE".equals(optionTarif)) {
+            frameCbemm = buildFrameCbemmBaseOption(frameValues);
+        } else if ("HC..".equals(optionTarif)) {
+            frameCbemm = buildFrameCbemmHcOption(frameValues);
+        } else if ("EJP.".equals(optionTarif)) {
+            frameCbemm = buildFrameCbemmEjpOption(frameValues);
+        } else if (optionTarif.startsWith("BBR") && optionTarif.length() == 4) {
+            ProgrammeCircuit1 prgCircuit1 = convertProgrammeCircuit1(optionTarif.charAt(3));
+            ProgrammeCircuit2 prgCircuit2 = convertProgrammeCircuit2(optionTarif.charAt(3));
+            frameCbemm = buildFrameCbemmTempoOption(frameValues, prgCircuit1, prgCircuit2);
+        } else {
+            final String error = String.format("The option Tarif '%s' is not supported", optionTarif);
+            throw new InvalidFrameException(error);
         }
         logger.trace("buildFrameCbemm(Map<Label, Object>) [end]");
         return frameCbemm;
@@ -457,12 +453,12 @@ public class TeleinfoInputStream extends InputStream {
         return frame;
     }
 
-    private FrameCbemmTempoOption buildFrameCbemmTempoOption(final Map<Label, Object> frameValues)
-            throws InvalidFrameException {
+    private FrameCbemmTempoOption buildFrameCbemmTempoOption(final Map<Label, Object> frameValues,
+            ProgrammeCircuit1 prgCircuit1, ProgrammeCircuit2 prgCircuit2) throws InvalidFrameException {
         logger.trace("buildFrameCbemmTempoOption(Map<Label, Object>) [start]");
         FrameCbemmTempoOption frame = new FrameCbemmTempoOption();
         setCbemmCommonFrameFields(frame, frameValues);
-        setFrameTempoOptionFields(frame, frameValues);
+        setFrameTempoOptionFields(frame, frameValues, prgCircuit1, prgCircuit2);
         logger.trace("buildFrameCbemmTempoOption(Map<Label, Object>) [end]");
         return frame;
     }
@@ -471,24 +467,22 @@ public class TeleinfoInputStream extends InputStream {
             throws InvalidFrameException {
         logger.trace("buildFrameCbemmEvolutionIcc(Map<Label, Object>) [start]");
         final FrameCbemmEvolutionIcc frameCbemmEvoIcc;
-        String optionTarif = (String) frameValues.get(Label.OPTARIF);
-        switch (optionTarif) {
-            case "BASE":
-                frameCbemmEvoIcc = buildFrameCbemmEvolutionIccBaseOption(frameValues);
-                break;
-            case "HC..":
-                frameCbemmEvoIcc = buildFrameCbemmEvolutionIccHcOption(frameValues);
-                break;
-            case "EJP.":
-                frameCbemmEvoIcc = buildFrameCbemmEvolutionIccEjpOption(frameValues);
-                break;
-            case "BBRx":
-                frameCbemmEvoIcc = buildFrameCbemmEvolutionIccTempoOption(frameValues);
-                break;
-            default:
-                final String error = String.format("The option Tarif '%1$c' is not supported", optionTarif);
-                throw new InvalidFrameException(error);
+        String optionTarif = getRequiredLabelValue(Label.OPTARIF, String.class, frameValues);
+        if ("BASE".equals(optionTarif)) {
+            frameCbemmEvoIcc = buildFrameCbemmEvolutionIccBaseOption(frameValues);
+        } else if ("HC..".equals(optionTarif)) {
+            frameCbemmEvoIcc = buildFrameCbemmEvolutionIccHcOption(frameValues);
+        } else if ("EJP.".equals(optionTarif)) {
+            frameCbemmEvoIcc = buildFrameCbemmEvolutionIccEjpOption(frameValues);
+        } else if (optionTarif.startsWith("BBR") && optionTarif.length() == 4) {
+            ProgrammeCircuit1 prgCircuit1 = convertProgrammeCircuit1(optionTarif.charAt(3));
+            ProgrammeCircuit2 prgCircuit2 = convertProgrammeCircuit2(optionTarif.charAt(3));
+            frameCbemmEvoIcc = buildFrameCbemmEvolutionIccTempoOption(frameValues, prgCircuit1, prgCircuit2);
+        } else {
+            final String error = String.format("The option Tarif '%s' is not supported", optionTarif);
+            throw new InvalidFrameException(error);
         }
+
         logger.trace("buildFrameCbemmEvolutionIcc(Map<Label, Object>) [end]");
         return frameCbemmEvoIcc;
     }
@@ -522,11 +516,12 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     private FrameCbemmEvolutionIccTempoOption buildFrameCbemmEvolutionIccTempoOption(
-            final Map<Label, Object> frameValues) throws InvalidFrameException {
+            final Map<Label, Object> frameValues, ProgrammeCircuit1 prgCircuit1, ProgrammeCircuit2 prgCircuit2)
+            throws InvalidFrameException {
         logger.trace("buildFrameCbemmEvolutionIccTempoOption(Map<Label, Object>) [start]");
         FrameCbemmEvolutionIccTempoOption frame = new FrameCbemmEvolutionIccTempoOption();
         setCbemmEvolutionIccCommonFrameFields(frame, frameValues);
-        setFrameTempoOptionFields(frame, frameValues);
+        setFrameTempoOptionFields(frame, frameValues, prgCircuit1, prgCircuit2);
         logger.trace("buildFrameCbemmEvolutionIccTempoOption(Map<Label, Object>) [end]");
         return frame;
     }
@@ -567,7 +562,8 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     private void setFrameTempoOptionFields(final FrameTempoOption frameTempoOption,
-            final Map<Label, Object> frameValues) throws InvalidFrameException {
+            final Map<Label, Object> frameValues, ProgrammeCircuit1 prgCircuit1, ProgrammeCircuit2 prgCircuit2)
+            throws InvalidFrameException {
         logger.trace("setFrameTempoOptionFields(FrameTempoOption) [start]");
         frameTempoOption.setBbrhpjr(getRequiredLabelValue(Label.BBRHPJR, Integer.class, frameValues));
         frameTempoOption.setBbrhcjr(getRequiredLabelValue(Label.BBRHCJR, Integer.class, frameValues));
@@ -576,6 +572,9 @@ public class TeleinfoInputStream extends InputStream {
         frameTempoOption.setBbrhpjb(getRequiredLabelValue(Label.BBRHPJB, Integer.class, frameValues));
         frameTempoOption.setBbrhcjb(getRequiredLabelValue(Label.BBRHCJB, Integer.class, frameValues));
         frameTempoOption.setDemain(getOptionalLabelValue(Label.DEMAIN, CouleurDemain.class, frameValues));
+        frameTempoOption.setHhphc(getRequiredLabelValue(Label.HHPHC, Hhphc.class, frameValues));
+        frameTempoOption.setProgrammeCircuit1(prgCircuit1);
+        frameTempoOption.setProgrammeCircuit2(prgCircuit2);
         logger.trace("setFrameTempoOptionFields(FrameTempoOption) [end]");
     }
 
@@ -593,6 +592,14 @@ public class TeleinfoInputStream extends InputStream {
     @SuppressWarnings("unchecked")
     private <T> T getOptionalLabelValue(Label label, Class<T> dataType, final Map<Label, Object> frameValues) {
         return (T) frameValues.get(label);
+    }
+
+    private ProgrammeCircuit1 convertProgrammeCircuit1(char value) {
+        return null;
+    }
+
+    private ProgrammeCircuit2 convertProgrammeCircuit2(char value) {
+        return null;
     }
 
     private Exception rethrowTaskExecutionException(ExecutionException e)

@@ -13,6 +13,7 @@
 package org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc;
 
 import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption;
+import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
 
 /**
  * The {@link FrameCbemmEvolutionIccHcOption} class defines a CBEMM Evolution ICC Teleinfo frame with HC option.

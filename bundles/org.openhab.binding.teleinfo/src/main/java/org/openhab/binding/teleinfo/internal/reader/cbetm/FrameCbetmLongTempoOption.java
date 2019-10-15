@@ -13,6 +13,7 @@
 package org.openhab.binding.teleinfo.internal.reader.cbetm;
 
 import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption;
+import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
 
 /**
  * The {@link FrameCbetmLongTempoOption} class defines a CBETM Teleinfo frame with Tempo option.
@@ -26,46 +27,13 @@ public class FrameCbetmLongTempoOption extends FrameCbetmLong implements FrameTe
     private int bbrhpjr;
     private int bbrhcjr;
     private int bbrhpjw;
-
-    @Override
-    public void setBbrhpjr(int bbrhpjr) {
-        this.bbrhpjr = bbrhpjr;
-    }
-
-    @Override
-    public void setBbrhcjr(int bbrhcjr) {
-        this.bbrhcjr = bbrhcjr;
-    }
-
-    @Override
-    public void setBbrhpjw(int bbrhpjw) {
-        this.bbrhpjw = bbrhpjw;
-    }
-
-    @Override
-    public void setBbrhcjw(int bbrhcjw) {
-        this.bbrhcjw = bbrhcjw;
-    }
-
-    @Override
-    public void setBbrhpjb(int bbrhpjb) {
-        this.bbrhpjb = bbrhpjb;
-    }
-
-    @Override
-    public void setBbrhcjb(int bbrhcjb) {
-        this.bbrhcjb = bbrhcjb;
-    }
-
-    @Override
-    public void setDemain(CouleurDemain demain) {
-        this.demain = demain;
-    }
-
     private int bbrhcjw;
     private int bbrhpjb;
     private int bbrhcjb;
     private CouleurDemain demain;
+    private Hhphc hhphc;
+    private ProgrammeCircuit1 programmeCircuit1;
+    private ProgrammeCircuit2 programmeCircuit2;
 
     public FrameCbetmLongTempoOption() {
         // default constructor
@@ -104,6 +72,71 @@ public class FrameCbetmLongTempoOption extends FrameCbetmLong implements FrameTe
     @Override
     public CouleurDemain getDemain() {
         return demain;
+    }
+
+    @Override
+    public void setBbrhpjr(int bbrhpjr) {
+        this.bbrhpjr = bbrhpjr;
+    }
+
+    @Override
+    public void setBbrhcjr(int bbrhcjr) {
+        this.bbrhcjr = bbrhcjr;
+    }
+
+    @Override
+    public void setBbrhpjw(int bbrhpjw) {
+        this.bbrhpjw = bbrhpjw;
+    }
+
+    @Override
+    public void setBbrhcjw(int bbrhcjw) {
+        this.bbrhcjw = bbrhcjw;
+    }
+
+    @Override
+    public void setBbrhpjb(int bbrhpjb) {
+        this.bbrhpjb = bbrhpjb;
+    }
+
+    @Override
+    public void setBbrhcjb(int bbrhcjb) {
+        this.bbrhcjb = bbrhcjb;
+    }
+
+    @Override
+    public void setDemain(CouleurDemain demain) {
+        this.demain = demain;
+    }
+
+    @Override
+    public Hhphc getHhphc() {
+        return hhphc;
+    }
+
+    @Override
+    public void setHhphc(Hhphc hhphc) {
+        this.hhphc = hhphc;
+    }
+
+    @Override
+    public ProgrammeCircuit1 getProgrammeCircuit1() {
+        return programmeCircuit1;
+    }
+
+    @Override
+    public void setProgrammeCircuit1(ProgrammeCircuit1 programmeCircuit1) {
+        this.programmeCircuit1 = programmeCircuit1;
+    }
+
+    @Override
+    public ProgrammeCircuit2 getProgrammeCircuit2() {
+        return programmeCircuit2;
+    }
+
+    @Override
+    public void setProgrammeCircuit2(ProgrammeCircuit2 programmeCircuit2) {
+        this.programmeCircuit2 = programmeCircuit2;
     }
 
 }

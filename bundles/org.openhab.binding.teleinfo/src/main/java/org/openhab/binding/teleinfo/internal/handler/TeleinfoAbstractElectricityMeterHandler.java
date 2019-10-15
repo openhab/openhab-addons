@@ -102,13 +102,13 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
         updateState(CHANNEL_TEMPO_FRAME_BBRHCJW, new DecimalType(frameTempoOption.getBbrhcjw()));
         updateState(CHANNEL_TEMPO_FRAME_BBRHPJB, new DecimalType(frameTempoOption.getBbrhpjb()));
         updateState(CHANNEL_TEMPO_FRAME_BBRHCJB, new DecimalType(frameTempoOption.getBbrhcjb()));
+        updateState(CHANNEL_TEMPO_FRAME_HHPHC, new StringType(frameTempoOption.getHhphc().name()));
 
         if (frameTempoOption.getDemain() == null) {
             updateState(CHANNEL_TEMPO_FRAME_DEMAIN, UnDefType.NULL);
         } else {
             updateState(CHANNEL_TEMPO_FRAME_DEMAIN, new StringType(frameTempoOption.getDemain().name()));
         }
-
     }
 
     protected void updateStatesForEjpFrameOption(@NonNull FrameEjpOption frameEjpOption) {

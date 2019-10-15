@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport.converter;
 
-import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption.Hhphc;
+import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConvertionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
