@@ -8,10 +8,13 @@ import java.util.concurrent.TimeoutException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openhab.binding.teleinfo.internal.reader.Frame;
+import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccBaseOption;
 import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccHcOption;
 import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccTempoOption;
 import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongBaseOption;
 import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongEjpOption;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.ProgrammeCircuit1;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.ProgrammeCircuit2;
 import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
 import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
@@ -125,6 +128,30 @@ public class TeleinfoInputStreamTest {
             Assert.assertEquals(620, frameCbemmEvolutionIccTempoOption.getPapp());
             Assert.assertNull(frameCbemmEvolutionIccTempoOption.getAdps());
             Assert.assertEquals(Hhphc.Y, frameCbemmEvolutionIccTempoOption.getHhphc());
+            Assert.assertEquals(ProgrammeCircuit1.B, frameCbemmEvolutionIccTempoOption.getProgrammeCircuit1());
+            Assert.assertEquals(ProgrammeCircuit2.P2, frameCbemmEvolutionIccTempoOption.getProgrammeCircuit2());
+        }
+    }
+
+    @Test
+    public void testReadNextFrameCbemmEvoIccBase1()
+            throws FileNotFoundException, IOException, InvalidFrameException, TimeoutException {
+
+        try (TeleinfoInputStream in = new TeleinfoInputStream(
+                new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-base-option-1.raw")))) {
+            Frame frame = in.readNextFrame();
+
+            Assert.assertNotNull(frame);
+            Assert.assertEquals(FrameCbemmEvolutionIccBaseOption.class, frame.getClass());
+            FrameCbemmEvolutionIccBaseOption frameCbemmEvolutionIccBaseOption = (FrameCbemmEvolutionIccBaseOption) frame;
+            Assert.assertEquals("031762120162", frameCbemmEvolutionIccBaseOption.getAdco());
+            Assert.assertEquals(30, frameCbemmEvolutionIccBaseOption.getIsousc());
+            Assert.assertEquals(190575, frameCbemmEvolutionIccBaseOption.getBase());
+            Assert.assertEquals(Ptec.TH, frameCbemmEvolutionIccBaseOption.getPtec());
+            Assert.assertEquals(1, frameCbemmEvolutionIccBaseOption.getIinst());
+            Assert.assertEquals(new Integer(90), frameCbemmEvolutionIccBaseOption.getImax());
+            Assert.assertEquals(270, frameCbemmEvolutionIccBaseOption.getPapp());
+            Assert.assertNull(frameCbemmEvolutionIccBaseOption.getAdps());
         }
     }
 }

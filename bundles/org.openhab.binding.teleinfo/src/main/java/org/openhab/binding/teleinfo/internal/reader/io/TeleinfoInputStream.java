@@ -29,6 +29,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.teleinfo.internal.reader.Frame;
 import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemm;
 import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmBaseOption;
@@ -595,11 +596,47 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     private ProgrammeCircuit1 convertProgrammeCircuit1(char value) {
-        return null;
+        String prgCircuit1 = computeProgrammeCircuitBinaryValue(value).substring(3, 5);
+        switch (prgCircuit1) {
+            case "01":
+                return ProgrammeCircuit1.A;
+            case "10":
+                return ProgrammeCircuit1.B;
+            case "11":
+                return ProgrammeCircuit1.C;
+            default:
+                final String error = String.format("Programme circuit 1 '%s' is unknown", prgCircuit1);
+                throw new IllegalStateException(error);
+        }
     }
 
     private ProgrammeCircuit2 convertProgrammeCircuit2(char value) {
-        return null;
+        String prgCircuit2 = computeProgrammeCircuitBinaryValue(value).substring(5, 8);
+        switch (prgCircuit2) {
+            case "000":
+                return ProgrammeCircuit2.P0;
+            case "001":
+                return ProgrammeCircuit2.P1;
+            case "010":
+                return ProgrammeCircuit2.P2;
+            case "011":
+                return ProgrammeCircuit2.P3;
+            case "100":
+                return ProgrammeCircuit2.P4;
+            case "101":
+                return ProgrammeCircuit2.P5;
+            case "110":
+                return ProgrammeCircuit2.P6;
+            case "111":
+                return ProgrammeCircuit2.P7;
+            default:
+                final String error = String.format("Programme circuit 2 '%s' is unknown", prgCircuit2);
+                throw new IllegalStateException(error);
+        }
+    }
+
+    private String computeProgrammeCircuitBinaryValue(char value) {
+        return StringUtils.leftPad(Integer.toBinaryString(value), 8, "0");
     }
 
     private Exception rethrowTaskExecutionException(ExecutionException e)

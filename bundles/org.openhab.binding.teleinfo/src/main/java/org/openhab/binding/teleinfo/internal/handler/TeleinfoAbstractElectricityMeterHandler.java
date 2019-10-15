@@ -103,6 +103,10 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
         updateState(CHANNEL_TEMPO_FRAME_BBRHPJB, new DecimalType(frameTempoOption.getBbrhpjb()));
         updateState(CHANNEL_TEMPO_FRAME_BBRHCJB, new DecimalType(frameTempoOption.getBbrhcjb()));
         updateState(CHANNEL_TEMPO_FRAME_HHPHC, new StringType(frameTempoOption.getHhphc().name()));
+        updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_1,
+                new StringType(frameTempoOption.getProgrammeCircuit1().name()));
+        updateState(CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_2,
+                new StringType(frameTempoOption.getProgrammeCircuit2().name()));
 
         if (frameTempoOption.getDemain() == null) {
             updateState(CHANNEL_TEMPO_FRAME_DEMAIN, UnDefType.NULL);
