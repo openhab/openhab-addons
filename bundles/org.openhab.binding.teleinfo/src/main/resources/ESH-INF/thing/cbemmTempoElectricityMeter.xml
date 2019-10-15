@@ -4,32 +4,29 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="base_electricitymeter" listed="false">
-		<label>Electricity meter with BASE option</label>
+	<thing-type id="cbemm_tempo_electricitymeter" listed="false">
+		<label>Single-phase Electricity meter with TEMPO option - CBEMM (Compteur Bleu Electronique Monophasé Multitarif)</label>
 
 		<channels>
 			<channel id="isousc" typeId="isouscType" />
 			<channel id="ptec" typeId="ptecType" />
 			<channel id="imax" typeId="imaxType" />
 			<channel id="adps" typeId="adpsType" />
-			<channel id="papp" typeId="pappType" />
 			<channel id="iinst" typeId="iinstType" />
 			<channel id="currentPower" typeId="currentPowerType" />
+			<channel id="bbrhpjr" typeId="bbrhpjrType" />
+			<channel id="bbrhcjr" typeId="bbrhcjrType" />
+            <channel id="bbrhpjw" typeId="bbrhpjwType" />
+            <channel id="bbrhcjw" typeId="bbrhcjwType" />
+            <channel id="bbrhpjb" typeId="bbrhpjbType" />
+            <channel id="bbrhcjb" typeId="bbrhcjbType" />
 			<channel id="lastUpdate" typeId="lastUpdateType" />
-            <channel id="base" typeId="baseType" />
 		</channels>
 
 		<properties>
 			<property name="adco">adco</property>
 		</properties>
-	</thing-type>
 
-	<channel-type id="baseType">
-		<item-type>Number:Energy</item-type>
-		<label>BASE</label>
-		<description>Index</description>
-		<category>Energy</category>
-		<state pattern="%d Wh" readOnly="true" />
-	</channel-type>
+	</thing-type>
 
 </thing:thing-descriptions>

@@ -12,20 +12,20 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport.converter;
 
-import org.openhab.binding.teleinfo.internal.reader.Frame.PeriodeTarifaire;
+import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConvertionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PeriodeTarifaireConverter} class defines a converter to translate a Teleinfo String value into
- * {@link PeriodeTarifaire} object.
+ * The {@link PtecConverter} class defines a converter to translate a Teleinfo String value into
+ * {@link Ptec} object.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public class PeriodeTarifaireConverter implements Converter {
+public class PtecConverter implements Converter {
 
-    private static Logger logger = LoggerFactory.getLogger(PeriodeTarifaireConverter.class);
+    private static Logger logger = LoggerFactory.getLogger(PtecConverter.class);
 
     @Override
     public Object convert(String value) throws ConvertionException {
@@ -34,22 +34,22 @@ public class PeriodeTarifaireConverter implements Converter {
             logger.trace("value = " + value);
         }
 
-        PeriodeTarifaire convertedValue = null;
+        Ptec convertedValue = null;
         switch (value) {
             case "TH..":
-                convertedValue = PeriodeTarifaire.TH;
+                convertedValue = Ptec.TH;
                 break;
             case "HC..":
-                convertedValue = PeriodeTarifaire.HC;
+                convertedValue = Ptec.HC;
                 break;
             case "HP..":
-                convertedValue = PeriodeTarifaire.HP;
+                convertedValue = Ptec.HP;
                 break;
             case "HN..":
-                convertedValue = PeriodeTarifaire.HN;
+                convertedValue = Ptec.HN;
                 break;
             case "PM..":
-                convertedValue = PeriodeTarifaire.PM;
+                convertedValue = Ptec.PM;
                 break;
             default:
                 throw new ConvertionException(value);

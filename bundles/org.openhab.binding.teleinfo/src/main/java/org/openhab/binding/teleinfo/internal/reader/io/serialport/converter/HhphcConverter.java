@@ -12,20 +12,20 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport.converter;
 
-import org.openhab.binding.teleinfo.internal.reader.FrameOptionHeuresCreuses.GroupeHoraire;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption.Hhphc;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConvertionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GroupeHoraireConverter} class defines a converter to translate a Teleinfo String value into
- * {@link GroupeHoraire} object.
+ * The {@link HhphcConverter} class defines a converter to translate a Teleinfo String value into
+ * {@link Hhphc} object.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public class GroupeHoraireConverter implements Converter {
+public class HhphcConverter implements Converter {
 
-    private static Logger logger = LoggerFactory.getLogger(GroupeHoraireConverter.class);
+    private static Logger logger = LoggerFactory.getLogger(HhphcConverter.class);
 
     @Override
     public Object convert(String value) throws ConvertionException {
@@ -34,22 +34,22 @@ public class GroupeHoraireConverter implements Converter {
             logger.trace("value = " + value);
         }
 
-        GroupeHoraire convertedValue = null;
+        Hhphc convertedValue = null;
         switch (value) {
             case "A":
-                convertedValue = GroupeHoraire.A;
+                convertedValue = Hhphc.A;
                 break;
             case "C":
-                convertedValue = GroupeHoraire.C;
+                convertedValue = Hhphc.C;
                 break;
             case "D":
-                convertedValue = GroupeHoraire.D;
+                convertedValue = Hhphc.D;
                 break;
             case "E":
-                convertedValue = GroupeHoraire.E;
+                convertedValue = Hhphc.E;
                 break;
             case "Y":
-                convertedValue = GroupeHoraire.Y;
+                convertedValue = Hhphc.Y;
                 break;
             default:
                 throw new ConvertionException(value);

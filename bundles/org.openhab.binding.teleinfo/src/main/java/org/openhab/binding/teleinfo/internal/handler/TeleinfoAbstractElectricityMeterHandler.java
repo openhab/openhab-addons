@@ -14,10 +14,7 @@ package org.openhab.binding.teleinfo.internal.handler;
 
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -29,7 +26,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.teleinfo.internal.reader.Frame;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameBaseOption;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameEjpOption;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,27 +85,40 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
         // no commands supported
     }
 
-    protected void updateStatesForCommonChannels(@NonNull Frame frame) {
-        // update common channels
-        updateState(CHANNEL_ISOUSC, new DecimalType(frame.getIntensiteSouscrite()));
-        updateState(CHANNEL_PTEC, new StringType(frame.getPeriodeTarifaireEnCours().name()));
-        if (frame.getIntensiteMaximale() == null) {
-            updateState(CHANNEL_IMAX, UnDefType.NULL);
+    protected void updateStatesForBaseFrameOption(@NonNull FrameBaseOption frameBaseOption) {
+        updateState(CHANNEL_BASE_FRAME_BASE, new DecimalType(frameBaseOption.getBase()));
+    }
+
+    protected void updateStatesForHcFrameOption(@NonNull FrameHcOption frameHcOption) {
+        updateState(CHANNEL_HC_FRAME_HCHC, new DecimalType(frameHcOption.getHchc()));
+        updateState(CHANNEL_HC_FRAME_HCHP, new DecimalType(frameHcOption.getHchp()));
+        updateState(CHANNEL_HC_FRAME_HHPHC, new StringType(frameHcOption.getHhphc().name()));
+    }
+
+    protected void updateStatesForTempoFrameOption(@NonNull FrameTempoOption frameTempoOption) {
+        updateState(CHANNEL_TEMPO_FRAME_BBRHPJR, new DecimalType(frameTempoOption.getBbrhpjr()));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHCJR, new DecimalType(frameTempoOption.getBbrhcjr()));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHPJW, new DecimalType(frameTempoOption.getBbrhpjw()));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHCJW, new DecimalType(frameTempoOption.getBbrhcjw()));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHPJB, new DecimalType(frameTempoOption.getBbrhpjb()));
+        updateState(CHANNEL_TEMPO_FRAME_BBRHCJB, new DecimalType(frameTempoOption.getBbrhcjb()));
+
+        if (frameTempoOption.getDemain() == null) {
+            updateState(CHANNEL_TEMPO_FRAME_DEMAIN, UnDefType.NULL);
         } else {
-            updateState(CHANNEL_IMAX, new DecimalType(frame.getIntensiteMaximale()));
+            updateState(CHANNEL_TEMPO_FRAME_DEMAIN, new StringType(frameTempoOption.getDemain().name()));
         }
 
-        if (frame.getAvertissementDepassementPuissanceSouscrite() == null) {
-            updateState(CHANNEL_ADPS, UnDefType.NULL);
-        } else {
-            updateState(CHANNEL_ADPS, new DecimalType(frame.getAvertissementDepassementPuissanceSouscrite()));
-        }
-        updateState(CHANNEL_PAPP, new DecimalType(frame.getPuissanceApparente()));
-        updateState(CHANNEL_IINST, new DecimalType(frame.getIntensiteInstantanee()));
-        updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
+    }
 
-        BigDecimal powerFactor = (BigDecimal) getThing().getChannel(CHANNEL_CURRENT_POWER).getConfiguration()
-                .get(CHANNEL_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-        updateState(CHANNEL_CURRENT_POWER, new DecimalType(frame.getIntensiteInstantanee() * powerFactor.intValue()));
+    protected void updateStatesForEjpFrameOption(@NonNull FrameEjpOption frameEjpOption) {
+        updateState(CHANNEL_EJP_FRAME_EJPHN, new DecimalType(frameEjpOption.getEjphn()));
+        updateState(CHANNEL_EJP_FRAME_EJPHPM, new DecimalType(frameEjpOption.getEjphpm()));
+
+        if (frameEjpOption.getPejp() == null) {
+            updateState(CHANNEL_EJP_FRAME_PEJP, UnDefType.NULL);
+        } else {
+            updateState(CHANNEL_EJP_FRAME_PEJP, new DecimalType(frameEjpOption.getPejp()));
+        }
     }
 }

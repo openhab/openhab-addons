@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="cbemm_evolution_icc_tempo_electricitymeter" listed="false">
+		<label>Single-phase Electricity meter with TEMPO option - CBEMM Evolution ICC (Compteur Bleu Electronique Monophasé Multitarif Evolution ICC)</label>
+
+		<channels>
+			<channel id="isousc" typeId="isouscType" />
+			<channel id="ptec" typeId="ptecType" />
+			<channel id="imax" typeId="imaxType" />
+			<channel id="adps" typeId="adpsType" />
+			<channel id="papp" typeId="pappType" />
+			<channel id="iinst" typeId="iinstType" />
+			<channel id="currentPower" typeId="currentPowerType" />
+			<channel id="bbrhpjr" typeId="bbrhpjrType" />
+			<channel id="bbrhcjr" typeId="bbrhcjrType" />
+            <channel id="bbrhpjw" typeId="bbrhpjwType" />
+            <channel id="bbrhcjw" typeId="bbrhcjwType" />
+            <channel id="bbrhpjb" typeId="bbrhpjbType" />
+            <channel id="bbrhcjb" typeId="bbrhcjbType" />
+			<channel id="lastUpdate" typeId="lastUpdateType" />
+		</channels>
+
+		<properties>
+			<property name="adco">adco</property>
+		</properties>
+
+	</thing-type>
+
+</thing:thing-descriptions>

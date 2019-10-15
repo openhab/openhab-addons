@@ -211,7 +211,7 @@ public class TeleinfoSerialportReader extends TeleinfoReaderAdaptor {
 
             @Override
             public void onFrameReceived(@NonNull TeleinfoReader reader, @NonNull Frame frame) {
-                System.out.println("ADCO = " + frame.getADCO());
+                System.out.println("frame = " + frame);
             }
 
             @Override

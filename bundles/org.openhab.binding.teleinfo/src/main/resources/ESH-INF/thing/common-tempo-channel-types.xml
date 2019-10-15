@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="bbrhpjrType">
+        <item-type>Number:Energy</item-type>
+        <label>BBRHPJR</label>
+        <description>BBRHPJR</description>
+        <category>Energy</category>
+        <state pattern="%d Wh" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="bbrhcjrType">
+        <item-type>Number:Energy</item-type>
+        <label>BBRHCJR</label>
+        <description>BBRHCJR</description>
+        <category>Energy</category>
+        <state pattern="%d Wh" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="bbrhpjwType">
+        <item-type>Number:Energy</item-type>
+        <label>BBRHPJW</label>
+        <description>BBRHPJW</description>
+        <category>Energy</category>
+        <state pattern="%d Wh" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="bbrhcjwType">
+        <item-type>Number:Energy</item-type>
+        <label>BBRHCJW</label>
+        <description>BBRHCJW</description>
+        <category>Energy</category>
+        <state pattern="%d Wh" readOnly="true" />
+    </channel-type>
+  
+    <channel-type id="bbrhpjbType">
+        <item-type>Number:Energy</item-type>
+        <label>BBRHPJB</label>
+        <description>BBRHPJB</description>
+        <category>Energy</category>
+        <state pattern="%d Wh" readOnly="true" />
+    </channel-type> 
+    
+    <channel-type id="bbrhcjbType">
+        <item-type>Number:Energy</item-type>
+        <label>BBRHCJB</label>
+        <description>BBRHCJB</description>
+        <category>Energy</category>
+        <state pattern="%d Wh" readOnly="true" />
+    </channel-type>          
+    
+    <channel-type id="couleurDemainType">
+        <item-type>String</item-type>
+        <label>DEMAIN</label>
+        <description>DEMAIN</description>
+        <category>Energy</category>
+        <state pattern="%s" readOnly="true">
+            <options>
+                <option value="Bleu">Bleu</option>
+                <option value="Blanc">Blanc</option>
+                <option value="Rouge">Rouge</option>
+            </options>
+        </state>
+    </channel-type>
+    
+</thing:thing-descriptions>

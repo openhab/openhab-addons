@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="frameTypeType" advanced="true">
+        <item-type>String</item-type>
+        <label>frameType</label>
+        <description>frameType</description>
+        <category>Energy</category>
+        <state pattern="%s" readOnly="true">
+            <options>
+                <option value="Long">Long</option>
+                <option value="Short">Short</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="iinst1Type">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>IINST1</label>
+        <description>IINST1</description>
+        <category>Energy</category>
+        <state pattern="%d A" readOnly="true" />
+    </channel-type>
+  
+    <channel-type id="iinst2Type">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>IINST2</label>
+        <description>IINST2</description>
+        <category>Energy</category>
+        <state pattern="%d A" readOnly="true" />
+    </channel-type>
+ 
+    <channel-type id="iinst3Type">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>IINST3</label>
+        <description>IINST3</description>
+        <category>Energy</category>
+        <state pattern="%d A" readOnly="true" />
+    </channel-type>
+          
+    <channel-type id="currentPower1Type">
+        <item-type>Number:Power</item-type>
+        <label>currentpower1</label>
+        <description>Instantaneous power 1</description>
+        <category>Energy</category>
+        <state pattern="%d W" readOnly="true" />
+        <config-description>
+            <parameter name="powerFactor" type="integer">
+                <label>Power factor</label>
+                <limitToOptions>true</limitToOptions>
+                <required>true</required>
+                <unitLabel>Volt</unitLabel>
+                <verify>true</verify>
+                <options>
+                    <option value="220">220</option> 
+                    <option value="230">230</option> 
+                    <option value="240">240</option>   
+                </options>
+                <default>230</default>
+            </parameter>
+        </config-description>
+    </channel-type>
+
+    <channel-type id="currentPower2Type">
+        <item-type>Number:Power</item-type>
+        <label>currentpower2</label>
+        <description>Instantaneous power 2</description>
+        <category>Energy</category>
+        <state pattern="%d W" readOnly="true" />
+        <config-description>
+            <parameter name="powerFactor" type="integer">
+                <label>Power factor</label>
+                <limitToOptions>true</limitToOptions>
+                <required>true</required>
+                <unitLabel>Volt</unitLabel>
+                <verify>true</verify>
+                <options>
+                    <option value="220">220</option> 
+                    <option value="230">230</option> 
+                    <option value="240">240</option>   
+                </options>
+                <default>230</default>
+            </parameter>
+        </config-description>
+    </channel-type>
+
+    <channel-type id="currentPower3Type">
+        <item-type>Number:Power</item-type>
+        <label>currentpower3</label>
+        <description>Instantaneous power 3</description>
+        <category>Energy</category>
+        <state pattern="%d W" readOnly="true" />
+        <config-description>
+            <parameter name="powerFactor" type="integer">
+                <label>Power factor</label>
+                <limitToOptions>true</limitToOptions>
+                <required>true</required>
+                <unitLabel>Volt</unitLabel>
+                <verify>true</verify>
+                <options>
+                    <option value="220">220</option> 
+                    <option value="230">230</option> 
+                    <option value="240">240</option>   
+                </options>
+                <default>230</default>
+            </parameter>
+        </config-description>
+    </channel-type>
+                  
+    <channel-type id="imax1Type">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>IMAX1</label>
+        <description>IMAX1</description>
+        <category>Energy</category>
+        <state pattern="%d A" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="imax2Type">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>IMAX2</label>
+        <description>IMAX2</description>
+        <category>Energy</category>
+        <state pattern="%d A" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="imax3Type">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>IMAX3</label>
+        <description>IMAX3</description>
+        <category>Energy</category>
+        <state pattern="%d A" readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="pmaxType">
+        <item-type>Number:Power</item-type>
+        <label>PMAX</label>
+        <description>PMAX</description>
+        <category>Energy</category>
+        <state pattern="%d W" readOnly="true" />
+    </channel-type>    
+    
+    <channel-type id="pappType">
+        <item-type>Number</item-type>
+        <label>PAPP</label>
+        <description>PAPP</description>
+        <category>Energy</category>
+        <state pattern="%d VA" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="ppotType">
+        <item-type>String</item-type>
+        <label>PPOT</label>
+        <description>PPOT</description>
+        <category>Energy</category>
+        <state pattern="%s" readOnly="true"/>
+    </channel-type>
+        
+    <channel-type id="adir1Type">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>ADIR1</label>
+        <description>ADIR1</description>
+        <category>Energy</category>
+        <state pattern="%d A" readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="adir2Type">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>ADIR2</label>
+        <description>ADIR2</description>
+        <category>Energy</category>
+        <state pattern="%d A" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="adir3Type">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>ADIR3</label>
+        <description>ADIR3</description>
+        <category>Energy</category>
+        <state pattern="%d A" readOnly="true" />
+    </channel-type>
+</thing:thing-descriptions>

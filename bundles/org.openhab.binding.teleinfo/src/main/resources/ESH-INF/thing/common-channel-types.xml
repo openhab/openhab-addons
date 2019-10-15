@@ -7,7 +7,7 @@
 	<channel-type id="isouscType">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ISOUSC</label>
-		<description>Subcribed intensity</description>
+		<description>ISOUSC</description>
 		<category>Energy</category>
 		<state pattern="%d A" readOnly="true" />
 	</channel-type>
@@ -15,7 +15,7 @@
 	<channel-type id="ptecType">
 		<item-type>String</item-type>
 		<label>PTEC</label>
-		<description>Current pricing period</description>
+		<description>PTEC</description>
 		<category>Energy</category>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -24,81 +24,16 @@
 				<option value="HP">HP</option>
 				<option value="HN">HN</option>
 				<option value="PM">PM</option>
+				<option value="HCJB">HCJB</option>
+				<option value="HCJW">HCJW</option>
+				<option value="HCJR">HCJR</option>
+				<option value="HPJB">HPJB</option>
+                <option value="HPJW">HPJW</option>
+                <option value="HPJR">HPJR</option>
 			</options>
 		</state>
 	</channel-type>
 
-    <channel-type id="imaxType">
-        <item-type>Number:ElectricCurrent</item-type>
-        <label>IMAX</label>
-        <description>Maximum intensity</description>
-        <category>Energy</category>
-        <state pattern="%d A" readOnly="true" />
-    </channel-type>
-
-    <channel-type id="iinstType">
-        <item-type>Number:ElectricCurrent</item-type>
-        <label>IINST</label>
-        <description>Instantaneous intensity</description>
-        <category>Energy</category>
-        <state pattern="%d A" readOnly="true" />
-    </channel-type>
-    
-    <channel-type id="adpsType">
-        <item-type>Number:ElectricCurrent</item-type>
-        <label>ADPS</label>
-        <description>Warning on subscribed power overload</description>
-        <category>Energy</category>
-        <state pattern="%d A" readOnly="true" />
-    </channel-type>
-    
-    <channel-type id="currentPowerType">
-        <item-type>Number:Power</item-type>
-        <label>currentpower</label>
-        <description>Instantaneous power</description>
-        <category>Energy</category>
-        <state pattern="%d W" readOnly="true" />
-        <config-description>
-            <parameter name="powerFactor" type="integer">
-                <label>Power factor</label>
-                <limitToOptions>true</limitToOptions>
-                <required>true</required>
-                <unitLabel>Volt</unitLabel>
-                <verify>true</verify>
-                <options>
-                    <option value="220">220</option> 
-                    <option value="230">230</option> 
-                    <option value="240">240</option>   
-                </options>
-                <default>230</default>
-            </parameter>
-        </config-description>
-    </channel-type>
-    
-    <channel-type id="pappType">
-        <item-type>Number</item-type>
-        <label>PAPP</label>
-        <description>Apparent power</description>
-        <category>Energy</category>
-        <state pattern="%d VA" readOnly="true" />
-    </channel-type>
-    
-    <channel-type id="hhphcType">
-        <item-type>String</item-type>
-        <label>HHPHC</label>
-        <description>Time group</description>
-        <category>Energy</category>
-        <state pattern="%s" readOnly="true">
-            <options>
-                <option value="A">A</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-                <option value="E">E</option>
-                <option value="Y">Y</option>
-            </options>
-        </state>
-    </channel-type>
-    
     <channel-type id="lastUpdateType">
         <item-type>DateTime</item-type>
         <label>Last update</label>
@@ -106,19 +41,4 @@
         <state readOnly="true" />
     </channel-type>
     
-	<!-- <channel-type id="trigger-channel"> -->
-	<!-- <kind>trigger</kind> -->
-	<!-- <label>Trigger Channel</label> -->
-	<!-- <event> -->
-	<!-- <options> -->
-	<!-- <option value="PRESSED">pressed</option> -->
-	<!-- <option value="RELEASED">released</option> -->
-	<!-- <option value="DOUBLE_PRESSED">double pressed</option> -->
-	<!-- </options> -->
-	<!-- </event> -->
-	<!-- </channel-type> -->
-	<!-- avertissementDepassementPuissanceSouscrite -->
-
-
-
 </thing:thing-descriptions>
