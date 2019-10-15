@@ -54,10 +54,13 @@ import org.slf4j.LoggerFactory;
 // @Component(service = DiscoveryService.class, immediate = false, configurationPid = "discovery.teleinfo")
 public class TeleinfoDiscoveryService extends AbstractDiscoveryService implements TeleinfoControllerHandlerListener {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
-            .of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID,
-                    THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID)
-            .collect(Collectors.toSet());
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
+            THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID,
+            THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
+            THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
+            THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID,
+            THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID,
+            THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID).collect(Collectors.toSet());
 
     private final Logger logger = LoggerFactory.getLogger(TeleinfoDiscoveryService.class);
     private final TeleinfoAbstractControllerHandler controllerHandler;
@@ -120,7 +123,7 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
         final Map<String, Object> properties = getThingProperties(thingUID.getThingTypeUID(), frameAdco);
         final String representationProperty = getRepresentationProperty(thingUID.getThingTypeUID(), frameAdco);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withLabel("ADCO " + frameAdco.getAdco()).withThingType(getThingTypeUID(frameAdco))
+                .withLabel("Teleinfo ADCO " + frameAdco.getAdco()).withThingType(getThingTypeUID(frameAdco))
                 .withBridge(controllerHandler.getThing().getUID()).withRepresentationProperty(representationProperty)
                 .build();
 
