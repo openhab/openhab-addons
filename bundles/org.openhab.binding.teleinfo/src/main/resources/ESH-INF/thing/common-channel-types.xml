@@ -34,6 +34,22 @@
 		</state>
 	</channel-type>
 
+    <channel-type id="hhphcType">
+        <item-type>String</item-type>
+        <label>HHPHC</label>
+        <description>HHPHC</description>
+        <category>Energy</category>
+        <state pattern="%s" readOnly="true">
+            <options>
+                <option value="A">A</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="Y">Y</option>
+            </options>
+        </state>
+    </channel-type>
+
     <channel-type id="lastUpdateType">
         <item-type>DateTime</item-type>
         <label>Last update</label>

@@ -51,6 +51,24 @@ public class PtecConverter implements Converter {
             case "PM..":
                 convertedValue = Ptec.PM;
                 break;
+            case "HCJB":
+                convertedValue = Ptec.HCJB;
+                break;
+            case "HCJW":
+                convertedValue = Ptec.HCJW;
+                break;
+            case "HCJR":
+                convertedValue = Ptec.HCJR;
+                break;
+            case "HPJB":
+                convertedValue = Ptec.HPJB;
+                break;
+            case "HPJW":
+                convertedValue = Ptec.HPJW;
+                break;
+            case "HPJR":
+                convertedValue = Ptec.HPJR;
+                break;
             default:
                 throw new ConvertionException(value);
         }

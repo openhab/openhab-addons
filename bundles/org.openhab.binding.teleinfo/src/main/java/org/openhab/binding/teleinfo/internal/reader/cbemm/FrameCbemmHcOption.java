@@ -13,6 +13,7 @@
 package org.openhab.binding.teleinfo.internal.reader.cbemm;
 
 import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption;
+import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
 
 /**
  * The {@link FrameCbemmHcOption} class defines a CBEMM Teleinfo frame with HC/HP option.
