@@ -87,51 +87,51 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_CBETM_SHORT_ADIR3 = "adir3";
 
     public static final ThingTypeUID THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "hc_cbemm_electricitymeter");
+            "cbemm_hc_electricitymeter");
     public static final String THING_HC_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
 
     public static final ThingTypeUID THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "base_cbemm_electricitymeter");
+            "cbemm_base_electricitymeter");
     public static final String THING_BASE_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO = THING_HC_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "ejp_cbemm_electricitymeter");
+            "cbemm_ejp_electricitymeter");
     public static final String THING_EJP_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO = THING_HC_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "tempo_cbemm_electricitymeter");
+            "cbemm_tempo_electricitymeter");
     public static final String THING_TEMPO_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO = THING_HC_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "hc_cbemm_evo_icc_electricitymeter");
+            "cbemm_evolution_icc_hc_electricitymeter");
     public static final String THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
 
     public static final ThingTypeUID THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "base_cbemm_evo_icc_electricitymeter");
+            "cbemm_evolution_icc_base_electricitymeter");
     public static final String THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO = THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "ejp_cbemm_evo_icc_electricitymeter");
+            "cbemm_evolution_icc_ejp_electricitymeter");
     public static final String THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO = THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "tempo_cbemm_evo_icc_electricitymeter");
+            "cbemm_evolution_icc_tempo_electricitymeter");
     public static final String THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO = THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "hc_cbetm_electricitymeter");
+            "cbetm_hc_electricitymeter");
     public static final String THING_HC_CBETM_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
 
     public static final ThingTypeUID THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "base_cbetm_electricitymeter");
+            "cbetm_base_electricitymeter");
     public static final String THING_BASE_CBETM_ELECTRICITY_METER_PROPERTY_ADCO = THING_HC_CBETM_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "ejp_cbetm_electricitymeter");
+            "cbetm_ejp_electricitymeter");
     public static final String THING_EJP_CBETM_ELECTRICITY_METER_PROPERTY_ADCO = THING_HC_CBETM_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "tempo_cbetm_electricitymeter");
+            "cbetm_tempo_electricitymeter");
     public static final String THING_TEMPO_CBETM_ELECTRICITY_METER_PROPERTY_ADCO = THING_HC_CBETM_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public final static String ERROR_OFFLINE_SERIAL_NOT_FOUND = "@text/teleinfo.thingstate.serial_notfound";
