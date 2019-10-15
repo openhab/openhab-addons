@@ -33,6 +33,18 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.teleinfo.internal.TeleinfoDiscoveryService;
+import org.openhab.binding.teleinfo.internal.handler.cbemm.TeleinfoBaseCbemmElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbemm.TeleinfoEjpCbemmElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbemm.TeleinfoHcCbemmElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbemm.TeleinfoTempoCbemmElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbemm.evoicc.TeleinfoBaseCbemmEvoIccElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbemm.evoicc.TeleinfoEjpCbemmEvoIccElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbemm.evoicc.TeleinfoHcCbemmEvoIccElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbemm.evoicc.TeleinfoTempoCbemmEvoIccElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbetm.TeleinfoBaseCbetmLongElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbetm.TeleinfoEjpCbetmLongElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbetm.TeleinfoHcCbetmLongElectricityMeterHandler;
+import org.openhab.binding.teleinfo.internal.handler.cbetm.TeleinfoTempoCbetmLongElectricityMeterHandler;
 import org.openhab.binding.teleinfo.internal.serial.TeleinfoSerialControllerHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
@@ -49,7 +61,13 @@ import org.osgi.service.component.annotations.Reference;
 public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_SERIAL_CONTROLLER,
-            THING_HCHP_ELECTRICITY_METER_TYPE_UID, THING_BASE_ELECTRICITY_METER_TYPE_UID).collect(Collectors.toSet());
+            THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID,
+            THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID,
+            THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
+            THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
+            THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID, THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID,
+            THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID, THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID)
+            .collect(Collectors.toSet());
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -87,14 +105,30 @@ public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
             return controller;
         }
 
-        if (THING_BASE_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
-            return new TeleinfoBaseElectricityMeterHandler(thing);
-        } else if (THING_HCHP_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
-            return new TeleinfoHchpElectricityMeterHandler(thing);
-        } else if (THING_TEMPO_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
-            throw new IllegalStateException("NOT YET IMPLEMENTED");
-        } else if (THING_EJP_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
-            throw new IllegalStateException("NOT YET IMPLEMENTED");
+        if (THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoBaseCbemmElectricityMeterHandler(thing);
+        } else if (THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoHcCbemmElectricityMeterHandler(thing);
+        } else if (THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoTempoCbemmElectricityMeterHandler(thing);
+        } else if (THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoEjpCbemmElectricityMeterHandler(thing);
+        } else if (THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoBaseCbemmEvoIccElectricityMeterHandler(thing);
+        } else if (THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoHcCbemmEvoIccElectricityMeterHandler(thing);
+        } else if (THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoTempoCbemmEvoIccElectricityMeterHandler(thing);
+        } else if (THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoEjpCbemmEvoIccElectricityMeterHandler(thing);
+        } else if (THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoBaseCbetmLongElectricityMeterHandler(thing);
+        } else if (THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoHcCbetmLongElectricityMeterHandler(thing);
+        } else if (THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoTempoCbetmLongElectricityMeterHandler(thing);
+        } else if (THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
+            return new TeleinfoEjpCbetmLongElectricityMeterHandler(thing);
         } else {
             throw new IllegalStateException("Teleinfo frame type not supported: " + thing.getThingTypeUID());
         }

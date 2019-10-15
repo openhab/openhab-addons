@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
-import org.openhab.binding.teleinfo.internal.reader.Frame.PeriodeTarifaire;
-import org.openhab.binding.teleinfo.internal.reader.FrameOptionHeuresCreuses.GroupeHoraire;
+import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption.Hhphc;
+import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
 
 /**
  * The {@link Label} enum defines all Teleinfo labels and their format.
@@ -24,20 +24,31 @@ public enum Label {
 
     ADCO(String.class, 12),
     OPTARIF(String.class, 4),
-    BASE(String.class, 8),
+    BASE(Integer.class, 9),
     HCHC(Integer.class, 9),
     HCHP(Integer.class, 9),
-    EJPHN(Integer.class, 8),
-    EJPHPM(Integer.class, 8),
+    EJPHN(Integer.class, 9),
+    EJPHPM(Integer.class, 9),
     GAZ(Integer.class, 7),
     AUTRE(Integer.class, 7),
-    PTEC(PeriodeTarifaire.class, 4),
+    PTEC(Ptec.class, 4),
     MOTDETAT(String.class, 6),
     ISOUSC(Integer.class, 2),
     IINST(Integer.class, 3),
+    IINST1(Integer.class, 3),
+    IINST2(Integer.class, 3),
+    IINST3(Integer.class, 3),
+    ADIR1(Integer.class, 3),
+    ADIR2(Integer.class, 3),
+    ADIR3(Integer.class, 3),
     ADPS(Integer.class, 3),
     IMAX(Integer.class, 3),
-    HHPHC(GroupeHoraire.class, 1),
+    IMAX1(Integer.class, 3),
+    IMAX2(Integer.class, 3),
+    IMAX3(Integer.class, 3),
+    PMAX(Integer.class, 5),
+    PPOT(String.class, 2),
+    HHPHC(Hhphc.class, 1),
     PAPP(Integer.class, 5),
     BBRHCJB(Integer.class, 9),
     BBRHPJB(Integer.class, 9),

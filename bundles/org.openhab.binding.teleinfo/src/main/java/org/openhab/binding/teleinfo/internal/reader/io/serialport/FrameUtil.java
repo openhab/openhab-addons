@@ -13,7 +13,7 @@
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
 /**
- * The {@link FrameUtil} class defines a utility class for {@link Frame}.
+ * The {@link FrameUtil} class defines a utility class for {@link FrameCbetmLong}.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */

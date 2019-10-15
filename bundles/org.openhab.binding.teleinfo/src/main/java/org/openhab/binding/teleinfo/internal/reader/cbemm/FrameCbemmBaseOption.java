@@ -10,28 +10,32 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader;
+package org.openhab.binding.teleinfo.internal.reader.cbemm;
+
+import org.openhab.binding.teleinfo.internal.reader.common.FrameBaseOption;
 
 /**
- * The {@link FrameOptionBase} class defines a Teleinfo frame with Base option.
+ * The {@link FrameCbemmBaseOption} class defines a CBEMM Teleinfo frame with Base option.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public class FrameOptionBase extends Frame {
+public class FrameCbemmBaseOption extends FrameCbemm implements FrameBaseOption {
 
     private static final long serialVersionUID = 5560141193379363335L;
 
-    private int indexBase; // BASE : Index si option = base (en Wh)
+    private int base;
 
-    public FrameOptionBase() {
+    public FrameCbemmBaseOption() {
         // default constructor
     }
 
-    public int getIndexBase() {
-        return indexBase;
+    @Override
+    public int getBase() {
+        return base;
     }
 
-    public void setIndexBase(int indexBase) {
-        this.indexBase = indexBase;
+    @Override
+    public void setBase(int base) {
+        this.base = base;
     }
 }

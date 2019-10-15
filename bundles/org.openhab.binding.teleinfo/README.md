@@ -66,8 +66,8 @@ _Provide a full usage example based on textual configuration files (*.things, *.
 
 _The Teleinfo binding has been successfully validated with below hardware configuration:_
 
-| Serial interface | Power Energy Meter     | Mode                   |
+| Serial interface | Power Energy Meter model    | Mode                   |
 |----------|--------|------------------------------|
-| GCE Electronics USB Teleinfo module [(more details)](http://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | HCHC  |
+| GCE Electronics USB Teleinfo module [(more details)](http://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | Single-phase HCHC  |
 
 

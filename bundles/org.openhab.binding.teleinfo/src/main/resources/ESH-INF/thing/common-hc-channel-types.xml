@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="hhphcType">
+        <item-type>String</item-type>
+        <label>HHPHC</label>
+        <description>HHPHC</description>
+        <category>Energy</category>
+        <state pattern="%s" readOnly="true">
+            <options>
+                <option value="A">A</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="Y">Y</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="hchcType">
+        <item-type>Number:Energy</item-type>
+        <label>HCHC</label>
+        <description>HCHC</description>
+        <category>Energy</category>
+        <state pattern="%d Wh" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="hchpType">
+        <item-type>Number:Energy</item-type>
+        <label>HCHP</label>
+        <description>HCHP</description>
+        <category>Energy</category>
+        <state pattern="%d Wh" readOnly="true" />
+    </channel-type>
+    
+</thing:thing-descriptions>

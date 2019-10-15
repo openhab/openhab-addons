@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="hchp_electricitymeter" listed="false">
-		<label>Electricity meter with HC/HP option</label>
+	<thing-type id="cbemm_evolution_icc_ejp_electricitymeter" listed="false">
+		<label>Single-phase Electricity meter with EJP option - CBEMM (Compteur Bleu Electronique Monophasé Multitarif)</label>
 
 		<channels>
 			<channel id="isousc" typeId="isouscType" />
@@ -15,9 +15,9 @@
 			<channel id="papp" typeId="pappType" />
 			<channel id="iinst" typeId="iinstType" />
 			<channel id="currentPower" typeId="currentPowerType" />
-			<channel id="hchc" typeId="hchcType" />
-			<channel id="hchp" typeId="hchpType" />
-			<channel id="hhphc" typeId="hhphcType"/>
+			<channel id="pejp" typeId="pejpType" />
+			<channel id="ejphpm" typeId="ejphpmType" />
+			<channel id="ejphn" typeId="ejphnType"/>
 			<channel id="lastUpdate" typeId="lastUpdateType" />
 		</channels>
 
@@ -36,21 +36,5 @@
 <!--             </parameter> -->
 <!-- 		</config-description> -->
 	</thing-type>
-
-	<channel-type id="hchcType">
-		<item-type>Number:Energy</item-type>
-		<label>HCHC</label>
-		<description>Index of Off-peak hours (Heures creuses)</description>
-		<category>Energy</category>
-		<state pattern="%d Wh" readOnly="true" />
-	</channel-type>
-
-	<channel-type id="hchpType">
-		<item-type>Number:Energy</item-type>
-		<label>HCHP</label>
-		<description>Index of Full hours (Heures pleines)</description>
-		<category>Energy</category>
-		<state pattern="%d Wh" readOnly="true" />
-	</channel-type>
 
 </thing:thing-descriptions>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="cbemm_hc_electricitymeter" listed="false">
+		<label>Single-phase Electricity meter with HC/HP option - CBEMM (Compteur Bleu Electronique Monophasé Multitarif)</label>
+
+		<channels>
+			<channel id="isousc" typeId="isouscType" />
+			<channel id="ptec" typeId="ptecType" />
+			<channel id="imax" typeId="imaxType" />
+			<channel id="adps" typeId="adpsType" />
+			<channel id="iinst" typeId="iinstType" />
+			<channel id="currentPower" typeId="currentPowerType" />
+			<channel id="hchc" typeId="hchcType" />
+			<channel id="hchp" typeId="hchpType" />
+			<channel id="hhphc" typeId="hhphcType"/>
+			<channel id="lastUpdate" typeId="lastUpdateType" />
+		</channels>
+
+		<properties>
+			<property name="adco">adco</property>
+		</properties>
+
+<!-- 		<config-description> -->
+<!-- 			<parameter name="hchcKWhPricing" type="integer" required="true" min="0"> -->
+<!-- 				<label>Pricing of 1 kWh during HCHC period</label> -->
+<!-- 				<unitLabel>euro</unitLabel> -->
+<!-- 			</parameter> -->
+<!--             <parameter name="hchpKWhPricing" type="integer" required="true" min="0"> -->
+<!--                 <label>Pricing of 1 kWh during HCHP period</label> -->
+<!--                 <unitLabel>euro</unitLabel> -->
+<!--             </parameter> -->
+<!-- 		</config-description> -->
+	</thing-type>
+
+</thing:thing-descriptions>

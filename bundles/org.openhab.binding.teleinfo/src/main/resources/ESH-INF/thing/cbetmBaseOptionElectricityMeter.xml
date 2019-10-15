@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="cbetm_base_electricitymeter" listed="false">
+        <label>Three-phase Electricity meter with BASE option - CBETM (Compteur Bleu Electronique Triphasé Multitarif)</label>
+
+		<channels>
+            <channel id="frameType" typeId="frameTypeType" />
+			<channel id="isousc" typeId="isouscType" />
+			<channel id="ptec" typeId="ptecType" />
+			<channel id="iinst1" typeId="iinst1Type" />
+            <channel id="iinst2" typeId="iinst2Type" />
+            <channel id="iinst3" typeId="iinst3Type" />
+			<channel id="currentPower1" typeId="currentPower1Type" />
+            <channel id="currentPower2" typeId="currentPower2Type" />
+            <channel id="currentPower3" typeId="currentPower3Type" />
+            <channel id="imax1" typeId="imax1Type" />
+            <channel id="imax2" typeId="imax2Type" />
+            <channel id="imax3" typeId="imax3Type" />
+            <channel id="pmax" typeId="pmaxType" />
+            <channel id="papp" typeId="pappType" />
+            <channel id="ppot" typeId="ppotType" />
+            <channel id="adir1" typeId="adir1Type" />
+            <channel id="adir2" typeId="adir2Type" />
+            <channel id="adir3" typeId="adir3Type" />
+			<channel id="lastUpdate" typeId="lastUpdateType" />
+            <channel id="base" typeId="baseType" />
+		</channels>
+
+		<properties>
+			<property name="adco">adco</property>
+		</properties>
+	</thing-type>
+
+</thing:thing-descriptions>
