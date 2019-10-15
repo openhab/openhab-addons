@@ -20,7 +20,7 @@ The following configuration parameters are available on the Doorbird thing:
 | Parameter                | Required/Optional | Description                                                                                                                                                                    |
 |--------------------------|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ID                       | Required          | The ID number of the Doorbird device. This is usually a single digit (e.g. 1).                                                                                                 |
-| Hostname                 | Required          | The hostname or IP address of the Doorbird device.                                                                                                 |
+| Hostname                 | Required          | The hostname or IP address of the Doorbird device.                                                                                                                             |
 | User ID                  | Required          | User Id of a Doorbird user that has permissions to access the camera, motion sensor, etc. The User ID and Password must be created using the Doorbird smart phone application. |
 | Password                 | Required          | Password of a Doorbird user.                                                                                                                                                   |
 | Image Refresh Rate       | Optional          | Rate at which image channel should be automatically updated. Leave field blank (default) to disable refresh.                                                                   |
@@ -39,22 +39,22 @@ The following channels are supported by the binding.
 | doorbell                 | Trigger   | Generates PRESSED event when doorbell is pressed  |
 | doorbellTimestamp        | DateTime  | Timestamp when doorbell was pressed               |
 | doorbellImage            | Image     | Image captured when the doorbell was pressed      |
+| doorbellHistoryIndex     | Number    | Index of historical image for doorbell press      |
+| doorbellHistoryTimestamp | DateTime  | Time when doorbell was pressed for history image  |
+| doorbellHistoryImage     | Image     | Historical image for doorbell press               |
+| doorbellMontage          | Image     | Concatenation of first n doorbell history images  |
 | motion                   | Switch    | Changes to ON when the device detects motion      |
 | motionTimestamp          | DateTime  | Timestamp when motion sensor was triggered        |
 | motionImage              | Image     | Image captured when motion was detected           |
+| motionHistoryIndex       | Number    | Index of Historical image for motion              |
+| motionHistoryTimestamp   | DateTime  | Time when motion was detected for history image   |
+| motionHistoryImage       | Image     | Historical image for motion sensor                |
+| motionMontage            | Image     | Concatenation of first n motion history images    |
 | light                    | Switch    | Activates the light relay                         |
 | openDoor1                | Switch    | Activates the door 1 relay                        |
 | openDoor2                | Switch    | Activates the door 2 relay (D210x only)           |
 | image                    | Image     | Image from the doorbird camera                    |
 | imageTimestamp           | DateTime  | Time when image was captured from device          |
-| doorbellHistoryIndex     | Number    | Index of historical image for doorbell press      |
-| doorbellHistoryTimestamp | DateTime  | Time when doorbell was pressed for history image  |
-| doorbellHistoryImage     | Image     | Historical image for doorbell press               |
-| motionHistoryIndex       | Number    | Index of Historical image for motion              |
-| motionHistoryTimestamp   | DateTime  | Time when motion was detected for history image   |
-| motionHistoryImage       | Image     | Historical image for motion sensor                |
-| doorbellMontage          | Image     | Concatenation of first n doorbell history images  |
-| motionMontage            | Image     | Concatenation of first n motion history images    |
 
 ## Profiles
 
@@ -73,7 +73,7 @@ Restarts the Doorbird device.
 
 ### sipHangup()
 
-Hangs up a SIP all.
+Hangs up a SIP call.
 
 Example
 
@@ -236,4 +236,15 @@ Frame {
         }
     }
 }
+```
+
+### Rule
+
+```
+rule "Doorbell Button Pressed"
+when
+    Channel "doorbird:d101:doorbell:doorbell" triggered PRESSED
+then
+    // Do something when the doorbell is pressed
+end
 ```

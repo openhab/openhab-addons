@@ -7,24 +7,24 @@
 		<label>Doorbird D101</label>
 		<description>Doorbird doorbell model D101</description>
 		<channels>
-			<channel id="doorbell" typeId="doorbell" />
+			<channel id="doorbell" typeId="system.rawbutton" />
 			<channel id="doorbellTimestamp" typeId="doorbellTimestamp" />
 			<channel id="doorbellImage" typeId="doorbellImage" />
-			<channel id="motion" typeId="motion" />
+			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
+			<channel id="doorbellHistoryTimestamp" typeId="doorbellHistoryTimestamp" />
+			<channel id="doorbellHistoryImage" typeId="doorbellHistoryImage" />
+			<channel id="doorbellMontage" typeId="doorbellMontage" />
+			<channel id="motion" typeId="system.motion" />
 			<channel id="motionTimestamp" typeId="motionTimestamp" />
 			<channel id="motionImage" typeId="motionImage" />
+			<channel id="motionHistoryIndex" typeId="motionHistoryIndex" />
+			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp" />
+			<channel id="motionHistoryImage" typeId="motionHistoryImage" />
+			<channel id="motionMontage" typeId="motionMontage" />
 			<channel id="light" typeId="light" />
 			<channel id="openDoor1" typeId="openDoor1" />
 			<channel id="image" typeId="image" />
 			<channel id="imageTimestamp" typeId="imageTimestamp" />
-			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
-			<channel id="doorbellHistoryTimestamp" typeId="doorbellHistoryTimestamp" />
-			<channel id="doorbellHistoryImage" typeId="doorbellHistoryImage" />
-			<channel id="motionHistoryIndex" typeId="motionHistoryIndex" />
-			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp" />
-			<channel id="motionHistoryImage" typeId="motionHistoryImage" />
-			<channel id="doorbellMontage" typeId="doorbellMontage" />
-			<channel id="motionMontage" typeId="motionMontage" />
 		</channels>
 		<config-description-ref uri="thing-type:doorbird:config" />
 	</thing-type>
@@ -33,40 +33,29 @@
 		<label>Doorbird D210x</label>
 		<description>Doorbird doorbell model D210x</description>
 		<channels>
-			<channel id="doorbell" typeId="doorbell" />
+			<channel id="doorbell" typeId="system.rawbutton" />
 			<channel id="doorbellTimestamp" typeId="doorbellTimestamp" />
 			<channel id="doorbellImage" typeId="doorbellImage" />
-			<channel id="motion" typeId="motion" />
+			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
+			<channel id="doorbellHistoryTimestamp" typeId="doorbellHistoryTimestamp" />
+			<channel id="doorbellHistoryImage" typeId="doorbellHistoryImage" />
+			<channel id="doorbellMontage" typeId="doorbellMontage" />
+			<channel id="motion" typeId="system.motion" />
 			<channel id="motionTimestamp" typeId="motionTimestamp" />
 			<channel id="motionImage" typeId="motionImage" />
+			<channel id="motionHistoryIndex" typeId="motionHistoryIndex" />
+			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp" />
+			<channel id="motionHistoryImage" typeId="motionHistoryImage" />
+			<channel id="motionMontage" typeId="motionMontage" />
 			<channel id="light" typeId="light" />
 			<channel id="openDoor1" typeId="openDoor1" />
 			<channel id="openDoor2" typeId="openDoor2" />
 			<channel id="image" typeId="image" />
 			<channel id="imageTimestamp" typeId="imageTimestamp" />
-			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
-			<channel id="doorbellHistoryTimestamp" typeId="doorbellHistoryTimestamp" />
-			<channel id="doorbellHistoryImage" typeId="doorbellHistoryImage" />
-			<channel id="motionHistoryIndex" typeId="motionHistoryIndex" />
-			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp" />
-			<channel id="motionHistoryImage" typeId="motionHistoryImage" />
-			<channel id="doorbellMontage" typeId="doorbellMontage" />
-			<channel id="motionMontage" typeId="motionMontage" />
 		</channels>
 		<config-description-ref uri="thing-type:doorbird:config" />
 	</thing-type>
 
-	<channel-type id="doorbell">
-		<kind>trigger</kind>
-		<label>Doorbell</label>
-		<description>Doorbell pressed</description>
-		<event>
-			<options>
-				<option value="PRESSED">Pressed</option>
-				<option value="RELEASED">Released</option>
-			</options>
-		</event>
-	</channel-type>
 	<channel-type id="doorbellTimestamp">
 		<item-type>DateTime</item-type>
 		<label>Doorbell Timestamp</label>
@@ -78,12 +67,6 @@
 		<label>Doorbell Pressed Image</label>
 		<description>Image when doorbell was last pressed</description>
 		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="motion">
-		<item-type>Switch</item-type>
-		<label>Motion</label>
-		<description>Motion detected</description>
-		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="motionTimestamp">
 		<item-type>DateTime</item-type>
