@@ -30,12 +30,14 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.CFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
+import org.openhab.binding.mqtt.homeassistant.internal.util.FutureCollector;
 
 /**
  * A HomeAssistant component is comparable to an ESH channel group.
@@ -92,14 +94,16 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
                     this.channelConfiguration.payload_not_available);
 
             availablityChannel = buildChannel(HomeAssistantThingHandler.AVAILABILITY_CHANNEL, value,
-                    channelConfiguration.name + " availability").listener(componentConfiguration.getUpdateListener())//
+                    channelConfiguration.name + " availability", componentConfiguration.getUpdateListener())//
                             .stateTopic(channelConfiguration.availability_topic)//
                             .build(false);
         }
     }
 
-    protected CChannel.Builder buildChannel(String channelID, Value valueState, String label) {
-        return new CChannel.Builder(this, componentConfiguration, channelID, valueState, label);
+    protected CChannel.Builder buildChannel(String channelID, Value valueState, String label,
+            ChannelStateUpdateListener channelStateUpdateListener) {
+        return new CChannel.Builder(this, componentConfiguration, channelID, valueState, label,
+                channelStateUpdateListener);
     }
 
     public void setConfigSeen() {
@@ -129,10 +133,8 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        CompletableFuture<@Nullable Void> all = CompletableFuture.completedFuture(null);
-
-        all = channels.values().stream().map(v -> v.start(connection, scheduler, timeout)).reduce(all,
-                (f, v) -> f.thenCompose(b -> v));
+        CompletableFuture<@Nullable Void> all = channels.values().parallelStream()
+                .map(v -> v.start(connection, scheduler, timeout)).collect(FutureCollector.allOf());
 
         if (availablityChannel != null) {
             all = all.thenCompose(v -> availablityChannel.start(connection, scheduler, timeout));
@@ -148,9 +150,8 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      *         exceptionally on errors.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        CompletableFuture<@Nullable Void> all = CompletableFuture.completedFuture(null);
-
-        all = channels.values().stream().map(v -> v.stop()).reduce(all, (f, v) -> f.thenCompose(b -> v));
+        CompletableFuture<@Nullable Void> all = channels.values().parallelStream().map(v -> v.stop())
+                .collect(FutureCollector.allOf());
 
         if (availablityChannel != null) {
             all = all.thenCompose(v -> availablityChannel.stop());
