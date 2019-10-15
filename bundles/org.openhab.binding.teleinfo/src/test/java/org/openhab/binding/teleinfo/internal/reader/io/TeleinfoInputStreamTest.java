@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.openhab.binding.teleinfo.internal.reader.Frame;
 import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccHcOption;
 import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongBaseOption;
+import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongEjpOption;
 import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption.Hhphc;
 import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
@@ -34,6 +35,7 @@ public class TeleinfoInputStreamTest {
             Assert.assertEquals(Ptec.TH, frameCbetmLongBaseOption.getPtec());
             Assert.assertEquals(0, frameCbetmLongBaseOption.getIinst1());
             Assert.assertEquals(2, frameCbetmLongBaseOption.getIinst2());
+            Assert.assertEquals(0, frameCbetmLongBaseOption.getIinst3());
             Assert.assertEquals(new Integer(26), frameCbetmLongBaseOption.getImax1());
             Assert.assertEquals(new Integer(18), frameCbetmLongBaseOption.getImax2());
             Assert.assertEquals(new Integer(27), frameCbetmLongBaseOption.getImax3());
@@ -64,6 +66,35 @@ public class TeleinfoInputStreamTest {
             Assert.assertEquals(680, frameCbemmEvolutionIccHcOption.getPapp());
             Assert.assertNull(frameCbemmEvolutionIccHcOption.getAdps());
             Assert.assertEquals(Hhphc.A, frameCbemmEvolutionIccHcOption.getHhphc());
+        }
+    }
+
+    @Test
+    public void testReadNextFrameCbetmEjp1()
+            throws FileNotFoundException, IOException, InvalidFrameException, TimeoutException {
+
+        try (TeleinfoInputStream in = new TeleinfoInputStream(
+                new FileInputStream(TestUtils.getTestFile("cbetm-ejp-option-1.raw")))) {
+            Frame frame = in.readNextFrame();
+
+            Assert.assertNotNull(frame);
+            Assert.assertEquals(FrameCbetmLongEjpOption.class, frame.getClass());
+            FrameCbetmLongEjpOption frameCbetmLongEjpOption = (FrameCbetmLongEjpOption) frame;
+            Assert.assertEquals("XXXXXXXXXX", frameCbetmLongEjpOption.getAdco());
+            Assert.assertEquals(30, frameCbetmLongEjpOption.getIsousc());
+            Assert.assertEquals(1111111, frameCbetmLongEjpOption.getEjphn());
+            Assert.assertEquals(2222222, frameCbetmLongEjpOption.getEjphpm());
+            Assert.assertNull(frameCbetmLongEjpOption.getPejp());
+            Assert.assertEquals(Ptec.HN, frameCbetmLongEjpOption.getPtec());
+            Assert.assertEquals(10, frameCbetmLongEjpOption.getIinst1());
+            Assert.assertEquals(5, frameCbetmLongEjpOption.getIinst2());
+            Assert.assertEquals(8, frameCbetmLongEjpOption.getIinst3());
+            Assert.assertEquals(new Integer(38), frameCbetmLongEjpOption.getImax1());
+            Assert.assertEquals(new Integer(42), frameCbetmLongEjpOption.getImax2());
+            Assert.assertEquals(new Integer(44), frameCbetmLongEjpOption.getImax3());
+            Assert.assertEquals(17480, frameCbetmLongEjpOption.getPmax());
+            Assert.assertEquals(5800, frameCbetmLongEjpOption.getPapp());
+            Assert.assertEquals("00", frameCbetmLongEjpOption.getPpot());
         }
     }
 }
