@@ -14,14 +14,17 @@ package org.openhab.binding.hellodolly.internal;
 
 import static org.openhab.binding.hellodolly.internal.HelloDollyBindingConstants.*;
 
+import java.util.ArrayList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,20 +39,58 @@ public class HelloDollyHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HelloDollyHandler.class);
 
+    // Hello Dolly Song by Louis Armstrong
+    ArrayList<String> hdl;
+
     private @Nullable HelloDollyConfiguration config;
 
     public HelloDollyHandler(Thing thing) {
         super(thing);
+        this.hdl = new ArrayList<String>();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
+        //logger.debug("Hello Dolly | handleCommand()!");
+        if (CHANNEL_0.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
             }
+        }
+        if (CHANNEL_1.equals(channelUID.getId())) {
+            if (command instanceof RefreshType) {
+                // TODO: handle data refresh
+                if (this.hdl == null){
+                    fillHelloDollyArray();
+                }
+            }
+        }
+        // change value after button is triggered
+        if (CHANNEL_2.equals(channelUID.getId())) {
+            if (this.hdl == null){
+                fillHelloDollyArray();
+            }
+
+            if (command instanceof RefreshType) {
+                // TODO: handle data refresh
+                if (this.hdl == null){
+                    fillHelloDollyArray();
+                }
+            }
 
             // TODO: handle command
+
+            // Random number between 0 and 4
+            int randomNumber = getRandomIntegerBetweenRange(0, 4);
+            String randomLine = this.hdl.get(randomNumber);
+
+            // set state of text field
+            try {
+                State newState = new StringType(randomLine);
+                updateState(CHANNEL_1, newState);
+            } catch (Exception ex) {
+                logger.error("Can't update state for channel {} : {}", channelUID, ex.getMessage(), ex);
+            }
 
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information:
@@ -60,8 +101,14 @@ public class HelloDollyHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // logger.debug("Start initializing!");
         config = getConfigAs(HelloDollyConfiguration.class);
+        
+        if (hdl == null){
+            fillHelloDollyArray();
+        }
+
+        int randomNumber = getRandomIntegerBetweenRange(0, 4);
+        String randomLine = this.hdl.get(randomNumber);
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly. Also, before leaving this method a thing
@@ -82,17 +129,37 @@ public class HelloDollyHandler extends BaseThingHandler {
             // when done do:
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
+                State newState = new StringType(randomLine);
+                updateState(CHANNEL_1, newState);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
-
-        // logger.debug("Finished initializing!");
 
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
         // Add a description to give user information to understand why thing does not work as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    private void fillHelloDollyArray(){
+        // Hello Dolly Song by Louis Armstrong
+        this.hdl = new ArrayList<String>();
+        hdl.add("It's so nice to have you back where you belong");
+        hdl.add("You're lookin' swell, Dolly");
+        hdl.add("You're still glowin', you're still crowin'");
+        hdl.add("You're still goin' strong");
+        hdl.add("Dolly'll never go away again Hello, Dolly,");
+    }
+
+    private int getRandomIntegerBetweenRange(int min, int max){
+        double randomVal = Math.random();
+        double multA = max - min + 1;
+        double sumA = randomVal * multA;
+        double sumB = sumA + min;
+        //logger.info("Hello Dolly Binding - getRandomIntegerBetweenRange(" + min + ", " + max + "): " + randomVal + "; " + sumA + "; " + sumB + ";");
+        int y = (int) sumB;
+        return y;
     }
 }

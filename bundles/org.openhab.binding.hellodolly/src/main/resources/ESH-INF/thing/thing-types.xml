@@ -10,7 +10,10 @@
 		<description>Sample thing for HelloDolly Binding</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel" />
+			<channel id="channel0" typeId="sample-channel" />
+			<channel id="channel1" typeId="hellodolly-line-channel" />
+			<channel id="channel2" typeId="hellodolly-update-channel" />
+			<channel id="channel3" typeId="hellodolly-backend-params" />
 		</channels>
 
 		<config-description>
@@ -22,11 +25,29 @@
 
 	</thing-type>
 
-	<!-- Sample Channel Type -->
 	<channel-type id="sample-channel">
 		<item-type>hellodollyItem</item-type>
 		<label>HelloDolly Binding Channel</label>
 		<description>Sample channel for HelloDolly Binding</description>
 	</channel-type>
+
+	<channel-type id="hellodolly-line-channel">
+		<item-type>String</item-type>
+		<label>HelloDolly Line</label>
+		<description>Show Params String of Backend.</description>
+	</channel-type>
+
+	<channel-type id="hellodolly-update-channel">
+		<item-type>Switch</item-type>
+		<label>HelloDolly Update Message</label>
+		<description>Hit the switch and toggle new message.</description>
+	</channel-type>
+
+	<channel-type id="hellodolly-backend-params">
+		<item-type>String</item-type>
+		<label>HelloDolly Backend Params</label>
+		<description>Show Params String of Backend.</description>
+	</channel-type>
+
 
 </thing:thing-descriptions>

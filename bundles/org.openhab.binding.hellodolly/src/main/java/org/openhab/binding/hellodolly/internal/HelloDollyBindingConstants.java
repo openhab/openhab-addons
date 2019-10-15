@@ -30,5 +30,8 @@ public class HelloDollyBindingConstants {
     public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String CHANNEL_0 = "channel0"; // sample channel with own channel type
+    public static final String CHANNEL_1 = "channel1"; // Hello Dolly Line
+    public static final String CHANNEL_2 = "channel2"; // Update Switch
+    public static final String CHANNEL_3 = "channel3"; // Backend String
 }

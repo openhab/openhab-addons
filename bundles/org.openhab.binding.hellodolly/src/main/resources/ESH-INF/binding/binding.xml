@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>HelloDolly Binding</name>
-	<description>This is the binding for HelloDolly.</description>
+	<description>This is the binding for HelloDolly - Version 0.14</description>
 	<author>Jochen Bauer</author>
 
 </binding:binding>
