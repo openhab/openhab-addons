@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="cbemm_evolution_icc_hc_electricitymeter" listed="false">
-		<label>Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC (Compteur Bleu Electronique Monophasé Multitarif Evolution ICC)</label>
+		<label>Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC (aka "Compteur Bleu Electronique Monophasé Multitarif Evolution ICC")</label>
 
 		<channels>
 			<channel id="isousc" typeId="isouscType" />
