@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="cbemm_evolution_icc_ejp_electricitymeter" listed="false">
-		<label>Single-phase Electricity meter with EJP option - CBEMM (Compteur Bleu Electronique Monophasé Multitarif)</label>
+		<label>Single-phase Electricity meter with EJP option - CBEMM (aka "Compteur Bleu Electronique Monophasé Multitarif")</label>
 
 		<channels>
 			<channel id="isousc" typeId="isouscType" />

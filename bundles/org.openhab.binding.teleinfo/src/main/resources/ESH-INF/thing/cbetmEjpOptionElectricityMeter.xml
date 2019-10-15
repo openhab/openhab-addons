@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="cbetm_ejp_electricitymeter" listed="false">
-        <label>Three-phase Electricity meter with EJP option - CBETM (Compteur Bleu Electronique Triphasé Multitarif)</label>
+        <label>Three-phase Electricity meter with EJP option - CBETM (aka "Compteur Bleu Electronique Triphasé Multitarif")</label>
 
 		<channels>
             <channel id="frameType" typeId="frameTypeType" />
