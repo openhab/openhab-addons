@@ -22,6 +22,8 @@
             <channel id="bbrhcjb" typeId="bbrhcjbType" />
             <channel id="demain" typeId="couleurDemainType" />
             <channel id="hhphc" typeId="hhphcType"/>
+            <channel id="programmeCircuit1" typeId="programmeCircuit1Type"/>
+            <channel id="programmeCircuit2" typeId="programmeCircuit2Type"/>
 			<channel id="lastUpdate" typeId="lastUpdateType" />
 		</channels>
 

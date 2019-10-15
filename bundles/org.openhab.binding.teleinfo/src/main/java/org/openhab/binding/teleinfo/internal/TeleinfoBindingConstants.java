@@ -47,6 +47,8 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_TEMPO_FRAME_BBRHCJB = "bbrhcjb";
     public static final String CHANNEL_TEMPO_FRAME_DEMAIN = "demain";
     public static final String CHANNEL_TEMPO_FRAME_HHPHC = "hhphc";
+    public static final String CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_1 = "programmeCircuit1";
+    public static final String CHANNEL_TEMPO_FRAME_PROGRAMME_CIRCUIT_2 = "programmeCircuit2";
     // List of EJP frames channel ids
     public static final String CHANNEL_EJP_FRAME_PEJP = "pejp";
     public static final String CHANNEL_EJP_FRAME_EJPHPM = "ejphpm";
