@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum DigitalIoMode {
     INPUT,
-    OUTPUT;
+    OUTPUT
 }

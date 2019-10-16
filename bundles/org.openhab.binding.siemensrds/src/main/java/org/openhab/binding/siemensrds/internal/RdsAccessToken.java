@@ -31,7 +31,6 @@ import java.util.Date;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.eclipse.jdt.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +40,9 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Interface to the Access Token for a particular User
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 class RdsAccessToken {
 
@@ -85,7 +84,7 @@ class RdsAccessToken {
         https.setDoOutput(true);
 
         try (OutputStream outputStream = https.getOutputStream();
-                DataOutputStream dataOutputStream = new DataOutputStream(outputStream);) {
+                DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
             dataOutputStream.writeBytes(String.format(TOKEN_REQUEST, user, password));
             dataOutputStream.flush();
         }
@@ -96,7 +95,7 @@ class RdsAccessToken {
 
         try (InputStream inputStream = https.getInputStream();
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-                BufferedReader reader = new BufferedReader(inputStreamReader);) {
+                BufferedReader reader = new BufferedReader(inputStreamReader)) {
             String inputString;
             StringBuffer response = new StringBuffer();
             while ((inputString = reader.readLine()) != null) {
@@ -115,7 +114,7 @@ class RdsAccessToken {
             String json = httpGetTokenJson(apiKey, user, password);
             return GSON.fromJson(json, RdsAccessToken.class);
         } catch (JsonSyntaxException | RdsCloudException | IOException e) {
-            LOGGER.warn("token creation error \"{}\", cause \"{}\"", e.getMessage(), e.getCause());
+            LOGGER.warn("create {}: \"{}\"", e.getClass().getName(), e.getMessage());
             return null;
         }
     }

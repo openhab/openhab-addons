@@ -78,7 +78,7 @@ public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
                         "Could not sync status with the OpenSprinkler.");
             }
         }
-    };
+    }
 
     @Override
     public void dispose() {

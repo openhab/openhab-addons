@@ -47,11 +47,9 @@ Full discovery is supported for RadioRA 2 and HomeWorks QS systems.
 Both the main repeaters/processors themselves and the devices connected to them can be automatically discovered.
 Discovered repeaters/processors will be accessed using the default integration credentials.
 These can be changed in the bridge thing configuration.
+Discovered keypad devices should now have their model parameters automatically set to the correct value.
 
 Hubs and their connected devices in Caseta and RA2 Select systems need to be configured manually.
-
-**Remember:** Discovered keypads will not have their model parameter automatically set.
-You must manually set the model parameter for each keypad so that the correct channels for your particular keypad model will be created.
 
 ## Binding Configuration
 
@@ -76,6 +74,11 @@ It defaults to 5.
 Note that the handler will wait up to 30 seconds for a heartbeat response before attempting to reconnect.
 The optional advanced parameter `reconnect` can be used to set the connection retry interval, in minutes.
 It also defaults to 5.
+
+The optional advanced parameter `delay` can be used to set a delay (in milliseconds) between transmission of integration commands to the bridge device.
+This may be used for command send rate throttling.
+It can be set to an integer value between 0 and 250 ms, and defaults to 0 (no delay).
+It is recommended to leave it set to 0 unless you experience problems with commands sent to Caseta hubs being dropped/ignored.
 
 The optional advanced parameter `discoveryFile` can be set to force the device discovery service to read the Lutron configuration XML from a local file rather than retrieving it via HTTP from the RadioRA 2 or HomeWorks QS bridge device.
 This is useful in the case of some older Lutron software versions, where the discovery service may have problems retrieving the file from the bridge device.
@@ -155,9 +158,6 @@ You can monitor button channels for ON and OFF state changes to indicate button 
 Ditto for the indicator LED channels.
 Note, however, that version 11.6 or higher of the RadioRA 2 software may be required in order to drive keypad LED states, and then this may only be done on unbound buttons.
 
-When using auto-discovery, remember to select the correct value for the `model` parameter after accepting the keypad thing from the inbox.
-The correct channels will then be automatically configured.
-
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.104 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
 If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:keypad:radiora2:entrykeypad`) from the openHAB CLI to list the channels.
 
@@ -186,9 +186,6 @@ Tabletop seeTouch keypads use the **ttkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
-When using auto-discovery, remember to select the correct value for the `model` parameter after accepting the **ttkeypad** thing from the inbox.
-The correct channels will then be automatically configured.
-
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.110 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
 If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:ttkeypad:radiora2:bedroomkeypad`) from the openHAB CLI to list the channels.
 
@@ -205,9 +202,6 @@ Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true 
 International seeTouch keypads used in the Homeworks QS system use the **intlkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and led channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
-
-If using auto-discovery, remember to select the correct value for the `model` parameter after accepting the **intlkeypad** thing from the inbox.
-The correct channels will then be automatically configured.
 
 To support this keypad's contact closure inputs, CCI channels named *cci1* and *cci2* are created with item type Contact and category Switch.
 They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
@@ -230,9 +224,6 @@ Pico keypads use the **pico** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** and **ttkeypad** things.
 The only difference is that no LED channels will be created, since Pico keypads have no indicator LEDs.
 See the discussion above for a full discussion of configuration and use.
-
-When using auto-discovery, remember to select the correct value for the `model` parameter after accepting the **pico** thing from the inbox.
-The correct channels will then be automatically configured.
 
 Component numbering: For button layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.113 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
 If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:pico:radiora2:hallpico`) from the openHAB CLI to list the channels.
@@ -261,7 +252,8 @@ To support the GRAFIK Eye's contact closure input, a CCI channel named *cci1* wi
 It is marked as Advanced, so it will not be automatically linked to items in the Paper UI's Simple Mode.
 It presents ON/OFF states the same as a keypad button.
 
-Component numbering: The buttons and LEDs on the GRAFIK Eye are numbered top to bottom, starting with the 5 scene buttons in a column on the right side of the panel, and then proceeding with the columns of buttons (if any) on the left side of the panel, working left to right. If you are having problems determining which channels have been created for a given model setting, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:grafikeyekeypad:radiora2:theaterkeypad`) from the openHAB CLI to list the channels.
+Component numbering: The buttons and LEDs on the GRAFIK Eye are numbered top to bottom, starting with the 5 scene buttons in a column on the right side of the panel, and then proceeding with the columns of buttons (if any) on the left side of the panel, working left to right.
+If you are having problems determining which channels have been created for a given model setting, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:grafikeyekeypad:radiora2:theaterkeypad`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: 0COL, 1COL, 2COL, 3COL (default)
 
@@ -367,7 +359,8 @@ You can also read the current shade level from the channel.
 It is specified as a percentage, where 0% = closed and 100% = fully open. Movement delays are not currently supported.
 The shade handler should be compatible with all Lutron devices which appear to the system as shades, including roller shades, honeycomb shades, pleated shades, roman shades, tension roller shades, drapes, and Kirbe vertical drapes.
 
-**Note:** While a shade is moving, the Lutron system will report the target level for the shade rather than the actual current level.
+**Note:** While a shade is moving to a specific level because of a Percent command, the system will report the target level for the shade rather than the actual current level.
+While a shade is moving because of an Up or Down command, it will report the previous level until it stops moving.
 
 Thing configuration file example:
 

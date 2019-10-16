@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -64,12 +65,13 @@ public class F6_10_01 extends _RPSMessage {
                 }
 
             case CHANNEL_CONTACT:
+                EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
                 if (data == Closed) {
-                    return OpenClosedType.CLOSED;
+                    return c.inverted ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                 } else if (data == Tilted) {
-                    return OpenClosedType.OPEN;
+                    return c.inverted ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                 } else if (data == Open1 || data == Open2) {
-                    return OpenClosedType.OPEN;
+                    return c.inverted ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                 }
         }
 

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="heos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="group">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>HEOS Group</label>
+		<description>A group of HEOS Player</description>
+		<channels>
+			<channel id="Control" typeId="system.media-control" />
+			<channel id="Volume" typeId="system.volume" />
+			<channel id="Mute" typeId="system.mute" />
+			<channel id="Inputs" typeId="input" />
+			<channel id="Title" typeId="system.media-title" />
+			<channel id="Artist" typeId="system.media-artist" />
+			<channel id="Album" typeId="album" />
+			<channel id="Cover" typeId="cover" />
+			<channel id="CurrentPosition" typeId="currentPosition" />
+			<channel id="Duration" typeId="duration" />
+			<channel id="Type" typeId="type" />
+			<channel id="Station" typeId="station" />
+			<channel id="PlayUrl" typeId="playUrl" />
+			<channel id="Ungroup" typeId="ungroup" />
+			<channel id="Shuffle" typeId="shuffleMode" />
+			<channel id="RepeatMode" typeId="repeatMode" />
+			<channel id="Playlists" typeId="playlists" />
+		</channels>
+		<config-description>
+			<parameter name="members" type="text" readOnly="false">
+				<label>The group member player IDs</label>
+				<description>Shows the single player IDs of the members of this group</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

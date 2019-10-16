@@ -15,6 +15,10 @@ Fragment-Host: org.openhab.io.hueemulation
     bnd.identity;id='org.openhab.core.storage.json',\
     bnd.identity;id='org.openhab.core.storage.mapdb'
 
+-runproperties: logback.configurationFile=file:${.}/logback.xml
+
+-runvm: -Dorg.osgi.service.http.port=${org.osgi.service.http.port}
+
 #
 # done
 #
@@ -42,8 +46,6 @@ Fragment-Host: org.openhab.io.hueemulation
 	osgi.enroute.hamcrest.wrapper;version='[1.3.0,1.3.1)',\
 	osgi.enroute.junit.wrapper;version='[4.12.0,4.12.1)',\
 	slf4j.api;version='[1.7.25,1.7.26)',\
-	net.bytebuddy.byte-buddy;version='[1.9.7,1.9.8)',\
-	net.bytebuddy.byte-buddy-agent;version='[1.9.7,1.9.8)',\
 	org.apache.commons.collections;version='[3.2.1,3.2.2)',\
 	org.apache.commons.exec;version='[1.1.0,1.1.1)',\
 	org.apache.felix.configadmin;version='[1.9.8,1.9.9)',\
@@ -58,11 +60,9 @@ Fragment-Host: org.openhab.io.hueemulation
 	org.eclipse.jetty.websocket.common;version='[9.4.11,9.4.12)',\
 	org.eclipse.jetty.xml;version='[9.4.11,9.4.12)',\
 	org.jupnp;version='[2.5.2,2.5.3)',\
-	org.mockito.mockito-core;version='[2.25.0,2.25.1)',\
 	org.objectweb.asm;version='[7.0.0,7.0.1)',\
 	org.objectweb.asm.commons;version='[7.0.0,7.0.1)',\
 	org.objectweb.asm.tree;version='[7.0.0,7.0.1)',\
-	org.objenesis;version='[2.6.0,2.6.1)',\
 	org.openhab.core.automation;version='[2.5.0,2.5.1)',\
 	org.openhab.core.io.console;version='[2.5.0,2.5.1)',\
 	org.openhab.core.io.net;version='[2.5.0,2.5.1)',\

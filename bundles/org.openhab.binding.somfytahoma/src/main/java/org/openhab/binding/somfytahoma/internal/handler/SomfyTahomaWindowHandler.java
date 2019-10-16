@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -19,8 +21,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaWindowHandler} is responsible for handling commands,
@@ -63,13 +63,16 @@ public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
         }
     }
 
-    private String getTahomaCommand(String command) {
+    @Override
+    protected String getTahomaCommand(String command) {
         switch (command) {
             case "OFF":
             case "DOWN":
+            case "CLOSE":
                 return COMMAND_CLOSE;
             case "ON":
             case "UP":
+            case "OPEN":
                 return COMMAND_OPEN;
             case "STOP":
                 return COMMAND_STOP;

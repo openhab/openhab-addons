@@ -120,7 +120,6 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
         if (json.get("method").getAsString().equalsIgnoreCase("notifyPlayingContentInfo")) {
             SonyAudioInput input = new SonyAudioInput();
-            ;
             input.input = param.get("uri").getAsString();
             if (param.has("broadcastFreq")) {
                 int freq = param.get("broadcastFreq").getAsInt();

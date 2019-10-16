@@ -7,7 +7,7 @@ feels wrong or incomplete.
 ## Build Environment
 
 For instructions on setting up your development environment, please
-see our dedicated [IDE setup guide](https://www.openhab.org/docs/developer/development/ide.html).
+see our dedicated [IDE setup guide](https://www.openhab.org/docs/developer/).
 
 ## Contribution guidelines
 

@@ -10,6 +10,11 @@ Only a single thing type is added by this extension:
 | --------------- | ------------------------- |
 | ruuvitag_beacon | A Ruuvi Tag Sensor Beacon |
 
+
+Under normal conditions the ruuvitag should submit data every 10 seconds.
+However, if no data has been retrieved after 1 minute the ruuvitag is set to OFFLINE and the state of channels is set to UNDEF.
+When new data is retrieved when OFFLINE the ruuvtag is set ONLINE again.
+
 ## Discovery
 
 As any other Bluetooth device, Ruuvi Tag Beacons are discovered automatically by the corresponding bridge. 

@@ -34,7 +34,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
 
     public enum TYPE {
         REQUEST,
-        RESPONSE;
+        RESPONSE
     }
 
     private String methodName;

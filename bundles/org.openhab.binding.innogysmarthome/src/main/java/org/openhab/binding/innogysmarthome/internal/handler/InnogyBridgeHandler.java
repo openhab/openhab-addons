@@ -156,7 +156,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler implements Credential
             properties.put(PROPERTY_REGISTRATION_TIME, bridgeDevice.getRegistrationTimeFormattedString());
             updateProperties(properties);
         }
-    };
+    }
 
     /**
      * Runnable to run the websocket for receiving permanent update {@link Event}s from the innogy API.

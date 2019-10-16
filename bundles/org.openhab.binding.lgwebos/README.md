@@ -1,7 +1,7 @@
 # LG webOS Binding
 
 The binding integrates LG WebOS based smart TVs.
-This binding uses a [forked version](https://github.com/sprehn/Connect-SDK-Java-Core) of LG's [Connect SDK](https://github.com/ConnectSDK/Connect-SDK-Android-Core) library.
+This binding is an adoption of LG's [Connect SDK](https://github.com/ConnectSDK/Connect-SDK-Android-Core) library, which is no longer maintained and which was specific to Android.
 
 ## Supported Things
 

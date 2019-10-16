@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link SatelBindingConstants} class defines common constants, which are
@@ -39,18 +40,23 @@ public class SatelBindingConstants {
     public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
     public static final ThingTypeUID THING_TYPE_SYSTEM = new ThingTypeUID(BINDING_ID, "system");
     public static final ThingTypeUID THING_TYPE_EVENTLOG = new ThingTypeUID(BINDING_ID, "event-log");
+    public static final ThingTypeUID THING_TYPE_ATD100 = new ThingTypeUID(BINDING_ID, "atd-100");
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Stream.of(THING_TYPE_ETHM1, THING_TYPE_INTRS)
             .collect(Collectors.toSet());
 
     // Physical devices
     public static final Set<ThingTypeUID> DEVICE_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_OUTPUT, THING_TYPE_PARTITION, THING_TYPE_SHUTTER, THING_TYPE_ZONE)
+            .of(THING_TYPE_OUTPUT, THING_TYPE_PARTITION, THING_TYPE_SHUTTER, THING_TYPE_ZONE, THING_TYPE_ATD100)
             .collect(Collectors.toSet());
 
     // Virtual devices
     public static final Set<ThingTypeUID> VIRTUAL_THING_TYPES_UIDS = Stream.of(THING_TYPE_SYSTEM, THING_TYPE_EVENTLOG)
             .collect(Collectors.toSet());
+
+    // Channel types
+    public static final ChannelTypeUID CHANNEL_TYPE_LOBATT = new ChannelTypeUID("system", "low-battery");
+    public static final ChannelTypeUID CHANNEL_TYPE_NOCOMM = new ChannelTypeUID(BINDING_ID, "device_nocomm");
 
     // List of all Channel ids except those covered by state enums
     public static final String CHANNEL_SHUTTER_STATE = "shutter_state";
@@ -67,5 +73,6 @@ public class SatelBindingConstants {
     public static final String CHANNEL_TIMESTAMP = "timestamp";
     public static final String CHANNEL_DESCRIPTION = "description";
     public static final String CHANNEL_DETAILS = "details";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
 
 }

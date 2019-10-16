@@ -7,7 +7,7 @@
 	<config-description uri="mqtt:ha_channel">
 		<parameter name="component" type="text" readOnly="true" required="true">
 			<label>Component</label>
-			<description>Type of the channel group.</description>
+			<description>HomeAssistant component type (e.g. binary_sensor, switch, light)</description>
 			<default></default>
 		</parameter>
 		<parameter name="nodeid" type="text" readOnly="true">

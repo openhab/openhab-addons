@@ -48,8 +48,7 @@ public class ComponentCover extends AbstractComponent<ComponentCover.ChannelConf
         RollershutterValue value = new RollershutterValue(channelConfiguration.payload_open,
                 channelConfiguration.payload_close, channelConfiguration.payload_stop);
 
-        buildChannel(switchChannelID, value, channelConfiguration.name)
-                .listener(componentConfiguration.getUpdateListener())//
+        buildChannel(switchChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())//
                 .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
                 .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain)//
                 .build();

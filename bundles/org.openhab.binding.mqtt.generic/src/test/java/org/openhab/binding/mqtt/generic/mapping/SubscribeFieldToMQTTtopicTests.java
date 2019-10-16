@@ -92,7 +92,7 @@ public class SubscribeFieldToMQTTtopicTests {
         public @NonNull Object getFieldsOf() {
             return this;
         }
-    };
+    }
 
     Attributes attributes = new Attributes();
 

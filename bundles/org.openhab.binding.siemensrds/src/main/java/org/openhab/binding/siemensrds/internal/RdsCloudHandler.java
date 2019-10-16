@@ -53,19 +53,19 @@ public class RdsCloudHandler extends BaseBridgeHandler {
 
         if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing configuration, status => offline!");
+                    "missing configuration");
             return;
         }
 
         if (config.userEmail.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing email address, status => offline!");
+                    "missing email address");
             return;
         }
 
         if (config.userPassword.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing password, status => offline!");
+                    "missing password");
             return;
         }
 
@@ -74,12 +74,10 @@ public class RdsCloudHandler extends BaseBridgeHandler {
 
         if (config.pollingInterval < FAST_POLL_INTERVAL || config.pollingInterval > LAZY_POLL_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("polling interval out of range [%d..%d], status => offline!", FAST_POLL_INTERVAL,
+                    String.format("polling interval out of range [%d..%d]", FAST_POLL_INTERVAL,
                             LAZY_POLL_INTERVAL));
             return;
         }
-
-        refreshToken();
     }
 
     @Override
@@ -106,12 +104,13 @@ public class RdsCloudHandler extends BaseBridgeHandler {
 
         if (accessToken != null) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "server responded, status => online..");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, 
+                        "cloud server responded");
             }
         } else {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "server authentication error, status => offline!");
+                        "cloud server authentication error");
             }
         }
     }

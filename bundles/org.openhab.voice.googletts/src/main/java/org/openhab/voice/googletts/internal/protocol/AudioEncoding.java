@@ -40,5 +40,5 @@ public enum AudioEncoding {
      * Android, and in browsers (at least Chrome and Firefox). The quality of the encoding is considerably higher than
      * MP3 while using approximately the same bitrate.
      */
-    OGG_OPUS;
+    OGG_OPUS
 }

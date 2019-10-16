@@ -135,7 +135,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
             modified(config);
         }
         activateTimeStamp = new Date().getTime();
-    };
+    }
 
     synchronized void setDevices(List<Device> deviceList) {
         DiscoveryServiceCallback discoveryServiceCallback = this.discoveryServiceCallback;

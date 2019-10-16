@@ -62,6 +62,9 @@ public class DarkSkyBindingConstants {
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_MIN_TEMPERATURE = "min-temperature";
     public static final String CHANNEL_MAX_TEMPERATURE = "max-temperature";
+    public static final String CHANNEL_APPARENT_TEMPERATURE = "apparent-temperature";
+    public static final String CHANNEL_MIN_APPARENT_TEMPERATURE = "min-apparent-temperature";
+    public static final String CHANNEL_MAX_APPARENT_TEMPERATURE = "max-apparent-temperature";
     public static final String CHANNEL_PRESSURE = "pressure";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_WIND_SPEED = "wind-speed";

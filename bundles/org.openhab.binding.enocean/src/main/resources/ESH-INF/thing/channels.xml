@@ -135,6 +135,13 @@
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>Contact channel</description>
+		<config-description>
+			<parameter name="inverted" type="boolean">
+				<label>Invert Open/Closed</label>
+				<description>True for Eltako FPE-2, false otherwise.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="windowHandleState">
@@ -235,6 +242,14 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<channel-type id="vibration">
+		<item-type>Switch</item-type>
+		<label>Vibration Alarm</label>
+		<description>Vibration alarm state.</description>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
 	<channel-type id="illumination">
 		<item-type>Number:Illuminance</item-type>
 		<label>Lux</label>
@@ -291,17 +306,15 @@
 		<state pattern="%d %unit%" />
 	</channel-type>
 
-	<!-- Litre Channel -->
-	<channel-type id="amrLitre">
-		<item-type>Number:Litre</item-type>
-		<label>Litre per second</label>
+	<channel-type id="currentFlow">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Current flow</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
-	<!-- Litre Channel -->
-	<channel-type id="amrCubicMetre">
-		<item-type>Number:Litre</item-type>
-		<label>Cubic metre</label>
+	<channel-type id="cumulativeValue">
+		<item-type>Number:Volume</item-type>
+		<label>Cumulative value</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 

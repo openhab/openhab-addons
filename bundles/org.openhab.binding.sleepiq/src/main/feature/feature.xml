@@ -5,7 +5,6 @@
     <feature name="openhab-binding-sleepiq" description="SleepIQ Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle dependency="true">mvn:com.eclipsesource.jaxrs/provider-gson/2.3</bundle>
-        <bundle dependency="true">mvn:org.syphr/sleepiq-api/0.3.0</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.sleepiq/${project.version}</bundle>
     </feature>
 </features>
