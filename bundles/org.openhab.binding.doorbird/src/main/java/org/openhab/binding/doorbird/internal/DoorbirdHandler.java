@@ -75,8 +75,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DoorbirdHandler extends BaseThingHandler {
-    private static final long API_REQUEST_TIMEOUT = 3L;
-    private static final long MONTAGE_UPDATE_DELAY = 5L;
+    private static final long API_REQUEST_TIMEOUT_SECONDS = 3L;
+    private static final long MONTAGE_UPDATE_DELAY_SECONDS = 5L;
 
     // Maximum number of doorbell and motion history images stored on Doorbird backend
     private static final int MAX_HISTORY_IMAGES = 50;
@@ -426,20 +426,20 @@ public class DoorbirdHandler extends BaseThingHandler {
         if (config.montageNumImages == 0) {
             return;
         }
-        logger.debug("Scheduling DOORBELL montage update to run in {} seconds", MONTAGE_UPDATE_DELAY);
+        logger.debug("Scheduling DOORBELL montage update to run in {} seconds", MONTAGE_UPDATE_DELAY_SECONDS);
         scheduler.schedule(() -> {
             updateMontage("doorbell", CHANNEL_DOORBELL_IMAGE_MONTAGE);
-        }, MONTAGE_UPDATE_DELAY, TimeUnit.SECONDS);
+        }, MONTAGE_UPDATE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
     private void updateMotionMontage() {
         if (config.montageNumImages == 0) {
             return;
         }
-        logger.debug("Scheduling MOTION montage update to run in {} seconds", MONTAGE_UPDATE_DELAY);
+        logger.debug("Scheduling MOTION montage update to run in {} seconds", MONTAGE_UPDATE_DELAY_SECONDS);
         scheduler.schedule(() -> {
             updateMontage("motionsensor", CHANNEL_MOTION_IMAGE_MONTAGE);
-        }, MONTAGE_UPDATE_DELAY, TimeUnit.SECONDS);
+        }, MONTAGE_UPDATE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
     private void updateMontage(String event, String channelId) {
@@ -547,7 +547,7 @@ public class DoorbirdHandler extends BaseThingHandler {
     private String executeGetRequest(String url) throws IOException {
         // @formatter:off
         return HttpRequestBuilder.getFrom(url)
-            .withTimeout(Duration.ofSeconds(API_REQUEST_TIMEOUT))
+            .withTimeout(Duration.ofSeconds(API_REQUEST_TIMEOUT_SECONDS))
             .withHeader("Authorization", "Basic " + authorization)
             .withHeader("charset", "utf-8")
             .withHeader("Accept-language", "en-us")

@@ -38,7 +38,7 @@ public class DoorbirdUdpListener extends Thread {
     private static final int UDP_PORT = 6524;
 
     // How long to wait in milliseconds for a UDP packet
-    private static final int SOCKET_TIMEOUT = 3000;
+    private static final int SOCKET_TIMEOUT_MILLISECONDS = 3000;
 
     private static final int BUFFER_SIZE = 80;
 
@@ -76,12 +76,12 @@ public class DoorbirdUdpListener extends Thread {
     private void receivePackets() {
         try {
             DatagramSocket s = new DatagramSocket(null);
-            s.setSoTimeout(SOCKET_TIMEOUT);
+            s.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
             s.setReuseAddress(true);
             InetSocketAddress address = new InetSocketAddress(UDP_PORT);
             s.bind(address);
             socket = s;
-            logger.debug("Listener got UDP socket on port {} with timeout {}", UDP_PORT, SOCKET_TIMEOUT);
+            logger.debug("Listener got UDP socket on port {} with timeout {}", UDP_PORT, SOCKET_TIMEOUT_MILLISECONDS);
         } catch (SocketException e) {
             logger.debug("Listener got SocketException: {}", e.getMessage(), e);
             socket = null;
@@ -142,14 +142,12 @@ public class DoorbirdUdpListener extends Thread {
 
     private boolean isDuplicate(DatagramPacket packet) {
         boolean packetIsDuplicate = false;
-        if (lastData != null) {
-            if (lastDataLength == packet.getLength()) {
-                // Lengths are different, therefore not a dup
+        if (lastData != null && lastDataLength == packet.getLength()) {
+            // Packet must be received within 750 ms of previous packet to be considered a duplicate
+            if ((System.currentTimeMillis() - lastDataTime) < 750) {
+                // Compare packets byte-for-byte
                 if (Arrays.equals(lastData, Arrays.copyOf(packet.getData(), packet.getLength()))) {
-                    // Packet must be received within 750 ms of previous packet to be consider a duplicate
-                    if ((System.currentTimeMillis() - lastDataTime) < 750) {
-                        packetIsDuplicate = true;
-                    }
+                    packetIsDuplicate = true;
                 }
             }
         }
