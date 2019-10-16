@@ -41,8 +41,13 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
     Integer updateIntervalSkillsInSeconds;
 
     class UpdateGroup {
-        int intervalInSeconds;
+        final int intervalInSeconds;
         Date lastUpdated;
+
+        public UpdateGroup(int intervalInSeconds) {
+            this.intervalInSeconds = intervalInSeconds;
+            this.lastUpdated = new Date(0);
+        }
     }
 
     Map<Integer, UpdateGroup> updateGroups = new HashMap<>();
@@ -96,9 +101,7 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
         for (SmartHomeDevice device : devices) {
             int updateIntervalInSeconds = GetUpdateIntervalInSeconds(device);
             if (!updateGroups.containsKey(updateIntervalInSeconds)) {
-                UpdateGroup newGroup = new UpdateGroup();
-                newGroup.intervalInSeconds = updateIntervalInSeconds;
-                newGroup.lastUpdated = new Date(0);
+                UpdateGroup newGroup = new UpdateGroup(updateIntervalInSeconds);
                 updateGroups.put(updateIntervalInSeconds, newGroup);
                 syncAllGroups = true;
             }
