@@ -45,10 +45,7 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttService;
 import org.eclipse.smarthome.io.transport.mqtt.MqttServiceObserver;
 import org.openhab.io.mqttembeddedbroker.Constants;
 import org.openhab.io.mqttembeddedbroker.internal.MqttEmbeddedBrokerDetectStart.MqttEmbeddedBrokerStartedListener;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +83,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 @NonNullByDefault
 public class EmbeddedBrokerService
         implements ConfigurableService, MqttConnectionObserver, MqttServiceObserver, MqttEmbeddedBrokerStartedListener {
-    private @Nullable MqttService service;
+    private final MqttService service;
     private String persistenceFilename = "";
     // private NetworkServerTls networkServerTls; //TODO wait for NetworkServerTls implementation
 
@@ -146,21 +143,18 @@ public class EmbeddedBrokerService
 
     private @Nullable MqttBrokerConnection connection;
 
-    @Reference
-    public void setMqttService(MqttService service) {
-        this.service = service;
-    }
-
-    public void unsetMqttService(MqttService service) {
-        this.service = service;
-    }
-
     @Activate
-    public void activate(Map<String, Object> data) throws IOException {
-        initialize(new Configuration(data).as(ServiceConfiguration.class));
+    public EmbeddedBrokerService(@Reference MqttService mqttService, Map<String, Object> config) throws IOException {
+        this.service = mqttService;
+        initialize(new Configuration(config).as(ServiceConfiguration.class));
     }
 
-    @SuppressWarnings("null")
+    @Modified
+    public void modified(Map<String, Object> config) throws IOException {
+        deactivate();
+        initialize(new Configuration(config).as(ServiceConfiguration.class));
+    }
+
     public void initialize(ServiceConfiguration config) throws IOException {
         int port = config.port == null ? (config.port = config.secure ? 8883 : 1883) : config.port;
 
@@ -232,7 +226,7 @@ public class EmbeddedBrokerService
     @Override
     public void brokerRemoved(String brokerID, MqttBrokerConnection broker) {
         // Do not allow this connection to be removed. Add it again.
-        if (broker == connection) {
+        if (broker.equals(connection)) {
             service.addBrokerConnection(brokerID, broker);
         }
     }
@@ -303,20 +297,19 @@ public class EmbeddedBrokerService
 
         // We may provide ACL functionality at some point as well
         IAuthorizatorPolicy authorizer = null;
+        ISslContextCreator sslContextCreator = secure ? nettySSLcontextCreator() : null;
 
         try {
-            if (secure) {
-                server.startServer(new MemoryConfig(properties), null, nettySSLcontextCreator(), authentificator,
-                        authorizer);
-            } else {
-                server.startServer(new MemoryConfig(properties), null, null, authentificator, authorizer);
-            }
+            server.startServer(new MemoryConfig(properties), null, sslContextCreator, authentificator,
+                    authorizer);
         } catch (IllegalArgumentException e) {
             if (e.getMessage().contains("Could not deserialize")) {
                 Path persistenceFilePath = Paths.get((new File(persistenceFilename)).getAbsolutePath());
                 logger.warn("persistence corrupt: {}, deleting {}", e.getMessage(), persistenceFilePath);
                 Files.delete(persistenceFilePath);
-                throw  new IllegalStateException("Could not start broker (persistence corrupted)");
+                // retry starting broker, if it fails again, don't catch exception
+                server.startServer(new MemoryConfig(properties), null, sslContextCreator, authentificator,
+                        authorizer);
             }
         }
         this.server = server;
