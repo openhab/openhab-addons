@@ -79,6 +79,9 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             return null;
         }
         ThingUID accountThingId = thing.getBridgeUID();
+        if (accountThingId == null) {
+            return null;
+        }
         Thing accountThing = thingRegistry.get(accountThingId);
         if (accountThing == null) {
             return null;
