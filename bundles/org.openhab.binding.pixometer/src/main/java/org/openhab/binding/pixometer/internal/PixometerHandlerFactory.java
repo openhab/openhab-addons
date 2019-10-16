@@ -13,6 +13,8 @@
 package org.openhab.binding.pixometer.internal;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,8 +28,6 @@ import org.openhab.binding.pixometer.handler.ApiserviceHandler;
 import org.openhab.binding.pixometer.handler.MeterHandler;
 import org.osgi.service.component.annotations.Component;
 
-import jersey.repackaged.com.google.common.collect.Sets;
-
 /**
  * The {@link PixometerHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -38,8 +38,9 @@ import jersey.repackaged.com.google.common.collect.Sets;
 @Component(configurationPid = "binding.pixometer", service = ThingHandlerFactory.class)
 public class PixometerHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
-            PixometerBindingConstants.BRIDGE_THING_TYPES_UIDS, PixometerBindingConstants.SUPPORTED_THING_TYPES_UIDS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(PixometerBindingConstants.BRIDGE_THING_TYPES_UIDS, PixometerBindingConstants.SUPPORTED_THING_TYPES_UIDS)
+            .flatMap(Set::stream).collect(Collectors.toSet());
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
