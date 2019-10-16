@@ -220,7 +220,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     }
 
     private MqttBrokerConnection createMqttConnection(@Nullable String username, @Nullable String password,
-            @Nullable String clientId) throws MqttException {
+            String clientId) throws MqttException {
         Path persistencePath = persistenceBasePath.resolve(clientId);
         MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
         connection.setPersistencePath(persistencePath);
