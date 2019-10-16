@@ -12,6 +12,7 @@
  */
 package org.openhab.io.mqttembeddedbroker.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -303,13 +304,21 @@ public class EmbeddedBrokerService
         // We may provide ACL functionality at some point as well
         IAuthorizatorPolicy authorizer = null;
 
-        if (secure) {
-            server.startServer(new MemoryConfig(properties), null, nettySSLcontextCreator(), authentificator,
-                    authorizer);
-        } else {
-            server.startServer(new MemoryConfig(properties), null, null, authentificator, authorizer);
+        try {
+            if (secure) {
+                server.startServer(new MemoryConfig(properties), null, nettySSLcontextCreator(), authentificator,
+                        authorizer);
+            } else {
+                server.startServer(new MemoryConfig(properties), null, null, authentificator, authorizer);
+            }
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("Could not deserialize")) {
+                Path persistenceFilePath = Paths.get((new File(persistenceFilename)).getAbsolutePath());
+                logger.warn("persistence corrupt: {}, deleting {}", e.getMessage(), persistenceFilePath);
+                Files.delete(persistenceFilePath);
+                throw  new IllegalStateException("Could not start broker (persistence corrupted)");
+            }
         }
-
         this.server = server;
         server.addInterceptHandler(metrics);
         ScheduledExecutorService s = new ScheduledThreadPoolExecutor(1);
