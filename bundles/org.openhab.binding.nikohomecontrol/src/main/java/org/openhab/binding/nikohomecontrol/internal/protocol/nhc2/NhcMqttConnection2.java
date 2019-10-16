@@ -214,7 +214,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
             logger.debug("Niko Home Control: profile connection execution exception", e.getCause());
             throw new MqttException(32103);
         } catch (TimeoutException e) {
-            logger.debug("Niko Home Control: public connection timeout exception");
+            logger.debug("Niko Home Control: profile connection timeout exception");
             throw new MqttException(32000);
         }
     }
