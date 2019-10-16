@@ -1100,7 +1100,7 @@ public class Connection {
         executeSequenceCommand(null, "Alexa.Notifications.SendMobilePush", parameters);
     }
 
-    public void sendAnnouncement(Device device, String text, String bodyText, @Nullable String title,
+    public void sendAnnouncement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, int standardVolume) throws IOException, URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("expireAfter", "PT5S");
@@ -1112,10 +1112,10 @@ public class Connection {
             content.display.title = title;
         }
         content.display.body = bodyText;
-        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
+        if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
             content.speak.type = "ssml";
         }
-        content.speak.value = text;
+        content.speak.value = speak;
 
         contentArray[0] = content;
 

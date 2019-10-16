@@ -29,7 +29,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 public interface IAmazonThingHandler {
     void updateChannelState(String channelId, State state);
 
-    void startAnnouncment(Device device, String text, String bodyText, String title, @Nullable Integer volume)
-            throws IOException, URISyntaxException;
+    void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
+            @Nullable Integer volume) throws IOException, URISyntaxException;
 
 }

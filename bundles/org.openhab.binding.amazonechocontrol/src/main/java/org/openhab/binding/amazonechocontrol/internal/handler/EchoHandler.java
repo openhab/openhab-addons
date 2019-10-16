@@ -783,8 +783,8 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
     }
 
     @Override
-    public void startAnnouncment(Device device, String text, String bodyText, String title, @Nullable Integer volume)
-            throws IOException, URISyntaxException {
+    public void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
+            @Nullable Integer volume) throws IOException, URISyntaxException {
         Connection connection = this.findConnection();
         if (connection == null) {
             return;
@@ -798,7 +798,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
         if (volume != null) {
             startIgnoreVolumeChange();
         }
-        connection.sendAnnouncement(device, text, bodyText, title, volume, lastKnownVolume);
+        connection.sendAnnouncement(device, speak, bodyText, title, volume, lastKnownVolume);
     }
 
     private void stopCurrentNotification() {
