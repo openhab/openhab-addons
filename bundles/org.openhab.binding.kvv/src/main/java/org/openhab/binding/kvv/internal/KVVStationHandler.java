@@ -1,18 +1,10 @@
 package org.openhab.binding.kvv.internal;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-import com.google.gson.Gson;
-
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -29,10 +21,6 @@ public class KVVStationHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(KVVStationHandler.class);
 
     private final KVVStationConfig config;
-
-    /** the most recent set of departures */
-    @Nullable
-    private DepartureResult departures;
 
     public KVVStationHandler(final Thing thing) {
         super(thing);
@@ -58,7 +46,14 @@ public class KVVStationHandler extends BaseThingHandler {
             this.updateThing(this.editThing().withChannels(channels).build());
 
             logger.info("Starting inital fetch");
-            final DepartureResult departures = ((KVVBridgeHandler) this.getBridge()).queryKVV(this.config);
+            final KVVBridgeHandler bridge = ((KVVBridgeHandler) getBridge());
+            if (bridge == null) {
+                logger.warn("Failed to get bridge (is null)");
+                updateStatus(ThingStatus.OFFLINE);
+                return;
+            }
+
+            final DepartureResult departures = bridge.queryKVV(this.config);
             if (departures == null) {
                 logger.warn("Failed to get departures for '" + this.thing.getUID().getAsString() + "'");
                 updateStatus(ThingStatus.OFFLINE);
@@ -113,7 +108,13 @@ public class KVVStationHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-            final DepartureResult departures = ((KVVBridgeHandler) getBridge()).queryKVV(config);
+            final KVVBridgeHandler bridge = ((KVVBridgeHandler) getBridge());
+            if (bridge == null) {
+                logger.warn("Failed to get bridge (is null)");
+                return;
+            }
+
+            final DepartureResult departures = bridge.queryKVV(config);
             if (departures != null) {
                 setDepartures(departures);
             }
