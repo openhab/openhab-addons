@@ -78,6 +78,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private IPBridgeConfig config;
     private int reconnectInterval;
     private int heartbeatInterval;
+    private int sendDelay;
 
     private TelnetSession session;
     private BlockingQueue<LutronCommand> sendQueue = new LinkedBlockingQueue<>();
@@ -138,6 +139,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         if (validConfiguration(this.config)) {
             reconnectInterval = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
             heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_MINUTES;
+            sendDelay = (config.delay < 0) ? 0 : config.delay;
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
             scheduler.submit(this::connect); // start the async connect task
@@ -236,6 +238,9 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
                     // reconnect() will start a new thread; terminate this one
                     break;
+                }
+                if (sendDelay > 0) {
+                    Thread.sleep(sendDelay); // introduce delay to throttle send rate
                 }
             }
         } catch (InterruptedException e) {

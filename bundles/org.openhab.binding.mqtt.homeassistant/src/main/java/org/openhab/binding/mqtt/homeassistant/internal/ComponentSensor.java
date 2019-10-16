@@ -48,11 +48,11 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");
         }
 
-        buildChannel(sensorChannelID, new TextValue(), channelConfiguration.name)
-                .listener(componentConfiguration.getUpdateListener())//
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
-                .unit(channelConfiguration.unit_of_measurement)//
-                .build();
+        buildChannel(sensorChannelID, new TextValue(), channelConfiguration.name,
+                componentConfiguration.getUpdateListener())//
+                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
+                        .unit(channelConfiguration.unit_of_measurement)//
+                        .build();
     }
 
 }

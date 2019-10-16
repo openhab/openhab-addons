@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.CONTACT;
+
+import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -20,10 +24,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
-
-import java.util.HashMap;
-
 /**
  * The {@link SomfyTahomaContactSensorHandler} is responsible for handling commands,
  * which are sent to one of the channels of the contact sensors.
@@ -31,15 +31,13 @@ import java.util.HashMap;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaContactSensorHandler extends SomfyTahomaBaseThingHandler  {
+public class SomfyTahomaContactSensorHandler extends SomfyTahomaBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaContactSensorHandler.class);
 
     public SomfyTahomaContactSensorHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put(CONTACT, "core:ContactState");
-        }};
+        stateNames.put(CONTACT, "core:ContactState");
     }
 
     @Override

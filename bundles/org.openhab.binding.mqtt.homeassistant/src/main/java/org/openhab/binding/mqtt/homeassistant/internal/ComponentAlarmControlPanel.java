@@ -61,25 +61,25 @@ public class ComponentAlarmControlPanel extends AbstractComponent<ComponentAlarm
         final String[] state_enum = { channelConfiguration.state_disarmed, channelConfiguration.state_armed_home,
                 channelConfiguration.state_armed_away, channelConfiguration.state_pending,
                 channelConfiguration.state_triggered };
-        buildChannel(stateChannelID, new TextValue(state_enum), channelConfiguration.name)
-                .listener(componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
-                .build();
+        buildChannel(stateChannelID, new TextValue(state_enum), channelConfiguration.name,
+                componentConfiguration.getUpdateListener())
+                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
+                        .build();
 
         String command_topic = channelConfiguration.command_topic;
         if (command_topic != null) {
             buildChannel(switchDisarmChannelID, new TextValue(new String[] { channelConfiguration.payload_disarm }),
-                    channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                    channelConfiguration.name, componentConfiguration.getUpdateListener())//
                             .commandTopic(command_topic, channelConfiguration.retain)//
                             .build();
 
             buildChannel(switchArmHomeChannelID, new TextValue(new String[] { channelConfiguration.payload_arm_home }),
-                    channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                    channelConfiguration.name, componentConfiguration.getUpdateListener())//
                             .commandTopic(command_topic, channelConfiguration.retain)//
                             .build();
 
             buildChannel(switchArmAwayChannelID, new TextValue(new String[] { channelConfiguration.payload_arm_away }),
-                    channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                    channelConfiguration.name, componentConfiguration.getUpdateListener())//
                             .commandTopic(command_topic, channelConfiguration.retain)//
                             .build();
         }

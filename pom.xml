@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -489,6 +489,7 @@ Import-Package: \\
                     <versionRange>[3.0.0,)</versionRange>
                     <goals>
                       <goal>unpack</goal>
+                      <goal>unpack-dependencies</goal>
                     </goals>
                   </pluginExecutionFilter>
                   <action>
@@ -499,6 +500,7 @@ Import-Package: \\
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.openhab.tools.sat</groupId>
           <artifactId>sat-plugin</artifactId>
@@ -545,6 +547,7 @@ Import-Package: \\
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -620,7 +623,7 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/;filter:=*.jar;lib:=true</bnd.includeresource>
         <feature.directory>../../src/main/feature/feature.xml</feature.directory>
       </properties>
       <build>
@@ -651,7 +654,6 @@ Import-Package: \\
         </plugins>
       </build>
     </profile>
-
     <profile>
       <id>add-libraries-eclipse</id>
       <activation>
@@ -663,10 +665,9 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/;filter:=*.jar;lib:=true</bnd.includeresource>
       </properties>
     </profile>
-
     <profile>
       <id>with-bnd-resolver-resolve</id>
       <activation>
@@ -694,45 +695,6 @@ Import-Package: \\
         </pluginManagement>
       </build>
     </profile>
-
-    <profile>
-      <id>embedExternalDependency</id>
-      <activation>
-        <file>
-          <exists>embedExternalDependency.profile</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.0.0</version>
-            <executions>
-              <!-- unpack dependency -->
-              <execution>
-                <id>unpack-dependency</id>
-                <goals>  
-                  <goal>unpack</goal>
-                </goals>
-                <configuration>
-                  <artifactItems>
-                    <artifactItem>
-                      <groupId>${embedDependency.groupId}</groupId>
-                      <artifactId>${embedDependency.artifactId}</artifactId>
-                      <version>${embedDependency.version}</version>
-                      <type>jar</type>
-                      <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                      <overWrite>true</overWrite>
-                    </artifactItem>
-                  </artifactItems>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
   </profiles>
 
 </project>

@@ -134,6 +134,7 @@ import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_0F_NodON;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_11;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12_NodON;
+import org.openhab.binding.enocean.internal.eep.D2_03.D2_03_0A;
 import org.openhab.binding.enocean.internal.eep.D2_05.D2_05_00;
 import org.openhab.binding.enocean.internal.eep.D5_00.D5_00_01;
 import org.openhab.binding.enocean.internal.eep.F6_01.F6_01_01;
@@ -171,6 +172,8 @@ public enum EEPType {
             CHANNEL_CONTACT),
 
     PushButton(RORG.RPS, 0x01, 0x01, false, F6_01_01.class, THING_TYPE_PUSHBUTTON, CHANNEL_PUSHBUTTON),
+    PushButtonTriState(RORG.VLD, 0x03, 0x0A, false, D2_03_0A.class, THING_TYPE_PUSHBUTTON, CHANNEL_PUSHBUTTON,
+            CHANNEL_DOUBLEPRESS, CHANNEL_LONGPRESS, CHANNEL_BATTERY_LEVEL),
 
     RockerSwitch2RockerStyle1(RORG.RPS, 0x02, 0x01, false, F6_02_01.class, THING_TYPE_ROCKERSWITCH,
             CHANNEL_ROCKERSWITCH_CHANNELA, CHANNEL_ROCKERSWITCH_CHANNELB, CHANNEL_VIRTUALSWITCHA,
@@ -353,9 +356,9 @@ public enum EEPType {
     AutomatedMeterReading_01(RORG._4BS, 0x12, 0x01, false, A5_12_01.class, THING_TYPE_AUTOMATEDMETERSENSOR,
             CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER),
     AutomatedMeterReading_02(RORG._4BS, 0x12, 0x02, false, A5_12_02.class, THING_TYPE_AUTOMATEDMETERSENSOR,
-            CHANNEL_TOTALCUBICMETRE, CHANNEL_INSTANTLITRE),
+            CHANNEL_CUMULATIVEVALUE, CHANNEL_CURRENTFLOW),
     AutomatedMeterReading_03(RORG._4BS, 0x12, 0x03, false, A5_12_03.class, THING_TYPE_AUTOMATEDMETERSENSOR,
-            CHANNEL_TOTALCUBICMETRE, CHANNEL_INSTANTLITRE),
+            CHANNEL_CUMULATIVEVALUE, CHANNEL_CURRENTFLOW),
 
     Rollershutter_A5(RORG._4BS, 0x11, 0x03, false, A5_11_03.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER,
             CHANNEL_ANGLE),

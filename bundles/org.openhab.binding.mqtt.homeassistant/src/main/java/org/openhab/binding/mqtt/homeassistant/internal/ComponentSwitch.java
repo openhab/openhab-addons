@@ -55,8 +55,7 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.ChannelCo
         OnOffValue value = new OnOffValue(channelConfiguration.state_on, channelConfiguration.state_off,
                 channelConfiguration.payload_on, channelConfiguration.payload_off);
 
-        buildChannel(switchChannelID, value, channelConfiguration.name)
-                .listener(componentConfiguration.getUpdateListener())//
+        buildChannel(switchChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())//
                 .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
                 .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain)//
                 .build();

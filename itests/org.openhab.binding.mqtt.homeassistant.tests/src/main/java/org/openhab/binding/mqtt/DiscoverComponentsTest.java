@@ -26,11 +26,16 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
@@ -78,7 +83,19 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
 
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
-                scheduler, null, gson, transformationServiceProvider));
+                scheduler, new ChannelStateUpdateListener() {
+                    @Override
+                    public void updateChannelState(@NonNull ChannelUID channelUID, @NonNull State value) {
+                    }
+
+                    @Override
+                    public void triggerChannel(@NonNull ChannelUID channelUID, @NonNull String eventPayload) {
+                    }
+
+                    @Override
+                    public void postChannelCommand(@NonNull ChannelUID channelUID, @NonNull Command value) {
+                    }
+                }, gson, transformationServiceProvider));
 
         HandlerConfiguration config = new HandlerConfiguration("homeassistant",
                 Collections.singletonList("switch/object"));

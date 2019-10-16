@@ -9,9 +9,9 @@
 		</supported-bridge-type-refs>
 		<label>Somfy Pod</label>
 		<channels>
-			<channel id="cyclic_button_state" typeId="cyclic_button_state"></channel>
-			<channel id="battery_status_state" typeId="battery_status_state"></channel>
-			<channel id="lighting_led_pod_mod_state" typeId="lighting_led_pod_mod_state"></channel>
+			<channel id="cyclic_button" typeId="cyclic_button"></channel>
+			<channel id="battery_status" typeId="battery_status"></channel>
+			<channel id="lighting_led_pod_mode" typeId="lighting_led_pod_mode"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

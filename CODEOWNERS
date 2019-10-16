@@ -46,6 +46,7 @@
 /bundles/org.openhab.binding.feed/ @svilenvul
 /bundles/org.openhab.binding.feican/ @Hilbrand
 /bundles/org.openhab.binding.folding/ @fa2k
+/bundles/org.openhab.binding.foobot/ @airboxlab @Hilbrand
 /bundles/org.openhab.binding.freebox/ @lolodomo
 /bundles/org.openhab.binding.fronius/ @trokohl
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
@@ -108,8 +109,10 @@
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
+/bundles/org.openhab.binding.networkupstools/ @Hilbrand
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
 /bundles/org.openhab.binding.nibeuplink/ @alexf2015
+/bundles/org.openhab.binding.nikobus/ @crnjan
 /bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.ntp/ @marcelrv
 /bundles/org.openhab.binding.nuki/ @mkatter

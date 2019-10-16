@@ -206,5 +206,55 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="iRoomV2ActiveModeTypeId">
+		<item-type>Number</item-type>
+		<label>Active Mode</label>
+		<description>Loxone Intelligent Room Controller V2 Active Mode.</description>
+		<state pattern="%d" min="0" max="3" step="1" readOnly="true">
+			<options>
+				<option value="0">Economy</option>
+				<option value="1">Comfort temperature</option>
+				<option value="2">Building protection</option>
+				<option value="3">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="iRoomV2OperatingModeTypeId">
+		<item-type>Number</item-type>
+		<label>Operating Mode</label>
+		<description>Loxone Intelligent Room Controller V2 Operating Mode.</description>
+		<state pattern="%d" min="0" max="5" step="1">
+			<options>
+				<option value="0">Automatic, heating and cooling allowed</option>
+				<option value="1">Automatic, only heating allowed</option>
+				<option value="2">Automatic, only cooling allowed</option>
+				<option value="3">Manual, heating and cooling allowed</option>
+				<option value="4">Manual, only heating allowed</option>
+				<option value="5">Manual, only cooling allowed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="iRoomV2PrepareStateTypeId">
+		<item-type>Number</item-type>
+		<label>Prepare State</label>
+		<description>Loxone Intelligent Room Controller V2 Prepare State.</description>
+		<state pattern="%d" min="-1" max="1" step="1" readOnly="true">
+			<options>
+				<option value="-1">Cooling down</option>
+				<option value="0">No action</option>
+				<option value="1">Heating up</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="iRoomV2ComfortToleranceTypeId">
+		<item-type>Number</item-type>
+		<label>Comfort Tolerance Temperature</label>
+		<description>Loxone Intelligent Room Controller V2 Comfort Tolerance.</description>
+		<state min="0.5" max="3" />
+	</channel-type>
+
 </thing:thing-descriptions>
 

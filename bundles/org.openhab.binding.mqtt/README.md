@@ -32,7 +32,6 @@ Additionally the following parameters can be set:
 
 * __qos__: Quality of Service. Can be 0, 1 or 2. Please read the MQTT specification for details. Defaults to 0.
 * __clientID__: Use a fixed client ID. Defaults to empty which means a user ID is generated for this connection.
-* __retainMessages__: Retain messages. Defaults to false.
 
 Reconnect parameters are:
 
