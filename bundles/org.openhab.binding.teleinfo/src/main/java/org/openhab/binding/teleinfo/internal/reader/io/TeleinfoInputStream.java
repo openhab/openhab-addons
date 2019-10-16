@@ -204,7 +204,10 @@ public class TeleinfoInputStream extends InputStream {
                     if (computedChecksum != checksum) {
                         logger.trace("computedChecksum = {}", computedChecksum);
                         logger.trace("checksum = {}", checksum);
-                        throw new InvalidFrameException("The groupLine seems corrupted (integrity not checked)");
+                        final String error = String.format(
+                                "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected checksum: '%s'",
+                                groupLine, checksum, computedChecksum);
+                        throw new InvalidFrameException(error);
                     }
 
                     Label label = Label.valueOf(labelStr);
