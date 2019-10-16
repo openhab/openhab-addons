@@ -31,6 +31,9 @@ public class PixometerBindingConstants {
 
     private static final String BINDING_ID = "pixometer";
 
+    // Api base url
+    public static final String API_BASE_URL = "https://pixometer.io/api/";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "apiservice");
     public static final ThingTypeUID THING_TYPE_ENERGYMETER = new ThingTypeUID(BINDING_ID, "energymeter");

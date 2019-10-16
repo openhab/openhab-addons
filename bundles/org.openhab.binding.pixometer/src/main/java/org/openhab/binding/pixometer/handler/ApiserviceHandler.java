@@ -17,7 +17,6 @@ import static org.openhab.binding.pixometer.internal.PixometerBindingConstants.*
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Properties;
@@ -32,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.pixometer.internal.PixometerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,32 +67,32 @@ public class ApiserviceHandler extends BaseBridgeHandler {
         logger.debug("Initialize Pixometer Apiservice");
         updateStatus(ThingStatus.UNKNOWN);
 
-        Configuration config = getThing().getConfiguration();
-        setRefreshInterval(((BigDecimal) config.get(CONFIG_BRIDGE_REFRESH)).intValue());
-        String user = config.get(CONFIG_BRIDGE_USER).toString();
-        String password = config.get(CONFIG_BRIDGE_PASSWORD).toString();
-        String scope = config.get(CONFIG_BRIDGE_SCOPE).toString();
+        PixometerConfiguration config = getConfigAs(PixometerConfiguration.class);
+        setRefreshInterval(config.refreshInterval);
+        String user = config.user;
+        String password = config.password;
+        String scope = config.scope;
 
         obtainAuthTokenAndExpiryDate(user, password, scope);
 
-        config.put(CONFIG_BRIDGE_AUTH_TOKEN, getAuthToken());
+        Configuration editConfig = editConfiguration();
+        editConfig.put(CONFIG_BRIDGE_AUTH_TOKEN, getAuthToken());
+        updateConfiguration(editConfig);
 
         // Check expiry date every Day and obtain new access token if difference is less then or equal to 2 days
-        scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Checking if new access token is needed...");
-                try {
-                    long difference = getTokenExpiryDate().toInstant().toEpochMilli()
-                            - ZonedDateTime.now().toInstant().toEpochMilli();
-                    if (difference <= TOKEN_MIN_DIFF) {
-                        obtainAuthTokenAndExpiryDate(user, password, scope);
-                    }
-                } catch (RuntimeException r) {
-                    logger.debug("Could not check token expiry date for Thing {}: ", getThing().getUID(), r);
+        scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Checking if new access token is needed...");
+            try {
+                long difference = getTokenExpiryDate().toInstant().toEpochMilli()
+                        - ZonedDateTime.now().toInstant().toEpochMilli();
+                if (difference <= TOKEN_MIN_DIFF) {
+                    obtainAuthTokenAndExpiryDate(user, password, scope);
                 }
+            } catch (RuntimeException r) {
+                logger.debug("Could not check token expiry date for Thing {}: ", getThing().getUID(), r);
             }
         }, 1, 1, TimeUnit.DAYS);
+
         logger.debug("Refresh job scheduled to run every {} days. for '{}'", 1, getThing().getUID());
     }
 
@@ -111,7 +111,7 @@ public class ApiserviceHandler extends BaseBridgeHandler {
      */
     private void obtainAuthTokenAndExpiryDate(String user, String password, String scope) {
         try {
-            String url = new StringBuilder("https://pixometer.io/api/v1/access-token/").toString();
+            String url = new StringBuilder(API_BASE_URL).append("v1/access-token/").toString();
             Properties urlHeader = (Properties) new Properties().put("CONTENT-TYPE", "application/json");
 
             JsonObject httpBody = new JsonObject();
@@ -125,7 +125,7 @@ public class ApiserviceHandler extends BaseBridgeHandler {
 
             if (responseJson.has(CONFIG_BRIDGE_AUTH_TOKEN)) {
                 // Store the expire date for automatic token refresh
-                Integer expiresIn = Integer.parseInt(responseJson.get("expires_in").toString());
+                int expiresIn = Integer.parseInt(responseJson.get("expires_in").toString());
                 setTokenExpiryDate(ZonedDateTime.now().plusSeconds(expiresIn));
 
                 setAuthToken(responseJson.get(CONFIG_BRIDGE_AUTH_TOKEN).toString().replaceAll("\"", ""));

@@ -57,7 +57,6 @@ public class MeterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MeterHandler.class);
 
-    private static final String API_BASE_URL = "https://pixometer.io/api/";
     private static final String API_VERSION = "v1";
     private static final String API_METER_ENDPOINT = "meters";
     private static final String API_READINGS_ENDPOINT = "readings";
@@ -66,7 +65,7 @@ public class MeterHandler extends BaseThingHandler {
             new CustomReadingInstanceDeserializer());
     private final Gson gson = gsonBuilder.create();
 
-    private String ressourceID;
+    private String resourceID;
     private String meterID;
 
     private ScheduledFuture<?> pollingJob;
@@ -103,15 +102,12 @@ public class MeterHandler extends BaseThingHandler {
 
             // Start polling job with the interval, that has been set up in the bridge
             int pollingPeriod = Integer.parseInt(b.getConfiguration().get(CONFIG_BRIDGE_REFRESH).toString());
-            pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    logger.debug("Try to refresh meter data");
-                    try {
-                        updateMeter(token);
-                    } catch (RuntimeException r) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
-                    }
+            pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                logger.debug("Try to refresh meter data");
+                try {
+                    updateMeter(token);
+                } catch (RuntimeException r) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
                 }
             }, pollingPeriod, pollingPeriod, TimeUnit.MINUTES);
             logger.debug("Refresh job scheduled to run every {} hours. for '{}'", pollingPeriod, getThing().getUID());
@@ -241,11 +237,11 @@ public class MeterHandler extends BaseThingHandler {
      */
 
     public String getRessourceID() {
-        return ressourceID;
+        return resourceID;
     }
 
     private void setRessourceID(String ressourceID) {
-        this.ressourceID = ressourceID;
+        this.resourceID = ressourceID;
     }
 
     public String getMeterID() {
