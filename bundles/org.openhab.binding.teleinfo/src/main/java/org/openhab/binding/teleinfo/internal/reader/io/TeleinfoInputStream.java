@@ -210,16 +210,18 @@ public class TeleinfoInputStream extends InputStream {
                         throw new InvalidFrameException(error);
                     }
 
-                    Label label = Label.valueOf(labelStr);
-                    if (label == null) {
-                        final String error = String.format("The label '%1$s' is unknown", labelStr);
+                    final Label label;
+                    try {
+                        label = Label.valueOf(labelStr);
+                    } catch (IllegalArgumentException e) {
+                        final String error = String.format("The label '%s' is unknown", labelStr);
                         throw new InvalidFrameException(error);
                     }
 
                     Class<?> labelType = label.getType();
                     Converter converter = LABEL_VALUE_CONVERTERS.get(labelType);
                     if (converter == null) {
-                        final String error = String.format("No converter founded for '%1$s' label type", labelType);
+                        final String error = String.format("No converter founded for '%s' label type", labelType);
                         throw new IllegalStateException(error);
                     }
                     try {
@@ -227,7 +229,7 @@ public class TeleinfoInputStream extends InputStream {
 
                         frameValues.put(label, value);
                     } catch (ConvertionException e) {
-                        final String error = String.format("An error occurred during '%1$s' value conversion",
+                        final String error = String.format("An error occurred during '%s' value conversion",
                                 valueString);
                         throw new InvalidFrameException(error, e);
                     }
