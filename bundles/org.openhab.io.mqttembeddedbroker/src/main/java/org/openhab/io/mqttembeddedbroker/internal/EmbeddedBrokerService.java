@@ -144,18 +144,18 @@ public class EmbeddedBrokerService
     private @Nullable MqttBrokerConnection connection;
 
     @Activate
-    public EmbeddedBrokerService(@Reference MqttService mqttService, Map<String, Object> config) throws IOException {
+    public EmbeddedBrokerService(@Reference MqttService mqttService, Map<String, Object> configuration) throws IOException {
         this.service = mqttService;
-        initialize(new Configuration(config).as(ServiceConfiguration.class));
+        initialize(configuration);
     }
-
     @Modified
-    public void modified(Map<String, Object> config) throws IOException {
+    public void modified(Map<String, Object> configuration) throws IOException {
         deactivate();
-        initialize(new Configuration(config).as(ServiceConfiguration.class));
+        initialize(configuration);
     }
-
-    public void initialize(ServiceConfiguration config) throws IOException {
+    
+    public void initialize(Map<String, Object> configuration) throws IOException {
+        ServiceConfiguration config = new Configuration(configuration).as(ServiceConfiguration.class);
         int port = config.port == null ? (config.port = config.secure ? 8883 : 1883) : config.port;
 
         // Create MqttBrokerConnection
