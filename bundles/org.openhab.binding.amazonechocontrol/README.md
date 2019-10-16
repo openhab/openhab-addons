@@ -55,14 +55,14 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - Implement own handling for voice commands in a rule
 - Change the equalizer settings depending on the bluetooth connection
 - Turn on a light on your alexa alarm time
-- Activate or deactive the Alexa Guard with presence detection
+- Activate or deactivate the Alexa Guard with presence detection
 
 With the possibility to control your lights you could do:
 
 - a scene-based configuration of your rooms
 - connect single bulbs to functions of openhab
 - simulate your presence at home
-- automaticly turn on your lights at the evening
+- automatically turn on your lights at the evening
 - integrate your smart bulbs with rules 
 
 ## Binding Configuration
