@@ -22,15 +22,18 @@
 			<parameter name="port" type="integer" min="1" max="65335">
 				<label>Port</label>
 				<description>Port of the OpenGarage Web API interface.</description>
+				<default>80</default>
 			</parameter>
 			<parameter name="password" type="text">
 				<label>Password</label>
 				<description>The admin password used to access the Web API interface.</description>
 				<context>password</context>
+				<default>opendoor</default>
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
+				<default>60</default>
 			</parameter>
 		</config-description>
 
