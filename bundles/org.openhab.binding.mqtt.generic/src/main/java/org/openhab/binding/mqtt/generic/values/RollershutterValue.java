@@ -118,7 +118,16 @@ public class RollershutterValue extends Value {
         if (this.nextIsStop) {
             this.nextIsStop = false;
             return stopString;
+        } else if (state instanceof PercentType) {
+            if (state.equals(PercentType.HUNDRED) && upString != null) {
+                return upString;
+            } else if (state.equals(PercentType.ZERO) && downString != null) {
+                return downString;
+            } else {
+                return String.valueOf(((PercentType) state).intValue());
+            }
+        } else {
+            return "UNDEF";
         }
-        return (state == UnDefType.UNDEF) ? "0" : String.valueOf(((PercentType) state).intValue());
     }
 }

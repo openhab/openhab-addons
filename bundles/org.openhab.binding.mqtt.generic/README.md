@@ -167,11 +167,15 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 
 ### Channel Type "rollershutter"
 
-* __on__: An optional string (like "Open") that is recognized as UP state.
-* __off__: An optional string (like "Close") that is recognized as DOWN state.
-* __stop__: An optional string (like "Stop") that is recognized as STOP state.
+* __on__: An optional string (like "Open") that is recognized as `UP` state.
+* __off__: An optional string (like "Close") that is recognized as `DOWN` state.
+* __stop__: An optional string (like "Stop") that is recognized as `STOP` state.
+
+Internally `UP` is converted to 100%, `DOWN` to 0%.
+If strings are defined for these values, they are used for sending commands to the broker, too.
 
 You can connect this channel to a Rollershutter or Dimmer item.
+
 
 ## Rule Actions
 
