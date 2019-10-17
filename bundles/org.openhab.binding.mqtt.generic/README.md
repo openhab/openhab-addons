@@ -79,6 +79,7 @@ You can add the following channels:
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor. 
 * __retained__: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time. 
+* __qos__: QoS of this channel. Overrides the connection  QoS (defined in broker connection).
 * __trigger__: If `true`, the state topic will not update a state, but trigger a channel instead.
 
 ### Channel Type "string"
