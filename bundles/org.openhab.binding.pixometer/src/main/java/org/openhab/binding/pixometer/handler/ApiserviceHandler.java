@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -46,7 +45,7 @@ import com.google.gson.JsonParser;
 public class ApiserviceHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final static int TOKEN_MIN_DIFF = 172800000;
+    private static final int TOKEN_MIN_DIFF = 172800000;
 
     private String authToken;
     private int refreshInterval;
@@ -57,7 +56,7 @@ public class ApiserviceHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         // Nothing to handle here currently
     }
 
