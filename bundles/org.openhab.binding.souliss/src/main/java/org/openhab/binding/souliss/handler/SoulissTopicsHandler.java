@@ -61,8 +61,13 @@ public class SoulissTopicsHandler extends SoulissGenericActionMessage implements
     public void setFloatValue(float valueOf) {
         this.updateState(SoulissBindingConstants.LASTSTATUSSTORED_CHANNEL, this.getLastUpdateTime());
         if (fSetPointValue != valueOf) {
-            this.setState(DecimalType.valueOf(Float.toString(valueOf)));
-            fSetPointValue = valueOf;
+            try {
+                this.setState(DecimalType.valueOf(Float.toString(valueOf)));
+                fSetPointValue = valueOf;
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 

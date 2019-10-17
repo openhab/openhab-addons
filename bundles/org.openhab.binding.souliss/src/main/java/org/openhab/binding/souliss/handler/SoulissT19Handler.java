@@ -144,6 +144,9 @@ public class SoulissT19Handler extends SoulissGenericHandler {
         } catch (IllegalStateException ex) {
             logger.debug("UUID: " + this.getThing().getUID().getAsString()
                     + " - Update state error (in setDimmerValue): " + ex.getMessage());
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 

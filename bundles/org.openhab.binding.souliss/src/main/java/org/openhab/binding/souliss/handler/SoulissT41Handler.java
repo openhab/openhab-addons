@@ -113,21 +113,26 @@ public class SoulissT41Handler extends SoulissGenericHandler {
         super.setLastStatusStored();
         // update item state only if it is different from previous
         if (T4nRawState != _rawState) {
-            switch (_rawState) {
-                case SoulissBindingProtocolConstants.Souliss_T4n_NoAntitheft:
-                    this.setState(OnOffType.OFF);
-                    this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL));
-                    break;
-                case SoulissBindingProtocolConstants.Souliss_T4n_Antitheft:
-                    this.setState(OnOffType.ON);
-                    this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL));
-                    break;
-                case SoulissBindingProtocolConstants.Souliss_T4n_InAlarm:
-                    this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL));
-                    break;
-                case SoulissBindingProtocolConstants.Souliss_T4n_Armed:
-                    this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ARMED_MESSAGE_CHANNEL));
-                    break;
+            try {
+                switch (_rawState) {
+                    case SoulissBindingProtocolConstants.Souliss_T4n_NoAntitheft:
+                        this.setState(OnOffType.OFF);
+                        this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL));
+                        break;
+                    case SoulissBindingProtocolConstants.Souliss_T4n_Antitheft:
+                        this.setState(OnOffType.ON);
+                        this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL));
+                        break;
+                    case SoulissBindingProtocolConstants.Souliss_T4n_InAlarm:
+                        this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL));
+                        break;
+                    case SoulissBindingProtocolConstants.Souliss_T4n_Armed:
+                        this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ARMED_MESSAGE_CHANNEL));
+                        break;
+                }
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
         T4nRawState = _rawState;

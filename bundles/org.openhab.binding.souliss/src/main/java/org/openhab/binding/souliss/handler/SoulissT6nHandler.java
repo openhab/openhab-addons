@@ -71,8 +71,13 @@ public class SoulissT6nHandler extends SoulissGenericHandler {
     public void setFloatValue(float valueOf) {
         super.setLastStatusStored();
         if (fSetPointValue != valueOf) {
-            this.setState(DecimalType.valueOf(Float.toString(valueOf)));
-            fSetPointValue = valueOf;
+            try {
+                this.setState(DecimalType.valueOf(Float.toString(valueOf)));
+                fSetPointValue = valueOf;
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
