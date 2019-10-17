@@ -79,7 +79,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
      * @param channelUID The channelUID
      * @return A channel state. May be null.
      */
-    abstract public @Nullable ChannelState getChannelState(ChannelUID channelUID);
+    public abstract @Nullable ChannelState getChannelState(ChannelUID channelUID);
 
     /**
      * Start the topic discovery and subscribe to all channel state topics on all {@link ChannelState}s.
@@ -88,7 +88,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
      * @param connection A started broker connection
      * @return A future that completes normal on success and exceptionally on any errors.
      */
-    abstract protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
+    protected abstract CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
 
     /**
      * Called when the MQTT connection disappeared.

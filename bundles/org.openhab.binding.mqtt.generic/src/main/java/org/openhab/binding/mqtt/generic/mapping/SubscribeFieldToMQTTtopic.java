@@ -20,7 +20,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
@@ -128,7 +127,7 @@ public class SubscribeFieldToMQTTtopic implements MqttMessageSubscriber {
      */
     @SuppressWarnings({ "null", "unused" })
     @Override
-    public void processMessage(@NonNull String topic, byte @NonNull [] payload) {
+    public void processMessage(String topic, byte [] payload) {
         final ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
         if (scheduledFuture != null) { // Cancel timeout
             scheduledFuture.cancel(false);
