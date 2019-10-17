@@ -18,7 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +50,7 @@ public class ApiserviceHandler extends BaseBridgeHandler {
 
     private String authToken;
     private int refreshInterval;
-    private ZonedDateTime tokenExpiryDate;
+    private long tokenExpiryDate;
 
     public ApiserviceHandler(Bridge bridge) {
         super(bridge);
@@ -65,33 +64,26 @@ public class ApiserviceHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initialize Pixometer Apiservice");
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting to get access-token from api...");
 
         PixometerConfiguration config = getConfigAs(PixometerConfiguration.class);
-        setRefreshInterval(config.refreshInterval);
+        setRefreshInterval(config.refresh);
         String user = config.user;
         String password = config.password;
         String scope = config.scope;
-
-        obtainAuthTokenAndExpiryDate(user, password, scope);
-
-        Configuration editConfig = editConfiguration();
-        editConfig.put(CONFIG_BRIDGE_AUTH_TOKEN, getAuthToken());
-        updateConfiguration(editConfig);
 
         // Check expiry date every Day and obtain new access token if difference is less then or equal to 2 days
         scheduler.scheduleWithFixedDelay(() -> {
             logger.debug("Checking if new access token is needed...");
             try {
-                long difference = getTokenExpiryDate().toInstant().toEpochMilli()
-                        - ZonedDateTime.now().toInstant().toEpochMilli();
+                long difference = getTokenExpiryDate() - System.nanoTime();
                 if (difference <= TOKEN_MIN_DIFF) {
                     obtainAuthTokenAndExpiryDate(user, password, scope);
                 }
             } catch (RuntimeException r) {
                 logger.debug("Could not check token expiry date for Thing {}: ", getThing().getUID(), r);
             }
-        }, 1, 1, TimeUnit.DAYS);
+        }, 1, 1440, TimeUnit.MINUTES);
 
         logger.debug("Refresh job scheduled to run every {} days. for '{}'", 1, getThing().getUID());
     }
@@ -126,9 +118,15 @@ public class ApiserviceHandler extends BaseBridgeHandler {
             if (responseJson.has(CONFIG_BRIDGE_AUTH_TOKEN)) {
                 // Store the expire date for automatic token refresh
                 int expiresIn = Integer.parseInt(responseJson.get("expires_in").toString());
-                setTokenExpiryDate(ZonedDateTime.now().plusSeconds(expiresIn));
+                setTokenExpiryDate(TimeUnit.SECONDS.toNanos(expiresIn));
 
                 setAuthToken(responseJson.get(CONFIG_BRIDGE_AUTH_TOKEN).toString().replaceAll("\"", ""));
+
+                // Save new auth token to config
+                Configuration editConfig = editConfiguration();
+                editConfig.put(CONFIG_BRIDGE_AUTH_TOKEN, getAuthToken());
+                updateConfiguration(editConfig);
+
                 updateStatus(ThingStatus.ONLINE);
                 return;
             }
@@ -166,12 +164,12 @@ public class ApiserviceHandler extends BaseBridgeHandler {
         this.refreshInterval = refreshInterval;
     }
 
-    public ZonedDateTime getTokenExpiryDate() {
+    public long getTokenExpiryDate() {
         return tokenExpiryDate;
     }
 
-    private void setTokenExpiryDate(ZonedDateTime tokenExpiryDate) {
-        this.tokenExpiryDate = tokenExpiryDate;
+    private void setTokenExpiryDate(long expiresIn) {
+        this.tokenExpiryDate = System.nanoTime() + expiresIn;
     }
 
 }

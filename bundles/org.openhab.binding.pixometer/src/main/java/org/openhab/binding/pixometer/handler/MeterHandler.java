@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Volume;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -38,6 +37,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.pixometer.internal.PixometerMeterConfiguration;
 import org.openhab.binding.pixometer.internal.config.ReadingInstance;
 import org.openhab.binding.pixometer.internal.serializer.CustomReadingInstanceDeserializer;
 import org.slf4j.Logger;
@@ -85,8 +85,8 @@ public class MeterHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         try {
-            Configuration config = getThing().getConfiguration();
-            setRessourceID((String) config.get(CONFIG_THING_RESSOURCE_ID));
+            PixometerMeterConfiguration config = getConfigAs(PixometerMeterConfiguration.class);
+            setRessourceID(config.resource_id);
 
             Bridge b = this.getBridge();
             if (b == null) {
@@ -109,7 +109,7 @@ public class MeterHandler extends BaseThingHandler {
                 } catch (RuntimeException r) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
                 }
-            }, pollingPeriod, pollingPeriod, TimeUnit.MINUTES);
+            }, 2, pollingPeriod, TimeUnit.MINUTES);
             logger.debug("Refresh job scheduled to run every {} hours. for '{}'", pollingPeriod, getThing().getUID());
         } catch (RuntimeException r) {
             logger.debug("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ", r);
