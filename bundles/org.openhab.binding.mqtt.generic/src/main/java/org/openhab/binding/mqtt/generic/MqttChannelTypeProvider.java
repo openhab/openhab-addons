@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -65,32 +64,32 @@ public class MqttChannelTypeProvider implements ThingTypeProvider, ChannelGroupT
     }
 
     @Override
-    public @Nullable Collection<@NonNull ChannelType> getChannelTypes(@Nullable Locale locale) {
+    public @Nullable Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
         return types.values();
     }
 
     @Override
-    public @Nullable ChannelType getChannelType(@NonNull ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
+    public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
         return types.get(channelTypeUID);
     }
 
     @Override
-    public @Nullable ChannelGroupType getChannelGroupType(@NonNull ChannelGroupTypeUID channelGroupTypeUID,
+    public @Nullable ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID,
             @Nullable Locale locale) {
         return groups.get(channelGroupTypeUID);
     }
 
     @Override
-    public @Nullable Collection<@NonNull ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
+    public @Nullable Collection<ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
         return groups.values();
     }
 
     @Override
-    public Collection<@NonNull ThingType> getThingTypes(@Nullable Locale locale) {
+    public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
         return things.values();
     }
 
-    public Set<@NonNull ThingTypeUID> getThingTypeUIDs() {
+    public Set<ThingTypeUID> getThingTypeUIDs() {
         return things.keySet();
     }
 
