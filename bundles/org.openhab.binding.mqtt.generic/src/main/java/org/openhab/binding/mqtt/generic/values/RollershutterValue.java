@@ -121,10 +121,10 @@ public class RollershutterValue extends Value {
             this.nextIsStop = false;
             return stopString;
         } else if (state instanceof PercentType) {
-            if (state.equals(PercentType.HUNDRED) && upString != null) {
-                return upString;
-            } else if (state.equals(PercentType.ZERO) && downString != null) {
+            if (state.equals(PercentType.HUNDRED) && downString != null) {
                 return downString;
+            } else if (state.equals(PercentType.ZERO) && upString != null) {
+                return upString;
             } else {
                 return String.valueOf(((PercentType) state).intValue());
             }
