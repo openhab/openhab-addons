@@ -243,6 +243,7 @@ public class ChannelState implements MqttMessageSubscriber {
     }
 
     private void internalStop() {
+        logger.debug("Unsubscribed channel {} form topic: {}", this.channelUID, config.stateTopic);
         this.connection = null;
         this.channelStateUpdateListener = null;
         hasSubscribed = false;
@@ -274,7 +275,6 @@ public class ChannelState implements MqttMessageSubscriber {
      * @param connection A broker connection
      * @param scheduler A scheduler to realize the timeout
      * @param timeout A timeout in milliseconds. Can be 0 to disable the timeout and let the future return earlier.
-     * @param channelStateUpdateListener An update listener
      * @return A future that completes with true if the subscribing worked, with false if the stateTopic is not set
      *         and exceptionally otherwise.
      */

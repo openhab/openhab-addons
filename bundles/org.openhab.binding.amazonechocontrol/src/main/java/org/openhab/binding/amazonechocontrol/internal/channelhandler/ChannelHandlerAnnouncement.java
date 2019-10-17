@@ -15,6 +15,8 @@ package org.openhab.binding.amazonechocontrol.internal.channelhandler;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
@@ -44,21 +46,38 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                 String commandValue = ((StringType) command).toFullString();
                 String body = commandValue;
                 String title = null;
-                String speak = " "; // blank generates a beep
+                String speak = commandValue;
                 if (commandValue.startsWith("{") && commandValue.endsWith("}")) {
                     try {
                         AnnouncementRequestJson request = parseJson(commandValue, AnnouncementRequestJson.class);
                         if (request != null) {
+                            if (StringUtils.isEmpty(request.speak)) {
+                                speak = " "; // blank generates a beep
+                            } else {
+                                speak = request.speak;
+                            }
                             title = request.title;
                             body = request.body;
                             if (body == null) {
                                 body = "";
                             }
-                            if (request.sound == false) {
-                                speak = "<speak></speak>";
+                            Boolean sound = request.sound;
+                            if (sound != null) {
+                                if (sound == false && !speak.startsWith("<speak>")) {
+                                    speak = "<speak>" + StringEscapeUtils.escapeXml(speak) + "</speak>";
+                                }
+                                if (sound == true && speak.startsWith("<speak>")) {
+                                    body = "Error: The combination of sound and speak in SSML syntax is not allowed";
+                                    title = "Error";
+                                    speak = "<speak><lang xml:lang=\"en-UK\">Error: The combination of sound and speak in <prosody rate=\"x-slow\"><say-as interpret-as=\"characters\">SSML</say-as></prosody> syntax is not allowed</lang></speak>";
+                                }
                             }
                         }
                     } catch (JsonSyntaxException e) {
+                        body = "Invalid Json." + e.getLocalizedMessage();
+                        title = "Error";
+                        speak = "<speak><lang xml:lang=\"en-US\">" + StringEscapeUtils.escapeXml(body)
+                                + "</lang></speak>";
                         body = e.getLocalizedMessage();
                     }
                 }
@@ -73,9 +92,10 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }
 
-    class AnnouncementRequestJson {
+    static class AnnouncementRequestJson {
         public @Nullable Boolean sound;
         public @Nullable String title;
         public @Nullable String body;
+        public @Nullable String speak;
     }
 }

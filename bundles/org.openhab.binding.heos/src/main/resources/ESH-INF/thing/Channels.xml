@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="heos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="ungroup">
+		<item-type>Switch</item-type>
+		<label>Group</label>
+	</channel-type>
+	<channel-type id="album">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="cover" advanced="true">
+		<item-type>Image</item-type>
+		<label>Cover</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="buildGroup">
+		<item-type>Switch</item-type>
+		<label>Make Group</label>
+	</channel-type>
+	<channel-type id="playlists" advanced="true">
+		<item-type>String</item-type>
+		<label>Playlists</label>
+	</channel-type>
+	<channel-type id="reboot">
+		<item-type>Switch</item-type>
+		<label>Reboot</label>
+	</channel-type>
+	<channel-type id="input" advanced="true">
+		<item-type>String</item-type>
+		<label>External Inputs</label>
+	</channel-type>
+	<channel-type id="currentPosition" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Track position</label>
+		<description>The current track position</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f"></state>
+	</channel-type>
+	<channel-type id="duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Track duration</label>
+		<description>The overall duration of the track</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f"></state>
+	</channel-type>
+	<channel-type id="rawCommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Send RAW Command</label>
+		<description>Sending a HEOS command as specified within the HEOS CLI protocol</description>
+	</channel-type>
+	<channel-type id="type" advanced="true">
+		<item-type>String</item-type>
+		<label>Type</label>
+		<description>The media currently played type (station, song, ...)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="station" advanced="true">
+		<item-type>String</item-type>
+		<label>Station</label>
+		<description>The name of the station currently played</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="playUrl" advanced="true">
+		<item-type>String</item-type>
+		<label>Play URL</label>
+		<description>Plays a media file from URL</description>
+	</channel-type>
+	<channel-type id="shuffleMode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Shuffle</label>
+		<description>Sets the shuffle mode</description>
+	</channel-type>
+	<channel-type id="repeatMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Repeat Mode</label>
+		<description>Set the repeat mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="One">One</option>
+				<option value="All">All</option>
+				<option value="Off">Off</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

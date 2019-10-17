@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.loxone.internal.types.LxState;
@@ -252,8 +252,10 @@ class LxControlLightControllerV2 extends LxControl {
             // convert all moods to options list for state description
             List<StateOption> optionsList = newMoodList.values().stream()
                     .map(mood -> new StateOption(mood.getId().toString(), mood.getName())).collect(Collectors.toList());
-            addChannelStateDescription(channelId, new StateDescription(new BigDecimal(minMoodId),
-                    new BigDecimal(maxMoodId), BigDecimal.ONE, null, false, optionsList));
+            addChannelStateDescriptionFragment(channelId,
+                    StateDescriptionFragmentBuilder.create().withMinimum(new BigDecimal(minMoodId))
+                            .withMaximum(new BigDecimal(maxMoodId)).withStep(BigDecimal.ONE).withReadOnly(false)
+                            .withOptions(optionsList).build());
         }
 
         moodList.values().forEach(m -> removeControl(m));

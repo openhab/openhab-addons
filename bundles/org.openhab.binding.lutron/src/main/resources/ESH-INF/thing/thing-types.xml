@@ -40,6 +40,13 @@
 				<default>5</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="delay" type="integer" min="0" max="250" unit="ms">
+				<label>Send delay</label>
+				<description>The delay in milliseconds between sending integration commands (for throttling)</description>
+				<unitLabel>ms</unitLabel>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="discoveryFile" type="text">
 				<label>Discovery Data File</label>
 				<description>File to read device discovery information from (for debugging)</description>

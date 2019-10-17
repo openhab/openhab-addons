@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
+import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.hue.internal.FullSensor.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
@@ -41,6 +42,7 @@ import org.openhab.binding.hue.internal.FullHueObject;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.StateUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,20 +100,22 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (!propertiesInitializedSuccessfully) {
             FullHueObject fullSensor = getSensor();
             if (fullSensor != null) {
+                Map<String, String> properties = editProperties();
                 String softwareVersion = fullSensor.getSoftwareVersion();
                 if (softwareVersion != null) {
-                    updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, softwareVersion);
+                    properties.put(PROPERTY_FIRMWARE_VERSION, softwareVersion);
                 }
                 String modelId = fullSensor.getNormalizedModelID();
                 if (modelId != null) {
-                    updateProperty(Thing.PROPERTY_MODEL_ID, modelId);
+                    properties.put(PROPERTY_MODEL_ID, modelId);
                 }
-                updateProperty(Thing.PROPERTY_VENDOR, fullSensor.getManufacturerName());
-                updateProperty(PRODUCT_NAME, fullSensor.getProductName());
+                properties.put(PROPERTY_VENDOR, fullSensor.getManufacturerName());
+                properties.put(PRODUCT_NAME, fullSensor.getProductName());
                 String uniqueID = fullSensor.getUniqueID();
                 if (uniqueID != null) {
-                    updateProperty(UNIQUE_ID, uniqueID);
+                    properties.put(UNIQUE_ID, uniqueID);
                 }
+                updateProperties(properties);
                 propertiesInitializedSuccessfully = true;
             }
         }
@@ -145,7 +149,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof HueClient) {
+            if (handler instanceof HueBridgeHandler) {
                 hueClient = (HueClient) handler;
                 hueClient.registerSensorStatusListener(this);
             } else {
@@ -157,9 +161,44 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // no commands
-    }
+        handleCommand(channelUID.getId(), command);
+    }    
+    
+    public void handleCommand(String channel, Command command) {
+        //updateSensorState
+        FullSensor sensor = getSensor();
+        if (  sensor == null) {
+            logger.debug("hue sensor not known on bridge. Cannot handle command.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-wrong-light-id");
+            return;
+        }
+        
+        HueClient hueBridge = getHueClient();
+        if (hueBridge == null) {
+            logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
+            return;
+        }
 
+        StateUpdate sensorState = new StateUpdate();
+        switch (channel)
+        {
+        case  STATE_STATUS: 
+            sensorState = sensorState.setStatus(((DecimalType) command).intValue());
+            break;   
+        case STATE_FLAG:
+            sensorState = sensorState.setFlag(OnOffType.ON.equals(command));
+            break;
+        }
+   
+        if (sensorState != null) {
+            hueBridge.updateSensorState(sensor, sensorState);
+        } 
+        else {
+          logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+        }
+    }
+    
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         SensorConfigUpdate configUpdate = doConfigurationUpdate(configurationParameters);
@@ -225,6 +264,21 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                 // do nothing
             }
         }
+        
+        Object status = sensor.getState().get(STATE_STATUS);
+        if (status != null) {
+            try { DecimalType value = new DecimalType(String.valueOf(status));
+            updateState(STATE_STATUS, value);} catch (DateTimeParseException e) {
+                // do nothing
+            }
+        }
+        Object flag = sensor.getState().get(STATE_FLAG);
+        if (flag != null) {
+            try {boolean value = Boolean.parseBoolean(String.valueOf(flag));
+            updateState(CHANNEL_FLAG, value ? OnOffType.ON : OnOffType.OFF);} catch (DateTimeParseException e) {
+                // do nothing
+            }
+        }  
 
         Object battery = sensor.getConfig().get(CONFIG_BATTERY);
         if (battery != null) {

@@ -13,37 +13,20 @@
 package org.openhab.binding.lgwebos.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.connectsdk.device.ConnectableDevice;
-import com.connectsdk.service.capability.ToastControl;
+import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
 
 /**
  * Handles Toast Control Command. This allows to send messages to the TV screen.
  *
- * @author Sebastian Prehn - initial contribution
+ * @author Sebastian Prehn - Initial contribution
  */
 @NonNullByDefault
-public class ToastControlToast extends BaseChannelHandler<Void, Object> {
-    private final Logger logger = LoggerFactory.getLogger(ToastControlToast.class);
-
-    private ToastControl getControl(ConnectableDevice device) {
-        return device.getCapability(ToastControl.class);
-    }
+public class ToastControlToast extends BaseChannelHandler<CommandConfirmation> {
 
     @Override
-    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
-            Command command) {
-        if (device == null) {
-            return;
-        }
-        if (hasCapability(device, ToastControl.Show_Toast)) {
-            final String value = command.toString();
-            getControl(device).showToast(value, getDefaultResponseListener());
-        }
+    public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
+        handler.getSocket().showToast(command.toString(), getDefaultResponseListener());
     }
 }

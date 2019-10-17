@@ -40,6 +40,8 @@ public class ShadeHandler extends LutronHandler {
     private static final Integer ACTION_STARTRAISING = 2;
     private static final Integer ACTION_STARTLOWERING = 3;
     private static final Integer ACTION_STOP = 4;
+    private static final Integer ACTION_POSITION_UPDATE = 32; // undocumented in integration protocol guide
+    private static final Integer PARAMETER_POSITION_UPDATE = 2; // undocumented in integration protocol guide
 
     private final Logger logger = LoggerFactory.getLogger(ShadeHandler.class);
 
@@ -109,13 +111,20 @@ public class ShadeHandler extends LutronHandler {
 
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
-        if (type == LutronCommandType.OUTPUT && parameters.length >= 2
-                && ACTION_ZONELEVEL.toString().equals(parameters[0])) {
-            BigDecimal level = new BigDecimal(parameters[1]);
-            if (getThing().getStatus() == ThingStatus.UNKNOWN) {
-                updateStatus(ThingStatus.ONLINE);
+        if (type == LutronCommandType.OUTPUT && parameters.length >= 2) {
+            if (ACTION_ZONELEVEL.toString().equals(parameters[0])) {
+                BigDecimal level = new BigDecimal(parameters[1]);
+                if (getThing().getStatus() == ThingStatus.UNKNOWN) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+                logger.trace("Shade {} received zone level: {}", getIntegrationId(), level);
+                updateState(CHANNEL_SHADELEVEL, new PercentType(level));
+            } else if (ACTION_POSITION_UPDATE.toString().equals(parameters[0])
+                    && PARAMETER_POSITION_UPDATE.toString().equals(parameters[1]) && parameters.length >= 3) {
+                BigDecimal level = new BigDecimal(parameters[2]);
+                logger.trace("Shade {} received position update: {}", getIntegrationId(), level);
+                updateState(CHANNEL_SHADELEVEL, new PercentType(level));
             }
-            updateState(CHANNEL_SHADELEVEL, new PercentType(level));
         }
     }
 }

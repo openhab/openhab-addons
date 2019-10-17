@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.loxone.internal.types.LxCategory;
+import org.openhab.binding.loxone.internal.types.LxTags;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -73,9 +74,9 @@ class LxControlSwitch extends LxControl {
         super.initialize(config);
         LxCategory category = getCategory();
         if (category != null && category.getType() == LxCategory.CategoryType.LIGHTS) {
-            tags.add("Lighting");
+            tags.addAll(LxTags.LIGHTING);
         } else {
-            tags.add("Switchable");
+            tags.addAll(LxTags.SWITCHABLE);
         }
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH), defaultChannelLabel,
                 "Switch", tags, this::handleSwitchCommands, this::getSwitchState);
@@ -125,7 +126,16 @@ class LxControlSwitch extends LxControl {
      * @return ON/OFF or null if undefined
      */
     State getSwitchState() {
-        Double value = getStateDoubleValue(STATE_ACTIVE);
+        return convertSwitchState(getStateDoubleValue(STATE_ACTIVE));
+    }
+
+    /**
+     * Convert double value of switch into ON/OFF state value
+     *
+     * @param value state value as double
+     * @return state value as ON/OFF
+     */
+    static State convertSwitchState(Double value) {
         if (value != null) {
             if (value == 1.0) {
                 return OnOffType.ON;

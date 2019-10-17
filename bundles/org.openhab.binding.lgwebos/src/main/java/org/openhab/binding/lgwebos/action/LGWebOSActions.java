@@ -29,30 +29,24 @@ import javax.imageio.ImageIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
+import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVMouseSocket.ButtonType;
+import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket;
+import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
+import org.openhab.binding.lgwebos.internal.handler.core.AppInfo;
+import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
+import org.openhab.binding.lgwebos.internal.handler.core.TextInputStatusInfo;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.connectsdk.core.AppInfo;
-import com.connectsdk.core.TextInputStatusInfo;
-import com.connectsdk.device.ConnectableDevice;
-import com.connectsdk.service.capability.CapabilityMethods;
-import com.connectsdk.service.capability.KeyControl;
-import com.connectsdk.service.capability.Launcher;
-import com.connectsdk.service.capability.TVControl;
-import com.connectsdk.service.capability.TextInputControl;
-import com.connectsdk.service.capability.TextInputControl.TextInputStatusListener;
-import com.connectsdk.service.capability.ToastControl;
-import com.connectsdk.service.capability.listeners.ResponseListener;
-import com.connectsdk.service.command.ServiceCommandError;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 /**
  * This is the automation engine action handler service for the
@@ -64,7 +58,7 @@ import com.connectsdk.service.command.ServiceCommandError;
 @NonNullByDefault
 public class LGWebOSActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(LGWebOSActions.class);
-    private final TextInputStatusListener textInputListener = createTextInputStatusListener();
+    private final ResponseListener<TextInputStatusInfo> textInputListener = createTextInputStatusListener();
     private @Nullable LGWebOSHandler handler;
 
     @Override
@@ -75,6 +69,16 @@ public class LGWebOSActions implements ThingActions {
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return this.handler;
+    }
+
+    // a NonNull getter for handler
+    private LGWebOSHandler getLGWebOSHandler() {
+        LGWebOSHandler lgWebOSHandler = this.handler;
+        if (lgWebOSHandler == null) {
+            throw new IllegalStateException(
+                    "ThingHandler must be set before any action may be invoked on LGWebOSActions.");
+        }
+        return lgWebOSHandler;
     }
 
     private enum Button {
@@ -93,7 +97,7 @@ public class LGWebOSActions implements ThingActions {
     public void showToast(
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
             throws IOException {
-        getControl(ToastControl.class).ifPresent(control -> control.showToast(text, createResponseListener()));
+        getSocket().ifPresent(control -> control.showToast(text, createResponseListener()));
     }
 
     @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconLabel")
@@ -105,37 +109,33 @@ public class LGWebOSActions implements ThingActions {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream(); OutputStream b64 = Base64.getEncoder().wrap(os)) {
             ImageIO.write(bi, "png", b64);
             String string = os.toString(StandardCharsets.UTF_8.name());
-            getControl(ToastControl.class)
-                    .ifPresent(control -> control.showToast(text, string, "png", createResponseListener()));
+            getSocket().ifPresent(control -> control.showToast(text, string, "png", createResponseListener()));
         }
     }
 
     @RuleAction(label = "@text/actionLaunchBrowserLabel", description = "@text/actionLaunchBrowserDesc")
     public void launchBrowser(
             @ActionInput(name = "url", label = "@text/actionLaunchBrowserInputUrlLabel", description = "@text/actionLaunchBrowserInputUrlDesc") String url) {
-        getControl(Launcher.class).ifPresent(control -> control.launchBrowser(url, createResponseListener()));
+        getSocket().ifPresent(control -> control.launchBrowser(url, createResponseListener()));
     }
 
     private List<AppInfo> getAppInfos() {
-        LGWebOSHandler lgWebOSHandler = this.handler;
-        if (lgWebOSHandler == null) {
-            throw new IllegalStateException(
-                    "ThingHandler must be set before any action may be invoked on LGWebOSActions.");
-        }
+        LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
 
-        final Optional<ConnectableDevice> connectableDevice = lgWebOSHandler.getDevice();
-        if (!connectableDevice.isPresent()) {
-            logger.warn("Device not present.");
+        final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
+        if (!socket.isConnected()) {
+            logger.warn("Device with ThingID {} is currently not connected.", lgWebOSHandler.getThing().getUID());
             return Collections.emptyList();
         }
-        ConnectableDevice device = connectableDevice.get();
 
-        List<AppInfo> appInfos = lgWebOSHandler.getLauncherApplication().getAppInfos(device);
+        List<AppInfo> appInfos = lgWebOSHandler.getLauncherApplication()
+                .getAppInfos(lgWebOSHandler.getThing().getUID());
         if (appInfos == null) {
-            logger.warn("No application list cached for {}, ignoring command.", lgWebOSHandler.getThing().getLabel());
+            logger.warn("No AppInfos found for device with ThingID {}.", lgWebOSHandler.getThing().getUID());
             return Collections.emptyList();
         }
         return appInfos;
+
     }
 
     public List<Application> getApplications() {
@@ -146,45 +146,46 @@ public class LGWebOSActions implements ThingActions {
     @RuleAction(label = "@text/actionLaunchApplicationLabel", description = "@text/actionLaunchApplicationDesc")
     public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId) {
-        List<AppInfo> appInfos = getAppInfos();
-        getControl(Launcher.class).ifPresent(control -> {
-            Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
-            if (appInfo.isPresent()) {
-                control.launchApp(appId, createResponseListener());
-            } else {
-                logger.warn("TV does not support any app with id: {}.", appId);
-            }
-        });
+        Optional<AppInfo> appInfo = getAppInfos().stream().filter(a -> a.getId().equals(appId)).findFirst();
+        if (appInfo.isPresent()) {
+            getSocket().ifPresent(control -> control.launchAppWithInfo(appInfo.get(), createResponseListener()));
+        } else {
+            logger.warn("Device with ThingID {} does not support any app with id: {}.",
+                    getLGWebOSHandler().getThing().getUID(), appId);
+        }
+
     }
 
     @RuleAction(label = "@text/actionLaunchApplicationWithParamsLabel", description = "@text/actionLaunchApplicationWithParamsDesc")
     public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
-            @ActionInput(name = "params", label = "@text/actionLaunchApplicationInputParamsLabel", description = "@text/actionLaunchApplicationInputParamsDesc") Object params) {
-        JSONObject parameters;
+            @ActionInput(name = "params", label = "@text/actionLaunchApplicationInputParamsLabel", description = "@text/actionLaunchApplicationInputParamsDesc") String params) {
         try {
-            parameters = new JSONObject(params);
-        } catch (JSONException ex) {
+            JsonParser parser = new JsonParser();
+            JsonObject payload = (JsonObject) parser.parse(params);
+
+            Optional<AppInfo> appInfo = getAppInfos().stream().filter(a -> a.getId().equals(appId)).findFirst();
+            if (appInfo.isPresent()) {
+                getSocket().ifPresent(
+                        control -> control.launchAppWithInfo(appInfo.get(), payload, createResponseListener()));
+            } else {
+                logger.warn("Device with ThingID {} does not support any app with id: {}.",
+                        getLGWebOSHandler().getThing().getUID(), appId);
+            }
+
+        } catch (JsonParseException ex) {
             logger.warn("Parameters value ({}) is not in a valid JSON format. {}", params, ex.getMessage());
             return;
         }
-        List<AppInfo> appInfos = getAppInfos();
-        getControl(Launcher.class).ifPresent(control -> {
-            Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
-            if (appInfo.isPresent()) {
-                control.launchAppWithInfo(appInfo.get(), parameters, createResponseListener());
-            } else {
-                logger.warn("TV does not support any app with id: {}.", appId);
-            }
-        });
     }
 
     @RuleAction(label = "@text/actionSendTextLabel", description = "@text/actionSendTextDesc")
     public void sendText(
             @ActionInput(name = "text", label = "@text/actionSendTextInputTextLabel", description = "@text/actionSendTextInputTextDesc") String text) {
-        getControl(TextInputControl.class).ifPresent(control -> {
-            control.subscribeTextInputStatus(textInputListener);
+        getSocket().ifPresent(control -> {
+            ServiceSubscription<TextInputStatusInfo> subscription = control.subscribeTextInputStatus(textInputListener);
             control.sendText(text);
+            control.unsubscribe(subscription);
         });
     }
 
@@ -194,37 +195,31 @@ public class LGWebOSActions implements ThingActions {
         try {
             switch (Button.valueOf(button)) {
                 case UP:
-                    getControl(KeyControl.class).ifPresent(control -> control.up(createResponseListener()));
+                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.UP)));
                     break;
                 case DOWN:
-                    getControl(KeyControl.class).ifPresent(control -> control.down(createResponseListener()));
+                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.DOWN)));
                     break;
                 case LEFT:
-                    getControl(KeyControl.class).ifPresent(control -> control.left(createResponseListener()));
+                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.LEFT)));
                     break;
                 case RIGHT:
-                    getControl(KeyControl.class).ifPresent(control -> control.right(createResponseListener()));
+                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.RIGHT)));
                     break;
                 case BACK:
-                    getControl(KeyControl.class).ifPresent(control -> control.back(createResponseListener()));
+                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.BACK)));
                     break;
                 case DELETE:
-                    getControl(TextInputControl.class).ifPresent(control -> {
-                        control.subscribeTextInputStatus(textInputListener);
-                        control.sendDelete();
-                    });
+                    getSocket().ifPresent(control -> control.sendDelete());
                     break;
                 case ENTER:
-                    getControl(TextInputControl.class).ifPresent(control -> {
-                        control.subscribeTextInputStatus(textInputListener);
-                        control.sendEnter();
-                    });
+                    getSocket().ifPresent(control -> control.sendEnter());
                     break;
                 case HOME:
-                    getControl(KeyControl.class).ifPresent(control -> control.home(createResponseListener()));
+                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button("HOME")));
                     break;
                 case OK:
-                    getControl(KeyControl.class).ifPresent(control -> control.ok(createResponseListener()));
+                    getSocket().ifPresent(control -> control.executeMouse(s -> s.click()));
                     break;
             }
         } catch (IllegalArgumentException ex) {
@@ -235,47 +230,31 @@ public class LGWebOSActions implements ThingActions {
 
     @RuleAction(label = "@text/actionIncreaseChannelLabel", description = "@text/actionIncreaseChannelDesc")
     public void increaseChannel() {
-        getControl(TVControl.class).ifPresent(control -> control.channelUp(createResponseListener()));
+        getSocket().ifPresent(control -> control.channelUp(createResponseListener()));
     }
 
     @RuleAction(label = "@text/actionDecreaseChannelLabel", description = "@text/actionDecreaseChannelDesc")
     public void decreaseChannel() {
-        getControl(TVControl.class).ifPresent(control -> control.channelDown(createResponseListener()));
+        getSocket().ifPresent(control -> control.channelDown(createResponseListener()));
     }
 
-    private <C extends @Nullable CapabilityMethods> Optional<C> getControl(Class<C> clazz) {
-        LGWebOSHandler lgWebOSHandler = this.handler;
-        if (lgWebOSHandler == null) {
-            throw new IllegalStateException(
-                    "ThingHandler must be set before any action may be invoked on LGWebOSActions.");
-        }
-
-        ThingStatus status = lgWebOSHandler.getThing().getStatus();
-        if (!ThingStatus.ONLINE.equals(status)) {
-            logger.info("Device not online.");
+    private Optional<LGWebOSTVSocket> getSocket() {
+        LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
+        final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
+        if (!socket.isConnected()) {
+            logger.warn("Device with ThingID {} is currently not connected.", lgWebOSHandler.getThing().getUID());
             return Optional.empty();
         }
 
-        final Optional<ConnectableDevice> connectableDevice = lgWebOSHandler.getDevice();
-        if (!connectableDevice.isPresent()) {
-            logger.warn("Device not present.");
-            return Optional.empty();
-        }
-
-        C control = connectableDevice.get().getCapability(clazz);
-        if (control == null) {
-            logger.warn("Device does not have the ability: {}.", clazz.getName());
-            return Optional.empty();
-        }
-        return Optional.of(control);
+        return Optional.of(socket);
     }
 
-    private TextInputStatusListener createTextInputStatusListener() {
-        return new TextInputStatusListener() {
+    private ResponseListener<TextInputStatusInfo> createTextInputStatusListener() {
+        return new ResponseListener<TextInputStatusInfo>() {
 
             @Override
-            public void onError(@Nullable ServiceCommandError error) {
-                logger.warn("Response: {}", error == null ? "" : error.getMessage());
+            public void onError(@Nullable String error) {
+                logger.warn("Response: {}", error);
             }
 
             @Override
@@ -289,12 +268,12 @@ public class LGWebOSActions implements ThingActions {
         return new ResponseListener<O>() {
 
             @Override
-            public void onError(@Nullable ServiceCommandError error) {
-                logger.warn("Response: {}", error == null ? "" : error.getMessage());
+            public void onError(@Nullable String error) {
+                logger.warn("Response: {}", error);
             }
 
             @Override
-            public void onSuccess(O object) {
+            public void onSuccess(@Nullable O object) {
                 logger.debug("Response: {}", object == null ? "OK" : object.toString());
             }
         };

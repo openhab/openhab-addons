@@ -128,6 +128,7 @@
 				<description>Content data type</description>
 				<options>
 					<option value="STRING">String</option>
+					<option value="HEXSTRING">Hex-String</option>
 					<option value="IPADDRESS">IP Address</option>
 				</options>
 				<default>STRING</default>
@@ -176,6 +177,7 @@
 					<option value="INT32">Integer (32 bit)</option>
 					<option value="COUNTER64">Counter (64 bit)</option>
 					<option value="STRING">String</option>
+					<option value="HEXSTRING">Hex-String</option>
 					<option value="IPADDRESS">IP Address</option>
 				</options>
 				<default>UINT32</default>

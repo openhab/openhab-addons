@@ -30,13 +30,15 @@ import org.slf4j.LoggerFactory;
 public class RFXComStreamReader extends Thread {
     private final Logger logger = LoggerFactory.getLogger(RFXComStreamReader.class);
     private static final int MAX_READ_TIMEOUTS = 4;
+    private static final int MAX_RFXCOM_MESSAGE_LEN = 256;
 
     private RFXComBaseConnector connector;
 
     private class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         @Override
         public void uncaughtException(Thread thread, Throwable throwable) {
-            logger.error("Connector died: ", throwable);
+            logger.debug("Connector died: ", throwable);
+            connector.sendErrorToListeners("Connector died: " + throwable.getMessage());
         }
     }
 
@@ -48,7 +50,7 @@ public class RFXComStreamReader extends Thread {
     @Override
     public void run() {
         logger.debug("Data listener started");
-        byte[] buf = new byte[Byte.MAX_VALUE];
+        byte[] buf = new byte[MAX_RFXCOM_MESSAGE_LEN];
 
         // The stream has (or SHOULD have) a read timeout set. Taking a
         // read timeout (read returns 0) between packets gives us a chance
@@ -62,6 +64,7 @@ public class RFXComStreamReader extends Thread {
                 int packetLength = buf[0];
 
                 if (bytesRead > 0 && packetLength > 0) {
+                    logger.trace("Message length is {} bytes", packetLength);
                     processMessage(buf, packetLength);
                     connector.sendMsgToListeners(Arrays.copyOfRange(buf, 0, packetLength + 1));
                 }
@@ -78,13 +81,12 @@ public class RFXComStreamReader extends Thread {
         // Now read the rest of the packet
         int bufferIndex = 1;
         int readTimeoutCount = 1;
-        int bytesRead;
         while (bufferIndex <= packetLength) {
             int bytesRemaining = packetLength - bufferIndex + 1;
-
-            bytesRead = connector.read(buf, bufferIndex, bytesRemaining);
-
+            logger.trace("Waiting remaining {} bytes from the message", bytesRemaining);
+            int bytesRead = connector.read(buf, bufferIndex, bytesRemaining);
             if (bytesRead > 0) {
+                logger.trace("Received {} bytes from the message", bytesRead);
                 bufferIndex += bytesRead;
                 readTimeoutCount = 1;
             } else if (readTimeoutCount++ == MAX_READ_TIMEOUTS) {

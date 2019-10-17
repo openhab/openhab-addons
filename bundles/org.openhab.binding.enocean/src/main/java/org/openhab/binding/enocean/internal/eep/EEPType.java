@@ -104,6 +104,7 @@ import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_03;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_09;
+import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_0A;
 import org.openhab.binding.enocean.internal.eep.A5_20.A5_20_04;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Blinds;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Dimming;
@@ -133,6 +134,7 @@ import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_0F_NodON;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_11;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12_NodON;
+import org.openhab.binding.enocean.internal.eep.D2_03.D2_03_0A;
 import org.openhab.binding.enocean.internal.eep.D2_05.D2_05_00;
 import org.openhab.binding.enocean.internal.eep.D5_00.D5_00_01;
 import org.openhab.binding.enocean.internal.eep.F6_01.F6_01_01;
@@ -161,7 +163,7 @@ public enum EEPType {
             CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD),
     Generic4BS(RORG._4BS, 0xFF, 0xFF, false, Generic4BS.class, THING_TYPE_GENERICTHING, CHANNEL_GENERIC_SWITCH,
             CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_DIMMER, CHANNEL_GENERIC_NUMBER, CHANNEL_GENERIC_STRING,
-            CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD),
+            CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD, CHANNEL_VIBRATION),
     GenericVLD(RORG.VLD, 0xFF, 0xFF, false, GenericVLD.class, THING_TYPE_GENERICTHING, CHANNEL_GENERIC_SWITCH,
             CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_DIMMER, CHANNEL_GENERIC_NUMBER, CHANNEL_GENERIC_STRING,
             CHANNEL_GENERIC_COLOR, CHANNEL_GENERIC_TEACHINCMD),
@@ -170,6 +172,8 @@ public enum EEPType {
             CHANNEL_CONTACT),
 
     PushButton(RORG.RPS, 0x01, 0x01, false, F6_01_01.class, THING_TYPE_PUSHBUTTON, CHANNEL_PUSHBUTTON),
+    PushButtonTriState(RORG.VLD, 0x03, 0x0A, false, D2_03_0A.class, THING_TYPE_PUSHBUTTON, CHANNEL_PUSHBUTTON,
+            CHANNEL_DOUBLEPRESS, CHANNEL_LONGPRESS, CHANNEL_BATTERY_LEVEL),
 
     RockerSwitch2RockerStyle1(RORG.RPS, 0x02, 0x01, false, F6_02_01.class, THING_TYPE_ROCKERSWITCH,
             CHANNEL_ROCKERSWITCH_CHANNELA, CHANNEL_ROCKERSWITCH_CHANNELB, CHANNEL_VIRTUALSWITCHA,
@@ -186,6 +190,8 @@ public enum EEPType {
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT),
     MechanicalHandle02(RORG._4BS, 0x14, 0x09, false, A5_14_09.class, THING_TYPE_MECHANICALHANDLE,
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_BATTERY_VOLTAGE),
+    MechanicalHandle03(RORG._4BS, 0x14, 0x0A, false, A5_14_0A.class, THING_TYPE_MECHANICALHANDLE,
+            CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_VIBRATION, CHANNEL_BATTERY_VOLTAGE),
 
     ContactAndSwitch01(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT),
     ContactAndSwitch02(RORG._4BS, 0x14, 0x01, false, A5_14_01.class, THING_TYPE_CONTACT, CHANNEL_BATTERY_VOLTAGE,
@@ -350,9 +356,9 @@ public enum EEPType {
     AutomatedMeterReading_01(RORG._4BS, 0x12, 0x01, false, A5_12_01.class, THING_TYPE_AUTOMATEDMETERSENSOR,
             CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER),
     AutomatedMeterReading_02(RORG._4BS, 0x12, 0x02, false, A5_12_02.class, THING_TYPE_AUTOMATEDMETERSENSOR,
-            CHANNEL_TOTALCUBICMETRE, CHANNEL_INSTANTLITRE),
+            CHANNEL_CUMULATIVEVALUE, CHANNEL_CURRENTFLOW),
     AutomatedMeterReading_03(RORG._4BS, 0x12, 0x03, false, A5_12_03.class, THING_TYPE_AUTOMATEDMETERSENSOR,
-            CHANNEL_TOTALCUBICMETRE, CHANNEL_INSTANTLITRE),
+            CHANNEL_CUMULATIVEVALUE, CHANNEL_CURRENTFLOW),
 
     Rollershutter_A5(RORG._4BS, 0x11, 0x03, false, A5_11_03.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER,
             CHANNEL_ANGLE),

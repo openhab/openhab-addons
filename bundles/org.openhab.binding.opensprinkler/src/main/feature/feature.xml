@@ -4,7 +4,6 @@
 
     <feature name="openhab-binding-opensprinkler" description="OpenSprinkler Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:com.pi4j/pi4j-core/1.2</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.opensprinkler/${project.version}</bundle>
     </feature>
 </features>

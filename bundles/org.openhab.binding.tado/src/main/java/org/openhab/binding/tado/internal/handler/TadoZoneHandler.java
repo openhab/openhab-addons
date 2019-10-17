@@ -42,6 +42,7 @@ import org.openhab.binding.tado.internal.TadoBindingConstants.ZoneType;
 import org.openhab.binding.tado.internal.TadoHvacChange;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
 import org.openhab.binding.tado.internal.api.ApiException;
+import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.internal.api.model.Overlay;
 import org.openhab.binding.tado.internal.api.model.OverlayTemplate;
@@ -56,6 +57,8 @@ import org.slf4j.LoggerFactory;
  * The {@link TadoZoneHandler} is responsible for handling commands of zones and update their state.
  *
  * @author Dennis Frommknecht - Initial contribution
+ * @author Andrew Fiddian-Green - Added Low Battery Alarm, A/C Power and Open Window channels
+ * 
  */
 public class TadoZoneHandler extends BaseHomeThingHandler {
     private Logger logger = LoggerFactory.getLogger(TadoZoneHandler.class);
@@ -64,7 +67,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     private ScheduledFuture<?> refreshTimer;
     private ScheduledFuture<?> scheduledHvacChange;
     private GenericZoneCapabilities capabilities;
-
     TadoHvacChange pendingHvacChange;
 
     public TadoZoneHandler(Thing thing) {
@@ -90,7 +92,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     public ZoneState getZoneState() throws IOException, ApiException {
-        return getApi().showZoneState(getHomeId(), getZoneId());
+        HomeApi api = getApi();
+        return api != null ? api.showZoneState(getHomeId(), getZoneId()) : null;
     }
 
     public GenericZoneCapabilities getZoneCapabilities() {
@@ -232,7 +235,9 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             TadoZoneStateAdapter state = new TadoZoneStateAdapter(zoneState, getTemperatureUnit());
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE, state.getInsideTemperature());
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_HUMIDITY, state.getHumidity());
+            
             updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER, state.getHeatingPower());
+            updateStateIfNotNull(TadoBindingConstants.CHANNEL_ZONE_AC_POWER, state.getAcPower());
 
             updateState(TadoBindingConstants.CHANNEL_ZONE_OPERATION_MODE, state.getOperationMode());
 
@@ -245,10 +250,17 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
             updateState(TadoBindingConstants.CHANNEL_ZONE_OVERLAY_EXPIRY, state.getOverlayExpiration());
 
+            updateState(TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_DETECTED, state.getOpenWindowDetected());
+
             onSuccessfulOperation();
         } catch (IOException | ApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
+        }
+        
+        TadoHomeHandler home = getHomeHandler();
+        if (home != null) {
+            updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM, home.getBatteryLowAlarm(getZoneId()));
         }
     }
 

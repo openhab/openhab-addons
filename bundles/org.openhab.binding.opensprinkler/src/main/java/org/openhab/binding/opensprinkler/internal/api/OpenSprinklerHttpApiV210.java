@@ -14,6 +14,8 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.DataFormatErrorApiException;
@@ -83,7 +85,7 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
     }
 
     @Override
-    public void openStation(int station) throws Exception {
+    public void openStation(int station, BigDecimal duration) throws CommunicationApiException, GeneralApiException {
         String returnContent;
 
         if (station < 0 || station >= numberOfStations) {
@@ -93,8 +95,8 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
 
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATION_CONTROL, getRequestRequiredOptions() + "&"
-                    + CMD_STATION + station + "&" + CMD_STATION_ENABLE + "&" + CMD_STATION_ENABLE_TIME);
-        } catch (Exception exp) {
+                    + CMD_STATION + station + "&" + CMD_STATION_ENABLE + "&t=" + duration);
+        } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
@@ -103,7 +105,7 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
     }
 
     @Override
-    public void closeStation(int station) throws Exception {
+    public void closeStation(int station) throws CommunicationApiException, GeneralApiException {
         String returnContent;
 
         if (station < 0 || station > numberOfStations) {
@@ -148,7 +150,7 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
      *            an action result is returned from the API.
      * @throws Exception Returns a custom exception based on the result key.
      */
-    protected void resultParser(String returnContent) throws Exception {
+    protected void resultParser(String returnContent) throws GeneralApiException {
         int returnCode;
 
         try {

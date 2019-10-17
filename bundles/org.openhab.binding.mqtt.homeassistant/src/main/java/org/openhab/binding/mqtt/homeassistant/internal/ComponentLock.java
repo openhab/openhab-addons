@@ -52,7 +52,7 @@ public class ComponentLock extends AbstractComponent<ComponentLock.ChannelConfig
 
         buildChannel(switchChannelID,
                 new OnOffValue(channelConfiguration.payload_lock, channelConfiguration.payload_unlock),
-                channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                channelConfiguration.name, componentConfiguration.getUpdateListener())//
                         .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
                         .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain)//
                         .build();

@@ -15,13 +15,15 @@ package org.openhab.binding.lgwebos.internal;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.jupnp.model.types.ServiceType;
 
 /**
  * This class defines common constants, which are used across the whole binding.
  *
- * @author Sebastian Prehn - initial contribution
+ * @author Sebastian Prehn - Initial contribution
  */
 @NonNullByDefault
 public class LGWebOSBindingConstants {
@@ -30,13 +32,36 @@ public class LGWebOSBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_WEBOSTV = new ThingTypeUID(BINDING_ID, "WebOSTV");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WEBOSTV);
+    public static final Set<@NonNull ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(THING_TYPE_WEBOSTV);
 
-    public static final String BINDING_CONFIGURATION_LOCALIP = "localIP";
+    public static final ServiceType UPNP_SERVICE_TYPE = new ServiceType("lge-com", "webos-second-screen", 1);
 
+    /*
+     * Config names must match property names in
+     * - WebOSConfiguration
+     * - parameter names in ESH-INF/config/config.xml
+     * - property names in ESH-INF/thing/thing-types.xml
+     */
+    public static final String CONFIG_HOST = "host";
+    public static final String CONFIG_KEY = "key";
+
+    /*
+     * Property names must match property names in
+     * - property names in ESH-INF/thing/thing-types.xml
+     */
     public static final String PROPERTY_DEVICE_ID = "deviceId";
+    public static final String PROPERTY_DEVICE_OS = "deviceOS";
+    public static final String PROPERTY_DEVICE_OS_VERSION = "deviceOSVersion";
+    public static final String PROPERTY_DEVICE_OS_RELEASE_VERSION = "deviceOSReleaseVersion";
+    public static final String PROPERTY_LAST_CONNECTED = "lastConnected";
+    public static final String PROPERTY_MODEL_NAME = "modelName";
+    public static final String PROPERTY_MANUFACTURER = "manufacturer";
 
-    // List of all Channel ids. Values have to match ids in thing-types.xml
+    /*
+     * List of all Channel ids.
+     * Values have to match ids in thing-types.xml
+     */
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_MUTE = "mute";
