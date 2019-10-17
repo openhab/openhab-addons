@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="doorbird" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="d101">
+		<label>Doorbird D101</label>
+		<description>Doorbird doorbell model D101</description>
+		<channels>
+			<channel id="doorbell" typeId="system.rawbutton" />
+			<channel id="doorbellTimestamp" typeId="doorbellTimestamp" />
+			<channel id="doorbellImage" typeId="doorbellImage" />
+			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
+			<channel id="doorbellHistoryTimestamp" typeId="doorbellHistoryTimestamp" />
+			<channel id="doorbellHistoryImage" typeId="doorbellHistoryImage" />
+			<channel id="doorbellMontage" typeId="doorbellMontage" />
+			<channel id="motion" typeId="system.motion" />
+			<channel id="motionTimestamp" typeId="motionTimestamp" />
+			<channel id="motionImage" typeId="motionImage" />
+			<channel id="motionHistoryIndex" typeId="motionHistoryIndex" />
+			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp" />
+			<channel id="motionHistoryImage" typeId="motionHistoryImage" />
+			<channel id="motionMontage" typeId="motionMontage" />
+			<channel id="light" typeId="light" />
+			<channel id="openDoor1" typeId="openDoor1" />
+			<channel id="image" typeId="image" />
+			<channel id="imageTimestamp" typeId="imageTimestamp" />
+		</channels>
+		<config-description-ref uri="thing-type:doorbird:config" />
+	</thing-type>
+
+	<thing-type id="d210x">
+		<label>Doorbird D210x</label>
+		<description>Doorbird doorbell model D210x</description>
+		<channels>
+			<channel id="doorbell" typeId="system.rawbutton" />
+			<channel id="doorbellTimestamp" typeId="doorbellTimestamp" />
+			<channel id="doorbellImage" typeId="doorbellImage" />
+			<channel id="doorbellHistoryIndex" typeId="doorbellHistoryIndex" />
+			<channel id="doorbellHistoryTimestamp" typeId="doorbellHistoryTimestamp" />
+			<channel id="doorbellHistoryImage" typeId="doorbellHistoryImage" />
+			<channel id="doorbellMontage" typeId="doorbellMontage" />
+			<channel id="motion" typeId="system.motion" />
+			<channel id="motionTimestamp" typeId="motionTimestamp" />
+			<channel id="motionImage" typeId="motionImage" />
+			<channel id="motionHistoryIndex" typeId="motionHistoryIndex" />
+			<channel id="motionHistoryTimestamp" typeId="motionHistoryTimestamp" />
+			<channel id="motionHistoryImage" typeId="motionHistoryImage" />
+			<channel id="motionMontage" typeId="motionMontage" />
+			<channel id="light" typeId="light" />
+			<channel id="openDoor1" typeId="openDoor1" />
+			<channel id="openDoor2" typeId="openDoor2" />
+			<channel id="image" typeId="image" />
+			<channel id="imageTimestamp" typeId="imageTimestamp" />
+		</channels>
+		<config-description-ref uri="thing-type:doorbird:config" />
+	</thing-type>
+
+	<channel-type id="doorbellTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Doorbell Timestamp</label>
+		<description>Time when doorbell was last pressed</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="doorbellImage">
+		<item-type>Image</item-type>
+		<label>Doorbell Pressed Image</label>
+		<description>Image when doorbell was last pressed</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="motionTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Motion Timestamp</label>
+		<description>Time when motion was last detected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="motionImage">
+		<item-type>Image</item-type>
+		<label>Motion Detected Image</label>
+		<description>Image when motion was last detected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="light">
+		<item-type>Switch</item-type>
+		<label>Light</label>
+		<description>Energize the light relay</description>
+		<state pattern="%s"></state>
+	</channel-type>
+	<channel-type id="openDoor1">
+		<item-type>Switch</item-type>
+		<label>Open Door 1</label>
+		<description>Energize opendoor / alarm output relay 1</description>
+		<state pattern="%s"></state>
+	</channel-type>
+	<channel-type id="openDoor2">
+		<item-type>Switch</item-type>
+		<label>Open Door 2</label>
+		<description>Energize opendoor / alarm output relay 2</description>
+		<state pattern="%s"></state>
+	</channel-type>
+	<channel-type id="imageTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Image Timestamp</label>
+		<description>Time when image was captured from device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<description>Image from device</description>
+	</channel-type>
+	<channel-type id="doorbellHistoryIndex">
+		<item-type>Number</item-type>
+		<label>Doorbell History Index</label>
+		<description>Index of historical image for doorbell press</description>
+		<state min="1" max="50" step="1"></state>
+	</channel-type>
+	<channel-type id="doorbellHistoryTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Doorbell History Timestamp</label>
+		<description>Time when doorbell was pressed for history image</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="doorbellHistoryImage">
+		<item-type>Image</item-type>
+		<label>Doorbell History Image</label>
+		<description>Historical image for doorbell press</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="motionHistoryIndex">
+		<item-type>Number</item-type>
+		<label>Motion History Index</label>
+		<description>Index of Historical image for motion</description>
+		<state min="1" max="50" step="1"></state>
+	</channel-type>
+	<channel-type id="motionHistoryTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Motion History Timestamp</label>
+		<description>Time when motion was detected for history image</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="motionHistoryImage">
+		<item-type>Image</item-type>
+		<label>Motion History Image</label>
+		<description>Historical image for motion sensor</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="doorbellMontage">
+		<item-type>Image</item-type>
+		<label>Doorbell Montage Image</label>
+		<description>Montage of multiple doorbell history images</description>
+	</channel-type>
+	<channel-type id="motionMontage">
+		<item-type>Image</item-type>
+		<label>Motion Montage Image</label>
+		<description>Montage of multiple motion history images</description>
+	</channel-type>
+
+</thing:thing-descriptions>
