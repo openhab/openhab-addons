@@ -115,6 +115,8 @@ public class RollershutterValue extends Value {
 
     @Override
     public String getMQTTpublishValue() {
+        final String upString = this.upString;
+        final String downString = this.downString;
         if (this.nextIsStop) {
             this.nextIsStop = false;
             return stopString;
