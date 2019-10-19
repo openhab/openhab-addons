@@ -88,7 +88,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        config = getThing().getConfiguration().as(AcDeviceConfig.class);
+        config = getConfigAs(AcDeviceConfig.class);
         logger.debug("A.C. device config: {}", config);
 
         initializeBridge(bridge.getHandler(), bridge.getStatus());

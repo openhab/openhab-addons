@@ -66,7 +66,7 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing MELCloud account handler.");
-        config = getThing().getConfiguration().as(AccountConfig.class);
+        config = getConfigAs(AccountConfig.class);
         connection = new MelCloudConnection();
         devices = Collections.emptyList();
         loginCredentialError = false;
