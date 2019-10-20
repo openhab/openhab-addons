@@ -160,6 +160,7 @@ This binding currently supports following channel types:
 | datetime        | DateTime      | DateTime channel.                                                                  |
 | dimminglevel    | Dimmer        | Dimming level channel.                                                             |
 | fanspeedstring  | String        | Set the speed of the device, values could be device specific                       |
+| fanspeedcontrol | Rollershutter | Set the speed of the device, values could be device specific                       |
 | fanlight        | Switch        | Enable light of Fan                                                                |
 | forecast        | String        | Weather forecast from device: NO\_INFO\_AVAILABLE/SUNNY/PARTLY\_CLOUDY/CLOUDY/RAIN |
 | tempcontrol     | Rollershutter | Global control for temperature also setting ON, OFF, UP, DOWN                      |
@@ -464,6 +465,49 @@ Switch item=FanSwitch label="Fan"
 Switch item=FanLightSwitch label="Light" mappings=[ON="On"]
 Switch item=FanSpeedSwitch label="Speed" mappings=[LOW=Low, MED=Medium, HI=High]
 ```
+
+#### Falmec fan
+
+A Falmec Fan device
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type | Remarks                      |
+|--------------|-------------------------------------|-----------|------------------------------|
+| command      | [command](#channels)                | Switch    |                              |
+| fanSpeed     | [fanspeed](#channels)               | Number    | Options: 1,2,3,4,5,6         |
+| fanLight     | [fanlight](#channels)               | Switch    |                              |
+| signalLevel  | [system.signal-strength](#channels) | Number    |                              |
+
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360    
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   FALMEC - Falmec
+
+#### Lucci Air DC fan
+
+A Lucci Air DC fan device
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type     | Remarks                                                       |
+|--------------|-------------------------------------|---------------|---------------------------------------------------------------|
+| commandString| [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, REVERSE, NATURAL_FLOW, PAIR  |
+| fanSpeed     | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN                                            |
+| fanLight     | [fanlight](#channels)               | Switch        |                                                               |
+| signalLevel  | [system.signal-strength](#channels) | Number        |                                                               |
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360    
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   LUCCI_AIR_DC - Lucci Air DC
 
 ### energy - RFXCOM Energy Sensor
 
