@@ -23,7 +23,7 @@
     <dependency>
       <groupId>com.github.j-n-k</groupId>
       <artifactId>moquette-broker</artifactId>
-      <version>0.13.0.OH2</version>
+      <version>0.13.0.OH3</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>

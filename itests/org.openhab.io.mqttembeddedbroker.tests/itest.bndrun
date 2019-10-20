@@ -61,3 +61,4 @@ Fragment-Host: org.openhab.io.mqttembeddedbroker
 	net.bytebuddy.byte-buddy;version='[1.9.10,1.9.11)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.9.10,1.9.11)',\
 	org.mockito.mockito-core;version='[3.1.0,3.1.1)'
+-runvm: -Dio.netty.noUnsafe=true
