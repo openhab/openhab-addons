@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -131,6 +132,15 @@ public class FloureonThermostatHandler extends BroadlinkHandler {
     private void refreshData() {
         try {
             BaseStatusInfo baseStatusInfo = floureonDevice.getBasicStatus();
+            if(baseStatusInfo == null){
+                logger.warn("Device {} did not return any data. Trying to reauthenticate...",thing.getUID());
+                authenticate();
+                baseStatusInfo = floureonDevice.getBasicStatus();
+            }
+            if(baseStatusInfo == null){
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,"Device not responding.");
+                return;
+            }
             logger.debug("Retrieved data from device {}: {}", thing.getUID(), baseStatusInfo);
             logger.debug("Updating channel {} with value {}", ROOM_TEMPERATURE, new DecimalType(baseStatusInfo.getRoomTemp()));
             logger.debug("Mode {}",StringType.valueOf(baseStatusInfo.getAutoMode() ? "auto" : "manual"));
