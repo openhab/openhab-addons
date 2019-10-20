@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
@@ -219,9 +220,23 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         }
     }
 
+    /**
+     * This method cleans the locks to overcome bug in Paho persistence implementation. It will be removed when Paho
+     * bug is fixed, or another mqtt library is used.
+     *
+     * @param persistencePath
+     */
+    private void cleanLock(Path persistencePath) {
+        try {
+            Files.delete(persistencePath);
+        } catch (IOException e) {
+        }
+    }
+
     private MqttBrokerConnection createMqttConnection(@Nullable String username, @Nullable String password,
             String clientId) throws MqttException {
         Path persistencePath = persistenceBasePath.resolve(clientId);
+        cleanLock(persistencePath); // fix for lock files not being removed
         MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
         connection.setPersistencePath(persistencePath);
         connection.setTrustManagers(trustManagers);
