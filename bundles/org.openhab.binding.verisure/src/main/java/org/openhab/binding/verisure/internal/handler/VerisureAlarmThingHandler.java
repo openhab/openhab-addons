@@ -47,6 +47,8 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
         SUPPORTED_THING_TYPES.add(THING_TYPE_ALARM);
     }
 
+    private static final int REFRESH_DELAY_SECONDS = 10;
+
     public VerisureAlarmThingHandler(Thing thing) {
         super(thing);
     }
@@ -58,7 +60,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
             super.handleCommand(channelUID, command);
         } else if (channelUID.getId().equals(CHANNEL_ALARM_STATUS)) {
             handleAlarmState(command);
-            scheduleImmediateRefresh();
+            scheduleImmediateRefresh(REFRESH_DELAY_SECONDS);
         } else {
             logger.warn("Unknown command! {}", command);
         }

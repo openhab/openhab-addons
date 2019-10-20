@@ -51,6 +51,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
         SUPPORTED_THING_TYPES.add(THING_TYPE_SMARTLOCK);
     }
 
+    private static final int REFRESH_DELAY_SECONDS = 10;
+
     public VerisureSmartLockThingHandler(Thing thing) {
         super(thing);
     }
@@ -62,16 +64,16 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
             super.handleCommand(channelUID, command);
         } else if (channelUID.getId().equals(CHANNEL_SMARTLOCK_STATUS)) {
             handleSmartLockState(command);
-            scheduleImmediateRefresh();
+            scheduleImmediateRefresh(REFRESH_DELAY_SECONDS);
         } else if (channelUID.getId().equals(CHANNEL_AUTO_RELOCK)) {
             handleAutoRelock(command);
-            scheduleImmediateRefresh();
+            scheduleImmediateRefresh(REFRESH_DELAY_SECONDS);
         } else if (channelUID.getId().equals(CHANNEL_SMARTLOCK_VOLUME)) {
             handleSmartLockVolume(command);
-            scheduleImmediateRefresh();
+            scheduleImmediateRefresh(REFRESH_DELAY_SECONDS);
         } else if (channelUID.getId().equals(CHANNEL_SMARTLOCK_VOICE_LEVEL)) {
             handleSmartLockVoiceLevel(command);
-            scheduleImmediateRefresh();
+            scheduleImmediateRefresh(REFRESH_DELAY_SECONDS);
         } else {
             logger.warn("Unknown command! {}", command);
         }
@@ -268,7 +270,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
             } else if ("PENDING".equals(smartLockStatus)) {
                 // Schedule another refresh.
                 logger.debug("Issuing another immediate refresh since statis is stii PENDING ...");
-                this.scheduleImmediateRefresh();
+                this.scheduleImmediateRefresh(REFRESH_DELAY_SECONDS);
             }
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_BY_USER);
             updateState(cuid, new StringType(doorlock.getUserString()));

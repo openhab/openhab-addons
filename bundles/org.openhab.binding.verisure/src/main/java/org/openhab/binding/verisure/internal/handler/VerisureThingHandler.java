@@ -58,7 +58,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand, channel: {}, command: {}", channelUID, command);
+        logger.debug("VerisureThingHandler handleCommand, channel: {}, command: {}", channelUID, command);
         if (command instanceof RefreshType) {
             Bridge bridge = getBridge();
             if (bridge != null) {
@@ -77,13 +77,13 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         }
     }
 
-    protected void scheduleImmediateRefresh() {
+    protected void scheduleImmediateRefresh(int refreshDelay) {
         logger.debug("scheduleImmediateRefresh on thing: {}", thing);
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() != null) {
             VerisureBridgeHandler vbh = (VerisureBridgeHandler) bridge.getHandler();
             if (vbh != null) {
-                vbh.scheduleImmediateRefresh(VerisureBridgeHandler.REFRESH_DELAY_SECONDS);
+                vbh.scheduleImmediateRefresh(refreshDelay);
             }
         }
     }

@@ -48,6 +48,8 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
         SUPPORTED_THING_TYPES.add(THING_TYPE_SMARTPLUG);
     }
 
+    private static final int REFRESH_DELAY_SECONDS = 10;
+
     public VerisureSmartPlugThingHandler(Thing thing) {
         super(thing);
     }
@@ -59,7 +61,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
             super.handleCommand(channelUID, command);
         } else if (channelUID.getId().equals(CHANNEL_SMARTPLUG_STATUS)) {
             handleSmartPlugState(command);
-            scheduleImmediateRefresh();
+            scheduleImmediateRefresh(REFRESH_DELAY_SECONDS);
         } else {
             logger.warn("Unknown command! {}", command);
         }
@@ -130,7 +132,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
             } else if ("PENDING".equals(smartPlugStatus)) {
                 // Schedule another refresh.
                 logger.debug("Issuing another immediate refresh since status is still PENDING ...");
-                this.scheduleImmediateRefresh();
+                this.scheduleImmediateRefresh(REFRESH_DELAY_SECONDS);
             } else {
                 logger.warn("Unknown SmartPlug status: {}", smartPlugStatus);
             }

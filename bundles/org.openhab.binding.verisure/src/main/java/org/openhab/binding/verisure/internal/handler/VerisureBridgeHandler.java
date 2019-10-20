@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VerisureBridgeHandler extends BaseBridgeHandler {
 
-    public static final int REFRESH_DELAY_SECONDS = 10;
+    private static final int REFRESH_DELAY_SECONDS = 30;
 
     @Override
     protected void updateThing(Thing thing) {
@@ -72,7 +72,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(VerisureBridgeHandler.class);
     private final ReentrantLock immediateRefreshJobLock = new ReentrantLock();
 
-    private @Nullable String authstring;
+    private String authstring = "";
     private @Nullable String pinCode;
     private @Nullable BigDecimal refresh = new BigDecimal(600);
     private @Nullable ScheduledFuture<?> refreshJob;
@@ -88,13 +88,13 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handle command {} on channelUID: {}", command, channelUID);
+        logger.debug("VerisureBridgeHandler Handle command {} on channelUID: {}", command, channelUID);
         if (command instanceof RefreshType) {
             if (channelUID.getId().equals(CHANNEL_STATUS) && channelUID.getThingUID().equals(getThing().getUID())) {
-                logger.debug("Refresh command on channel {} will trigger instant refresh", channelUID);
+                logger.debug("Refresh command on status channel {} will trigger instant refresh", channelUID);
                 scheduleImmediateRefresh(0);
             } else {
-                logger.debug("Refresh command on channel {} will trigger fresh in {} seconds", channelUID,
+                logger.debug("Refresh command on channel {} will trigger refresh in {} seconds", channelUID,
                         REFRESH_DELAY_SECONDS);
                 scheduleImmediateRefresh(REFRESH_DELAY_SECONDS);
             }
@@ -192,16 +192,21 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     }
 
     void scheduleImmediateRefresh(int refreshDelay) {
+        logger.debug("VerisureBridgeHandler - scheduleImmediateRefresh");
         immediateRefreshJobLock.lock();
         try {
             // We schedule in 10 sec, to avoid multiple updates
             if (refreshJob != null) {
                 logger.debug("Current remaining delay {} for refresh job {}", refreshJob.getDelay(TimeUnit.SECONDS),
                         refreshJob);
-                if (refreshJob != null && refreshJob.getDelay(TimeUnit.SECONDS) > refreshDelay) {
+                if (immediateRefreshJob != null) {
+                    logger.debug("Current remaining delay {} for immediate refresh job {}",
+                            immediateRefreshJob.getDelay(TimeUnit.SECONDS), immediateRefreshJob);
+                }
+                if (refreshJob.getDelay(TimeUnit.SECONDS) > refreshDelay) {
                     if (immediateRefreshJob == null || immediateRefreshJob.getDelay(TimeUnit.SECONDS) <= 0) {
                         if (immediateRefreshJob != null) {
-                            logger.debug("Current immediateRefreshJob delay {} for immediate refresh job {}",
+                            logger.debug("Current remaining delay {} for immediate refresh job {}",
                                     immediateRefreshJob.getDelay(TimeUnit.SECONDS), immediateRefreshJob);
                         }
                         // Note we are using getDelay() instead of isDone() as we want to allow Things to schedule a
@@ -210,7 +215,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                         // execution the isDone() will return false and would not allow the rescheduling of the task.
                         immediateRefreshJob = scheduler.schedule(this::refreshAndUpdateStatus, refreshDelay,
                                 TimeUnit.SECONDS);
-                        logger.debug("Scheduling immediate refresh job {}", immediateRefreshJob);
+                        logger.debug("Scheduling new immediate refresh job {}", immediateRefreshJob);
                     }
                 }
             }
@@ -225,8 +230,8 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         logger.debug("Start automatic refresh {}", refreshJob);
         if (refreshJob == null || refreshJob.isCancelled()) {
             try {
-                refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, REFRESH_DELAY_SECONDS,
-                        refresh.intValue(), TimeUnit.SECONDS);
+                refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, 0, refresh.intValue(),
+                        TimeUnit.SECONDS);
                 logger.debug("Scheduling at fixed delay refreshjob {}", refreshJob);
             } catch (IllegalArgumentException e) {
                 logger.warn("Refresh time value is invalid! Please change the refresh time configuration!", e);
