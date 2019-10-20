@@ -181,7 +181,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
     }
 
     private String getHostnameWithoutDomain(String hostname){
-        String broadlinkRegex = "broadlink-oem(-[a-z,0-9]{2}){4}.*";
+        String broadlinkRegex = "BroadLink-OEM(-[A-Z,a-z,0-9]{2}){4}.*";
         if(hostname.matches(broadlinkRegex)) {
             String[] dotSeparatedString = hostname.split("\\.");
             logger.debug("Found original broadlink DNS name {}, removing domain",hostname);
