@@ -219,6 +219,7 @@ Please note that the incoming value will be discarded if one transformation fail
 
 All mentioned channels allow an optional transformation for outgoing values.
 Please prefer formatting as described in the next section whenever possible.
+Please note that value will be discarded and not sent if one transformation fails (e.g. REGEX did not match).
 
 ## Format before Publish
 

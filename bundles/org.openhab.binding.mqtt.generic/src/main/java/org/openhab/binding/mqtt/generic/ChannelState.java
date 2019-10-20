@@ -350,7 +350,14 @@ public class ChannelState implements MqttMessageSubscriber {
 
         // Outgoing transformations
         for (ChannelStateTransformation t : transformationsOut) {
-            mqttCommandValue = t.processValue(mqttCommandValue);
+            String transformedValue = t.processValue(mqttCommandValue);
+            if (transformedValue != null) {
+                mqttCommandValue = transformedValue;
+            } else {
+                logger.info("Transformation '{}' returned null on '{}', discarding message", mqttCommandValue,
+                        t.serviceName);
+                return CompletableFuture.completedFuture(false);
+            }
         }
 
         // Formatter: Applied before the channel state value is published to the MQTT broker.
