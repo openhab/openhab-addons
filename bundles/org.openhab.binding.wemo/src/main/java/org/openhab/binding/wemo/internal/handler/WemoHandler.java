@@ -14,8 +14,15 @@ package org.openhab.binding.wemo.internal.handler;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -120,6 +127,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
 
         if (configuration.get("udn") != null) {
             logger.debug("Initializing WemoHandler for UDN '{}'", configuration.get("udn"));
+            service.registerParticipant(this);
             onSubscription();
             onUpdate();
             updateStatus(ThingStatus.ONLINE);
@@ -190,6 +198,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         subscriptionState.put(service, succeeded);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void onValueReceived(String variable, String value, String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
@@ -304,10 +313,10 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                             getThing().getUID());
                     updateState(CHANNEL_STANDBYLIMIT, standByLimit);
                 }
-                if (currentMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue() > standByLimitMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue()){
+                if (currentMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue() > standByLimitMW
+                        .divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue()) {
                     updateState(CHANNEL_ONSTANDBY, OnOffType.OFF);
-                }
-                else{
+                } else {
                     updateState(CHANNEL_ONSTANDBY, OnOffType.ON);
                 }
             }
@@ -452,13 +461,39 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
 
     public String getWemoURL(String actionService) {
         URL descriptorURL = service.getDescriptorURL(this);
+        int portCheckStart = 49151;
+        int portCheckStop = 49157;
         String wemoURL = null;
+        String host = null;
+        String port = null;
         if (descriptorURL != null) {
-            String deviceURL = StringUtils.substringBefore(descriptorURL.toString(), "/setup.xml");
-            wemoURL = deviceURL + "/upnp/control/" + actionService + "1";
+            host = StringUtils.substringBetween(descriptorURL.toString(), "://", ":");
+            for (int i = portCheckStart; i < portCheckStop; i++) {
+                try {
+                    boolean portFound = servicePing(host, i);
+                    if (portFound) {
+                        logger.trace("WeMo device {} responded at Port {}", getUDN(), i);
+                        port = String.valueOf(i);
+                        break;
+                    }
+                } catch (Exception e) {
+                }
+            }
+            wemoURL = "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
             return wemoURL;
         }
-        return null;
+        return wemoURL;
+    }
+
+    public boolean servicePing(String host, int port) throws IOException {
+        SocketAddress socketAddress = new InetSocketAddress(host, port);
+        try (Socket socket = new Socket()) {
+            logger.trace("Ping WeMo device at '{}'", socketAddress);
+            socket.connect(socketAddress, 250);
+            return true;
+        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
+            return false;
+        }
     }
 
     @Override
