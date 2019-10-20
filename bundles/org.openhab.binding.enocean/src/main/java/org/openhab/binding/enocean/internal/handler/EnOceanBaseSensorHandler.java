@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.enocean.internal.handler;
 
+import static java.util.Collections.unmodifiableCollection;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
@@ -67,12 +70,20 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     }
 
     @Override
+    Collection<EEPType> getEEPTypes() {
+        if (receivingEEPTypes == null) {
+            return Collections.emptyList();
+        }
+
+        return unmodifiableCollection(receivingEEPTypes.values());
+    }
+
+    @Override
     boolean validateConfig() {
         receivingEEPTypes = null;
 
         try {
             if (config.receivingEEPId != null && !config.receivingEEPId.isEmpty()) {
-                boolean first = true;
                 receivingEEPTypes = new Hashtable<>();
 
                 for (String receivingEEP : config.receivingEEPId) {
@@ -87,8 +98,6 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                     }
 
                     receivingEEPTypes.put(receivingEEPType.getRORG(), receivingEEPType);
-                    updateChannels(receivingEEPType, first);
-                    first = false;
                 }
             } else {
                 receivingEEPTypes = null;
@@ -97,6 +106,8 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
             configurationErrorDescription = "Receiving EEP is not supported";
             return false;
         }
+
+        updateChannels();
 
         if (receivingEEPTypes != null) {
             if (!validateEnoceanId(config.enoceanId)) {

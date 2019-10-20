@@ -74,13 +74,13 @@ public class RdsHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "status => unknown..");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
 
         config = getConfigAs(RdsConfiguration.class);
 
         if (config == null || config.plantId == null || config.plantId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing Plant Id, status => offline!");
+                    "missing Plant Id");
             return;
         }
 
@@ -88,13 +88,13 @@ public class RdsHandler extends BaseThingHandler {
 
         if (cloud == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing cloud handler, status => offline!");
+                    "missing cloud server handler");
             return;
         }
 
         if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "cloud handler not online, status => offline!");
+                    "cloud server offline");
             return;
         }
 
@@ -108,8 +108,6 @@ public class RdsHandler extends BaseThingHandler {
             int pollInterval = cloud.getPollInterval();
 
             if (pollInterval > 0) {
-                logger.info("creating polling timers..");
-
                 // create a "lazy" polling scheduler
                 if (lazyPollingScheduler == null || lazyPollingScheduler.isCancelled()) {
                     lazyPollingScheduler = scheduler.scheduleWithFixedDelay(this::lazyPollingSchedulerExecute,
@@ -139,8 +137,6 @@ public class RdsHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.info("disposing polling timers..");
-
         // clean up the lazy polling scheduler
         if (lazyPollingScheduler != null && !lazyPollingScheduler.isCancelled()) {
             lazyPollingScheduler.cancel(true);
@@ -192,18 +188,19 @@ public class RdsHandler extends BaseThingHandler {
 
         if (cloud == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing cloud handler, status => offline!");
+                    "missing cloud server handler");
             return;
         }
 
+        String token = cloud.getToken();
+
         if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "cloud handler offline, status => offline!");
+                    "cloud server offline");
             return;
         }
 
         String apiKey = cloud.getApiKey();
-        String token = cloud.getToken();
 
         if (points == null || (!points.refresh(apiKey, token))) {
             points = RdsDataPoints.create(apiKey, token, config.plantId);
@@ -212,7 +209,7 @@ public class RdsHandler extends BaseThingHandler {
         if (points == null) {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        String.format("server has no info for %s, status => offline!", getThing().getLabel()));
+                        "cloud server has no info this device");
             }
             return;
         }
@@ -220,14 +217,14 @@ public class RdsHandler extends BaseThingHandler {
         if (!points.isOnline()) {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        String.format("server reports %s offline, status => offline!", getThing().getLabel()));
+                        "cloud server reports device offline");
             }
             return;
         }
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                    String.format("received info for %s from cloud server, status => online..", getThing().getLabel()));
+                    "received info from cloud server");
         }
 
         for (ChannelMap chan : CHAN_MAP) {
@@ -352,7 +349,7 @@ public class RdsHandler extends BaseThingHandler {
     }
 
     /*
-     * private method: returns the cloud handler
+     * private method: returns the cloud server handler
      */
     private RdsCloudHandler getCloudHandler() {
         @Nullable Bridge b;

@@ -106,8 +106,8 @@
 				<!-- values here match SerialPort.FLOWCONTROL_* constants -->
 				<options>
 					<option value="none">None</option>
-					<option value="xon/xoff in">RTS/CTS</option>
-					<option value="rts/cts in">XON/XOFF</option>
+					<option value="xon/xoff in">XON/XOFF</option>
+					<option value="rts/cts in">RTS/CTS</option>
 				</options>
 			</parameter>
 			<parameter name="flowControlOut" type="text" multiple="false">
@@ -117,8 +117,8 @@
 				<!-- values here match SerialPort.FLOWCONTROL_* constants -->
 				<options>
 					<option value="none">None</option>
-					<option value="xon/xoff out">RTS/CTS</option>
-					<option value="rts/cts out">XON/XOFF</option>
+					<option value="xon/xoff out">XON/XOFF</option>
+					<option value="rts/cts out">RTS/CTS</option>
 				</options>
 			</parameter>
 

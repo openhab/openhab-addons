@@ -14,7 +14,7 @@ All available Sonos (playback) devices are supported by this binding. This inclu
 
 When being defined in a \*.things file, the specific thing types One, PLAY1, PLAY3, PLAY5, PLAYBAR, PLAYBASE, Beam, CONNECT and CONNECTAMP should be used.
 
-Please note that these thing types are case sensitive (you need to define them in upper case).
+Please note that these thing types are case sensitive (you need to define them **exactly as stated above**).
 
 ## Discovery
 
@@ -32,7 +32,7 @@ The binding has the following configuration options, which can be set for "bindi
 ## Thing Configuration
 
 The Sonos Thing requires the UPnP UDN (Unique Device Name) as a configuration value in order for the binding to know how to access it.
-All the Sonos UDN have the "RINCON_000E58D8403A0XXXX" format.
+All the Sonos UDN have the "RINCON_000E58D8403A0XXXX" format (value to be found via Sonos item in the PaperUI Inbox).
 Additionally, a refresh interval, used to poll the Sonos device, can be specified (in seconds).
 You can use the `notificationVolume` property for setting a default volume (in percent) to be used to play notifications.
 In the thing file, this looks e.g. like

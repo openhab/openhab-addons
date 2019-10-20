@@ -25,9 +25,10 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.loxone.internal.types.LxState;
+import org.openhab.binding.loxone.internal.types.LxTags;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -97,7 +98,7 @@ class LxControlLightController extends LxControl {
     @Override
     public void initialize(LxControlConfig config) {
         super.initialize(config);
-        tags.add("Scene");
+        tags.addAll(LxTags.SCENE);
         // add only channel, state description will be added later when a control state update message is received
         channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL),
                 defaultChannelLabel, "Light controller", tags, this::handleCommands, this::getChannelState);
@@ -151,8 +152,10 @@ class LxControlLightController extends LxControl {
                         sceneNames.add(new StateOption(params[0], params[1]));
                     }
                 }
-                addChannelStateDescription(channelId, new StateDescription(BigDecimal.ZERO,
-                        new BigDecimal(NUM_OF_SCENES - 1), BigDecimal.ONE, null, false, sceneNames));
+                addChannelStateDescriptionFragment(channelId,
+                        StateDescriptionFragmentBuilder.create().withMinimum(BigDecimal.ZERO)
+                                .withMaximum(new BigDecimal(NUM_OF_SCENES - 1)).withStep(BigDecimal.ONE)
+                                .withReadOnly(false).withOptions(sceneNames).build());
             }
         } else {
             super.onStateChange(state);

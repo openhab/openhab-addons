@@ -81,7 +81,6 @@ public class ChildMap<T> {
     public CompletableFuture<@Nullable Void> apply(String[] childIDs,
             final Function<T, CompletableFuture<Void>> addedAction, final Function<String, T> supplyNewChild,
             final Consumer<T> removedCallback) {
-
         Set<String> arrayValues = Stream.of(childIDs).collect(Collectors.toSet());
 
         // Add all entries to the map, that are not in there yet.

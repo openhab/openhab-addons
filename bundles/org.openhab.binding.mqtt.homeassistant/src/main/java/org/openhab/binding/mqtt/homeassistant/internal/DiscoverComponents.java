@@ -45,7 +45,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     private final Logger logger = LoggerFactory.getLogger(DiscoverComponents.class);
     private final ThingUID thingUID;
     private final ScheduledExecutorService scheduler;
-    private final @Nullable ChannelStateUpdateListener updateListener;
+    private final ChannelStateUpdateListener updateListener;
     private final TransformationServiceProvider transformationServiceProvider;
 
     protected final CompletableFuture<@Nullable Void> discoverFinishedFuture = new CompletableFuture<>();
@@ -72,7 +72,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      * @param channelStateUpdateListener Channel update listener. Usually the handler.
      */
     public DiscoverComponents(ThingUID thingUID, ScheduledExecutorService scheduler,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson,
+            ChannelStateUpdateListener channelStateUpdateListener, Gson gson,
             TransformationServiceProvider transformationServiceProvider) {
         this.thingUID = thingUID;
         this.scheduler = scheduler;

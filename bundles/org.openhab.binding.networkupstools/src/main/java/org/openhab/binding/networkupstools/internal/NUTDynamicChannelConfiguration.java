@@ -10,23 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.deconz.internal.netutils;
+package org.openhab.binding.networkupstools.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.deconz.internal.dto.SensorState;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Informs about updated sensor states
+ * Configuration class for dynamic created channels.
  *
- * @author David Graeff - Initial contribution
+ * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public interface ValueUpdateListener {
-    /**
-     * A sensor state was updated.
-     *
-     * @param sensorID The sensor ID (API endpoint)
-     * @param newState The new state
-     */
-    void websocketUpdate(String sensorID, SensorState newState);
+public class NUTDynamicChannelConfiguration {
+    public String networkupstools = "";
+    public @Nullable String unit;
+
 }
