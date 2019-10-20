@@ -212,8 +212,9 @@ public class EmbeddedBrokerService
                     server.stopServer();
                     server = null;
                 }
-            }).get(300, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
+            }).get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+           logger.warn("Could not cleanly shutdown connection or server.", e);
         }
         connection = null;
     }
