@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.*;
 
 /**
- * The {@link FloureonThermostatHandler} is responsible for handling thermostats labled as Floureon Thermostat.
+ * The {@link FloureonThermostatHandler} is responsible for handling thermostats labeled as Floureon Thermostat.
  *
  * @author Florian Mueller - Initial contribution
  */
