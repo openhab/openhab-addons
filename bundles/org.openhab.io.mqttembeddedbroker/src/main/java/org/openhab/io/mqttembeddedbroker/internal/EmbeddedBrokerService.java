@@ -12,6 +12,7 @@
  */
 package org.openhab.io.mqttembeddedbroker.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -44,10 +45,7 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttService;
 import org.eclipse.smarthome.io.transport.mqtt.MqttServiceObserver;
 import org.openhab.io.mqttembeddedbroker.Constants;
 import org.openhab.io.mqttembeddedbroker.internal.MqttEmbeddedBrokerDetectStart.MqttEmbeddedBrokerStartedListener;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +83,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 @NonNullByDefault
 public class EmbeddedBrokerService
         implements ConfigurableService, MqttConnectionObserver, MqttServiceObserver, MqttEmbeddedBrokerStartedListener {
-    private @Nullable MqttService service;
+    private final MqttService service;
     private String persistenceFilename = "";
     // private NetworkServerTls networkServerTls; //TODO wait for NetworkServerTls implementation
 
@@ -145,22 +143,19 @@ public class EmbeddedBrokerService
 
     private @Nullable MqttBrokerConnection connection;
 
-    @Reference
-    public void setMqttService(MqttService service) {
-        this.service = service;
-    }
-
-    public void unsetMqttService(MqttService service) {
-        this.service = service;
-    }
-
     @Activate
-    public void activate(Map<String, Object> data) throws IOException {
-        initialize(new Configuration(data).as(ServiceConfiguration.class));
+    public EmbeddedBrokerService(@Reference MqttService mqttService, Map<String, Object> configuration) throws IOException {
+        this.service = mqttService;
+        initialize(configuration);
     }
-
-    @SuppressWarnings("null")
-    public void initialize(ServiceConfiguration config) throws IOException {
+    @Modified
+    public void modified(Map<String, Object> configuration) throws IOException {
+        deactivate();
+        initialize(configuration);
+    }
+    
+    public void initialize(Map<String, Object> configuration) throws IOException {
+        ServiceConfiguration config = new Configuration(configuration).as(ServiceConfiguration.class);
         int port = config.port == null ? (config.port = config.secure ? 8883 : 1883) : config.port;
 
         // Create MqttBrokerConnection
@@ -217,8 +212,9 @@ public class EmbeddedBrokerService
                     server.stopServer();
                     server = null;
                 }
-            }).get(300, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
+            }).get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+           logger.warn("Could not cleanly shutdown connection or server.", e);
         }
         connection = null;
     }
@@ -231,7 +227,7 @@ public class EmbeddedBrokerService
     @Override
     public void brokerRemoved(String brokerID, MqttBrokerConnection broker) {
         // Do not allow this connection to be removed. Add it again.
-        if (broker == connection) {
+        if (broker.equals(connection)) {
             service.addBrokerConnection(brokerID, broker);
         }
     }
@@ -302,14 +298,21 @@ public class EmbeddedBrokerService
 
         // We may provide ACL functionality at some point as well
         IAuthorizatorPolicy authorizer = null;
+        ISslContextCreator sslContextCreator = secure ? nettySSLcontextCreator() : null;
 
-        if (secure) {
-            server.startServer(new MemoryConfig(properties), null, nettySSLcontextCreator(), authentificator,
+        try {
+            server.startServer(new MemoryConfig(properties), null, sslContextCreator, authentificator,
                     authorizer);
-        } else {
-            server.startServer(new MemoryConfig(properties), null, null, authentificator, authorizer);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("Could not deserialize")) {
+                Path persistenceFilePath = Paths.get((new File(persistenceFilename)).getAbsolutePath());
+                logger.warn("persistence corrupt: {}, deleting {}", e.getMessage(), persistenceFilePath);
+                Files.delete(persistenceFilePath);
+                // retry starting broker, if it fails again, don't catch exception
+                server.startServer(new MemoryConfig(properties), null, sslContextCreator, authentificator,
+                        authorizer);
+            }
         }
-
         this.server = server;
         server.addInterceptHandler(metrics);
         ScheduledExecutorService s = new ScheduledThreadPoolExecutor(1);

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
@@ -61,21 +62,20 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
     private final Logger logger = LoggerFactory.getLogger(MqttEmbeddedBrokerServiceTest.class);
 
     private EmbeddedBrokerService subject;
-    private ServiceConfiguration config = new ServiceConfiguration();
+    private Map<String, Object> config = new HashMap<>();
     private @Mock MqttService service;
 
     @Before
     public void setUp() throws ConfigurationException, MqttException, GeneralSecurityException, IOException {
         MockitoAnnotations.initMocks(this);
-        subject = new EmbeddedBrokerService();
-        subject.setMqttService(service);
 
-        config.username = "username";
-        config.password = "password";
-        config.port = 12345;
-        config.secure = false;
-        config.persistenceFile = "";
+        config.put("username","username");
+        config.put("password", "password");
+        config.put("port",12345);
+        config.put("secure",false);
+        config.put("persistenceFile","");
 
+        subject = new EmbeddedBrokerService(service, config);
     }
 
     @After
@@ -107,8 +107,6 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
 
     @Test
     public void connectUnsecureAndTestCredentials() throws InterruptedException, IOException, ExecutionException {
-        subject.initialize(config);
-
         MqttBrokerConnection c = subject.getConnection();
         assertNotNull(c);
         waitForConnectionChange(c, MqttConnectionState.CONNECTED);
@@ -150,8 +148,8 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
 
     @Test
     public void connectSecure() throws InterruptedException, IOException {
-        config.secure = true;
-        subject.initialize(config);
+        config.put("secure", true);
+        subject.modified(config);
 
         MqttBrokerConnection c = subject.getConnection();
         assertNotNull(c);
@@ -167,15 +165,15 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
 
     @Test
     public void testPersistence() throws InterruptedException, IOException, ExecutionException {
-        config.persistenceFile = "persist.mqtt";
+        config.put("persistenceFile","persist.mqtt");
         Path path = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath();
-        File jksFile = path.resolve(config.persistenceFile).toFile();
+        File jksFile = path.resolve("persist.mqtt").toFile();
 
         if (jksFile.exists()) {
             jksFile.delete();
         }
 
-        subject.initialize(config);
+        subject.modified(config);
 
         MqttBrokerConnection c = subject.getConnection();
         assertNotNull(c);
