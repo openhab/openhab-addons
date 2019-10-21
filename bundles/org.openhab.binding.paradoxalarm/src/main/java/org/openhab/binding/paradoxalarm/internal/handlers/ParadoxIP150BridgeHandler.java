@@ -36,8 +36,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.paradoxalarm.internal.communication.CommunicationState;
 import org.openhab.binding.paradoxalarm.internal.communication.GenericCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.IDataUpdateListener;
+import org.openhab.binding.paradoxalarm.internal.communication.IP150Command;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxInitialLoginCommunicator;
+import org.openhab.binding.paradoxalarm.internal.communication.ISocketTimeOutListener;
 import org.openhab.binding.paradoxalarm.internal.communication.ParadoxCommunicatorFactory;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
 import org.openhab.binding.paradoxalarm.internal.model.PanelType;
@@ -54,7 +56,8 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings("null")
 @NonNullByDefault({})
-public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDataUpdateListener {
+public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
+        implements IDataUpdateListener, ISocketTimeOutListener {
 
     private static final String RESET_COMMAND = "RESET";
 
@@ -70,6 +73,8 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
     private @Nullable ScheduledFuture<?> refreshCacheUpdateSchedule;
 
     private long timeStamp = 0;
+
+    private ScheduledFuture<?> resetScheduleFuture;
 
     public ParadoxIP150BridgeHandler(Bridge bridge) {
         super(bridge);
@@ -95,18 +100,20 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
 
             logger.debug("Phase1 - Identify communicator");
             IParadoxInitialLoginCommunicator initialCommunicator = new GenericCommunicator(ipAddress, tcpPort,
-                ip150Password, pcPassword, scheduler);
+                    ip150Password, pcPassword, scheduler);
             initialCommunicator.startLoginSequence();
 
             timeStamp = System.currentTimeMillis();
             scheduler.schedule(() -> doPostOnlineTask(initialCommunicator), 500, TimeUnit.MILLISECONDS);
         } catch (UnknownHostException e) {
             logger.warn("Error while starting socket communication. {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host. Probably misconfiguration or DNS issue.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Unknown host. Probably misconfiguration or DNS issue.");
             throw new ParadoxRuntimeException(e);
         } catch (IOException e) {
             logger.warn("Error while starting socket communication. {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error while starting socket communication.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error while starting socket communication.");
             throw new ParadoxRuntimeException(e);
         }
     }
@@ -118,9 +125,10 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
                 logger.debug("Communicator not yet online. Rescheduling...");
             } else {
                 logger.warn(
-                    "Initial communicator not coming up online for {} seconds. Probably there is something wrong with communication.",
-                    ONLINE_WAIT_TRESHOLD_MILLIS);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error while starting socket communication.");
+                        "Initial communicator not coming up online for {} seconds. Probably there is something wrong with communication.",
+                        ONLINE_WAIT_TRESHOLD_MILLIS);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error while starting socket communication.");
             }
             return;
         }
@@ -131,8 +139,8 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
         logger.info("Found {} panel type.", panelType);
         CommunicationState.logout(initialCommunicator);
 
-        // Wait 3 seconds before we create the discovered communicator so we ensure that the socket is closed successfully from
-        // both ends
+        // Wait 3 seconds before we create the discovered communicator so we ensure that the socket is closed
+        // successfully from both ends
         scheduler.schedule(() -> createDiscoveredCommunicatorJob(panelType), 3, TimeUnit.SECONDS);
     }
 
@@ -151,7 +159,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
         String ip150Password = config.getIp150Password();
         String pcPassword = config.getPcPassword();
         ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, tcpPort, ip150Password,
-            pcPassword, scheduler);
+                pcPassword, scheduler);
         communicator = factory.createCommunicator(panelTypeStr);
 
         ParadoxPanel panel = ParadoxPanel.getInstance();
@@ -159,6 +167,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
 
         Collection<IDataUpdateListener> listeners = Arrays.asList(panel, this);
         communicator.setListeners(listeners);
+        communicator.setStoListener(this);
 
         communicator.startLoginSequence();
 
@@ -173,8 +182,10 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
                 logger.debug("Communicator not yet online. Rescheduling...");
                 return;
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error while starting socket communication.");
-                throw new ParadoxRuntimeException("Communicator didn't go online in defined treshold time. " + ONLINE_WAIT_TRESHOLD_MILLIS + "sec.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error while starting socket communication.");
+                throw new ParadoxRuntimeException("Communicator didn't go online in defined treshold time. "
+                        + ONLINE_WAIT_TRESHOLD_MILLIS + "sec.");
             }
         }
 
@@ -191,9 +202,17 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
 
     private void scheduleRefresh() {
         logger.debug("Scheduling cache update. Refresh interval: {}s. Starts after: {}s.", config.getRefresh(),
-            INITIAL_SCHEDULE_DELAY_SECONDS);
+                INITIAL_SCHEDULE_DELAY_SECONDS);
         refreshCacheUpdateSchedule = scheduler.scheduleWithFixedDelay(communicator::refreshMemoryMap,
-            INITIAL_SCHEDULE_DELAY_SECONDS, config.getRefresh(), TimeUnit.SECONDS);
+                INITIAL_SCHEDULE_DELAY_SECONDS, config.getRefresh(), TimeUnit.SECONDS);
+    }
+
+    private void cancelSchedule(@Nullable ScheduledFuture<?> schedule) {
+        if (schedule != null && !schedule.isCancelled()) {
+            boolean cancelingResult = schedule.cancel(true);
+            String cancelingSuccessful = cancelingResult ? "successful" : "failed";
+            logger.debug("Canceling schedule of {} is {}", schedule, cancelingSuccessful);
+        }
     }
 
     @Override
@@ -203,7 +222,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
         for (Thing thing : things) {
             ThingHandler handler = thing.getHandler();
             Channel bridgeChannel = bridge
-                .getChannel(ParadoxAlarmBindingConstants.IP150_COMMUNICATION_COMMAND_CHANNEL_UID);
+                    .getChannel(ParadoxAlarmBindingConstants.IP150_COMMUNICATION_COMMAND_CHANNEL_UID);
             if (handler != null && bridgeChannel != null) {
                 handler.handleCommand(bridgeChannel.getUID(), RefreshType.REFRESH);
             }
@@ -223,7 +242,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
                 String commandAsString = command.toFullString();
                 if (commandAsString.equals(RESET_COMMAND)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                        "Bringing bridge offline due to reinitialization of communicator.");
+                            "Bringing bridge offline due to reinitialization of communicator.");
                     resetCommunicator();
                 } else {
                     communicator.executeCommand(commandAsString);
@@ -242,14 +261,18 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
     }
 
     private void resetCommunicator() {
+        updateStatus(ThingStatus.OFFLINE);
+
         synchronized (communicator) {
             if (communicator != null) {
                 CommunicationState.logout(communicator);
             }
+
             initializeCommunicator();
         }
-    }
 
+        resetScheduleFuture = null;
+    }
 
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
@@ -263,16 +286,21 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
         }
     }
 
-    private void cancelSchedule(@Nullable ScheduledFuture<?> schedule) {
-        if (schedule != null) {
-            boolean cancelingResult = schedule.cancel(true);
-            String cancelingSuccessful = cancelingResult ? "successful" : "failed";
-            logger.debug("Canceling schedule of {} is {}", schedule, cancelingSuccessful);
-        }
-    }
-
     public IParadoxCommunicator getCommunicator() {
         return communicator;
+    }
+
+    @Override
+    public void onSocketTimeOutOccurred(IOException exception) {
+        logger.warn("TIMEOUT! {} received message for socket timeout. ", this, exception);
+        if (resetScheduleFuture == null) {
+            communicator.executeCommand(IP150Command.LOGOUT.name());
+
+            logger.warn("Reset task is null. Will schedule new task to reset communicator in {} seconds.",
+                    config.getReconnectWaitTime());
+            resetScheduleFuture = scheduler.schedule(this::resetCommunicator, config.getReconnectWaitTime(),
+                    TimeUnit.SECONDS);
+        }
     }
 
 }
