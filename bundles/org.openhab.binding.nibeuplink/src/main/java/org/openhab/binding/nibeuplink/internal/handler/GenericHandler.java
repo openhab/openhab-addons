@@ -19,9 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.ChannelList;
-import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
+import org.openhab.binding.nibeuplink.internal.model.NibeChannel;
 
 /**
  * generic implementation of handler logic
@@ -35,8 +34,8 @@ public class GenericHandler extends UplinkBaseHandler {
     /**
      * constructor, called by the factory
      *
-     * @param thing       instance of the thing, passed in by the factory
-     * @param httpClient  the httpclient that communicates with the API
+     * @param thing instance of the thing, passed in by the factory
+     * @param httpClient the httpclient that communicates with the API
      * @param channelList the specific channellist
      */
     public GenericHandler(Thing thing, HttpClient httpClient, ChannelList channelList) {
@@ -45,21 +44,21 @@ public class GenericHandler extends UplinkBaseHandler {
     }
 
     @Override
-    public @Nullable Channel getSpecificChannel(String channelCode) {
-        Channel channel = channelList.fromCode(channelCode);
+    public @Nullable NibeChannel getSpecificChannel(String channelCode) {
+        NibeChannel channel = channelList.fromCode(channelCode);
 
         // check custom channels if no stock channel was found
         if (channel == null) {
-            channel = CustomChannels.getInstance().fromCode(channelCode);
+            channel = getCustomChannels().fromCode(channelCode);
         }
         return channel;
     }
 
     @Override
-    public Set<Channel> getChannels() {
-        Set<Channel> specificAndCustomChannels = new HashSet<>();
+    public Set<NibeChannel> getChannels() {
+        Set<NibeChannel> specificAndCustomChannels = new HashSet<>();
         specificAndCustomChannels.addAll(channelList.getChannels());
-        specificAndCustomChannels.addAll(CustomChannels.getInstance().getChannels());
+        specificAndCustomChannels.addAll(getCustomChannels().getChannels());
         return specificAndCustomChannels;
     }
 

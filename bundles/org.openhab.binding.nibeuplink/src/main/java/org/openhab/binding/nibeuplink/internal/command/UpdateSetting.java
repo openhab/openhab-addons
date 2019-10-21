@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
 import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
-import org.openhab.binding.nibeuplink.internal.model.Channel;
+import org.openhab.binding.nibeuplink.internal.model.NibeChannel;
 import org.openhab.binding.nibeuplink.internal.model.SwitchChannel;
 import org.openhab.binding.nibeuplink.internal.model.ValidationException;
 
@@ -43,11 +43,11 @@ import org.openhab.binding.nibeuplink.internal.model.ValidationException;
 public class UpdateSetting extends AbstractUplinkCommandCallback implements NibeUplinkCommand {
 
     private final NibeUplinkHandler handler;
-    private final Channel channel;
+    private final NibeChannel channel;
     private String value;
     private int retries = 0;
 
-    public UpdateSetting(NibeUplinkHandler handler, Channel channel, Command command) {
+    public UpdateSetting(NibeUplinkHandler handler, NibeChannel channel, Command command) {
         super(handler.getConfiguration());
         this.handler = handler;
         this.channel = channel;
@@ -81,7 +81,7 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
 
         if (value.matches(channel.getValidationExpression())) {
             Fields fields = new Fields();
-            fields.add(channel.getChannelCode(), value);
+            fields.add(channel.getId(), value);
 
             FormContentProvider cp = new FormContentProvider(fields);
 
@@ -109,8 +109,7 @@ public class UpdateSetting extends AbstractUplinkCommandCallback implements Nibe
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.FOUND.equals(getCommunicationStatus().getHttpCode()) && retries++ < MAX_RETRIES) {
-            logger.debug("Could not set value '{}' for channel '{}' ({})", value, channel.getChannelCode(),
-                    channel.getName());
+            logger.debug("Could not set value '{}' for channel '{}' ({})", value, channel.getId(), channel.getName());
             handler.getWebInterface().enqueueCommand(this);
         }
     }

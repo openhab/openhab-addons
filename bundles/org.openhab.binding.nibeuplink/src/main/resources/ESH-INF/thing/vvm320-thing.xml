@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<thing-type id="vvm320">
+	<thing-type id="vvm320" extensible="custom-type-unscaled,custom-type-div10,custom-type-div100">
 		<label>Nibe VVM320 / VVM325</label>
 		<description>Nibe VVM320 / VVM325 heat pump connected through Nibe UpLink</description>
 		<channel-groups>
@@ -12,7 +12,6 @@
 			<channel-group typeId="vvm320-general" id="general" />
 			<channel-group typeId="vvm320-compressor" id="compressor" />
 			<channel-group typeId="vvm320-airsupply" id="airsupply" />
-			<channel-group typeId="custom-custom" id="custom" />
 		</channel-groups>
 		<config-description-ref uri="thing-type:nibeuplink:web" />
 	</thing-type>

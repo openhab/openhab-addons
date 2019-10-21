@@ -3,60 +3,25 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="custom-type-CH01">
+	<channel-type id="custom-type-unscaled">
 		<item-type>Number</item-type>
-		<label>Custom Channel 01</label>
+		<label>Unscaled Custom Channel</label>
 		<description></description>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="custom-type-CH02">
+	<channel-type id="custom-type-div10">
 		<item-type>Number</item-type>
-		<label>Custom Channel 02</label>
+		<label>Scaled Custom Channel (0.1)</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%.1f" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="custom-type-CH03">
+	<channel-type id="custom-type-div100">
 		<item-type>Number</item-type>
-		<label>Custom Channel 03</label>
+		<label>Scaled Custom Channel (0.01)</label>
 		<description></description>
-		<state pattern="%d" readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="custom-type-CH04">
-		<item-type>Number</item-type>
-		<label>Custom Channel 04</label>
-		<description></description>
-		<state pattern="%d" readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="custom-type-CH05">
-		<item-type>Number</item-type>
-		<label>Custom Channel 05</label>
-		<description></description>
-		<state pattern="%d" readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="custom-type-CH06">
-		<item-type>Number</item-type>
-		<label>Custom Channel 06</label>
-		<description></description>
-		<state pattern="%d" readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="custom-type-CH07">
-		<item-type>Number</item-type>
-		<label>Custom Channel 07</label>
-		<description></description>
-		<state pattern="%d" readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="custom-type-CH08">
-		<item-type>Number</item-type>
-		<label>Custom Channel 08</label>
-		<description></description>
-		<state pattern="%d" readOnly="true">
+		<state pattern="%.2f" readOnly="true">
 		</state>
 	</channel-type>
 </thing:thing-descriptions>

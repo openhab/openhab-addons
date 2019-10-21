@@ -45,42 +45,42 @@ public final class F1155Channels extends BaseChannels {
     }
 
     // General
-    public static final Channel CH_44302 = INSTANCE
+    public static final NibeChannel CH_44302 = INSTANCE
             .addChannel(new QuantityChannel("44302", "Heat Meter - Cooling Cpr EP14", ChannelGroup.GENERAL,
                     ScaleFactor.DIV_10, MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR)));
 
     // Compressor
-    public static final Channel CH_43424 = INSTANCE.addChannel(new QuantityChannel("43424",
+    public static final NibeChannel CH_43424 = INSTANCE.addChannel(new QuantityChannel("43424",
             "EB100-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
-    public static final Channel CH_43420 = INSTANCE.addChannel(new QuantityChannel("43420",
+    public static final NibeChannel CH_43420 = INSTANCE.addChannel(new QuantityChannel("43420",
             "EB100-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
-    public static final Channel CH_43416 = INSTANCE
-            .addChannel(new Channel("43416", "EB100-EP14 Compressor starts", ChannelGroup.COMPRESSOR));
-    public static final Channel CH_40022 = INSTANCE.addChannel(new QuantityChannel("40022", "EB100-EP14-BT17 Suction",
+    public static final NibeChannel CH_43416 = INSTANCE
+            .addChannel(new NibeChannel("43416", "EB100-EP14 Compressor starts", ChannelGroup.COMPRESSOR));
+    public static final NibeChannel CH_40022 = INSTANCE.addChannel(new QuantityChannel("40022", "EB100-EP14-BT17 Suction",
             ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_40019 = INSTANCE.addChannel(new QuantityChannel("40019",
+    public static final NibeChannel CH_40019 = INSTANCE.addChannel(new QuantityChannel("40019",
             "EB100-EP14-BT15 Liquid Line", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_40018 = INSTANCE.addChannel(new QuantityChannel("40018",
+    public static final NibeChannel CH_40018 = INSTANCE.addChannel(new QuantityChannel("40018",
             "EB100-EP14-BT14 Hot Gas Temp", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_40017 = INSTANCE.addChannel(new QuantityChannel("40017",
+    public static final NibeChannel CH_40017 = INSTANCE.addChannel(new QuantityChannel("40017",
             "EB100-EP14-BT12 Condensor Out", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_43136 = INSTANCE.addChannel(new QuantityChannel("43136",
+    public static final NibeChannel CH_43136 = INSTANCE.addChannel(new QuantityChannel("43136",
             "Compressor Frequency, Actual", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
-    public static final Channel CH_43122 = INSTANCE.addChannel(new QuantityChannel("43122", "Compr. current min.freq.",
+    public static final NibeChannel CH_43122 = INSTANCE.addChannel(new QuantityChannel("43122", "Compr. current min.freq.",
             ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
-    public static final Channel CH_43123 = INSTANCE.addChannel(new QuantityChannel("43123", "Compr. current max.freq.",
+    public static final NibeChannel CH_43123 = INSTANCE.addChannel(new QuantityChannel("43123", "Compr. current max.freq.",
             ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
-    public static final Channel CH_40015 = INSTANCE.addChannel(new QuantityChannel("40015",
+    public static final NibeChannel CH_40015 = INSTANCE.addChannel(new QuantityChannel("40015",
             "EB100-EP14-BT10 Brine In Temperature", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_40016 = INSTANCE.addChannel(new QuantityChannel("40016",
+    public static final NibeChannel CH_40016 = INSTANCE.addChannel(new QuantityChannel("40016",
             "EB100-EP14-BT11 Brine Out Temperature", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_43439 = INSTANCE.addChannel(
+    public static final NibeChannel CH_43439 = INSTANCE.addChannel(
             new QuantityChannel("43439", "EP14-GP2 Brine Pump Speed", ChannelGroup.COMPRESSOR, SmartHomeUnits.PERCENT));
 
     // Airsupply
-    public static final Channel CH_40025 = INSTANCE.addChannel(new QuantityChannel("40025", "BT20 Exhaust air temp. 1",
+    public static final NibeChannel CH_40025 = INSTANCE.addChannel(new QuantityChannel("40025", "BT20 Exhaust air temp. 1",
             ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_40026 = INSTANCE.addChannel(new QuantityChannel("40026", "BT21 Vented air temp. 1",
+    public static final NibeChannel CH_40026 = INSTANCE.addChannel(new QuantityChannel("40026", "BT21 Vented air temp. 1",
             ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
 
 }

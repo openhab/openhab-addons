@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<thing-type id="f730">
+	<thing-type id="f730" extensible="custom-type-unscaled,custom-type-div10,custom-type-div100">
 		<label>Nibe F730</label>
 		<description>Nibe F730 heat pump connected through Nibe UpLink</description>
 		<channel-groups>
@@ -11,7 +11,6 @@
 			<channel-group typeId="base-hotwater" id="hotwater" />
 			<channel-group typeId="f730-compressor" id="compressor" />
 			<channel-group typeId="f730-airsupply" id="airsupply" />
-			<channel-group typeId="custom-custom" id="custom" />
 		</channel-groups>
 		<config-description-ref uri="thing-type:nibeuplink:web" />
 	</thing-type>

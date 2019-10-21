@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nibeuplink.internal.model.Channel;
+import org.openhab.binding.nibeuplink.internal.model.NibeChannel;
 
 /**
  * this interface provides all methods which deal with channels
@@ -26,11 +26,11 @@ import org.openhab.binding.nibeuplink.internal.model.Channel;
 @NonNullByDefault
 public interface ChannelProvider {
 
-    Set<Channel> getChannels();
+    Set<NibeChannel> getChannels();
 
-    Set<Channel> getDeadChannels();
+    Set<NibeChannel> getDeadChannels();
 
     @Nullable
-    Channel getSpecificChannel(String channelCode);
+    NibeChannel getSpecificChannel(String channelCode);
 
 }

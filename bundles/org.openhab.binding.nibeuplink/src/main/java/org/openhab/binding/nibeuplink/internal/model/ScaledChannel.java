@@ -21,10 +21,10 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class ScaledChannel extends Channel {
+public class ScaledChannel extends NibeChannel {
 
     static enum ScaleFactor {
-        ONE(1),
+        UNSCALED(1),
         DIV_10(0.1),
         DIV_100(0.01);
 
@@ -39,16 +39,16 @@ public class ScaledChannel extends Channel {
         }
     }
 
-    private final ScaleFactor factor;
+    protected ScaleFactor factor;
 
     /**
      * constructor for channels with write access enabled + unit
      *
-     * @param id                   identifier of the channel
-     * @param name                 human readable name
-     * @param channelGroup         group of the channel
-     * @param factor               scaling factor
-     * @param writeApiUrl          API URL for channel updates
+     * @param id identifier of the channel
+     * @param name human readable name
+     * @param channelGroup group of the channel
+     * @param factor scaling factor
+     * @param writeApiUrl API URL for channel updates
      * @param validationExpression expression to validate values before sent to the API
      */
     ScaledChannel(String id, String name, ChannelGroup channelGroup, ScaleFactor factor, @Nullable String writeApiUrl,
@@ -60,10 +60,10 @@ public class ScaledChannel extends Channel {
     /**
      * constructor for channels without write access
      *
-     * @param id           identifier of the channel
-     * @param name         human readable name
+     * @param id identifier of the channel
+     * @param name human readable name
      * @param channelGroup group of the channel
-     * @param factor       scaling factor
+     * @param factor scaling factor
      */
     ScaledChannel(String id, String name, ChannelGroup channelGroup, ScaleFactor factor) {
         this(id, name, channelGroup, factor, null, null);
@@ -72,4 +72,5 @@ public class ScaledChannel extends Channel {
     public final double getFactor() {
         return factor.getFactor();
     }
+
 }

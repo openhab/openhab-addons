@@ -28,10 +28,10 @@ import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
 import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
-import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.DataResponse;
 import org.openhab.binding.nibeuplink.internal.model.DataResponseTransformer;
 import org.openhab.binding.nibeuplink.internal.model.GenericDataResponse;
+import org.openhab.binding.nibeuplink.internal.model.NibeChannel;
 import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
 
 /**
@@ -58,10 +58,10 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
         fields.add(DATA_API_FIELD_LAST_DATE, DATA_API_FIELD_LAST_DATE_DEFAULT_VALUE);
         fields.add(DATA_API_FIELD_ID, config.getNibeId());
 
-        for (Channel channel : handler.getChannels()) {
+        for (NibeChannel channel : handler.getChannels()) {
             if (!handler.getDeadChannels().contains(channel)) {
-                if (!channel.getChannelCode().equals("0")) {
-                    fields.add(DATA_API_FIELD_DATA, channel.getChannelCode());
+                if (!channel.getId().equals("0")) {
+                    fields.add(DATA_API_FIELD_DATA, channel.getId());
                 }
             }
         }

@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.nibeuplink.internal.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
-import org.openhab.binding.nibeuplink.internal.model.Channel;
+import org.openhab.binding.nibeuplink.internal.model.NibeChannel;
 
 /**
  * public interface of the {@link UplinkBaseHandler}
@@ -47,7 +47,7 @@ public interface NibeUplinkHandler extends ThingHandler, ChannelProvider {
      */
     UplinkWebInterface getWebInterface();
 
-    void updateChannelStatus(Map<Channel, State> values);
+    void updateChannelStatus(Map<NibeChannel, State> values);
 
     NibeUplinkConfiguration getConfiguration();
 

@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -34,8 +35,9 @@ import org.openhab.binding.nibeuplink.internal.AtomicReferenceTrait;
 import org.openhab.binding.nibeuplink.internal.command.UpdateSetting;
 import org.openhab.binding.nibeuplink.internal.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
-import org.openhab.binding.nibeuplink.internal.model.Channel;
+import org.openhab.binding.nibeuplink.internal.model.ChannelList;
 import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
+import org.openhab.binding.nibeuplink.internal.model.NibeChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,8 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     private final long POLLING_INITIAL_DELAY = 30;
     private final long HOUSE_KEEPING_INITIAL_DELAY = 300;
 
-    private Set<Channel> deadChannels = new HashSet<>(100);
+    private Set<NibeChannel> deadChannels = new HashSet<>(100);
+    private final CustomChannels customChannelList = new CustomChannels();
 
     /**
      * Interface object for querying the NibeUplink web interface
@@ -80,7 +83,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof RefreshType)) {
             logger.debug("command for {}: {}", channelUID.getIdWithoutGroup(), command.toString());
-            Channel channel = getSpecificChannel(channelUID.getIdWithoutGroup());
+            NibeChannel channel = getSpecificChannel(channelUID.getIdWithoutGroup());
             if (channel != null && !channel.isReadOnly()) {
                 webInterface.enqueueCommand(new UpdateSetting(this, channel, command));
             }
@@ -94,7 +97,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
 
         logger.debug("NibeUplink initialized with configuration: {}", config);
 
-        setupCustomChannels(config);
+        setupCustomChannels();
 
         startPolling();
         webInterface.start();
@@ -106,15 +109,13 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      *
      * @param config the active configuration
      */
-    private void setupCustomChannels(NibeUplinkConfiguration config) {
-        CustomChannels.CH_CH01.setCode(config.getCustomChannel01());
-        CustomChannels.CH_CH02.setCode(config.getCustomChannel02());
-        CustomChannels.CH_CH03.setCode(config.getCustomChannel03());
-        CustomChannels.CH_CH04.setCode(config.getCustomChannel04());
-        CustomChannels.CH_CH05.setCode(config.getCustomChannel05());
-        CustomChannels.CH_CH06.setCode(config.getCustomChannel06());
-        CustomChannels.CH_CH07.setCode(config.getCustomChannel07());
-        CustomChannels.CH_CH08.setCode(config.getCustomChannel08());
+    private void setupCustomChannels() {
+        customChannelList.clearList();
+        for (Channel channel : getThing().getChannels()) {
+            if (CustomChannels.isCustomChannel(channel)) {
+                customChannelList.registerCustomChannel(channel);
+            }
+        }
     }
 
     /**
@@ -152,10 +153,10 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      * @param values map containing the data updates
      */
     @Override
-    public void updateChannelStatus(Map<Channel, State> values) {
+    public void updateChannelStatus(Map<NibeChannel, State> values) {
         logger.debug("Handling channel update. ({} Channels)", values.size());
 
-        for (Channel channel : values.keySet()) {
+        for (NibeChannel channel : values.keySet()) {
             if (getChannels().contains(channel)) {
                 State value = values.get(channel);
                 logger.debug("Channel is to be updated: {}: {}", channel.getFQName(), value);
@@ -168,7 +169,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     }
 
     @Override
-    public Set<Channel> getDeadChannels() {
+    public Set<NibeChannel> getDeadChannels() {
         return deadChannels;
     }
 
@@ -180,6 +181,10 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     @Override
     public NibeUplinkConfiguration getConfiguration() {
         return this.getConfigAs(NibeUplinkConfiguration.class);
+    }
+
+    protected ChannelList getCustomChannels() {
+        return customChannelList;
     }
 
 }

@@ -61,10 +61,6 @@ Setting less than 60 seconds does not make any sense as the heat pump only provi
 interval (seconds) in which list of "dead channels" (channels that do not return any data or invalid data) should be purged (default = 3600).
 Usually this settings should not be changed.
 
-- **customChannel01 - customChannel08**  
-allows to define up to 8 custom channels which are not covered in the basic channel list of your model.
-Any number between 10000 and 50000 is allowed. 
-
 ### Examples
 
 - minimum configuration
@@ -304,13 +300,27 @@ Following models/channels are currently available:
 | airsupply#40942  | Switch               | ---    | ---     | No       | External ERS accessory block status                |                                                      |
 | airsupply#47260  | Number               | ---    | ---     | Yes      | Selected fan speed                                 | 0=normal, 1=speed 1, 2=speed 2, 3=speed 3, 4=speed 4 |
 
+### Custom Channels
+
+An arbitrary number of custom channels can be added via paper-ui or file based configuration.
+The recommended way is to use paper-ui as this is much easier to use.
+There are three custom channel types available, which allow different scaling of the raw values retrieved from the NIBE API:
+
+- custom-type-unscaled
+- custom-type-div10
+- custom-type-div100
+
 
 ## Full Example
 
 ### Thing
 
 ```
-nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", nibeId="4711", pollingInterval=300, customChannel01=47376, customChannel02=48009 ]
+nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", nibeId="4711", pollingInterval=300] {
+   Channels:
+        Type custom-type-div10    : 47015 "min supply temp heating"
+        Type custom-type-unscaled : 48177 "min supply temp cooling"
+}
 ```
 
 ### Items
@@ -322,14 +332,15 @@ Channels which have more than two states are internally represented as number.
 You need to define a map file which also gives you the opportunity to translate the state into your preferred language.
 
 ```
-Number:Temperature      NIBE_SUPPLY            "Vorlauf"                         { channel="nibeuplink:vvm320:mynibe:base#40008" }
-Number:Temperature      NIBE_RETURN            "Rücklauf [%.2f °F]"              { channel="nibeuplink:vvm320:mynibe:base#40012" }
-Number:Temperature      NIBE_HW_TOP            "Brauchwasser oben"               { channel="nibeuplink:vvm320:mynibe:hotwater#40013" }
-Number:Energy           NIBE_HM_HEAT           "WM Heizung"                      { channel="nibeuplink:vvm320:mynibe:base#44308" }
-Switch                  NIBE_COMP_DEFROST      "Enteisung"                       { channel="nibeuplink:vvm320:mynibe:compressor#44703" }
-Number                  NIBE_HW_MODE           "Modus [MAP(hwmode.map):%s]"      { channel="nibeuplink:vvm320:mynibe:hotwater#47041" }
+Number:Temperature      NIBE_SUPPLY            "Vorlauf"                                 { channel="nibeuplink:vvm320:mynibe:base#40008" }
+Number:Temperature      NIBE_RETURN            "Rücklauf [%.2f °F]"                      { channel="nibeuplink:vvm320:mynibe:base#40012" }
+Number:Temperature      NIBE_HW_TOP            "Brauchwasser oben"                       { channel="nibeuplink:vvm320:mynibe:hotwater#40013" }
+Number:Energy           NIBE_HM_HEAT           "WM Heizung"                              { channel="nibeuplink:vvm320:mynibe:base#44308" }
+Switch                  NIBE_COMP_DEFROST      "Enteisung"                               { channel="nibeuplink:vvm320:mynibe:compressor#44703" }
+Number                  NIBE_HW_MODE           "Modus [MAP(hwmode.map):%s]"              { channel="nibeuplink:vvm320:mynibe:hotwater#47041" }
 
-Number                  NIBE_CUSTOM_01         "Custom 01"                       { channel="nibeuplink:vvm320:mynibe:custom#CH01" }
+Number                  NIBE_MIN_SUP_HEAT      "min supply temp. heating [%.1f °C]"      { channel="nibeuplink:vvm320:mynibe:47015" }
+Number                  NIBE_MIN_SUP_COOL      "min supply temp. cooling [%d °C]"        { channel="nibeuplink:vvm320:mynibe:48177" }
 ```
 
 ### Transformations

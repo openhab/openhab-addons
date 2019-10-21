@@ -26,7 +26,7 @@ public abstract class AbstractChannels implements ChannelList {
     /**
      * Holds the channels
      */
-    protected final Set<Channel> channels = new HashSet<>();
+    protected final Set<NibeChannel> channels = new HashSet<>();
 
     /**
      * returns an unmodifiable set containing all available channels.
@@ -34,7 +34,7 @@ public abstract class AbstractChannels implements ChannelList {
      * @return set of unique channels
      */
     @Override
-    public Set<Channel> getChannels() {
+    public Set<NibeChannel> getChannels() {
         return Collections.unmodifiableSet(channels);
     }
 
@@ -45,9 +45,9 @@ public abstract class AbstractChannels implements ChannelList {
      * @return channel which belongs to the code. might be null if there is no channel found.
      */
     @Override
-    public Channel fromCode(String channelCode) {
-        for (Channel channel : channels) {
-            if (channel.getChannelCode().equals(channelCode)) {
+    public NibeChannel fromCode(String channelCode) {
+        for (NibeChannel channel : channels) {
+            if (channel.getId().equals(channelCode)) {
                 return channel;
             }
         }
@@ -60,7 +60,7 @@ public abstract class AbstractChannels implements ChannelList {
      * @param channel
      * @return
      */
-    protected final <T extends Channel> T addChannel(T channel) {
+    protected final <T extends NibeChannel> T addChannel(T channel) {
         channels.add(channel);
         return channel;
     }
