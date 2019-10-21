@@ -12,24 +12,14 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
+import java.io.IOException;
+
 /**
- * The {@link IConnectionHandler} is base communication interface which defines only the basic communication level.
+ * The {@link ISocketTimeOutListener} Listener interface for informing listeners who may be interested and act in case
+ * of socket time out occurs.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public interface IConnectionHandler {
-
-    void close();
-
-    boolean isOnline();
-
-    void setOnline(boolean flag);
-
-    void submitRequest(IRequest request);
-
-    /**
-     * @param stoListener This method sets a listener which is called in case of socket timeout occurrence.
-     */
-    void setStoListener(ISocketTimeOutListener stoListener);
-
+public interface ISocketTimeOutListener {
+    void onSocketTimeOutOccurred(IOException exception);
 }

@@ -25,6 +25,7 @@ public class ParadoxIP150BridgeConfiguration {
     private String ipAddress;
     private int port;
     private String panelType;
+    private int reconnectWaitTime;
 
     public int getRefresh() {
         return refresh;
@@ -72,6 +73,14 @@ public class ParadoxIP150BridgeConfiguration {
 
     public void setPanelType(String panelType) {
         this.panelType = panelType;
+    }
+
+    public int getReconnectWaitTime() {
+        return reconnectWaitTime;
+    }
+
+    public void setReconnectWaitTime(int reconnectWaitTime) {
+        this.reconnectWaitTime = reconnectWaitTime;
     }
 
 }

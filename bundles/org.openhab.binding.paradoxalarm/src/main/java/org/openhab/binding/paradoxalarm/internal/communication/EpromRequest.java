@@ -39,4 +39,9 @@ public class EpromRequest extends Request {
         return entityId;
     }
 
+    @Override
+    public String toString() {
+        return "EpromRequest [getType()=" + getType() + ", entityType=" + entityType + ", entityId=" + entityId + "]";
+    }
+
 }
