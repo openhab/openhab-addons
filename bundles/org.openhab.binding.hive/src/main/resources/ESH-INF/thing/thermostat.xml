@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="thermostat" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Hive Home Thermostat</label>
+		<description>Hive Home Thermostat</description>		 
+		<channels>
+			<channel id="currenttemperature" typeId="currenttemperature" />
+			<channel id="targettemperature" typeId="targettemperature" />
+			<channel id="boost" typeId="boost" />
+			<channel id="heatingon" typeId="heatingon" />
+			<channel id="hotwateron" typeId="hotwateron" />
+			<channel id="mode" typeId="mode" />
+			<channel id="boostremaining" typeId="boostremaining" />
+			<channel id="thermostatbattery" typeId="battery-level" />
+		</channels>
+        <properties>
+            <property name="linkedDevice"></property>
+        </properties>
+        <representation-property>nodeId</representation-property>
+	</thing-type>
+	<channel-type id="currenttemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="targettemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>The current target temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="boost">
+        <item-type>Switch</item-type>
+        <label>Boost</label>
+        <description>Turn boost on</description>
+        <category>Valve</category>
+    </channel-type>
+	<channel-type id="heatingon">
+		<item-type>Switch</item-type>
+		<label>Heating On</label>
+		<description>The current heating status</description>
+		<category>Valve</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="hotwateron">
+		<item-type>Switch</item-type>
+		<label>Hot Water On</label>
+		<description>The current hot water status</description>
+		<category>Valve</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Heating Mode</label>
+		<description>The current heating/hot water mode</description>
+		<category>Valve</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="boostremaining">
+        <item-type>Number</item-type>
+		<label>Remaining Boost Time</label>
+		<description>The time remaining until this boost ends</description>
+		<category>Valve</category>
+	</channel-type>
+	<channel-type id="battery-level">
+        <item-type>Number</item-type>
+        <label>Battery Level</label>
+        <description>The thermostat battery level</description>
+        <category>Battery</category>
+        <state readOnly="true" />
+    </channel-type>
+</thing:thing-descriptions>

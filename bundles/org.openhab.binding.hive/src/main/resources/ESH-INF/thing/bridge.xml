@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="bridge">
+		<label>Hive Home Account</label>
+		<description>Provides Access To Your Hive Home Account</description>
+		<config-description>
+			<parameter name="USRNM" type="text" required="true">
+				<label>Username</label>
+				<description>Your Hive Home Username</description>
+			</parameter>
+			<parameter name="PASSWD" type="text" required="true">
+				<label>Password</label>
+				<description>Your Hive Home Password</description>
+			</parameter>
+			<parameter name="TKN" type="text" required="false" readOnly="true">
+				<label>Token</label>
+				<description>Your Hive Home Login Token</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>	
+</thing:thing-descriptions>
