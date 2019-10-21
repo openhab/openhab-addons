@@ -172,8 +172,6 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
                     if (quantity != null) {
                         val = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
                     }
-                } else {
-                    val = new BigDecimal(command.toString()).setScale(1, RoundingMode.HALF_UP);
                 }
                 if (val != null) {
                     // round nearest .5
