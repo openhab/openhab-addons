@@ -1,0 +1,15 @@
+toon me de geschiedenis van de <START:object> temperatuur <END> van het laatste uur
+ik wil een grafiek van het laatste uur voor het <START:object> stroomverbruik <END>
+uurlijkse grafiek van de <START:object> temperatuur <END> in de <START:location> keuken <END>
+uurlijkse grafiek van de <START:object> temperatuur <END> in de <START:location> woonkamer <END>
+teken de <START:object> temperatuur <END> van de <START:location> woonkamer <END> af voor de laatste <START:period> 2 <END> uur
+<START:object> temperatuur <END> in de <START:location> woonkamer <END> in de vorige <START:period> 6 <END> uur
+evolutie van de <START:object> temperatuur <END> in de <START:location> badkamer <END> voor deze <START:period> 2 <END> uur
+wijzigingen in <START:object> temperatuur <END> in de <START:location> slaapkamer <END> over <START:period> 6 <END> uur
+<START:object> temperatuur <END> in de <START:location> woonkamer <END> voor <START:period> 12 <END> uur
+grafiek van de <START:object> temperatuur <END> in <START:location> eric's room <END> gedurende de laatste <START:period> 4 <END> uren
+teken me alsjeblieft een schema van <START:object> vochtigheid <END> in <START:location> frank's kamer <END> van de laatste <START:period> 8 <END> uur
+diagram van het <START:object> licht <END> in de <START:location> tuin <END> voor de laatste <START:period> 3 <END> uur
+teken een kaart van het <START:object> rolluik <END> in de <START:location> benedentrap <END> voor de laatste <START:period> 3 <END> uur
+<START:object> gewenste temperatuur <END> in de <START:location> hoofdslaapkamer <END> over de afgelopen <START:period> 6 <END> uren
+Hoe is het verloop van de <START:object> temperatuur <END> in het afgelopen uur

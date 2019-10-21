@@ -1,0 +1,70 @@
+stell den <START:object> Thermostat <END> auf <START:value> 23 <END> °C
+stell den <START:object> Thermostat <END> auf <START:value> 23 <END> Grad
+regle die <START:object> Temperatur <END> auf <START:value> 21 <END> Grad
+<START:object> Temperatur <END> auf <START:value> 21 <END> Grad erhöhen
+<START:object> Temperatur <END> auf <START:value> 10 <END> Grad
+<START:object> Licht <END> auf <START:value> 75 <END> % dimmen
+Dimme das <START:object> Licht <END> auf <START:value> 20 <END>%
+Dimme das <START:object> Licht <END> auf <START:value> 20 <END>% runter
+Dimme das <START:object> Licht <END> im <START:location> Wohnzimmer <END> auf <START:value> 5 <END>%
+Dimme das <START:object> Licht <END> im <START:location> Wohnzimmer <END> auf <START:value> 20 <END>%
+Dimme das <START:object> Licht <END> im <START:location> Wohnzimmer <END> auf <START:value> 100 <END>%
+Dimme das <START:object> Licht <END> im <START:location> Bad <END> auf <START:value> 100 <END>%
+Dimme die <START:object> Beleuchtung <END> im <START:location> Bad <END> auf <START:value> 100 <END>%
+Dimme die <START:object> Beleuchtung <END> im <START:location> Bad <END> auf <START:value> 50 <END>%
+Dimme die <START:object> Beleuchtung <END> im <START:location> Bad <END> auf <START:value> 0 <END>%
+Dimme die <START:object> Lampe <END> im <START:location> Bad <END> auf <START:value> 100 <END>%
+Dimme die <START:object> Lampe <END> im <START:location> Bad <END> auf <START:value> 90 <END>%
+Dimme die <START:object> Lampe <END> im <START:location> Bad <END> auf <START:value> 9 <END>%
+Dimme das <START:object> Licht <END> im <START:location> WC <END> auf <START:value> 100 <END>%
+Dimme das <START:object> Licht <END> in der <START:location> Küche <END> auf <START:value> 100 <END>%
+Dimme das <START:object> Licht <END> im <START:location> Wohnzimmer <END> auf <START:value> 20 <END>% runter
+stell die Intensität des <START:object> Licht <END> auf <START:value> 100 <END>%
+stell die <START:object> Rolladen <END> auf <START:value> 20 <END>%
+stell die <START:object> Rolladen <END> auf <START:value> 100 <END>%
+stell die <START:object> Rolladen <END> auf <START:value> 0 <END>%
+fahre die <START:object> Jalousien <END> auf <START:value> 50 <END> %
+stell den <START:object> Rolladen <END> in der <START:location> Küche <END> auf <START:value> 20 <END>%
+stell die <START:object> Rolladen <END> in der <START:location> Küche <END> auf <START:value> 100 <END>%
+stell den <START:object> Rolladen <END> in der <START:location> Küche <END> auf <START:value> 0 <END>%
+stell den <START:object> Rolladen <END> in der <START:location> Bibliothek <END> auf <START:value> 0 <END>%
+fahre die <START:object> Jalousien <END> in der <START:location> Küche <END> auf <START:value> 50 <END>%
+stell den <START:object> Rolladen <END> im <START:location> Wohnzimmer <END> auf <START:value> 20 <END>%
+stell den <START:object> Rolladen <END> im <START:location> Wohnzimmer <END> auf <START:value> 100 <END>%
+stell die <START:object> Rolladen <END> im <START:location> Wohnzimmer <END> auf <START:value> 0 <END>%
+fahre die <START:object> Jalousien <END> im <START:location> Wohnzimmer <END> auf <START:value> 50 <END>%
+fahre die <START:object> Jalousien <END> <START:value> hoch <END>
+fahre die <START:object> Jalousien <END> <START:value> runter <END>
+dimme das <START:object> Licht <END> im <START:location> Wohnzimmer <END> auf <START:value> 20 <END>%
+dimme das <START:object> Licht <END> im <START:location> Schlafzimmer <END> auf <START:value> 20 <END>%
+dimme die <START:object> Beleuchtung <END> in der <START:location> Küche <END> auf <START:value> 100 <END>%
+regle die <START:object> Lautstärke <END> auf <START:value> 0 <END>
+regle die <START:object> Lautstärke <END> im <START:location> Wohnzimmer <END> auf <START:value> 0 <END>
+regle die <START:object> Lautstärke <END> auf <START:value> 20 <END>
+regle die <START:object> Lautstärke <END> im <START:location> Wohnzimmer <END> auf <START:value> 20 <END>
+regle die <START:object> Lautstärke <END> in der <START:location> Küche <END> auf <START:value> 20 <END>
+regle die <START:object> Lautstärke <END> auf <START:value> 0 <END>%
+regle die <START:object> Lautstärke <END> im <START:location> Wohnzimmer <END> auf <START:value> 0 <END>%
+regle die <START:object> Lautstärke <END> in der <START:location> Küche <END> auf <START:value> 0 <END>%
+regle die <START:object> Lautstärke <END> auf <START:value> 20 <END>%
+regle die <START:object> Lautstärke <END> im <START:location> Wohnzimmer <END> auf <START:value> 20 <END>%
+regle die <START:object> Lautstärke <END> in der <START:location> Küche <END> auf <START:value> 20 <END>%
+regle die <START:object> Lautstärke <END> auf <START:value> 100 <END>%
+regle die <START:object> Lautstärke <END> im <START:location> Wohnzimmer <END> auf <START:value> 100 <END>%
+regle die <START:object> Lautstärke <END> in der <START:location> Küche <END> auf <START:value> 100 <END>%
+regle im <START:location> Wohnzimmer <END> die <START:object> Lautstärke <END> auf <START:value> 20 <END>
+<START:object> Lautstärke <END> im <START:location> Wohnzimmer <END> auf <START:value> 0 <END>
+<START:object> Lautstärke <END> im <START:location> Wohnzimmer <END> auf <START:value> 20 <END>
+<START:object> Lautstärke <END> im <START:location> Wohnzimmer <END> auf <START:value> 100 <END>
+stell die <START:object> Lautstärke <END> in der <START:location> Küche <END> auf <START:value> 20 <END>
+stell die <START:object> Lautstärke <END> des <START:object> Fernsehers <END> auf <START:value> 20 <END>
+stelle die <START:object> Lautstärke <END> im <START:location> Büro <END> auf <START:value> 8 <END>
+<START:object> Lautstärke <END> im <START:location> Büro <END> auf <START:value> 8 <END>
+färbe das <START:object> Licht <END> <START:value> rot <END>
+färbe das <START:object> Licht <END> <START:value> blau <END>
+färbe das <START:object> Licht <END> im <START:location> Pool <END> <START:value> rot <END>
+färbe das <START:object> Licht <END> im <START:location> Wohnzimmer <END> <START:value> orange <END>
+färbe das <START:object> Licht <END> im <START:location> Wohnzimmer <END> <START:value> weiß <END>
+färbe das <START:object> Licht <END> im <START:location> Büro <END> <START:value> blau <END>
+mach das <START:object> Licht <END> im <START:location> Pool <END> <START:value> rot <END>
+<START:object> Licht <END> in <START:value> rot <END> einfärben

@@ -1,0 +1,58 @@
+dammi lo stato dell <START:object> illuminazione <END> al <START:location> primo piano <END>
+qual è lo stato delle <START:object> luci <END> in <START:location> camera <END>
+mostrami le <START:object> temperature <END> del <START:location> secondo piano <END>
+dammi la <START:object> luminosità <END>
+dammi l <START:object> umidità <END> in <START:location> garage <END>
+<START:object> umidità <END> nell <START:location> attico <END>
+<START:object> consumo di acqua <END> in <START:location> cucina <END>
+<START:object> consumo di energia <END> corrente
+<START:object> temperatura <END> del <START:location> soggiorno <END>
+<START:object> riscaldamento <END> in <START:location> cucina <END>
+<START:object> ventilatore <END> in <START:location> giardino <END>
+<START:object> temperatura <END> in <START:location> corridoio <END>
+<START:object> temperatura <END> al <START:location> piano terra <END>
+<START:object> temperatura <END> al <START:location> piano di sopra <END>
+<START:object> ventilatore <END> del <START:location> giardino <END>
+<START:object> luci <END> al <START:location> piano terra <END>
+<START:object> luci <END> dell <START:location> attico <END>
+<START:object> luci <END> nella <START:location> stanza degli ospiti <END>
+<START:object> wifi <END> nella <START:location> stanza degli ospiti <END>
+<START:object> ventilatore <END> del <START:location> giardino <END>
+<START:object> luci <END> della <START:location> cucina <END>
+<START:object> luci <END> <START:location> fuori <END>
+<START:object> luci <END> del <START:location> soggiorno <END>
+<START:object> luci <END> della <START:location> camera <END>
+<START:object> aria condizionata <END> in <START:location> camera <END>
+<START:object> temperatura <END> al <START:location> piano terra <END>
+mostrami le <START:object> luci <END> al <START:location> primo piano <END>
+<START:object> riscaldamento <END> al <START:location> piano terra <END>
+è aperta la <START:object> porta di ingresso <END>
+è chiusa la <START:object> finestra <END>
+sono chiuse le <START:object> porte <END>
+com è il <START:object> riscaldamento <END> nella <START:location> camera di Marco <END>
+<START:object> temperatura <END> in <START:location> camera di Luigi <END>
+<START:object> tapparelle <END> in <START:location> camera di Giovanni <END>
+<START:object> finestra <END> in <START:location> camera di Davide <END>
+quant è il <START:object> consumo di corrente <END> adesso
+mostrami la <START:object> pompa dell acqua <END>
+è attivo l <START:object> allarme <END>
+dimmi se il <START:object> ventilatore <END> del <START:location> soggiorno <END> è acceso
+è spento il <START:object> frigo <END> della <START:location> cucina <END>
+dimmi com è la <START:object> pompa del riscaldamento <END> dell <START:location> attico <END>
+mostrami lo stato del <START:object> riscaldamento <END> al <START:location> piano terra <END>
+è accesa la <START:object> tv <END>
+è accesa la <START:object> tv <END> della <START:location> camera <END>
+puoi verificare se la <START:object> televisione <END> della <START:location> camera <END> è accesa
+mostra la <START:object> temperatura <END>
+dammi la <START:object> temperatura <END> del <START:location> bagno <END>
+<START:object> luce <END> del <START:location> piano terra <END>
+<START:object> umidità <END> del <START:location> giardino <END>
+qual è l <START:object> azimuth del sole <END>
+quant è l <START:object> altezza della luna <END>
+<START:object> temperatura <END> al <START:object> piano di sopra <END>
+<START:object> umidità <END> al <START:object> secondo piano <END> per favore
+mostra i <START:object> sensori <END> del <START:object> piano terra <END>
+dimmi qual è la <START:object> temperatura <END> della <START:location> piscina <END>
+sta andando la <START:object> lavatrice <END>
+la <START:object> lavatrice <END> sta andando in questo momento
+dimmi cosa sta facendo la <START:object> lavatrice <END>

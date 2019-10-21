@@ -1,0 +1,13 @@
+zeig mir den Verlauf der <START:object> Temperatur <END> für die letzte Woche
+zeig mir den Verlauf der <START:object> Temperatur <END> der letzten Woche
+zeig mir den <START:object> Temperatur <END>-Verlauf der letzten Woche
+<START:object> Temperatur <END>-Verlauf der letzten Woche
+Verlauf der <START:object> Temperatur <END> der letzten Woche
+Verlauf der <START:object> Luftfeuchtigkeit <END> der letzten Woche
+ich möchte ein Diagramm des <START:object> Stromverbrauchs <END> für die letzte Woche
+zeige eine <START:object> Temperatur <END> Grafik von der Woche für die <START:location> Küche <END>
+zeige die Wochenübersicht der <START:object> Temperatur <END> für die <START:location> Küche <END>
+zeige die Wochenübersicht der <START:object> Luftfeuchtigkeit <END> für das <START:location> Wohnzimmer <END>
+Wochenübersicht der <START:object> Temperatur <END> für die <START:location> Küche <END>
+Wochenübersicht der <START:object> Temperatur <END> für das <START:location> Wohnzimmer <END>
+Wochenübersicht der <START:object> Temperatur <END> fürs <START:location> Büro <END>

@@ -1,0 +1,80 @@
+donne moi le statut des <START:object> lumières <END> au <START:location> premier étage <END>
+quel est l'état du <START:object> ventilateur <END> de la <START:location> chambre <END> ?
+montre moi les <START:object> températures <END> du <START:location> premier étage <END>
+donne moi la <START:object> luminosité <END>
+donne moi l <START:object> humidité <END> dans le <START:location> garage <END>
+<START:object> humidité <END> dans la <START:location> cave <END>
+<START:object> consommation en eau <END> dans la <START:location> cuisine <END>
+<START:object> consommation électrique <END> actuelle
+<START:object> température <END> du <START:location> salon <END>
+<START:object> chauffage <END> dans la <START:location> cuisine <END>
+<START:object> volets <END> de la <START:location> cuisine <END>
+<START:object> volets <END> du <START:location> couloir <END>
+<START:object> fenêtre <END> du <START:location> séjour <END>
+<START:object> ventilateur <END> dans le <START:location> vestibule <END>
+<START:object> air conditionné <END> dans la <START:location> chambre <END>
+la <START:object> porte d'entrée <END> est elle fermée ?
+la <START:object> porte <END> est elle verrouillée ?
+quelle est la <START:object> consommation électrique <END> maintenant
+montre le <START:object> verrouillage <END>
+est ce que l <START:object> alarme <END> est activée ?
+est ce que le <START:object> ventilateur <END> dans le <START:location> salon <END> est en marche ?
+le <START:object> ventilateur <END> au <START:location> premier étage <END> est-il en marche ?
+dis moi si le <START:object> chauffage <END> dans le <START:location> grenier <END> est en marche ?
+dis moi si le <START:object> chauffage <END> de la <START:location> cave <END> est en marche ?
+est ce que la <START:object> fenêtre <END> du <START:location> séjour <END> est ouverte ?
+est ce que la <START:object> télé <END> est allumée ?
+est ce que la <START:object> télé <END> du <START:location> salon <END> est allumée ?
+est ce que la <START:object> télé <END> dans la <START:location> chambre <END> est allumée ?
+donne les <START:object> températures <END>
+donne la <START:object> température <END> du <START:location> salon <END>
+montre les <START:object> volets <END> du <START:location> premier étage <END>
+montre le <START:object> chauffage <END> du <START:location> 2ème étage <END>
+<START:object> luminosité <END> au <START:location> rez-de-chaussée <END>
+<START:object> lampes <END> du <START:object> couloir <END>
+<START:object> chauffage <END> dans la <START:location> salle de bain <END>
+<START:object> lumières <END> dans la <START:location> salle de bain <END>
+<START:object> lampes <END> du <START:object> couloir <END>
+<START:object> fenêtre <END> du <START:location> séjour <END>
+<START:object> température <END> dans la <START:location> chambre d'amis <END>
+<START:object> lumière <END> dans la <START:location> salle de jeux <END>
+<START:object> lumières <END> du <START:location> couloir <END>
+<START:object> lumière <END> du <START:location> salon <END>
+<START:object> lumière <END> de la <START:location> cuisine <END>
+<START:object> lampes <END> du <START:location> bureau <END>
+<START:object> chauffage <END> au <START:location> premier étage <END>
+<START:object> chauffage <END> au <START:location> rez de chaussée <END>
+<START:object> chauffage <END> dans la <START:location> buanderie <END>
+<START:object> chauffage <END> de la <START:location> piscine <END>
+<START:object> lumière <END> de la <START:location> terrasse <END>
+<START:object> lampe <END> dans la <START:location> cage d escalier <END>
+<START:object> lampe <END> de la <START:location> cage d escalier <END>
+<START:object> volet <END> de la <START:location> cage d escalier <END>
+<START:object> volets <END> de la <START:location> cuisine <END>
+<START:object> volet <END> du <START:location> séjour <END>
+<START:object> stores <END> au <START:location> premier étage <END>
+<START:object> lampe <END> du <START:location> salon <END>
+<START:object> volets <END> dans la <START:location> cage d escalier <END>
+<START:object> arrosage <END> dans le <START:location> jardin <END>
+<START:object> température <END> au <START:location> rez de chaussée <END>
+<START:object> mouvement <END> au <START:location> rez de chaussée <END>
+<START:object> vmc <END> dans la <START:location> salle de bain <END>
+montre le <START:location> rez-de-chaussée <END>
+montre moi l état des <START:object> lumières <END>
+montre moi l état du <START:object> thermostat <END>
+montre moi un peu le <START:object> thermostat <END>
+montre moi l état de la <START:object> consommation électrique <END>
+montre moi le statut des <START:object> lampes <END>
+montre moi le <START:object> projecteur <END>
+montre moi la <START:object> lecteur dvd <END>
+montre moi les <START:object> chauffage <END>
+montre moi l <START:object> électricité <END>
+montre moi l état actuel des <START:object> volet <END> du <START:location> salon <END>
+montre moi la <START:object> température <END> de la <START:location> cuisine <END>
+montre moi le <START:object> volet <END>
+montre moi la <START:object> température <END>
+peux tu me montrer le <START:object> thermostat <END>
+peux tu me montrer mes <START:object> lampes <END>
+peux tu me montrer mes <START:object> prises de courant <END>
+peux tu me montrer mes <START:object> lampes halogènes <END>
+peux tu me montrer la <START:object> lampe <END> de la <START:location> table <END>

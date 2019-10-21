@@ -1,0 +1,8 @@
+montre-moi l'historique de la dernière heure pour la <START:object> température <END>
+je veux un graphique de la <START:object> consommation électrique <END> de cette dernière heure
+graphique pour la <START:object> température <END> dans la <START:location> cuisine <END> pour l'heure qui vient de passer
+graphique pour la <START:object> température <END> dans la <START:location> salon <END> pour les <START:period> 2 <END> dernières heures
+<START:object> température <END> dans le <START:location> salon <END> pour les <START:period> 6 <END> dernières heures
+évolution de la <START:object> température <END> dans la <START:location> salle à manger <END> pour les <START:period> deux <END> dernières heures
+changements de <START:object> température <END> dans la <START:location> chambre <END> pour les <START:period> six <END> dernières heures
+<START:object> température <END> dans le <START:location> salon <END> pour les <START:period> 12 <END> dernières heures

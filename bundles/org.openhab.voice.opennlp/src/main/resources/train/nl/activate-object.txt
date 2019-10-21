@@ -1,0 +1,42 @@
+activeer alstublieft de <START:object> verwarming <END>
+activeer de <START:object> bewegingsdetectie <END> in de <START:location> gang <END>
+activeer het <START:object> alarm <END>
+doe het <START:object> licht <END> aan
+doe het <START:object> licht <END> aan, alsjeblieft 
+doe het <START:object> licht <END> in de <START:location> keuken <END> aan
+ik wil de <START:object> airconditioning <END> in de <START:location> slaapkamer <END>
+ik wil graag wat <START:object> muziek <END> in de <START:location> badkamer <END> alstublieft
+ik wil <START:object> airconditioning <END> in de <START:location> slaapkamer <END>
+ik wil <START:object> licht <END> op
+ik wil wat <START:object> light <END> in de <START:location> slaapkamer <END>
+ik wil wat <START:object> verwarming <END> op de <START:location> eerste verdieping <END>
+ik zou graag wat <START:object> muziek <END> willen hebben
+kun je alsjeblieft de <START:object> vaatwasser <END> aanzetten
+kun je de <START:object> lichten <END> in de <START:location> slaapkamer <END> aanzetten?
+kun je wat <START:object> licht <END> aanzetten in de <START:location> slaapkamer <END>
+schakel de <START:location> woonkamer <END> <START:object> ventilator <END> in
+schakel de <START:object> a/c <END> in de <START:location> woonkamer <END> in
+schakel de <START:object> verlichting <END> van de <START:location> begane grond <END> in
+schakel de <START:object> verlichting <END> aan
+schakel de <START:object> verwarming <END> in op de <START:location> eerste verdiepingr <END>
+schakel de <START:object> waterpomp <END> in de <START:location> kelder <END> in
+schakel het <START:object> licht <END> in
+schakel het <START:object> lichten <END> in
+schakel het <START:object> apparaat <END> in
+start alstublieft de <START:object> fan <END> in de <START:location> slaapkamer <END>
+start de <START:location> kelder <END> <START:object> verwarming <END>
+start de <START:object> ac <END> alstublieft
+start de <START:object> ketel <END> in de <START:location> garage <END>
+start de <START:object> verwarming <END> in de <START:location> garage <END>
+start de <START:object> verwarming <END> op de <START:location> zolder <END>
+start de <START:object> wasmachine <END>
+zet de <START:object> radiator <END> aan in de <START:location> keuken <END>
+zet de <START:object> lampen <END> aan op <START:location> zolder <END>
+zet de <START:object> televisie <END> aan
+zet het <START:object> licht <END> aan
+zet het <START:object> licht <END> in de <START:location> keuken <END> aan
+zet het <START:object> licht <END> aan op <START:location> zolder <END>
+zet het <START:object> licht <END> aan de <START:location> gang <END>
+zet het <START:object> licht <END> aan in de  <START:location> woonkamer <END>
+zet het <START:object> licht <END> op de <START:location> gang <END> aan
+zet het <START:object> licht <END> op <START:location> zolder <END> aan

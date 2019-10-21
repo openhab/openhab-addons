@@ -1,0 +1,15 @@
+wann hat sich die <START:object> Temperatur <END> das letzte mal geändert
+Wann wurde der <START:object> Fernseher <END> aus geschaltet
+wann wurde der letzte <START:object> Alarm <END> ausgelöst
+wann wurde der letzte <START:object> Wert <END> gesendet
+wann wurde der Status vom <START:object> Licht <END> zuletzt geändert
+wann wurde der Status vom <START:object> Sensor <END> zuletzt geändert
+wann wurde der Status vom <START:object> Fernseher <END> zuletzt geändert
+wann wurde der Status von der <START:object> Heizung <END> zuletzt geändert
+wann wurde der Status vom <START:object> Licht <END> im <START:location> Wohnzimmer <END> zuletzt geändert
+letzte Änderung von der <START:object> Temperatur <END>
+wann war die letzte Änderung der <START:object> Temperatur <END>
+wann hat sich die <START:object> Temperatur <END> zuletzt geändert
+letzte Änderung der <START:object> Temperatur <END>
+wann hat sich die <START:object> Luftfeuchtigkeit <END> im <START:location> Wohnzimmer <END> zuletzt geändert
+wann wurde der <START:object> Wert <END> zuletzt geändert

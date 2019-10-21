@@ -1,0 +1,51 @@
+gib mir den Status der <START:Objektes> Beleuchtung <END> im <START:Location> Erdgeschoss <END>
+<START:object> Temperatur <END> im <START:location> Wohnzimmer <END>
+Wie ist die <START:object> Temperatur <END> im <START:location> Wohnzimmer <END>
+Wie hoch ist die <START:object> Temperatur <END> im <START:location> Wohnzimmer <END>
+Wie hoch ist die <START:object> Temperatur <END> im <START:location> Kinderzimmer <END>
+Wie hoch ist die <START:object> Temperatur <END> auf der <START:location> Toilette <END>
+Wie hoch ist die <START:object> Temperatur <END> in der <START:location> Küche <END>
+Wie hoch ist die <START:object> Temperatur <END> im <START:location> Obergeschoss <END>
+Wie <START:object> warm <END> ist es im <START:location> Wohnzimmer <END>
+Wie ist die <START:object> Temperatur <END> in der <START:location> Küche <END>
+Wie ist die <START:object> Temperatur <END> im <START:location> Bad <END>
+Wie ist die <START:object> Temperatur <END> auf dem  <START:location> WC <END>
+<START:object> Heizung <END> in der <START:location> Küche <END>
+<START:object> Heizung <END> im <START:location> Büro <END>
+<START:object> Heizung <END> auf dem  <START:location> WC <END>
+<START:object> Temperatur <END> in der <START:location> Küche <END>
+<START:object> Temperatur <END> im <START:location> Bad <END>
+<START:object> Temperatur <END> auf dem  <START:location> WC <END>
+Ist das <START:object> Garagentor <END> offen
+Ist die <START:object> Haustüre <END> offen
+Ist das <START:object> Licht <END> an
+Ist das <START:object> Licht <END> in der <START:location> Küche <END> an
+Ist das <START:object> Licht <END> im <START:location> Bad <END> an
+Ist das <START:object> Licht <END> im <START:location> Wohnzimmer <END> an
+Ist das <START:object> Licht <END> im <START:location> Keller <END> an
+Ist das <START:object> Licht <END> im <START:location> Kinderzimmer <END> an
+Ist das <START:object> Licht <END> im <START:location> Garten <END> an
+Ist das <START:object> Licht <END> im <START:location> Büro <END> an
+Ist das <START:object> Licht <END> auf dem  <START:location> WC <END> an
+Ist das <START:object> Licht <END> <START:location> draußen <END> an
+Ist das <START:object> Flutlicht <END> <START:location> draußen <END> an
+Ist das <START:object> Licht <END> <START:location> irgendwo <END> an
+Ist der <START:object> Brunnen <END> <START:location> draußen <END> an
+Ist das <START:object> Licht <END> <START:location> oben <END> an
+Ist das <START:object> Licht <END> <START:location> unten <END> an
+Ist die <START:object> Beleuchtung <END> <START:location> oben <END> an
+Ist der <START:object> Brunnen <END> <START:location> oben <END> an
+Wie ist das <START:object> Licht <END> <START:location> draußen <END>
+Wie ist das <START:object> Licht <END> im <START:location> Wohnzimmer <END>
+Ist <START:location> draußen <END> das <START:object> Licht <END> an
+Ist <START:location> drinnen <END> das <START:object> Licht <END> an
+Ist <START:location> oben <END> <START:object> Licht <END> an
+Ist <START:location> drinnen <END> <START:object> Licht <END> an
+<START:object> Licht <END> in der <START:location> Küche <END>
+<START:object> Licht <END> im <START:location> Bad <END>
+<START:object> Licht <END> im <START:location> Wohnzimmer <END>
+<START:object> Licht <END> im <START:location> Keller <END>
+<START:object> Licht <END> im <START:location> Kinderzimmer <END>
+<START:object> Licht <END> im <START:location> Schlafzimmer <END>
+<START:object> Licht <END> im <START:location> Büro <END>
+<START:object> Licht <END> auf dem  <START:location> WC <END>

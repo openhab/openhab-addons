@@ -1,0 +1,10 @@
+mostrami lo storico della <START:object> temperatura <END> di oggi
+vorrei un grafico del <START:object> consumo di energia <END> di ieri
+fai un grafico della <START:object> temperatura <END> del <START:location> soggiorno <END> di oggi
+mostra un grafico della <START:object> temperatura <END> in <START:location> cucina <END> di oggi
+grafico della <START:object> temperatura <END> del <START:location> bagno <END> di oggi
+<START:object> temperatura <END> in <START:location> soggiorno <END> degli ultimi <START:period> 2 <END> giorni
+evoluzione della <START:object> temperatura <END> in <START:location> sala da pranzo <END> negli ultimi <START:period> 3 <END> giorni
+variazioni di <START:object> consumo dell acqua <END> in <START:location> giardino <END> in questi ultimi <START:period> 4 <END> giorni
+quanto è stato il <START:object> consumo di gas <END> negli ultimi <START:period> 4 <END> giorni
+fai un grafico dell <START:object> umidità <END> negli ultimi <START:period> 5 <END> giorni

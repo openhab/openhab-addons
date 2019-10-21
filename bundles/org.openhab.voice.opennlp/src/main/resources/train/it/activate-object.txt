@@ -1,0 +1,31 @@
+puoi accendere le <START:object> luci <END> della <START:location> camera <END>
+per favore accendi le <START:object> luci <END>
+accendi la <START:object> tv <END>
+accendi l <START:object> aria condizionata <END> per favore
+puoi accendere la <START:object> lavastoviglie <END> 
+accendi il <START:object> radiatore <END> della <START:location> cucina <END>
+accendi il <START:object> ventilatore <END> del <START:location> soggiorno <END>
+fai partire la <START:object> lavatrice <END>
+accendi <START:object> televisione <END>
+accendi le <START:object> luci <END>
+accendi l <START:object> illuminazione <END>
+per favore attiva il <START:object> riscaldamento <END>
+accendi la <START:object> aria condizionata <END> del <START:location> soggiorno <END>
+per favore attiva <START:object> ventilatore <END> della <START:location> camera <END>
+attiva il <START:object> riscaldamento <END> del <START:location> piano terra <END>
+accendi la <START:object> pompa <END> del <START:location> piano terra <END>
+accendi il <START:object> riscaldamento <END> del <START:location> piano di sopra <END>
+attiva l <START:object> allarme <END>
+attiva il <START:object> sensore di movimento <END> del <START:object> corridoio <END>
+attiva l <START:object> illuminazione <END> del <START:location> piano terra <END>
+attiva il <START:object> riscaldamento <END> nel <START:location> garage <END>
+attiva il <START:object> boiler <END> del <START:location> garage <END>
+voglio un po di <START:object> luce <END> in <START:location> camera <END>
+voglio l <START:object> aria condizionata <END> in <START:location> bagno <END>
+voglio <START:object> luce <END>
+voglio l <START:object> aria condizionata <END> in <START:location> camera <END>
+vorrei un po di <START:object> musica <END> in <START:location> bagno <END> per favore
+vorrei un po di <START:object> musica <END>
+puoi fare un po di <START:object> luce <END> in <START:location> camera <END>
+voglio un po di <START:object> riscaldamento <END> al <START:location> primo piano <END>
+metti un po di <START:object> musica <END> per favore

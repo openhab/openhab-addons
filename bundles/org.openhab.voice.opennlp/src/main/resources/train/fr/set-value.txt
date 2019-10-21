@@ -1,0 +1,27 @@
+mets le <START:object> thermostat <END> à <START:value> 21 °C <END>
+mets la <START:object> température <END> à <START:value> 19 °C <END>
+change la <START:object> température <END> du <START:location> salon <END> à <START:value> 25 degrés <END>
+mets le <START:object> volume <END> de la <START:location> cuisine <END> à <START:value> 40 <END>
+change la <START:object> ventilation <END> dans la <START:location> chambre <END> à <START:value> 30% <END>
+mets le <START:object> chauffage <END> du <START:location> rez de chaussée <END> à <START:value> 6 <END>
+mets la <START:object> lumière <END> de la <START:location> salle de bain <END> à <START:value> 50 % <END>
+mets la <START:object> lumière <END> du <START:location> premier étage <END> à <START:value> 25 % <END>
+mets les <START:object> lampes <END> du <START:location> couloir <END> à <START:value> 75 % <END>
+mets les <START:object> lampes <END> du <START:location> bureau <END> à <START:value> 100 % <END>
+mets les <START:object> lumières <END> du <START:location> couloir <END> à <START:value> 15% <END>
+mets les <START:object> lampes <END> du <START:location> salon <END> en <START:color> rouge <END>
+change les <START:object> lumières <END> dans le <START:location> jardin <END> en <START:color> vert <END>
+mets la <START:object> lumière <END> de la <START:location> terrasse <END> en <START:color> jaune <END>
+change la couleur des <START:object> lumières <END> de la <START:location> cuisine <END> en <START:color> blanc <END>
+mets les <START:object> lampes <END> de la <START:location> cuisine <END> en <START:color> blanc <END>
+colorise les <START:object> lampes <END> dans la <START:location> salle de bain <END> en <START:color> bleu <END>
+change la couleur de la <START:location> chambre <END> en <START:color> rouge <END>
+change la couleur du <START:location> couloir <END> en <START:color> mauve <END>
+mets les <START:location> lumières <END> en couleur <START:color> jaune <END>
+couleur <START:color> vert <END> pour le <START:location> bureau <END>
+change la couleur en <START:color> orange <END> dans le <START:location> séjour <END>
+mets la <START:object> lumière <END> de la <START:location> table <END> en <START:color> vert <END>
+mets la <START:object> lumière <END> de la <START:location> table <END> en <START:color> vert <END>
+mets la <START:object> musique <END> à <START:value> 60% <END>
+mets la <START:object> température <END> du <START:location> premier étage <END> à <START:value> 22 degrés <END>
+change la <START:object> température <END> dans la <START:location> chambre d amis <END> à <START:value> 23 °C <END>

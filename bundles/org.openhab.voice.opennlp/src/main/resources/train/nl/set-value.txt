@@ -1,0 +1,74 @@
+dim het <START:object> licht <END> in <START:value> 20% <END>
+dim het <START:object> licht <END> tot <START:value> 70% <END>
+dim <START:object> licht <END> in <START:location> slaapkamer <END> tot <START:value> 20% <END>
+dim <START:object> licht <END> in <START:location> woonkamer <END> tot <START:value> 20% <END>
+dim <START:object> licht <END> tot <START:value> 20 <END>%
+dim <START:object> verlichting <END> in de <START:location> keuken <END> tot <START:value> 100% <END>
+kleur de <START:object> lichten <END> in de <START:location> gang <END> <START:color> cyaan <END>
+kleur de <START:object> lichten <END> op de <START:location> zolder <END> <START:color> wit <END>
+kleur de <START:object> lampen <END> <START:color> groen <END>
+kleur de <START:object> slaapkamer <END> <START:color> paars <END>
+kleur de <START:object> woonkamer <END> <START:color> blauw <END>
+kleur het <START:object> licht <END> in de <START:location> woonkamer <END> <START:color> oranje <END>
+kleur het <START:object> licht <END> in het <START:location> zwembad <END> <START:color> groen <END>
+kleur het <START:object> licht <END> <START:color> cyaan <END>
+kleur het <START:object> licht <END> <START:color> groen <END>
+kleur het <START:object> licht <END> <START:color> oranje <END>
+kleur het <START:object> licht <END> <START:color> paars <END>
+kleur het <START:object> licht <END> <START:color> wit <END>
+maak het <START:object> licht <END> in het <START:location> zwembad <END> <START:color> cyaan <END>
+maak het <START:object> licht <END> in de <START:location> gang <END> <START:color> geel <END>
+pas de <START:object> temperatuur <END> aan tot <START:value> 21 <END> graden
+pas het <START:object> volume <END> aan in <START:location> woonkamer <END> tot <START:value> 20 <END>
+pas het <START:object> volume <END> aan <START:value> 20 <END> aan
+<START:object> licht <END> in <START:color> rood <END>
+<START:object> licht <END> tot <START:value> 75 <END>% dimmen
+<START:object> temperatuur <END> tot <START:value> 10 <END> graden
+<START:object> temperatuur verhogen <END> tot <START:value> 21 <END> graden
+<START:object> Volume <END> in de <START:location> woonkamer <END> op <START:value> 20 <END>
+stel de intensiteit van <START:object> licht <END> in op <START:value> 100 <END>%
+stel de <START:object> temperatuur <END> in op <START:value> 80 <END> °F 
+stel <START:object> fan <END> van de <START:location> woonkamer <END> in op <START:value> 25% <END>
+stel <START:object> licht <END> in de <START:location> keuken <END> in op <START:color> blauw <END>
+stel <START:object> licht <END> in op <START:color> rood <END>
+stel <START:object> licht <END> in op <START:value> 75% <END>
+stel <START:object> lichten <END> van de <START:location> patio <END> in op <START:color> paars <END>
+stel <START:object> lichten <END> van de <START:location> pool <END> in op <START:color> rood <END>
+stel <START:object> muziekvolume <END> in de <START:location> keuken <END> in op <START:value> 70% <END>
+stel <START:object> televisie <END> in op <START:value> 100% <END>
+stel <START:object> Thermostaat <END> in op <START:value> 23 <END> °C
+stel <START:object> thermostaat <END> in op <START:value> 23 <END> °C 
+stel <START:object> Thermostaat <END> in op <START:value> 23 <END> graden
+stel <START:object> ventilator <END> in de <START:location> keuken <END> in op <START:value> 100% <END>
+stel <START:object> verwarming <END> in de <START:location> gang <END> in op <START:value> 70 °F <END>
+stel <START:object> volume <END> in de <START:location> keuken <END> in op <START:value> 20 <END>
+stel <START:object> volume <END> van <START:object> TV <END> in op <START:value> 20 <END>
+verander de kleur van de <START:object> licht <END> van de <START:location> badkamer <END> <START:color> geel <END>
+verander de <START:location> eetzaal <END> <START:object> licht <END> tot <START:value> 100% <END>
+verander de <START:location> tabel <END> <START:object> licht <END> naar <START:value> 100% <END>
+verander de <START:object> licht <END> kleur op de <START:location> eerste verdieping <END> in <START:color> wit <END>
+verander de <START:object> temperatuur <END> in de <START:value> 25 <END> graden
+verander de <START:object> verwarming <END> van de <START:location> slaapkamer <END> naar <START:value> 2 <END>
+verander <START:object> volume <END> in de <START:location> keuken <END> op <START:value> 70% <END>
+verander <START:object> volume <END> in <START:value> 40% <END>
+Verhoog de <START:object> temperatuur <END> tot <START:value> 21 <END> graden
+zet de <START:object> lichten <END> in de <START:location> slaapkamer <END> op <START:value> 30% <END>
+zet de <START:object> lichten <END> op <START:color> blauw <END>
+zet de <START:object> lichten <END> op <START:color> oranje <END>
+zet de <START:object> lampen <END> in het <START:location> tuinhuis <END> op <START:color> geel <END>
+stel <START:object> lamp <END> kleur in op <START:color> rood <END>
+stel <START:object> lamp <END> kleur in op <START:color> oranje <END>
+stel <START:object> lamp <END> kleur in op <START:color> geel <END>
+stel <START:object> lamp <END> kleur in op <START:color> groen <END>
+stel <START:object> lamp <END> kleur in op <START:color> cyaan <END>
+stel <START:object> lamp <END> kleur in op <START:color> blauw <END>
+stel <START:object> lamp <END> kleur in op <START:color> paars <END>
+stel <START:object> lamp <END> kleur in op <START:color> wit <END>
+kleur de <START:object> lichten <END> <START:color> rood <END>
+kleur de <START:object> lamp <END> <START:color> oranje <END>
+kleur de <START:object> lamp <END> <START:color> geel <END>
+kleur de <START:object> lamp <END> <START:color> groen <END>
+kleur de <START:object> lamp <END> <START:color> cyaan <END>
+kleur de <START:object> lamp <END> <START:color> blauw <END>
+kleur de <START:object> lamp <END> <START:color> paars <END>
+kleur de <START:object> lamp <END> <START:color> wit <END>

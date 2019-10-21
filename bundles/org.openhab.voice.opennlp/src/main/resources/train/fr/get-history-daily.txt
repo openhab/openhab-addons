@@ -1,0 +1,10 @@
+montre-moi l'historique du jour passé pour la <START:object> température <END>
+je veux un graphique de la <START:object> consommation électrique <END> d'hier
+graphique pour la <START:object> température <END> dans le <START:location> salon <END> pour aujourd'hui
+affiche un graphe de la <START:object> température <END> dans la <START:location> cuisine <END> pour ce dernier jour
+graphe de la <START:object> température <END> dans la <START:location> cuisine <END> pour le jour passé
+<START:object> température <END> dans le <START:location> salon <END> pour les <START:period> 3 <END> derniers jours
+évolution de la <START:object> température <END> dans la <START:location> salle à manger <END> pour les <START:period> trois <END> derniers jours
+changements de <START:object> consommation en eau <END> dans la <START:location> chambre <END> ces <START:period> 3 <END> derniers jours
+évolution de la <START:object> consommation en gaz <END> sur <START:period> 2 <END> jours
+graphique de l' <START:object> humidité <END> sur <START:period> 3 <END> jours

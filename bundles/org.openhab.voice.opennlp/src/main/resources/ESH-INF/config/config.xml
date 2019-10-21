@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="voice:opennlp">
+		<parameter name="theme" type="text" required="true">
+			<label>Tokenizer</label>
+			<description>The alphanumeric tokenizer removes punctuation and might help with languages where entities might not always be enclosed between whitespaces (French, Spanish, Italian... Example: "l'humidité", "l'alarme")</description>
+			<options>
+				<option value="whitespace">Whitespace</option>
+				<option value="alphanumeric">Alphanumeric</option>
+			</options>
+			<default>whitespace</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

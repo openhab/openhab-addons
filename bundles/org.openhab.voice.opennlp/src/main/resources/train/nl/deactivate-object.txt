@@ -1,0 +1,41 @@
+schakel <START:object> lights <END> uit in de <START:location> woonkamer <END>
+zet alstublieft het <START:object> lichten <END> uit
+schakel het <START:object> tv <END> uit
+doe het <START:object> licht <END> uit
+doe het <START:object> licht <END> uit, alsjeblieft
+kunt u alstublieft het <START:object> wasmachine <END> uitzetten
+zet <START:object> verwarming <END> in de <START:location> hoofdslaapkamer <END> alsjeblieft uit
+schakel <START:location> woonkamer <END> <START:object> ventilator <END> uit
+stop de <START:object> vaatwasser <END>
+schakel het <START:object> tv <END> uit
+schakel <START:object> licht <END> in <START:location> ruimte van de rekening <END> uit aub
+schakel het <START:object> thermostaat <END> uit
+deactiveer <START:object> airconditioning <END>
+zet de <START:object> audio-ontvanger <END> in de <START:location> woonkamer <END> uit
+stop <START:object> projector <END> in de <START:location> home cinema room <END>
+zet de <START:location> keuken <END> <START:object> lights <END> uit
+stop de <START:object> waterpomp <END>
+zet <START:object> muziekspeler <END> in <START:location> daniel's slaapkamer <END>
+deactiveer het <START:object> alarm <END>
+deactiveer aub <START:object> bewegingsdetectie <END> in <START:object> begane grond <END>
+zet het <START:object> lichten <END> van de <START:location> begane grond <END> uit
+stop het <START:object> muziekspeler <END> in <START:location> amy's room <END>
+stop het <START:object> muziek <END> in de <START:location> woonkamer <END>
+deactiveer het <START:object> alarm <END>
+ik wil geen <START:object> muziek <END> meer in de <START:location> kitchen <END>
+ik wil niet <START:object> verwarming <END> in de <START:location> woonkamer <END> meer
+ik wil niet <START:object> fan <END> in de <START:location> woonkamer <END> meer
+ik wil niet meer <START:object> verlichting <END> in de <START:location> gang <END>
+ik vind het <START:object> verwarming <END> in de <START:location> bedroom <END> niet leuk
+niet meer <START:object> licht <END> op in de <START:location> slaapkamer <END>
+niet meer <START:object> airconditioning <END> alstublieft
+deactiveer het <START:object> alarm <END> alsjeblieft
+zet het <START:object> licht <END> uit
+zet het <START:object> licht <END> in de <START:location> keuken <END> uit
+zet het <START:object> licht <END> op de <START:location> zolder <END> uit
+zet het <START:object> licht <END> uit in de <START:location> keuken <END> 
+zet het <START:object> licht <END> uit op de <START:location> zolder <END> 
+doe het <START:object> licht <END> uit
+doe het <START:object> licht <END> in de <START:location> keuken <END> uit
+doe het <START:object> licht <END> uit in de <START:location> keuken <END>
+doe het <START:object> licht <END> uit op de <START:location> zolder <END>

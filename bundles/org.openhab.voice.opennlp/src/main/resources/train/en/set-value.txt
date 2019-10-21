@@ -1,0 +1,23 @@
+set the <START:object> thermostat <END> to <START:value> 23 °C <END>
+set the <START:object> temperature <END> to <START:value> 80 °F <END>
+change the <START:object> temperature <END> in the <START:value> 25 degrees <END>
+set the <START:object> lights <END> to <START:value> 75% <END>
+change the <START:object> heating <END> of the <START:location> bedroom <END> to <START:value> 2 <END>
+set the <START:object> fan <END> of the <START:location> living room <END> to <START:value> 25% <END>
+change the <START:object> volume <END> in the <START:location> kitchen <END> at <START:value> 70 % <END>
+set the <START:object> music volume <END> in the <START:location> kitchen <END> at <START:value> 70 % <END>
+change the color of the <START:object> lights <END> of the <START:location> bathroom <END> <START:color> yellow <END>
+change the <START:object> lights <END> color on the <START:location> first floor <END> in <START:color> white <END>
+put the <START:object> lights <END> in the <START:color> bedroom <END> at <START:value> 30% <END>
+set the <START:object> heating <END> in the <START:location> guest house <END> to <START:color> 70°F <END>
+set the <START:object> lights <END> to <START:color> red <END>
+put the <START:object> lights <END> to <START:color> orange <END>
+set the <START:object> lights <END> in the <START:location> guest house <END> to <START:color> blue <END>
+set the <START:object> lights <END> of the <START:location> pool <END> to <START:color> red <END>
+set the <START:object> lights <END> of the <START:location> patio <END> to <START:color> purple <END>
+set the <START:object> ventilator <END> in the <START:location> guest house <END> to <START:value> 100% <END>
+put the <START:object> lights <END> in <START:color> blue <END>
+change the <START:location> table <END> <START:object> light <END> to <START:value> 100% <END>
+change the <START:location> dinner room <END> <START:object> light <END> to <START:value> 100% <END>
+set the <START:object> television <END> to <START:value> 100% <END>
+change the <START:object> volume <END> to <START:value> 40% <END>

@@ -1,0 +1,12 @@
+mostrami la <START:object> temperatura <END> storica dell ultimo mese
+vorrei un grafico del <START:object> consumo di energia <END> dell ultimo mese
+grafico della <START:object> temperatura <END> in <START:location> soggiorno <END> questo mese
+mostra il grafico della <START:object> temperatura <END> della <START:location> cucina <END> per questo mese
+<START:object> umidità <END> in <START:location> corridoio <END> nell ultimo mese
+mostrami il grafico mensile della <START:object> temperatura <END> del <START:location> bagno <END>
+<START:object> temperatura <END> in <START:location> soggiorno <END> negli ultimi <START:period> 3 <END> mesi
+evoluzione della <START:object> temperatura <END> della <START:location> sala da pranzo <END> negli ultimi <START:period> 6 <END> mesi
+variazioni di <START:object> consumo di acqua <END> in <START:location> giardino <END> in questi <START:period> 3 <END> mesi
+quant è stato il <START:object> consumo di gas <END> degli ultimi <START:period> 6 <END> mesi
+fai il grafico dell <START:object> umidità <END> per <START:period> 2 <END> mesi
+<START:object> temperatura <END> del <START:location> piano di sotto <END> nell ultimo mese

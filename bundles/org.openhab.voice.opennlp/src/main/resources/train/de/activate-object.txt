@@ -1,0 +1,37 @@
+<START:object> Licht <END> an
+<START:object> Lichtschalter <END> an
+<START:object> Schalter <END> an
+<START:object> Fernseher <END> an
+<START:object> Lampe <END> an
+<START:object> Player <END> an
+<START:object> Musik <END> an
+kannst du das <START:object> Licht <END> im <START:location> Schlafzimmer <END> einschalten
+kannst du den <START:object> Fernseher <END> im <START:location> Wohnzimmer <END> einschalten
+kannst du die <START:object> Beleuchtung <END> im <START:location> Wohnzimmer <END> einschalten
+bitte mache das <START:object> Licht <END> an
+kannst du bitte den <START:object> Geschirrspüler <END> einschalten
+mach den <START:object> Heizkörper <END> in der <START:location> Küche <END> an
+mach das <START:object> Licht <END> in der <START:location> Küche <END> an
+mach das <START:object> Licht <END> im <START:location> Wohnzimmer <END> an
+mach die <START:object> Lampe <END> in der <START:location> Küche <END> an
+mach die <START:object> Lampe <END> im <START:location> Wohnzimmer <END> an
+mach im <START:location> Wohnzimmer <END> das <START:object> Licht <END> an
+mach in der <START:location> Küche <END> das <START:object> Licht <END> an
+schalte im <START:location> Wohnzimmer <END> den <START:object> Ventilator <END> an
+starte die <START:object> Waschmaschine <END>
+mach den <START:object> Fernseher <END> an
+mach die <START:object> Lampe <END> an
+schalte den <START:object> Fernseher <END> ein
+schalte das <START:object> Licht <END> an
+schalte die <START:object> Lichter <END> an
+schalte die <START:object> Beleuchtung <END> an
+schalte das <START:object> Licht <END> ein
+schalte die <START:object> Lampe <END> ein
+schalte das <START:object> Licht <END> <START:location> oben <END> an
+aktiviere bitte die <START:object> Heizung <END>
+schalte im <START:location> Keller <END> die <START:object> Heizung <END> an
+mach bitte den <START:object> Ventilator <END> im <START:location> Schlafzimmer <END> an
+schalten die <START:object> Wasserpumpe <END> im <START:location> Keller <END> an
+schalte die <START:object> Heizung <END> im <START:location> Obergeschoss <END> an
+schalte das <START:object> Licht <END> im <START:location> Erdgeschoss <END> ein
+aktiviere die <START:object> Alarmanlage <END>

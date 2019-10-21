@@ -1,0 +1,20 @@
+toon me de <START:object> temperatuur <END> geschiedenis van de afgelopen maand
+ik wil graag een grafiek van het <START:object> stroomverbruik <END> van de afgelopen maand
+grafiek van de <START:object> temperatuur <END> in de <START:location> woonkamer <END> deze maand
+toon een grafiek van de <START:object> temperatuur <END> in de <START:location> keuken <END> voor deze maand
+<START:object> vochtigheid <END> in de <START:location> gang <END> van de laatste maand
+toon een maandelijkse grafiek voor de <START:object> temperatuur <END> in de <START:location> badkamer <END>
+<START:object> temperatuur <END> in de <START:location> woonkamer <END> voor de laatste <START:period> 3 <END> maanden
+evolutie van de <START:object> temperatuur <END> in de <START:location> eetzaal <END> over <START:period> 6 <END> maanden
+wijzigingen van het <START:object> waterverbruik <END> in de <START:location> tuin <END> deze laatste <START:period> 3 <END> maanden
+wat was het <START:object> aardgasverbruik <END> van de laatste <START:period> 6 <END> maanden
+teken het <START:object> vochtigheid <END> over <START:period> 2 <END> maanden
+geschiedenis van de <START:object> luchtvochtigheid <END> van de afgelopen maand
+maandelijks overzicht van de <START:object> temperatuur <END>
+maandelijks overzicht van de <START:object> temperatuur <END> voor de <START:location> keuken <END>
+maand overzicht van de <START:object> temperatuur <END>
+maand overzicht van de <START:object> temperatuur <END> voor de <START:location> keuken <END>
+toon het maand overzicht van de <START:object> temperatuur <END>
+toon het maand overzicht van de <START:object> temperatuur <END> voor de <START:location> keuken <END>
+toon het maandelijks overzicht van de <START:object> temperatuur <END>
+toon het maandelijks overzicht van de <START:object> temperatuur <END> voor de <START:location> keuken <END>

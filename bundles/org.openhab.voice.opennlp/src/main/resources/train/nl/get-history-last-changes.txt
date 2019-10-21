@@ -1,0 +1,18 @@
+wanneer veranderde de <START:object> temperatuur <END>
+wanneer veranderde de <START:object> temperatuur <END> het laatst
+wanneer is de <START:object> temperatuur <END> voor de laatste keer gewijzigd?
+geef me de geschiedenis van de <START:object> verwarming <END> in de <START:location> woonkamer <END>
+laatste wijzigingen aan de status van <START:object> fan <END> in de <START:location> keuken <END>
+toon me de laatste <START:object> bewegingsdetecties <END> in de <START:location> kelder <END>
+toon de lijst met de laatste <START:object> alarmen <END>
+wanneer was de <START:object> deur <END> geopend?
+wanneer is het <START:object> alarm <END> voor het laatst geactiveerd?
+wanneer heb je een <START:object> beweging <END> gedetecteerd in de <START:location> tuin <END>
+wanneer is <START:object> beweging <END> de laatste tijd gedetecteerd?
+toon de laatste wijzigingen van de <START:object> gewenste temperatuur <END> op de <START:location> tweede verdieping <END>
+hoe laat is de <START:object> aanwezigheid <END> voor de laatste keer gewijzigd?
+geef de laatste datum en tijd op van de <START:object> televisie <END>
+op welk moment is de <START:object> projector <END> gestart?
+op welk moment was het <START:object> tv <END> uitgeschakeld?
+wanneer stopte de <START:object> ontvanger <END>?
+wanneer is de status van het <START:object> licht <END> in de <START:location> woonkamer <END> voor het laatst veranderd?

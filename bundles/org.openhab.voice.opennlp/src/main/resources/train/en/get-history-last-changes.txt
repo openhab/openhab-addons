@@ -1,0 +1,15 @@
+when was the <START:object> temperature <END> changed for the last time?
+give me the history of the <START:object> heating <END> in the <START:location> living room <END>
+last changes on the status of the <START:object> fan <END> in the <START:location> kitchen <END>
+show me the last <START:object> motion detections <END> in the <START:location> basement <END>
+display the list of the last <START:object> alarms <END>
+when was the <START:object> door <END> opened?
+when was the <START:object> alarm <END> last triggered?
+when did you detect a <START:object> movement <END> in the <START:location> garden<END>
+when was <START:object> motion <END> detected lately?
+show the last changes on the <START:object> desired temperature <END> of the <START:location> second floor <END>
+what was the time the <START:object> presence <END> changed for the last time?
+give the last date and time of the <START:object> television <END>
+at what time was the <START:object> projector <END> started?
+at what time was the <START:object> tv <END> switched off?
+when did the <START:object> receiver <END> stopped

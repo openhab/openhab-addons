@@ -1,0 +1,14 @@
+quand est-ce que la <START:object> température <END> a été changée pour la dernière fois ?
+donne-moi l'historique du <START:object> chauffage <END> dans le <START:location> salon <END>
+derniers changements pour le <START:object> ventilateur <END> de la <START:location> cuisine <END>
+affiche les dernières détections de <START:object> mouvement <END> dans le <START:location> sous-sol <END>
+affiche la liste des dernières <START:object> alarmes <END>
+quand est-ce que la <START:object> porte <END> a été ouverte ?
+quand est-ce que l' <START:object> alarme <END> a été enclenchée ?
+quand as-tu détecté un <START:object> mouvement <END> dans le <START:location> jardin <END> ?
+quand est-ce qu'un <START:object> mouvement <END> a été détecté dernièrement ?
+montre les derniers changements sur la <START:object> température désirée <END> au <START:location> premier étage <END> ?
+à quelle heure la <START:object> présence <END> a changé pour la dernière fois
+donne la dernière date du changement pour la <START:object> télévision <END>
+quand est-ce que le <START:object> projecteur <END> projecteur a été allumé
+à quelle date le <START:object> home cinema <END> projecteur a été éteint

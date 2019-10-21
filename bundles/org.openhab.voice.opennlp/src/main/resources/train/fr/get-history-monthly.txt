@@ -1,0 +1,9 @@
+montre-moi l'historique du mois de la <START:object> température <END>
+je veux un graphique de la <START:object> consommation électrique <END> de ce mois-ci
+graphe de la <START:object> consommation électrique <END> de ce mois
+graphique pour la <START:object> température <END> dans la <START:location> cuisine <END> pour le mois
+graphique pour la <START:object> température <END> dans la <START:location> salon <END> pour les <START:period> 2 <END> derniers mois
+<START:object> température <END> dans le <START:location> salon <END> pour les <START:period> 6 <END> derniers mois
+évolution de la <START:object> température <END> dans la <START:location> salle à manger <END> pour les <START:period> 3 <END> derniers mois
+changements de <START:object> température <END> dans la <START:location> chambre <END> pour les <START:period> six <END> derniers mois
+<START:object> température <END> dans le <START:location> salon <END> pour les <START:period> 12 <END> derniers mois

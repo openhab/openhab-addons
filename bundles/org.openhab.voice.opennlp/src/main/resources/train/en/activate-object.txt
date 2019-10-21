@@ -1,0 +1,30 @@
+can you switch the <START:object> lights <END> in the <START:location> bedroom <END> on?
+please switch on the <START:object> lights <END>
+switch the <START:object> tv <END> on 
+start the <START:object> ac <END> please
+can you please turn on the <START:object> dishwasher <END> 
+turn on the <START:object> radiator <END> in the <START:location> kitchen <END>
+switch on the <START:location> living room <END> <START:object> fan <END>
+start the <START:object> washing machine <END>
+turn on the <START:object> television <END>
+switch on the <START:object> lights <END>
+turn on the <START:object> lighting <END>
+please activate the <START:object> heating <END>
+turn on the <START:object> a/c <END> in the <START:location> living room <END>
+please start the <START:object> fan <END> in the <START:location> bedroom <END>
+start the <START:location> basement <END> <START:object> heating <END>
+turn on the <START:object> water pump <END> in the <START:location> basement <END>
+turn on <START:object> heating <END> on the <START:location> first floor <END>
+activate the <START:object> alarm <END>
+activate the <START:object> motion detection <END> in the <START:object> corridor <END>
+turn on the <START:object> lightning <END> of the <START:location> ground floor <END>
+start the <START:object> heating <END> in the <START:location> garage <END>
+start the <START:object> boiler <END> in the <START:location> garage <END>
+i want some <START:object> light <END> in the <START:location> bedroom <END>
+i want <START:object> air conditioning <END> in the <START:location> bedroom <END>
+i want <START:object> lights <END>
+i want the <START:object> air conditioning <END> in the <START:location> bedroom <END>
+i'd like some <START:object> music <END> in the <START:location> bathroom <END> please
+i'd like some <START:object> music <END>
+can you put some <START:object> light <END> in the <START:location> bedroom <END>
+i want some <START:object> heating <END> on the <START:location> first floor <END>

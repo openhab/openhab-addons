@@ -1,0 +1,58 @@
+give me the status of the <START:object> lighting <END> on the <START:location> first floor <END>
+what's the status of the <START:object> lights <END> in the <START:location> bedroom <END>
+show me the <START:object> temperatures <END> of the <START:location> second floor <END>
+give me the <START:object> luminosity <END>
+give me the <START:object> humidity <END> in the <START:location> garage <END>
+<START:object> humidity <END> in the <START:location> attic <END>
+<START:object> water consumption <END> in the <START:location> kitchen <END>
+current <START:object> power consumption <END>
+<START:object> temperature <END> of the <START:location> living room <END>
+<START:object> heating <END> in the <START:location> kitchen <END>
+<START:object> fan <END> in the <START:location> patio <END>
+<START:object> temperature <END> in the <START:location> corridor <END>
+<START:object> temperature <END> on the <START:location> ground floor <END>
+<START:object> temperature <END> on the <START:location> first floor <END>
+<START:object> fan <END> in the <START:location> patio <END>
+<START:object> lights <END> in the <START:location> basement <END>
+<START:object> lights <END> in the <START:location> attic <END>
+<START:object> lights <END> in the <START:location> guest house <END>
+<START:object> wifi <END> in the <START:location> guest house <END>
+<START:object> fan <END> in the <START:location> patio <END>
+<START:location> kitchen <END> <START:object> lights <END>
+<START:location> outside <END> <START:object> lights <END>
+<START:location> living room <END> <START:object> lights <END>
+<START:location> bedroom <END> <START:object> lights <END>
+<START:object> air conditioning <END> in the <START:location> bedroom <END>
+<START:object> temperature <END> on the <START:location> ground floor <END>
+show the <START:object> lights <END> of the <START:location> first floor <END>
+<START:object> heating <END> on the <START:location> ground floor <END>
+is the <START:object> front door <END> open
+is the <START:object> window <END> closed
+are the <START:object> doors <END> locked
+how's the <START:object> heating <END> in <START:location> Amy's room <END>
+<START:object> temperature <END> in <START:location> Ben's room <END>
+<START:object> rollershutters <END> in <START:location> Charles' room <END>
+<START:object> window <END> in <START:location> David's room <END>
+what's the <START:object> power consumption <END> now
+show me the <START:object> water pump <END>
+is the <START:object> alarm <END> activated?
+tell me if the <START:object> fan <END> in the <START:location> living room <END> is on
+is the <START:object> fridge <END> in the <START:location> kitchen <END> off?
+tell me how the <START:object> heat pump <END> in the <START:location> attic <END> is
+show me the state of the <START:object> heating <END> in the <START:location> basement <END>
+is the <START:object> tv <END> on
+is the <START:location> bedroom <END> <START:object> tv <END> on
+can you check if the <START:object> television <END> in the <START:location> bedroom <END> is switched on
+show the <START:object> temperature <END>
+give the <START:object> temperature <END> in the <START:location> bathroom <END>
+<START:object> light <END> in the <START:location> ground floor <END>
+<START:object> humidity <END> of the <START:location> garden <END>
+what's the <START:object> sun azimuth <END>
+what is the <START:object> moon elevation <END>
+<START:object> temperature <END> on the <START:object> first floor <END>
+<START:object> humidity <END> on the <START:object> second floor <END> please
+show the <START:object> sensors <END> on the <START:object> ground floor <END>
+tell me what's the <START:object> temperature <END> of the <START:location> swimming pool <END>
+is the <START:object> washing machine <END> running
+is the <START:object> washing machine <END> running right now
+tell me how's the <START:object> washing machine <END> doing

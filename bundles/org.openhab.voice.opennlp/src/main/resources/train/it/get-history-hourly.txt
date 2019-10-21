@@ -1,0 +1,14 @@
+mostrami la storia della <START:object> temperatura <END> nell ultima ora
+voglio un grafico del <START:object> consumo di energia <END> dell ultima ora
+grafico orario della <START:object> temperatura <END> in <START:location> cucina <END>
+grafico orario della <START:object> temperatura <END> del <START:location> soggiorno <END>
+disegna un grafico della <START:object> temperatura <END> del <START:location> soggiorno <END> per le ultime <START:period> 2 <END> ore
+<START:object> temperatura <END> in <START:location> soggiorno <END> nelle ultime <START:period> 6 <END> ore
+evoluzione della <START:object> temperatura <END> in <START:location> bagno <END> in queste <START:period> 2 <END> ore
+variazioni di <START:object> temperatura <END> in <START:location> camera <END> nelle ultime <START:period> 6 <END> ore
+<START:object> temperatura <END> del <START:location> soggiorno <END> per <START:period> 12 <END> ore
+grafico della <START:object> temperatura <END> in <START:location> camera di Giorgio <END> nelle ultime <START:period> 4 <END> ore
+per favore disegnami un grafico dell <START:object> umidità <END> in <START:location> camera di Franco <END> nelle ultime <START:period> 8 <END> ore
+grafico delle <START:object> luci <END> nel <START:location> corridoio di sopra <END> per le ultime <START:period> 3 <END> ore
+fai un grafico della <START:object> tapparella <END> del <START:location> soggiorno <END> per le ultime <START:period> 3 <END> ore
+<START:object> temperatura impostata <END> in <START:location> camera matrimoniale <END> in un periodo di <START:period> 6 <END> ore

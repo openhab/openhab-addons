@@ -1,0 +1,25 @@
+<START:object> Licht <END> aus
+<START:object> Fernseher <END> aus
+<START:object> Lampe <END> aus
+<START:object> Player <END> aus
+<START:object> Musik <END> aus
+mach das <START:object> Licht <END> aus
+mach den <START:object> Fernseher <END> aus
+mach die <START:object> Lampe <END> aus
+mach den <START:object> Player <END> aus
+mach die <START:object> Musik <END> aus
+bitte mach das <START:object> Licht <END> aus
+bitte mach den <START:object> Fernseher <END> aus
+bitte mach die <START:object> Lampe <END> aus
+bitte mach den <START:object> Player <END> aus
+bitte mach die <START:object> Musik <END> aus
+mach bitte den <START:object> Fernseher <END> aus
+mach bitte die <START:object> Lampe <END> aus
+mach bitte den <START:object> Player <END> aus
+mach bitte die <START:object> Musik <END> aus
+schalte den <START:object> Fernseher <END> aus
+schalte alle <START:object> Lichter <END> aus
+schalte die <START:object> Beleuchtung <END> aus
+schalte das <START:object> Licht <END> aus
+schalte die <START:object> Lampe <END> aus
+schalte das <START:object> Licht <END> im <START:location> Wohnzimmer <END> aus

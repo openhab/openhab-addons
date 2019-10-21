@@ -1,0 +1,30 @@
+switch off the <START:object> lights <END> in the <START:location> living room <END>
+please turn off the <START:object> lights <END>
+switch the <START:object> tv <END> off 
+can you please turn off the <START:object> washing machine <END> 
+turn off the <START:object> heating <END> in the <START:location> master bedroom <END> please
+switch off the <START:location> living room <END> <START:object> fan <END>
+stop the <START:object> dishwasher <END>
+turn off the <START:object> tv <END>
+switch off the <START:object> lights <END> in <START:location> bill's room <END> please
+turn off the <START:object> thermostat <END>
+deactivate the <START:object> air conditioning <END>
+turn off the <START:object> audio receiver <END> in the <START:location> living room <END>
+stop the <START:object> projector <END> in the <START:location> home cinema room <END>
+turn off the <START:location> kitchen <END> <START:object> lights <END>
+stop the <START:object> water pump <END>
+turn off the <START:object> music player <END> in <START:location> daniel's bedroom <END>
+deactivate the <START:object> alarm <END>
+please deactivate the <START:object> motion detection <END> in the <START:object> ground floor <END>
+turn off the <START:object> lights <END> of the <START:location> ground floor <END>
+stop the <START:object> music player <END> in <START:location> amy's room <END>
+stop the <START:object> music <END> in the <START:location> living room <END>
+deactivate the <START:object> alarm <END>
+i don't want any <START:object> music <END> in the <START:location> kitchen <END> anymore
+i don't want <START:object> heating <END> in the <START:location> living room <END> anymore
+i don't want the <START:object> fan <END> in the <START:location> living room <END> anymore
+i want no more <START:object> lighting <END> in the <START:location> corridor <END>
+i don't like the <START:object> heating <END> in the <START:location> bedroom <END> anymore
+no more <START:object> lights <END> in the <START:location> bedroom <END> 
+no more <START:object> air conditioning <END> please
+deactivate the <START:object> alarm <END> please

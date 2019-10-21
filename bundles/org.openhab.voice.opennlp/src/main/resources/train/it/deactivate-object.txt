@@ -1,0 +1,33 @@
+spegni le <START:object> luci <END> del <START:location> soggiorno <END>
+per favore spegni le <START:object> luci <END>
+spegni la <START:object> tv <END>
+puoi spegnere la <START:object> lavatrice <END>
+spegni il <START:object> riscaldamento <END> della <START:location> camera matrimoniale <END> per favore
+spegni il <START:object> ventilatore <END> del <START:location> soggiorno <END>
+ferma la <START:object> lavastoviglie <END>
+ferma la <START:object> lavatrice <END>
+spegni la <START:object> tv <END>
+spegni le <START:object> luci <END> della <START:location> camera di Marco <END> per favore
+spegni il <START:object> termostato <END>
+disattiva l <START:object> aria condizionata <END>
+spegni il <START:object> ricevitore audio <END> in <START:location> soggiorno <END>
+spegni il <START:object> proiettore <END> del <START:location> soggiorno <END>
+spegni le <START:object> luci <END> della <START:location> cucina <END>
+ferma la <START:object> pompa dell acqua <END>
+spegni la <START:object> musica <END> nella <START:location> camera di Giovanni <END>
+disattiva l <START:object> allarme <END>
+per favore disattiva il <START:object> sensore di movimento <END> del <START:object> piano terra <END>
+spegni le <START:object> luci <END> del <START:location> piano terra <END>
+ferma la <START:object> musica <END> in <START:location> camera di Maria <END>
+ferma la <START:object> musica <END> del <START:location> soggiorno <END>
+disattiva l <START:object> allarme <END>
+non voglio più <START:object> musica <END> in <START:location> cucina <END>
+non voglio più <START:object> riscaldamento <END> in <START:location> soggiorno <END>
+non voglio il <START:object> ventilatore <END> in <START:location> soggiorno <END>
+non voglio più <START:object> illuminazione <END> nel <START:location> corridoio <END>
+non voglio il <START:object> riscaldamento <END> in <START:location> camera <END>
+niente più <START:object> luci <END> in <START:location> camera <END> 
+niente più <START:object> aria condizionata <END> per favore
+disattiva l <START:object> allarme <END> per favore
+per favore spegni i <START:object> radiatori <END>
+per favore potrestispegnere l <START:object> aria condizionata <END>

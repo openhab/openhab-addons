@@ -1,0 +1,14 @@
+show me the history for the <START:object> temperature <END> in the last hour
+i want a graph of the last hour for the <START:object> power consumption <END>
+hourly graph of the <START:object> temperature <END> in the <START:location> kitchen <END> 
+hourly graph of the <START:object> temperature <END> in the <START:location> living room <END> 
+graph the <START:object> temperature <END> of the <START:location> living room <END> for the last <START:period> 2 <END> hours
+<START:object> temperature <END> in the <START:location> living room <END> in the previous <START:period> 6 <END> hours
+evolution of the <START:object> temperature <END> in the <START:location> bathroom <END> for these <START:period> 2 <END> hours
+changes in <START:object> temperature <END> in the <START:location> bedroom <END> over <START:period> 6 <END> hours
+<START:object> temperature <END> in the <START:location> living room <END> for <START:period> 12 <END> hours
+graph of the <START:object> temperature <END> in <START:location> eric's room <END> over the last <START:period> 4 <END> hours
+please draw me a chart of the <START:object> humidity <END> in <START:location> frank's room <END> of the last <START:period> 8 <END> hours
+chart of the <START:object> lights <END> in the <START:location> upstairs corridor <END> for the last <START:period> 3 <END> hours
+draw a chart of the <START:object> roller shutter <END> in the <START:location> downstairs stairwell <END> for the last <START:period> 3 <END> hours
+<START:object> desired temperature <END> in the <START:location> master bedroom <END> over the a <START:period> 6 <END> hours period

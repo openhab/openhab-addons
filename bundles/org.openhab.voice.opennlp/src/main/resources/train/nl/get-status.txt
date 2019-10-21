@@ -1,0 +1,107 @@
+brandt het <START:object> licht <END> in de <START:location> kelder <END>
+brandt het <START:object> licht <END> op <START:location> zolder <END>
+geef de <START:object> helderheid <END>
+geef de <START:object> temperatuur <END> in de <START:location> badkamer <END>
+geef de <START:object> vochtigheid <END> in de <START:location> garage <END>
+geef de <START:object> vochtigheid <END> op <START:location> zolder <END>
+geef de status van de <START:object> verlichting <END> op de <START:location> eerste verdieping <END>
+geef me de <START:object> helderheid <END>
+geef me de <START:object> vochtigheid <END> in de <START:location> garage <END>
+geef me de status van de <START:object> verlichting <END> op de <START:location> eerste verdieping <END>
+hoe staat de <START:object> verwarming <END>
+hoe staat de <START:object> verwarming <END> in <START:location> Amy's kamer <END>
+is de <START:location> slaapkamer <END> <START:object> tv <END> aan
+is de <START:object> koelkast <END> in de <START:location> kitchen <END> uitgeschakeld?
+is de <START:object> tv <END> aan
+is de <START:object> tv <END> uit
+is de <START:object> voordeur <END> dicht
+is de <START:object> voordeur <END> open
+is de <START:object> wasmachine <END> actief
+is de <START:object> wasmachine <END> nu aan het werk
+is het <START:object> alarm <END> geactiveerd?
+is het <START:object> apparaat <END> aan
+is het <START:object> apparaat <END> uit
+is het <START:object> venster <END> gesloten
+kun je controleren of het <START:object> tv <END> in de <START:location> slaapkamer <END> is ingeschakeld
+staan de <START:object> lampen <END> aan
+staan de <START:object> lampen <END> aan
+staan de <START:object> lampen <END> uit
+staan de <START:object> luiken <END> open
+staan de <START:object> luiken <END> open op <START:location> zolder <END>
+staat de <START:object> verlichting <END> aan
+staat de <START:object> voordeur <END> open
+staat het <START:object> raam <END> in de <START:location> wc <END> open
+staat het <START:object> raam <END> open
+<START:location> buiten <END> <START:object> licht <END>
+<START:location> keuken <END> <START:object> licht <END>
+<START:location> keuken <END> <START:object> verlichting <END>
+<START:location> slaapkamer <END> <START:object> licht <END>
+<START:location> woonkamer <END> <START:object> lichten <END>
+<START:object> airconditioning <END> in de <START:location> slaapkamer <END>
+<START:object> fan <END> in de <START:location> patio <END>
+<START:object> licht <END> in de <START:location> begane grond <END>
+<START:object> licht <END> op <START:location> pension <END>
+<START:object> lichten <END> in de <START:location> gang <END>
+<START:object> lichten <END> in het <START:location> tuinhuis <END>
+<START:object> lichten <END> in het <START:location> zwembad <END>
+<START:object> lichten <END> op <START:location> zolder <END>
+<START:object> rolluiken <END> in <START:location> Charles 'kamer <END>
+<START:object> temperatuur <END> in de <START:location> gang <END>
+<START:object> temperatuur <END> in <START:location> Ben's kamer <END>
+<START:object> temperatuur <END> in het <START:location> tuinhuis <END>
+<START:object> temperatuur <END> op de <START:location> begane grond <END>
+<START:object> temperatuur <END> op de <START:location> eerste verdieping <END>
+<START:object> temperatuur <END> op <START:location> zolder <END>
+<START:object> temperatuur <END> van de <START:location> woonkamer <END>
+<START:object> venster <END> in <START:location> David's kamer <END>
+<START:object> verwarming <END> in de <START:location> keuken <END>
+<START:object> verwarming <END> op de <START:location> begane grond <END>
+<START:object> vochtigheid <END> op <START:location> tweede verdieping <END> alstublieft
+<START:object> vochtigheid <END> op <START:location> zolder <END>
+<START:object> vochtigheid <END> van de <START:location> tuin <END>
+<START:object> waterverbruik <END> in de <START:location> keuken <END>
+<START:object> wifi <END> in de <START:location> pension <END>
+huidig <START:object> stroomverbruik <END>
+toon de <START:object> sensoren <END> op de <START:location> zolder <END>
+toon de <START:object> sensoren <END> op het <START:location> begane grond <END>
+toon de <START:object> temperatuur <END>
+toon het <START:object> licht <END> op de <START:location> zolder <END>
+toon het <START:object> licht <END> van de <START:location> eerste verdieping <END>
+toon me de <START:object> temperaturen <END> van de <START:location> tweede verdieping <END>
+toon mij de staat van de <START:object> verwarming <END> in de <START:location> kelder <END>
+toon mij de <START:object> waterpomp <END>
+vertel me de <START:object> temperatuur <END> van het <START:location> zwembad <END>
+vertel me hoe de <START:object> warmtepomp <END> in de <START:location> zolder <END> is
+vertel me hoe het met de <START:object> wasmachine <END> gaat
+vertel me of het <START:object> fan <END> in de <START:location> woonkamer <END> is ingeschakeld
+vertel me wat is de <START:object> temperatuur <END> van het <START:location> zwembad <END>
+wat is de <START:object> elevatie van de maan <END>
+wat is de <START:object> temparatuur <END> in de <START:location> keuken <END>
+wat is de <START:object> temperatuur <END> in de <START:location> slaapkamer <END>
+wat is de <START:object> temperatuur <END> op de <START:location> zolder <END>
+wat is de <START:object> zon azimut <END>
+wat is de status van de <START:object> verwarming <END>
+wat is de status van de <START:object> verwarming <END> in de <START:location> slaapkamer <END>
+wat is het <START:object> stroomverbruik <END> nu
+wat is het <START:object> stroomverbruik <END> nu in de <START:location> keuken <END>
+wat is het <START:object> stroomverbruik <END> nu op <START:location> zolder <END>
+welke <START:object> lampem <END> staan aan
+welke <START:object> lampem <END> staan aan op <START:location> zolder <END>
+welke <START:object> lampem <END> staan uit
+welke <START:object> lampem <END> staan uit op <START:location> zolder <END>
+welke <START:object> lampen <END> staan aan
+welke <START:object> lampen <END> staan aan op <START:location> zolder <END>
+welke <START:object> ramen <END> staan open
+welke <START:object> ramen <END> staan open op <START:location> zolder <END>
+welke <START:object> ramen <END> zijn open
+welke <START:object> ramen <END> zijn open op <START:location> zolder <END>
+welke <START:object> ramen <END> zijn dicht
+welke <START:object> ramen <END> zijn dicht op <START:location> zolder <END>
+zijn de <START:object> deuren <END> op slot
+zijn de <START:object> deuren <END> op slot op <START:location> zolder <END>
+zijn de <START:object> deuren <END> vergrendeld
+zijn de <START:object> deuren <END> vergrendeld op <START:location> zolder <END>
+zijn de <START:object> luiken <END> dicht
+zijn de <START:object> luiken <END> dicht op <START:location> zolder <END>
+zijn de <START:object> luiken <END> open
+zijn de <START:object> luiken <END> open op <START:location> zolder <END>

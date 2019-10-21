@@ -1,0 +1,22 @@
+toon me de geschiedenis voor de <START:object> temperatuur <END> in de laatste week
+ik wil een grafiek van de laatste week voor het <START:object> stroomverbruik <END>
+weekgrafiek van de <START:object> temperatuur <END> in de <START:location> keuken <END>
+teken de <START:object> temperatuur <END> van de <START:location> woonkamer <END> voor de laatste <START:period> 2 <END> weken
+<START:object> temperatuur <END> in de <START:location> woonkamer <END> in de vorige <START:period> 6 <END> weken
+evolutie van de <START:object> temperatuur <END> in de <START:location> badkamer <END> voor deze <START:period> 2 <END> weken
+wijzigingen in <START:object> temperatuur <END> in de <START:location> slaapkamer <END> over <START:period> 6 <END> weken
+<START:object> temperatuur <END> in de <START:location> woonkamer <END> voor <START:period> 12 <END> weken
+grafiek van de <START:object> temperatuur <END> in <START:location> eric's room <END> gedurende de laatste <START:period> 4 <END> weken
+schema van de <START:object> licht <END> in de <START:location> bovenloop <END> voor de laatste <START:period> 3 <END> weken
+teken een kaart van het <START:object> waterverbruik <END> in de <START:location> gang <END> voor de laatste <START:period> 3 <END> weken
+<START:object> temperatuursetpoint <END> in de <START:location> hoofdslaapkamer <END> over de laatste <START:period> 6 <END> weken periode
+Verloop van de <START:object> temperatuur <END> van de laatste week
+Verloop van de <START:object> vochtigheid <END> van vorige week
+wekelijkse overzicht van de <START:object> temperatuur <END>
+wekelijkse overzicht van de <START:object> temperatuur <END> voor de <START:location> keuken <END>
+toon het wekelijkse overzicht van de <START:object> temperatuur <END>
+toon het wekelijkse overzicht van de <START:object> temperatuur <END> voor de <START:location> keuken <END>
+week overzicht van de <START:object> temperatuur <END>
+week overzicht van de <START:object> temperatuur <END> voor de <START:location> keuken <END>
+toon het week overzicht van de <START:object> temperatuur <END>
+toon het week overzicht van de <START:object> temperatuur <END> voor de <START:location> keuken <END>

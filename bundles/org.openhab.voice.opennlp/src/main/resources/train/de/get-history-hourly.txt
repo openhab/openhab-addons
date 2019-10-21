@@ -1,0 +1,4 @@
+zeig mir den Verlauf der <START:object> Temperatur <END> für die letzte Stunde
+wie ist der Verlauf der <START:object> Temperatur <END> der letzten Stunde?
+Verlauf der <START:object> Temperatur <END> in der letzten Stunde
+Verlauf der <START:object> Temperatur <END> der letzten Stunde

@@ -1,0 +1,13 @@
+show me the history for the <START:object> temperature <END> in the last week
+i want a graph of the last week for the <START:object> power consumption <END>
+weekly graph of the <START:object> temperature <END> in the <START:location> kitchen <END> 
+graph the <START:object> temperature <END> of the <START:location> living room <END> for the last <START:period> 2 <END> weeks
+<START:object> temperature <END> in the <START:location> living room <END> in the previous <START:period> 6 <END> weeks
+evolution of the <START:object> temperature <END> in the <START:location> bathroom <END> for these <START:period> 2 <END> weeks
+changes in <START:object> temperature <END> in the <START:location> bedroom <END> over <START:period> 6 <END> weeks
+<START:object> temperature <END> in the <START:location> living room <END> for <START:period> 12 <END> weeks
+graph of the <START:object> temperature <END> in <START:location> eric's room <END> over the last <START:period> 4 <END> weeks
+please draw me a chart of the <START:object> humidity <END> in <START:location> frank's room <END> of the last <START:period> 8 <END> weeks
+chart of the <START:object> lights <END> in the <START:location> upstairs corridor <END> for the last <START:period> 3 <END> weeks
+draw a chart of the <START:object> water consumption <END> in the <START:location> downstairs corridor <END> for the last <START:period> 3 <END> weeks
+<START:object> temperature setpoint <END> in the <START:location> master bedroom <END> over the a <START:period> 6 <END> weeks period

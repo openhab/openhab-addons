@@ -1,0 +1,10 @@
+montre-moi l'historique de la semaine passée pour la <START:object> température <END>
+je veux un graphique de la <START:object> consommation électrique <END> de la semaine dernière
+graphique pour la <START:object> température <END> dans le <START:location> salon <END> pour cette semaine
+affiche un graphe de la <START:object> température <END> dans la <START:location> cuisine <END> pour la semaine
+graphe de cette semaine de la <START:object> température <END> dans la <START:location> cuisine <END>
+<START:object> température <END> dans le <START:location> salon <END> pour les <START:period> 2 <END> dernières semaines
+évolution de la <START:object> température <END> dans la <START:location> salle à manger <END> pour les <START:period> deux <END> dernières semaines
+changements de <START:object> consommation en eau <END> dans la <START:location> chambre <END> ces <START:period> 2 <END> semaines écoulées
+évolution de la <START:object> consommation en gaz <END> sur <START:period> 2 <END> semaines
+graphique de l' <START:object> humidité <END> sur <START:period> 2 <END> semaines

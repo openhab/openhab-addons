@@ -1,0 +1,35 @@
+peux-tu éteindre les <START:object> lumières <END> dans la <START:location> chambre <END>
+peux-tu éteindre les <START:object> lampes <END>
+peux-tu arrêter la <START:object> télévision <END> 
+peux-tu arrêter le <START:object> lave-vaisselle <END> 
+éteins le <START:object> radiateur <END> dans la <START:location> cuisine <END>
+active le <START:object> ventilateur <END> du <START:location> salon <END>
+stoppe le <START:object> lave-vaisselle <END>
+éteins la <START:object> télévision <END>
+éteindre la <START:object> lumière <END>
+éteins l' <START:object> éclairage <END>
+éteins le <START:object> chauffage <END>
+éteins les <START:object> lumières <END> dans la <START:location> cuisine <END>
+arrête le <START:object> chauffage <END> du <START:location> salon <END>
+stopper le <START:object> chauffage <END> de la <START:location> chambre <END>
+stoppe le <START:object> chauffage <END> dans le <START:location> sous-sol <END>
+arrêter le <START:object> radiateur <END> dans la <START:location> cave <END>
+éteins le <START:object> radiateur <END> au <START:location> 1er étage <END>
+éteindre le <START:object> radiateur <END> au <START:location> premier étage <END>
+arrêter le <START:object> radiateur <END> au <START:location> deuxième étage <END>
+éteindre le <START:object> radiateur <END> au <START:location> rez-de-chaussée <END>
+arrêter l <START:object> air conditionné <END>
+éteindre l <START:object> air conditionné <END>
+éteindre la <START:object> lumière <END> dans la <START:location> salle à manger <END>
+éteindre la <START:object> chaudière <END>
+éteindre la <START:object> climatisation <END>
+éteindre l <START:object> arrosage <END> du <START:location> jardin <END>
+arrête l <START:object> arrosage <END> du <START:location> jardin <END>
+stoppe la <START:object> ventilation <END>
+stoppe la <START:object> chaudière <END>
+je ne veux plus de <START:object> chauffage <END> dans le <START:location> salon <END>
+je ne veux plus de <START:object> musique <END> dans la <START:location> cuisine <END>
+je ne veux plus de <START:object> musique <END>
+je ne veux plus de <START:object> lumière <END>
+arrête le <START:object> chauffage <END> dans le <START:location> salon <END>
+arrête la <START:object> musique <END>
