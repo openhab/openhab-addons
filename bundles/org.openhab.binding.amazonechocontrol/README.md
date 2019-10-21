@@ -25,6 +25,7 @@ It provides features to control and view the current state of echo devices:
 - change the volume of the alarm
 - change the equalizer settings
 - get information about the next alarm, reminder and timer
+- send a message to the echo devices
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
@@ -140,6 +141,7 @@ It will be configured at runtime by using the save channel to store the current 
 | mediaLength           | Number:Time | R           | echo, echoshow, echospot      | Media length
 | notificationVolume    | Dimmer      | R           | echo, echoshow, echospot      | Notification volume
 | ascendingAlarm        | Switch      | R/W         | echo, echoshow, echospot      | Ascending alarm up to the configured volume
+| sendMessage           | String      | W           | account                       | Write Only! Sends a message to the Echo devices.
 | save                  | Switch      | W         | flashbriefingprofile     | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W       | flashbriefingprofile     | Active the profile
 | playOnDevice          | String      | W         | flashbriefingprofile     | Specify the echo serial number or name to start the flash briefing. 
