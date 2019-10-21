@@ -13,6 +13,7 @@
 			<channel id="lastMessageDate" typeId="lastMessageDate" />
 			<channel id="lastMessageName" typeId="lastMessageName" />
 			<channel id="lastMessageUsername" typeId="lastMessageUsername" />
+			<channel id="chatId" typeId="chatId" />
 			<channel id="replyId" typeId="replyId" />
 		</channels>
 
@@ -21,13 +22,13 @@
 				<label>botToken</label>
 				<description>Enter the BotToken you received from the "BotFather".</description>
 			</parameter>
-			<parameter name="botUsername" type="text" required="true">
-                <label>botUsername</label>
-                <description>Enter the Name of your Bot.</description>
-            </parameter>
             <parameter name="chatIds" type="text" required="true" multiple="true">
                 <label>chatIds</label>
                 <description>Enter your ChatID. Only Messages from this ID will be send to OpenHAB.</description>
+            </parameter>
+            <parameter name="parseMode" type="text" required="false">
+                <label>parseMode</label>
+                <description>Support for formatted messages, values: Markdown or HTML. Default: no formatting is used.</description>
             </parameter>
 		</config-description>
 
@@ -56,6 +57,12 @@
         <label>Last Message Username</label>
         <description>Contains the latest message senders username as a string</description>
     </channel-type>
+
+    <channel-type id="chatId">
+        <item-type>String</item-type>
+        <label>Chat Id</label>
+        <description>Contains the id of chat from where the message was received.</description>
+    </channel-type>	
 
     <channel-type id="replyId">
         <item-type>String</item-type>
