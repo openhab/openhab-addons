@@ -29,6 +29,7 @@ import java.util.List;
 
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.Commands.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.*;
 
 /**
@@ -48,7 +49,7 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
         CASAFAN(6),
         FT1211R(7),
         FALMEC(8),
-        LUCCI_AIR_DCII(9);
+        LUCCI_AIR_DC_II(9);
 
         private final int subType;
 
@@ -101,9 +102,15 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
         LUCCI_AIR_DC_NATURAL_FLOW(6, LUCCI_AIR_DC),
         LUCCI_AIR_DC_PAIR(7, LUCCI_AIR_DC),
 
-
-
-        ;
+        LUCCI_AIR_DC_II_POWER_OFF(1, 0, LUCCI_AIR_DC_II),
+        LUCCI_AIR_DC_II_SPEED_1(2, 1, LUCCI_AIR_DC_II),
+        LUCCI_AIR_DC_II_SPEED_2(3, 2, LUCCI_AIR_DC_II),
+        LUCCI_AIR_DC_II_SPEED_3(4, 3, LUCCI_AIR_DC_II),
+        LUCCI_AIR_DC_II_SPEED_4(5, 4, LUCCI_AIR_DC_II),
+        LUCCI_AIR_DC_II_SPEED_5(6, 5, LUCCI_AIR_DC_II),
+        LUCCI_AIR_DC_II_SPEED_6(7, 6, LUCCI_AIR_DC_II),
+        LUCCI_AIR_DC_II_LIGHT(8, LUCCI_AIR_DC_II),
+        LUCCI_AIR_DC_II_REVERSE(9, LUCCI_AIR_DC_II);
 
         private final int command;
         private final Integer speed;
@@ -146,10 +153,10 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
 
     private static final List<SubType> GENERIC_SUB_TYPES = Arrays.asList(WESTINGHOUSE_7226640, CASAFAN, LUCCI_AIR_FAN);
 
-    private static final List<Commands> LIGHT_ON_COMMANDS = Arrays.asList(Commands.LIGHT, Commands.LUCCI_AIR_DC_LIGHT, Commands.FALMEC_LIGHT_ON);
-    private static final List<Commands> ON_COMMANDS = Arrays.asList(Commands.HI, Commands.MED, Commands.LOW,
-            Commands.FALMEC_SPEED_1, Commands.FALMEC_SPEED_2, Commands.FALMEC_SPEED_3, Commands.FALMEC_SPEED_4);
-    private static final List<Commands> OFF_COMMANDS = Arrays.asList(Commands.OFF, Commands.FALMEC_POWER_OFF);
+    private static final List<Commands> LIGHT_ON_COMMANDS = Arrays.asList(LIGHT, LUCCI_AIR_DC_LIGHT, LUCCI_AIR_DC_II_LIGHT, FALMEC_LIGHT_ON);
+    private static final List<Commands> ON_COMMANDS = Arrays.asList(HI, MED, LOW,
+            FALMEC_SPEED_1, FALMEC_SPEED_2, FALMEC_SPEED_3, FALMEC_SPEED_4, LUCCI_AIR_DC_II_SPEED_1, LUCCI_AIR_DC_II_SPEED_2, LUCCI_AIR_DC_II_SPEED_3, LUCCI_AIR_DC_II_SPEED_4, LUCCI_AIR_DC_II_SPEED_5, LUCCI_AIR_DC_II_SPEED_6);
+    private static final List<Commands> OFF_COMMANDS = Arrays.asList(OFF, FALMEC_POWER_OFF, LUCCI_AIR_DC_II_POWER_OFF);
 
     private SubType subType;
     private int sensorId;
@@ -183,8 +190,8 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 return PacketType.FAN_FT1211R;
             case FALMEC:
                 return PacketType.FAN_FALMEC;
-            case LUCCI_AIR_DCII:
-                return PacketType.FAN_LUCCI_DCII;
+            case LUCCI_AIR_DC_II:
+                return PacketType.FAN_LUCCI_DC_II;
         }
         return super.getPacketType();
     }
@@ -296,6 +303,13 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
             case FT1211R_SPEED_3:
             case FT1211R_SPEED_4:
             case FT1211R_SPEED_5:
+            case LUCCI_AIR_DC_II_POWER_OFF:
+            case LUCCI_AIR_DC_II_SPEED_1:
+            case LUCCI_AIR_DC_II_SPEED_2:
+            case LUCCI_AIR_DC_II_SPEED_3:
+            case LUCCI_AIR_DC_II_SPEED_4:
+            case LUCCI_AIR_DC_II_SPEED_5:
+            case LUCCI_AIR_DC_II_SPEED_6:
                 return new DecimalType(command.getSpeed());
 
             case LUCCI_AIR_DC_DOWN:
@@ -348,12 +362,19 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
             String stringCommand = type.toString();
             switch (stringCommand) {
                 case "POWER":
+                case "POWER_OFF":
                 case "UP":
                 case "DOWN":
                 case "LIGHT":
                 case "REVERSE":
                 case "NATURAL_FLOW":
                 case "PAIR":
+                case "SPEED_1":
+                case "SPEED_2":
+                case "SPEED_3":
+                case "SPEED_4":
+                case "SPEED_5":
+                case "SPEED_6":
                     return Commands.valueOf(subType.name() + "_" + stringCommand);
             }
         }
@@ -366,6 +387,8 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 return (type == OnOffType.ON ? Commands.MED : Commands.OFF);
             } else if (subType == FALMEC) {
                 return (type == OnOffType.ON ? Commands.FALMEC_SPEED_2 : Commands.FALMEC_POWER_OFF);
+            } else if (subType == LUCCI_AIR_DC_II) {
+                return (type == OnOffType.ON ? LUCCI_AIR_DC_II_SPEED_3 : LUCCI_AIR_DC_II_POWER_OFF);
             }
         }
         throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
@@ -403,10 +426,13 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 case CASAFAN:
                 case WESTINGHOUSE_7226640:
                 case LUCCI_AIR_DC:
-                    return Commands.LIGHT;
+                    return LIGHT;
 
                 case FALMEC:
-                    return Commands.FALMEC_LIGHT_ON;
+                    return FALMEC_LIGHT_ON;
+
+                case LUCCI_AIR_DC_II:
+                    return LUCCI_AIR_DC_II_LIGHT;
             }
         } else if (type == OnOffType.OFF && subType == FALMEC) {
             return Commands.FALMEC_LIGHT_OFF;

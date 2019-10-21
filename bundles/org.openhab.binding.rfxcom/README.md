@@ -509,6 +509,28 @@ A Lucci Air DC fan device
     *   Specifies device sub type.
         *   LUCCI_AIR_DC - Lucci Air DC
 
+#### Lucci Air DC II fan
+
+A Lucci Air DC II fan device
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type | Remarks                              |
+|--------------|-------------------------------------|-----------|--------------------------------------|
+| command      | [command](#channels)                | Switch    |                                      |
+| commandString| [commandString](#channels)          | String    | Options: POWER_OFF, LIGHT, REVERSE   |
+| fanSpeed     | [fanspeed](#channels)               | Number    | Options: 1,2,3,4,5,6                 |
+| fanLight     | [fanlight](#channels)               | Switch    |                                      |
+| signalLevel  | [system.signal-strength](#channels) | Number    |                                      |
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360    
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   LUCCI_AIR_DC_II - Lucci Air DC II
+
 ### energy - RFXCOM Energy Sensor
 
 An Energy device
