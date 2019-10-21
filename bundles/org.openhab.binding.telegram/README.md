@@ -26,6 +26,8 @@ As described in the Telegram Bot API, this is the manual procedure needed in ord
 - `https://api.telegram.org/bot<token>/sendMessage?chat_id=<chatId>&text=testing`
 - Your Telegram-bot should send you a message with the text: `testing`
 
+**Notice:** By default your bot will only receive messages that either start with the '/' symbol or mention the bot by username (or if you talk to it directly). However, if you add your bot to a group you must either talk to BotFather and send the command "/setprivacy" and then disable it or you give admin rights to your bot in that group. Otherwise you will not be able to receive those messages.
+
 ## Supported Things
 
 **telegramBot** - A Telegram Bot that can send and receive messages.
@@ -46,9 +48,9 @@ Please note that the things cannot be used to send messages. In order to send a 
 
 | Property                | Default | Required | Description                                                                                  |
 |-------------------------|---------|:--------:|----------------------------------------------------------------------------------------------|
-| `botUsername`                    |         | Yes      | The name of the bot                                                     |
-| `chatIds`     |         | Yes      | Comma-separated list of chat ids                    |
-| `botToken`      |         | Yes      | authentication token                                                                         |
+| `chatIds`               |         | Yes      | Comma-separated list of chat ids                                                             |
+| `botToken`              |         | Yes      | authentication token                                                                         |
+| `parseMode`             |  None   | No       | Support for formatted messages, values: Markdown or HTML.                                    |
 
 ## Channels
 
@@ -58,6 +60,7 @@ Please note that the things cannot be used to send messages. In order to send a 
 | lastMessageDate                      | String    | The date of the last received message                           |
 | lastMessageName                      | String    | The full name of the sender of the last received message        |
 | lastMessageUsername                  | String    | The username of the sender of the last received message         |
+| chatId                               | String    | The id of the chat of the last received meesage                 |
 | replyId                              | String    | The id of the reply which was passed to sendTelegram() as replyId argument. This id can be used to have an unambiguous assignment of the users reply to the message which was sent by the bot             |
 
 
@@ -68,6 +71,7 @@ This binding includes a rule action, which allows to send Telegram messages from
 ```
 val telegramAction = getActions("telegram","telegram:telegramBot:<uid>")
 ```
+
 where uid is the Thing UID of the Telegram thing (not the chat id!).
 
 
@@ -80,13 +84,25 @@ telegramAction.sendTelegram("Hello world!")
 The following actions are supported.
 Each of the actions returns true on success or false on failure.
 
+### Actions to send messages to all configured chats
+
+These actions will send a message to all chat ids configured for this bot.
+
 | Action                     | Description  |
 |----------------------------|--------------|
 | sendTelegram(String message) | Sends a message. |
 | sendTelegram(String format, Object... args)          | Sends a formatted message (See https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html for more information).
 | sendTelegram(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png). |
 | sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should *always* call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
-| sendTelegramPhoto(String photoURL, String caption) | Sends a picture. The URL can be specified using the http, https, and file protocols. |
+| sendTelegramPhoto(String photoURL, String caption) | Sends a picture. The URL can be specified using the http, https, and file protocols or a base64 encoded image. |
+
+### Actions to send messages to a particular chat
+
+Just put the chat id (must be a long value!) as the first argument to one of the above mentioned APIs:
+
+```
+telegramAction.sendTelegram(1234567L, "Hello world!")
+```
 
 ## Full Example
 
@@ -120,7 +136,7 @@ end
 
 ### Send an image to telegram chat
 
-`http`, `https`, and `file` are the only protocols allowed.
+`http`, `https`, and `file` are the only protocols allowed or a base64 encoded image.
 
 telegram.rules
 
@@ -158,8 +174,8 @@ when
     Item Light_GF_Living_Table changed
 then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
-    var String base64Image = "data:image/jpeg;base64, LzlqLzRBQ..."
-    telegramAction.sendTelegramPhoto(base64Image, "sent from openHAB")
+    var String base64Image = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
+    telegramAction.sendTelegramPhoto(base64Image, "battery of motion sensor is empty")
 end
 ```
 
@@ -173,7 +189,7 @@ when
     Item Light_GF_Living_Table changed
 then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
-    telegramAction.sendTelegramPhoto("file:///path/to/local/image.jpg", "sent from openHAB")
+    telegramAction.sendTelegramPhoto("file://C:/mypicture.jpg", "sent from openHAB")
 end
 ```
 
@@ -226,7 +242,7 @@ when
     Item Presence changed to OFF
 then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
-    telegramAction.sendTelegram("No one is at home, but some lights are still on. Do you want me to turn off the lights?", "Reply_Lights", "Yes", "No")
+    telegramAction.sendTelegramQuery("No one is at home, but some lights are still on. Do you want me to turn off the lights?", "Reply_Lights", "Yes", "No")
 end
 
 
@@ -247,3 +263,4 @@ then
     }
 end
 ```
+

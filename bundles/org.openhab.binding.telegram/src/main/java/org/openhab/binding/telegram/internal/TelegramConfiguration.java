@@ -26,6 +26,7 @@ public class TelegramConfiguration {
      */
     private String botUsername, botToken;
     private List<String> chatIds;
+    private String parseMode;
 
     public String getBotUsername() {
         return botUsername;
@@ -37,6 +38,10 @@ public class TelegramConfiguration {
 
     public List<String> getChatIds() {
         return chatIds;
+    }
+
+    public String getParseMode() {
+        return parseMode;
     }
 
 }

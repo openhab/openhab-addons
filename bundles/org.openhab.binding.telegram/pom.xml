@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -14,19 +14,43 @@
 
   <name>openHAB Add-ons :: Bundles :: Telegram Binding</name>
 
+  <properties>
+    <jackson.version>2.9.9</jackson.version>
+    <jersey.version>2.22.2</jersey.version>
+    <hk2.version>2.4.0-b32</hk2.version>
+    <bnd.importpackage>!android.*,!com.android.org.*,!dalvik.*,!javax.annotation.meta.*,!org.apache.harmony.*,!org.conscrypt.*,!sun.*</bnd.importpackage>
+  </properties>
+
   <dependencies>
-    <dependency>
-        <groupId>org.openhab.osgiify</groupId>
-        <artifactId>org.telegram.telegrambots</artifactId>
-        <version>4.2</version>
-        <scope>provided</scope>
+	<dependency>
+	  <groupId>com.github.pengrad</groupId>
+	  <artifactId>java-telegram-bot-api</artifactId>
+	  <version>4.4.0</version>
+	  <scope>compile</scope>
+	</dependency>
+	<dependency>
+	  <groupId>com.google.code.gson</groupId>
+	  <artifactId>gson</artifactId>
+	  <version>2.8.5</version>
+	  <scope>compile</scope>
+    </dependency>
+	<dependency>
+	    <groupId>com.squareup.okhttp3</groupId>
+	    <artifactId>okhttp</artifactId>
+	    <version>3.12.3</version>
+	    <scope>compile</scope>
+	</dependency>
+	<dependency>
+	    <groupId>com.squareup.okio</groupId>
+	    <artifactId>okio</artifactId>
+	    <version>1.15.0</version>
+	    <scope>compile</scope>
     </dependency>
     <dependency>
-        <groupId>org.openhab.osgiify</groupId>
-        <artifactId>org.telegram.telegrambots-meta</artifactId>
-        <version>4.2</version>
-        <scope>provided</scope>
+	    <groupId>com.squareup.okhttp3</groupId>
+	    <artifactId>logging-interceptor</artifactId>
+	    <version>3.12.3</version>
     </dependency>
   </dependencies>
-
 </project>
+
