@@ -89,6 +89,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      *
      * @author afriese - initial contribution
      */
+    @NonNullByDefault
     private class WebRequestExecutor implements Runnable {
 
         /**
@@ -157,10 +158,13 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
                 };
 
                 NibeUplinkCommand command = commandQueue.poll();
-                command.setListener(statusUpdater);
-                command.performAction(httpClient);
+                if (command != null) {
+                    command.setListener(statusUpdater);
+                    command.performAction(httpClient);
+                }
             }
         }
+
     }
 
     /**
@@ -261,6 +265,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
         this.uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 preCheckStatusMessage);
         return false;
+
     }
 
     /**

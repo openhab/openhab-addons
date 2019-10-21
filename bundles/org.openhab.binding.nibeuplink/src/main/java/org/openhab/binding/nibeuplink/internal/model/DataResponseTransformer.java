@@ -41,14 +41,14 @@ public class DataResponseTransformer {
         this.channelProvider = channelProvider;
     }
 
-    public Map<Channel, State> transform(DataResponse response) {
+    public Map<NibeChannel, State> transform(DataResponse response) {
         Map<String, Long> source = response.getValues();
-        Map<Channel, State> result = new HashMap<>(source.size());
+        Map<NibeChannel, State> result = new HashMap<>(source.size());
 
         for (String channelId : source.keySet()) {
             Long value = source.get(channelId);
 
-            Channel channel = channelProvider.getSpecificChannel(channelId);
+            NibeChannel channel = channelProvider.getSpecificChannel(channelId);
             if (channel == null) {
                 // This should not happen but we want to get informed about it
                 logger.warn("Channel not found: {}", channelId);

@@ -48,6 +48,11 @@ public final class NibeUplinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_F1145 = new ThingTypeUID(BINDING_ID, DEVICE_F1145);
     public static final ThingTypeUID THING_TYPE_F1155 = new ThingTypeUID(BINDING_ID, DEVICE_F1155);
 
+    // List of all custom channel types
+    public static final String CUSTOM_TYPE_UNSCALED = "custom-type-unscaled";
+    public static final String CUSTOM_TYPE_DIV_10 = "custom-type-div10";
+    public static final String CUSTOM_TYPE_DIV_100 = "custom-type-div100";
+
     // List of all Channel ids ==> see UplinkDataChannels
 
     // URLs

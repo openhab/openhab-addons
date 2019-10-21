@@ -26,7 +26,7 @@ public interface ChannelList {
      *
      * @return
      */
-    Set<Channel> getChannels();
+    Set<NibeChannel> getChannels();
 
     /**
      * returns the matching channel, null if no match was found
@@ -34,5 +34,5 @@ public interface ChannelList {
      * @param channelCode the channelCode which identifies the channel
      * @return channel which belongs to the code. might be null if there is no channel found.
      */
-    Channel fromCode(String channelCode);
+    NibeChannel fromCode(String channelCode);
 }

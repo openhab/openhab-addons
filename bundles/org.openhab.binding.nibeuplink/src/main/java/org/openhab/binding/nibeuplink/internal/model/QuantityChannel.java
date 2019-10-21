@@ -50,7 +50,7 @@ public class QuantityChannel extends ScaledChannel {
      * @param unit UoM unit
      */
     QuantityChannel(String id, String name, ChannelGroup channelGroup, Unit<?> unit) {
-        this(id, name, channelGroup, ScaleFactor.ONE, unit);
+        this(id, name, channelGroup, ScaleFactor.UNSCALED, unit);
     }
 
     public Unit<?> getUnit() {

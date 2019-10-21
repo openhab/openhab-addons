@@ -21,10 +21,10 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class ScaledChannel extends Channel {
+public class ScaledChannel extends NibeChannel {
 
     static enum ScaleFactor {
-        ONE(1),
+        UNSCALED(1),
         DIV_10(0.1),
         DIV_100(0.01);
 
@@ -39,7 +39,7 @@ public class ScaledChannel extends Channel {
         }
     }
 
-    private final ScaleFactor factor;
+    protected ScaleFactor factor;
 
     /**
      * constructor for channels with write access enabled + unit
@@ -72,4 +72,5 @@ public class ScaledChannel extends Channel {
     public final double getFactor() {
         return factor.getFactor();
     }
+
 }

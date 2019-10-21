@@ -21,9 +21,9 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class Channel {
+public class NibeChannel {
+    public static final String VALID_CHANNEL_ID_REGEX = "[1-5][0-9][0-9][0-9][0-9]";
 
-    protected String channelCode;
     private final String id;
     private final String name;
     private final ChannelGroup channelGroup;
@@ -39,9 +39,14 @@ public class Channel {
      * @param writeApiUrl API URL for channel updates
      * @param validationExpression expression to validate values before sent to the API
      */
-    Channel(String id, String name, ChannelGroup channelGroup, @Nullable String writeApiUrl,
+    NibeChannel(String id, String name, ChannelGroup channelGroup, @Nullable String writeApiUrl,
             @Nullable String validationExpression) {
-        this.channelCode = id;
+
+        if (!id.matches(VALID_CHANNEL_ID_REGEX)) {
+            throw new ValidationException(
+                    "channel creation failed, not a valid channel: " + id + ", must match: " + VALID_CHANNEL_ID_REGEX);
+        }
+
         this.id = id;
         this.name = name;
         this.channelGroup = channelGroup;
@@ -56,7 +61,7 @@ public class Channel {
      * @param name human readable name
      * @param channelGroup group of the channel
      */
-    Channel(String id, String name, ChannelGroup channelGroup) {
+    NibeChannel(String id, String name, ChannelGroup channelGroup) {
         this(id, name, channelGroup, null, null);
     }
 
@@ -68,16 +73,19 @@ public class Channel {
         return id;
     }
 
-    public final String getChannelCode() {
-        return channelCode;
-    }
-
     public ChannelGroup getChannelGroup() {
         return channelGroup;
     }
 
-    public String getFQName() {
-        return channelGroup.toString().toLowerCase() + "#" + id;
+    public final String getFQName() {
+        switch (channelGroup) {
+            // custom channel do not have a group
+            case CUSTOM:
+                return id;
+            default:
+                return channelGroup.toString().toLowerCase() + "#" + id;
+        }
+
     }
 
     public @Nullable String getWriteApiUrlSuffix() {

@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class SwitchChannel extends Channel {
+public class SwitchChannel extends NibeChannel {
 
     private static final double DEFAULT_OFF = 0;
     private static final double DEFAULT_ON = 1;
