@@ -99,10 +99,12 @@ Multiple actions are supported by this binding. In classic rules these are acces
 Example
 
 ```
- val actions = getActions("volvooncall","volvooncall:vehicle:myVinNumber")
+ val actions = getActions("volvooncall","volvooncall:vehicle:bridgeId:thingId")
  if(null === actions) {
         logInfo("actions", "Actions not found, check thing ID")
         return
+ } else {
+        actions.openCarCommand()
  }
 ```
 
