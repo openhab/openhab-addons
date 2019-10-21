@@ -123,10 +123,10 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
             ParadoxUtil.printPacket("Tx Packet:", packetBytes);
             tx.write(packetBytes);
             syncQueue.moveRequest();
-        } catch (SocketException se) {
-            logger.debug("Socket time out occurred. Informing listener. Request={}. Exception=", request, se);
+        } catch (SocketException e) {
+            logger.debug("Socket time out occurred. Informing listener. Request={}. Exception=", request, e);
             syncQueue.removeSendRequest();
-            stoListener.onSocketTimeOutOccurred(se);
+            stoListener.onSocketTimeOutOccurred(e);
         } catch (IOException e) {
             logger.debug("Error while sending packet with request={}. IOException=", request, e);
             syncQueue.removeSendRequest();
@@ -155,10 +155,10 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
                         PACKET_EXPIRATION_TRESHOLD_MILLISECONDS, requestInQueue);
                 retryCounter = 0;
             }
-        } catch (SocketException se) {
-            logger.debug("Socket time out occurred. Informing listener. Request={}. Exception=", se);
+        } catch (SocketException e) {
+            logger.debug("Socket time out occurred. Informing listener. Request={}. Exception=", e);
             IRequest request = syncQueue.poll();
-            stoListener.onSocketTimeOutOccurred(se);
+            stoListener.onSocketTimeOutOccurred(e);
         } catch (IOException e) {
             IRequest request = syncQueue.poll();
             retryCounter = 0;

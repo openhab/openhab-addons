@@ -140,8 +140,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
         CommunicationState.logout(initialCommunicator);
 
         // Wait 3 seconds before we create the discovered communicator so we ensure that the socket is closed
-        // successfully from
-        // both ends
+        // successfully from both ends
         scheduler.schedule(() -> createDiscoveredCommunicatorJob(panelType), 3, TimeUnit.SECONDS);
     }
 
