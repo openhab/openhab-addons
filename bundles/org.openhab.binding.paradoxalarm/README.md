@@ -27,14 +27,15 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 
 ### IP150 parameters
 
-| Parameter     | Description                            |
-|---------------|----------------------------------------|
-| refresh       | Value is in seconds. Defines the refresh interval when the binding polls from paradox system.|
-| ip150Password | The password to your IP150 (not your panel PIN).|
-| pcPassword    | The code 3012 setting. Default value is 0000.|
-| ipAddress     | IP address of your IP150.|
-| port          | The port used for data communication. Default value is 10000.|
-| panelType     | Not mandatory. Will be used if discovery does not identify the panel. Otherwise provide EVO48, EVO96, EVO192, etc...|
+| Parameter         | Description                            |
+|-------------------|----------------------------------------|
+| refresh           | Value is in seconds. Defines the refresh interval when the binding polls from paradox system.|
+| ip150Password     | The password to your IP150 (not your panel PIN).|
+| pcPassword        | The code 3012 setting. Default value is 0000.|
+| ipAddress         | IP address of your IP150.|
+| port              | The port used for data communication. Default value is 10000.|
+| panelType         | Not mandatory. Will be used if discovery does not identify the panel. Otherwise provide EVO48, EVO96, EVO192, etc...|
+| reconnectWaitTime | Value is in seconds. The time to wait before a reconnect occurs after socket timeout.|
 
 ### IP150 channels
 
