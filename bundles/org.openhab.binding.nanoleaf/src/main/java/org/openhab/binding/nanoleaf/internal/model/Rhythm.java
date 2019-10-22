@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Represents rhythm module settings
  *
@@ -29,7 +31,7 @@ public class Rhythm {
     private RhythmPos rhythmPos;
 
     public Boolean getRhythmConnected() {
-        return rhythmConnected;
+        return rhythmConnected == null ? Boolean.FALSE : rhythmConnected;
     }
 
     public void setRhythmConnected(Boolean rhythmConnected) {
@@ -37,7 +39,7 @@ public class Rhythm {
     }
 
     public Boolean getRhythmActive() {
-        return rhythmActive;
+        return rhythmActive == null ? Boolean.FALSE : rhythmActive;
     }
 
     public void setRhythmActive(Boolean rhythmActive) {
@@ -45,7 +47,7 @@ public class Rhythm {
     }
 
     public Integer getRhythmId() {
-        return rhythmId;
+        return rhythmId == null ? new Integer(0) : this.rhythmId;
     }
 
     public void setRhythmId(Integer rhythmId) {
@@ -53,7 +55,7 @@ public class Rhythm {
     }
 
     public String getHardwareVersion() {
-        return hardwareVersion;
+        return hardwareVersion == null ? StringUtils.EMPTY : this.hardwareVersion;
     }
 
     public void setHardwareVersion(String hardwareVersion) {
@@ -61,7 +63,7 @@ public class Rhythm {
     }
 
     public String getFirmwareVersion() {
-        return firmwareVersion;
+        return firmwareVersion == null ? StringUtils.EMPTY : this.firmwareVersion;
     }
 
     public void setFirmwareVersion(String firmwareVersion) {
@@ -69,7 +71,7 @@ public class Rhythm {
     }
 
     public Boolean getAuxAvailable() {
-        return auxAvailable;
+        return auxAvailable == null ? Boolean.FALSE : this.auxAvailable;
     }
 
     public void setAuxAvailable(Boolean auxAvailable) {
@@ -77,7 +79,7 @@ public class Rhythm {
     }
 
     public Integer getRhythmMode() {
-        return rhythmMode;
+        return rhythmMode == null ? new Integer(-1) : rhythmMode;
     }
 
     public void setRhythmMode(Integer rhythmMode) {

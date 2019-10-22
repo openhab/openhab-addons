@@ -445,12 +445,13 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                         new PercentType(controllerInfo.getState().getSaturation().getValue()),
                         new PercentType(isOn ? controllerInfo.getState().getBrightness().getValue() : 0)));
         updateState(CHANNEL_COLOR_MODE, new StringType(controllerInfo.getState().getColorMode()));
-        updateState(CHANNEL_RHYTHM_ACTIVE,
-                controllerInfo.getRhythm().getRhythmActive().booleanValue() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode().intValue()));
-        updateState(CHANNEL_RHYTHM_STATE,
-                controllerInfo.getRhythm().getRhythmConnected().booleanValue() ? OnOffType.ON : OnOffType.OFF);
-
+        if (controllerInfo.getRhythm() != null) {
+            updateState(CHANNEL_RHYTHM_ACTIVE,
+                    controllerInfo.getRhythm().getRhythmActive().booleanValue() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode().intValue()));
+            updateState(CHANNEL_RHYTHM_STATE,
+                    controllerInfo.getRhythm().getRhythmConnected().booleanValue() ? OnOffType.ON : OnOffType.OFF);
+        }
         // update bridge properties which may have changed, or are not present during discovery
         Map<String, String> properties = editProperties();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, controllerInfo.getSerialNo());
