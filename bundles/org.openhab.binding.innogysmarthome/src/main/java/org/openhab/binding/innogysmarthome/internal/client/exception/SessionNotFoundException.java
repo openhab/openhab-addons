@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown, if the session is not initialized or disconnected.
  *
  * @author Oliver Kuhl - Initial contribution
  *
  */
-@SuppressWarnings("serial")
+@NonNullByDefault
 public class SessionNotFoundException extends ApiException {
 
+    private static final long serialVersionUID = 1L;
+
     public SessionNotFoundException() {
-        super();
     }
 
     public SessionNotFoundException(String message) {

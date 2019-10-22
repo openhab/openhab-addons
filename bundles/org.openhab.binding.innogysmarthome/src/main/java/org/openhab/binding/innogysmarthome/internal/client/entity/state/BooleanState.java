@@ -10,22 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.innogysmarthome.internal.client.exception;
+package org.openhab.binding.innogysmarthome.internal.client.entity.state;
 
 /**
- * Thrown, if the {@Link Configuration} is not complete
- *
  * @author Oliver Kuhl - Initial contribution
  *
  */
-@SuppressWarnings("serial")
-public class ConfigurationException extends Exception {
+public class BooleanState extends BaseState {
+    private Boolean value;
 
-    public ConfigurationException() {
+    /**
+     * @return the value
+     */
+    public Boolean getValue() {
+        return value;
     }
 
-    public ConfigurationException(String message) {
-        super(message);
+    /**
+     * @param value the value to set
+     */
+    public void setValue(Boolean value) {
+        this.value = value;
     }
-
 }

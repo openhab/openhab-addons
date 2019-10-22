@@ -10,17 +10,61 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.innogysmarthome.internal.client.entity.state;
+package org.openhab.binding.innogysmarthome.internal.client.entity.device;
+
+import java.util.HashMap;
 
 import org.openhab.binding.innogysmarthome.internal.client.Util;
-import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
+import org.openhab.binding.innogysmarthome.internal.client.entity.Property;
 
 /**
  * Defines the {@link DeviceState}, e.g. if the device is reachable.
  *
  * @author Oliver Kuhl - Initial contribution
  */
-public class DeviceState extends EntityState {
+public class DeviceState {
+
+    protected static final String DEVICE_INCLUSION_STATE_INCLUDED = "Included";
+    protected static final String DEVICE_INCLUSION_STATE_PENDING = "InclusionPending";
+    protected static final String DEVICE_UPDATE_STATE_UPTODATE = "UpToDate";
+
+    protected static final String PROTOCOL_ID_WMBUS = "wMBus";
+    protected static final String PROTOCOL_ID_VIRTUAL = "Virtual";
+    protected static final String PROTOCOL_ID_COSIP = "Cosip";
+
+    private String id;
+
+    private State state;
+
+    private HashMap<String, Property> stateMap;
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the state
+     */
+    public State getState() {
+        return state;
+    }
+
+    /**
+     * @param state the state to set
+     */
+    public void setState(State state) {
+        this.state = state;
+    }
 
     /**
      * Returns true if the device is reachable, false otherwise.
@@ -28,7 +72,16 @@ public class DeviceState extends EntityState {
      * @return true or false for "reachable" {@link Device}s, else null.
      */
     public Boolean isReachable() {
-        return getPropertyValueAsBoolean(STATE_NAME_ISREACHABLE);
+        return getState().getIsReachable().getValue();
+    }
+
+    /**
+     * Returns if the {@link State} "isReachable" is available for the current {@link Device}.
+     *
+     * @return
+     */
+    public Boolean hasIsReachableState() {
+        return getState().getIsReachable() != null;
     }
 
     /**
@@ -37,7 +90,7 @@ public class DeviceState extends EntityState {
      * @param isReachable
      */
     public void setReachable(boolean isReachable) {
-        setPropertyValueAsBoolean(STATE_NAME_ISREACHABLE, isReachable);
+        getState().getIsReachable().setValue(isReachable);
     }
 
     /**
@@ -46,7 +99,7 @@ public class DeviceState extends EntityState {
      * @return the configuration state
      */
     public String getDeviceConfigurationState() {
-        return getPropertyValueAsString(STATE_NAME_DEVICECONFIGURATIONSTATE);
+        return getState().getDeviceConfigurationState().getValue();
     }
 
     /**
@@ -55,7 +108,7 @@ public class DeviceState extends EntityState {
      * @return the device inclusion state
      */
     public String getDeviceInclusionState() {
-        return getPropertyValueAsString(STATE_NAME_DEVICEINCLUSIONSTATE);
+        return getState().getDeviceInclusionState().getValue();
     }
 
     /**
@@ -64,7 +117,21 @@ public class DeviceState extends EntityState {
      * @return true, if the {@link Device} is "Included"
      */
     public boolean deviceIsIncluded() {
-        return Util.equalsIfPresent(getDeviceInclusionState(), DEVICE_INCLUSION_STATE_INCLUDED);
+        return Util.equalsIfPresent(getState().getDeviceInclusionState().getValue(), DEVICE_INCLUSION_STATE_INCLUDED);
+    }
+
+    /**
+     * @return the stateMap
+     */
+    public HashMap<String, Property> getStateMap() {
+        return stateMap;
+    }
+
+    /**
+     * @param stateMap the stateMap to set
+     */
+    public void setStateMap(HashMap<String, Property> stateMap) {
+        this.stateMap = stateMap;
     }
 
     /**
@@ -82,7 +149,7 @@ public class DeviceState extends EntityState {
      * @return the update state
      */
     public String getDeviceUpdateState() {
-        return getPropertyValueAsString(STATE_NAME_UPDATESTATE);
+        return getState().getUpdateState().getValue();
     }
 
     /**
@@ -100,6 +167,6 @@ public class DeviceState extends EntityState {
      * @return the firmware version
      */
     public String getFirmwareVersion() {
-        return getPropertyValueAsString(STATE_NAME_FIRMWAREVERSION);
+        return getState().getFirmwareVersion().getValue();
     }
 }

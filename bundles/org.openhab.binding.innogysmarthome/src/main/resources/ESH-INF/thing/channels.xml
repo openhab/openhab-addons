@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="innogysmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="innogysmarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -25,6 +26,12 @@
 		<label>Blinds Position</label>
 		<description>Controls the blinds</description>
 		<category>Blinds</category>
+		<config-description>
+			<parameter name="invert" type="boolean">
+				<label>Invert Position</label>
+				<description>When invert is true than 0 on innogy is UP and 100 is DOWN</description>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<!-- BooleanSwitch Channel -->
@@ -310,6 +317,33 @@
 		<label>Feed (day)</label>
 		<description>The energy feed per day in kWh</description>
 		<category>Energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- CPUUsage -->
+	<channel-type id="CPUUsage">
+		<item-type>Number</item-type>
+		<label>CPU usage</label>
+		<description>The CPU usage of SHC-A, updated every 5 minutes</description>
+		<category>System</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- DiskUsage -->
+	<channel-type id="DiskUsage">
+		<item-type>Number</item-type>
+		<label>Disk usage</label>
+		<description>The disk usage of SHC-A, updated every 5 minutes</description>
+		<category>System</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- MemoryUsage -->
+	<channel-type id="MemoryUsage">
+		<item-type>Number</item-type>
+		<label>Memory usage</label>
+		<description>The memory usage of SHC-A, updated every 5 minutes</description>
+		<category>System</category>
 		<state readOnly="true"></state>
 	</channel-type>
 

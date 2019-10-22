@@ -15,16 +15,23 @@ package org.openhab.binding.innogysmarthome.internal.client;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Utility class with commonly used methods.
  *
  * @author Oliver Kuhl - Initial contribution
  *
  */
-public class Util {
+@NonNullByDefault
+public final class Util {
+
+    private Util() {
+        // Util class.
+    }
 
     public static ZonedDateTime convertZuluTimeStringToDate(String timeString) {
-        DateTimeFormatter fmt = DateTimeFormatter.ISO_INSTANT;
         return ZonedDateTime.parse(timeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
 
@@ -35,7 +42,7 @@ public class Util {
      * @param string2
      * @return true, if both strings are equal and not null
      */
-    public static boolean equalsIfPresent(String string1, String string2) {
+    public static boolean equalsIfPresent(@Nullable String string1, @Nullable String string2) {
         return string1 == null ? false : string1.equals(string2);
     }
 }
