@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	
+		<config-description uri="bridge-type:touchwand:bridge">
+		
+		
+		
+		
+		<parameter name="username" type="text">
+			<context>login-details</context>
+			<label>Username</label>
+			<description>Username for TouchWand Wanderfull Hub </description>
+			<required>true</required>
+		</parameter><parameter name="password" type="text">
+			<context>login-details</context>
+			<label>Password</label>
+			<description>Password for TouchWand Wanderfull Hub </description>
+			<required>true</required>
+		</parameter>
+
+
+		<parameter name="ipAddress" type="text">
+			<context>network-address</context>
+			<label>Network Address</label>
+			<description>Network address of this TouchWand Wanderfull Hub </description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="port" type="integer">
+			<context>network-address</context>
+			<label>Port</label>
+			<description>Port of the TouchWand Wanderfull Hub communication channel</description>
+			<required>true</required>
+			<default>8080</default>
+			<advanced>true</advanced>
+		</parameter>
+	
+	</config-description>		
+</config-description:config-descriptions>
