@@ -10,19 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.doorbird.internal;
+package org.openhab.binding.doorbird.internal.config;
 
 /**
- * The {@link DoorbirdConfig} class contains fields mapping thing configuration parameters.
+ * The {@link DoorbellConfig} class contains fields mapping thing configuration parameters
+ * for doorbell thing types.
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class DoorbirdConfiguration {
-    /**
-     * Doorbird ID must match the ID returned in UDP events
-     */
-    public String doorbirdId;
-
+public class DoorbellConfiguration {
     /**
      * Hostname or IP address of doorbell
      */

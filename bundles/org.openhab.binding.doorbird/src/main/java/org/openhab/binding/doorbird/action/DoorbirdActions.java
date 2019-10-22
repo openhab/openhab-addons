@@ -17,7 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.doorbird.internal.DoorbirdHandler;
+import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +33,16 @@ import org.slf4j.LoggerFactory;
 public class DoorbirdActions implements ThingActions {
     private final static Logger logger = LoggerFactory.getLogger(DoorbirdActions.class);
 
-    private @Nullable DoorbirdHandler handler;
+    private @Nullable DoorbellHandler handler;
 
     public DoorbirdActions() {
-        logger.debug("Doorbird actions service created");
+        logger.debug("DoorbirdActions service created");
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DoorbirdHandler) {
-            this.handler = (DoorbirdHandler) handler;
+        if (handler instanceof DoorbellHandler) {
+            this.handler = (DoorbellHandler) handler;
         }
     }
 
@@ -50,7 +51,7 @@ public class DoorbirdActions implements ThingActions {
         return this.handler;
     }
 
-    @RuleAction(label = "Restart Doorbird", description = "restarts the Doorbird device")
+    @RuleAction(label = "Restart Doorbird", description = "Restarts the Doorbird device")
     public void restart() {
         logger.debug("Doorbird action 'restart' called");
         if (handler != null) {
@@ -64,11 +65,11 @@ public class DoorbirdActions implements ThingActions {
         if (actions instanceof DoorbirdActions) {
             ((DoorbirdActions) actions).restart();
         } else {
-            throw new IllegalArgumentException("Instance is not a DoorbirdActionsService class");
+            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
         }
     }
 
-    @RuleAction(label = "SIP Hangup", description = "hangup SIP call")
+    @RuleAction(label = "SIP Hangup", description = "Hangup SIP call")
     public void sipHangup() {
         logger.debug("Doorbird action 'sipHangup' called");
         if (handler != null) {
@@ -82,7 +83,83 @@ public class DoorbirdActions implements ThingActions {
         if (actions instanceof DoorbirdActions) {
             ((DoorbirdActions) actions).sipHangup();
         } else {
-            throw new IllegalArgumentException("Instance is not a DoorbirdActionsService class");
+            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
+        }
+    }
+
+    @RuleAction(label = "Get Ring Time Limit", description = "Get the value of RING_TIME_LIMIT")
+    public @ActionOutput(name = "getRingTimeLimit", type = "java.lang.String") String getRingTimeLimit() {
+        logger.debug("Doorbird action 'getRingTimeLimit' called");
+        if (handler != null) {
+            return handler.actionGetRingTimeLimit();
+        } else {
+            logger.info("Doorbird Action service ThingHandler is null!");
+            return "";
+        }
+    }
+
+    public static String getRingTimeLimit(@Nullable ThingActions actions) {
+        if (actions instanceof DoorbirdActions) {
+            return ((DoorbirdActions) actions).getRingTimeLimit();
+        } else {
+            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
+        }
+    }
+
+    @RuleAction(label = "Get Call Time Limit", description = "Get the value of CALL_TIME_LIMIT")
+    public @ActionOutput(name = "getCallTimeLimit", type = "java.lang.String") String getCallTimeLimit() {
+        logger.debug("Doorbird action 'getCallTimeLimit' called");
+        if (handler != null) {
+            return handler.actionGetCallTimeLimit();
+        } else {
+            logger.info("Doorbird Action service ThingHandler is null!");
+            return "";
+        }
+    }
+
+    public static String getCallTimeLimit(@Nullable ThingActions actions) {
+        if (actions instanceof DoorbirdActions) {
+            return ((DoorbirdActions) actions).getCallTimeLimit();
+        } else {
+            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
+        }
+    }
+
+    @RuleAction(label = "Get Last Error Code", description = "Get the value of LASTERRORCODE")
+    public @ActionOutput(name = "getLastErrorCode", type = "java.lang.String") String getLastErrorCode() {
+        logger.debug("Doorbird action 'getLastErrorCode' called");
+        if (handler != null) {
+            return handler.actionGetLastErrorCode();
+        } else {
+            logger.info("Doorbird Action service ThingHandler is null!");
+            return "";
+        }
+    }
+
+    public static String getLastErrorCode(@Nullable ThingActions actions) {
+        if (actions instanceof DoorbirdActions) {
+            return ((DoorbirdActions) actions).getLastErrorCode();
+        } else {
+            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
+        }
+    }
+
+    @RuleAction(label = "Get Last Error Text", description = "Get the value of LASTERRORTEXT")
+    public @ActionOutput(name = "getLastErrorText", type = "java.lang.String") String getLastErrorText() {
+        logger.debug("Doorbird action 'getLastErrorText' called");
+        if (handler != null) {
+            return handler.actionGetLastErrorText();
+        } else {
+            logger.info("Doorbird Action service ThingHandler is null!");
+            return "";
+        }
+    }
+
+    public static String getLastErrorText(@Nullable ThingActions actions) {
+        if (actions instanceof DoorbirdActions) {
+            return ((DoorbirdActions) actions).getLastErrorText();
+        } else {
+            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
         }
     }
 }
