@@ -148,7 +148,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         }
 
         if (deviceStatus == null) {
-            logger.warn("No initial data available, ignore command");
+            logger.info("No initial data available, bridge is probably offline. Ignore command");
             return;
         }
 
