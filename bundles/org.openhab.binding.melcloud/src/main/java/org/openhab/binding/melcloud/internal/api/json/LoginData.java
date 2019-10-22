@@ -13,7 +13,6 @@
 package org.openhab.binding.melcloud.internal.api.json;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link LoginData} is responsible of JSON data For MELCloud API
@@ -24,136 +23,135 @@ import com.google.gson.annotations.SerializedName;
  */
 public class LoginData {
 
-    @SerializedName("ContextKey")
     @Expose
     private String contextKey;
-    @SerializedName("Client")
+
     @Expose
     private Integer client;
-    @SerializedName("Terms")
+
     @Expose
     private Integer terms;
-    @SerializedName("AL")
+
     @Expose
     private Integer aL;
-    @SerializedName("ML")
+
     @Expose
     private Integer mL;
-    @SerializedName("CMI")
+
     @Expose
     private Boolean cMI;
-    @SerializedName("IsStaff")
+
     @Expose
     private Boolean isStaff;
-    @SerializedName("CUTF")
+
     @Expose
     private Boolean cUTF;
-    @SerializedName("CAA")
+
     @Expose
     private Boolean cAA;
-    @SerializedName("ReceiveCountryNotifications")
+
     @Expose
     private Boolean receiveCountryNotifications;
-    @SerializedName("ReceiveAllNotifications")
+
     @Expose
     private Boolean receiveAllNotifications;
-    @SerializedName("CACA")
+
     @Expose
     private Boolean cACA;
-    @SerializedName("CAGA")
+
     @Expose
     private Boolean cAGA;
-    @SerializedName("MaximumDevices")
+
     @Expose
     private Integer maximumDevices;
-    @SerializedName("ShowDiagnostics")
+
     @Expose
     private Boolean showDiagnostics;
-    @SerializedName("Language")
+
     @Expose
     private Integer language;
-    @SerializedName("Country")
+
     @Expose
     private Integer country;
-    @SerializedName("RealClient")
+
     @Expose
     private Integer realClient;
-    @SerializedName("Name")
+
     @Expose
     private String name;
-    @SerializedName("UseFahrenheit")
+
     @Expose
     private Boolean useFahrenheit;
-    @SerializedName("Duration")
+
     @Expose
     private Integer duration;
-    @SerializedName("Expiry")
+
     @Expose
     private String expiry;
-    @SerializedName("CMSC")
+
     @Expose
     private Boolean cMSC;
-    @SerializedName("PartnerApplicationVersion")
+
     @Expose
     private Object partnerApplicationVersion;
-    @SerializedName("EmailSettingsReminderShown")
+
     @Expose
     private Boolean emailSettingsReminderShown;
-    @SerializedName("EmailUnitErrors")
+
     @Expose
     private Integer emailUnitErrors;
-    @SerializedName("EmailCommsErrors")
+
     @Expose
     private Integer emailCommsErrors;
-    @SerializedName("IsImpersonated")
+
     @Expose
     private Boolean isImpersonated;
-    @SerializedName("LanguageCode")
+
     @Expose
     private String languageCode;
-    @SerializedName("CountryName")
+
     @Expose
     private String countryName;
-    @SerializedName("CurrencySymbol")
+
     @Expose
     private String currencySymbol;
-    @SerializedName("SupportEmailAddress")
+
     @Expose
     private String supportEmailAddress;
-    @SerializedName("DateSeperator")
+
     @Expose
     private String dateSeperator;
-    @SerializedName("TimeSeperator")
+
     @Expose
     private String timeSeperator;
-    @SerializedName("AtwLogoFile")
+
     @Expose
     private String atwLogoFile;
-    @SerializedName("DECCReport")
+
     @Expose
     private Boolean dECCReport;
-    @SerializedName("CSVReport1min")
+
     @Expose
     private Boolean cSVReport1min;
-    @SerializedName("HidePresetPanel")
+
     @Expose
     private Boolean hidePresetPanel;
-    @SerializedName("EmailSettingsReminderRequired")
+
     @Expose
     private Boolean emailSettingsReminderRequired;
-    @SerializedName("TermsText")
+
     @Expose
     private Object termsText;
-    @SerializedName("MapView")
+
     @Expose
     private Boolean mapView;
-    @SerializedName("MapZoom")
+
     @Expose
     private Integer mapZoom;
-    @SerializedName("MapLongitude")
+
     @Expose
     private Double mapLongitude;
-    @SerializedName("MapLatitude")
+
     @Expose
     private Double mapLatitude;
 

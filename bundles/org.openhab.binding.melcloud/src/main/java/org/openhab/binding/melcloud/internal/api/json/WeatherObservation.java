@@ -13,7 +13,6 @@
 package org.openhab.binding.melcloud.internal.api.json;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Structure} is responsible of JSON data For MELCloud API
@@ -24,37 +23,36 @@ import com.google.gson.annotations.SerializedName;
  */
 public class WeatherObservation {
 
-    @SerializedName("Date")
     @Expose
     private String date;
-    @SerializedName("Sunrise")
+
     @Expose
     private String sunrise;
-    @SerializedName("Sunset")
+
     @Expose
     private String sunset;
-    @SerializedName("Condition")
+
     @Expose
     private Integer condition;
-    @SerializedName("ID")
+
     @Expose
     private Integer iD;
-    @SerializedName("Humidity")
+
     @Expose
     private Integer humidity;
-    @SerializedName("Temperature")
+
     @Expose
     private Integer temperature;
-    @SerializedName("Icon")
+
     @Expose
     private String icon;
-    @SerializedName("ConditionName")
+
     @Expose
     private String conditionName;
-    @SerializedName("Day")
+
     @Expose
     private Integer day;
-    @SerializedName("WeatherType")
+
     @Expose
     private Integer weatherType;
 

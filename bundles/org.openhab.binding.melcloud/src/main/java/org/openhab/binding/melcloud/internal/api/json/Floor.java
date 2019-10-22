@@ -15,7 +15,6 @@ package org.openhab.binding.melcloud.internal.api.json;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * {@link Floor} provides floor specific information for JSON data returned from MELCloud API
@@ -26,37 +25,36 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Floor {
 
-    @SerializedName("ID")
     @Expose
     private Integer iD;
-    @SerializedName("Name")
+
     @Expose
     private String name;
-    @SerializedName("BuildingId")
+
     @Expose
     private Integer buildingId;
-    @SerializedName("AccessLevel")
+
     @Expose
     private Integer accessLevel;
-    @SerializedName("DirectAccess")
+
     @Expose
     private Boolean directAccess;
-    @SerializedName("EndDate")
+
     @Expose
     private Object endDate;
-    @SerializedName("Areas")
+
     @Expose
     private List<Area> areas = null;
-    @SerializedName("Devices")
+
     @Expose
     private List<Device> devices = null;
-    @SerializedName("MinTemperature")
+
     @Expose
     private Integer minTemperature;
-    @SerializedName("MaxTemperature")
+
     @Expose
     private Integer maxTemperature;
-    @SerializedName("Expanded")
+
     @Expose
     private Boolean expanded;
 

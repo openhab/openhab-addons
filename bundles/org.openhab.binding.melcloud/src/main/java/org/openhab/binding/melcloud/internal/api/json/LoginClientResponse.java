@@ -15,7 +15,6 @@ package org.openhab.binding.melcloud.internal.api.json;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link LoginClientResponse} is responsible of JSON data For MELCloud API
@@ -26,40 +25,39 @@ import com.google.gson.annotations.SerializedName;
  */
 public class LoginClientResponse {
 
-    @SerializedName("ErrorId")
     @Expose
     private Object errorId;
-    @SerializedName("ErrorMessage")
+
     @Expose
     private Object errorMessage;
-    @SerializedName("LoginStatus")
+
     @Expose
     private Integer loginStatus;
-    @SerializedName("UserId")
+
     @Expose
     private Integer userId;
-    @SerializedName("RandomKey")
+
     @Expose
     private Object randomKey;
-    @SerializedName("AppVersionAnnouncement")
+
     @Expose
     private Object appVersionAnnouncement;
-    @SerializedName("LoginData")
+
     @Expose
     private LoginData loginData;
-    @SerializedName("ListPendingInvite")
+
     @Expose
     private List<Object> listPendingInvite = null;
-    @SerializedName("ListOwnershipChangeRequest")
+
     @Expose
     private List<Object> listOwnershipChangeRequest = null;
-    @SerializedName("ListPendingAnnouncement")
+
     @Expose
     private List<Object> listPendingAnnouncement = null;
-    @SerializedName("LoginMinutes")
+
     @Expose
     private Integer loginMinutes;
-    @SerializedName("LoginAttempts")
+
     @Expose
     private Integer loginAttempts;
 

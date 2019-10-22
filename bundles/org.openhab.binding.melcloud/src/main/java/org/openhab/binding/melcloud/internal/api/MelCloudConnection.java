@@ -31,6 +31,7 @@ import org.openhab.binding.melcloud.internal.exceptions.MelCloudLoginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -52,7 +53,8 @@ public class MelCloudConnection {
     private static final int TIMEOUT_MILLISECONDS = 10000;
 
     // Gson objects are safe to share across threads and are somewhat expensive to construct. Use a single instance.
-    private static final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    private static final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
+            .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
 
     private final Logger logger = LoggerFactory.getLogger(MelCloudConnection.class);
 

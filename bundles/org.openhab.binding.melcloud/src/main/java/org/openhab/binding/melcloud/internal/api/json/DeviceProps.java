@@ -15,7 +15,6 @@ package org.openhab.binding.melcloud.internal.api.json;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link DeviceProps} is responsible of JSON data For MELCloud API
@@ -26,298 +25,297 @@ import com.google.gson.annotations.SerializedName;
  */
 public class DeviceProps {
 
-    @SerializedName("ListHistory24Formatters")
     @Expose
     private List<Object> listHistory24Formatters = null;
-    @SerializedName("DeviceType")
+
     @Expose
     private Integer deviceType;
-    @SerializedName("CanCool")
+
     @Expose
     private Boolean canCool;
-    @SerializedName("CanHeat")
+
     @Expose
     private Boolean canHeat;
-    @SerializedName("CanDry")
+
     @Expose
     private Boolean canDry;
-    @SerializedName("HasAutomaticFanSpeed")
+
     @Expose
     private Boolean hasAutomaticFanSpeed;
-    @SerializedName("AirDirectionFunction")
+
     @Expose
     private Boolean airDirectionFunction;
-    @SerializedName("SwingFunction")
+
     @Expose
     private Boolean swingFunction;
-    @SerializedName("NumberOfFanSpeeds")
+
     @Expose
     private Integer numberOfFanSpeeds;
-    @SerializedName("UseTemperatureA")
+
     @Expose
     private Boolean useTemperatureA;
-    @SerializedName("TemperatureIncrementOverride")
+
     @Expose
     private Integer temperatureIncrementOverride;
-    @SerializedName("TemperatureIncrement")
+
     @Expose
     private Double temperatureIncrement;
-    @SerializedName("MinTempCoolDry")
+
     @Expose
     private Double minTempCoolDry;
-    @SerializedName("MaxTempCoolDry")
+
     @Expose
     private Double maxTempCoolDry;
-    @SerializedName("MinTempHeat")
+
     @Expose
     private Double minTempHeat;
-    @SerializedName("MaxTempHeat")
+
     @Expose
     private Double maxTempHeat;
-    @SerializedName("MinTempAutomatic")
+
     @Expose
     private Double minTempAutomatic;
-    @SerializedName("MaxTempAutomatic")
+
     @Expose
     private Double maxTempAutomatic;
-    @SerializedName("LegacyDevice")
+
     @Expose
     private Boolean legacyDevice;
-    @SerializedName("UnitSupportsStandbyMode")
+
     @Expose
     private Boolean unitSupportsStandbyMode;
-    @SerializedName("ModelIsAirCurtain")
+
     @Expose
     private Boolean modelIsAirCurtain;
-    @SerializedName("ModelSupportsFanSpeed")
+
     @Expose
     private Boolean modelSupportsFanSpeed;
-    @SerializedName("ModelSupportsAuto")
+
     @Expose
     private Boolean modelSupportsAuto;
-    @SerializedName("ModelSupportsHeat")
+
     @Expose
     private Boolean modelSupportsHeat;
-    @SerializedName("ModelSupportsDry")
+
     @Expose
     private Boolean modelSupportsDry;
-    @SerializedName("ModelSupportsVaneVertical")
+
     @Expose
     private Boolean modelSupportsVaneVertical;
-    @SerializedName("ModelSupportsVaneHorizontal")
+
     @Expose
     private Boolean modelSupportsVaneHorizontal;
-    @SerializedName("ModelSupportsStandbyMode")
+
     @Expose
     private Boolean modelSupportsStandbyMode;
-    @SerializedName("ModelSupportsEnergyReporting")
+
     @Expose
     private Boolean modelSupportsEnergyReporting;
-    @SerializedName("Power")
+
     @Expose
     private Boolean power;
-    @SerializedName("RoomTemperature")
+
     @Expose
     private Double roomTemperature;
-    @SerializedName("SetTemperature")
+
     @Expose
     private Double setTemperature;
-    @SerializedName("ActualFanSpeed")
+
     @Expose
     private Integer actualFanSpeed;
-    @SerializedName("FanSpeed")
+
     @Expose
     private Integer fanSpeed;
-    @SerializedName("AutomaticFanSpeed")
+
     @Expose
     private Boolean automaticFanSpeed;
-    @SerializedName("VaneVerticalDirection")
+
     @Expose
     private Integer vaneVerticalDirection;
-    @SerializedName("VaneVerticalSwing")
+
     @Expose
     private Boolean vaneVerticalSwing;
-    @SerializedName("VaneHorizontalDirection")
+
     @Expose
     private Integer vaneHorizontalDirection;
-    @SerializedName("VaneHorizontalSwing")
+
     @Expose
     private Boolean vaneHorizontalSwing;
-    @SerializedName("OperationMode")
+
     @Expose
     private Integer operationMode;
-    @SerializedName("EffectiveFlags")
+
     @Expose
     private Integer effectiveFlags;
-    @SerializedName("LastEffectiveFlags")
+
     @Expose
     private Integer lastEffectiveFlags;
-    @SerializedName("InStandbyMode")
+
     @Expose
     private Boolean inStandbyMode;
-    @SerializedName("DefaultCoolingSetTemperature")
+
     @Expose
     private Double defaultCoolingSetTemperature;
-    @SerializedName("DefaultHeatingSetTemperature")
+
     @Expose
     private Double defaultHeatingSetTemperature;
-    @SerializedName("RoomTemperatureLabel")
+
     @Expose
     private Integer roomTemperatureLabel;
-    @SerializedName("HasEnergyConsumedMeter")
+
     @Expose
     private Boolean hasEnergyConsumedMeter;
-    @SerializedName("CurrentEnergyConsumed")
+
     @Expose
     private Integer currentEnergyConsumed;
-    @SerializedName("CurrentEnergyMode")
+
     @Expose
     private Integer currentEnergyMode;
-    @SerializedName("CoolingDisabled")
+
     @Expose
     private Boolean coolingDisabled;
-    @SerializedName("MinPcycle")
+
     @Expose
     private Integer minPcycle;
-    @SerializedName("MaxPcycle")
+
     @Expose
     private Integer maxPcycle;
-    @SerializedName("EffectivePCycle")
+
     @Expose
     private Integer effectivePCycle;
-    @SerializedName("MaxOutdoorUnits")
+
     @Expose
     private Integer maxOutdoorUnits;
-    @SerializedName("MaxIndoorUnits")
+
     @Expose
     private Integer maxIndoorUnits;
-    @SerializedName("MaxTemperatureControlUnits")
+
     @Expose
     private Integer maxTemperatureControlUnits;
-    @SerializedName("DeviceID")
+
     @Expose
     private Integer deviceID;
-    @SerializedName("MacAddress")
+
     @Expose
     private String macAddress;
-    @SerializedName("SerialNumber")
+
     @Expose
     private String serialNumber;
-    @SerializedName("TimeZoneID")
+
     @Expose
     private Integer timeZoneID;
-    @SerializedName("DiagnosticMode")
+
     @Expose
     private Integer diagnosticMode;
-    @SerializedName("DiagnosticEndDate")
+
     @Expose
     private Object diagnosticEndDate;
-    @SerializedName("ExpectedCommand")
+
     @Expose
     private Integer expectedCommand;
-    @SerializedName("Owner")
+
     @Expose
     private Object owner;
-    @SerializedName("DetectedCountry")
+
     @Expose
     private Object detectedCountry;
-    @SerializedName("AdaptorType")
+
     @Expose
     private Integer adaptorType;
-    @SerializedName("FirmwareDeployment")
+
     @Expose
     private Object firmwareDeployment;
-    @SerializedName("FirmwareUpdateAborted")
+
     @Expose
     private Boolean firmwareUpdateAborted;
-    @SerializedName("WifiSignalStrength")
+
     @Expose
     private Integer wifiSignalStrength;
-    @SerializedName("WifiAdapterStatus")
+
     @Expose
     private String wifiAdapterStatus;
-    @SerializedName("Position")
+
     @Expose
     private String position;
-    @SerializedName("PCycle")
+
     @Expose
     private Integer pCycle;
-    @SerializedName("RecordNumMax")
+
     @Expose
     private Integer recordNumMax;
-    @SerializedName("LastTimeStamp")
+
     @Expose
     private String lastTimeStamp;
-    @SerializedName("ErrorCode")
+
     @Expose
     private Integer errorCode;
-    @SerializedName("HasError")
+
     @Expose
     private Boolean hasError;
-    @SerializedName("LastReset")
+
     @Expose
     private String lastReset;
-    @SerializedName("FlashWrites")
+
     @Expose
     private Integer flashWrites;
-    @SerializedName("Scene")
+
     @Expose
     private Object scene;
-    @SerializedName("SSLExpirationDate")
+
     @Expose
     private Object sSLExpirationDate;
-    @SerializedName("SPTimeout")
+
     @Expose
     private Object sPTimeout;
-    @SerializedName("Passcode")
+
     @Expose
     private Object passcode;
-    @SerializedName("ServerCommunicationDisabled")
+
     @Expose
     private Boolean serverCommunicationDisabled;
-    @SerializedName("ConsecutiveUploadErrors")
+
     @Expose
     private Integer consecutiveUploadErrors;
-    @SerializedName("DoNotRespondAfter")
+
     @Expose
     private Object doNotRespondAfter;
-    @SerializedName("OwnerRoleAccessLevel")
+
     @Expose
     private Integer ownerRoleAccessLevel;
-    @SerializedName("OwnerCountry")
+
     @Expose
     private Integer ownerCountry;
-    @SerializedName("Rate1StartTime")
+
     @Expose
     private Object rate1StartTime;
-    @SerializedName("Rate2StartTime")
+
     @Expose
     private Object rate2StartTime;
-    @SerializedName("ProtocolVersion")
+
     @Expose
     private Integer protocolVersion;
-    @SerializedName("UnitVersion")
+
     @Expose
     private Integer unitVersion;
-    @SerializedName("FirmwareAppVersion")
+
     @Expose
     private Integer firmwareAppVersion;
-    @SerializedName("FirmwareWebVersion")
+
     @Expose
     private Integer firmwareWebVersion;
-    @SerializedName("FirmwareWlanVersion")
+
     @Expose
     private Integer firmwareWlanVersion;
-    @SerializedName("HasErrorMessages")
+
     @Expose
     private Boolean hasErrorMessages;
-    @SerializedName("HasZone2")
+
     @Expose
     private Boolean hasZone2;
-    @SerializedName("Offline")
+
     @Expose
     private Boolean offline;
-    @SerializedName("Units")
+
     @Expose
     private List<Object> units = null;
 
