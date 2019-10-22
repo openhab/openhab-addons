@@ -22,19 +22,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.openhab.binding.innogysmarthome.internal.client.entity.Location;
-import org.openhab.binding.innogysmarthome.internal.client.entity.Message;
-import org.openhab.binding.innogysmarthome.internal.client.entity.Property;
-import org.openhab.binding.innogysmarthome.internal.client.entity.SHCInfo;
+import org.openhab.binding.innogysmarthome.internal.client.entity.StatusResponse;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.Action;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.SetStateAction;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
+import org.openhab.binding.innogysmarthome.internal.client.entity.capability.CapabilityState;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
+import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceState;
+import org.openhab.binding.innogysmarthome.internal.client.entity.device.Gateway;
+import org.openhab.binding.innogysmarthome.internal.client.entity.device.State;
 import org.openhab.binding.innogysmarthome.internal.client.entity.error.ErrorResponse;
-import org.openhab.binding.innogysmarthome.internal.client.entity.link.CapabilityLink;
 import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
-import org.openhab.binding.innogysmarthome.internal.client.entity.state.CapabilityState;
-import org.openhab.binding.innogysmarthome.internal.client.entity.state.DeviceState;
+import org.openhab.binding.innogysmarthome.internal.client.entity.location.Location;
+import org.openhab.binding.innogysmarthome.internal.client.entity.message.Message;
 import org.openhab.binding.innogysmarthome.internal.client.exception.ApiException;
 import org.openhab.binding.innogysmarthome.internal.client.exception.ConfigurationException;
 import org.openhab.binding.innogysmarthome.internal.client.exception.ControllerOfflineException;
@@ -92,8 +92,8 @@ public class InnogyClient {
     private JsonFactory jsonFactory;
     private Builder credentialBuilder;
     private HttpRequestFactory requestFactory;
-    private Device bridgeDetails;
-    private long currentConfigurationVersion;
+    private Gateway bridgeDetails;
+    private String configVersion;
     private CredentialRefreshListener credentialRefreshListener;
     private long apiCallCounter = 0;
 
@@ -104,7 +104,7 @@ public class InnogyClient {
     /**
      * @return the bridgeInfo
      */
-    public Device getBridgeDetails() {
+    public Gateway getBridgeDetails() {
         return bridgeDetails;
     }
 
@@ -114,7 +114,7 @@ public class InnogyClient {
      * used or - if not yet available - new tokens are fetched from the service using the provided auth code.
      *
      * Throws {@link ApiException}s or {@link IOException}s as described in {@link #getOAuth2Tokens()} and
-     * {@link #initializeSession()}.
+     * {@link #getStatus()}.
      *
      * @throws IOException
      * @throws ApiException
@@ -135,7 +135,7 @@ public class InnogyClient {
             getAccessToken();
         }
 
-        initializeSession();
+        getStatus();
     }
 
     /**
@@ -171,46 +171,26 @@ public class InnogyClient {
     }
 
     /**
-     * Logs into the innogy SmartHome service and initializes the session.
+     * Gets the status
      *
      * As the API returns the details of the SmartHome controller (SHC), the data is saved in {@link #bridgeDetails} and
-     * the {@link #currentConfigurationVersion} is set.
+     * the {@link #configVersion} is set.
      *
      * @throws SessionExistsException thrown, if a session already exists
      * @throws IOException
      * @throws ApiException
      */
-    private void initializeSession() throws IOException, ApiException {
-        logger.debug("Initializing innogy SmartHome Session...");
-        HttpResponse response = executeGet(API_URL_INITIALIZE);
+    private void getStatus() throws IOException, ApiException {
+        logger.debug("Get innogy SmartHome status...");
+        HttpResponse response = executeGet(API_URL_STATUS);
 
         handleResponseErrors(response);
 
-        SHCInfo info = response.parseAs(SHCInfo.class);
-        bridgeDetails = info.deviceList.get(0);
-        currentConfigurationVersion = info.currentConfigurationVersion;
+        StatusResponse status = response.parseAs(StatusResponse.class);
+        bridgeDetails = status.gateway;
+        configVersion = bridgeDetails.getConfigVersion();
 
-        logger.debug("innogy SmartHome Session initialized. Configuration version is {}",
-                info.currentConfigurationVersion);
-    }
-
-    /**
-     * Uninitializes the session.
-     *
-     * @throws IOException
-     * @throws ApiException
-     */
-    public void uninitializeSession() throws IOException, ApiException {
-        logger.debug("Uninitializing innogy SmartHome Session...");
-        bridgeDetails = null;
-
-        HttpResponse response = executeGet(API_URL_UNINITIALIZE);
-
-        try {
-            handleResponseErrors(response);
-        } catch (SessionNotFoundException e) {
-            // Session not found - ignoring
-        }
+        logger.debug("innogy SmartHome Status loaded. Configuration version is {}.", configVersion);
     }
 
     /**
@@ -530,7 +510,6 @@ public class InnogyClient {
      */
     public void dispose() {
         try {
-            uninitializeSession();
             if (httpTransport != null) {
                 httpTransport.shutdown();
                 httpTransport = null;
@@ -538,7 +517,7 @@ public class InnogyClient {
             jsonFactory = null;
             requestFactory = null;
             credentialBuilder = null;
-        } catch (IOException | ApiException e) {
+        } catch (IOException e) {
             logger.debug("Error disposing resources: {}", e.getMessage());
             logger.trace("Trace:", e);
         }
@@ -621,7 +600,7 @@ public class InnogyClient {
         Map<String, List<Message>> deviceMessageMap = new HashMap<>();
         for (Message m : messageList) {
             if (m.getDeviceLinkList() != null && !m.getDeviceLinkList().isEmpty()) {
-                String deviceId = m.getDeviceLinkList().get(0).getValue().replace("/device/", "");
+                String deviceId = m.getDeviceLinkList().get(0).replace("/device/", "");
                 List<Message> ml;
                 if (deviceMessageMap.containsKey(deviceId)) {
                     ml = deviceMessageMap.get(deviceId);
@@ -645,10 +624,12 @@ public class InnogyClient {
             HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
 
             // capabilities and their states
-            for (CapabilityLink cl : d.getCapabilityLinkList()) {
-                Capability c = capabilityMap.get(cl.getId());
-                c.setCapabilityState(capabilityStateMap.get(c.getId()));
-                deviceCapabilityMap.put(c.getId(), c);
+            for (String cl : d.getCapabilityLinkList()) {
+                Capability c = capabilityMap.get(Link.getId(cl));
+                String capabilityId = c.getId();
+                CapabilityState capabilityState = capabilityStateMap.get(capabilityId);
+                c.setCapabilityState(capabilityState);
+                deviceCapabilityMap.put(capabilityId, c);
             }
             d.setCapabilityMap(deviceCapabilityMap);
 
@@ -662,6 +643,7 @@ public class InnogyClient {
                     switch (m.getType()) {
                         case Message.TYPE_DEVICE_LOW_BATTERY:
                             d.setLowBattery(true);
+                            d.setLowBatteryMessageId(m.getId());
                             break;
                     }
                 }
@@ -703,10 +685,12 @@ public class InnogyClient {
         }
 
         // DEVICE STATE
-        List<Property> deviceStateList = getDeviceStatesByDeviceId(deviceId);
+        State state = getDeviceStateByDeviceId(deviceId);
         DeviceState deviceState = new DeviceState();
         deviceState.setId(deviceId);
-        deviceState.setStateList(deviceStateList);
+        deviceState.setState(state);
+
+        // deviceState.setStateList(deviceStateList);
 
         // MESSAGES
         List<Message> messageList = getMessages();
@@ -714,9 +698,10 @@ public class InnogyClient {
         List<Message> ml = new ArrayList<>();
 
         for (Message m : messageList) {
+            logger.trace("Message Type {} with ID {}", m.getType(), m.getId());
             if (m.getDeviceLinkList() != null && !m.getDeviceLinkList().isEmpty()) {
-                for (Link li : m.getDeviceLinkList()) {
-                    if (li.getValue().equals("/device/" + deviceId)) {
+                for (String li : m.getDeviceLinkList()) {
+                    if (li.equals("/device/" + deviceId)) {
                         ml.add(m);
                     }
                 }
@@ -735,9 +720,9 @@ public class InnogyClient {
 
         // capabilities and their states
         HashMap<String, Capability> deviceCapabilityMap = new HashMap<>();
-        for (CapabilityLink cl : d.getCapabilityLinkList()) {
+        for (String cl : d.getCapabilityLinkList()) {
 
-            Capability c = capabilityMap.get(cl.getId());
+            Capability c = capabilityMap.get(Link.getId(cl));
             c.setCapabilityState(capabilityStateMap.get(c.getId()));
             deviceCapabilityMap.put(c.getId(), c);
 
@@ -754,6 +739,7 @@ public class InnogyClient {
                 switch (m.getType()) {
                     case Message.TYPE_DEVICE_LOW_BATTERY:
                         d.setLowBattery(true);
+                        d.setLowBatteryMessageId(m.getId());
                         break;
                 }
             }
@@ -781,24 +767,23 @@ public class InnogyClient {
     }
 
     /**
-     * Loads the device states for the given deviceId.
+     * Loads the device state for the given deviceId.
      *
      * @param deviceId
      * @return
      * @throws IOException
      * @throws ApiException
      */
-    public List<Property> getDeviceStatesByDeviceId(String deviceId) throws IOException, ApiException {
+    public State getDeviceStateByDeviceId(String deviceId) throws IOException, ApiException {
         logger.debug("Loading device states for device id {}...", deviceId);
 
         HttpResponse response = executeGet(API_URL_DEVICE_ID_STATE.replace("{id}", deviceId));
 
         handleResponseErrors(response);
 
-        Property[] propertyArray = response.parseAs(Property[].class);
-        List<Property> propertyList = Arrays.asList(propertyArray);
+        State state = response.parseAs(State.class);
 
-        return propertyList;
+        return state;
     }
 
     /**
@@ -912,5 +897,19 @@ public class InnogyClient {
      */
     public void setCredentialRefreshListener(CredentialRefreshListener credentialRefreshListener) {
         this.credentialRefreshListener = credentialRefreshListener;
+    }
+
+    /**
+     * @return the configVersion
+     */
+    public String getConfigVersion() {
+        return configVersion;
+    }
+
+    /**
+     * @param configVersion the configVersion to set
+     */
+    public void setConfigVersion(String configVersion) {
+        this.configVersion = configVersion;
     }
 }

@@ -23,13 +23,14 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
 import org.openhab.binding.innogysmarthome.internal.client.entity.message.Message;
 
 import com.google.api.client.util.Key;
+//import com.google.gson.annotations.SerializedName;
 
 /**
  * Defines the {@link Event}, which is sent by the innogy websocket to inform the clients about changes.
  *
  * @author Oliver Kuhl - Initial contribution
  */
-public class Event extends BaseEvent {
+public class MessageEvent extends BaseEvent {
 
     public static final String EVENT_PROPERTY_CONFIGURATION_VERSION = "ConfigurationVersion";
     public static final String EVENT_PROPERTY_IS_CONNECTED = "IsConnected";
@@ -47,23 +48,13 @@ public class Event extends BaseEvent {
     private String namespace;
 
     /**
-     * This container includes only properties, e.g. for the changed state properties. If there is other data than
-     * properties to be transported, the data container will be used.
-     * Optional.
-     */
-    @Key("properties")
-    private EventProperties properties;
-
-    protected HashMap<String, Property> propertyMap;
-
-    /**
      * Data for the event, The data container can contain any type of entity dependent on the event type. For example,
      * the DeviceFound events contains the entire Device entity rather than selected properties.
      * Optional.
      */
     @Key("data")
-    // @SerializedName("Data")
-    private EventData data;
+    //@SerializedName("data")
+    private Message data;
 
     /**
      * @return the link to the source
@@ -94,44 +85,21 @@ public class Event extends BaseEvent {
     }
 
     /**
-     * @return the properties
-     */
-    public EventProperties getProperties() {
-        return properties;
-    }
-
-    /**
-     * @param propertyList the propertyList to set
-     */
-    public void setProperties(EventProperties properties) {
-        this.properties = properties;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see in.ollie.innogysmarthome.entity.PropertyList#getPropertyMap()
-     */
-    // protected Map<String, Property> getPropertyMap() {
-    // if (propertyMap == null) {
-    // // propertyMap = PropertyList.getHashMap(properties);
-    // }
-    //
-    // return propertyMap;
-    // }
-
-    /**
      * @return the dataList
      */
-    public EventData getData() {
+    public Message getData() {
         return data;
     }
 
     /**
-     * @param dataList the dataList to set
+     * @param message the message to set
      */
-    public void setData(EventData data) {
+    public void setData(Message data) {
         this.data = data;
+    }
+
+    public Message getMessage() {
+        return data;
     }
 
     /**
@@ -195,27 +163,5 @@ public class Event extends BaseEvent {
      */
     public Boolean isLinkedtoSHC() {
         return source == null ? false : Link.isTypeSHC(source);
-    }
-
-    /**
-     * Returns the configurationVersion or null, if this {@link Property} is not available in the event.
-     *
-     * @return
-     */
-    public Integer getConfigurationVersion() {
-        return getData().getConfigVersion();
-    }
-
-    /**
-     * Returns the isConnected {@link Property} value. Only available for event of type ControllerConnectivityChanged
-     *
-     * @return {@link Boolean} or <code>null</code>, if {@link Property} is not available or {@link Event} is not of
-     *         type ControllerConnectivityChanged.
-     */
-    public Boolean getIsConnected() {
-        if (!isControllerConnectivityChangedEvent()) {
-            return null;
-        }
-        return getProperties().getIsConnected();
     }
 }

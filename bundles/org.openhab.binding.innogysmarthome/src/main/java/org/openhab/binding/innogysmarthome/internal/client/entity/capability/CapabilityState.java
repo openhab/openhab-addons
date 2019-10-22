@@ -10,16 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.innogysmarthome.internal.client.entity.state;
+package org.openhab.binding.innogysmarthome.internal.client.entity.capability;
 
-import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
+import com.google.api.client.util.Key;
 
 /**
  * Defines the {@link CapabilityState}, that holds the state of a {@link Capability}, e.g. a temperature.
  *
  * @author Oliver Kuhl - Initial contribution
  */
-public class CapabilityState extends EntityState {
+public class CapabilityState /* extends EntityState */ {
     public static final String STATE_NAME_VARIABLE_ACTUATOR = "Value";
     public static final String STATE_NAME_SWITCH_ACTUATOR = "OnState";
     public static final String STATE_NAME_TEMPERATURE_SENSOR_TEMPERATURE = "Temperature";
@@ -36,8 +36,6 @@ public class CapabilityState extends EntityState {
     public static final String STATE_NAME_LUMINANCE_SENSOR = "Luminance";
     public static final String STATE_NAME_PUSH_BUTTON_SENSOR_COUNTER = "LastKeyPressCounter";
     public static final String STATE_NAME_PUSH_BUTTON_SENSOR_BUTTON_INDEX = "LastPressedButtonIndex";
-    public static final String STATE_NAME_DIMMER_ACTUATOR = "DimLevel";
-    public static final String STATE_NAME_ROLLERSHUTTER_ACTUATOR = "ShutterLevel";
 
     // ENERGY CONSUMPTION SENSOR
     public static final String STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_MONTH_KWH = "EnergyConsumptionMonthKWh";
@@ -73,343 +71,383 @@ public class CapabilityState extends EntityState {
     public static final String STATE_VALUE_OPERATION_MODE_AUTO = "Auto";
     public static final String STATE_VALUE_OPERATION_MODE_MANUAL = "Manu";
 
+    /**
+     * id of the {@link Capability}
+     */
+    @Key("id")
+    private String id;
+
+    /**
+     * class containing all states
+     */
+    @Key("state")
+    private State state;
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the state
+     */
+    public State getState() {
+        return state;
+    }
+
+    /**
+     * @param state the state to set
+     */
+    public void setState(State state) {
+        this.state = state;
+    }
+
     public Boolean getVariableActuatorState() {
-        return getPropertyValueAsBoolean(STATE_NAME_VARIABLE_ACTUATOR);
+        return getState().getValueState().getValue();
     }
 
     public void setVariableActuatorState(boolean on) {
-        setPropertyValueAsBoolean(STATE_NAME_VARIABLE_ACTUATOR, on);
+        getState().getValueState().setValue(on);
     }
 
     public Boolean getSwitchActuatorState() {
-        return getPropertyValueAsBoolean(STATE_NAME_SWITCH_ACTUATOR);
+        return getState().getOnState().getValue();
     }
 
     public void setSwitchActuatorState(boolean on) {
-        setPropertyValueAsBoolean(STATE_NAME_SWITCH_ACTUATOR, on);
+        getState().getOnState().setValue(on);
     }
 
     public Double getTemperatureSensorTemperatureState() {
-        return getPropertyValueAsDouble(STATE_NAME_TEMPERATURE_SENSOR_TEMPERATURE);
+        return getState().getTemperatureState().getValue();
     }
 
     public void setTemperatureSensorTemperatureState(double temperature) {
-        setPropertyValueAsDouble(STATE_NAME_TEMPERATURE_SENSOR_TEMPERATURE, temperature);
+        getState().getTemperatureState().setValue(temperature);
     }
 
     public Boolean getTemperatureSensorFrostWarningState() {
-        return getPropertyValueAsBoolean(STATE_NAME_TEMPERATURE_SENSOR_FROST_WARNING);
+        return getState().getFrostWarningState().getValue();
     }
 
     public void setTemperatureSensorFrostWarningState(boolean frostWarning) {
-        setPropertyValueAsBoolean(STATE_NAME_TEMPERATURE_SENSOR_FROST_WARNING, frostWarning);
+        getState().getFrostWarningState().setValue(frostWarning);
     }
 
     public Double getThermostatActuatorPointTemperatureState() {
-        return getPropertyValueAsDouble(STATE_NAME_THERMOSTAT_ACTUATOR_POINT_TEMPERATURE);
+        return getState().getPointTemperatureState().getValue();
     }
 
     public void setThermostatActuatorPointTemperatureState(double pointTemperature) {
-        setPropertyValueAsDouble(STATE_NAME_THERMOSTAT_ACTUATOR_POINT_TEMPERATURE, pointTemperature);
+        getState().getPointTemperatureState().setValue(pointTemperature);
     }
 
     public String getThermostatActuatorOperationModeState() {
-        return getPropertyValueAsString(STATE_NAME_THERMOSTAT_ACTUATOR_OPERATION_MODE);
+        return getState().getOperationModeState().getValue();
     }
 
     public void setThermostatActuatorOperationModeState(String operationMode) {
         if (operationMode.equals(STATE_VALUE_OPERATION_MODE_MANUAL)) {
-            setPropertyValueAsString(STATE_NAME_THERMOSTAT_ACTUATOR_OPERATION_MODE, STATE_VALUE_OPERATION_MODE_MANUAL);
+            getState().getOperationModeState().setValue(STATE_VALUE_OPERATION_MODE_MANUAL);
         } else {
-            setPropertyValueAsString(STATE_NAME_THERMOSTAT_ACTUATOR_OPERATION_MODE, STATE_VALUE_OPERATION_MODE_AUTO);
+            getState().getOperationModeState().setValue(STATE_VALUE_OPERATION_MODE_AUTO);
         }
     }
 
     public Boolean getThermostatActuatorWindowReductionActiveState() {
-        return getPropertyValueAsBoolean(STATE_NAME_THERMOSTAT_ACTUATOR_WINDOW_REDUCTION_ACTIVE);
+        return getState().getWindowReductionActiveState().getValue();
     }
 
     public void setThermostatActuatorWindowReductionActiveState(boolean windowReductionActive) {
-        setPropertyValueAsBoolean(STATE_NAME_THERMOSTAT_ACTUATOR_WINDOW_REDUCTION_ACTIVE, windowReductionActive);
+        getState().getWindowReductionActiveState().setValue(windowReductionActive);
     }
 
     public Double getHumiditySensorHumidityState() {
-        return getPropertyValueAsDouble(STATE_NAME_HUMIDITY_SENSOR_HUMIDITY);
+        return getState().getHumidityState().getValue();
     }
 
     public void setHumiditySensorHumidityState(double humidity) {
-        setPropertyValueAsDouble(STATE_NAME_HUMIDITY_SENSOR_HUMIDITY, humidity);
+        getState().getHumidityState().setValue(humidity);
     }
 
     public Boolean getHumiditySensorMoldWarningState() {
-        return getPropertyValueAsBoolean(STATE_NAME_HUMIDITY_SENSOR_MOLD_WARNING);
+        return getState().getMoldWarningState().getValue();
     }
 
     public void setHumiditySensorMoldWarningState(boolean moldWarning) {
-        setPropertyValueAsBoolean(STATE_NAME_HUMIDITY_SENSOR_MOLD_WARNING, moldWarning);
+        getState().getMoldWarningState().setValue(moldWarning);
     }
 
     public Boolean getWindowDoorSensorState() {
-        return getPropertyValueAsBoolean(STATE_NAME_WINDOW_DOOR_SENSOR);
+        return getState().getIsOpenState().getValue();
     }
 
     public void setWindowDoorSensorState(boolean open) {
-        setPropertyValueAsBoolean(STATE_NAME_WINDOW_DOOR_SENSOR, open);
+        getState().getIsOpenState().setValue(open);
     }
 
     public Boolean getSmokeDetectorSensorState() {
-        return getPropertyValueAsBoolean(STATE_NAME_SMOKE_DETECTOR_SENSOR);
+        return getState().getIsSmokeAlarmState().getValue();
     }
 
     public void setSmokeDetectorSensorState(boolean on) {
-        setPropertyValueAsBoolean(STATE_NAME_SMOKE_DETECTOR_SENSOR, on);
+        getState().getIsSmokeAlarmState().setValue(on);
     }
 
     public Boolean getAlarmActuatorState() {
-        return getPropertyValueAsBoolean(STATE_NAME_ALARM_ACTUATOR);
+        return getState().getOnState().getValue();
     }
 
     public void setAlarmActuatorState(boolean on) {
-        setPropertyValueAsBoolean(STATE_NAME_ALARM_ACTUATOR, on);
+        getState().getOnState().setValue(on);
     }
 
-    public Double getMotionDetectionSensorState() {
-        return getPropertyValueAsDouble(STATE_NAME_MOTION_DETECTION_SENSOR);
+    public Integer getMotionDetectionSensorState() {
+        return getState().getMotionDetectedCountState().getValue();
     }
 
-    public void setMotionDetectionSensorState(double numberOfMotions) {
-        setPropertyValueAsDouble(STATE_NAME_MOTION_DETECTION_SENSOR, numberOfMotions);
+    public void setMotionDetectionSensorState(Integer numberOfMotions) {
+        getState().getMotionDetectedCountState().setValue(numberOfMotions);
     }
 
     public Double getLuminanceSensorState() {
-        return getPropertyValueAsDouble(STATE_NAME_LUMINANCE_SENSOR);
+        return getState().getLuminanceState().getValue();
     }
 
     public void setLuminanceSensorState(double luminance) {
-        setPropertyValueAsDouble(STATE_NAME_LUMINANCE_SENSOR, luminance);
+        getState().getLuminanceState().setValue(luminance);
     }
 
-    public Double getPushButtonSensorCounterState() {
-        return getPropertyValueAsDouble(STATE_NAME_PUSH_BUTTON_SENSOR_COUNTER);
+    public Integer getPushButtonSensorCounterState() {
+        return getState().getLastKeyPressCounterState().getValue();
     }
 
-    public void setPushButtonSensorCounterState(double numberOfPresses) {
-        setPropertyValueAsDouble(STATE_NAME_PUSH_BUTTON_SENSOR_COUNTER, numberOfPresses);
+    public void setPushButtonSensorCounterState(Integer numberOfPresses) {
+        getState().getLastKeyPressCounterState().setValue(numberOfPresses);
     }
 
-    public Double getPushButtonSensorButtonIndexState() {
-        return getPropertyValueAsDouble(STATE_NAME_PUSH_BUTTON_SENSOR_BUTTON_INDEX);
+    public Integer getPushButtonSensorButtonIndexState() {
+        return getState().getLastPressedButtonIndex().getValue();
     }
 
-    public void setPushButtonSensorButtonIndexState(double buttonIndex) {
-        setPropertyValueAsDouble(STATE_NAME_PUSH_BUTTON_SENSOR_BUTTON_INDEX, buttonIndex);
+    public void setPushButtonSensorButtonIndexState(Integer buttonIndex) {
+        getState().getLastPressedButtonIndex().setValue(buttonIndex);
     }
 
-    public Double getDimmerActuatorState() {
-        return getPropertyValueAsDouble(STATE_NAME_DIMMER_ACTUATOR);
+    public Integer getDimmerActuatorState() {
+        return getState().getDimLevelState().getValue();
     }
 
-    public void setDimmerActuatorState(double DimLevel) {
-        setPropertyValueAsDouble(STATE_NAME_DIMMER_ACTUATOR, DimLevel);
+    public void setDimmerActuatorState(Integer DimLevel) {
+        getState().getDimLevelState().setValue(DimLevel);
     }
 
-    public Double getRollerShutterActuatorState() {
-        return getPropertyValueAsDouble(STATE_NAME_ROLLERSHUTTER_ACTUATOR);
+    public Integer getRollerShutterActuatorState() {
+        return getState().getShutterLevelState().getValue();
     }
 
-    public void setRollerShutterActuatorState(double rollerShutterLevel) {
-        setPropertyValueAsDouble(STATE_NAME_ROLLERSHUTTER_ACTUATOR, rollerShutterLevel);
+    public void setRollerShutterActuatorState(Integer rollerShutterLevel) {
+        getState().getShutterLevelState().setValue(rollerShutterLevel);
     }
 
     // ENERGY CONSUMPTION SENSOR
     public Double getEnergyConsumptionSensorEnergyConsumptionMonthKWhState() {
-        return getPropertyValueAsDouble(STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_MONTH_KWH);
+        return getState().getEnergyConsumptionMonthKWhState().getValue();
     }
 
     public void setEnergyConsumptionSensorEnergyConsumptionMonthKWhState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_MONTH_KWH, state);
+        getState().getEnergyConsumptionMonthKWhState().setValue(state);
     }
 
     public Double getEnergyConsumptionSensorAbsoluteEnergyConsumptionState() {
-        return getPropertyValueAsDouble(STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ABSOLUTE_ENERGY_CONSUMPTION);
+        return getState().getAbsoluteEnergyConsumptionState().getValue();
     }
 
     public void setEnergyConsumptionSensorAbsoluteEnergyConsumptionState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ABSOLUTE_ENERGY_CONSUMPTION, state);
+        getState().getAbsoluteEnergyConsumptionState().setValue(state);
     }
 
     public Double getEnergyConsumptionSensorEnergyConsumptionMonthEuroState() {
-        return getPropertyValueAsDouble(STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_MONTH_EURO);
+        return getState().getEnergyConsumptionMonthEuroState().getValue();
     }
 
     public void setEnergyConsumptionSensorEnergyConsumptionMonthEuroState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_MONTH_EURO, state);
+        getState().getEnergyConsumptionMonthEuroState().setValue(state);
     }
 
     public Double getEnergyConsumptionSensorEnergyConsumptionDayEuroState() {
-        return getPropertyValueAsDouble(STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_DAY_EURO);
+        return getState().getEnergyConsumptionDayEuroState().getValue();
     }
 
     public void setEnergyConsumptionSensorEnergyConsumptionDayEuroState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_DAY_EURO, state);
+        getState().getEnergyConsumptionDayEuroState().setValue(state);
     }
 
     public Double getEnergyConsumptionSensorEnergyConsumptionDayKWhState() {
-        return getPropertyValueAsDouble(STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_DAY_KWH);
+        return getState().getEnergyConsumptionDayKWhState().getValue();
     }
 
     public void setEnergyConsumptionSensorEnergyConsumptionDayKWhState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_DAY_KWH, state);
+        getState().getEnergyConsumptionDayKWhState().setValue(state);
     }
 
     // POWER CONSUMPTION SENSOR
     public Double getPowerConsumptionSensorPowerConsumptionWattState() {
-        return getPropertyValueAsDouble(STATE_NAME_POWER_CONSUMPTION_SENSOR_POWER_CONSUMPTION_WATT);
+        return getState().getPowerConsumptionWattState().getValue();
     }
 
     public void setPowerConsumptionSensorPowerConsumptionWattState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_POWER_CONSUMPTION_SENSOR_POWER_CONSUMPTION_WATT, state);
+        getState().getPowerConsumptionWattState().setValue(state);
     }
 
     // GENERATION METER ENGERY SENSOR
     public Double getGenerationMeterEnergySensorEnergyPerMonthInKWhState() {
-        return getPropertyValueAsDouble(STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_MONTH_IN_KWH);
+        return getState().getEnergyPerMonthInKWhState().getValue();
     }
 
     public void setGenerationMeterEnergySensorEnergyPerMonthInKWhState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_MONTH_IN_KWH, state);
+        getState().getEnergyPerMonthInKWhState().setValue(state);
     }
 
     public Double getGenerationMeterEnergySensorTotalEnergyState() {
-        return getPropertyValueAsDouble(STATE_NAME_GENERATION_METER_ENERGY_SENSOR_TOTAL_ENERGY);
+        return getState().getTotalEnergyState().getValue();
     }
 
     public void setGenerationMeterEnergySensorTotalEnergyState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_GENERATION_METER_ENERGY_SENSOR_TOTAL_ENERGY, state);
+        getState().getTotalEnergyState().setValue(state);
     }
 
     public Double getGenerationMeterEnergySensorEnergyPerMonthInEuroState() {
-        return getPropertyValueAsDouble(STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_MONTH_IN_EURO);
+        return getState().getEnergyPerMonthInEuroState().getValue();
     }
 
     public void setGenerationMeterEnergySensorEnergyPerMonthInEuroState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_MONTH_IN_EURO, state);
+        getState().getEnergyPerMonthInEuroState().setValue(state);
     }
 
     public Double getGenerationMeterEnergySensorEnergyPerDayInEuroState() {
-        return getPropertyValueAsDouble(STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_DAY_IN_EURO);
+        return getState().getEnergyPerDayInEuroState().getValue();
     }
 
     public void setGenerationMeterEnergySensorEnergyPerDayInEuroState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_DAY_IN_EURO, state);
+        getState().getEnergyPerDayInEuroState().setValue(state);
     }
 
     public Double getGenerationMeterEnergySensorEnergyPerDayInKWhState() {
-        return getPropertyValueAsDouble(STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_DAY_IN_KWH);
+        return getState().getEnergyPerDayInKWhState().getValue();
     }
 
     public void setGenerationMeterEnergySensorEnergyPerDayInKWhState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_DAY_IN_KWH, state);
+        getState().getEnergyPerDayInKWhState().setValue(state);
     }
 
     // GENERATION METER POWER CONSUMPTION SENSOR
     public Double getGenerationMeterPowerConsumptionSensorPowerInWattState() {
-        return getPropertyValueAsDouble(STATE_NAME_GENERATION_METER_POWER_CONSUMPTION_SENSOR_POWER_IN_WATT);
+        return getState().getPowerInWattState().getValue();
     }
 
     public void setGenerationMeterPowerConsumptionSensorPowerInWattState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_GENERATION_METER_POWER_CONSUMPTION_SENSOR_POWER_IN_WATT, state);
+        getState().getPowerInWattState().setValue(state);
     }
 
     // TWO WAY METER ENERGY CONSUMPTION SENSOR
     public Double getTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInKWhState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_MONTH_IN_KWH);
+        return getState().getEnergyPerMonthInKWhState().getValue();
     }
 
     public void setTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInKWhState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_MONTH_IN_KWH, state);
+        getState().getEnergyPerMonthInKWhState().setValue(state);
     }
 
     public Double getTwoWayMeterEnergyConsumptionSensorTotalEnergyState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_TOTAL_ENERGY);
+        return getState().getTotalEnergyState().getValue();
     }
 
     public void setTwoWayMeterEnergyConsumptionSensorTotalEnergyState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_TOTAL_ENERGY, state);
+        getState().getTotalEnergyState().setValue(state);
     }
 
     public Double getTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInEuroState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_MONTH_IN_EURO);
+        return getState().getEnergyPerMonthInEuroState().getValue();
     }
 
     public void setTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInEuroState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_MONTH_IN_EURO, state);
+        getState().getEnergyPerMonthInEuroState().setValue(state);
     }
 
     public Double getTwoWayMeterEnergyConsumptionSensorEnergyPerDayInEuroState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_DAY_IN_EURO);
+        return getState().getEnergyPerDayInEuroState().getValue();
     }
 
     public void setTwoWayMeterEnergyConsumptionSensorEnergyPerDayInEuroState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_DAY_IN_EURO, state);
+        getState().getEnergyPerDayInEuroState().setValue(state);
     }
 
     public Double getTwoWayMeterEnergyConsumptionSensorEnergyPerDayInKWhState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_DAY_IN_KWH);
+        return getState().getEnergyPerDayInKWhState().getValue();
     }
 
     public void setTwoWayMeterEnergyConsumptionSensorEnergyPerDayInKWhState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_DAY_IN_KWH, state);
+        getState().getEnergyPerDayInKWhState().setValue(state);
     }
 
     // TWO WAY METER ENERGY FEED SENSOR
     public Double getTwoWayMeterEnergyFeedSensorEnergyPerMonthInKWhState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_MONTH_IN_KWH);
+        return getState().getEnergyPerMonthInKWhState().getValue();
     }
 
     public void setTwoWayMeterEnergyFeedSensorEnergyPerMonthInKWhState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_MONTH_IN_KWH, state);
+        getState().getEnergyPerMonthInKWhState().setValue(state);
     }
 
     public Double getTwoWayMeterEnergyFeedSensorTotalEnergyState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_TOTAL_ENERGY);
+        return getState().getTotalEnergyState().getValue();
     }
 
     public void setTwoWayMeterEnergyFeedSensorTotalEnergyState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_TOTAL_ENERGY, state);
+        getState().getTotalEnergyState().setValue(state);
     }
 
     public Double getTwoWayMeterEnergyFeedSensorEnergyPerMonthInEuroState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_MONTH_IN_EURO);
+        return getState().getEnergyPerMonthInEuroState().getValue();
     }
 
     public void setTwoWayMeterEnergyFeedSensorEnergyPerMonthInEuroState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_MONTH_IN_EURO, state);
+        getState().getEnergyPerMonthInEuroState().setValue(state);
     }
 
     public Double getTwoWayMeterEnergyFeedSensorEnergyPerDayInEuroState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_DAY_IN_EURO);
+        return getState().getEnergyPerDayInEuroState().getValue();
     }
 
     public void setTwoWayMeterEnergyFeedSensorEnergyPerDayInEuroState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_DAY_IN_EURO, state);
+        getState().getEnergyPerDayInEuroState().setValue(state);
     }
 
     public Double getTwoWayMeterEnergyFeedSensorEnergyPerDayInKWhState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_DAY_IN_KWH);
+        return getState().getEnergyPerDayInKWhState().getValue();
     }
 
     public void setTwoWayMeterEnergyFeedSensorEnergyPerDayInKWhState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_DAY_IN_KWH, state);
+        getState().getEnergyPerDayInKWhState().setValue(state);
     }
 
     // TWO WAY METER POWER CONSUMPTION SENSOR
     public Double getTwoWayMeterPowerConsumptionSensorPowerInWattState() {
-        return getPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_POWER_CONSUMPTION_SENSOR_POWER_IN_WATT);
+        return getState().getPowerInWattState().getValue();
     }
 
     public void setTwoWayMeterPowerConsumptionSensorPowerInWattState(double state) {
-        setPropertyValueAsDouble(STATE_NAME_TWO_WAY_METER_POWER_CONSUMPTION_SENSOR_POWER_IN_WATT, state);
+        getState().getPowerInWattState().setValue(state);
     }
 
 }

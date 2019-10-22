@@ -95,7 +95,7 @@ public class InnogyDeviceDiscoveryService extends AbstractDiscoveryService {
 
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
 
-            String name = device.getName();
+            String name = device.getConfig().getName();
             if (name.isEmpty()) {
                 name = device.getSerialnumber();
             }
@@ -116,7 +116,7 @@ public class InnogyDeviceDiscoveryService extends AbstractDiscoveryService {
             thingDiscovered(discoveryResult);
         } else {
             logger.debug("Discovered unsupported device of type '{}' and name '{}' with id {}", device.getType(),
-                    device.getName(), device.getId());
+                    device.getConfig().getName(), device.getId());
         }
     }
 

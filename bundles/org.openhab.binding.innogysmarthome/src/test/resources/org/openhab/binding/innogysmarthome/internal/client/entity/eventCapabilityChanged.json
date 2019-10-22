@@ -1,0 +1,11 @@
+{
+	"sequenceNumber": -1,
+	"type": "StateChanged",
+	"desc": "/desc/event/StateChanged",
+	"namespace": "core.RWE",
+	"timestamp": "2019-03-10T17:34:56.2400000Z",
+	"source": "/capability/3f268584b95c40df93b67d6c64957846",
+	"properties": {
+		"onState": true
+	}
+}

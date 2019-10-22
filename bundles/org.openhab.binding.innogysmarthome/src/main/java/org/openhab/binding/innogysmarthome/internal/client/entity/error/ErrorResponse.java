@@ -60,6 +60,7 @@ public class ErrorResponse {
 
     // Products
     public static final int ERR_PREMIUM_SERVICE_CANNOT_BE_ENABLED_DIRECTLY = 3500;
+    public static final int ERR_CANNOT_REMOVE_A_PRODUCT_THAT_WAS_PAID = 3501;
 
     // Actions
     public static final int ERR_INVALID_ACTION_TRIGGERED = 4000;
@@ -75,6 +76,12 @@ public class ErrorResponse {
     public static final int ERR_ONE_SHC_ALREADY_REGISTERED = 5004;
     public static final int ERR_USER_HAS_NO_REGISTERED_SHC = 5005;
     public static final int ERR_CONTROLLER_OFFLINE = 5006;
+    public static final int ERR_REGISTRATION_FAILURE = 5009;
+
+    // Smart codes
+    public static final int ERR_SMARTCODE_REQUEST_NOT_ALLOWED = 6000;
+    public static final int ERR_SMARTCODE_CANNOT_BE_REDEEMED = 6001;
+    public static final int ERR_RESTRICTED_ACCESS = 6002;
 
     @SerializedName("errorcode")
     private int code;

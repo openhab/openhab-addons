@@ -21,11 +21,10 @@ import java.util.Map;
 
 import org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
-import org.openhab.binding.innogysmarthome.internal.client.entity.Message;
-import org.openhab.binding.innogysmarthome.internal.client.entity.Property;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
-import org.openhab.binding.innogysmarthome.internal.client.entity.link.CapabilityLink;
+import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
+import org.openhab.binding.innogysmarthome.internal.client.entity.message.Message;
 import org.openhab.binding.innogysmarthome.internal.client.exception.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,7 @@ public class DeviceStructureManager {
 
     private final InnogyClient client;
     private final Map<String, Device> deviceMap;
-    private final Map<String, Device> capabilityToDeviceMap;
+    private final Map<String, Device> capabilityIdToDeviceMap;
     private String bridgeDeviceId;
 
     /**
@@ -54,7 +53,7 @@ public class DeviceStructureManager {
     public DeviceStructureManager(InnogyClient client) {
         this.client = client;
         deviceMap = Collections.synchronizedMap(new HashMap<>());
-        capabilityToDeviceMap = Collections.synchronizedMap(new HashMap<>());
+        capabilityIdToDeviceMap = Collections.synchronizedMap(new HashMap<>());
     }
 
     /**
@@ -101,6 +100,7 @@ public class DeviceStructureManager {
      * @throws ApiException
      */
     public void refreshDevice(String deviceId) throws IOException, ApiException {
+        logger.trace("Refreshing Device with id '{}'", deviceId);
         Device d = client.getFullDeviceById(deviceId);
         handleRefreshedDevice(d);
     }
@@ -115,7 +115,7 @@ public class DeviceStructureManager {
         if (InnogyBindingConstants.SUPPORTED_DEVICES.contains(d.getType())) {
             addDeviceToStructure(d);
         } else {
-            logger.debug("Device {}:'{}' by {} ({}) ignored - UNSUPPORTED.", d.getType(), d.getName(),
+            logger.debug("Device {}:'{}' by {} ({}) ignored - UNSUPPORTED.", d.getType(), d.getConfig().getName(),
                     d.getManufacturer(), d.getId());
             logger.debug("====================================");
             return;
@@ -127,18 +127,18 @@ public class DeviceStructureManager {
 
         if (logger.isDebugEnabled()) {
             try {
-                logger.debug("Device {}:'{}' by {} ({}) loaded.", d.getType(), d.getName(), d.getManufacturer(),
-                        d.getId());
+                logger.debug("Device {}:'{}@{}' by {} ({}) loaded.", d.getType(), d.getConfig().getName(),
+                        d.getLocation() != null ? d.getLocation().getName() : "<none>", d.getManufacturer(), d.getId());
                 for (Capability c : d.getCapabilityMap().values()) {
                     logger.debug("> CAP: {}/{} ({})", c.getType(), c.getName(), c.getId());
                     if (d.isRadioDevice() && !d.isReachable()) {
                         logger.debug(">> CAP-State: unknown (device NOT REACHABLE).");
                     } else {
-                        if (c.getCapabilityState() != null) {
-                            for (Property p : c.getCapabilityState().getStateMap().values()) {
-                                logger.debug(">> CAP-State: {} -> {} ({})", p.getName(), p.getValue(),
-                                        p.getLastchanged());
-                            }
+                        if (c.hasState()) {
+                            org.openhab.binding.innogysmarthome.internal.client.entity.capability.State state = c
+                                    .getCapabilityState().getState();
+                            logger.debug(">> CAP-State: {} -> {} ({})", state.getName(), state.getValue(),
+                                    state.getLastChanged());
                         } else {
                             logger.debug(">> CAP-State: unknown (NULL)");
                         }
@@ -161,8 +161,8 @@ public class DeviceStructureManager {
             getDeviceMap().put(device.getId(), device);
         }
 
-        for (CapabilityLink cl : device.getCapabilityLinkList()) {
-            capabilityToDeviceMap.put(cl.getValue(), device);
+        for (String cl : device.getCapabilityLinkList()) {
+            capabilityIdToDeviceMap.put(Link.getId(cl), device);
         }
     }
 
@@ -180,11 +180,11 @@ public class DeviceStructureManager {
     /**
      * Returns the {@link Device}, that provides the given capability.
      *
-     * @param capabilityLink
+     * @param capabilityId
      * @return {@link Device} or null
      */
-    public Device getDeviceByCapabilityLink(String capabilityLink) {
-        return capabilityToDeviceMap.get(capabilityLink);
+    public Device getDeviceByCapabilityId(String capabilityId) {
+        return capabilityIdToDeviceMap.get(capabilityId);
     }
 
     /**
@@ -212,6 +212,7 @@ public class DeviceStructureManager {
      * @return the {@link Device} or null if none found
      */
     public Device getDeviceWithMessageId(String messageId) {
+        logger.trace("Getting Device with MessageId '{}'", messageId);
         for (Device d : getDeviceMap().values()) {
             if (d.hasMessages()) {
                 for (Message m : d.getMessageList()) {

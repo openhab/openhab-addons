@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.innogysmarthome.internal;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link InnogyBindingConstants} class defines common constants, which are
@@ -33,21 +32,11 @@ public class InnogyBindingConstants {
 
     // brands and client ids
     public static final String BRAND_INNOGY_SMARTHOME = "innogy_smarthome";
-    public static final String BRAND_SMARTHOME_AUSTRIA = "smarthome_austria";
-    public static final String BRAND_START_SMARTHOME = "start_smarthome";
     public static final String DEFAULT_BRAND = BRAND_INNOGY_SMARTHOME;
 
     public static final String CLIENT_ID_INNOGY_SMARTHOME = "24635748";
-    public static final String CLIENT_ID_SMARTHOME_AUSTRIA = "24635749";
-    public static final String CLIENT_ID_START_SMARTHOME = "24635750";
-
     public static final String CLIENT_SECRET_INNOGY_SMARTHOME = "no secret";
-    public static final String CLIENT_SECRET_SMARTHOME_AUSTRIA = "no secret";
-    public static final String CLIENT_SECRET_START_SMARTHOME = "no secret";
-
     public static final String REDIRECT_URL_INNOGY_SMARTHOME = "https://www.openhab.org/oauth/innogy/innogy-smarthome.html";
-    public static final String REDIRECT_URL_SMARTHOME_AUSTRIA = "https://www.openhab.org/oauth/innogy/smarthome-austria.html";
-    public static final String REDIRECT_URL_START_SMARTHOME = "https://www.openhab.org/oauth/innogy/start-smarthome.html";
 
     // Bridge config parameters
     public static final String CONFIG_BRAND = "brand";
@@ -61,7 +50,7 @@ public class InnogyBindingConstants {
     public static final long REINITIALIZE_DELAY_LONG_SECONDS = 120;
 
     // API URLs
-    public static final String API_VERSION = "1.0";
+    public static final String API_VERSION = "1.1";
     public static final String WEBSOCKET_API_URL_EVENTS = "wss://api.services-smarthome.de/API/" + API_VERSION
             + "/events?token={token}";
 
@@ -69,6 +58,7 @@ public class InnogyBindingConstants {
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_VERSION = "Version";
     public static final String PROPERTY_LOCATION = "Location";
+    public static final String PROPERTY_GEOLOCATION = "Geo Location";
     public static final String PROPERTY_SOFTWARE_VERSION = "Software version";
     public static final String PROPERTY_IP_ADDRESS = "IP address";
     public static final String PROPERTY_REGISTRATION_TIME = "Registration Time";
@@ -76,9 +66,21 @@ public class InnogyBindingConstants {
     public static final String PROPERTY_TIME_OF_DISCOVERY = "Time of discovery";
     public static final String PROPERTY_BATTERY_POWERED = "Battery powered";
     public static final String PROPERTY_DEVICE_TYPE = "Device Type";
+    public static final String PROPERTY_CONFIGURATION_STATE = "Configuration state";
+    public static final String PROPERTY_SHC_TYPE = "Controller Type";
+    public static final String PROPERTY_TIME_ZONE = "Time Zone";
+    public static final String PROPERTY_CURRENT_UTC_OFFSET = "Current UTC offset (minutes)";
+    public static final String PROPERTY_PROTOCOL_ID = "Protocol ID";
+    public static final String PROPERTY_BACKEND_CONNECTION_MONITORED = "Backend connection monitored";
+    public static final String PROPERTY_RFCOM_FAILURE_NOTIFICATION = "RFComm failure notification";
+    public static final String PROPERTY_DISPLAY_CURRENT_TEMPERATURE = "Display current temperature";
+    public static final String PROPERTY_UNDERLYING_DEVICE_IDS = "Underlying device IDs (thermostats)";
+    public static final String PROPERTY_METER_ID = "Meter ID";
+    public static final String PROPERTY_METER_FIRMWARE_VERSION = "Meter firmware version";
 
     // List of main device types
     public static final String DEVICE_SHC = "SHC"; // smarthome controller - the bridge
+    public static final String DEVICE_SHCA = "SHCA"; // smarthome controller version 2
     public static final String DEVICE_PSS = "PSS"; // pluggable smart switch
     public static final String DEVICE_PSSO = "PSSO"; // pluggable smart switch outdoor
     public static final String DEVICE_VARIABLE_ACTUATOR = "VariableActuator";
@@ -102,13 +104,10 @@ public class InnogyBindingConstants {
     public static final String DEVICE_SMART_METER = "SmartMeter";
     public static final String DEVICE_TWO_WAY_METER = "TwoWayMeter";
 
-    public static final Set<String> SUPPORTED_DEVICES = Collections
-            .unmodifiableSet(Stream
-                    .of(DEVICE_SHC, DEVICE_PSS, DEVICE_PSSO, DEVICE_VARIABLE_ACTUATOR, DEVICE_RST, DEVICE_RST2,
-                            DEVICE_WRT, DEVICE_WDS, DEVICE_ISS2, DEVICE_WSD, DEVICE_WSD2, DEVICE_WMD, DEVICE_WMDO,
-                            DEVICE_WSC2, DEVICE_BRC8, DEVICE_ISC2, DEVICE_ISD2, DEVICE_ISR2, DEVICE_PSD,
-                            DEVICE_ANALOG_METER, DEVICE_GENERATION_METER, DEVICE_SMART_METER, DEVICE_TWO_WAY_METER)
-                    .collect(Collectors.toSet()));
+    public static final Set<String> SUPPORTED_DEVICES = ImmutableSet.of(DEVICE_SHC, DEVICE_SHCA, DEVICE_PSS, DEVICE_PSSO,
+            DEVICE_VARIABLE_ACTUATOR, DEVICE_RST, DEVICE_RST2, DEVICE_WRT, DEVICE_WDS, DEVICE_ISS2, DEVICE_WSD,
+            DEVICE_WSD2, DEVICE_WMD, DEVICE_WMDO, DEVICE_WSC2, DEVICE_BRC8, DEVICE_ISC2, DEVICE_ISD2, DEVICE_ISR2,
+            DEVICE_PSD, DEVICE_ANALOG_METER, DEVICE_GENERATION_METER, DEVICE_SMART_METER, DEVICE_TWO_WAY_METER);
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
@@ -137,14 +136,11 @@ public class InnogyBindingConstants {
     public static final ThingTypeUID THING_TYPE_SMART_METER = new ThingTypeUID(BINDING_ID, DEVICE_SMART_METER);
     public static final ThingTypeUID THING_TYPE_TWO_WAY_METER = new ThingTypeUID(BINDING_ID, DEVICE_TWO_WAY_METER);
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES = Collections
-            .unmodifiableSet(Stream
-                    .of(THING_TYPE_PSS, THING_TYPE_PSSO, THING_TYPE_VARIABLE_ACTUATOR, THING_TYPE_RST, THING_TYPE_RST2,
-                            THING_TYPE_WRT, THING_TYPE_WDS, THING_TYPE_ISS2, THING_TYPE_WSD, THING_TYPE_WSD2,
-                            THING_TYPE_WMD, THING_TYPE_WMDO, THING_TYPE_WSC2, THING_TYPE_BRC8, THING_TYPE_ISC2,
-                            THING_TYPE_ISD2, THING_TYPE_ISR2, THING_TYPE_PSD, THING_TYPE_ANALOG_METER,
-                            THING_TYPE_GENERATION_METER, THING_TYPE_SMART_METER, THING_TYPE_TWO_WAY_METER)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES = ImmutableSet.of(THING_TYPE_PSS,
+            THING_TYPE_PSSO, THING_TYPE_VARIABLE_ACTUATOR, THING_TYPE_RST, THING_TYPE_RST2, THING_TYPE_WRT,
+            THING_TYPE_WDS, THING_TYPE_ISS2, THING_TYPE_WSD, THING_TYPE_WSD2, THING_TYPE_WMD, THING_TYPE_WMDO,
+            THING_TYPE_WSC2, THING_TYPE_BRC8, THING_TYPE_ISC2, THING_TYPE_ISD2, THING_TYPE_ISR2, THING_TYPE_PSD,
+            THING_TYPE_ANALOG_METER, THING_TYPE_GENERATION_METER, THING_TYPE_SMART_METER, THING_TYPE_TWO_WAY_METER);
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
@@ -202,5 +198,7 @@ public class InnogyBindingConstants {
     public static final String CHANNEL_ENERGY_FEED_DAY_EURO = "energy_feed_day_euro";
     public static final String CHANNEL_ENERGY_FEED_DAY_KWH = "energy_feed_day_kwh";
     public static final String CHANNEL_POWER_WATT = "power_watt";
-
+    public static final String CHANNEL_CPU = "cpu";
+    public static final String CHANNEL_DISK = "disk";
+    public static final String CHANNEL_MEMORY = "memory";
 }

@@ -12,12 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.capability;
 
-import java.util.List;
-
-import org.openhab.binding.innogysmarthome.internal.client.entity.ConfigPropertyList;
-import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
-import org.openhab.binding.innogysmarthome.internal.client.entity.state.CapabilityState;
-
 import com.google.api.client.util.Key;
 
 /**
@@ -26,10 +20,7 @@ import com.google.api.client.util.Key;
  *
  * @author Oliver Kuhl - Initial contribution
  */
-public class Capability extends ConfigPropertyList {
-
-    private static final String CONFIG_PROPERTY_ACTIVITY_LOG_ACTIVE = "ActivityLogActive";
-    private static final String CONFIG_PROPERTY_PUSH_BUTTONS = "PushButtons";
+public class Capability {
 
     /** capability types */
     public static final String TYPE_SWITCHACTUATOR = "SwitchActuator";
@@ -66,19 +57,16 @@ public class Capability extends ConfigPropertyList {
     private String type;
 
     /**
-     * Link to the metadata of that specific capability. The link should be complete and can be followed without further
-     * additions. In the instance of a capability, the Link will point to the actual instance of the underlying device.
-     *
-     * Optional.
+     * Contains the link to the parent device, which offers the capability.
      */
-    @Key("desc")
-    private String desc;
+    @Key("device")
+    private String device;
 
     /**
-     * Contain the link to the parent device, which offers the capability.
+     * This represents a container of all configuration properties.
      */
-    @Key("Device")
-    private List<Link> deviceLink;
+    @Key("config")
+    private CapabilityConfig config;
 
     private CapabilityState capabilityState;
 
@@ -111,31 +99,31 @@ public class Capability extends ConfigPropertyList {
     }
 
     /**
-     * @return the desc
-     */
-    public String getDesc() {
-        return desc;
-    }
-
-    /**
-     * @param desc the desc to set
-     */
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    /**
      * @return
      */
-    public List<Link> getDeviceLink() {
-        return deviceLink;
+    public String getDeviceLink() {
+        return device;
     }
 
     /**
      * @param deviceLink
      */
-    public void setDeviceLink(List<Link> deviceLink) {
-        this.deviceLink = deviceLink;
+    public void setDeviceLink(String deviceLink) {
+        this.device = deviceLink;
+    }
+
+    /**
+     * @return the config
+     */
+    public CapabilityConfig getConfig() {
+        return config;
+    }
+
+    /**
+     * @param config the config to set
+     */
+    public void setConfig(CapabilityConfig config) {
+        this.config = config;
     }
 
     /**
@@ -161,7 +149,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean hasState() {
-        return capabilityState != null;
+        return (capabilityState != null) && (capabilityState.getState() != null);
     }
 
     /**
@@ -169,9 +157,8 @@ public class Capability extends ConfigPropertyList {
      *
      * @return
      */
-    @Override
     public String getName() {
-        return getPropertyValueAsString(CONFIG_PROPERTY_NAME);
+        return getConfig().getName();
     }
 
     /**
@@ -180,7 +167,7 @@ public class Capability extends ConfigPropertyList {
      * @return boolean or null, if the {@link Capability} does not have this property.
      */
     public boolean getActivityLogActive() {
-        return getPropertyValueAsBoolean(CONFIG_PROPERTY_ACTIVITY_LOG_ACTIVE);
+        return getConfig().getActivityLogActive();
     }
 
     /**
@@ -189,7 +176,7 @@ public class Capability extends ConfigPropertyList {
      * @return int or null, if the {@link Capability} does not have this property.
      */
     public int getPushButtons() {
-        return getPropertyValueAsInteger(CONFIG_PROPERTY_PUSH_BUTTONS);
+        return getConfig().getPushButtons();
     }
 
     /**

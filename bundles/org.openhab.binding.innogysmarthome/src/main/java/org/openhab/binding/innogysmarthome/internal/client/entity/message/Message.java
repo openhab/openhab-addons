@@ -10,13 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.innogysmarthome.internal.client.entity;
+package org.openhab.binding.innogysmarthome.internal.client.entity.message;
 
 import java.util.List;
 
-import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
-
 import com.google.api.client.util.Key;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Defines the structure of a {@link Message}. Messages are part of the innogy system and besides other things are used
@@ -89,18 +88,16 @@ public class Message {
     private String type;
 
     /**
+     * Defines whether the message has been viewed by a user.
+     */
+    @Key("read")
+    private boolean isRead;
+
+    /**
      * Defines whether it is an alert or a message, default is message.
      */
     @Key("class")
     private String messageClass;
-
-    /**
-     * Reference to the description of the message.
-     *
-     * Optional.
-     */
-    @Key("desc")
-    private String desc;
 
     /**
      * Timestamp when the message was created.
@@ -111,48 +108,37 @@ public class Message {
     private String timestamp;
 
     /**
-     * Defines whether the message has been viewed by a user.
-     */
-    @Key("read")
-    private boolean isRead;
-
-    /**
-     * Reference to the underlying product, which the message relates to.
-     */
-    @Key("Product")
-    private Link productLink;
-
-    /**
      * Reference to the underlying devices, which the message relates to.
      *
      * Optional.
      */
-    @Key("Devices")
-    private List<Link> deviceLinkList;
+    @Key("devices")
+    @SerializedName("devices")
+    private List<String> deviceLinkList;
 
     /**
      * Reference to the underlying capabilities, which the message relates to.
      *
      * Optional.
+     *
+     * TODO: unclear how the structure looks. May be like {@link Message#properties}
      */
-    @Key("Capabilities")
-    private List<Link> capabilityLinkList;
+    // @Key("capabilities")
+    // private List<Link> capabilityLinkList;
 
     /**
      * Container for all parameters of the message. The parameters are contained in Property entities.
      *
      * Optional.
      */
-    @Key("Data")
-    private List<Property> dataPropertyList;
+    @Key("properties")
+    private MessageProperties properties;
 
     /**
-     * Container for tagging the message, e.g. if the message should only be visible to certain roles.
-     *
-     * Optional.
+     * The product (context) that generated the message.
      */
-    @Key("Tags")
-    private List<Property> tagsPropertyList;
+    @Key("namespace")
+    private String namespace;
 
     /**
      * @return the id
@@ -197,20 +183,6 @@ public class Message {
     }
 
     /**
-     * @return the desc
-     */
-    public String getDesc() {
-        return desc;
-    }
-
-    /**
-     * @param desc the desc to set
-     */
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    /**
      * @return the timestamp
      */
     public String getTimestamp() {
@@ -239,72 +211,62 @@ public class Message {
     }
 
     /**
-     * @return the productLink
-     */
-    public Link getProductLink() {
-        return productLink;
-    }
-
-    /**
-     * @param productLink the productLink to set
-     */
-    public void setProductLink(Link productLink) {
-        this.productLink = productLink;
-    }
-
-    /**
      * @return the deviceLinkList
      */
-    public List<Link> getDeviceLinkList() {
+    public List<String> getDeviceLinkList() {
         return deviceLinkList;
     }
 
     /**
      * @param deviceLinkList the deviceLinkList to set
      */
-    public void setDeviceLinkList(List<Link> deviceLinkList) {
+    public void setDeviceLinkList(List<String> deviceLinkList) {
         this.deviceLinkList = deviceLinkList;
-    }
-
-    /**
-     * @return the capabilityLinkList
-     */
-    public List<Link> getCapabilityLinkList() {
-        return capabilityLinkList;
-    }
-
-    /**
-     * @param capabilityLinkList the capabilityLinkList to set
-     */
-    public void setCapabilityLinkList(List<Link> capabilityLinkList) {
-        this.capabilityLinkList = capabilityLinkList;
     }
 
     /**
      * @return the dataPropertyList
      */
-    public List<Property> getDataPropertyList() {
-        return dataPropertyList;
+    public MessageProperties getProperties() {
+        return properties;
     }
 
     /**
      * @param dataPropertyList the dataPropertyList to set
      */
-    public void setDataPropertyList(List<Property> dataPropertyList) {
-        this.dataPropertyList = dataPropertyList;
+    public void setProperties(MessageProperties properties) {
+        this.properties = properties;
     }
 
     /**
-     * @return the tagsPropertyList
+     * @return the namespace
      */
-    public List<Property> getTagsPropertyList() {
-        return tagsPropertyList;
+    public String getNamespace() {
+        return namespace;
     }
 
     /**
-     * @param tagsPropertyList the tagsPropertyList to set
+     * @param namespace the namespace to set
      */
-    public void setTagsPropertyList(List<Property> tagsPropertyList) {
-        this.tagsPropertyList = tagsPropertyList;
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    /**
+     * Returns true, if the message is of type "DeviceUnreachable".
+     *
+     * @return
+     */
+    public boolean isTypeDeviceUnreachable() {
+        return TYPE_DEVICE_UNREACHABLE.equals(type);
+    }
+
+    /**
+     * Returns true, if the message is of type "DeviceLowBattery".
+     * 
+     * @return
+     */
+    public boolean isTypeDeviceLowBattery() {
+        return TYPE_DEVICE_LOW_BATTERY.equals(type);
     }
 }

@@ -313,4 +313,31 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<!-- CPUUsage -->
+	<channel-type id="CPUUsage">
+		<item-type>Number</item-type>
+		<label>CPU usage</label>
+		<description>The CPU usage of SHC-A, updated every 5 minutes</description>
+		<category>System</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- DiskUsage -->
+	<channel-type id="DiskUsage">
+		<item-type>Number</item-type>
+		<label>Disk usage</label>
+		<description>The disk usage of SHC-A, updated every 5 minutes</description>
+		<category>System</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- MemoryUsage -->
+	<channel-type id="MemoryUsage">
+		<item-type>Number</item-type>
+		<label>Memory usage</label>
+		<description>The memory usage of SHC-A, updated every 5 minutes</description>
+		<category>System</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>

@@ -10,24 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.innogysmarthome.internal.client.entity;
-
-import java.util.List;
-
-import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
+package org.openhab.binding.innogysmarthome.internal.client.entity.state;
 
 import com.google.api.client.util.Key;
 
 /**
- * Special data structure, which is returned on session initialization by the innogy API.
- *
  * @author Oliver Kuhl - Initial contribution
+ *
  */
-public class SHCInfo {
+public class DoubleState extends BaseState {
+    @Key("value")
+    private Double value;
 
-    @Key("CurrentConfigurationVersion")
-    public long currentConfigurationVersion;
+    /**
+     * @return the value
+     */
+    public Double getValue() {
+        return value;
+    }
 
-    @Key("Data")
-    public List<Device> deviceList;
+    /**
+     * @param value the value to set
+     */
+    public void setValue(Double value) {
+        this.value = value;
+    }
+
 }

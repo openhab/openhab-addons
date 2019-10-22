@@ -15,26 +15,24 @@ package org.openhab.binding.innogysmarthome.internal.client.entity.state;
 import com.google.api.client.util.Key;
 
 /**
- * The general structure of the state of an entity.
- *
  * @author Oliver Kuhl - Initial contribution
+ *
  */
-public class EntityState extends StatePropertyList {
-
-    @Key("Id")
-    private String id;
+public class BooleanState extends BaseState {
+    @Key("value")
+    private Boolean value;
 
     /**
-     * @return the id
+     * @return the value
      */
-    public String getId() {
-        return id;
+    public Boolean getValue() {
+        return value;
     }
 
     /**
-     * @param id the id to set
+     * @param value the value to set
      */
-    public void setId(String id) {
-        this.id = id;
+    public void setValue(Boolean value) {
+        this.value = value;
     }
 }

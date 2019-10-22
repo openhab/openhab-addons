@@ -45,12 +45,13 @@ public class InnogyWebSocket {
     private WebSocketClient client;
     private final URI webSocketURI;
     private final int maxIdleTimeout;
+    private boolean closing = false;
 
     /**
      * Constructs the {@link InnogyWebSocket}.
      *
-     * @param bridgeHandler the responsible {@link InnogyBridgeHandler}
-     * @param webSocketURI the {@link URI} of the websocket endpoint
+     * @param bridgeHandler  the responsible {@link InnogyBridgeHandler}
+     * @param webSocketURI   the {@link URI} of the websocket endpoint
      * @param maxIdleTimeout
      */
     public InnogyWebSocket(InnogyBridgeHandler bridgeHandler, URI webSocketURI, int maxIdleTimeout) {
@@ -87,6 +88,7 @@ public class InnogyWebSocket {
      * Stops the {@link InnogyWebSocket}.
      */
     public synchronized void stop() {
+        this.closing = true;
         if (isRunning()) {
             logger.debug("Closing session...");
             session.close();
@@ -108,6 +110,7 @@ public class InnogyWebSocket {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
+        this.closing = false;
         logger.info("Connected to innogy Webservice.");
         logger.trace("innogy Websocket session: {}", session);
     }
@@ -145,6 +148,10 @@ public class InnogyWebSocket {
     @OnWebSocketMessage
     public void onMessage(String msg) {
         logger.debug("innogy WebSocket onMessage() - {}", msg);
-        eventListener.onEvent(msg);
+        if (!this.closing) {
+            eventListener.onEvent(msg);
+        } else {
+            logger.debug("innogy WebSocket onMessage() - ignored, WebSocket is closing...");
+        }
     }
 }
