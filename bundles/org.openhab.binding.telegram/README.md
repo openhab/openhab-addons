@@ -38,6 +38,7 @@ The Telegram binding supports the following things which origin from the latest 
 * message date
 * full name of sender (first name + last name)
 * username of sender
+* chat id (used to identify the chat of the last message)
 * reply id (used to identify an answer from a user of a previously sent message by the binding)
 
 Please note that the things cannot be used to send messages. In order to send a message, an action must be used instead.
