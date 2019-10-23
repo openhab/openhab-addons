@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -135,7 +136,8 @@ public class TelegramHandler extends BaseThingHandler {
             }
         }
 
-        OkHttpClient client = new OkHttpClient();
+        client = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS).readTimeout(75, TimeUnit.SECONDS)
+                .build();
         updateStatus(ThingStatus.ONLINE);
         TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(client).build();
         localBot.setUpdatesListener(new UpdatesListener() {
@@ -201,11 +203,14 @@ public class TelegramHandler extends BaseThingHandler {
     public void dispose() {
         LOGGER.debug("Trying to dispose Telegram client");
         OkHttpClient localClient = client;
-        if (localClient != null) {
+        TelegramBot localBot = bot;
+        if (localClient != null && localBot != null) {
+            localBot.removeGetUpdatesListener();
             localClient.dispatcher().executorService().shutdown();
             localClient.connectionPool().evictAll();
             LOGGER.debug("Telegram client closed");
         }
+        super.dispose();
     }
 
     public void updateChannel(String channelName, String stateString) {
