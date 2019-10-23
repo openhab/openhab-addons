@@ -89,6 +89,7 @@ public enum MiIoDevices {
     TOOTHBRUSH("soocare.toothbrush.x3", "Mi Toothbrush", THING_TYPE_UNSUPPORTED),
     VACUUM("rockrobo.vacuum.v1", "Mi Robot Vacuum", THING_TYPE_VACUUM),
     VACUUM2("roborock.vacuum.s5", "Mi Robot Vacuum v2", THING_TYPE_VACUUM),
+    VACUUM1S("roborock.vacuum.m1s", "Mi Robot Vacuum 1S", THING_TYPE_VACUUM),
     VACUUMS6("roborock.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
     VACUUMSS6("rockrobo.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
     VACUUME2("roborock.vacuum.e2", "Rockrobo Xiaowa Vacuum v2", THING_TYPE_UNSUPPORTED),
