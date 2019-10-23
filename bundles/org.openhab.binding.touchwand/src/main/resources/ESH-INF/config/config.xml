@@ -38,6 +38,11 @@
 			<default>8080</default>
 			<advanced>true</advanced>
 		</parameter>
-	
-	</config-description>		
+		<parameter name="refresh" type="integer">
+			<required>false</required>
+			<default>5</default>
+			<description>unit status refresh interval (seconds)</description>
+			<label>Refresh</label></parameter>
+
+		</config-description>		
 </config-description:config-descriptions>

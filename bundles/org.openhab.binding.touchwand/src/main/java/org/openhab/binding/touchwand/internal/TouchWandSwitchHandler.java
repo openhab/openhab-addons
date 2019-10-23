@@ -59,6 +59,9 @@ public class TouchWandSwitchHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TouchWandSwitchHandler.class);
 
+    private final static int STATUS_RERESH_RATE = 5;
+    private final static int INITIAL_UPDATE_TIME = 10;
+
     private @Nullable ScheduledFuture<?> pollingJob;
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_SWITCH));
@@ -123,7 +126,8 @@ public class TouchWandSwitchHandler extends BaseThingHandler {
             thingReachable = !(response == null);
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                pollingJob = scheduler.scheduleWithFixedDelay(runnable, 10, 5, TimeUnit.SECONDS);
+                pollingJob = scheduler.scheduleWithFixedDelay(runnable, INITIAL_UPDATE_TIME, STATUS_RERESH_RATE,
+                        TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
@@ -152,7 +156,7 @@ public class TouchWandSwitchHandler extends BaseThingHandler {
 
         } catch (JsonSyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            logger.warn("Could not parse cmdGetUnitById response");
+            logger.warn("Could not parse cmdGetUnitById response {}", getThing().getLabel());
         }
 
         return state;

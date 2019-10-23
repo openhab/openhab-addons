@@ -51,7 +51,8 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
 
     private Configuration config;
     private String host;
-    private String port; // not used at the moment
+    private String port;
+
     public TouchWandRestClient touchWandClient = new TouchWandRestClient();
 
     @Override
@@ -62,8 +63,8 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
         config = getThing().getConfiguration();
 
         try {
-
-            InetAddress addr = InetAddress.getByName(config.get(HOST).toString());
+            @SuppressWarnings("unused")
+            InetAddress addr = InetAddress.getByName(config.get(HOST).toString()); // validate IP address
             host = config.get(HOST).toString();
             port = config.get(PORT).toString();
         } catch (UnknownHostException e) {

@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TouchWandRestClient} is responsible for handling low level commands units Touchwand hub
+ * The {@link TouchWandRestClient} is responsible for handling low level commands units Touchwand WonderFull hub
  * REST API interface
  *
  * @author Roie Geron - Initial contribution

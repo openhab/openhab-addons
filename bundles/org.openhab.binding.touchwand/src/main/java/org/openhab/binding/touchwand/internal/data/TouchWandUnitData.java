@@ -44,4 +44,56 @@ public class TouchWandUnitData {
         return name;
     }
 
+    public String getConnectivity() {
+        return connectivity;
+    }
+
+    public int getIdData() {
+        return idData;
+    }
+
+    public void setIdData(int idData) {
+        this.idData = idData;
+    }
+
+    public int getEpId() {
+        return epId;
+    }
+
+    public void setEpId(int epId) {
+        this.epId = epId;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getCurrStatus() {
+        return currStatus;
+    }
+
+    public void setCurrStatus(String currStatus) {
+        this.currStatus = currStatus;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
 }

@@ -44,6 +44,7 @@ public class TouchWandBindingConstants {
     public static final String PORT = "port";
     public static final String USER = "username";
     public static final String PASS = "password";
+    public static final String REFRESH = "refresh";
 
     public static final String SWITCH_STATUS_ON = "255";
     public static final String SWITCH_STATUS_OFF = "0";
@@ -52,9 +53,9 @@ public class TouchWandBindingConstants {
 
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SWITCH);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHUTTER);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WALLCONTROLLER);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SCENARIO);
+        // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHUTTER); // not implemented yet
+        // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WALLCONTROLLER); // not implemented yet
+        // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SCENARIO); // not implemented yet
     }
 
 }
