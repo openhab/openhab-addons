@@ -15,7 +15,6 @@ package org.openhab.binding.melcloud.internal.api.json;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link DeviceProps} is responsible of JSON data For MELCloud API
@@ -27,119 +26,90 @@ import com.google.gson.annotations.SerializedName;
  */
 public class DeviceStatus {
 
-    @SerializedName("EffectiveFlags")
     @Expose
     private Integer effectiveFlags;
 
-    @SerializedName("LocalIPAddress")
     @Expose(serialize = false, deserialize = true)
     private Object localIPAddress;
 
-    @SerializedName("RoomTemperature")
     @Expose(serialize = false, deserialize = true)
     private Double roomTemperature;
 
-    @SerializedName("SetTemperature")
     @Expose
     private Double setTemperature;
 
-    @SerializedName("SetFanSpeed")
     @Expose
     private Integer setFanSpeed;
 
-    @SerializedName("OperationMode")
     @Expose
     private Integer operationMode;
 
-    @SerializedName("VaneHorizontal")
     @Expose
     private Integer vaneHorizontal;
 
-    @SerializedName("VaneVertical")
     @Expose
     private Integer vaneVertical;
 
-    @SerializedName("Name")
     @Expose
     private Object name;
 
-    @SerializedName("NumberOfFanSpeeds")
     @Expose(serialize = false, deserialize = true)
     private Integer numberOfFanSpeeds;
 
-    @SerializedName("WeatherObservations")
     @Expose(serialize = false, deserialize = true)
     private List<WeatherObservation> weatherObservations = null;
 
-    @SerializedName("ErrorMessage")
     @Expose(serialize = false, deserialize = true)
     private Object errorMessage;
 
-    @SerializedName("ErrorCode")
     @Expose(serialize = false, deserialize = true)
     private Integer errorCode;
 
-    @SerializedName("DefaultHeatingSetTemperature")
     @Expose(serialize = false, deserialize = true)
     private Double defaultHeatingSetTemperature;
 
-    @SerializedName("DefaultCoolingSetTemperature")
     @Expose(serialize = false, deserialize = true)
     private Double defaultCoolingSetTemperature;
 
-    @SerializedName("HideVaneControls")
     @Expose(serialize = false, deserialize = true)
     private Boolean hideVaneControls;
 
-    @SerializedName("HideDryModeControl")
     @Expose(serialize = false, deserialize = true)
     private Boolean hideDryModeControl;
 
-    @SerializedName("RoomTemperatureLabel")
     @Expose(serialize = false, deserialize = true)
     private Integer roomTemperatureLabel;
 
-    @SerializedName("InStandbyMode")
     @Expose(serialize = false, deserialize = true)
     private Boolean inStandbyMode;
 
-    @SerializedName("TemperatureIncrementOverride")
     @Expose(serialize = false, deserialize = true)
     private Integer temperatureIncrementOverride;
 
-    @SerializedName("DeviceID")
     @Expose
     private Integer deviceID;
 
-    @SerializedName("DeviceType")
     @Expose(serialize = false, deserialize = true)
     private Integer deviceType;
 
-    @SerializedName("LastCommunication")
     @Expose(serialize = false, deserialize = true)
     private String lastCommunication;
 
-    @SerializedName("NextCommunication")
     @Expose(serialize = false, deserialize = true)
     private String nextCommunication;
 
-    @SerializedName("Power")
     @Expose
     private Boolean power;
 
-    @SerializedName("HasPendingCommand")
     @Expose
     private Boolean hasPendingCommand;
 
-    @SerializedName("Offline")
     @Expose(serialize = false, deserialize = true)
     private Boolean offline;
 
-    @SerializedName("Scene")
     @Expose(serialize = false, deserialize = true)
     private Object scene;
 
-    @SerializedName("SceneOwner")
     @Expose(serialize = false, deserialize = true)
     private Object sceneOwner;
 

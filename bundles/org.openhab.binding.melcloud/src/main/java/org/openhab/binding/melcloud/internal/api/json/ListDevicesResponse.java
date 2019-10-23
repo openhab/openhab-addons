@@ -24,118 +24,118 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ListDevicesResponse {
 
-    @SerializedName("ID")
     @Expose
     private Integer iD;
-    @SerializedName("Name")
+
     @Expose
     private String name;
-    @SerializedName("AddressLine1")
+
     @Expose
     private String addressLine1;
-    @SerializedName("AddressLine2")
+
     @Expose
     private Object addressLine2;
-    @SerializedName("City")
+
     @Expose
     private String city;
-    @SerializedName("Postcode")
+
     @Expose
     private String postcode;
-    @SerializedName("Latitude")
+
     @Expose
     private Double latitude;
-    @SerializedName("Longitude")
+
     @Expose
     private Double longitude;
-    @SerializedName("District")
+
     @Expose
     private Object district;
-    @SerializedName("FPDefined")
+
     @Expose
     private Boolean fPDefined;
-    @SerializedName("FPEnabled")
+
     @Expose
     private Boolean fPEnabled;
-    @SerializedName("FPMinTemperature")
+
     @Expose
     private Integer fPMinTemperature;
-    @SerializedName("FPMaxTemperature")
+
     @Expose
     private Integer fPMaxTemperature;
-    @SerializedName("HMDefined")
+
     @Expose
     private Boolean hMDefined;
-    @SerializedName("HMEnabled")
+
     @Expose
     private Boolean hMEnabled;
-    @SerializedName("HMStartDate")
+
     @Expose
     private Object hMStartDate;
-    @SerializedName("HMEndDate")
+
     @Expose
     private Object hMEndDate;
-    @SerializedName("BuildingType")
+
     @Expose
     private Integer buildingType;
-    @SerializedName("PropertyType")
+
     @Expose
     private Integer propertyType;
-    @SerializedName("DateBuilt")
+
     @Expose
     private String dateBuilt;
-    @SerializedName("HasGasSupply")
+
     @Expose
     private Boolean hasGasSupply;
-    @SerializedName("LocationLookupDate")
+
     @Expose
     private String locationLookupDate;
-    @SerializedName("Country")
+
     @Expose
     private Integer country;
-    @SerializedName("TimeZoneContinent")
+
     @Expose
     private Integer timeZoneContinent;
-    @SerializedName("TimeZoneCity")
+
     @Expose
     private Integer timeZoneCity;
-    @SerializedName("TimeZone")
+
     @Expose
     private Integer timeZone;
-    @SerializedName("Location")
+
     @Expose
     private Integer location;
-    @SerializedName("CoolingDisabled")
+
     @Expose
     private Boolean coolingDisabled;
-    @SerializedName("Expanded")
+
     @Expose
     private Boolean expanded;
-    @SerializedName("Structure")
+
     @Expose
     private Structure structure;
-    @SerializedName("AccessLevel")
+
     @Expose
     private Integer accessLevel;
-    @SerializedName("DirectAccess")
+
     @Expose
     private Boolean directAccess;
-    @SerializedName("MinTemperature")
+
     @Expose
     private Integer minTemperature;
-    @SerializedName("MaxTemperature")
+
     @Expose
     private Integer maxTemperature;
-    @SerializedName("Owner")
+
     @Expose
     private Object owner;
-    @SerializedName("EndDate")
+
     @Expose
     private String endDate;
+
     @SerializedName("iDateBuilt")
     @Expose
     private Object iDateBuilt;
-    @SerializedName("QuantizedCoordinates")
+
     @Expose
     private QuantizedCoordinates quantizedCoordinates;
 

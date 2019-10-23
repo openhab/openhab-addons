@@ -13,7 +13,6 @@
 package org.openhab.binding.melcloud.internal.api.json;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Preset} is responsible of JSON data For MELCloud API
@@ -24,40 +23,39 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Preset {
 
-    @SerializedName("SetTemperature")
     @Expose
     private Double setTemperature;
-    @SerializedName("Power")
+
     @Expose
     private Boolean power;
-    @SerializedName("OperationMode")
+
     @Expose
     private Integer operationMode;
-    @SerializedName("VaneHorizontal")
+
     @Expose
     private Integer vaneHorizontal;
-    @SerializedName("VaneVertical")
+
     @Expose
     private Integer vaneVertical;
-    @SerializedName("FanSpeed")
+
     @Expose
     private Integer fanSpeed;
-    @SerializedName("ID")
+
     @Expose
     private Integer iD;
-    @SerializedName("Client")
+
     @Expose
     private Integer client;
-    @SerializedName("D" + "eviceLocation")
+
     @Expose
     private Integer deviceLocation;
-    @SerializedName("Number")
+
     @Expose
     private Integer number;
-    @SerializedName("Configuration")
+
     @Expose
     private String configuration;
-    @SerializedName("NumberDescription")
+
     @Expose
     private String numberDescription;
 

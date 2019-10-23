@@ -15,7 +15,6 @@ package org.openhab.binding.melcloud.internal.api.json;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Structure} is responsible of JSON data For MELCloud API
@@ -27,16 +26,15 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Structure {
 
-    @SerializedName("Floors")
     @Expose
     private List<Floor> floors = null;
-    @SerializedName("Areas")
+
     @Expose
     private List<Area> areas = null;
-    @SerializedName("Devices")
+
     @Expose
     private List<Device> devices = null;
-    @SerializedName("Clients")
+
     @Expose
     private List<Object> clients = null;
 

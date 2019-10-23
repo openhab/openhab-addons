@@ -88,7 +88,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        config = getThing().getConfiguration().as(AcDeviceConfig.class);
+        config = getConfigAs(AcDeviceConfig.class);
         logger.debug("A.C. device config: {}", config);
 
         initializeBridge(bridge.getHandler(), bridge.getStatus());
@@ -125,7 +125,6 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
 
             if (bridgeStatus == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
-                startAutomaticRefresh();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
@@ -139,7 +138,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         logger.debug("Received command '{}' to channel {}", command, channelUID);
 
         if (command instanceof RefreshType) {
-            logger.debug("Resfresh command not supported");
+            logger.debug("Refresh command not supported");
             return;
         }
 
@@ -149,7 +148,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         }
 
         if (deviceStatus == null) {
-            logger.warn("No initial data available, ignore command");
+            logger.info("No initial data available, bridge is probably offline. Ignore command");
             return;
         }
 
@@ -173,8 +172,6 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
                     if (quantity != null) {
                         val = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
                     }
-                } else {
-                    val = new BigDecimal(command.toString()).setScale(1, RoundingMode.HALF_UP);
                 }
                 if (val != null) {
                     // round nearest .5

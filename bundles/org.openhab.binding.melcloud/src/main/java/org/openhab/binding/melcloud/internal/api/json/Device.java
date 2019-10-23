@@ -16,7 +16,6 @@ import java.security.Permissions;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Device} is responsible of JSON data For MELCloud API
@@ -28,148 +27,146 @@ import com.google.gson.annotations.SerializedName;
 
 public class Device {
 
-    @SerializedName("DeviceID")
     @Expose
     private Integer deviceID;
-    @SerializedName("DeviceName")
+
     @Expose
     private String deviceName;
-    @SerializedName("BuildingID")
+
     @Expose
     private Integer buildingID;
-    @SerializedName("BuildingName")
+
     @Expose
     private Object buildingName;
-    @SerializedName("FloorID")
+
     @Expose
     private Object floorID;
-    @SerializedName("FloorName")
+
     @Expose
     private Object floorName;
-    @SerializedName("AreaID")
+
     @Expose
     private Object areaID;
-    @SerializedName("AreaName")
+
     @Expose
     private Object areaName;
-    @SerializedName("ImageID")
+
     @Expose
     private Integer imageID;
-    @SerializedName("InstallationDate")
+
     @Expose
     private String installationDate;
-    @SerializedName("LastServiceDate")
+
     @Expose
     private Object lastServiceDate;
-    @SerializedName("Presets")
+
     @Expose
     private List<Preset> presets = null;
-    @SerializedName("OwnerID")
+
     @Expose
     private Object ownerID;
-    @SerializedName("OwnerName")
+
     @Expose
     private Object ownerName;
-    @SerializedName("OwnerEmail")
+
     @Expose
     private Object ownerEmail;
-    @SerializedName("AccessLevel")
+
     @Expose
     private Integer accessLevel;
-    @SerializedName("DirectAccess")
+
     @Expose
     private Boolean directAccess;
-    @SerializedName("EndDate")
+
     @Expose
     private String endDate;
-    @SerializedName("Zone1Name")
+
     @Expose
     private Object zone1Name;
-    @SerializedName("Zone2Name")
+
     @Expose
     private Object zone2Name;
-    @SerializedName("MinTemperature")
+
     @Expose
     private Integer minTemperature;
-    @SerializedName("MaxTemperature")
+
     @Expose
     private Integer maxTemperature;
-    @SerializedName("HideVaneControls")
+
     @Expose
     private Boolean hideVaneControls;
-    @SerializedName("HideDryModeControl")
+
     @Expose
     private Boolean hideDryModeControl;
-    @SerializedName("HideRoomTemperature")
+
     @Expose
     private Boolean hideRoomTemperature;
-    @SerializedName("HideSupplyTemperature")
+
     @Expose
     private Boolean hideSupplyTemperature;
-    @SerializedName("HideOutdoorTemperature")
+
     @Expose
     private Boolean hideOutdoorTemperature;
-    @SerializedName("BuildingCountry")
+
     @Expose
     private Object buildingCountry;
-    @SerializedName("OwnerCountry")
+
     @Expose
     private Object ownerCountry;
-    @SerializedName("AdaptorType")
+
     @Expose
     private Integer adaptorType;
-    @SerializedName("Type")
+
     @Expose
     private Integer type;
-    @SerializedName("MacAddress")
+
     @Expose
     private String macAddress;
-    @SerializedName("SerialNumber")
+
     @Expose
     private String serialNumber;
-    @SerializedName("Device")
+
     @Expose
     private DeviceProps device;
-    @SerializedName("DiagnosticMode")
+
     @Expose
     private Integer diagnosticMode;
-    @SerializedName("DiagnosticEndDate")
+
     @Expose
     private Object diagnosticEndDate;
-    @SerializedName("Location")
+
     @Expose
     private Integer location;
-    @SerializedName("DetectedCountry")
+
     @Expose
     private Object detectedCountry;
-    @SerializedName("Registrations")
+
     @Expose
     private Integer registrations;
-    @SerializedName("LocalIPAddress")
+
     @Expose
     private Object localIPAddress;
-    @SerializedName("TimeZone")
+
     @Expose
     private Integer timeZone;
-    @SerializedName("RegistReason")
+
     @Expose
     private Object registReason;
-    @SerializedName("ExpectedCommand")
+
     @Expose
     private Integer expectedCommand;
-    @SerializedName("RegistRetry")
-    @Expose
+
     private Integer registRetry;
-    @SerializedName("DateCreated")
+
     @Expose
     private String dateCreated;
-    @SerializedName("FirmwareDeployment")
+
     @Expose
     private Object firmwareDeployment;
-    @SerializedName("FirmwareUpdateAborted")
+
     @Expose
     private Boolean firmwareUpdateAborted;
-    @SerializedName("Permissions")
+
     @Expose
     private Permissions permissions;
 

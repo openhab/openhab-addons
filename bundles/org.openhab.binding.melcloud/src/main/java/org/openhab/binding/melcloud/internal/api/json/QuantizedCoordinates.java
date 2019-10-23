@@ -13,7 +13,6 @@
 package org.openhab.binding.melcloud.internal.api.json;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link QuantizedCoordinates} is responsible of JSON data For MELCloud API
@@ -24,10 +23,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class QuantizedCoordinates {
 
-    @SerializedName("Latitude")
     @Expose
     private Double latitude;
-    @SerializedName("Longitude")
+
     @Expose
     private Double longitude;
 

@@ -66,19 +66,11 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing MELCloud account handler.");
-        config = getThing().getConfiguration().as(AccountConfig.class);
+        config = getConfigAs(AccountConfig.class);
         connection = new MelCloudConnection();
         devices = Collections.emptyList();
         loginCredentialError = false;
-        scheduler.execute(() -> {
-            try {
-                connect();
-            } catch (MelCloudCommException e) {
-                logger.debug("Cannot open the connection to MELCloud, reason: {}", e.getMessage());
-            } finally {
-                startConnectionCheck();
-            }
-        });
+        startConnectionCheck();
     }
 
     @Override
@@ -183,13 +175,13 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
                     try {
                         connect();
                     } catch (MelCloudCommException e) {
-                        logger.debug("Connection to MELCloud down");
+                        logger.debug("Connection to MELCloud down, reason: {}.", e.getMessage());
                     } catch (RuntimeException e) {
                         logger.warn("Unknown error occured during connection check, reason: {}.", e.getMessage(), e);
                     }
                 }
             };
-            connectionCheckTask = scheduler.scheduleWithFixedDelay(runnable, 30, 60, TimeUnit.SECONDS);
+            connectionCheckTask = scheduler.scheduleWithFixedDelay(runnable, 0, 60, TimeUnit.SECONDS);
         } else {
             logger.debug("Connection check task already running");
         }
