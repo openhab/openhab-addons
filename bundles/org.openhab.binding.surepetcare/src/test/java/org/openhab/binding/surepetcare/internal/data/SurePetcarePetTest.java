@@ -9,7 +9,6 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.openhab.binding.surepetcare.internal.GsonColonDateTypeAdapter;
-import org.openhab.binding.surepetcare.internal.data.SurePetcarePetLocation.PetLocation;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -96,9 +95,9 @@ public class SurePetcarePetTest {
         assertEquals(SurePetcarePet.PetSpecies.CAT.getId(), response.getSpeciesId());
         assertEquals(new Integer(382), response.getBreedId());
 
-        assertEquals(PetLocation.INSIDE.getId(), response.getLocation().getWhere());
+        assertEquals(new Integer(1), response.getPetStatus().getActivity().getWhere());
         Date sinceDate = simpleDateFormat.parse("2019-10-03T10:23:37+0000");
-        assertEquals(sinceDate, response.getLocation().getSince());
+        assertEquals(sinceDate, response.getPetStatus().getActivity().getSince());
     }
 
 }

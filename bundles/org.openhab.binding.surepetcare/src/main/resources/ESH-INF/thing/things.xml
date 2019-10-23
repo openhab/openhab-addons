@@ -1,9 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
-<thing:thing-descriptions bindingId="surepetcare"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="surepetcare" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Supported Sure Petcare pets and features -->
 
@@ -21,6 +18,11 @@
             <channel id="timezoneId" typeId="timezoneIdType" />
 			<channel id="createdAt" typeId="createdAtType" />
 			<channel id="updatedAt" typeId="updatedAtType" />
+			<channel id="userName1" typeId="userNameType" />
+			<channel id="userName2" typeId="userNameType" />
+			<channel id="userName3" typeId="userNameType" />
+			<channel id="userName4" typeId="userNameType" />
+			<channel id="userName5" typeId="userNameType" />
 		</channels>
 	</thing-type>
 
@@ -145,6 +147,7 @@
 			<channel id="tagIdentifier" typeId="tagIdentifierType" />
 			<channel id="location" typeId="locationType" />
 			<channel id="locationChanged" typeId="locationChangedType" />
+			<channel id="locationChangedThrough" typeId="locationChangedThroughType" />
 			<channel id="dateOfBirth" typeId="dateOfBirthType" />
 			<channel id="weight" typeId="weightType" />
 			<channel id="feederDevice" typeId="feederDeviceType" />
@@ -170,12 +173,19 @@
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-    <channel-type id="commentType">
-        <item-type>String</item-type>
-        <label>Comment</label>
-        <description>Comments about the thing</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
+	<channel-type id="userNameType">
+		<item-type>String</item-type>
+		<label>User Name</label>
+		<description>The username of the thing</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="commentType">
+		<item-type>String</item-type>
+		<label>Comment</label>
+		<description>Comments about the thing</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
 
     <channel-type id="timezoneIdType">
         <item-type>Number</item-type>
@@ -324,6 +334,13 @@
 		<label>Last Location Change Time</label>
 		<description>The time when the pet location has last changed</description>
 		<state readOnly="true" pattern="%1$tF %1$tR"></state>
+	</channel-type>
+
+	<channel-type id="locationChangedThroughType">
+		<item-type>String</item-type>
+		<label>Pet Location Changed Through</label>
+		<description>Shows the device name or username of the last location change.</description>
+		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="ledModeType" advanced="true">

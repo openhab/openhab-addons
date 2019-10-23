@@ -48,7 +48,7 @@ public class SurePetcareConstants {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String REFRESH_INTERVAL_TOPOLOGY = "refresh_interval_topology";
-    public static final String REFRESH_INTERVAL_LOCATION = "refresh_interval_location";
+    public static final String REFRESH_INTERVAL_STATUS = "refresh_interval_status";
 
     // Bridge Channel Names
     public static final String BRIDGE_CHANNEL_ONLINE = "online";
@@ -58,10 +58,9 @@ public class SurePetcareConstants {
     public static final String HOUSEHOLD_CHANNEL_ID = "id";
     public static final String HOUSEHOLD_CHANNEL_NAME = "name";
     public static final String HOUSEHOLD_CHANNEL_TIMEZONE_ID = "timezoneId";
-    // public static final String HOUSEHOLD_CHANNEL_TIMEZONE = "timezone";
-    // public static final String HOUSEHOLD_CHANNEL_TIMEZONE_UTC_OFFSET = "timezoneUTCOffset";
     public static final String HOUSEHOLD_CHANNEL_CREATED_AT = "createdAt";
     public static final String HOUSEHOLD_CHANNEL_UPDATED_AT = "updatedAt";
+    public static final String HOUSEHOLD_CHANNEL_USER_NAME = "userName";
 
     // Device Channel Names
     public static final String DEVICE_CHANNEL_ID = "id";
@@ -107,6 +106,7 @@ public class SurePetcareConstants {
     public static final String PET_CHANNEL_PHOTO_URL = "photoURL";
     public static final String PET_CHANNEL_LOCATION = "location";
     public static final String PET_CHANNEL_LOCATION_CHANGED = "locationChanged";
+    public static final String PET_CHANNEL_LOCATION_CHANGED_THROUGH = "locationChangedThrough";
     public static final String PET_CHANNEL_DATE_OF_BIRTH = "dateOfBirth";
     public static final String PET_CHANNEL_WEIGHT = "weight";
     public static final String PET_CHANNEL_TAG_IDENTIFIER = "tagIdentifier";

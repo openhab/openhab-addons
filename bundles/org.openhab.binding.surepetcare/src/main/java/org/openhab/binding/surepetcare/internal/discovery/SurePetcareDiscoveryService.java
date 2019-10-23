@@ -47,8 +47,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcareDiscoveryService.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .singleton(THING_TYPE_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
     private static final int DISCOVERY_REFRESH_INTERVAL = 12 * 3600; // 12 hours
@@ -145,8 +144,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void createHouseholdThing(SurePetcareHousehold household) {
-        ThingUID thingsUID = new ThingUID(THING_TYPE_HOUSEHOLD, bridgeUID,
-                household.getId().toString());
+        ThingUID thingsUID = new ThingUID(THING_TYPE_HOUSEHOLD, bridgeUID, household.getId().toString());
         Map<String, Object> properties = household.getThingProperties();
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(household.getName())
                 .withProperties(properties).withBridge(bridgeUID).build());

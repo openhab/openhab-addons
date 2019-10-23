@@ -1,9 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
-<thing:thing-descriptions bindingId="surepetcare"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="surepetcare" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
 
@@ -31,9 +28,9 @@
 				<description>Query interval (in secs) for device topology</description>
 				<default>36000</default>
 			</parameter>
-			<parameter name="refresh_interval_location" type="integer" required="false" min="30">
-				<label>Refresh Interval Location</label>
-				<description>Query interval (in secs) for pet locations</description>
+			<parameter name="refresh_interval_status" type="integer" required="false" min="60">
+				<label>Refresh Interval Pet Status</label>
+				<description>Query interval (in secs) for pet status</description>
 				<default>300</default>
 			</parameter>
 

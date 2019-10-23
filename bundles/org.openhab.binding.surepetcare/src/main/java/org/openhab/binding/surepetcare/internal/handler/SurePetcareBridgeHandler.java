@@ -53,7 +53,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
 
     private SurePetcareAPIHelper petcareAPI;
     private @Nullable ScheduledFuture<?> topologyPollingJob = null;
-    private @Nullable ScheduledFuture<?> petLocationPollingJob = null;
+    private @Nullable ScheduledFuture<?> petStatusPollingJob = null;
 
     public SurePetcareBridgeHandler(Bridge bridge, SurePetcareAPIHelper petcareAPI) {
         super(bridge);
@@ -72,7 +72,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             logger.warn("Setting thing '{}' to OFFLINE: Parameter 'password' and 'username' must be configured.",
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-password");
+                    "@text/offline.conf-error-missing-username-or-password");
         } else {
             String username = (String) config.get(USERNAME);
             String password = (String) config.get(PASSWORD);
@@ -93,7 +93,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
 
         try {
             long refreshIntervalTopology = ((BigDecimal) config.get(REFRESH_INTERVAL_TOPOLOGY)).longValueExact();
-            long refreshIntervalLocation = ((BigDecimal) config.get(REFRESH_INTERVAL_LOCATION)).longValueExact();
+            long refreshIntervalStatus = ((BigDecimal) config.get(REFRESH_INTERVAL_STATUS)).longValueExact();
 
             if (topologyPollingJob == null || topologyPollingJob.isCancelled()) {
                 topologyPollingJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -102,15 +102,15 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                 }, refreshIntervalTopology, refreshIntervalTopology, TimeUnit.SECONDS);
                 logger.debug("Bridge topology polling job every {} seconds", refreshIntervalTopology);
             }
-            if (petLocationPollingJob == null || petLocationPollingJob.isCancelled()) {
-                petLocationPollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (petStatusPollingJob == null || petStatusPollingJob.isCancelled()) {
+                petStatusPollingJob = scheduler.scheduleWithFixedDelay(() -> {
                     pollAndUpdatePetStatus();
-                }, refreshIntervalLocation, refreshIntervalLocation, TimeUnit.SECONDS);
-                logger.debug("Bridge location polling job every {} seconds", refreshIntervalLocation);
+                }, refreshIntervalStatus, refreshIntervalStatus, TimeUnit.SECONDS);
+                logger.debug("Pet status polling job every {} seconds", refreshIntervalStatus);
             }
         } catch (ArithmeticException e) {
             logger.warn("Invalid settings for refresh intervals [{},{}]", config.get(REFRESH_INTERVAL_TOPOLOGY),
-                    config.get(REFRESH_INTERVAL_LOCATION));
+                    config.get(REFRESH_INTERVAL_STATUS));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-invalid-refresh-intervals");
         }
@@ -126,9 +126,9 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             topologyPollingJob = null;
             logger.debug("Stopped pet background polling process");
         }
-        if (petLocationPollingJob != null && !petLocationPollingJob.isCancelled()) {
-            petLocationPollingJob.cancel(true);
-            petLocationPollingJob = null;
+        if (petStatusPollingJob != null && !petStatusPollingJob.isCancelled()) {
+            petStatusPollingJob.cancel(true);
+            petStatusPollingJob = null;
             logger.debug("Stopped pet location background polling process");
         }
     }
@@ -176,10 +176,10 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         petcareAPI.updatePetStatus();
         for (Thing th : ((Bridge) thing).getThings()) {
             if (th.getThingTypeUID().equals(THING_TYPE_PET)) {
-                logger.debug("updating pet location for: {}", th.getUID().getId());
+                logger.debug("Updating pet status for: {}", th.getUID().getId());
                 ThingHandler handler = th.getHandler();
                 if (handler != null) {
-                    ((SurePetcarePetHandler) handler).updatePetLocation();
+                    ((SurePetcarePetHandler) handler).updateThing();
                 }
             }
         }

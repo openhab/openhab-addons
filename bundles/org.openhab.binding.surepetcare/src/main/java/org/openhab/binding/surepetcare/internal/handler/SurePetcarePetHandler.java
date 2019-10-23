@@ -31,10 +31,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareApiException;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePet;
-import org.openhab.binding.surepetcare.internal.data.SurePetcarePetLocation;
-import org.openhab.binding.surepetcare.internal.data.SurePetcarePetStatus.Activity;
-import org.openhab.binding.surepetcare.internal.data.SurePetcarePetStatus.Feeding;
+import org.openhab.binding.surepetcare.internal.data.SurePetcarePetActivity;
+import org.openhab.binding.surepetcare.internal.data.SurePetcarePetFeeding;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,14 +56,14 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("DeviceHandler handleCommand called with command: {}", command.toString());
+        logger.debug("PetHandler handleCommand called with command: {}", command.toString());
 
         if (command instanceof RefreshType) {
             updateThing();
         } else {
             switch (channelUID.getId()) {
                 case PET_CHANNEL_LOCATION:
-                    logger.debug("received location update command: {}", command.toFullString());
+                    logger.debug("Received location update command: {}", command.toFullString());
                     if (command instanceof StringType) {
                         synchronized (petcareAPI) {
                             SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
@@ -71,12 +71,12 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                                 String newLocationIdStr = ((StringType) command).toString();
                                 try {
                                     Integer newLocationId = Integer.valueOf(newLocationIdStr);
-                                    logger.debug("received new location: {}", newLocationId);
+                                    logger.debug("Received new location: {}", newLocationId);
                                     petcareAPI.setPetLocation(pet, newLocationId);
                                     updateState(PET_CHANNEL_LOCATION,
-                                            new StringType(pet.getLocation().getWhere().toString()));
+                                            new StringType(pet.getPetStatus().getActivity().getWhere().toString()));
                                     updateState(PET_CHANNEL_LOCATION_CHANGED,
-                                            new DateTimeType(pet.getLocation().getLocationChanged()));
+                                            new DateTimeType(pet.getPetStatus().getActivity().getLocationChanged()));
                                 } catch (NumberFormatException e) {
                                     logger.warn("Invalid location id: {}, ignoring command", newLocationIdStr);
                                 } catch (SurePetcareApiException e) {
@@ -106,13 +106,19 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                 if (pet.getComments() != null) {
                     updateState(PET_CHANNEL_COMMENT, new StringType(pet.getComments()));
                 }
-                updateState(PET_CHANNEL_GENDER, new StringType(pet.getGenderId().toString()));
-                updateState(PET_CHANNEL_BREED, new StringType(pet.getBreedId().toString()));
-                updateState(PET_CHANNEL_SPECIES, new StringType(pet.getSpeciesId().toString()));
+                if (pet.getGenderId() != null) {
+                    updateState(PET_CHANNEL_GENDER, new StringType(pet.getGenderId().toString()));
+                }
+                if (pet.getBreedId() != null) {
+                    updateState(PET_CHANNEL_BREED, new StringType(pet.getBreedId().toString()));
+                }
+                if (pet.getSpeciesId() != null) {
+                    updateState(PET_CHANNEL_SPECIES, new StringType(pet.getSpeciesId().toString()));
+                }
                 if (pet.getPhoto() != null) {
                     updateState(PET_CHANNEL_PHOTO_URL, new StringType(pet.getPhoto().getLocation()));
                 }
-                Activity loc = pet.getPetStatus().getActivity();
+                SurePetcarePetActivity loc = pet.getPetStatus().getActivity();
                 if (loc != null) {
                     updateState(PET_CHANNEL_LOCATION, new StringType(loc.getWhere().toString()));
                     if (loc.getLocationChanged() != null) {
@@ -132,7 +138,22 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                         updateState(PET_CHANNEL_TAG_IDENTIFIER, new StringType(tag.getTag()));
                     }
                 }
-                Feeding feeding = pet.getPetStatus().getFeeding();
+                if (pet.getPetStatus().getActivity().getDeviceId() != null) {
+                    SurePetcareDevice device = petcareAPI
+                            .getDevice(pet.getPetStatus().getActivity().getDeviceId().toString());
+                    updateState(PET_CHANNEL_LOCATION_CHANGED_THROUGH, new StringType(device.getName()));
+                } else if (pet.getPetStatus().getActivity().getUserId() != null) {
+                    SurePetcareHousehold user = petcareAPI.getHousehold(pet.getHouseholdId().toString());
+                    int numUsers = user.getHouseholdUsers().size();
+                    for (int i = 0; (i < numUsers); i++) {
+                        if (pet.getPetStatus().getActivity().getUserId()
+                                .equals(user.getHouseholdUsers().get(i).getUser().getUserId())) {
+                            updateState(PET_CHANNEL_LOCATION_CHANGED_THROUGH,
+                                    new StringType(user.getHouseholdUsers().get(i).getUser().getUserName().toString()));
+                        }
+                    }
+                }
+                SurePetcarePetFeeding feeding = pet.getPetStatus().getFeeding();
                 if (feeding != null) {
                     SurePetcareDevice device = petcareAPI.getDevice(feeding.getDeviceId().toString());
                     if (device != null) {
@@ -162,18 +183,4 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
         }
     }
 
-    protected void updatePetLocation() {
-        synchronized (petcareAPI) {
-            SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
-            if (pet != null) {
-                SurePetcarePetLocation loc = pet.getLocation();
-                if (loc != null) {
-                    updateState(PET_CHANNEL_LOCATION, new StringType(loc.getWhere().toString()));
-                    if (loc.getLocationChanged() != null) {
-                        updateState(PET_CHANNEL_LOCATION_CHANGED, new DateTimeType(loc.getLocationChanged()));
-                    }
-                }
-            }
-        }
-    }
 }

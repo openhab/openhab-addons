@@ -22,6 +22,7 @@ import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -35,7 +36,6 @@ import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginCredentials;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareLoginResponse;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePet;
-import org.openhab.binding.surepetcare.internal.data.SurePetcarePetLocation;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePetStatus;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareTag;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareTopology;
@@ -70,6 +70,7 @@ public class SurePetcareAPIHelper {
     private static final String API_URL = "https://app.api.surehub.io/api";
     private static final String TOPOLOGY_URL = API_URL + "/me/start";
     private static final String PET_BASE_URL = API_URL + "/pet";
+    private static final String PET_STATUS_URL = API_URL + "/pet/?with[]=status";
     private static final String DEVICE_BASE_URL = API_URL + "/device";
     private static final String LOGIN_URL = API_URL + "/auth/login";
 
@@ -147,17 +148,16 @@ public class SurePetcareAPIHelper {
     }
 
     /**
-     * Refreshes only the pet status (location activity and feeding information). This API call can be used more
-     * frequently.
+     * Refreshes the pet information. This API call can be used more frequently.
+     * Unlike for the "position" API endpoint, there is none for the "status" (activity/feeding).
+     * We also dont need to specify a "petId" in the call, so we just need to call the API once.
      */
     public synchronized void updatePetStatus() {
         try {
-            for (SurePetcarePet pet : topologyCache.getPets()) {
-                String url = PET_BASE_URL + "/" + pet.getId().toString() + "?with[]=status";
-                pet.setPetStatus(gson.fromJson(getDataFromApi(url), SurePetcarePetStatus.class));
-            }
+            String url = PET_STATUS_URL;
+            topologyCache.setPets(Arrays.asList(gson.fromJson(getDataFromApi(url), SurePetcarePet[].class)));
         } catch (JsonSyntaxException | SurePetcareApiException e) {
-            logger.warn("Exception caught during topology cache update: {}", e.getMessage());
+            logger.warn("Exception caught during pet status update: {}", e.getMessage());
         }
     }
 
@@ -211,21 +211,6 @@ public class SurePetcareAPIHelper {
     }
 
     /**
-     * Returns the location object if a pet exists with the given id, otherwise null.
-     *
-     * @param id the pet id
-     * @return the location of the pet with the given id
-     */
-    public final @Nullable SurePetcarePetLocation getPetLocation(String id) {
-        SurePetcarePet pet = topologyCache.getPetById(id);
-        if (pet != null) {
-            return pet.getLocation();
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Returns the status object if a pet exists with the given id, otherwise null.
      *
      * @param id the pet id
@@ -243,22 +228,21 @@ public class SurePetcareAPIHelper {
     /**
      * Updates the pet location through an API call to the Sure Petcare API.
      *
-     * @param pet the pet
+     * @param pet           the pet
      * @param newLocationId the id of the new location
      * @throws SurePetcareApiException
      */
     public synchronized void setPetLocation(SurePetcarePet pet, Integer newLocationId) throws SurePetcareApiException {
-        pet.getLocation().setPetId(pet.getId());
-        pet.getLocation().setWhere(newLocationId);
-        pet.getLocation().setSince(new Date());
+        pet.getPetStatus().getActivity().setWhere(newLocationId);
+        pet.getPetStatus().getActivity().setSince(new Date());
         String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
-        setDataThroughApi(url, HTTP_REQUEST_METHOD_POST, pet.getLocation());
+        setDataThroughApi(url, HTTP_REQUEST_METHOD_POST, pet.getPetStatus().getActivity());
     }
 
     /**
      * Updates the device locking mode through an API call to the Sure Petcare API.
      *
-     * @param device the device
+     * @param device           the device
      * @param newLockingModeId the id of the new locking mode
      * @throws SurePetcareApiException
      */
@@ -279,7 +263,7 @@ public class SurePetcareAPIHelper {
     /**
      * Updates the device led mode through an API call to the Sure Petcare API.
      *
-     * @param device the device
+     * @param device       the device
      * @param newLedModeId the id of the new led mode
      * @throws SurePetcareApiException
      */
@@ -300,7 +284,7 @@ public class SurePetcareAPIHelper {
     /**
      * Updates all curfews through an API call to the Sure Petcare API.
      *
-     * @param device the device
+     * @param device     the device
      * @param curfewList the list of curfews
      * @throws SurePetcareApiException
      */
@@ -402,9 +386,9 @@ public class SurePetcareAPIHelper {
     /**
      * Sends a given object as a JSON payload to the API.
      *
-     * @param url the URL
+     * @param url           the URL
      * @param requestMethod the request method (POST, PUT etc.)
-     * @param payload an object used for the payload
+     * @param payload       an object used for the payload
      * @throws SurePetcareApiException
      */
     private void setDataThroughApi(String url, String requestMethod, Object payload) throws SurePetcareApiException {
@@ -464,9 +448,9 @@ public class SurePetcareAPIHelper {
     /**
      * Uses the given request method to send a JSON string to an API.
      *
-     * @param url the URL
+     * @param url           the URL
      * @param requestMethod the required request method (POST, PUT etc.)
-     * @param jsonPayload the JSON string
+     * @param jsonPayload   the JSON string
      * @throws SurePetcareApiException
      */
     private void postDataThroughAPI(String url, String requestMethod, String jsonPayload)

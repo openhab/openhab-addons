@@ -1,9 +1,8 @@
-Bridge surepetcare:bridge:bridge1 "Demo API Bridge" [ username="<USERNAME>", password="<PASSWORD>", refresh_interval_topology=36000, refresh_interval_location=300 ]
+Bridge surepetcare:bridge:bridge1 "Demo API Bridge" @ "SurePetcare" [ username="<USERNAME>", password="<PASSWORD>", refresh_interval_topology=36000, refresh_interval_status=300 ]
 {
-  Thing household  45237  "My Household"
-  Thing hubDevice  439862 "My SurePetcare Hub"
-  Thing flapDevice 316524 "My Backdoor Cat Flap"
-  Thing pet        60487  "My Cat"
+  Thing household     45237  "My Household" @ "SurePetcare"
+  Thing hubDevice     439862 "My SurePetcare Hub" @ "SurePetcare Devices"
+  Thing flapDevice    316524 "My Backdoor Cat Flap" @ "SurePetcare Devices"
+  Thing feederDevice  123456 "My Pet Feeder" @ "SurePetcare Devices"
+  Thing pet           60487  "My Cat" @ "SurePetcare Pets"
 }
-
-

@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.surepetcare.internal.data;
 
-import java.util.Date;
+import java.util.List;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link SurePetcareHousehold} is the Java class used as a DTO to represent a Sure Petcare Household.
@@ -21,23 +23,47 @@ import java.util.Date;
  */
 public class SurePetcareHousehold extends SurePetcareBaseObject {
 
-    // Commented members indicate properties returned by the API not used by the binding
+    public class HouseholdUsers {
+        public class User {
+            @SerializedName("id")
+            private Integer userId;
+            @SerializedName("name")
+            private String userName;
 
-    public class Timezone {
-        public Integer id;
-        public String name;
-        public String timezone;
-        public Integer utcOffset;
-        public Date createdAt;
-        public Date updatedAt;
+            public Integer getUserId() {
+                return userId;
+            }
+
+            public void setUserId(Integer userId) {
+                this.userId = userId;
+            }
+
+            public String getUserName() {
+                return userName;
+            }
+
+            public void setUserName(String userName) {
+                this.userName = userName;
+            }
+        }
+
+        @SerializedName("user")
+        private User user;
+
+        public User getUser() {
+            return user;
+        }
+
+        public void setUser(User user) {
+            this.user = user;
+        }
     }
 
     private String name;
     private String shareCode;
     private Integer timezoneId;
-
-    // Timezone does seem to be included anymore
-    // private Timezone timezone = new Timezone();
+    @SerializedName("users")
+    private List<HouseholdUsers> householdUsers = null;
 
     public String getName() {
         return name;
@@ -61,6 +87,14 @@ public class SurePetcareHousehold extends SurePetcareBaseObject {
 
     public void setTimezoneId(Integer timezoneId) {
         this.timezoneId = timezoneId;
+    }
+
+    public List<HouseholdUsers> getHouseholdUsers() {
+        return householdUsers;
+    }
+
+    public void setHouseholdUsers(List<HouseholdUsers> householdUsers) {
+        this.householdUsers = householdUsers;
     }
 
     @Override

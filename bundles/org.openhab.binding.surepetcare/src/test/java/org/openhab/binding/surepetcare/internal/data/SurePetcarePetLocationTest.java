@@ -8,7 +8,6 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.openhab.binding.surepetcare.internal.GsonColonDateTypeAdapter;
-import org.openhab.binding.surepetcare.internal.data.SurePetcarePetLocation.PetLocation;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -24,13 +23,12 @@ public class SurePetcarePetLocationTest {
 
     @Test
     public void testJsonDeserialize() throws ParseException {
-        String testReponse = "{\"pet_id\":70237,\"tag_id\":60126,\"device_id\":376236,\"where\":2,\"since\":\"2019-09-11T13:09:07+00:00\"}";
-        SurePetcarePetLocation response = gson.fromJson(testReponse, SurePetcarePetLocation.class);
+        String testReponse = "{\"tag_id\":60126,\"device_id\":376236,\"where\":2,\"since\":\"2019-09-11T13:09:07+00:00\"}";
+        SurePetcarePetActivity response = gson.fromJson(testReponse, SurePetcarePetActivity.class);
 
-        assertEquals(new Integer(70237), response.getPetId());
         assertEquals(new Integer(60126), response.getTagId());
         assertEquals(new Integer(376236), response.getDeviceId());
-        assertEquals(PetLocation.OUTSIDE.getId(), response.getWhere());
+        assertEquals(new Integer(2), response.getWhere());
         Date sinceDate = simpleDateFormat.parse("2019-09-11T13:09:07+0000");
         assertEquals(sinceDate, response.getSince());
     }
@@ -40,9 +38,9 @@ public class SurePetcarePetLocationTest {
 
         Date since = simpleDateFormat.parse("2019-09-11T13:09:07+0000");
 
-        SurePetcarePetLocation location = new SurePetcarePetLocation(PetLocation.OUTSIDE, since);
+        SurePetcarePetActivity location = new SurePetcarePetActivity(2, since);
 
-        String json = gson.toJson(location, SurePetcarePetLocation.class);
+        String json = gson.toJson(location, SurePetcarePetActivity.class);
 
         assertEquals("{\"where\":2,\"since\":\"2019-09-11T13:09:07+00:00\"}", json);
     }

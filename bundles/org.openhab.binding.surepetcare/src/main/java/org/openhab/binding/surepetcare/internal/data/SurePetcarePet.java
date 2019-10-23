@@ -99,8 +99,6 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     private Integer tagId;
     private SurePetcarePhoto photo;
 
-    @SerializedName("position")
-    private SurePetcarePetLocation location = new SurePetcarePetLocation();
     @SerializedName("status")
     private SurePetcarePetStatus status = new SurePetcarePetStatus();
 
@@ -190,14 +188,6 @@ public class SurePetcarePet extends SurePetcareBaseObject {
 
     public void setPhoto(SurePetcarePhoto photo) {
         this.photo = photo;
-    }
-
-    public SurePetcarePetLocation getLocation() {
-        return location;
-    }
-
-    public void setLocation(SurePetcarePetLocation position) {
-        this.location = position;
     }
 
     public SurePetcarePetStatus getPetStatus() {
