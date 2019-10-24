@@ -224,7 +224,7 @@
 		<state pattern="%d" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="authon" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Authentication Enabled</label>
 		<description>Authentication enabled</description>
 		<state pattern="%d" readOnly="true"></state>
