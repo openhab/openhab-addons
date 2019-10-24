@@ -38,7 +38,10 @@ public class TouchWandBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
+    public static final String CHANNEL_SHUTTER = "shutter";
     public static final String CHANNEL_SWITCH_LONGSHORT = "switch_longshort";
+
+    // List of configuration parameters
 
     public static final String HOST = "ipAddress";
     public static final String PORT = "port";
@@ -46,6 +49,7 @@ public class TouchWandBindingConstants {
     public static final String PASS = "password";
     public static final String REFRESH = "refresh";
 
+    // commands
     public static final String SWITCH_STATUS_ON = "255";
     public static final String SWITCH_STATUS_OFF = "0";
 
@@ -53,7 +57,7 @@ public class TouchWandBindingConstants {
 
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SWITCH);
-        // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHUTTER); // not implemented yet
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHUTTER);
         // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WALLCONTROLLER); // not implemented yet
         // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SCENARIO); // not implemented yet
     }

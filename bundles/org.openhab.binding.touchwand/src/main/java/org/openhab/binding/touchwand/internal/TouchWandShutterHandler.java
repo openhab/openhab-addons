@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -41,30 +41,29 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link TouchWandSwitchHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link TouchWandShutterHandler} is responsible for handling commands for Shutters
  *
  * @author Roie Geron - Initial contribution
  *
  */
 @NonNullByDefault
-public class TouchWandSwitchHandler extends BaseThingHandler {
+public class TouchWandShutterHandler extends BaseThingHandler {
 
-    public TouchWandSwitchHandler(Thing thing) {
+    public TouchWandShutterHandler(Thing thing) {
         super(thing);
     }
 
     @NonNullByDefault({})
     private String unitId;
 
-    private final Logger logger = LoggerFactory.getLogger(TouchWandSwitchHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TouchWandShutterHandler.class);
 
     private final static int STATUS_RERESH_RATE = 5;
     private final static int INITIAL_UPDATE_TIME = 10;
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_SWITCH));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_SHUTTER));
 
     @NonNullByDefault({})
     private TouchWandBridgeHandler bridgeHandler;
@@ -72,12 +71,14 @@ public class TouchWandSwitchHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
+        logger.debug("Received command {} on ChannelUID {}", command.toString(), channelUID.toString());
+
         String channelId = channelUID.getId();
-        if (CHANNEL_SWITCH.equals(channelId)) {
+        if (CHANNEL_SHUTTER.equals(channelId)) {
             if (command instanceof RefreshType) {
-                updateState(CHANNEL_SWITCH, getUnitState(unitId));
-            } else if (command instanceof OnOffType) {
-                bridgeHandler.touchWandClient.cmdSwitchOnOff(unitId, (OnOffType) command);
+                updateState(CHANNEL_SHUTTER, getUnitState(unitId));
+            } else {
+                touhWandShutterCommand(command.toString());
             }
         }
     }
@@ -95,7 +96,7 @@ public class TouchWandSwitchHandler extends BaseThingHandler {
 
         ThingStatus bridgeStatus;
 
-        logger.debug("Initializing TocuhWand Switch handler");
+        logger.debug("Initializing TocuhWand Shutter handler");
 
         Bridge bridge = getBridge();
 
@@ -136,9 +137,9 @@ public class TouchWandSwitchHandler extends BaseThingHandler {
         logger.debug("Finished initializing!");
     }
 
-    private OnOffType getUnitState(String unitId) {
+    private PercentType getUnitState(String unitId) {
 
-        OnOffType state = OnOffType.OFF;
+        PercentType state = PercentType.ZERO;
 
         if (bridgeHandler == null) {
             return state;
@@ -153,23 +154,38 @@ public class TouchWandSwitchHandler extends BaseThingHandler {
         try {
             JsonObject unitObj = jsonParser.parse(response).getAsJsonObject();
             String status = unitObj.get("currStatus").getAsString();
-            if (status.equals(SWITCH_STATUS_ON)) {
-                state = OnOffType.ON;
-            }
-
+            state = PercentType.valueOf(status);
         } catch (JsonSyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn("Could not parse cmdGetUnitById response {}", getThing().getLabel());
         }
-
         return state;
+    }
 
+    private void touhWandShutterCommand(String command) {
+
+        switch (command) {
+            case "OFF":
+            case "DOWN":
+                bridgeHandler.touchWandClient.cmdShutterDown(unitId);
+                break;
+            case "ON":
+            case "UP":
+                bridgeHandler.touchWandClient.cmdShutterUp(unitId);
+                break;
+            case "STOP":
+                bridgeHandler.touchWandClient.cmdShutterStop(unitId);
+                break;
+            default:
+                bridgeHandler.touchWandClient.cmdShutterPosition(unitId, command.toString());
+                break;
+        }
     }
 
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            updateState(CHANNEL_SWITCH, getUnitState(unitId));
+            updateState(CHANNEL_SHUTTER, getUnitState(unitId));
         }
     };
 

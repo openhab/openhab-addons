@@ -6,10 +6,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	
 		<config-description uri="bridge-type:touchwand:bridge">
-		
-		
-		
-		
+								
 		<parameter name="username" type="text">
 			<context>login-details</context>
 			<label>Username</label>

@@ -47,13 +47,14 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.touchwand", service = ThingHandlerFactory.class)
 public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
 
-    // private ServiceRegistration<?> discoveryServiceRegs;
-
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.concat(TouchWandSwitchHandler.SUPPORTED_THING_TYPES.stream(),
-                    TouchWandBridgeHandler.SUPPORTED_THING_TYPES.stream()).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream
+                    .of(TouchWandSwitchHandler.SUPPORTED_THING_TYPES.stream(),
+                            TouchWandShutterHandler.SUPPORTED_THING_TYPES.stream(),
+                            TouchWandBridgeHandler.SUPPORTED_THING_TYPES.stream())
+                    .flatMap(i -> i).collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -70,6 +71,8 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         } else if (THING_TYPE_SWITCH.equals(thingTypeUID)) {
             return new TouchWandSwitchHandler(thing);
+        } else if (THING_TYPE_SHUTTER.equals(thingTypeUID)) {
+            return new TouchWandShutterHandler(thing);
         }
 
         return null;

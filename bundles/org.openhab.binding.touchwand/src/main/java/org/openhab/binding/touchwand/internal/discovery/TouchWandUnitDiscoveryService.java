@@ -65,11 +65,16 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+
         if (touchWandBridgeHandler.touchWandClient == null) {
             return;
         }
+
         logger.debug("Starting TouchWand discovery on bridge {}", touchWandBridgeHandler.getThing().getUID());
         String response = touchWandBridgeHandler.touchWandClient.cmdListUnits();
+        if (response == null) {
+            return;
+        }
 
         logger.debug("Recieved list units respose {}", response);
 
@@ -83,20 +88,23 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                     String name = unitObj.get("name").getAsString();
                     String type = unitObj.get("type").getAsString();
                     String connectivity = unitObj.get("connectivity").getAsString();
+                    TouchWandUnitData touchWandUnit = new TouchWandUnitData(unitId, name);
                     if (type.equals("Switch")) {
-                        TouchWandUnitData touchWandUnit = new TouchWandUnitData(unitId, name);
                         addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SWITCH);
-                        logger.debug("id is {} name {} type {} connectivity {}", unitId, name, type, connectivity);
+                    } else if (type.equals("shutter")) {
+                        addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
                     }
+                    logger.debug("id is {} name {} type {} connectivity {}", unitId, name, type, connectivity);
                 }
             }
         } catch (JsonSyntaxException e) {
-            logger.warn("Could not parse list units response");
+            logger.warn("Could not parse list units response {}", e.getMessage());
         }
     }
 
     public void activate() {
         super.activate(null);
+        removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
         logger.debug("activate");
     }
 

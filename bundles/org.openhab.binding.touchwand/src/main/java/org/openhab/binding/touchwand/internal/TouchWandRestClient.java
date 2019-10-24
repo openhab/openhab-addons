@@ -52,12 +52,15 @@ public class TouchWandRestClient {
     public static final String CMD_LOGIN = "login";
     public static final String CMD_LIST_UNITS = "listunits";
     public static final String CMD_LIST_SCENARIOS = "listsencarios";
-    public static final String CMD_UNIT_ACTION_ON = "uniton";
-    public static final String CMD_UNIT_ACTION_OFF = "unitoff";
+    public static final String CMD_UNIT_ACTION = "action";
     public static final String CMD_GET_UNIT_BY_ID = "getunitbyid";
 
-    public static final String CMD_OFF = "{\"id\":%s ,\"value\":" + SWITCH_STATUS_OFF + "}";
-    public static final String CMD_ON = "{\"id\":%s ,\"value\":" + SWITCH_STATUS_ON + "}";
+    public static final String ACTION_SWITCH_OFF = "{\"id\":%s,\"value\":" + SWITCH_STATUS_OFF + "}";
+    public static final String ACTION_SWITCH_ON = "{\"id\":%s,\"value\":" + SWITCH_STATUS_ON + "}";
+    public static final String ACTION_SHUTTER_DOWN = "{\"id\":%s,\"value\":0,\"type\":\"height\"}";
+    public static final String ACTION_SHUTTER_UP = "{\"id\":%s,\"value\":255,\"type\":\"height\"}";
+    public static final String ACTION_SHUTTER_STOP = "{\"id\":%s,\"value\":0,\"type\":\"stop\"}";
+    public static final String ACTION_SHUTTER_POSITION = "{\"id\":%s,\"value\":%s}";
 
     private static final int timeout = 10000; // 10 seconds
     private Map<String, String> commandmap = new HashMap<String, String>();
@@ -67,8 +70,7 @@ public class TouchWandRestClient {
         commandmap.put(CMD_LOGIN, "/auth/login?");
         commandmap.put(CMD_LIST_UNITS, "/units/listUnits");
         commandmap.put(CMD_LIST_SCENARIOS, "/scenarios/listScenarios");
-        commandmap.put(CMD_UNIT_ACTION_ON, "/units/action");
-        commandmap.put(CMD_UNIT_ACTION_OFF, "/units/action");
+        commandmap.put(CMD_UNIT_ACTION, "/units/action");
         commandmap.put(CMD_GET_UNIT_BY_ID, "/units/getUnitByID?");
 
         CookieHandler.setDefault(cookieManager);
@@ -82,7 +84,6 @@ public class TouchWandRestClient {
         isConnected = cmdLogin(user, pass, ipAddr);
 
         return isConnected;
-
     }
 
     private final boolean cmdLogin(String user, String pass, String ipAddr) {
@@ -101,40 +102,58 @@ public class TouchWandRestClient {
 
         String command = buildUrl(CMD_LIST_UNITS);
         String response = sendCommand(command, METHOD_GET, null);
-
         return response;
     }
 
     public String cmdGetUnitById(String id) {
-
         String command = buildUrl(CMD_GET_UNIT_BY_ID) + "id=" + id;
         String response = sendCommand(command, METHOD_GET, null);
-
         return response;
-
     }
 
-    public String cmdUnitAction(String id, String action) {
+    public void cmdSwitchOnOff(String id, OnOffType onoff) {
+        String action;
 
-        String command = buildUrl(CMD_UNIT_ACTION_ON);
-        String unitAction = null;
-        if (action.equals(OnOffType.OFF.toString())) {
-            unitAction = String.format(CMD_OFF, id);
-        } else if (action.equals(OnOffType.ON.toString())) {
-            unitAction = String.format(CMD_ON, id);
+        if (OnOffType.OFF.equals(onoff)) {
+            action = String.format(ACTION_SWITCH_OFF, id);
+        } else {
+            action = String.format(ACTION_SWITCH_ON, id);
         }
+        cmdUnitAction(action);
+    }
 
-        String response = sendCommand(command, METHOD_POST, unitAction);
+    public void cmdShutterUp(String id) {
+        String action = String.format(ACTION_SHUTTER_UP, id);
+        cmdUnitAction(action);
+    }
+
+    public void cmdShutterDown(String id) {
+        String action = String.format(ACTION_SHUTTER_DOWN, id);
+        cmdUnitAction(action);
+    }
+
+    public void cmdShutterPosition(String id, String position) {
+        String action = String.format(ACTION_SHUTTER_POSITION, id, position);
+        cmdUnitAction(action);
+    }
+
+    public void cmdShutterStop(String id) {
+        String action = String.format(ACTION_SHUTTER_STOP, id);
+        cmdUnitAction(action);
+    }
+
+    private String cmdUnitAction(String action) {
+
+        String command = buildUrl(CMD_UNIT_ACTION);
+        String response = sendCommand(command, METHOD_POST, action);
 
         return response;
     }
 
-    private String buildUrl(String commad) {
+    private String buildUrl(String command) {
 
-        String url = "http://" + touchWandIpAddr + ":" + touchWandPort + commandmap.get(commad);
-
+        String url = "http://" + touchWandIpAddr + ":" + touchWandPort + commandmap.get(command);
         return url;
-
     }
 
     private String sendCommand(String command, String Method, String content) {
