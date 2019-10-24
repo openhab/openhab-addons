@@ -218,7 +218,7 @@
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="authreq" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Authentication Required</label>
 		<description>Authentication required</description>
 		<state pattern="%d" readOnly="true"></state>
