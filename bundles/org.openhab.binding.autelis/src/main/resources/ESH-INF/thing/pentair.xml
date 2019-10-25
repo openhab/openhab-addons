@@ -127,6 +127,7 @@
 			<channel id="temp-pooltemp" typeId="temp-pooltemp" />
 			<channel id="temp-spatemp" typeId="temp-spatemp" />
 			<channel id="temp-airtemp" typeId="temp-airtemp" />
+			<channel id="temp-soltemp" typeId="temp-soltemp" />
 			<channel id="temp-tempunits" typeId="temp-tempunits" />
 			<channel id="temp-htpump" typeId="temp-htpump" />
 			<channel id="pumps-pump1" typeId="pumps-pump1" />
@@ -336,6 +337,14 @@
 		<item-type>Number</item-type>
 		<label>Air Temperature</label>
 		<description>The current air temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="temp-soltemp">
+		<item-type>Number</item-type>
+		<label>Solar Temperature</label>
+		<description>The current Solar temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true">
 		</state>
