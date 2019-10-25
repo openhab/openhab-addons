@@ -151,12 +151,12 @@ Unsupported Z-Way device types: Camera, SensorMultiline, Text. The integration o
 
 ### Channels for the Z-Way Server (Bridge)
 
-| Channel Type ID | Item Type | Category | Description |
-| --------------- | --------- | -------- | ----------- |
-| actions         | String | -      | It is currently possible to update all devices. |
-| secureInclusion | Switch | Switch | Change inclusion type for further inclusions. |
-| inclusion       | Switch | Switch | Start inclusion mode (after a timeout the inclusion will be automatically finished). |
-| exclusion       | Switch | Switch | Start exclusion mode (after a timeout the exclusion will be automatically finished). ||
+| Channel Type ID | Item Type | Category | Description                                                                          |
+|-----------------|-----------|----------|--------------------------------------------------------------------------------------|
+| actions         | String    | -        | It is currently possible to update all devices.                                      |
+| secureInclusion | Switch    | Switch   | Change inclusion type for further inclusions.                                        |
+| inclusion       | Switch    | Switch   | Start inclusion mode (after a timeout the inclusion will be automatically finished). |
+| exclusion       | Switch    | Switch   | Start exclusion mode (after a timeout the exclusion will be automatically finished). |
 
 ## Locations
 
@@ -188,3 +188,5 @@ Because textual configuration isn't useful, follow the instructions in the [Gett
 -   Z-Way device types (especially the probe types) supported by openHAB channels with detailed information (scale types and so on) are not complete.
 -   Configuration of the Z-Wave network by the binding is currently not possible (physical device configuration)
 -   Only polling is available. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
+
+![BMWi](doc/BMWi_4C_Gef_en.jpg)
