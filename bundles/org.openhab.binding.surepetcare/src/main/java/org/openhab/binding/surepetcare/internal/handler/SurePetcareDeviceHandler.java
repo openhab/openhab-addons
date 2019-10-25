@@ -206,7 +206,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
     private void handleCurfewCommand(ChannelUID channelUID, Command command) {
         String channelUIDBase = channelUID.getIdWithoutGroup().substring(0,
                 channelUID.getIdWithoutGroup().length() - 1);
-        Integer slot = new Integer(channelUID.getAsString().substring(channelUID.getAsString().length() - 1));
+        int slot = Integer.parseInt(channelUID.getAsString().substring(channelUID.getAsString().length() - 1));
 
         synchronized (petcareAPI) {
             boolean requiresUpdate = false;
@@ -247,7 +247,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                             }
                             curfew.unlockTime = command.toString();
                         } else {
-                            logger.warn("Incorrect curfew time format HH:mm: {}", command.toString());
+                            logger.warn("Incorrect curfew time format HH:mm: {}", command);
                         }
                         break;
                     default:
@@ -261,7 +261,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                         updateThingCurfews(device);
                     } catch (SurePetcareApiException e) {
                         logger.warn("Error from SurePetcare API. Can't update curfews for device {}",
-                                device.toString());
+                                device);
                     }
                 }
             }
