@@ -170,7 +170,7 @@ public class TeleinfoInputStream extends InputStream {
         try {
             logger.debug("seeking the next header frame...");
             logger.trace("waitNextHeaderFrameTimeoutInMs = {}", waitNextHeaderFrameTimeoutInMs);
-            seekNextHeaderFrameTask.get(Long.MAX_VALUE, TimeUnit.MICROSECONDS); // FIXME
+            seekNextHeaderFrameTask.get(waitNextHeaderFrameTimeoutInMs, TimeUnit.MICROSECONDS);
 
             if (groupLine == null) { // end of stream
                 return null;
@@ -242,7 +242,7 @@ public class TeleinfoInputStream extends InputStream {
         try {
             logger.debug("reading data frame...");
             logger.trace("readingFrameTimeoutInMs = {}", readingFrameTimeoutInMs);
-            Map<Label, Object> frameValues = nextFrameFuture.get(Long.MAX_VALUE, TimeUnit.MICROSECONDS); // FIXME
+            Map<Label, Object> frameValues = nextFrameFuture.get(readingFrameTimeoutInMs, TimeUnit.MICROSECONDS);
 
             // build the frame from map values
             final Frame frame = buildFrame(frameValues);
