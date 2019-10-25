@@ -64,18 +64,29 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
                     Frame nextFrame = teleinfoStream.readNextFrame();
                     listener.onFrameReceived(this, nextFrame);
                 } catch (TimeoutException e) {
-                    logger.error("Got timeout {} during receiving.", e.getLocalizedMessage());
+                    logger.error("Got timeout '{}' during receiving.", e.getLocalizedMessage());
                     if (!listener.continueOnReadNextFrameTimeoutException(e)) {
                         break;
                     }
+                    skipInputStreamBuffer();
                 } catch (InvalidFrameException e) {
-                    listener.onInvalidFrameReceived(this, e);
                     logger.error("Got invalid frame. Detail: '{}'", e.getLocalizedMessage());
+                    listener.onInvalidFrameReceived(this, e);
                 } catch (IOException e) {
                     logger.error("Got I/O exception. Detail: '{}'", e.getLocalizedMessage(), e);
+
+                    try {
+                        logger.debug("serialPort.getInputStream().available() = {}",
+                                serialPort.getInputStream().available());
+                    } catch (IOException e2) {
+                        logger.debug("serialPort.getInputStream().available() throws an IOException (message: {})",
+                                e2.getLocalizedMessage());
+                    }
+
                     if (!listener.continueOnSerialPortInputStreamIOException(e)) {
                         break;
                     }
+                    skipInputStreamBuffer();
                 }
             }
         } catch (IOException e) {
@@ -85,5 +96,12 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
         logger.debug("Stopped Teleinfo receive thread");
 
         serialPort.removeEventListener();
+    }
+
+    @SuppressWarnings("null")
+    private void skipInputStreamBuffer() throws IOException {
+        logger.trace("skipInputStreamBuffer() [start]");
+        serialPort.getInputStream().skip(serialPort.getInputStream().available());
+        logger.trace("skipInputStreamBuffer() [end]");
     }
 }
