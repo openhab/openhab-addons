@@ -450,7 +450,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     controllerInfo.getRhythm().getRhythmActive().booleanValue() ? OnOffType.ON : OnOffType.OFF);
             updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode().intValue()));
             updateState(CHANNEL_RHYTHM_STATE,
-                    controllerInfo.getRhythm().getRhythmConnected().booleanValue() ? OnOffType.ON : OnOffType.OFF);
+                    controllerInfo.getRhythm().getRhythmConnected() ? OnOffType.ON : OnOffType.OFF);
         }
         // update bridge properties which may have changed, or are not present during discovery
         Map<String, String> properties = editProperties();

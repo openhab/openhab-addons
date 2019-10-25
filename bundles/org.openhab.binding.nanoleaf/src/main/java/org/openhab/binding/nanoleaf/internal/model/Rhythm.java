@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Represents rhythm module settings
  *
@@ -21,20 +19,20 @@ import org.apache.commons.lang.StringUtils;
  */
 public class Rhythm {
 
-    private Boolean rhythmConnected;
+    private boolean rhythmConnected;
     private Boolean rhythmActive;
-    private Integer rhythmId;
+    private int rhythmId;
     private String hardwareVersion;
     private String firmwareVersion;
     private Boolean auxAvailable;
     private Integer rhythmMode;
     private RhythmPos rhythmPos;
 
-    public Boolean getRhythmConnected() {
-        return rhythmConnected == null ? Boolean.FALSE : rhythmConnected;
+    public boolean getRhythmConnected() {
+        return rhythmConnected;
     }
 
-    public void setRhythmConnected(Boolean rhythmConnected) {
+    public void setRhythmConnected(boolean rhythmConnected) {
         this.rhythmConnected = rhythmConnected;
     }
 
@@ -46,16 +44,16 @@ public class Rhythm {
         this.rhythmActive = rhythmActive;
     }
 
-    public Integer getRhythmId() {
-        return rhythmId == null ? new Integer(0) : this.rhythmId;
+    public int getRhythmId() {
+        return rhythmId;
     }
 
-    public void setRhythmId(Integer rhythmId) {
+    public void setRhythmId(int rhythmId) {
         this.rhythmId = rhythmId;
     }
 
     public String getHardwareVersion() {
-        return hardwareVersion == null ? StringUtils.EMPTY : this.hardwareVersion;
+        return hardwareVersion == null ? "" : this.hardwareVersion;
     }
 
     public void setHardwareVersion(String hardwareVersion) {
@@ -63,7 +61,7 @@ public class Rhythm {
     }
 
     public String getFirmwareVersion() {
-        return firmwareVersion == null ? StringUtils.EMPTY : this.firmwareVersion;
+        return firmwareVersion == null ? "" : this.firmwareVersion;
     }
 
     public void setFirmwareVersion(String firmwareVersion) {
