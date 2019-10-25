@@ -162,7 +162,7 @@ Channel names in **bold** are read/write, everything else is read-only
 | gender                 | Text        | The pet's gender                                                 |
 | breed                  | Text        | The pet's breed                                                  |
 | species                | Text        | The pet's species                                                |
-| photoURL               | Text        | The URL of the pet's photo                                       |
+| photo                  | Image       | The image of the pet                                             |
 | tagIdentifier          | Text        | The unique identifier of the pet's micro chip or collar tag      |
 | **location**           | Text        | The current location of the pet (0=unknown, 1=inside, 2=outside) |
 | locationChanged        | DateTime    | The time when the location was last changed                      |
@@ -256,7 +256,7 @@ String     UR_1e_Comment            "Pet Comment [%s]"                          
 String     UR_1e_Gender             "Pet Gender [%s]"                                                   (dgPet)  { channel="surepetcare:pet:bridge1:60487:gender" }
 String     UR_1e_Breed              "Pet Breed [%s]"                                                    (dgPet)  { channel="surepetcare:pet:bridge1:60487:breed" }
 String     UR_1e_Species            "Pet Species [%s]"                                                  (dgPet)  { channel="surepetcare:pet:bridge1:60487:species" }
-String     UR_1e_PhotoURL           "Pet Photo URL [%s]"                                                (dgPet)  { channel="surepetcare:pet:bridge1:60487:photoURL" }
+Image      UR_1e_PhotoURL           "Pet Photo"                                                         (dgPet)  { channel="surepetcare:pet:bridge1:60487:photo" }
 String     UR_1e_TagIdentifier      "Pet Tag Identifier [%s]"                                           (dgPet)  { channel="surepetcare:pet:bridge1:60487:tagIdentifier" }
 String     UR_1e_Location           "Pet Location [%s]"                                                 (dgPet)  { channel="surepetcare:pet:bridge1:60487:location" }
 DateTime   UR_1e_LocationChanged    "Pet Location Last Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM:%1$tS]"   (dgPet)  { channel="surepetcare:pet:bridge1:60487:locationChanged" }
