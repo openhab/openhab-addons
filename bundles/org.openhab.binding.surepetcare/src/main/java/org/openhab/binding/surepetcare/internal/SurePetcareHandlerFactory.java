@@ -75,7 +75,7 @@ public class SurePetcareHandlerFactory extends BaseThingHandlerFactory {
      */
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        logger.debug("createHandler - create handler for {}", thing.toString());
+        logger.debug("createHandler - create handler for {}", thing);
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_HOUSEHOLD)) {

@@ -87,11 +87,7 @@ public class SurePetcarePetActivity {
     }
 
     public ZonedDateTime getLocationChanged() {
-        if (since != null) {
-            return since.toInstant().atZone(ZoneId.systemDefault()).withNano(0);
-        } else {
-            return null;
-        }
+        return since == null ? null : since.toInstant().atZone(ZoneId.systemDefault()).withNano(0);
     }
 
 }

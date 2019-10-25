@@ -70,19 +70,11 @@ public class SurePetcareBaseObject {
     }
 
     public ZonedDateTime getCreatedAtAsZonedDateTime() {
-        if (createdAt != null) {
-            return createdAt.toInstant().atZone(ZoneId.systemDefault());
-        } else {
-            return null;
-        }
+        return createdAt == null ? null : createdAt.toInstant().atZone(ZoneId.systemDefault());
     }
 
     public ZonedDateTime getUpdatedAtAsZonedDateTime() {
-        if (updatedAt != null) {
-            return updatedAt.toInstant().atZone(ZoneId.systemDefault());
-        } else {
-            return null;
-        }
+        return updatedAt == null ? null : updatedAt.toInstant().atZone(ZoneId.systemDefault());
     }
 
     public @NonNull Map<String, Object> getThingProperties() {

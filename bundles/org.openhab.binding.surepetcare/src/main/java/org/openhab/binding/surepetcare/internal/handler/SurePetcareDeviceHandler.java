@@ -86,7 +86,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                                 } catch (SurePetcareApiException e) {
                                     logger.warn(
                                             "Error from SurePetcare API. Can't update locking mode {} for device {}",
-                                            newLockingModeIdStr, device.toString());
+                                            newLockingModeIdStr, device);
                                 }
                             }
                         }
@@ -107,7 +107,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                                     logger.warn("Invalid locking mode: {}, ignoring command", newLedModeIdStr);
                                 } catch (SurePetcareApiException e) {
                                     logger.warn("Error from SurePetcare API. Can't update LED mode {} for device {}",
-                                            newLedModeIdStr, device.toString());
+                                            newLedModeIdStr, device);
                                 }
                             }
                         }
@@ -123,7 +123,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
     protected void updateThing() {
         SurePetcareDevice device = petcareAPI.getDevice(thing.getUID().getId());
         if (device != null) {
-            logger.debug("Updating all thing channels for device : {}", device.toString());
+            logger.debug("Updating all thing channels for device : {}", device);
             updateState(DEVICE_CHANNEL_ID, new DecimalType(device.getId()));
             updateState(DEVICE_CHANNEL_NAME, new StringType(device.getName()));
             updateState(DEVICE_CHANNEL_PRODUCT, new StringType(device.getProductId().toString()));
@@ -213,7 +213,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
             SurePetcareDevice device = petcareAPI.getDevice(thing.getUID().getId());
             if (device != null) {
                 SurePetcareDeviceControl existingControl = device.getControl();
-                logger.debug("Old Curfew Control: {}", existingControl.toString());
+                logger.debug("Old Curfew Control: {}", existingControl);
 
                 SurePetcareDeviceCurfew curfew = existingControl.getCurfewList().get(slot - 1);
                 logger.debug("channelUIDBase: {}", channelUIDBase);
@@ -230,14 +230,14 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                         break;
                     case DEVICE_CHANNEL_CURFEW_LOCK_TIME:
                         if ((command instanceof StringType) && (command.toString().matches(CURFEW_TIME_REGEXP))) {
-                            logger.debug("old locktime: {}, new locktime: {}", curfew.lockTime, command.toString());
+                            logger.debug("old locktime: {}, new locktime: {}", curfew.lockTime, command);
 
                             if (!(curfew.lockTime.equals(command.toString())) && curfew.enabled) {
                                 requiresUpdate = true;
                             }
                             curfew.lockTime = command.toString();
                         } else {
-                            logger.warn("Incorrect curfew time format HH:mm: {}", command.toString());
+                            logger.warn("Incorrect curfew time format HH:mm: {}", command);
                         }
                         break;
                     case DEVICE_CHANNEL_CURFEW_UNLOCK_TIME:
@@ -260,8 +260,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                         petcareAPI.setCurfews(device, existingControl.getCurfewList());
                         updateThingCurfews(device);
                     } catch (SurePetcareApiException e) {
-                        logger.warn("Error from SurePetcare API. Can't update curfews for device {}",
-                                device);
+                        logger.warn("Error from SurePetcare API. Can't update curfews for device {}", device);
                     }
                 }
             }

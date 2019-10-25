@@ -199,11 +199,7 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     }
 
     public ZonedDateTime getDateOfBirthAsZonedDateTime() {
-        if (dateOfBirth != null) {
-            return dateOfBirth.toInstant().atZone(ZoneId.systemDefault());
-        } else {
-            return null;
-        }
+        return dateOfBirth == null ? null : dateOfBirth.toInstant().atZone(ZoneId.systemDefault());
     }
 
     @Override

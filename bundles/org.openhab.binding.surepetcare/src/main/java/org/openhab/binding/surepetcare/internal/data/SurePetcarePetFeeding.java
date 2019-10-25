@@ -71,10 +71,6 @@ public class SurePetcarePetFeeding {
     }
 
     public ZonedDateTime getZonedFeedChangeAt() {
-        if (feedChangeAt != null) {
-            return feedChangeAt.toInstant().atZone(ZoneId.systemDefault());
-        } else {
-            return null;
-        }
+        return feedChangeAt == null ? null : feedChangeAt.toInstant().atZone(ZoneId.systemDefault());
     }
 }

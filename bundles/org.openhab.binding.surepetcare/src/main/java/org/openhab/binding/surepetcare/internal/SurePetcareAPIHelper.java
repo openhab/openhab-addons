@@ -22,6 +22,7 @@ import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -218,11 +219,7 @@ public class SurePetcareAPIHelper {
      */
     public final @Nullable SurePetcarePetStatus getPetStatus(String id) {
         SurePetcarePet pet = topologyCache.getPetById(id);
-        if (pet != null) {
-            return pet.getPetStatus();
-        } else {
-            return null;
-        }
+        return pet == null ? null : pet.getPetStatus();
     }
 
     /**
@@ -416,7 +413,8 @@ public class SurePetcareAPIHelper {
                 StringBuilder sb = new StringBuilder();
                 int httpResult = con.getResponseCode();
                 if (httpResult == HttpURLConnection.HTTP_OK) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
+                    BufferedReader br = new BufferedReader(
+                            new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
                     String line = null;
                     while ((line = br.readLine()) != null) {
                         sb.append(line + "\n");

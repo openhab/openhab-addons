@@ -135,7 +135,7 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("SurePetcareBridgeHandler handleCommand called with command: {}", command.toString());
+        logger.debug("SurePetcareBridgeHandler handleCommand called with command: {}", command);
         if (command instanceof RefreshType) {
             updateState(BRIDGE_CHANNEL_ONLINE, OnOffType.from(petcareAPI.isOnline()));
             updateState(BRIDGE_CHANNEL_REFRESH, OnOffType.OFF);

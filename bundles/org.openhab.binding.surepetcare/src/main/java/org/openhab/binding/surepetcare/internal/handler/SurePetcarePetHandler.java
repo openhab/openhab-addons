@@ -64,7 +64,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("PetHandler handleCommand called with command: {}", command.toString());
+        logger.debug("PetHandler handleCommand called with command: {}", command);
 
         if (command instanceof RefreshType) {
             updateThing();
@@ -89,7 +89,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                                     logger.warn("Invalid location id: {}, ignoring command", newLocationIdStr);
                                 } catch (SurePetcareApiException e) {
                                     logger.warn("Error from SurePetcare API. Can't update location {} for pet {}",
-                                            newLocationIdStr, pet.toString());
+                                            newLocationIdStr, pet);
                                 }
                             }
                         }
@@ -106,7 +106,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
         synchronized (petcareAPI) {
             SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
             if (pet != null) {
-                logger.debug("Updating all thing channels for pet : {}", pet.toString());
+                logger.debug("Updating all thing channels for pet : {}", pet);
                 updateState(PET_CHANNEL_ID, new DecimalType(pet.getId()));
                 if (pet.getName() != null) {
                     updateState(PET_CHANNEL_NAME, new StringType(pet.getName()));
