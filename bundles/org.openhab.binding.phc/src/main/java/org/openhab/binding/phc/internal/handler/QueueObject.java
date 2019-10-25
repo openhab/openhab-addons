@@ -28,6 +28,12 @@ class QueueObject {
     private int counter;
     private short time;
 
+    public QueueObject(String moduleType, byte moduleAddress, byte channel, Command command) {
+        this.moduleType = moduleType;
+        this.moduleAddress = moduleAddress;
+        this.channel = channel;
+        this.command = command;
+    }
     public QueueObject(String moduleType, int moduleAddress, String channel, Command command) {
         this.moduleType = moduleType;
         this.moduleAddress = (byte) moduleAddress;
