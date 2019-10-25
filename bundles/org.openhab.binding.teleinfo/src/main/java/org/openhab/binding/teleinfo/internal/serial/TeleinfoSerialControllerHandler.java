@@ -103,7 +103,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             serialPort.addEventListener(receiveThread);
             serialPort.notifyOnDataAvailable(true);
 
-            logger.info("Serial port is initialized");
+            logger.info("Teleinfo Serial port is initialized");
         } catch (PortInUseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_INUSE);
