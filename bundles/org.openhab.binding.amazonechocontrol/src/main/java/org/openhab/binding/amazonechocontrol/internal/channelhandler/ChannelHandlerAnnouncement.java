@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
@@ -51,10 +50,9 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                     try {
                         AnnouncementRequestJson request = parseJson(commandValue, AnnouncementRequestJson.class);
                         if (request != null) {
-                            if (StringUtils.isEmpty(request.speak)) {
+                            speak = request.speak;
+                            if (speak == null || speak.length() == 0) {
                                 speak = " "; // blank generates a beep
-                            } else {
-                                speak = request.speak;
                             }
                             title = request.title;
                             body = request.body;
