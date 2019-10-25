@@ -771,9 +771,9 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                 String capabilityId = deviceStructMan.getCapabilityId(deviceId, Capability.TYPE_VARIABLEACTUATOR);
                 client.setVariableActuatorState(capabilityId, state);
 
-                // PSS / PSSO / ISS2
-            } else if (deviceType.equals(DEVICE_PSS) || deviceType.equals(DEVICE_PSSO)
-                    || deviceType.equals(DEVICE_ISS2)) {
+                // PSS / PSSO / BT-PSS / ISS2
+            } else if (deviceType.equals(DEVICE_PSS) || deviceType.equals(DEVICE_PSSO) || 
+                        deviceType.equals(DEVICE_BT-PSS) || deviceType.equals(DEVICE_ISS2)) {
                 String capabilityId = deviceStructMan.getCapabilityId(deviceId, Capability.TYPE_SWITCHACTUATOR);
                 client.setSwitchActuatorState(capabilityId, state);
             }
