@@ -84,6 +84,7 @@ public class InnogyBindingConstants {
     public static final String DEVICE_SHCA = "SHCA"; // smarthome controller version 2
     public static final String DEVICE_PSS = "PSS"; // pluggable smart switch
     public static final String DEVICE_PSSO = "PSSO"; // pluggable smart switch outdoor
+    public static final String DEVICE_BT-PSS = "BT-PSS"; // Bluetooth pluggable smart switch
     public static final String DEVICE_VARIABLE_ACTUATOR = "VariableActuator";
     public static final String DEVICE_RST = "RST"; // radiator mounted smart thermostat
     public static final String DEVICE_RST2 = "RST2"; // radiator mounted smart thermostat (newer version)
@@ -107,7 +108,7 @@ public class InnogyBindingConstants {
 
     public static final Set<String> SUPPORTED_DEVICES = Collections
             .unmodifiableSet(Stream
-                    .of(DEVICE_SHC, DEVICE_SHCA, DEVICE_PSS, DEVICE_PSSO, DEVICE_VARIABLE_ACTUATOR, DEVICE_RST,
+                    .of(DEVICE_SHC, DEVICE_SHCA, DEVICE_PSS, DEVICE_PSSO, DEVICE_BT-PSS, DEVICE_VARIABLE_ACTUATOR, DEVICE_RST,
                             DEVICE_RST2, DEVICE_WRT, DEVICE_WDS, DEVICE_ISS2, DEVICE_WSD, DEVICE_WSD2, DEVICE_WMD,
                             DEVICE_WMDO, DEVICE_WSC2, DEVICE_BRC8, DEVICE_ISC2, DEVICE_ISD2, DEVICE_ISR2, DEVICE_PSD,
                             DEVICE_ANALOG_METER, DEVICE_GENERATION_METER, DEVICE_SMART_METER, DEVICE_TWO_WAY_METER)
@@ -117,6 +118,7 @@ public class InnogyBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_PSS = new ThingTypeUID(BINDING_ID, DEVICE_PSS);
     public static final ThingTypeUID THING_TYPE_PSSO = new ThingTypeUID(BINDING_ID, DEVICE_PSSO);
+    public static final ThingTypeUID THING_TYPE_BT-PSS = new ThingTypeUID(BINDING_ID, DEVICE_BT-PSS);
     public static final ThingTypeUID THING_TYPE_VARIABLE_ACTUATOR = new ThingTypeUID(BINDING_ID,
             DEVICE_VARIABLE_ACTUATOR);
     public static final ThingTypeUID THING_TYPE_RST = new ThingTypeUID(BINDING_ID, DEVICE_RST);
@@ -142,8 +144,8 @@ public class InnogyBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES = Collections
             .unmodifiableSet(Stream
-                    .of(THING_TYPE_PSS, THING_TYPE_PSSO, THING_TYPE_VARIABLE_ACTUATOR, THING_TYPE_RST, THING_TYPE_RST2,
-                            THING_TYPE_WRT, THING_TYPE_WDS, THING_TYPE_ISS2, THING_TYPE_WSD, THING_TYPE_WSD2,
+                    .of(THING_TYPE_PSS, THING_TYPE_PSSO, THING_TYPE_BT-PSS, THING_TYPE_VARIABLE_ACTUATOR, THING_TYPE_RST, 
+                            THING_TYPE_RST2, THING_TYPE_WRT, THING_TYPE_WDS, THING_TYPE_ISS2, THING_TYPE_WSD, THING_TYPE_WSD2,
                             THING_TYPE_WMD, THING_TYPE_WMDO, THING_TYPE_WSC2, THING_TYPE_BRC8, THING_TYPE_ISC2,
                             THING_TYPE_ISD2, THING_TYPE_ISR2, THING_TYPE_PSD, THING_TYPE_ANALOG_METER,
                             THING_TYPE_GENERATION_METER, THING_TYPE_SMART_METER, THING_TYPE_TWO_WAY_METER)
