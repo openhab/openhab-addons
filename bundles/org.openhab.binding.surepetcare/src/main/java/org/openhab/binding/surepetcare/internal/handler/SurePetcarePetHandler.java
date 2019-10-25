@@ -18,16 +18,19 @@ import java.time.ZonedDateTime;
 
 import javax.measure.quantity.Mass;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareApiException;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
@@ -36,6 +39,7 @@ import org.openhab.binding.surepetcare.internal.data.SurePetcarePet;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePetActivity;
 import org.openhab.binding.surepetcare.internal.data.SurePetcarePetFeeding;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareTag;
+import org.openhab.binding.surepetcare.internal.utils.ByteArrayFileCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +53,10 @@ import org.slf4j.LoggerFactory;
 public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcarePetHandler.class);
+
+    private static final String JPEG_CONTENT_TYPE = "image/jpeg";
+
+    private static final ByteArrayFileCache IMAGE_CACHE = new ByteArrayFileCache("org.openhab.binding.surepetcare");
 
     public SurePetcarePetHandler(Thing thing, SurePetcareAPIHelper petcareAPI) {
         super(thing, petcareAPI);
@@ -116,7 +124,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                     updateState(PET_CHANNEL_SPECIES, new StringType(pet.getSpeciesId().toString()));
                 }
                 if (pet.getPhoto() != null) {
-                    updateState(PET_CHANNEL_PHOTO_URL, new StringType(pet.getPhoto().getLocation()));
+                    updateState(PET_CHANNEL_PHOTO, getPetPhotoImage(pet.getPhoto().getLocation()));
                 }
                 SurePetcarePetActivity loc = pet.getPetStatus().getActivity();
                 if (loc != null) {
@@ -181,6 +189,37 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                 logger.debug("Trying to update unknown pet: {}", thing.getUID().getId());
             }
         }
+    }
+
+    /**
+     * Downloads the image for the given pet photo url.
+     *
+     * @param url the url of the pet photo
+     * @return the pet image as {@link RawType}
+     */
+    public static RawType getPetPhotoImage(String url) {
+        if (StringUtils.isEmpty(url)) {
+            throw new IllegalArgumentException("Cannot download pet photo as image url is null.");
+        }
+
+        return downloadPetPhotoFromCache(String.format(url));
+    }
+
+    private static RawType downloadPetPhotoFromCache(String url) {
+        if (IMAGE_CACHE.containsKey(url)) {
+            return new RawType(IMAGE_CACHE.get(url), JPEG_CONTENT_TYPE);
+        } else {
+            RawType image = downloadPetPhoto(url);
+            if (image != null) {
+                IMAGE_CACHE.put(url, image.getBytes());
+                return image;
+            }
+        }
+        return null;
+    }
+
+    private static RawType downloadPetPhoto(String url) {
+        return HttpUtil.downloadImage(url);
     }
 
 }

@@ -143,7 +143,7 @@
 			<channel id="gender" typeId="genderType" />
 			<channel id="breed" typeId="breedType" />
 			<channel id="species" typeId="speciesType" />
-			<channel id="photoURL" typeId="photoURLType" />
+			<channel id="photo" typeId="photoType" />
 			<channel id="tagIdentifier" typeId="tagIdentifierType" />
 			<channel id="location" typeId="locationType" />
 			<channel id="locationChanged" typeId="locationChangedType" />
@@ -303,11 +303,11 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="photoURLType">
-		<item-type>String</item-type>
-		<label>Photo URL</label>
+	<channel-type id="photoType">
+		<item-type>Image</item-type>
+		<label>Pet Photo</label>
 		<description>The URL of the pet photo</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="tagIdentifierType">

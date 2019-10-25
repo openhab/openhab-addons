@@ -103,7 +103,7 @@ public class SurePetcareConstants {
     public static final String PET_CHANNEL_GENDER = "gender";
     public static final String PET_CHANNEL_BREED = "breed";
     public static final String PET_CHANNEL_SPECIES = "species";
-    public static final String PET_CHANNEL_PHOTO_URL = "photoURL";
+    public static final String PET_CHANNEL_PHOTO = "photo";
     public static final String PET_CHANNEL_LOCATION = "location";
     public static final String PET_CHANNEL_LOCATION_CHANGED = "locationChanged";
     public static final String PET_CHANNEL_LOCATION_CHANGED_THROUGH = "locationChangedThrough";
