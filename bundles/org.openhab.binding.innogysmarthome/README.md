@@ -1,7 +1,7 @@
 # innogy SmartHome Binding
 
 The binding integrates the [innogy SmartHome](http://innogy.com/smarthome) system into openHAB.
-It uses the official API as provided by innogy as cloud service.
+It uses the official API 1.1 as provided by innogy as cloud service.
 As all status updates and commands have to go through the API, a permanent internet connection is required.
 Currently there is no API for a direct communication with the innogy SmartHome Controller (SHC).
 
@@ -10,7 +10,7 @@ Currently there is no API for a direct communication with the innogy SmartHome C
 ### Bridge
 
 The innogy SmartHome Controller (SHC) is the bridge, that provides the central communication with the devices.
-Without the SHC, you cannot communicate with the devices.
+Without the SHC, you cannot communicate with the devices. This binding supports both the SHC and the SHC2 (with support for Bluetooth devices)
 
 ### Devices
 
@@ -27,6 +27,7 @@ The channels are described in detail in the next chapter.
 | PSD | Pluggable Smart Dimmer | dimmer |
 | PSS | Pluggable Smart Switch, indoor | switch |
 | PSSO | Pluggable Smart Switch, outdoor | switch |
+| BT-PSS | Bluetooth Pluggable Smart Switch, indoor | switch |
 | RST | Radiator Mounted Smart Thermostat | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
 | RST2 | Radiator Mounted Smart Thermostat (newer two battery version since 2018) | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
 | | VariableActuator | switch |
@@ -234,7 +235,7 @@ If the bridge stays offline with the following status shown in the PaperUI, the 
 To solve this on a linux system, follow this steps:
 
 1. Download the certificates (.cer-files) of https://home.innogy-smarthome.de and https://innogy.com including the "DigiCert Global Root G2" to your computer.
-As this depends on the usen browser and operating system, please google on how to achieve this for your situation.
+As this depends on the used browser and operating system, please google on how to achieve this for your situation.
 2. On your linux system, goto your Java Machine's certificate store, e.g. `/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security`.
 The path should include a file called `cacerts` (this is the certificate store) and may differ depending on the system used.
 3. Copy the .cer-files from step 1 into this directory.
