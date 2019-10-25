@@ -20,7 +20,7 @@ The table below lists the Nest binding thing types:
 ## Authorization
 
 The Nest API uses OAuth for authorization.
-Therefor the binding needs some authorization parameters before it can access your Nest account via the Nest API.
+Therefore the binding needs some authorization parameters before it can access your Nest account via the Nest API.
 
 To get these authorization parameters you first need to sign up as a [Nest Developer](https://developer.nest.com) and [register a new Product](https://developer.nest.com/products/new) (free and instant).
 
@@ -117,7 +117,7 @@ Information about the last camera event (requires Nest Aware subscription).
 | rush_hour_rewards_enrollment | Switch    | If rush hour rewards system is enabled or not                                                          |      R     |
 | security_state               | String    | Security state of the structure (OK, DETER)                                                            |      R     |
 | smoke_alarm_state            | String    | Smoke alarm state (OK, EMERGENCY, WARNING)                                                             |      R     |
-| time_zone                    | String    | The time zone for the structure ([IANA time zone format](http://www.iana.org/time-zones))              |      R     |
+| time_zone                    | String    | The time zone for the structure ([IANA time zone format](https://www.iana.org/time-zones))             |      R     |
 
 ### Thermostat Channels
 

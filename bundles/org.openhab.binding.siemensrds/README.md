@@ -20,7 +20,7 @@ If the Configuration Parameters are all valid, then the Climatix IC Account Thin
 If the sign on succeeds, the Thing will indicate its status as Online, otherwise it will show an error status. 
 
 Once the Thing of the type Climatix IC Account has been created and successfully signed on to the cloud server, it will automatically interrogate the server to discover all the respective RDS Smart Thermostat Things associated with that account.
-After a short while, all discovered RDS Smart Thermostat Things will be displayed in the PaperUI Inbox.
+After a short while, all discovered RDS Smart Thermostat Things will be displayed in the Paper UI Inbox.
 If in future you add new RDS Smart Thermostat devices to your Siemens account (e.g. via the Siemens App) then these new devices will also appear in the Inbox.    
 
 ## Thing Configuration for "Climatix IC Account"
@@ -41,7 +41,7 @@ Note: You must create ONLY ONE Thing of the type Climatix IC Account; duplicate 
 ## Thing Configuration for "RDS Smart Thermostat"
 
 Each RDS Smart Thermostat Thing is identified in the Climatix IC Account by means of a unique Plant Id code.
-The PaperUI automatic discovery process determines the Plant Id codes of all connected thermostats automatically.   
+The Paper UI automatic discovery process determines the Plant Id codes of all connected thermostats automatically.   
 
 | Configuration Parameter | Description                                                                                                 | 
 |-------------------------|-------------------------------------------------------------------------------------------------------------|
@@ -75,7 +75,7 @@ Bridge siemensrds:climatixic:mybridgename "Climatix IC Account" [ userEmail="ema
 ```
 
 To manually configure an RDS Smart Thermostat Thing requires knowledge of the "Plant Id" which is a unique code used to identify a specific thermostat device in the Siemens Climatix IC cloud server account.
-The PaperUI automatic Discovery service (see above) discovers the "Plant Id" codes during the discovery process.
+The Paper UI automatic Discovery service (see above) discovers the "Plant Id" codes during the discovery process.
 
 ```
 Bridge siemensrds:climatixic:mybridgename "Climatix IC Account" [ userEmail="email@example.com", userPassword="secret", apiKey="32-character-code-provided-by-siemens", pollingInterval=60 ] {

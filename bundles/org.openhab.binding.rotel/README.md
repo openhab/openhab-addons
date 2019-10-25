@@ -17,7 +17,7 @@ The binding supports all kinds of Rotel protocols:
 For users without serial connector on server side, of course you can add a serial to USB adapter.
 
 You don't need to have your Rotel device directly connected to your openHAB server.
-You can connect it for example to a Raspberry PI and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
+You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
 
 Recent devices provide a network interface (RJ45 connector).
 So you can use the device IP to connect to the device, keeping 9590 as default port.
@@ -132,7 +132,7 @@ Some have additional parameters listed in the next table:
 Some notes:
 
 * On Linux, you may get an error stating the serial port cannot be opened when the Rotel binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Rotel and RFXcom. See the wiki page for more on symlinking the USB ports [](https://github.com/openhab/openhab1-addons/wiki/symlinks).
+* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Rotel and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 * Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is Rotel device specific):
 
 ```
