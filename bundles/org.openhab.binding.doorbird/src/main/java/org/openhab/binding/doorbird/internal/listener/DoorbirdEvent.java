@@ -15,7 +15,7 @@ package org.openhab.binding.doorbird.internal.listener;
 import java.net.DatagramPacket;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -149,7 +149,7 @@ public class DoorbirdEvent {
             bb.rewind();
             // Check for proper event signature
             if (!isValidSignature(bb)) {
-                logger.trace("Received event not a doorbell event: {}", new String(data, Charset.forName("US-ASCII")));
+                logger.trace("Received event not a doorbell event: {}", new String(data, StandardCharsets.US_ASCII));
                 return;
             }
             // Get the decryption version
