@@ -74,14 +74,14 @@ public class BlindHandler extends LutronHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
             return;
         }
-        if (config.type == null || (!(config.type.equalsIgnoreCase(BLIND_TYPE_SHEER))
-                && !(config.type.equalsIgnoreCase(BLIND_TYPE_VENETIAN)))) {
+        if (config.type == null || (!(BLIND_TYPE_SHEER.equalsIgnoreCase(config.type))
+                && !(BLIND_TYPE_VENETIAN.equalsIgnoreCase(config.type)))) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter type not set to valid value");
             return;
         }
         String blindType = config.type;
-        if (blindType.equalsIgnoreCase(BLIND_TYPE_SHEER)) {
+        if (BLIND_TYPE_SHEER.equalsIgnoreCase(blindType)) {
             tiltMax = 50;
         }
         logger.debug("Initializing Blind handler with type {} for integration ID {}", blindType, config.integrationId);

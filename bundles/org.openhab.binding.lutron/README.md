@@ -30,9 +30,9 @@ This binding currently supports the following thing types:
 * **occupancysensor** - Occupancy/vacancy sensor
 * **keypad** - Lutron seeTouch or Hybrid seeTouch Keypad
 * **ttkeypad** - Tabletop seeTouch Keypad
-* **intlkeypad** - International seeTouch Keypad (HomeWorks QS only) [**New in 2.5**]
+* **intlkeypad** - International seeTouch Keypad (HomeWorks QS only)
 * **pico** - Pico Keypad
-* **grafikeyekeypad** - GRAFIK Eye QS Keypad (RadioRA 2/HomeWorks QS only) [**New in 2.5**]
+* **grafikeyekeypad** - GRAFIK Eye QS Keypad (RadioRA 2/HomeWorks QS only)
 * **virtualkeypad** - Repeater virtual keypad
 * **vcrx** - Visor control receiver module (VCRX)
 * **qsio** - HomeWorks QS IO Interface
@@ -198,7 +198,7 @@ Thing configuration file example:
 Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true ]
 ```
 
-### International seeTouch Keypads (Homeworks QS) [**New in 2.5**]
+### International seeTouch Keypads (Homeworks QS)
 
 International seeTouch keypads used in the Homeworks QS system use the **intlkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and led channel types as the **keypad** thing.
@@ -237,7 +237,7 @@ Thing configuration file example:
 Thing pico hallpico [ integrationId=12, model="3BRL", autorelease=true ]
 ```
 
-### GRAFIK Eye QS Keypads (in RadioRA 2/HomeWorks QS systems) [**New in 2.5**]
+### GRAFIK Eye QS Keypads (in RadioRA 2/HomeWorks QS systems)
 
 GRAFIK Eye devices can contain up to 6 lighting dimmers, a scene controller, a time clock, and a front panel with a column of 5 programmable scene buttons and 0 to 3 columns of programmable shade or lighting control buttons.
 They can be used as peripheral devices in a RadioRA 2 or HomeWorks QS system, or can be used as stand-alone controllers that themselves can control other Lutron devices.
