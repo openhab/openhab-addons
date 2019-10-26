@@ -83,7 +83,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
         CustomerDetailsResponse customerDetails = client.getCustomerDetails();
 
         List<Controller> controllers = customerDetails.controllers;
-        if (controllers.size() == 0) {
+        if (controllers.isEmpty()) {
             throw new NotConfiguredException("No controllers found on account");
         }
 
