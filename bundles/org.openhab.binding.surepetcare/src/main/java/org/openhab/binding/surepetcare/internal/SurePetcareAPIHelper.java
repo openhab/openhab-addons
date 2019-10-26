@@ -26,6 +26,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Enumeration;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -76,7 +77,7 @@ public class SurePetcareAPIHelper {
     private static final String DEVICE_BASE_URL = API_URL + "/device";
     private static final String LOGIN_URL = API_URL + "/auth/login";
 
-    private static final int DEFAULT_DEVICE_ID = 12344711;
+    public static final int DEFAULT_DEVICE_ID = 12344711;
 
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .registerTypeAdapter(Date.class, new GsonColonDateTypeAdapter()).create();
@@ -315,10 +316,27 @@ public class SurePetcareAPIHelper {
      * @return a unique device id
      */
     public final Integer getDeviceId() {
-        int decimal = 0;
         try {
-            if (NetworkInterface.getNetworkInterfaces().hasMoreElements()) {
-                NetworkInterface netif = NetworkInterface.getNetworkInterfaces().nextElement();
+            return getDeviceId(NetworkInterface.getNetworkInterfaces(), InetAddress.getLocalHost());
+        } catch (UnknownHostException | SocketException e) {
+            logger.warn("unable to discover mac or hostname, assigning default device id {}", DEFAULT_DEVICE_ID);
+            return DEFAULT_DEVICE_ID;
+        }
+    }
+
+    /**
+     * Returns a unique device id used during the authentication process with the Sure Petcare API. The id is derived
+     * from the local MAC address or hostname provided as arguments
+     *
+     * @param interfaces a list of interface of this host
+     * @param localHostAddress the ip address of the localhost
+     * @return a unique device id
+     */
+    public final int getDeviceId(Enumeration<NetworkInterface> interfaces, InetAddress localHostAddress) {
+        int decimal = DEFAULT_DEVICE_ID;
+        try {
+            if (interfaces.hasMoreElements()) {
+                NetworkInterface netif = interfaces.nextElement();
 
                 byte[] mac = netif.getHardwareAddress();
                 if (mac != null) {
@@ -327,22 +345,20 @@ public class SurePetcareAPIHelper {
                         sb.append(String.format("%02x", mac[i]));
                     }
                     String hex = sb.toString();
-                    decimal = (int) (Long.parseLong(hex, 16) % Integer.MAX_VALUE);
+                    decimal = Math.abs((int) (Long.parseUnsignedLong(hex, 16) % Integer.MAX_VALUE));
                     logger.debug("current MAC address: {}, device id: {}", hex, decimal);
                 } else {
-                    try {
-                        InetAddress ip = InetAddress.getLocalHost();
-                        String hostname = ip.getHostName();
-                        decimal = hostname.hashCode();
-                        logger.debug("current hostname: {}, device id: {}", hostname, decimal);
-                    } catch (UnknownHostException e) {
-                        decimal = DEFAULT_DEVICE_ID;
-                        logger.warn("unable to discover mac or hostname, assigning default device id {}", decimal);
-                    }
+                    String hostname = localHostAddress.getHostName();
+                    decimal = hostname.hashCode();
+                    logger.debug("current hostname: {}, device id: {}", hostname, decimal);
                 }
+            } else {
+                String hostname = localHostAddress.getHostName();
+                decimal = hostname.hashCode();
+                logger.debug("current hostname: {}, device id: {}", hostname, decimal);
             }
         } catch (SocketException e) {
-            logger.warn("Socket Exception: {}", e.getMessage());
+            logger.debug("Socket Exception: {}", e.getMessage());
         }
         return decimal;
     }
