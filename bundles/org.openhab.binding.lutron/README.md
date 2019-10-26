@@ -38,7 +38,7 @@ This binding currently supports the following thing types:
 * **qsio** - HomeWorks QS IO Interface
 * **cco** - Contact closure output module or VCRX CCO
 * **shade** - Lutron shade or motorized drape
-* **blind** - Lutron venetian blind or horizontal sheer blind [**Beta**]
+* **blind** - Lutron venetian blind or horizontal sheer blind [**Experimental**]
 * **greenmode** - Green Mode subsystem
 * **timeclock** - Scheduling subsystem
 
@@ -369,12 +369,12 @@ Thing configuration file example:
 Thing shade libraryshade [ integrationId=33]
 ```
 
-### Blinds [**Beta**]
+### Blinds [**Experimental**]
 
 Each Lutron Sivoia QS Venetian Blind or Horizontal Sheer Blind is controlled by a **blind** thing.
 Besides `integrationId`, it requires that the parameter `type` be set to either "Venetian" for venetian blinds or "Sheer" for horizontal sheer blinds.
 There is no default.
-If discovery is used, the `type` parameter will automatically be correctly set when the **blind** thing is created.
+If discovery is used, the `type` parameter will set automatically when the **blind** thing is created.
 
 Two channels, *blindliftlevel* and *blindtiltlevel*, with item type Rollershutter and category Rollershutter will be created for each **blind** thing.
 They control the up/down motion and the slat tilt motions of the blinds, respectively.
@@ -386,9 +386,8 @@ It is specified as a percentage, where 0% = closed and 100% = fully open. Moveme
 **Note:** While a blind is moving to a specific level because of a Percent command, the Lutron system will report the target position for the blind rather than the actual current position.
 While a blind is moving because of an Up or Down command, it will report the previous level until it stops moving.
 
-**Beta Notice:** Support for Sivoia QS blinds is new and has been through very limited testing.
-Please comment on your use of it in the openHAB [community forum](https://community.openhab.org/).
-Any problems should be reported in a [GitHub issue](https://github.com/openhab/openhab2-addons/issues).
+**Note:** Support for Sivoia QS blinds is new and has been through very limited testing.
+Please comment on your use of it in the openHAB community forum.
 
 Thing configuration file example:
 
