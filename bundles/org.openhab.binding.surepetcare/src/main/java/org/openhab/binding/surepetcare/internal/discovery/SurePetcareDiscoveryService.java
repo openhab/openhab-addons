@@ -50,7 +50,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
-    private static final int DISCOVERY_REFRESH_INTERVAL = 12 * 3600; // 12 hours
+    private static final int DISCOVERY_REFRESH_INTERVAL_HOURS = 12;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
@@ -98,8 +98,8 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService {
         if (discoveryJob == null || discoveryJob.isCancelled()) {
             discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
                 retrieveTopologyFromSurePetcare();
-            }, 0, DISCOVERY_REFRESH_INTERVAL, TimeUnit.SECONDS);
-            logger.debug("Scheduled topology-changed job every {} seconds", DISCOVERY_REFRESH_INTERVAL);
+            }, 0, DISCOVERY_REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
+            logger.debug("Scheduled topology-changed job every {} hours", DISCOVERY_REFRESH_INTERVAL_HOURS);
         }
     }
 

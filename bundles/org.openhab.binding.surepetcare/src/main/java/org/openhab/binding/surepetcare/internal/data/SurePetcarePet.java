@@ -15,12 +15,9 @@ package org.openhab.binding.surepetcare.internal.data;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-//import java.time.ZoneId;
-//import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
-//import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
 

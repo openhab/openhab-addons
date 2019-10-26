@@ -14,6 +14,7 @@ package org.openhab.binding.surepetcare.internal;
 
 import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class SurePetcareHandlerFactory extends BaseThingHandlerFactory {
     private SurePetcareAPIHelper petcareAPI = new SurePetcareAPIHelper();
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(BRIDGE_THING_TYPES_UIDS, SurePetcareConstants.SUPPORTED_THING_TYPES_UIDS).flatMap(x -> x.stream())
+            .of(BRIDGE_THING_TYPES_UIDS, SurePetcareConstants.SUPPORTED_THING_TYPES_UIDS).flatMap(Collection::stream)
             .collect(Collectors.toSet());
 
     /**
