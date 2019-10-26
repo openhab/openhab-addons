@@ -23,12 +23,12 @@
 				<description>The password to access the Sure Petcare API</description>
 				<context>password</context>
 			</parameter>
-			<parameter name="refresh_interval_topology" type="integer" required="false" min="300">
+			<parameter name="refreshIntervalTopology" type="integer" required="false" min="300">
 				<label>Refresh Interval Topology</label>
 				<description>Query interval (in secs) for device topology</description>
 				<default>36000</default>
 			</parameter>
-			<parameter name="refresh_interval_status" type="integer" required="false" min="60">
+			<parameter name="refreshIntervalStatus" type="integer" required="false" min="60">
 				<label>Refresh Interval Pet Status</label>
 				<description>Query interval (in secs) for pet status</description>
 				<default>300</default>

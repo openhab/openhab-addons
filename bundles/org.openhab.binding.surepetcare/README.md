@@ -181,7 +181,7 @@ Channel names in **bold** are read/write, everything else is read-only
 ### Things configuration
 
 ```
-Bridge surepetcare:bridge:bridge1 "Demo API Bridge" @ "SurePetcare" [ username="<USERNAME>", password="<PASSWORD>", refresh_interval_topology=36000, refresh_interval_status=300 ]
+Bridge surepetcare:bridge:bridge1 "Demo API Bridge" @ "SurePetcare" [ username="<USERNAME>", password="<PASSWORD>", refreshIntervalTopology=36000, refreshIntervalStatus=300 ]
 {
   Thing household     45237  "My Household" @ "SurePetcare"
   Thing hubDevice     439862 "My SurePetcare Hub" @ "SurePetcare Devices"

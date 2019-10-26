@@ -44,12 +44,6 @@ public class SurePetcareConstants {
 
     public static final int FLAP_MAX_NUMBER_OF_CURFEWS = 4;
 
-    // Bridge configuration property names
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-    public static final String REFRESH_INTERVAL_TOPOLOGY = "refresh_interval_topology";
-    public static final String REFRESH_INTERVAL_STATUS = "refresh_interval_status";
-
     // Bridge Channel Names
     public static final String BRIDGE_CHANNEL_ONLINE = "online";
     public static final String BRIDGE_CHANNEL_REFRESH = "refresh";
