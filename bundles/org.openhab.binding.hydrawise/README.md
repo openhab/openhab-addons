@@ -28,6 +28,7 @@ This provides a subset of features compared to the Cloud Thing type limited to b
 Controlling zones through the local API will not be reported back to the cloud service or the Hydrawise mobile/web applications, and reporting functionality will not reflect the locally controlled state. 
 
 Use Cases    
+
 * The Local thing can be useful when testing zones, as there is no delay when starting/stopping zones as compared to the cloud API which can take anywhere between 5-15 seconds.  
 * This is also useful if you wish to not use the cloud scheduling  at all and use openHAB as the irrigation scheduling system.
 

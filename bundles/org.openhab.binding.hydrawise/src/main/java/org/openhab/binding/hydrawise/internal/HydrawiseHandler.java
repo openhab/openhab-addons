@@ -222,7 +222,8 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
                         new DateTimeType(now.plusSeconds(r.time).truncatedTo(ChronoUnit.MINUTES)));
             }
 
-            Optional<Running> running = status.running.stream().filter(z -> z.relayId.equals(r.relayId)).findAny();
+            Optional<Running> running = status.running.stream()
+                    .filter(z -> Integer.parseInt(z.relayId) == r.relayId.intValue()).findAny();
             if (running.isPresent()) {
                 updateGroupState(group, CHANNEL_ZONE_RUN, OnOffType.ON);
                 updateGroupState(group, CHANNEL_ZONE_TIME_LEFT, new DecimalType(running.get().timeLeft));
@@ -250,6 +251,7 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
     }
 
     @SuppressWarnings("serial")
+    @NonNullByDefault
     protected class NotConfiguredException extends Exception {
         NotConfiguredException(String message) {
             super(message);
