@@ -57,19 +57,19 @@ public class HydrawiseLocalHandler extends HydrawiseHandler {
     @Override
     protected void sendRunCommand(int seconds, Relay relay)
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
-        client.runRelay(seconds, relay.getRelay());
+        client.runRelay(seconds, relay.relay);
     }
 
     @Override
     protected void sendRunCommand(Relay relay)
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
-        client.runRelay(relay.getRelay());
+        client.runRelay(relay.relay);
     }
 
     @Override
     protected void sendStopCommand(Relay relay)
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
-        client.stopRelay(relay.getRelay());
+        client.stopRelay(relay.relay);
     }
 
     @Override

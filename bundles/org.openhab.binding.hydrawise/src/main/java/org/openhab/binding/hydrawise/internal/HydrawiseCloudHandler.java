@@ -15,7 +15,7 @@ package org.openhab.binding.hydrawise.internal;
 import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +23,7 @@ import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -81,7 +82,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
 
         CustomerDetailsResponse customerDetails = client.getCustomerDetails();
 
-        List<Controller> controllers = customerDetails.getControllers();
+        List<Controller> controllers = customerDetails.controllers;
         if (controllers.size() == 0) {
             throw new NotConfiguredException("No controllers found on account");
         }
@@ -95,19 +96,18 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
             }
         } else {
             // try and use ID from saved property
-            if (StringUtils.isNotBlank(getThing().getProperties().get(PROPERTY_CONTROLLER_ID))) {
+            String controllerId = getThing().getProperties().get(PROPERTY_CONTROLLER_ID);
+            if (StringUtils.isNotBlank(controllerId)) {
                 try {
-                    controller = getController(Integer.parseInt(getThing().getProperties().get(PROPERTY_CONTROLLER_ID)),
-                            controllers);
+                    controller = getController(Integer.parseInt(controllerId), controllers);
 
                 } catch (NumberFormatException e) {
-                    logger.debug("Can not parse property vaue {}",
-                            getThing().getProperties().get(PROPERTY_CONTROLLER_ID));
+                    logger.debug("Can not parse property vaue {}", controllerId);
                 }
             }
             // use current controller ID
             if (controller == null) {
-                controller = getController(customerDetails.getControllerId(), controllers);
+                controller = getController(customerDetails.controllerId, controllers);
             }
         }
 
@@ -115,7 +115,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
             throw new NotConfiguredException("No controller found");
         }
 
-        controllerId = controller.getControllerId().intValue();
+        controllerId = controller.controllerId.intValue();
         updateControllerProperties(controller);
         logger.debug("Controller id {}", controllerId);
     }
@@ -125,9 +125,9 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
      */
     @Override
     protected void pollController() throws HydrawiseConnectionException, HydrawiseAuthenticationException {
-        List<Controller> controllers = client.getCustomerDetails().getControllers();
+        List<Controller> controllers = client.getCustomerDetails().controllers;
         Controller controller = getController(controllerId, controllers);
-        if (controller != null && !controller.getOnline()) {
+        if (controller != null && !controller.online) {
             throw new HydrawiseConnectionException("Controller is offline");
         }
         StatusScheduleResponse status = client.getStatusSchedule(controllerId);
@@ -140,7 +140,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
     protected void sendRunCommand(int seconds, @Nullable Relay relay)
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
         if (relay != null) {
-            client.runRelay(seconds, relay.getRelayId());
+            client.runRelay(seconds, relay.relayId);
         }
     }
 
@@ -148,7 +148,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
     protected void sendRunCommand(@Nullable Relay relay)
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
         if (relay != null) {
-            client.runRelay(relay.getRelayId());
+            client.runRelay(relay.relayId);
         }
     }
 
@@ -156,7 +156,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
     protected void sendStopCommand(@Nullable Relay relay)
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
         if (relay != null) {
-            client.stopRelay(relay.getRelayId());
+            client.stopRelay(relay.relayId);
         }
 
     }
@@ -180,27 +180,27 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
     }
 
     private void updateSensors(StatusScheduleResponse status) {
-        status.getSensors().forEach(sensor -> {
-            String group = "sensor" + sensor.getInput();
-            updateGroupState(group, CHANNEL_SENSOR_ACTIVE, sensor.getActive() > 0 ? OnOffType.ON : OnOffType.OFF);
-            updateGroupState(group, CHANNEL_SENSOR_MODE, new DecimalType(sensor.getType()));
-            updateGroupState(group, CHANNEL_SENSOR_NAME, new StringType(sensor.getName()));
-            updateGroupState(group, CHANNEL_SENSOR_OFFLEVEL, new DecimalType(sensor.getOfflevel()));
-            updateGroupState(group, CHANNEL_SENSOR_OFFTIMER, new DecimalType(sensor.getOfftimer()));
-            updateGroupState(group, CHANNEL_SENSOR_TIMER, new DecimalType(sensor.getTimer()));
+        status.sensors.forEach(sensor -> {
+            String group = "sensor" + sensor.input;
+            updateGroupState(group, CHANNEL_SENSOR_ACTIVE, sensor.active > 0 ? OnOffType.ON : OnOffType.OFF);
+            updateGroupState(group, CHANNEL_SENSOR_MODE, new DecimalType(sensor.type));
+            updateGroupState(group, CHANNEL_SENSOR_NAME, new StringType(sensor.name));
+            updateGroupState(group, CHANNEL_SENSOR_OFFLEVEL, new DecimalType(sensor.offlevel));
+            updateGroupState(group, CHANNEL_SENSOR_OFFTIMER, new DecimalType(sensor.offtimer));
+            updateGroupState(group, CHANNEL_SENSOR_TIMER, new DecimalType(sensor.timer));
         });
     }
 
     private void updateForecast(StatusScheduleResponse status) {
         int i = 1;
-        for (Forecast forecast : status.getForecast()) {
+        for (Forecast forecast : status.forecast) {
             String group = "forecast" + (i++);
-            updateGroupState(group, CHANNEL_FORECAST_CONDITIONS, new StringType(forecast.getConditions()));
-            updateGroupState(group, CHANNEL_FORECAST_DAY, new StringType(forecast.getDay()));
-            updateGroupState(group, CHANNEL_FORECAST_HUMIDITY, new DecimalType(forecast.getHumidity()));
-            updateTemperature(forecast.getTempHi(), group, CHANNEL_FORECAST_TEMPERATURE_HIGH);
-            updateTemperature(forecast.getTempLo(), group, CHANNEL_FORECAST_TEMPERATURE_LOW);
-            updateWindspeed(forecast.getWind(), group, CHANNEL_FORECAST_WIND);
+            updateGroupState(group, CHANNEL_FORECAST_CONDITIONS, new StringType(forecast.conditions));
+            updateGroupState(group, CHANNEL_FORECAST_DAY, new StringType(forecast.day));
+            updateGroupState(group, CHANNEL_FORECAST_HUMIDITY, new DecimalType(forecast.humidity));
+            updateTemperature(forecast.tempHi, group, CHANNEL_FORECAST_TEMPERATURE_HIGH);
+            updateTemperature(forecast.tempLo, group, CHANNEL_FORECAST_TEMPERATURE_LOW);
+            updateWindspeed(forecast.wind, group, CHANNEL_FORECAST_WIND);
         }
     }
 
@@ -210,7 +210,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
             try {
                 updateGroupState(group, channel, new QuantityType<Temperature>(Double.valueOf(matcher.group(1)),
                         "C".equals(matcher.group(2)) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT));
-            } catch (RuntimeException e) {
+            } catch (NumberFormatException e) {
                 logger.debug("Could not parse temperature string {} ", tempString);
             }
         }
@@ -222,25 +222,23 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
             try {
                 updateGroupState(group, channel, new QuantityType<Speed>(Integer.parseInt(matcher.group(1)),
                         "kph".equals(matcher.group(2)) ? SIUnits.KILOMETRE_PER_HOUR : ImperialUnits.MILES_PER_HOUR));
-            } catch (RuntimeException e) {
+            } catch (NumberFormatException e) {
                 logger.debug("Could not parse wind string {} ", windString);
             }
         }
     }
 
     private void updateControllerProperties(Controller controller) {
-        getThing().setProperty(PROPERTY_CONTROLLER_ID, String.valueOf(controller.getControllerId()));
-        getThing().setProperty(PROPERTY_NAME, controller.getName());
-        getThing().setProperty(PROPERTY_DESCRIPTION, controller.getDescription());
-        getThing().setProperty(PROPERTY_LOCATION, controller.getLatitude() + "," + controller.getLongitude());
-        getThing().setProperty(PROPERTY_ADDRESS, controller.getAddress());
+        getThing().setProperty(PROPERTY_CONTROLLER_ID, String.valueOf(controller.controllerId));
+        getThing().setProperty(PROPERTY_NAME, controller.name);
+        getThing().setProperty(PROPERTY_DESCRIPTION, controller.description);
+        getThing().setProperty(PROPERTY_LOCATION, controller.latitude + "," + controller.longitude);
+        getThing().setProperty(PROPERTY_ADDRESS, controller.address);
     }
 
     private @Nullable Controller getController(int controllerId, List<Controller> controllers) {
-        try {
-            return controllers.stream().filter(c -> controllerId == c.getControllerId().intValue()).findAny().get();
-        } catch (NoSuchElementException e) {
-            return null;
-        }
+        Optional<@NonNull Controller> optionalController = controllers.stream()
+                .filter(c -> controllerId == c.controllerId.intValue()).findAny();
+        return optionalController.isPresent() ? optionalController.get() : null;
     }
 }

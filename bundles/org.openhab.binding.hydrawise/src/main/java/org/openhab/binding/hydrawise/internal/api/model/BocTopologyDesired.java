@@ -20,20 +20,6 @@ import java.util.List;
  */
 public class BocTopologyDesired {
 
-    private List<Object> bocGateways = null;
-
-    /**
-     * @return
-     */
-    public List<Object> getBocGateways() {
-        return bocGateways;
-    }
-
-    /**
-     * @param bocGateways
-     */
-    public void setBocGateways(List<Object> bocGateways) {
-        this.bocGateways = bocGateways;
-    }
+    public List<Object> bocGateways;
 
 }

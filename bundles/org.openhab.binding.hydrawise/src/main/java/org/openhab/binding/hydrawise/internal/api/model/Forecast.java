@@ -18,148 +18,22 @@ package org.openhab.binding.hydrawise.internal.api.model;
  */
 public class Forecast {
 
-    private String tempHi;
+    public String tempHi;
 
-    private String tempLo;
+    public String tempLo;
 
-    private String conditions;
+    public String conditions;
 
-    private String day;
+    public String day;
 
-    private Integer pop;
+    public Integer pop;
 
-    private Integer humidity;
+    public Integer humidity;
 
-    private String wind;
+    public String wind;
 
-    private String icon;
+    public String icon;
 
-    private String iconLocal;
-
-    /**
-     * @return
-     */
-    public String getTempHi() {
-        return tempHi;
-    }
-
-    /**
-     * @param tempHi
-     */
-    public void setTempHi(String tempHi) {
-        this.tempHi = tempHi;
-    }
-
-    /**
-     * @return
-     */
-    public String getTempLo() {
-        return tempLo;
-    }
-
-    /**
-     * @param tempLo
-     */
-    public void setTempLo(String tempLo) {
-        this.tempLo = tempLo;
-    }
-
-    /**
-     * @return
-     */
-    public String getConditions() {
-        return conditions;
-    }
-
-    /**
-     * @param conditions
-     */
-    public void setConditions(String conditions) {
-        this.conditions = conditions;
-    }
-
-    /**
-     * @return
-     */
-    public String getDay() {
-        return day;
-    }
-
-    /**
-     * @param day
-     */
-    public void setDay(String day) {
-        this.day = day;
-    }
-
-    /**
-     * @return
-     */
-    public Integer getPop() {
-        return pop;
-    }
-
-    /**
-     * @param pop
-     */
-    public void setPop(Integer pop) {
-        this.pop = pop;
-    }
-
-    /**
-     * @return
-     */
-    public Integer getHumidity() {
-        return humidity;
-    }
-
-    /**
-     * @param humidity
-     */
-    public void setHumidity(Integer humidity) {
-        this.humidity = humidity;
-    }
-
-    /**
-     * @return
-     */
-    public String getWind() {
-        return wind;
-    }
-
-    /**
-     * @param wind
-     */
-    public void setWind(String wind) {
-        this.wind = wind;
-    }
-
-    /**
-     * @return
-     */
-    public String getIcon() {
-        return icon;
-    }
-
-    /**
-     * @param icon
-     */
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    /**
-     * @return
-     */
-    public String getIconLocal() {
-        return iconLocal;
-    }
-
-    /**
-     * @param iconLocal
-     */
-    public void setIconLocal(String iconLocal) {
-        this.iconLocal = iconLocal;
-    }
+    public String iconLocal;
 
 }

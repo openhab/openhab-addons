@@ -20,8 +20,6 @@ Changes made through this Thing type will be reflected in the Hydrawise mobile a
 | [All Zones](#All-Zones-Channel-Group) |
 | [Sensor](#Sensor-Channel-Group)       |
 | [Forecast](#Sensor-Channel-Group)     |
-
-
      
 ### Local Thing
 

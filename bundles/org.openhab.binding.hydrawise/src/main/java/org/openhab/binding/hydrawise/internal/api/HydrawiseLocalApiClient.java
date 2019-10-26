@@ -178,10 +178,10 @@ public class HydrawiseLocalApiClient {
             throws HydrawiseConnectionException, HydrawiseAuthenticationException, HydrawiseCommandException {
         String json = doGet(url);
         SetZoneResponse response = gson.fromJson(json, SetZoneResponse.class);
-        if (response.getMessageType().equals("error")) {
-            throw new HydrawiseCommandException(response.getMessage());
+        if (response.messageType.equals("error")) {
+            throw new HydrawiseCommandException(response.message);
         }
-        return response.getMessage();
+        return response.message;
     }
 
     private String doGet(String url) throws HydrawiseConnectionException, HydrawiseAuthenticationException {

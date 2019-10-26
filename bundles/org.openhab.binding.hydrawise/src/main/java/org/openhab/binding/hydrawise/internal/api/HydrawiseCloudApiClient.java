@@ -123,8 +123,8 @@ public class HydrawiseCloudApiClient {
         String json = doGet(String.format(SET_CONTROLLER_URL, apiKey, id));
         SetControllerResponse response = gson.fromJson(json, SetControllerResponse.class);
         throwExceptionIfResponseError(response);
-        if (!response.getMessage().equals("OK")) {
-            throw new HydrawiseCommandException(response.getMessage());
+        if (!response.message.equals("OK")) {
+            throw new HydrawiseCommandException(response.message);
         }
         return response;
     }
@@ -273,10 +273,10 @@ public class HydrawiseCloudApiClient {
         String json = doGet(url);
         SetZoneResponse response = gson.fromJson(json, SetZoneResponse.class);
         throwExceptionIfResponseError(response);
-        if (response.getMessageType().equals("error")) {
-            throw new HydrawiseCommandException(response.getMessage());
+        if (response.messageType.equals("error")) {
+            throw new HydrawiseCommandException(response.message);
         }
-        return response.getMessage();
+        return response.message;
     }
 
     private String doGet(String url) throws HydrawiseConnectionException {
@@ -299,12 +299,12 @@ public class HydrawiseCloudApiClient {
 
     private void throwExceptionIfResponseError(Response response)
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
-        String error = response.getErrorMsg();
+        String error = response.errorMsg;
         if (error != null) {
             if (error.equalsIgnoreCase("unauthorized")) {
                 throw new HydrawiseAuthenticationException();
             } else {
-                throw new HydrawiseConnectionException(response.getErrorMsg());
+                throw new HydrawiseConnectionException(response.errorMsg);
             }
         }
     }

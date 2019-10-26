@@ -204,30 +204,29 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
 
     protected void updateZones(LocalScheduleResponse status) {
         ZonedDateTime now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        status.getRelays().forEach(r -> {
+        status.relays.forEach(r -> {
             String group = "zone" + r.getRelayNumber();
             relayMap.put(group, r);
-            logger.trace("Updateing Zone {} {} ", group, r.getName());
-            updateGroupState(group, CHANNEL_ZONE_NAME, new StringType(r.getName()));
-            updateGroupState(group, CHANNEL_ZONE_TYPE, new DecimalType(r.getType()));
+            logger.trace("Updateing Zone {} {} ", group, r.name);
+            updateGroupState(group, CHANNEL_ZONE_NAME, new StringType(r.name));
+            updateGroupState(group, CHANNEL_ZONE_TYPE, new DecimalType(r.type));
             updateGroupState(group, CHANNEL_ZONE_TIME,
-                    r.getRunTimeSeconds() != null ? new DecimalType(r.getRunTimeSeconds()) : UnDefType.UNDEF);
-            if (StringUtils.isNotBlank(r.getIcon())) {
-                updateGroupState(group, CHANNEL_ZONE_ICON, new StringType(BASE_IMAGE_URL + r.getIcon()));
+                    r.runTimeSeconds != null ? new DecimalType(r.runTimeSeconds) : UnDefType.UNDEF);
+            if (StringUtils.isNotBlank(r.icon)) {
+                updateGroupState(group, CHANNEL_ZONE_ICON, new StringType(BASE_IMAGE_URL + r.icon));
             }
-            if (r.getTime() >= MAX_RUN_TIME) {
+            if (r.time >= MAX_RUN_TIME) {
                 updateGroupState(group, CHANNEL_ZONE_NEXT_RUN_TIME_TIME, UnDefType.UNDEF);
             } else {
                 updateGroupState(group, CHANNEL_ZONE_NEXT_RUN_TIME_TIME,
-                        new DateTimeType(now.plusSeconds(r.getTime()).truncatedTo(ChronoUnit.MINUTES)));
+                        new DateTimeType(now.plusSeconds(r.time).truncatedTo(ChronoUnit.MINUTES)));
             }
 
-            Optional<Running> running = status.getRunning().stream().filter(z -> z.getRelayId().equals(r.getRelayId()))
-                    .findAny();
+            Optional<Running> running = status.running.stream().filter(z -> z.relayId.equals(r.relayId)).findAny();
             if (running.isPresent()) {
                 updateGroupState(group, CHANNEL_ZONE_RUN, OnOffType.ON);
-                updateGroupState(group, CHANNEL_ZONE_TIME_LEFT, new DecimalType(running.get().getTimeLeft()));
-                logger.debug("{} Time Left {}", r.getName(), running.get().getTimeLeft());
+                updateGroupState(group, CHANNEL_ZONE_TIME_LEFT, new DecimalType(running.get().timeLeft));
+                logger.debug("{} Time Left {}", r.name, running.get().timeLeft);
 
             } else {
                 updateGroupState(group, CHANNEL_ZONE_RUN, OnOffType.OFF);
@@ -236,7 +235,7 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
             }
 
             updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN,
-                    status.getRunning().size() > 0 ? OnOffType.ON : OnOffType.OFF);
+                    status.running.size() > 0 ? OnOffType.ON : OnOffType.OFF);
         });
     }
 

@@ -20,340 +20,46 @@ import java.util.List;
  */
 public class Controller {
 
-    private String name;
+    public String name;
 
-    private Integer lastContact;
+    public Integer lastContact;
 
-    private String serialNumber;
+    public String serialNumber;
 
-    private Integer controllerId;
+    public Integer controllerId;
 
-    private String swVersion;
+    public String swVersion;
 
-    private String hardware;
+    public String hardware;
 
-    private Boolean isBoc;
+    public Boolean isBoc;
 
-    private String address;
+    public String address;
 
-    private String timezone;
+    public String timezone;
 
-    private Integer deviceId;
+    public Integer deviceId;
 
-    private Object parentDeviceId;
+    public Object parentDeviceId;
 
-    private String image;
+    public String image;
 
-    private String description;
+    public String description;
 
-    private Integer customerId;
+    public Integer customerId;
 
-    private Double latitude;
+    public Double latitude;
 
-    private Double longitude;
+    public Double longitude;
 
-    private String lastContactReadable;
+    public String lastContactReadable;
 
-    private String status;
+    public String status;
 
-    private String statusIcon;
+    public String statusIcon;
 
-    private Boolean online;
+    public Boolean online;
 
-    private List<String> tags = null;
-
-    /**
-     * @return
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return
-     */
-    public Integer getLastContact() {
-        return lastContact;
-    }
-
-    /**
-     * @param lastContact
-     */
-    public void setLastContact(Integer lastContact) {
-        this.lastContact = lastContact;
-    }
-
-    /**
-     * @return
-     */
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    /**
-     * @param serialNumber
-     */
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    /**
-     * @return
-     */
-    public Integer getControllerId() {
-        return controllerId;
-    }
-
-    /**
-     * @param controllerId
-     */
-    public void setControllerId(Integer controllerId) {
-        this.controllerId = controllerId;
-    }
-
-    /**
-     * @return
-     */
-    public String getSwVersion() {
-        return swVersion;
-    }
-
-    /**
-     * @param swVersion
-     */
-    public void setSwVersion(String swVersion) {
-        this.swVersion = swVersion;
-    }
-
-    /**
-     * @return
-     */
-    public String getHardware() {
-        return hardware;
-    }
-
-    /**
-     * @param hardware
-     */
-    public void setHardware(String hardware) {
-        this.hardware = hardware;
-    }
-
-    /**
-     * @return
-     */
-    public Boolean getIsBoc() {
-        return isBoc;
-    }
-
-    /**
-     * @param isBoc
-     */
-    public void setIsBoc(Boolean isBoc) {
-        this.isBoc = isBoc;
-    }
-
-    /**
-     * @return
-     */
-    public String getAddress() {
-        return address;
-    }
-
-    /**
-     * @param address
-     */
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    /**
-     * @return
-     */
-    public String getTimezone() {
-        return timezone;
-    }
-
-    /**
-     * @param timezone
-     */
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
-    }
-
-    /**
-     * @return
-     */
-    public Integer getDeviceId() {
-        return deviceId;
-    }
-
-    /**
-     * @param deviceId
-     */
-    public void setDeviceId(Integer deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    /**
-     * @return
-     */
-    public Object getParentDeviceId() {
-        return parentDeviceId;
-    }
-
-    /**
-     * @param parentDeviceId
-     */
-    public void setParentDeviceId(Object parentDeviceId) {
-        this.parentDeviceId = parentDeviceId;
-    }
-
-    /**
-     * @return
-     */
-    public String getImage() {
-        return image;
-    }
-
-    /**
-     * @param image
-     */
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    /**
-     * @return
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * @return
-     */
-    public Integer getCustomerId() {
-        return customerId;
-    }
-
-    /**
-     * @param customerId
-     */
-    public void setCustomerId(Integer customerId) {
-        this.customerId = customerId;
-    }
-
-    /**
-     * @return
-     */
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    /**
-     * @param latitude
-     */
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    /**
-     * @return
-     */
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    /**
-     * @param longitude
-     */
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    /**
-     * @return
-     */
-    public String getLastContactReadable() {
-        return lastContactReadable;
-    }
-
-    /**
-     * @param lastContactReadable
-     */
-    public void setLastContactReadable(String lastContactReadable) {
-        this.lastContactReadable = lastContactReadable;
-    }
-
-    /**
-     * @return
-     */
-    public String getStatus() {
-        return status;
-    }
-
-    /**
-     * @param status
-     */
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    /**
-     * @return
-     */
-    public String getStatusIcon() {
-        return statusIcon;
-    }
-
-    /**
-     * @param statusIcon
-     */
-    public void setStatusIcon(String statusIcon) {
-        this.statusIcon = statusIcon;
-    }
-
-    /**
-     * @return
-     */
-    public Boolean getOnline() {
-        return online;
-    }
-
-    /**
-     * @param online
-     */
-    public void setOnline(Boolean online) {
-        this.online = online;
-    }
-
-    /**
-     * @return
-     */
-    public List<String> getTags() {
-        return tags;
-    }
-
-    /**
-     * @param tags
-     */
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
+    public List<String> tags = null;
 
 }
