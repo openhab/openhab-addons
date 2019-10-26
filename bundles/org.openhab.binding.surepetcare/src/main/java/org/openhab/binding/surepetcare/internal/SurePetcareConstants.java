@@ -14,11 +14,16 @@ package org.openhab.binding.surepetcare.internal;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The {@link SurePetcareConstants} class defines common constants, which are used across the whole binding.
@@ -43,6 +48,10 @@ public class SurePetcareConstants {
             THING_TYPE_PET, THING_TYPE_HUB_DEVICE, THING_TYPE_FLAP_DEVICE, THING_TYPE_FEEDER_DEVICE));
 
     public static final int FLAP_MAX_NUMBER_OF_CURFEWS = 4;
+
+    public static final Gson GSON = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .registerTypeAdapter(Date.class, new GsonColonDateTypeAdapter()).create();
 
     // Bridge Channel Names
     public static final String BRIDGE_CHANNEL_ONLINE = "online";

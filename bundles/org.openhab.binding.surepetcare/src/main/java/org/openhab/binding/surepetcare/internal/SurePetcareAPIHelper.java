@@ -45,9 +45,6 @@ import org.openhab.binding.surepetcare.internal.data.SurePetcareTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -79,8 +76,6 @@ public class SurePetcareAPIHelper {
 
     public static final int DEFAULT_DEVICE_ID = 12344711;
 
-    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .registerTypeAdapter(Date.class, new GsonColonDateTypeAdapter()).create();
     private String authenticationToken = "";
     private String username = "";
     private String password = "";
@@ -105,7 +100,8 @@ public class SurePetcareAPIHelper {
             con.setDoInput(true);
 
             OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
-            wr.write(gson.toJson(new SurePetcareLoginCredentials(username, password, getDeviceId().toString())));
+            wr.write(SurePetcareConstants.GSON
+                    .toJson(new SurePetcareLoginCredentials(username, password, getDeviceId().toString())));
             wr.flush();
 
             StringBuilder sb = new StringBuilder();
@@ -118,7 +114,8 @@ public class SurePetcareAPIHelper {
                 }
                 br.close();
                 @NonNull
-                SurePetcareLoginResponse response = gson.fromJson(sb.toString(), SurePetcareLoginResponse.class);
+                SurePetcareLoginResponse response = SurePetcareConstants.GSON.fromJson(sb.toString(),
+                        SurePetcareLoginResponse.class);
 
                 authenticationToken = response.getToken();
                 this.username = username;
@@ -144,7 +141,7 @@ public class SurePetcareAPIHelper {
      */
     public synchronized void updateTopologyCache() {
         try {
-            topologyCache = gson.fromJson(getDataFromApi(TOPOLOGY_URL), SurePetcareTopology.class);
+            topologyCache = SurePetcareConstants.GSON.fromJson(getDataFromApi(TOPOLOGY_URL), SurePetcareTopology.class);
         } catch (JsonSyntaxException | SurePetcareApiException e) {
             logger.warn("Exception caught during topology cache update: {}", e.getMessage());
         }
@@ -158,7 +155,8 @@ public class SurePetcareAPIHelper {
     public synchronized void updatePetStatus() {
         try {
             String url = PET_STATUS_URL;
-            topologyCache.setPets(Arrays.asList(gson.fromJson(getDataFromApi(url), SurePetcarePet[].class)));
+            topologyCache.setPets(
+                    Arrays.asList(SurePetcareConstants.GSON.fromJson(getDataFromApi(url), SurePetcarePet[].class)));
         } catch (JsonSyntaxException | SurePetcareApiException e) {
             logger.warn("Exception caught during pet status update: {}", e.getMessage());
         }
@@ -255,7 +253,8 @@ public class SurePetcareAPIHelper {
 
         // now we're fetching the new state back for the cache
         String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/status";
-        SurePetcareDeviceStatus newStatus = gson.fromJson(getDataFromApi(devurl), SurePetcareDeviceStatus.class);
+        SurePetcareDeviceStatus newStatus = SurePetcareConstants.GSON.fromJson(getDataFromApi(devurl),
+                SurePetcareDeviceStatus.class);
         device.getStatus().assign(newStatus);
     }
 
@@ -276,7 +275,8 @@ public class SurePetcareAPIHelper {
 
         // now we're fetching the new state back for the cache
         String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/status";
-        SurePetcareDeviceStatus newStatus = gson.fromJson(getDataFromApi(devurl), SurePetcareDeviceStatus.class);
+        SurePetcareDeviceStatus newStatus = SurePetcareConstants.GSON.fromJson(getDataFromApi(devurl),
+                SurePetcareDeviceStatus.class);
         device.getStatus().assign(newStatus);
     }
 
@@ -297,7 +297,8 @@ public class SurePetcareAPIHelper {
 
         // now we're fetching the new state back for the cache
         String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
-        SurePetcareDeviceControl newControl = gson.fromJson(getDataFromApi(devurl), SurePetcareDeviceControl.class);
+        SurePetcareDeviceControl newControl = SurePetcareConstants.GSON.fromJson(getDataFromApi(devurl),
+                SurePetcareDeviceControl.class);
         newControl.setCurfewList(newControl.getCurfewList().order());
         device.setControl(newControl);
     }
@@ -406,7 +407,7 @@ public class SurePetcareAPIHelper {
      * @throws SurePetcareApiException
      */
     private void setDataThroughApi(String url, String requestMethod, Object payload) throws SurePetcareApiException {
-        String jsonPayload = gson.toJson(payload);
+        String jsonPayload = SurePetcareConstants.GSON.toJson(payload);
         postDataThroughAPI(url, requestMethod, jsonPayload);
     }
 
