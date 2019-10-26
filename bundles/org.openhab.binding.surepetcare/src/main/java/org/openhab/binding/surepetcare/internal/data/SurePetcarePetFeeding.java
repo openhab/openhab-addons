@@ -34,7 +34,7 @@ public class SurePetcarePetFeeding {
     @SerializedName("device_id")
     private Integer deviceId;
     @SerializedName("change")
-    private List<Float> feedChange = new ArrayList<Float>();
+    private List<Float> feedChange = new ArrayList<>();
     @SerializedName("at")
     private Date feedChangeAt;
 

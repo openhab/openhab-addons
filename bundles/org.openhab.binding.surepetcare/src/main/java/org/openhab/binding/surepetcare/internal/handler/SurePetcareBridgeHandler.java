@@ -14,26 +14,33 @@ package org.openhab.binding.surepetcare.internal.handler;
 
 import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
-import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.surepetcare.internal.AuthenticationException;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
+import org.openhab.binding.surepetcare.internal.SurePetcareBridgeConfiguration;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
+import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
+import org.openhab.binding.surepetcare.internal.data.SurePetcarePet;
+import org.openhab.binding.surepetcare.internal.discovery.SurePetcareDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,22 +71,14 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Sure Petcare bridge handler.");
-        Configuration config = getThing().getConfiguration();
+        SurePetcareBridgeConfiguration config = getConfigAs(SurePetcareBridgeConfiguration.class);
         updateState(BRIDGE_CHANNEL_ONLINE, OnOffType.OFF);
-        // Check if username and password have been provided during the bridge creation
-        if ((StringUtils.trimToNull((String) config.get(PASSWORD)) == null)
-                || (StringUtils.trimToNull((String) config.get(USERNAME)) == null)) {
-            logger.warn("Setting thing '{}' to OFFLINE: Parameter 'password' and 'username' must be configured.",
-                    getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-username-or-password");
-        } else {
-            String username = (String) config.get(USERNAME);
-            String password = (String) config.get(PASSWORD);
+
+        if (config.getUsername() != null && config.getPassword() != null) {
             updateStatus(ThingStatus.UNKNOWN);
             try {
-                logger.debug("Login to SurePetcare API with username: {}", username);
-                petcareAPI.login(username, password);
+                logger.debug("Login to SurePetcare API with username: {}", config.getUsername());
+                petcareAPI.login(config.getUsername(), config.getPassword());
                 logger.debug("Login successful, updating topology cache");
                 petcareAPI.updateTopologyCache();
                 logger.debug("Cache update successful, setting bridge status to ONLINE");
@@ -89,31 +88,43 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
             } catch (AuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE);
             }
+        } else {
+            logger.warn("Setting thing '{}' to OFFLINE: Parameter 'password' and 'username' must be configured.",
+                    getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-missing-username-or-password");
         }
 
-        try {
-            long refreshIntervalTopology = ((BigDecimal) config.get(REFRESH_INTERVAL_TOPOLOGY)).longValueExact();
-            long refreshIntervalStatus = ((BigDecimal) config.get(REFRESH_INTERVAL_STATUS)).longValueExact();
-
+        if (config.getRefreshIntervalTopology() != null) {
             if (topologyPollingJob == null || topologyPollingJob.isCancelled()) {
                 topologyPollingJob = scheduler.scheduleWithFixedDelay(() -> {
                     petcareAPI.updateTopologyCache();
                     updateThings();
-                }, refreshIntervalTopology, refreshIntervalTopology, TimeUnit.SECONDS);
-                logger.debug("Bridge topology polling job every {} seconds", refreshIntervalTopology);
+                }, config.getRefreshIntervalTopology(), config.getRefreshIntervalTopology(), TimeUnit.SECONDS);
+                logger.debug("Bridge topology polling job every {} seconds", config.getRefreshIntervalTopology());
             }
-            if (petStatusPollingJob == null || petStatusPollingJob.isCancelled()) {
-                petStatusPollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                    pollAndUpdatePetStatus();
-                }, refreshIntervalStatus, refreshIntervalStatus, TimeUnit.SECONDS);
-                logger.debug("Pet status polling job every {} seconds", refreshIntervalStatus);
-            }
-        } catch (ArithmeticException e) {
-            logger.warn("Invalid settings for refresh intervals [{},{}]", config.get(REFRESH_INTERVAL_TOPOLOGY),
-                    config.get(REFRESH_INTERVAL_STATUS));
+        } else {
+            logger.warn("Invalid setting for topology refresh interval");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-invalid-refresh-intervals");
         }
+        if (config.getRefreshIntervalStatus() != null) {
+            if (petStatusPollingJob == null || petStatusPollingJob.isCancelled()) {
+                petStatusPollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                    pollAndUpdatePetStatus();
+                }, config.getRefreshIntervalStatus(), config.getRefreshIntervalStatus(), TimeUnit.SECONDS);
+                logger.debug("Pet status polling job every {} seconds", config.getRefreshIntervalStatus());
+            }
+        } else {
+            logger.warn("Invalid setting for status refresh interval");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-invalid-refresh-intervals");
+        }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(SurePetcareDiscoveryService.class);
     }
 
     @SuppressWarnings("null")
@@ -150,6 +161,29 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
                     break;
             }
         }
+    }
+
+    public ThingUID getUID() {
+        return thing.getUID();
+    }
+
+    public boolean isOnline() {
+        return petcareAPI.isOnline();
+    }
+
+    public Iterable<SurePetcareHousehold> listHouseholds() {
+        List<SurePetcareHousehold> list = petcareAPI.getTopology().getHouseholds();
+        return list == null ? Collections.emptyList() : list;
+    }
+
+    public Iterable<SurePetcarePet> listPets() {
+        List<SurePetcarePet> list = petcareAPI.getTopology().getPets();
+        return list == null ? Collections.emptyList() : list;
+    }
+
+    public Iterable<SurePetcareDevice> listDevices() {
+        List<SurePetcareDevice> list = petcareAPI.getTopology().getDevices();
+        return list == null ? Collections.emptyList() : list;
     }
 
     protected synchronized void updateThings() {

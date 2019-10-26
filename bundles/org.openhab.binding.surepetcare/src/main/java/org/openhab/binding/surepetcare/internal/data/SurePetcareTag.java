@@ -37,7 +37,7 @@ public class SurePetcareTag extends SurePetcareBaseObject {
     // }
 
     private String tag;
-    private List<Integer> supportedProductIds = new ArrayList<Integer>();
+    private List<Integer> supportedProductIds = new ArrayList<>();
 
     public String getTag() {
         return tag;

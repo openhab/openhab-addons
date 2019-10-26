@@ -26,11 +26,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public class SurePetcareTopology {
 
-    private List<SurePetcareDevice> devices = new ArrayList<SurePetcareDevice>();
-    private List<SurePetcareHousehold> households = new ArrayList<SurePetcareHousehold>();
-    private List<SurePetcarePet> pets = new ArrayList<SurePetcarePet>();
-    private List<SurePetcarePhoto> photos = new ArrayList<SurePetcarePhoto>();
-    private List<SurePetcareTag> tags = new ArrayList<SurePetcareTag>();
+    private List<SurePetcareDevice> devices = new ArrayList<>();
+    private List<SurePetcareHousehold> households = new ArrayList<>();
+    private List<SurePetcarePet> pets = new ArrayList<>();
+    private List<SurePetcarePhoto> photos = new ArrayList<>();
+    private List<SurePetcareTag> tags = new ArrayList<>();
     private SurePetcareUser user;
 
     public List<SurePetcareDevice> getDevices() {

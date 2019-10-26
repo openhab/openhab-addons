@@ -19,6 +19,10 @@ package org.openhab.binding.surepetcare.internal.data;
  */
 public class SurePetcareDeviceCurfew {
 
+    public Boolean enabled;
+    public String lockTime;
+    public String unlockTime;
+
     public SurePetcareDeviceCurfew() {
         this.enabled = false;
         this.lockTime = "00:00";
@@ -30,10 +34,6 @@ public class SurePetcareDeviceCurfew {
         this.lockTime = lockTime;
         this.unlockTime = unlockTime;
     }
-
-    public Boolean enabled;
-    public String lockTime;
-    public String unlockTime;
 
     @Override
     public String toString() {
