@@ -415,6 +415,16 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                 case SYSTEM_SHADE:
                     notifyDiscovery(THING_TYPE_SHADE, output.getIntegrationId(), label);
                     break;
+
+                case SHEER_BLIND:
+                    notifyDiscovery(THING_TYPE_BLIND, output.getIntegrationId(), label, BLIND_TYPE_PARAMETER,
+                            BLIND_TYPE_SHEER);
+                    break;
+
+                case VENETIAN_BLIND:
+                    notifyDiscovery(THING_TYPE_BLIND, output.getIntegrationId(), label, BLIND_TYPE_PARAMETER,
+                            BLIND_TYPE_VENETIAN);
+                    break;
             }
         } else {
             logger.warn("Unrecognized output type {}", output.getType());
