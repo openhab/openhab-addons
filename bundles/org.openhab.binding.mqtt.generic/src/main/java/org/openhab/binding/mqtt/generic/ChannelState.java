@@ -159,7 +159,7 @@ public class ChannelState implements MqttMessageSubscriber {
             if (transformedValue != null) {
                 strValue = transformedValue;
             } else {
-                logger.info("Transformation '{}' returned null on '{}', discarding message", strValue,
+                logger.debug("Transformation '{}' returned null on '{}', discarding message", strValue,
                         t.serviceName);
                 receivedOrTimeout();
                 return;
@@ -354,7 +354,7 @@ public class ChannelState implements MqttMessageSubscriber {
             if (transformedValue != null) {
                 mqttCommandValue = transformedValue;
             } else {
-                logger.info("Transformation '{}' returned null on '{}', discarding message", mqttCommandValue,
+                logger.debug("Transformation '{}' returned null on '{}', discarding message", mqttCommandValue,
                         t.serviceName);
                 return CompletableFuture.completedFuture(false);
             }
