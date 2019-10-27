@@ -12,7 +12,7 @@ This binding supports devices which implement the PJLink protocol (Class 1).
 Limitations at this point:
 
 - only IPv4 connections are supported
-- only PJLink Class 1 commands are supported. Class 2 devices should work fine nevertheless, it's just the Class 2 features that will not work.
+- only PJLink Class 1 commands are supported. Class 2 devices should work fine nevertheless, it is just the Class 2 features that will not work.
 
 The binding is tested with the PJLink device test tool (PJLinkTEST4CNT) and an Acer VL7680.
 

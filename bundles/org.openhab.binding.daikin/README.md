@@ -1,14 +1,17 @@
 # Daikin Binding
 
-The Daikin binding allows you to control your Daikin air conditioning units with openHAB. In order to do so, your Daikin air conditioning unit must have a BRP072A42 or BRP15B61 WiFi adapter installed.
+The Daikin binding allows you to control your Daikin air conditioning units with openHAB.
+In order to do so, your Daikin air conditioning unit must have a BRP072A42 or BRP15B61 WiFi adapter installed.
 
 ## Supported Things
 
-Daikin air conditioning units with a BRP072A42 or BRP15B61 installed. This may work with the older KRP series of wired adapters, but has not been tested with them.
+Daikin air conditioning units with a BRP072A42 or BRP15B61 installed.
+This may work with the older KRP series of wired adapters, but has not been tested with them.
 
 ## Discovery
 
-This addon will broadcast messages on your local network looking for Daikin air conditioning units and adding them to the queue of new items discovered. You can also manually add a new item if you know the IP address.
+This add-on will broadcast messages on your local network looking for Daikin air conditioning units and adding them to the queue of new items discovered.
+You can also manually add a new item if you know the IP address.
 
 ## Thing Configuration
 

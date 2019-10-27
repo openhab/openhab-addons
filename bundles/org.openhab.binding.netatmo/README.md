@@ -11,14 +11,14 @@ See http://www.netatmo.com/ for details on their product.
 
 ## Binding Configuration
 
-The binding has no configuration options itself, all configuration is done at 'Things' level but before, you'll have to grant openHAB to access Netatmo API.
+The binding has no configuration options itself, all configuration is done at 'Things' level but before, you will have to grant openHAB to access Netatmo API.
 Here is the procedure:
 
 ### 1. Application Creation
 
 Create an application at https://dev.netatmo.com/dev/createapp
 
-The variables you'll need to get to setup the binding are:
+The variables you will need to get to setup the binding are:
 
 * `<CLIENT_ID>` Your client ID taken from your App at https://dev.netatmo.com/dev/listapps
 * `<CLIENT_SECRET>` A token provided along with the `<CLIENT_ID>`.
@@ -28,7 +28,7 @@ The variables you'll need to get to setup the binding are:
 
 ### 2. Bridge and Things Configuration
 
-Once you'll get needed informations from the Netatmo API, you'll be able to configure bridge and things.
+Once you will get needed informations from the Netatmo API, you will be able to configure bridge and things.
 
 E.g.
 
@@ -51,7 +51,7 @@ Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_S
 
 For Welcome or Presence Camera, Netatmo servers can send push notifications to the Netatmo Binding by using a callback URL.
 The webhook URL is setup at bridge level using "Webhook Address" parameter.
-You'll define here public way to access your OH2 server:
+You will define here public way to access your openHAB server:
 
 ```
 http(s)://xx.yy.zz.ww:8080
@@ -99,7 +99,7 @@ For example your serial number "h00bcdc" should end up as "02:00:00:00:bc:dc".
 
 ## Discovery
 
-If you don't manually create things in the *.things file, the Netatmo Binding is able to discover automatically all depending modules and devices from Netatmo website.
+If you did not manually create things in the *.things file, the Netatmo Binding is able to discover automatically all depending modules and devices from Netatmo website.
 
 
 ## Channels
@@ -538,7 +538,7 @@ After you set the environment variable, try:
 ls -l $JAVA_HOME/jre/lib/security/cacerts
 ```
 
-If it's set correctly then you should see something similar to:
+If it is set correctly then you should see something similar to:
 
 ```
 -rw-r--r-- 1 root root 101992 Nov 4 10:54 /usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts

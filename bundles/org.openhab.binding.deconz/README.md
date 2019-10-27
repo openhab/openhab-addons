@@ -52,7 +52,7 @@ The Websocket port can be filled automatically by requesting it via the HTTP int
 The API key is an optional value.
 If a deCONZ API key is available because it has already been created manually, it can also be entered as a configuration value.
 Otherwise the field can be left empty and the binding will generate the key automatically.
-For this process the deCONZ bridge must be unlocked in the deCONZ software so that third party applications can register ([see deCONZ documentation](http://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#unlock-the-gateway)).
+For this process the deCONZ bridge must be unlocked in the deCONZ software so that third party applications can register ([see deCONZ documentation](https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#unlock-the-gateway)).
 
 ### Textual Thing Configuration - Retrieving an API Key
 
