@@ -1,5 +1,3 @@
 Number      UR_1b_Id            "Household Id [%d]"                 (dgPet) {channel="surepetcare:household:bridge1:12345:id"}
 String      UR_1b_Name          "Household Name [%s]"               (dgPet) {channel="surepetcare:household:bridge1:12345:name"}
 Number      UR_1b_TimezoneId    "Household Timezone Id [%d]"        (dgPet) {channel="surepetcare:household:bridge1:12345:timezoneId"}
-DateTime    UR_1b_CreatedAt_1   "[%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:household:bridge1:12345:createdAt"}
-DateTime    UR_1b_UpdatedAt_1   "[%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:household:bridge1:12345:updatedAt"}

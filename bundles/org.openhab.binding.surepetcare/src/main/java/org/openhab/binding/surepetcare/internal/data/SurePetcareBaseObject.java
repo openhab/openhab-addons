@@ -77,10 +77,12 @@ public class SurePetcareBaseObject {
         return updatedAt.toInstant().atZone(ZoneId.systemDefault());
     }
 
-    public Map<String, Object> getThingProperties() {
-        Map<String, Object> properties = new HashMap<String, Object>();
+    public Map<String, String> getThingProperties() {
+        Map<String, String> properties = new HashMap<String, String>();
         properties.put("id", id.toString());
         properties.put("version", version);
+        properties.put("createdAt", createdAt.toString());
+        properties.put("updatedAt", updatedAt.toString());
         return properties;
     }
 

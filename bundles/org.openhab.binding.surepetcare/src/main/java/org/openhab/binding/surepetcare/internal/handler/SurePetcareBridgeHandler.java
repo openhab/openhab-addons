@@ -16,6 +16,7 @@ import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -186,17 +187,34 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
         logger.debug("Updating {} connected things", ((Bridge) thing).getThings().size());
         // update existing things
         for (Thing th : ((Bridge) thing).getThings()) {
-            logger.debug("Thing: {}, id: {}", th.getThingTypeUID().getAsString(), th.getUID().getId());
+            String tid = th.getUID().getId();
+            logger.debug("Thing: {}, id: {}", th.getThingTypeUID().getAsString(), tid);
+            Map<String, String> properties = null;
             ThingHandler handler = th.getHandler();
             if (handler != null) {
                 if (th.getThingTypeUID().equals(THING_TYPE_PET)) {
                     ((SurePetcarePetHandler) handler).updateThing();
+                    SurePetcarePet pet = petcareAPI.getTopology().getPetById(tid);
+                    if (pet != null) {
+                        properties = pet.getThingProperties();
+                    }
                 } else if (th.getThingTypeUID().equals(THING_TYPE_HOUSEHOLD)) {
                     ((SurePetcareHouseholdHandler) handler).updateThing();
+                    SurePetcareHousehold household = petcareAPI.getTopology().getHouseholdById(tid);
+                    if (household != null) {
+                        properties = household.getThingProperties();
+                    }
                 } else if ((th.getThingTypeUID().equals(THING_TYPE_HUB_DEVICE))
                         || (th.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE))
                         || (th.getThingTypeUID().equals(THING_TYPE_FEEDER_DEVICE))) {
                     ((SurePetcareDeviceHandler) handler).updateThing();
+                    SurePetcareDevice device = petcareAPI.getTopology().getDeviceById(tid);
+                    if (device != null) {
+                        properties = device.getThingProperties();
+                    }
+                }
+                if (properties != null) {
+                    ((SurePetcareBaseObjectHandler) handler).updateProperties(properties);
                 }
             }
         }

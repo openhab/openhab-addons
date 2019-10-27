@@ -1,11 +1,6 @@
 Number      UR_1d_Id                "Flap Id [%d]"                              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:id"}
 String      UR_1d_Name              "Flap Name [%s]"                            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:name"}
 String      UR_1d_Product           "Flap Product [%s]"                         (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:product"}
-String      UR_1d_Serial_1          "Flap Serial [%s]"                          (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:serialNumber"}
-String      UR_1d_Mac_1             "Flap Mac [%s]"                             (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:macAddress"}
-DateTime    UR_1d_CreatedAt_1       "Created [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:createdAt"}
-DateTime    UR_1d_UpdatedAt_1       "Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:updatedAt"}
-DateTime    UR_1d_PairingAt_1       "Pairing [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:pairingAt"}
 Switch      UR_1d_CurfewEnabled1    "Flap Curfew 1 Enabled [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewEnabled1"}
 String      UR_1d_CurfewLockTime1   "Flap Curfew 1 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime1"}
 String      UR_1d_CurfewUnlockTime1 "Flap Curfew 1 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime1"}
@@ -19,8 +14,6 @@ Switch      UR_1d_CurfewEnabled4    "Flap Curfew 4 Enabled [%s]"                
 String      UR_1d_CurfewLockTime4   "Flap Curfew 4 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime4"}
 String      UR_1d_CurfewUnlockTime5 "Flap Curfew 4 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime4"}
 String      UR_1d_LockingMode       "Flap Locking Mode [%s]"                    (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:lockingMode"}
-Number      UR_1d_HardwareVersion   "Flap Hardware Version [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:hardwareVersion"}
-Number      UR_1d_FirmwareVersion   "Flap Firmware Version [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:firmwareVersion"}
 Switch      UR_1d_LowBattery        "Flap Low Battery [%s]"                     (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:lowBattery"}
 Number      UR_1d_BatteryLevel      "Flap Battery Level [%.0f %%]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:batteryLevel"}
 Number      UR_1d_BatteryVoltage    "Flap Battery Voltage [%.1f V]"             (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:batteryVoltage"}

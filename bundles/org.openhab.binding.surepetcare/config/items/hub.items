@@ -3,10 +3,4 @@ String      UR_1c_Name              "Hub Name [%s]"                             
 String      UR_1c_Product           "Hub Product [%s]"                              (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:product"}
 String      UR_1c_LEDMode           "Hub LED Mode [%s]"                             (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:ledMode"}
 String      UR_1c_PairingMode       "Hub Pairing Mode [%s]"                         (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:pairingMode"}
-DateTime    UR_1c_CreatedAt         "Hub Created [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:createdAt"}
-DateTime    UR_1c_UpdatedAt         "Hub Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:updatedAt"}
-String      UR_1c_Serial            "Hub Serial [%s]"                               (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:serialNumber"}
-String      UR_1c_Mac               "Hub Mac [%s]"                                  (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:macAddress"}
-Number      UR_1c_HardwareVersion   "Hub Hardware Version [%s]"                     (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:hardwareVersion"}
-Number      UR_1c_FirmwareVersion   "Hub Firmware Version [%s]"                     (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:firmwareVersion"}
 Switch      UR_1c_Online            "Hub Online [%s]"                               (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:online"}

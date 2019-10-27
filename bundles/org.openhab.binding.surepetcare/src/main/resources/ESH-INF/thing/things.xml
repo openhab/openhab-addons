@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<thing:thing-descriptions bindingId="surepetcare" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="surepetcare"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Supported Sure Petcare pets and features -->
 
@@ -14,11 +17,17 @@
 
 		<channels>
 			<channel id="id" typeId="idType" />
-            <channel id="name" typeId="nameType" />
-            <channel id="timezoneId" typeId="timezoneIdType" />
-			<channel id="createdAt" typeId="createdAtType" />
-			<channel id="updatedAt" typeId="updatedAtType" />
+			<channel id="name" typeId="nameType" />
+			<channel id="timezoneId" typeId="timezoneIdType" />
 		</channels>
+
+		<properties>
+			<property name="id" />
+			<property name="version" />
+			<property name="createdAt" />
+			<property name="updatedAt" />
+		</properties>
+
 	</thing-type>
 
 	<thing-type id="hubDevice">
@@ -35,14 +44,23 @@
 			<channel id="product" typeId="productType" />
 			<channel id="ledMode" typeId="ledModeType" />
 			<channel id="pairingMode" typeId="pairingModeType" />
-			<channel id="serialNumber" typeId="serialNumberType" />
-			<channel id="macAddress" typeId="macAddressType" />
-			<channel id="hardwareVersion" typeId="hardwareVersionType" />
-			<channel id="firmwareVersion" typeId="firmwareVersionType" />
 			<channel id="online" typeId="onlineType" />
-			<channel id="createdAt" typeId="createdAtType" />
-			<channel id="updatedAt" typeId="updatedAtType" />
 		</channels>
+
+		<properties>
+			<property name="id" />
+            <property name="version" />
+            <property name="createdAt" />
+            <property name="updatedAt" />
+            <property name="householdId" />
+            <property name="productType" />
+            <property name="productName" />
+			<property name="macAddress" />
+			<property name="serialNumber" />
+			<property name="hardwareVersion" />
+			<property name="firmwareVersion" />
+		</properties>
+
 	</thing-type>
 
 	<thing-type id="flapDevice">
@@ -70,20 +88,27 @@
 			<channel id="curfewLockTime4" typeId="curfewLockTimeType" />
 			<channel id="curfewUnlockTime4" typeId="curfewUnlockTimeType" />
 			<channel id="lockingMode" typeId="lockingModeType" />
-			<channel id="serialNumber" typeId="serialNumberType" />
-			<channel id="macAddress" typeId="macAddressType" />
-			<channel id="hardwareVersion" typeId="hardwareVersionType" />
-			<channel id="firmwareVersion" typeId="firmwareVersionType" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="batteryVoltage" typeId="batteryVoltageType" />
 			<channel id="online" typeId="onlineType" />
 			<channel id="deviceRSSI" typeId="rssiDeviceType" />
 			<channel id="hubRSSI" typeId="rssiHubType" />
-			<channel id="createdAt" typeId="createdAtType" />
-			<channel id="updatedAt" typeId="updatedAtType" />
-			<channel id="pairingAt" typeId="pairingAtType" />
 		</channels>
+		<properties>
+			<property name="id" />
+			<property name="version" />
+			<property name="createdAt" />
+            <property name="updatedAt" />
+            <property name="householdId" />
+            <property name="productType" />
+            <property name="productName" />
+            <property name="macAddress" />
+            <property name="serialNumber" />
+            <property name="hardwareVersion" />
+            <property name="firmwareVersion" />
+			<property name="pairingAt" />
+		</properties>
 	</thing-type>
 
 	<thing-type id="feederDevice">
@@ -98,19 +123,12 @@
 			<channel id="id" typeId="idType" />
 			<channel id="name" typeId="nameType" />
 			<channel id="product" typeId="productType" />
-			<channel id="serialNumber" typeId="serialNumberType" />
-			<channel id="macAddress" typeId="macAddressType" />
-			<channel id="hardwareVersion" typeId="hardwareVersionType" />
-			<channel id="firmwareVersion" typeId="firmwareVersionType" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="batteryVoltage" typeId="batteryVoltageType" />
 			<channel id="online" typeId="onlineType" />
 			<channel id="deviceRSSI" typeId="rssiDeviceType" />
 			<channel id="hubRSSI" typeId="rssiHubType" />
-			<channel id="createdAt" typeId="createdAtType" />
-			<channel id="updatedAt" typeId="updatedAtType" />
-			<channel id="pairingAt" typeId="pairingAtType" />
 			<channel id="bowlsFood" typeId="bowlsFoodType" />
 			<channel id="bowlsTarget" typeId="bowlsTargetType" />
 			<channel id="bowlsFoodLeft" typeId="bowlsFoodLeftType" />
@@ -121,6 +139,20 @@
 			<channel id="bowlsCloseDelay" typeId="bowlsCloseDelayType" />
 			<channel id="bowlsTrainingMode" typeId="bowlsTrainingModeType" />
 		</channels>
+		<properties>
+            <property name="id" />
+            <property name="version" />
+            <property name="createdAt" />
+            <property name="updatedAt" />
+            <property name="householdId" />
+            <property name="productType" />
+            <property name="productName" />
+            <property name="macAddress" />
+            <property name="serialNumber" />
+            <property name="hardwareVersion" />
+            <property name="firmwareVersion" />
+            <property name="pairingAt" />
+		</properties>
 	</thing-type>
 
 	<thing-type id="pet">
@@ -151,6 +183,13 @@
 			<channel id="feederLastChangeLeft" typeId="feederLastChangeLeftType" />
 			<channel id="feederLastChangeRight" typeId="feederLastChangeRightType" />
 		</channels>
+		<properties>
+			<property name="id" />
+			<property name="version" />
+			<property name="createdAt" />
+			<property name="updatedAt" />
+            <property name="householdId" />
+		</properties>
 
 	</thing-type>
 

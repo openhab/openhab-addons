@@ -14,6 +14,8 @@ package org.openhab.binding.surepetcare.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -59,6 +61,12 @@ public abstract class SurePetcareBaseObjectHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             updateThingCache.getValue();
         }
+    }
+
+    @Override
+    public void updateProperties(Map<String, String> properties) {
+        logger.debug("Updating thing properties");
+        super.updateProperties(properties);
     }
 
     private Integer refreshCache() {

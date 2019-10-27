@@ -1,16 +1,9 @@
 Number      UR_1f_Id                    "Feeder ID [%s]"                            (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:id"}
 String      UR_1f_Name                  "Feeder Name [%s]"                          (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:name"}
 String      UR_1f_Product               "Feeder Product [%s]"                       (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:product"}
-Number      UR_1f_Hardware              "Feeder Hardware [%s]"                      (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:hardwareVersion"}
-Number      UR_1f_Firmware              "Feeder Firmware [%s]"                      (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:firmwareVersion"}
 Switch      UR_1f_LowBattery            "Feeder Low Battery [%s]"                   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:lowBattery"}
 Number      UR_1f_BatteryLevel          "Feeder Battery Level [%.0f %%]"            (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:batteryLevel"}
 Number      UR_1f_BatteryVoltage        "Feeder Battery Voltage [%.2f V]"           (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:batteryVoltage"}
-String      UR_1f_Serial                "Feeder Serial [%s]"                        (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:serialNumber"}
-String      UR_1f_Mac                   "Feeder Mac [%s]"                           (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:macAddress"}
-DateTime    UR_1f_CreatedAt             "Created [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:createdAt"}
-DateTime    UR_1f_UpdatedAt             "Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:updatedAt"}
-DateTime    UR_1f_PairingAt             "Pairing [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:pairingAt"}
 String      UR_1f_BowlsType             "Feeder Bowls Type [%s]"                    (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowls"}
 String      UR_1f_BowlsFoodtype         "Feeder Food Type [%s]"                     (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsFood"}
 Number:Mass UR_1f_BowlsTarget           "Feeder Target [%.0f %unit%]"               (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsTarget"}

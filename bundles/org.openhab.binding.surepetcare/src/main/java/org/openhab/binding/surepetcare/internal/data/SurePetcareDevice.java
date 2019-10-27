@@ -158,11 +158,18 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
     }
 
     @Override
-    public Map<String, Object> getThingProperties() {
-        Map<String, Object> properties = super.getThingProperties();
+    public Map<@NonNull String, String> getThingProperties() {
+        Map<@NonNull String, String> properties = super.getThingProperties();
         properties.put("householdId", householdId.toString());
-        properties.put("productTypeId", productId.toString());
+        properties.put("productType", productId.toString());
         properties.put("productName", ProductType.findByTypeId(productId).getName());
+        properties.put("macAddress", macAddress);
+        properties.put("serialNumber", serialNumber);
+        properties.put("hardwareVersion", status.getVersion().device.hardware.toString());
+        properties.put("firmwareVersion", status.getVersion().device.firmware.toString());
+        if (pairingAt != null) {
+            properties.put("pairingAt", pairingAt.toString());
+        }
         return properties;
     }
 

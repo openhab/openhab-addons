@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -205,8 +207,8 @@ public class SurePetcarePet extends SurePetcareBaseObject {
     }
 
     @Override
-    public Map<String, Object> getThingProperties() {
-        Map<String, Object> properties = super.getThingProperties();
+    public Map<@NonNull String, @NonNull String> getThingProperties() {
+        Map<String, String> properties = super.getThingProperties();
         properties.put("householdId", householdId.toString());
         return properties;
     }
