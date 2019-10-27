@@ -131,6 +131,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
     }
 
     private void householdDiscovered(SurePetcareHousehold household) {
+        logger.debug("Discovered household: {}", household.getName());
         ThingUID thingsUID = new ThingUID(THING_TYPE_HOUSEHOLD, bridgeUID, household.getId().toString());
         Map<String, Object> properties = household.getThingProperties();
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(household.getName())
@@ -138,6 +139,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
     }
 
     private void petDiscovered(SurePetcarePet pet) {
+        logger.debug("Discovered pet: {}", pet.getName());
         ThingUID thingsUID = new ThingUID(THING_TYPE_PET, bridgeUID, pet.getId().toString());
         Map<String, Object> properties = pet.getThingProperties();
         thingDiscovered(DiscoveryResultBuilder.create(thingsUID).withLabel(pet.getName()).withProperties(properties)
@@ -145,6 +147,7 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
     }
 
     private void deviceDiscovered(SurePetcareDevice device) {
+        logger.debug("Discovered device: {}", device.getName());
         ThingTypeUID typeUID = null;
         switch (ProductType.findByTypeId(device.getProductId())) {
             case HUB:

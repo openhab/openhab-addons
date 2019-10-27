@@ -64,7 +64,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
 
         if (command instanceof RefreshType) {
             synchronized (petcareAPI) {
-                updateThing();
+                updateThingCache.getValue();
             }
         } else if (channelUID.getId().startsWith(DEVICE_CHANNEL_CURFEW_BASE)) {
             handleCurfewCommand(channelUID, command);

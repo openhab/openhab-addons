@@ -67,7 +67,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
         logger.debug("PetHandler handleCommand called with command: {}", command);
 
         if (command instanceof RefreshType) {
-            updateThing();
+            updateThingCache.getValue();
         } else {
             switch (channelUID.getId()) {
                 case PET_CHANNEL_LOCATION:
