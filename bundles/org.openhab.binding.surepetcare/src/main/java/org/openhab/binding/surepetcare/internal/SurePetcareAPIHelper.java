@@ -12,25 +12,28 @@
  */
 package org.openhab.binding.surepetcare.internal;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ProtocolException;
 import java.net.SocketException;
-import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDevice;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceControl;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareDeviceCurfewList;
@@ -59,10 +62,6 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class SurePetcareAPIHelper {
 
-    private static final String HTTP_REQUEST_METHOD_POST = "POST";
-    private static final String HTTP_REQUEST_METHOD_PUT = "PUT";
-    private static final String HTTP_REQUEST_METHOD_GET = "GET";
-
     private final Logger logger = LoggerFactory.getLogger(SurePetcareAPIHelper.class);
 
     private static final String API_USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36";
@@ -81,7 +80,17 @@ public class SurePetcareAPIHelper {
     private String password = "";
     private boolean online = false;
 
+    private @NonNullByDefault({}) HttpClient httpClient;
     private SurePetcareTopology topologyCache = new SurePetcareTopology();
+
+    /**
+     * Sets the httpClient object to be used for API calls to Sure Petcare.
+     *
+     * @param httpClient the client to be used.
+     */
+    public void setHttpClient(@Nullable HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
 
     /**
      * This method uses the provided username and password to obtain an authentication token used for subsequent API
@@ -93,43 +102,29 @@ public class SurePetcareAPIHelper {
      */
     public synchronized void login(String username, String password) throws AuthenticationException {
         try {
-            URL object = new URL(LOGIN_URL);
-            HttpURLConnection con = (HttpURLConnection) object.openConnection();
-            setConnectionHeaders(con);
-            con.setRequestMethod(HTTP_REQUEST_METHOD_POST);
-            con.setDoInput(true);
-
-            OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
-            wr.write(SurePetcareConstants.GSON
-                    .toJson(new SurePetcareLoginCredentials(username, password, getDeviceId().toString())));
-            wr.flush();
-
-            StringBuilder sb = new StringBuilder();
-            int httpResult = con.getResponseCode();
-            if (httpResult == HttpURLConnection.HTTP_OK) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
-                String line = null;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-                br.close();
+            Request request = httpClient.POST(LOGIN_URL);
+            setConnectionHeaders(request);
+            request.content(new StringContentProvider(SurePetcareConstants.GSON
+                    .toJson(new SurePetcareLoginCredentials(username, password, getDeviceId().toString()))));
+            ContentResponse response = request.send();
+            if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                 @NonNull
-                SurePetcareLoginResponse response = SurePetcareConstants.GSON.fromJson(sb.toString(),
-                        SurePetcareLoginResponse.class);
+                SurePetcareLoginResponse loginResponse = SurePetcareConstants.GSON
+                        .fromJson(response.getContentAsString(), SurePetcareLoginResponse.class);
 
-                authenticationToken = response.getToken();
+                authenticationToken = loginResponse.getToken();
                 this.username = username;
                 this.password = password;
                 online = true;
 
                 logger.debug("Login successful, token: {}", authenticationToken);
             } else {
-                logger.debug("HTTP Response Code: {}", con.getResponseCode());
-                logger.debug("HTTP Response Msg: {}", con.getResponseMessage());
+                logger.debug("HTTP Response Code: {}", response.getStatus());
+                logger.debug("HTTP Response Msg: {}", response.getReason());
                 throw new AuthenticationException(
-                        "HTTP response " + con.getResponseCode() + " - " + con.getResponseMessage());
+                        "HTTP response " + response.getStatus() + " - " + response.getReason());
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("Exception caught during login: {}", e.getMessage());
             throw new AuthenticationException(e);
         }
@@ -233,7 +228,7 @@ public class SurePetcareAPIHelper {
         pet.getPetStatus().getActivity().setWhere(newLocationId);
         pet.getPetStatus().getActivity().setSince(new Date());
         String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
-        setDataThroughApi(url, HTTP_REQUEST_METHOD_POST, pet.getPetStatus().getActivity());
+        setDataThroughApi(url, HttpMethod.POST, pet.getPetStatus().getActivity());
     }
 
     /**
@@ -249,7 +244,7 @@ public class SurePetcareAPIHelper {
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
         control.setLockingModeId(newLockingModeId);
         String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
-        setDataThroughApi(ctrlurl, HTTP_REQUEST_METHOD_PUT, control);
+        setDataThroughApi(ctrlurl, HttpMethod.PUT, control);
 
         // now we're fetching the new state back for the cache
         String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/status";
@@ -271,7 +266,7 @@ public class SurePetcareAPIHelper {
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
         control.setLedModeId(newLedModeId);
         String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
-        setDataThroughApi(ctrlurl, HTTP_REQUEST_METHOD_PUT, control);
+        setDataThroughApi(ctrlurl, HttpMethod.PUT, control);
 
         // now we're fetching the new state back for the cache
         String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/status";
@@ -293,7 +288,7 @@ public class SurePetcareAPIHelper {
         SurePetcareDeviceControl control = new SurePetcareDeviceControl();
         control.setCurfewList(curfewList.compact());
         String ctrlurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
-        setDataThroughApi(ctrlurl, HTTP_REQUEST_METHOD_PUT, control);
+        setDataThroughApi(ctrlurl, HttpMethod.PUT, control);
 
         // now we're fetching the new state back for the cache
         String devurl = DEVICE_BASE_URL + "/" + device.getId().toString() + "/control";
@@ -367,21 +362,21 @@ public class SurePetcareAPIHelper {
     /**
      * Sets a set of required HTTP headers for the JSON API calls.
      *
-     * @param con the HTTP connection
+     * @param request the HTTP connection
      * @throws ProtocolException
      */
-    private void setConnectionHeaders(HttpURLConnection con) throws ProtocolException {
+    private void setConnectionHeaders(Request request) throws ProtocolException {
         // headers
-        con.setRequestProperty("Connection", "keep-alive");
-        con.setRequestProperty("Origin", "https://surepetcare.io");
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setRequestProperty("User-Agent", API_USER_AGENT);
-        con.setRequestProperty("Referer", "https://surepetcare.io/");
-        con.setRequestProperty("Accept-Encoding", "gzip, deflate");
-        con.setRequestProperty("Accept", "application/json, text/plain, */*");
-        con.setRequestProperty("X-Requested-With", "com.sureflap.surepetcare");
-        con.setRequestProperty("Authorization", "Bearer " + authenticationToken);
-        con.setDoOutput(true);
+        request.header(HttpHeader.ACCEPT, "application/json, text/plain, */*");
+        request.header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate");
+        request.header(HttpHeader.AUTHORIZATION, "Bearer " + authenticationToken);
+        request.header(HttpHeader.CONNECTION, "keep-alive");
+        request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
+        request.header(HttpHeader.USER_AGENT, API_USER_AGENT);
+        request.header(HttpHeader.REFERER, "https://surepetcare.io/");
+        request.header("Origin", "https://surepetcare.io");
+        request.header("Referer", "https://surepetcare.io");
+        request.header("X-Requested-With", "com.sureflap.surepetcare");
     }
 
     /**
@@ -406,9 +401,9 @@ public class SurePetcareAPIHelper {
      * @param payload an object used for the payload
      * @throws SurePetcareApiException
      */
-    private void setDataThroughApi(String url, String requestMethod, Object payload) throws SurePetcareApiException {
+    private void setDataThroughApi(String url, HttpMethod method, Object payload) throws SurePetcareApiException {
         String jsonPayload = SurePetcareConstants.GSON.toJson(payload);
-        postDataThroughAPI(url, requestMethod, jsonPayload);
+        postDataThroughAPI(url, method, jsonPayload);
     }
 
     /**
@@ -423,37 +418,26 @@ public class SurePetcareAPIHelper {
         String responseData = "";
         while (!success) {
             try {
-                URL object = new URL(url);
-                HttpURLConnection con = (HttpURLConnection) object.openConnection();
-                setConnectionHeaders(con);
-                con.setRequestMethod(HTTP_REQUEST_METHOD_GET);
-
-                StringBuilder sb = new StringBuilder();
-                int httpResult = con.getResponseCode();
-                if (httpResult == HttpURLConnection.HTTP_OK) {
-                    BufferedReader br = new BufferedReader(
-                            new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
-                    String line = null;
-                    while ((line = br.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    br.close();
-                    logger.debug("API execution successful");
-                    responseData = sb.toString();
-                    logger.debug("Response data: {}", responseData);
-
+                Request request = httpClient.newRequest(url).method(HttpMethod.GET);
+                setConnectionHeaders(request);
+                ContentResponse response = request.send();
+                if (response.getStatus() == HttpURLConnection.HTTP_OK) {
+                    responseData = response.getContentAsString();
+                    logger.debug("API execution successful, response: {}", responseData);
                     success = true;
                 } else {
-                    logger.debug("HTTP Response Code: {}", con.getResponseCode());
-                    logger.debug("HTTP Response Msg: {}", con.getResponseMessage());
-                    if (con.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                    logger.debug("HTTP Response Code: {}", response.getStatus());
+                    logger.debug("HTTP Response Msg: {}", response.getReason());
+                    if (response.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                         // authentication token has expired, login again and retry
                         login(username, password);
                     } else {
-                        throw new SurePetcareApiException();
+                        throw new SurePetcareApiException(
+                                "Http error: " + response.getStatus() + " - " + response.getReason());
                     }
                 }
-            } catch (IOException | AuthenticationException e) {
+            } catch (AuthenticationException | InterruptedException | ExecutionException | TimeoutException
+                    | ProtocolException e) {
                 logger.debug("Exception caught during API execution: {}", e.getMessage());
                 throw new SurePetcareApiException(e);
             }
@@ -465,37 +449,38 @@ public class SurePetcareAPIHelper {
      * Uses the given request method to send a JSON string to an API.
      *
      * @param url the URL
-     * @param requestMethod the required request method (POST, PUT etc.)
+     * @param method the required request method (POST, PUT etc.)
      * @param jsonPayload the JSON string
      * @throws SurePetcareApiException
      */
-    private void postDataThroughAPI(String url, String requestMethod, String jsonPayload)
-            throws SurePetcareApiException {
+    private void postDataThroughAPI(String url, HttpMethod method, String jsonPayload) throws SurePetcareApiException {
         boolean success = false;
         logger.debug("postDataThroughAPI URL: {}", url);
         logger.debug("postDataThroughAPI Payload: {}", jsonPayload);
         while (!success) {
+
             try {
-                URL object = new URL(url);
-                HttpURLConnection con = (HttpURLConnection) object.openConnection();
-                setConnectionHeaders(con);
-                con.setRequestMethod(requestMethod);
-                con.getOutputStream().write(jsonPayload.getBytes());
-                int httpResult = con.getResponseCode();
-                if ((httpResult == HttpURLConnection.HTTP_OK) || (httpResult == HttpURLConnection.HTTP_CREATED)) {
+                Request request = httpClient.newRequest(url).method(method);
+                setConnectionHeaders(request);
+                request.content(new StringContentProvider(jsonPayload));
+                ContentResponse response = request.send();
+                if ((response.getStatus() == HttpURLConnection.HTTP_OK)
+                        || (response.getStatus() == HttpURLConnection.HTTP_CREATED)) {
                     logger.debug("API execution successful");
                     success = true;
                 } else {
-                    logger.debug("HTTP Response Code: {}", con.getResponseCode());
-                    logger.debug("HTTP Response Msg: {}", con.getResponseMessage());
-                    if (con.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                    logger.debug("HTTP Response Code: {}", response.getStatus());
+                    logger.debug("HTTP Response Msg: {}", response.getReason());
+                    if (response.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                         // authentication token has expired, login again and retry
                         login(username, password);
                     } else {
-                        throw new SurePetcareApiException();
+                        throw new SurePetcareApiException(
+                                "Http error: " + response.getStatus() + " - " + response.getReason());
                     }
                 }
-            } catch (IOException | AuthenticationException e) {
+            } catch (AuthenticationException | InterruptedException | TimeoutException | ExecutionException
+                    | ProtocolException e) {
                 logger.debug("Exception caught during API execution: {}", e.getMessage());
                 throw new SurePetcareApiException(e);
             }

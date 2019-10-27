@@ -27,11 +27,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.surepetcare.internal.handler.SurePetcareBridgeHandler;
 import org.openhab.binding.surepetcare.internal.handler.SurePetcareDeviceHandler;
 import org.openhab.binding.surepetcare.internal.handler.SurePetcareHouseholdHandler;
 import org.openhab.binding.surepetcare.internal.handler.SurePetcarePetHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,30 +91,13 @@ public class SurePetcareHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    // /**
-    // * Removed the thing handler.
-    // */
-    // @Override
-    // protected void removeHandler(ThingHandler thingHandler) {
-    // if (thingHandler instanceof SurePetcareBridgeHandler) {
-    // unregisterDiscoveryService(thingHandler.getThing().getUID());
-    // }
-    // }
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        petcareAPI.setHttpClient(httpClientFactory.getCommonHttpClient());
+    }
 
-    // private synchronized void registerDiscoveryService(ThingUID bridgeUID) {
-    // SurePetcareDiscoveryService discoveryService = new SurePetcareDiscoveryService(bridgeUID, petcareAPI);
-    // discoveryService.activate(null);
-    // discoveryServiceRegs.put(bridgeUID, bundleContext.registerService(DiscoveryService.class.getName(),
-    // discoveryService, new Hashtable<String, Object>()));
-    // }
-    //
-    // private synchronized void unregisterDiscoveryService(ThingUID bridgeUID) {
-    // ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(bridgeUID);
-    // SurePetcareDiscoveryService service = (SurePetcareDiscoveryService) bundleContext
-    // .getService(serviceReg.getReference());
-    // serviceReg.unregister();
-    // if (service != null) {
-    // service.deactivate();
-    // }
-    // }
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        petcareAPI.setHttpClient(null);
+    }
+
 }
