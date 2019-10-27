@@ -38,6 +38,7 @@ This binding currently supports the following thing types:
 * **qsio** - HomeWorks QS IO Interface
 * **cco** - Contact closure output module or VCRX CCO
 * **shade** - Lutron shade or motorized drape
+* **blind** - Lutron venetian blind or horizontal sheer blind [**Experimental**]
 * **greenmode** - Green Mode subsystem
 * **timeclock** - Scheduling subsystem
 
@@ -370,6 +371,32 @@ Thing configuration file example:
 Thing shade libraryshade [ integrationId=33]
 ```
 
+### Blinds [**Experimental**]
+
+Each Lutron Sivoia QS Venetian Blind or Horizontal Sheer Blind is controlled by a **blind** thing.
+Besides `integrationId`, it requires that the parameter `type` be set to either "Venetian" for venetian blinds or "Sheer" for horizontal sheer blinds.
+There is no default.
+If discovery is used, the `type` parameter will set automatically when the **blind** thing is created.
+
+Two channels, *blindliftlevel* and *blindtiltlevel*, with item type Rollershutter and category Rollershutter will be created for each **blind** thing.
+They control the up/down motion and the slat tilt motions of the blinds, respectively.
+Each channel accepts Percent, Up, Down, Stop and Refresh commands.
+Sending a Percent command will cause the blind to immediately move so as to be open the specified percentage.
+You can also read the current setting from each channel.
+It is specified as a percentage, where 0% = closed and 100% = fully open. Movement delays are not currently supported.
+
+**Note:** While a blind is moving to a specific level because of a Percent command, the Lutron system will report the target position for the blind rather than the actual current position.
+While a blind is moving because of an Up or Down command, it will report the previous level until it stops moving.
+
+**Note:** Support for Sivoia QS blinds is new and has been through very limited testing.
+Please comment on your use of it in the openHAB community forum.
+
+Thing configuration file example:
+
+```
+Thing blind officeblinds [ integrationId=76, type="Venetian"]
+```
+
 ### Green Mode
 
 Radio RA2 and HomeWorks QS systems have a "Green Mode" or "Green Button" feature which allows the system to be placed in to one or more user-defined power saving modes called "steps".
@@ -454,6 +481,8 @@ The following is a summary of channels for all RadioRA 2 binding things:
 | keypads(except pico)| led*              | Switch        | LED indicator for the associated button      |
 | vcrx                | cci*              | Contact       | Contact closure input on/off status          |
 | shade               | shadelevel        | Rollershutter | Level of the shade (100% = full open)        |
+| blind               | blindliftlevel    | Rollershutter | Level of the blind (100% = full open)        |
+| blind               | blindtiltlevel    | Rollershutter | Tilt of the blind slats                      |
 | greenmode           | step              | Number        | Get/set active green mode step number        |
 | timeclock           | clockmode         | Number        | Get/set active clock mode index number       |
 | timeclock           | sunrise           | DateTime      | Get the timeclock's sunrise time             |
@@ -477,6 +506,8 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, intl
 |           |led*           |OnOffType     |OnOffType, RefreshType                                 |
 |           |cci*           |OpenClosedType|(*readonly*)                                           |
 |shade      |shadelevel     |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
+|blind      |blindliftlevel |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
+|           |blindtiltlevel |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
 |greenmode  |step           |DecimalType   |DecimalType, OnOffType (ON=2,OFF=1), RefreshType       |
 |timeclock  |clockmode      |DecimalType   |DecimalType, RefreshType                               |
 |           |sunrise        |DateTimeType  |RefreshType (*readonly*)                               |
