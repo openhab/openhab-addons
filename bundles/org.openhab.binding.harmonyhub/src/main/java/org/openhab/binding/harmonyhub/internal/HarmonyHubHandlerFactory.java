@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -39,11 +40,13 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.harmonyhub.internal.discovery.HarmonyDeviceDiscoveryService;
 import org.openhab.binding.harmonyhub.internal.handler.HarmonyDeviceHandler;
 import org.openhab.binding.harmonyhub.internal.handler.HarmonyHubHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HarmonyHubHandlerFactory} is responsible for creating things and thing
@@ -53,8 +56,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Wouter Born - Add null annotations
  */
 @NonNullByDefault
-@Component(service = { ThingHandlerFactory.class,
-        ChannelTypeProvider.class }, configurationPid = "binding.harmonyhub")
+@Component(service = { ThingHandlerFactory.class, ChannelTypeProvider.class }, configurationPid = "binding.harmonyhub")
 public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements ChannelTypeProvider {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
@@ -63,6 +65,7 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements
             .collect(Collectors.toSet());
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private @NonNullByDefault({}) HttpClient httpClient;
 
     private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
     private final List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<>();
@@ -139,6 +142,19 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     public @Nullable Collection<ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
         return channelGroupTypes;
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
+    }
+
+    public HttpClient getHttpClient() {
+        return this.httpClient;
     }
 
     public void addChannelType(ChannelType type) {
