@@ -20,7 +20,7 @@ No binding configuration required.
 
 ## Thing Configuration
 
-All Things require the parameter `geolocation` (as `<latitude>,<longitude>,[<altitude in m>]`) for which the calculation is done. 
+All Things require the parameter `geolocation` (as `<latitude>,<longitude>[,<altitude in m>]`) for which the calculation is done. 
 The altitude segment is optional and sharpens results provided by the Radiation group.
 Optionally, a refresh `interval` (in seconds) can be defined to also calculate positional data like azimuth and elevation.
 
