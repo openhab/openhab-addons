@@ -39,6 +39,7 @@ public class ProcessorFactory {
     private @Nullable static Ws2902aProcessor WS2902A_PROCESSOR;
     private @Nullable static Ws8482Processor WS8482_PROCESSOR;
     private @Nullable static Ws0900ipProcessor WS0900IP_PROCESSOR;
+    private @Nullable static Ws0265Processor WS0265_PROCESSOR;
 
     /**
      * Individual weather station processors use this one Gson instance,
@@ -90,6 +91,14 @@ public class ProcessorFactory {
                 if (processor == null) {
                     processor = new Ws0900ipProcessor();
                     WS0900IP_PROCESSOR = processor;
+                }
+                return processor;
+            }
+            case "ambientweather:ws0265": {
+                Ws0265Processor processor = WS0265_PROCESSOR;
+                if (processor == null) {
+                    processor = new Ws0265Processor();
+                    WS0265_PROCESSOR = processor;
                 }
                 return processor;
             }
