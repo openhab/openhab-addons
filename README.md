@@ -54,7 +54,7 @@ You find the following repository structure:
 +-- tools     Static code analyser instructions
 |
 +-- CODEOWNERS  This file assigns people to directories so that they are informed if a pull-request
-                would modify their addons.
+                would modify their add-ons.
 ```
 
 ### Command line build

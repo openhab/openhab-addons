@@ -58,14 +58,14 @@ Be aware, that not all features of a station may be supported by the Pi interfac
 
 The following channel is supported by the `station` thing.
 
-| Channel Type ID    | Item Type   |    | Description                                             |
-|--------------------|-------------|----|---------------------------------------------------------|
-| stationState       | Switch      | RW | This channel indicates whether station 01 is on or off. |
-| remainingWaterTime | Number:Time | R  | The time the station remains to be open.                |
-| nextDuration       | Number:Time | RW | A configuration item, which time, if linked, will be    |
-|                    |             |    | used as the time the station will be kept open when     |
-|                    |             |    | switched on. It's advised to add persistence for items  |
-|                    |             |    | linked to this channel, the binding does not persist    |
+| Channel Type ID    | Item Type   |    | Description                                              |
+|--------------------|-------------|----|----------------------------------------------------------|
+| stationState       | Switch      | RW | This channel indicates whether station 01 is on or off.  |
+| remainingWaterTime | Number:Time | R  | The time the station remains to be open.                 |
+| nextDuration       | Number:Time | RW | A configuration item, which time, if linked, will be     |
+|                    |             |    | used as the time the station will be kept open when      |
+|                    |             |    | switched on. It is advised to add persistence for items  |
+|                    |             |    | linked to this channel, the binding does not persist     |
 |                    |             |    | values of it.
 
 When using the `nextDuration` channel, it is advised to setup persistence (e.g. MapDB) in order to persist the value through restarts.

@@ -1,10 +1,11 @@
 # Samsung TV Binding
 
-This binding integrates the [Samsung TV's](http://www.samsung.com).
+This binding integrates the [Samsung TV's](https://www.samsung.com).
 
 ## Supported Things
 
-Samsung TV C (2010), D (2011), E (2012) and F (2013) models should be supported. Also support added for TVs using websocket remote interface (2016+ models) 
+Samsung TV C (2010), D (2011), E (2012) and F (2013) models should be supported.
+Also support added for TVs using websocket remote interface (2016+ models) 
 Because Samsung does not publish any documentation about the TV's UPnP interface, there could be differences between different TV models, which could lead to mismatch problems.
 
 Tested TV models:
@@ -31,7 +32,8 @@ The binding does not require any special configuration.
 
 ## Thing Configuration
 
-The Samsung TV Thing requires the host name and port address as a configuration value in order for the binding to know how to access it. Samsung TV publish several UPnP devices and hostname is used to recognize those UPnP devices.
+The Samsung TV Thing requires the host name and port address as a configuration value in order for the binding to know how to access it.
+Samsung TV publish several UPnP devices and hostname is used to recognize those UPnP devices.
 Port address is used for remote control emulation protocol.
 Additionally, a refresh interval can be configured in milliseconds to specify how often TV resources are polled.
 

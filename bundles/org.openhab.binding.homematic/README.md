@@ -22,7 +22,7 @@ Also the IP of the device running openHAB has to be set to the list of "IP addre
 
 Also under `Home page > Settings > Control panel` with the menu `Security` the option `Authentication` has to be disabled as the binding does not support the configuration of `username` and `password`for the XML-RPC API.
 
-If this is not done the binding won't be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception:
+If this is not done the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception:
 
 ```
 xxx-xx-xx xx:xx:xx.xxx [hingStatusInfoChangedEvent] - - 'homematic:bridge:xxx' changed from INITIALIZING to OFFLINE (COMMUNICATION_ERROR): java.net.SocketTimeoutException: Connect Timeout
@@ -104,11 +104,15 @@ The difference is, that variables, scripts and device names are not supported, e
 
 ### Automatic install mode during discovery
 
-Besides discovering devices that are already known by the gateway, it may be desired to connect new devices to your system - which requires your gateway to be in install mode. Starting the binding's DiscoveryService will automatically put your gateway(s) in install mode for a specified period of time (see installModeDuration).
+Besides discovering devices that are already known by the gateway, it may be desired to connect new devices to your system - which requires your gateway to be in install mode.
+Starting the binding's DiscoveryService will automatically put your gateway(s) in install mode for a specified period of time (see installModeDuration).
 
-**Note:** Enabling / disabling of install mode is also available via GATEWAY-EXTRAS. You may use this if you prefer.
+**Note:** Enabling / disabling of install mode is also available via GATEWAY-EXTRAS.
+You may use this if you prefer.
 
-**Exception:** If a gateway is not ONLINE, the install mode will not be set automatically. For instance during initialization of the binding its DiscoveryService is started and will discover devices that are already connected. However, the install mode is not automatically enabled in this situation because the gateway is in the status INITIALIZING.
+**Exception:** If a gateway is not ONLINE, the install mode will not be set automatically.
+For instance during initialization of the binding its DiscoveryService is started and will discover devices that are already connected.
+However, the install mode is not automatically enabled in this situation because the gateway is in the status INITIALIZING.
 
 ## Bridge Configuration
 
@@ -256,7 +260,7 @@ The disadvantage is of course, that all events for this channel are delayed.
   }
 ```
 
-The `Type` is the device type, channel number and lowercase channel name separated with a underscore.
+The `Type` is the device type, channel number and lowercase channel name separated with an underscore.
 Note that, for Homegear devices, in contrast to the specification of the Rhing above no `HG-` prefix is needed for the specification of the Type of the Channel.
 
 The channel configs are optional.
@@ -311,7 +315,7 @@ A virtual datapoint (Switch) to reload all values for all devices, available in 
 
 ### RELOAD_RSSI
 
-A virtual datapoint (Switch) to reload all rssi values for all devices, available in channel 0 in GATEWAY-EXTRAS
+A virtual datapoint (Switch) to reload all RSSI values for all devices, available in channel 0 in GATEWAY-EXTRAS
 
 ### RSSI
 
@@ -343,7 +347,7 @@ A virtual datapoint (Enum) to configure the device deletion with DELETE_MODE, av
 ### ON_TIME_AUTOMATIC
 
 A virtual datapoint (Number) to automatically set the ON_TIME datapoint before the STATE or LEVEL datapoint is sent to the gateway, available for all devices which supports the ON_TIME datapoint.
-This is usefull to automatically turn off the datapoint after the specified time.
+This is useful to automatically turn off the datapoint after the specified time.
 
 ### DISPLAY_OPTIONS
 
@@ -490,10 +494,12 @@ If you can't disable security try to use key INSTALL_TEST which gets updated to 
 **-1 Failure**
 
 A device may return this failure while fetching the datapoint values.
-I've tested pretty much but i did not found the reason. The HM-ES-TX-WM device for example always returns this failure, it's impossible with the current CCU2 firmware (2.17.15) to fetch the values.
-I've implemented two workarounds, if a device returns the failure, workaround one is executed, if the device still returns the failure, workaround two is executed.
-This always works in my tests, but you may see a OFFLINE, ONLINE cycle for the device.
-Fetching values is only done at startup or if you trigger a REFRESH. I hope this will be fixed in one of the next CCU firmwares.
+I have tested pretty much but I did not find the reason.
+The HM-ES-TX-WM device for example always returns this failure, it is impossible with the current CCU2 firmware (2.17.15) to fetch the values.
+I have implemented two workarounds, if a device returns the failure, workaround one is executed, if the device still returns the failure, workaround two is executed.
+This always works in my tests, but you may see an OFFLINE, ONLINE cycle for the device.
+Fetching values is only done at startup or if you trigger a REFRESH.
+I hope this will be fixed in one of the next CCU firmwares.
 With [Homegear](https://www.homegear.eu) everything works as expected.
 
 **No variables and scripts in GATEWAY-EXTRAS**
@@ -503,10 +509,10 @@ Use the ```gatewayType=ccu``` config to force the binding to use the CCU impleme
 
 **Variables out of sync**
 
-The CCU only sends a event if a datapoint of a device has changed.
-There is (currently) no way to receive a event automatically when a variable has changed.
+The CCU only sends an event if a datapoint of a device has changed.
+There is (currently) no way to receive an event automatically when a variable has changed.
 To reload all variable values, send a REFRESH command to any variable.
-e.g you have a item linked to a variable with the name Var_1
+e.g you have an item linked to a variable with the name Var_1
 In the console:
 
 ```shell
@@ -521,7 +527,8 @@ import org.eclipse.smarthome.core.types.RefreshType
 Var_1.sendCommand(RefreshType.REFRESH)
 ```
 
-**Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS Thing is currently not supported. You have to delete the Thing, start a scan and add it again.
+**Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS Thing is currently not supported.
+You have to delete the Thing, start a scan and add it again.
 
 ### Debugging and Tracing
 

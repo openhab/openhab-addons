@@ -31,8 +31,8 @@ The *ethernet* Thing supports the following Channel Types:
 
 | Channel Type ID | Item Type | Description                                                                         |
 |-----------------|-----------|-------------------------------------------------------------------------------------|
-| blaster         | String    | Send (filtered) infrared commands over the specified blaster led of the transceiver |
-| receiver        | String    | Receive (filtered) infrared commands on the receiver led of the transceiver         |
+| blaster         | String    | Send (filtered) infrared commands over the specified blaster LED of the transceiver |
+| receiver        | String    | Receive (filtered) infrared commands on the receiver LED of the transceiver         |
 
 The *blaster* Channel Type requires a *led* configuration parameter to specify on which infrared commands will be emitted, *remote* the remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '*' for 'any' remote), and *command* the name of the command will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '*' for 'any' command).
 
@@ -69,7 +69,7 @@ Type blaster : appletv [led="3", remote="appletv", command="*"]
 }
 ```
 
-In the above channel a single IRtrans transceiver has 3 output leds in use, 2 to drive 2 DTV SetTopBoxes, and a third one to drive an Apple TV device.
+In the above channel a single IRtrans transceiver has 3 output LEDs in use, 2 to drive 2 DTV SetTopBoxes, and a third one to drive an Apple TV device.
 
 demo.items:
 

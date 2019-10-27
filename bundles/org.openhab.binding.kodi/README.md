@@ -26,7 +26,7 @@ To make use of the auto-discovery feature, you additionally need to enable "Allo
 This binding provides only one thing type: The Kodi media center.
 Create one Kodi thing per Kodi instance available in your home automation system.
 
-All Kodi devices are registered as an audio sink in the ESH/openHAB2 framework.
+All Kodi devices are registered as an audio sink in openHAB.
 
 ## Discovery
 

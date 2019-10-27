@@ -114,31 +114,31 @@ java.io.IOException: java.util.concurrent.ExecutionException: javax.net.ssl.SSLH
 ......
 ```
 
-This indicates a missing certificate of a certification authority (CA) in the certificate-store of the java jdk under which openHAB is running.
-In most cases, updating to the latest version of jdk solves this because the store of cacerts are maintained and updated in java releases.
+This indicates a missing certificate of a certification authority (CA) in the certificate-store of the Java JDK under which openHAB is running.
+In most cases, updating to the latest version of JDK solves this because the store of cacerts are maintained and updated in Java releases.
 
-Note: You must restart openHAB after a java update.
+Note: You must restart openHAB after a Java update.
 
-If you receive the error because you are running an old linux installation which does not have the latest java-versions available in its package-repositories, you may be able to fix the issue using one of the three options below:
+If you receive the error because you are running an old Linux installation which does not have the latest java-versions available in its package-repositories, you may be able to fix the issue using one of the three options below:
 
-   1.) Update the linux-system and install the latest java-versions
+   1.) Update the Linux system and install the latest Java version
    
-   2.) Download the most recent jdk and install it directly on to your system without using a pre-composed package
+   2.) Download the most recent JDK and install it directly on to your system without using a pre-composed package
    
-   On debian based systems one can use: http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html
+   On Debian based systems one can use: http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html
 
    3.) Update the cacerts store by importing the missing certificate
    
    Note: Using this version, loaded certificates will expire!
    If you still want to import the missing certificate, the example below may help:
-   Check which java package you have installed:
+   Check which Java package you have installed:
 
 ```java
 >> sudo dpkg -l | grep java
 >> ii  oracle-java8-jdk                    8u65                             armhf        Java™ Platform, Standard Edition 8 Development Kit
 ```
 
-Find the ca-store of your jdk
+Find the ca-store of your JDK
 
 ```java
 >> sudo dpkg -L oracle-java8-jdk | grep cacerts
@@ -168,7 +168,7 @@ Restart your server
 
 Either the web-request to Tankerkönig returned a failure or no valid response was received (this could be caused by a banned API-key).
 In both cases the Webservice and the Station(s) go OFFLINE.
-If the Tankerkönig return indicates an error a descriptive message (in German) is added next to the OFFLINE which will be displayed on the Webservice and Station(s) pages on PaperUI.
+If the Tankerkönig return indicates an error a descriptive message (in German) is added next to the OFFLINE which will be displayed on the Webservice and Station(s) pages on Paper UI.
 On the next receipt of a valid message Webservice and Station(s) will go ONLINE again.
 The scheduled polling of price-data is canceled in case of no valid response.
 Users should check the log for any reports to solve the reason for the OFFLINE status.
