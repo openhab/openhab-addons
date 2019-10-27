@@ -206,6 +206,7 @@ Some sensors (e.g. DS18x20) report 85 °C as Power-On-Reset value.
 In some installations this leads to errorneous temperature readings.
 If the `ignorepor` parameter is set to `true` 85 °C values will be filtered.
 The default is `false` as correct reading of 85 °C will otherwise be filtered, too.
+Please note that the parameter value must not be set in quotation marks (see example below).
 
 A channel of type `temperature-por-res` has one parameter: `resolution`.
 OneWire temperature sensors are capable of different resolutions: `9`, `10`, `11` and `12` bits.
@@ -261,6 +262,7 @@ Bridge onewire:owserver:mybridge [
         ] {
             Channels:
                 Type temperature-por-res : temperature [
+                    ignorepor=true,
                     resolution="11"
                 ]
         } 
@@ -273,6 +275,7 @@ Bridge onewire:owserver:mybridge [
         ] {
             Channels:
                 Type temperature-por-res : temperature [
+                    ignorepor=false,
                     resolution="9"
                 ]
         } 
