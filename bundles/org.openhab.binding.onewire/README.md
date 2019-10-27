@@ -6,7 +6,7 @@ It provides cheap sensors for temperature, humidity, digital I/O and more.
 
 ## Getting Started
 
-The OneWire File System (OWFS, http://owfs.org) provides an abstraction layer between the OneWire bus and this binding. 
+The OneWire File System (OWFS, https://owfs.org) provides an abstraction layer between the OneWire bus and this binding. 
 It is assumed that you already have a working OWFS installation.
 Besides your sensors, you need a busmaster device (e.g. DS9490R). 
 

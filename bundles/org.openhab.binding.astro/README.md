@@ -159,7 +159,7 @@ astro:sun:home [ geolocation="52.5200066,13.4049540,100", interval=60 ] {
 }
 ```
 
-or a offset and latest
+or an offset and latest
 
 ```
 astro:sun:home [ geolocation="52.5200066,13.4049540,100", interval=60 ] {

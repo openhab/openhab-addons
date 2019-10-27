@@ -1,30 +1,44 @@
 # Pentair Pool 
 
-This is an openHAB binding for a Pentair Pool System. It is based on combined efforts of many on the internet in reverse-engineering the proprietary Pentair protocol (see References section). The binding was developed and tested on a system with a Pentair EasyTouch controller, but should operate with other Pentair systems.
+This is an openHAB binding for a Pentair Pool System.
+It is based on combined efforts of many on the internet in reverse-engineering the proprietary Pentair protocol (see References section).
+The binding was developed and tested on a system with a Pentair EasyTouch controller, but should operate with other Pentair systems.
 
 ## Hardware Setup
 
 > REQUISITE DISCLAIMER: CONNECTING 3RD PARTY DEVICES TO THE PENTAIR SYSTEM BUS COULD CAUSE SERIOUS DAMAGE TO THE SYSTEM SHOULD SOMETHING MALFUNCTION.  IT IS NOT ENDORSED BY PENTAIR AND COULD VOID WARRENTY. IF YOU DECIDE TO USE THIS BINDING TO INTERFACE TO A PENTAIR CONTROLLER, THE AUTHOR(S) CAN NOT BE HELD RESPONSIBLE.
 
-This binding requires an adapter to interface to the Pentair system bus. This bus/wire runs between the Pentair control system, indoor control panels, IntelliFlo pumps, etc. It is a standard RS-485 bus running at 9600,8N1 so any RS-485 adapter should work and you should be able to buy one for under $30. Pentair does not publish any information on the protocol so this binding was developed using the great reverse-engineering efforts of others made available on the internet.  I have cited sevearl of those in the References section below.
+This binding requires an adapter to interface to the Pentair system bus.
+This bus/wire runs between the Pentair control system, indoor control panels, IntelliFlo pumps, etc.
+It is a standard RS-485 bus running at 9600,8N1 so any RS-485 adapter should work and you should be able to buy one for under $30.
+Pentair does not publish any information on the protocol so this binding was developed using the great reverse-engineering efforts of others made available on the internet.
+I have cited sevearl of those in the References section below.
 
 ### Connecting adapter to your system
 
-A usb or serial RS-485 interface or IP based interface can be used to interface to the Pentair system bus. The binding includes 2 different bridge Things depending on which type of interface you use, serial_bridge or ip_bridge.
+A USB or serial RS-485 interface or IP based interface can be used to interface to the Pentair system bus.
+The binding includes 2 different bridge Things depending on which type of interface you use, serial_bridge or ip_bridge.
 
-If your openHAB system is physically located far from your Pentair equipment or indoor control panel, you can use a Raspberry Pi or other computer to redirect USB/serial port traffic over the internet using a program called ser2sock (see Reference section). An example setup would run the following command: "ser2sock -p 10000 -s /dev/ttyUSB1 -b 9600 -d". Note: This is the setup utlized for the majority of my testing of this binding.
+If your openHAB system is physically located far from your Pentair equipment or indoor control panel, you can use a Raspberry Pi or other computer to redirect USB/serial port traffic over the internet using a program called ser2sock (see Reference section).
+An example setup would run the following command: "ser2sock -p 10000 -s /dev/ttyUSB1 -b 9600 -d".
+Note: This is the setup utlized for the majority of my testing of this binding.
 
-Note: if you are on a linux system, the framework may not see a symbolically linked device (i.e. /dev/ttyRS485).  To use a symbolically linked device, add the following line to /etc/default/openhab2, `EXTRA_JAVA_OPTS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyRS485"`
+Note: If you are on a Linux system, the framework may not see a symbolically linked device (i.e. /dev/ttyRS485).
+To use a symbolically linked device, add the following line to /etc/default/openhab2, `EXTRA_JAVA_OPTS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyRS485"`
 
-Once you have the interface connected to your system, it is best to test basic connectivity. Note the protocol is a binary protocol (not ASCII text based) and in order to view the communication packets, one must use a program capable of a binary/HEX mode. If connected properly, you will see a periodic traffic with packets staring with FF00FFA5.  This is the preamble for Pentairs communication packet. After you see this traffic, you can proceed to configuring the Pentair binding in openHAB.
+Once you have the interface connected to your system, it is best to test basic connectivity.
+Note the protocol is a binary protocol (not ASCII text based) and in order to view the communication packets, one must use a program capable of a binary/HEX mode.
+If connected properly, you will see a periodic traffic with packets staring with FF00FFA5.
+This is the preamble for Pentairs communication packet.
+After you see this traffic, you can proceed to configuring the Pentair binding in openHAB.
 
 #### USB/Serial interface
 
-For a USB/Serial interface, you can use most terminal emulators. For linux, you can use minicom with the following options: `minicom -H -D /dev/ttyUSB1 -b 9600`
+For a USB/Serial interface, you can use most terminal emulators. For Linux, you can use minicom with the following options: `minicom -H -D /dev/ttyUSB1 -b 9600`
 
 #### IP interface
 
-For an IP based interface (or utilizing ser2sock) on a linux system, you can use nc command with the following options: `nc localhost 10000 | xxd`
+For an IP based interface (or utilizing ser2sock) on a Linux system, you can use nc command with the following options: `nc localhost 10000 | xxd`
 
 ### Pentair Controller panel configuration
 
@@ -49,7 +63,8 @@ There are no overall binding configurations that need to be set up as all config
 
 ## Thing Configuration
 
-Pentair things can be configured either through the online Paper UI configuration, or manually through a 'pentair.thing' configuration file.  The following table shows the available configuration parameters for each thing.
+Pentair things can be configured either through the online Paper UI configuration, or manually through a 'pentair.thing' configuration file.
+The following table shows the available configuration parameters for each thing.
 
 | Thing         | Configuration Parameters                                     |
 | ------------- | ------------------------------------------------------------ |
@@ -61,13 +76,16 @@ Pentair things can be configured either through the online Paper UI configuratio
 |               | pollPeriod - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1. |
 |               | id - ID to use when communciating on Pentair control bus - default = 34. |
 
-Currently automatic discovery is not supported and the binding requires configuration via the PaperUI or a file in the conf/things folder.  Here is an example of a thing configuration file called 'pentair.thing':
+Currently automatic discovery is not supported and the binding requires configuration via the Paper UI or a file in the conf/things folder.
+Here is an example of a thing configuration file called 'pentair.thing':
 
-    Bridge pentair:ip_bridge:1 [ address="192.168.1.202", port=10001 ] {
-        easytouch main [ id=16 ]
-        intelliflo pump1 [ id=96 ]
-        intellichlor ic40
-    }
+```
+Bridge pentair:ip_bridge:1 [ address="192.168.1.202", port=10001 ] {
+    easytouch main [ id=16 ]
+    intelliflo pump1 [ id=96 ]
+    intellichlor ic40
+}
+```
 
 ## Channels
 
@@ -176,8 +194,8 @@ Frame label="Pool" {
 
 ## References
 
-Setting up RS485 and basic protocol - http://www.sdyoung.com/home/decoding-the-pentair-easytouch-rs-485-protocol/
-ser2sock Github - https://github.com/nutechsoftware/ser2sock 
+Setting up RS485 and basic protocol - https://www.sdyoung.com/home/decoding-the-pentair-easytouch-rs-485-protocol/
+ser2sock GitHub - https://github.com/nutechsoftware/ser2sock 
 
 ## Future Enhancements
 

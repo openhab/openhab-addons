@@ -2,7 +2,7 @@
 
 This binding is intended to provide basic support for Paradox Alarm system.
 
-With the power of OpenHAB this binding can be used for complex decision rules combining motion/magnetic sensor or whole partitions states with different scenarios.
+With the power of openHAB this binding can be used for complex decision rules combining motion/magnetic sensor or whole partitions states with different scenarios.
 
 
 Examples: 

@@ -1,6 +1,6 @@
 # innogy SmartHome Binding
 
-The binding integrates the [innogy SmartHome](http://innogy.com/smarthome) system into openHAB.
+The binding integrates the [innogy SmartHome](https://innogy.com/smarthome) system into openHAB.
 It uses the official API as provided by innogy as cloud service.
 As all status updates and commands have to go through the API, a permanent internet connection is required.
 Currently there is no API for a direct communication with the innogy SmartHome Controller (SHC).
@@ -227,15 +227,15 @@ end
 
 ## Resolving certificate issues
 
-If the bridge stays offline with the following status shown in the PaperUI, the reason could be an expired certificate:
+If the bridge stays offline with the following status shown in the Paper UI, the reason could be an expired certificate:
 
 `OFFLINE - COMMUNICATION_ERROR sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target`
 
-To solve this on a linux system, follow this steps:
+To solve this on a Linux system, follow this steps:
 
 1. Download the certificates (.cer-files) of https://home.innogy-smarthome.de and https://innogy.com including the "DigiCert Global Root G2" to your computer.
-As this depends on the usen browser and operating system, please google on how to achieve this for your situation.
-2. On your linux system, goto your Java Machine's certificate store, e.g. `/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security`.
+As this depends on the usen browser and operating system, please use a web search engine to find out how to achieve this for your situation.
+2. On your Linux system, goto your Java Machine's certificate store, e.g. `/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security`.
 The path should include a file called `cacerts` (this is the certificate store) and may differ depending on the system used.
 3. Copy the .cer-files from step 1 into this directory.
 4. Import each certificate with the command: `sudo keytool –importcert –alias “innogysmarthome” –keystore cacerts –file innogy.cer`

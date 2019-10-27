@@ -158,7 +158,7 @@ You can monitor button channels for ON and OFF state changes to indicate button 
 Ditto for the indicator LED channels.
 Note, however, that version 11.6 or higher of the RadioRA 2 software may be required in order to drive keypad LED states, and then this may only be done on unbound buttons.
 
-Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.104 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.104 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
 If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:keypad:radiora2:entrykeypad`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: H1RLD, H2RLD, H3BSRL, H3S, H4S, H5BRL, H6BRL, HN1RLD, HN2RLD, HN3S, HN3BSRL, HN4S, HN5BRL, HN6BRL, W1RLD, W2RLD, W3BD, W3BRL, W3BSRL, W3S, W4S, W5BRL, W5BRLIR, W6BRL, W7B, Generic (default)
@@ -186,7 +186,7 @@ Tabletop seeTouch keypads use the **ttkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
-Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.110 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.110 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
 If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:ttkeypad:radiora2:bedroomkeypad`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: T5RL, T10RL, T15RL, T5CRL, T10CRL, T15CRL, Generic (default)
@@ -200,14 +200,14 @@ Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true 
 ### International seeTouch Keypads (Homeworks QS)
 
 International seeTouch keypads used in the Homeworks QS system use the **intlkeypad** thing.
-It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and led channel types as the **keypad** thing.
+It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
 To support this keypad's contact closure inputs, CCI channels named *cci1* and *cci2* are created with item type Contact and category Switch.
 They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
 They present ON/OFF states the same as a keypad button.
 
-Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.107 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.107 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
 If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:intlkeypad:hwprocessor:kitchenkeypad`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: 2B, 3B, 4B, 5BRL, 6BRL, 7BRL, 8BRL, 10BRL / Generic (default)
@@ -225,7 +225,7 @@ It accepts the same `integrationID`, `model`, and `autorelease` parameters and c
 The only difference is that no LED channels will be created, since Pico keypads have no indicator LEDs.
 See the discussion above for a full discussion of configuration and use.
 
-Component numbering: For button layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.113 (http://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+Component numbering: For button layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.113 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
 If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:pico:radiora2:hallpico`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: 2B, 2BRL, 3B, 3BRL, 4B, Generic (default)
@@ -246,7 +246,9 @@ In this configuration, the integrated dimmers will appear to openHAB as separate
 If your GRAFIK Eye is being used as a stand-alone device and is not integrated in to a RadioRA 2 or HomeWorks QS system, then *this is not the thing you are looking for*.
 You should instead be using the **grafikeye** thing (see below).
 
-The **grafikeyekeypad** thing accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button, led, and cci, channel types as the other keypad things (see above). The model parameter should be set to indicate whether there are zero, one, two, or three columns of buttons on the left side of the panel. Note that this count does not include the column of 5 scene buttons always found on the right side of the panel.
+The **grafikeyekeypad** thing accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button, LED, and CCI, channel types as the other keypad things (see above).
+The model parameter should be set to indicate whether there are zero, one, two, or three columns of buttons on the left side of the panel.
+Note that this count does not include the column of 5 scene buttons always found on the right side of the panel.
 
 To support the GRAFIK Eye's contact closure input, a CCI channel named *cci1* will be created with item type Contact and category Switch.
 It is marked as Advanced, so it will not be automatically linked to items in the Paper UI's Simple Mode.
@@ -269,7 +271,7 @@ The **virtualkeypad** thing is used to interface to the virtual buttons on the R
 These are sometimes referred to in the Lutron documentation as phantom buttons or integration buttons, and are used only for integration.
 There are 100 of these virtual buttons, and 100 corresponding virtual indicator LEDs.
 
-The behavior of this binding is the same as the other keypad bindings, with the exception that the button and led channels created have the Advanced flag set.
+The behavior of this binding is the same as the other keypad bindings, with the exception that the button and LED channels created have the Advanced flag set.
 This means, among other things, that they will not be automatically linked to items in the Paper UI's Simple Mode.
 
 Thing configuration file example:
@@ -335,7 +337,7 @@ Each **cco** thing creates one switch channel called *switchstatus*.
 For pulsed CCOs, sending an ON command will close the output for the configured pulse time.
 Sending an OFF command does nothing.
 Because of limitations in RadioRA 2, you cannot monitor the state of a pulsed CCO.
-Therefore, the channel state will only transition OFF->ON->OFF when you send a ON command.
+Therefore, the channel state will only transition OFF->ON->OFF when you send an ON command.
 
 For maintained CCOs, sending ON and OFF commands works as expected, and the channel state updates as expected when either openHAB commands or external events change the CCO device state.
 
@@ -533,7 +535,7 @@ Rollershutter Lib_Shade1     "Shade 1"         { channel="lutron:shade:radiora2:
 This binding integrates with the legacy Lutron RadioRA (Classic) lighting system.
 
 This binding depends on RS232 communication.
-It has only been tested using the Chronos time module but the RS232 module should work as well.  
+It has only been tested using the Chronos time module but the RS232 module should work as well.
 
 ## Supported Things
 
@@ -594,9 +596,10 @@ Switch Phantom_Movie "Movie Scene" { channel="lutronradiora:phantomButton:chrono
 
 # Legacy HomeWorks RS232 (Serial) Processors
 
-The binding supports legacy HomeWorks processors that interface with a Serial RS232 connection.  To connect to such a system, you would need to use a RS232 -> USB adapter (assuming you don't have a serial port).  
+The binding supports legacy HomeWorks processors that interface with a Serial RS232 connection.
+To connect to such a system, you would need to use a RS232 -> USB adapter (assuming you don't have a serial port).
 
-Please see [HomeWorks RS232 Protocol Guide](http://www.lutron.com/TechnicalDocumentLibrary/HWI%20RS232%20Protocol.pdf) for information on the protocol.
+Please see [HomeWorks RS232 Protocol Guide](https://www.lutron.com/TechnicalDocumentLibrary/HWI%20RS232%20Protocol.pdf) for information on the protocol.
 
 ## Supported Things
 
@@ -610,11 +613,12 @@ Supported in future updates:
 
 ## Discovery
 
-This binding supports active and passive discovery.  It will detect dimmers as they are manually raised or lowered, or can be made to scan for configured dimmer modules.
+This binding supports active and passive discovery.
+It will detect dimmers as they are manually raised or lowered, or can be made to scan for configured dimmer modules.
 
 ## Thing Configuration
 
-The bridge requires the port location (e.g., /dev/ttyUSB1 or COM1) and the baud rate.  The default baud rate for HomeWorks processors is set to 9600.  
+The bridge requires the port location (e.g., /dev/ttyUSB1 or COM1) and the baud rate.  The default baud rate for HomeWorks processors is set to 9600.
 
 ```
 lutron:hwserialbridge:home [serialPort="/dev/ttyUSB1", baudRate="9600]
@@ -638,7 +642,7 @@ The following channels are supported:
 # Lutron Grafik Eye 3x/4x binding via GRX-PRG or GRX-CI-PRG
 
 This lutron binding will also work with Grafik Eye 3x/4x systems in conjuction with the GRX-PRG or GRX-CI-PRG interfaces.
-Please see [RS232ProtocolCommandSet](http://www.lutron.com/TechnicalDocumentLibrary/RS232ProtocolCommandSet.040196d.pdf) for more information.
+Please see [RS232ProtocolCommandSet](https://www.lutron.com/TechnicalDocumentLibrary/RS232ProtocolCommandSet.040196d.pdf) for more information.
 
 ## Supported Things
 
@@ -653,7 +657,7 @@ You will need to specify them directly.
 
 The bridge requires the IP address/Host name of the bridge.
 Optionally, you may specify the username (defaults to 'nwk') and retryPolling (in seconds) to retry connections if the connection fails (defaults to 10 seconds).
-This bridge does support two way communication with the Grafik Eye units (if a scene is selected or a zone changed on the unit or via a keypad, that information is immediately available in openhab).
+This bridge does support two way communication with the Grafik Eye units (if a scene is selected or a zone changed on the unit or via a keypad, that information is immediately available in openHAB).
 
 ```
 lutron:prgbridge:home [ ipAddress="192.168.1.51", user="nwk", retryPolling=10 ]

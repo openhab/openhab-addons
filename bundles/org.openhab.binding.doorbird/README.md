@@ -89,7 +89,7 @@ if(actions === null) {
 ## Known Issues
 
 The Doorbird uses the UDP protocol on port 6524 to broadcast events for Doorbird actions, such as doorbell pressed, motion detected, etc.
-If the Doorbord is on a separate subnet or VLAN from openHAB, those UDP packets won't route by default.
+If the Doorbord is on a separate subnet or VLAN from openHAB, those UDP packets will not route by default.
 In that case, the Doorbird binding will not receive those events.
 Either put the Doorbird and openHAB on the same subnet/VLAN, or set up your network to explicitly route those UDP packets.
 
