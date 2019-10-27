@@ -9,8 +9,9 @@ The binding currently supports weather data from these weather stations
 
 - WS-0900-IP,
 - WS-1400-IP / WS-1401-IP,
-- WS-2902A, and
-- WS-8482.
+- WS-2902A,
+- WS-8482, and
+- WS-0265.
 
 Other stations can be added relatively easily with changes in just several places in the source code.
 
@@ -76,6 +77,8 @@ The following channels are supported by the binding. Note that specific weather 
 | indoorSensor                 | batteryIndicator                | String                  | Battery indicator                                             |
 |                              |                                 |                         |                                                               |
 | remoteSensor\<1-10\>         | temperature                     | Number:Temperature      | Temperature                                                   |
+| remoteSensor\<1-10\>         | dewPoint                        | Number:Temperature      | Dew Point                                                     |
+| remoteSensor\<1-10\>         | feelingTemperature              | Number:Temperature      | "Real feel" temperature                                       |
 | remoteSensor\<1-10\>         | humidity                        | Number:Dimensionless    | Humidity                                                      |
 | remoteSensor\<1-10\>         | batteryIndicator                | String                  | Battery indicator                                             |
 | remoteSensor\<1-10\>         | co2                             | Number:Dimensionless    | Carbon Dioxide level                                          |
