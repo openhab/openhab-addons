@@ -180,14 +180,16 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### Things configuration
 
+If you use the label parameter (after the @ sign) you then have these things grouped in single tabs on PaperUI Control.
+
 ```
 Bridge surepetcare:bridge:bridge1 "Demo API Bridge" @ "SurePetcare" [ username="<USERNAME>", password="<PASSWORD>", refreshIntervalTopology=36000, refreshIntervalStatus=300 ]
 {
-  Thing household     45237  "My Household" @ "SurePetcare"
-  Thing hubDevice     439862 "My SurePetcare Hub" @ "SurePetcare Devices"
-  Thing flapDevice    316524 "My Backdoor Cat Flap" @ "SurePetcare Devices"
+  Thing household     12345  "My Household" @ "SurePetcare"
+  Thing hubDevice     123456 "My SurePetcare Hub" @ "SurePetcare Devices"
+  Thing flapDevice    123456 "My Backdoor Cat Flap" @ "SurePetcare Devices"
   Thing feederDevice  123456 "My Pet Feeder" @ "SurePetcare Devices"
-  Thing pet           60487  "My Cat" @ "SurePetcare Pets"
+  Thing pet           12345  "My Cat" @ "SurePetcare Pets"
 }
 ```
 
@@ -197,71 +199,119 @@ Bridge surepetcare:bridge:bridge1 "Demo API Bridge" @ "SurePetcare" [ username="
 /* *****************************************
  * Bridge
  * *****************************************/
-Group      dgPet
-Switch     UR_1a_Online             "Bridge Online [%s]"                                                (dgPet)  { channel="surepetcare:bridge:bridge1:online" }
+Group   dgPet                                               
+Switch  UR_1a_Online    "Bridge Online [%s]"        (dgPet) {channel="surepetcare:bridge:bridge1:online"}
+Switch  UR_1a_Refresh   "Bridge Data Refresh [%s]"  (dgPet) {channel="surepetcare:bridge:bridge1:refresh"}
 
 /* *****************************************
  * Household
  * *****************************************/
-Number     UR_1b_Id                 "Household Id [%d]"                                                 (dgPet)  { channel="surepetcare:household:bridge1:45237:id" }
-String     UR_1b_Name               "Household Name [%s]"                                               (dgPet)  { channel="surepetcare:household:bridge1:45237:name" }
-Number     UR_1b_TimezoneId         "Household Timezone Id [%d]"                                        (dgPet)  { channel="surepetcare:household:bridge1:45237:timezoneId" }
+Number      UR_1b_Id            "Household Id [%d]"                 (dgPet) {channel="surepetcare:household:bridge1:12345:id"}
+String      UR_1b_Name          "Household Name [%s]"               (dgPet) {channel="surepetcare:household:bridge1:12345:name"}
+Number      UR_1b_TimezoneId    "Household Timezone Id [%d]"        (dgPet) {channel="surepetcare:household:bridge1:12345:timezoneId"}
+DateTime    UR_1b_CreatedAt_1   "[%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:household:bridge1:12345:createdAt"}
+DateTime    UR_1b_UpdatedAt_1   "[%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:household:bridge1:12345:updatedAt"}
 
 /* *****************************************
  * Hub
  * *****************************************/
-Number     UR_1c_Id                 "Hub Id [%d]"                                                       (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:id" }
-String     UR_1c_Name               "Hub Name [%s]"                                                     (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:name" }
-String     UR_1c_Product            "Hub Product [%s]"                                                  (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:product" }
-String     UR_1c_LEDMode            "Hub LED Mode [%s]"                                                 (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:ledMode" }
-String     UR_1c_PairingMode        "Hub Pairing Mode [%s]"                                             (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:pairingMode" }
-Number     UR_1c_HardwareVersion    "Hub Hardware Version [%s]"                                         (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:hardwareVersion" }
-Number     UR_1c_FirmwareVersion    "Hub Firmware Version [%s]"                                         (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:firmwareVersion" }
-Switch     UR_1c_Online             "Hub Online [%s]"                                                   (dgPet)  { channel="surepetcare:hubDevice:bridge1:439862:online" }
+Number      UR_1c_Id                "Hub Id [%d]"                                   (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:id"}
+String      UR_1c_Name              "Hub Name [%s]"                                 (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:name"}
+String      UR_1c_Product           "Hub Product [%s]"                              (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:product"}
+String      UR_1c_LEDMode           "Hub LED Mode [%s]"                             (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:ledMode"}
+String      UR_1c_PairingMode       "Hub Pairing Mode [%s]"                         (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:pairingMode"}
+DateTime    UR_1c_CreatedAt         "Hub Created [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:createdAt"}
+DateTime    UR_1c_UpdatedAt         "Hub Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:updatedAt"}
+String      UR_1c_Serial            "Hub Serial [%s]"                               (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:serialNumber"}
+String      UR_1c_Mac               "Hub Mac [%s]"                                  (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:macAddress"}
+Number      UR_1c_HardwareVersion   "Hub Hardware Version [%s]"                     (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:hardwareVersion"}
+Number      UR_1c_FirmwareVersion   "Hub Firmware Version [%s]"                     (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:firmwareVersion"}
+Switch      UR_1c_Online            "Hub Online [%s]"                               (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:online"}
  
 /* *****************************************
- * Cat Flap
+ * Cat/Pet Flap
  * *****************************************/
-Number     UR_1d_Id                 "Cat Flap Id [%d]"                                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:id" }
-String     UR_1d_Name               "Cat Flap Name [%s]"                                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:name" }
-String     UR_1d_Product            "Cat Flap Product [%s]"                                             (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:product" }
-Switch     UR_1d_CurfewEnabled1     "Cat Flap Curfew 1 Enabled [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewEnabled1" }
-String     UR_1d_CurfewLockTime1    "Cat Flap Curfew 1 Lock Time [%s]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewLockTime1" }
-String     UR_1d_CurfewUnlockTime1  "Cat Flap Curfew 1 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewUnlockTime1" }
-Switch     UR_1d_CurfewEnabled2     "Cat Flap Curfew 2 Enabled [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewEnabled2" }
-String     UR_1d_CurfewLockTime2    "Cat Flap Curfew 2 Lock Time [%s]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewLockTime2" }
-String     UR_1d_CurfewUnlockTime2  "Cat Flap Curfew 2 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewUnlockTime2" }
-Switch     UR_1d_CurfewEnabled3     "Cat Flap Curfew 3 Enabled [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewEnabled3" }
-String     UR_1d_CurfewLockTime3    "Cat Flap Curfew 3 Lock Time [%s]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewLockTime3" }
-String     UR_1d_CurfewUnlockTime3  "Cat Flap Curfew 3 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewUnlockTime3" }
-Switch     UR_1d_CurfewEnabled4     "Cat Flap Curfew 4 Enabled [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewEnabled4" }
-String     UR_1d_CurfewLockTime4    "Cat Flap Curfew 4 Lock Time [%s]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewLockTime4" }
-String     UR_1d_CurfewUnlockTime5  "Cat Flap Curfew 4 Unlock Time [%s]"                                (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:curfewUnlockTime4" }
-String     UR_1d_LockingMode        "Cat Flap Locking Mode [%s]"                                        (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:lockingMode" }
-Number     UR_1d_HardwareVersion    "Cat Flap Hardware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:hardwareVersion" }
-Number     UR_1d_FirmwareVersion    "Cat Flap Firmware Version [%s]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:firmwareVersion" }
-Switch     UR_1d_LowBattery         "Cat Flap Low Battery [%s]"                                         (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:lowBattery" }
-Number     UR_1d_BatteryLevel       "Cat Flap Battery Level [%.0f %%]"                                  (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:batteryLevel" }
-Number     UR_1d_BatteryVoltage     "Cat Flap Battery Voltage [%.1f V]"                                 (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:batteryVoltage" }
-Switch     UR_1d_Online             "Cat Flap Online [%s]"                                              (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:online" }
-Number     UR_1d_DeviceRSSI         "Cat Flap Device RSSI [%.2f dB]"                                    (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:deviceRSSI" }
-Number     UR_1d_HubRSSI            "Cat Flap Hub RSSI [%.2f dB]"                                       (dgPet)  { channel="surepetcare:flapDevice:bridge1:316524:hubRSSI" }
+Number      UR_1d_Id                "Flap Id [%d]"                              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:id"}
+String      UR_1d_Name              "Flap Name [%s]"                            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:name"}
+String      UR_1d_Product           "Flap Product [%s]"                         (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:product"}
+String      UR_1d_Serial_1          "Flap Serial [%s]"                          (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:serialNumber"}
+String      UR_1d_Mac_1             "Flap Mac [%s]"                             (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:macAddress"}
+DateTime    UR_1d_CreatedAt_1       "Created [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:createdAt"}
+DateTime    UR_1d_UpdatedAt_1       "Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:updatedAt"}
+DateTime    UR_1d_PairingAt_1       "Pairing [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:pairingAt"}
+Switch      UR_1d_CurfewEnabled1    "Flap Curfew 1 Enabled [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewEnabled1"}
+String      UR_1d_CurfewLockTime1   "Flap Curfew 1 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime1"}
+String      UR_1d_CurfewUnlockTime1 "Flap Curfew 1 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime1"}
+Switch      UR_1d_CurfewEnabled2    "Flap Curfew 2 Enabled [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewEnabled2"}
+String      UR_1d_CurfewLockTime2   "Flap Curfew 2 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime2"}
+String      UR_1d_CurfewUnlockTime2 "Flap Curfew 2 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime2"}
+Switch      UR_1d_CurfewEnabled3    "Flap Curfew 3 Enabled [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewEnabled3"}
+String      UR_1d_CurfewLockTime3   "Flap Curfew 3 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime3"}
+String      UR_1d_CurfewUnlockTime3 "Flap Curfew 3 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime3"}
+Switch      UR_1d_CurfewEnabled4    "Flap Curfew 4 Enabled [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewEnabled4"}
+String      UR_1d_CurfewLockTime4   "Flap Curfew 4 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime4"}
+String      UR_1d_CurfewUnlockTime5 "Flap Curfew 4 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime4"}
+String      UR_1d_LockingMode       "Flap Locking Mode [%s]"                    (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:lockingMode"}
+Number      UR_1d_HardwareVersion   "Flap Hardware Version [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:hardwareVersion"}
+Number      UR_1d_FirmwareVersion   "Flap Firmware Version [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:firmwareVersion"}
+Switch      UR_1d_LowBattery        "Flap Low Battery [%s]"                     (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:lowBattery"}
+Number      UR_1d_BatteryLevel      "Flap Battery Level [%.0f %%]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:batteryLevel"}
+Number      UR_1d_BatteryVoltage    "Flap Battery Voltage [%.1f V]"             (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:batteryVoltage"}
+Switch      UR_1d_Online            "Flap Online [%s]"                          (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:online"}
+Number      UR_1d_DeviceRSSI        "Flap Device RSSI [%.2f dB]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:deviceRSSI"}
+Number      UR_1d_HubRSSI           "Flap Hub RSSI [%.2f dB]"                   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:hubRSSI"}
 
 /* *****************************************
  * Pet
  * *****************************************/
-Number     UR_1e_Id                 "Pet Id [%d]"                                                       (dgPet)  { channel="surepetcare:pet:bridge1:60487:id" }
-String     UR_1e_Name               "Pet Name [%s]"                                                     (dgPet)  { channel="surepetcare:pet:bridge1:60487:name" }
-String     UR_1e_Comment            "Pet Comment [%s]"                                                  (dgPet)  { channel="surepetcare:pet:bridge1:60487:comment" }
-String     UR_1e_Gender             "Pet Gender [%s]"                                                   (dgPet)  { channel="surepetcare:pet:bridge1:60487:gender" }
-String     UR_1e_Breed              "Pet Breed [%s]"                                                    (dgPet)  { channel="surepetcare:pet:bridge1:60487:breed" }
-String     UR_1e_Species            "Pet Species [%s]"                                                  (dgPet)  { channel="surepetcare:pet:bridge1:60487:species" }
-Image      UR_1e_PhotoURL           "Pet Photo"                                                         (dgPet)  { channel="surepetcare:pet:bridge1:60487:photo" }
-String     UR_1e_TagIdentifier      "Pet Tag Identifier [%s]"                                           (dgPet)  { channel="surepetcare:pet:bridge1:60487:tagIdentifier" }
-String     UR_1e_Location           "Pet Location [%s]"                                                 (dgPet)  { channel="surepetcare:pet:bridge1:60487:location" }
-DateTime   UR_1e_LocationChanged    "Pet Location Last Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM:%1$tS]"   (dgPet)  { channel="surepetcare:pet:bridge1:60487:locationChanged" }
-Number     UR_1e_Weight             "Pet Weight [%.1f kg]"                                              (dgPet)  { channel="surepetcare:pet:bridge1:60487:weight" }
-DateTime   UR_1e_DateOfBirth        "Pet Date of Birth [%1$td.%1$tm.%1$tY]"                             (dgPet)  { channel="surepetcare:pet:bridge1:60487:dateOfBirth" }
+Number      UR_1e_Id                "Pet Id [%d]"                           (dgPet) {channel="surepetcare:pet:bridge1:12345:id"}
+String      UR_1e_Name              "Pet Name [%s]"                         (dgPet) {channel="surepetcare:pet:bridge1:12345:name"}
+String      UR_1e_Comment           "Pet Comment [%s]"                      (dgPet) {channel="surepetcare:pet:bridge1:12345:comment"}
+String      UR_1e_Gender            "Pet Gender [%s]"                       (dgPet) {channel="surepetcare:pet:bridge1:12345:gender"}
+String      UR_1e_Breed             "Pet Breed [%s]"                        (dgPet) {channel="surepetcare:pet:bridge1:12345:breed"}
+String      UR_1e_Species           "Pet Species [%s]"                      (dgPet) {channel="surepetcare:pet:bridge1:12345:species"}
+Image       UR_1e_Photo             "Pet Photo"                             (dgPet) {channel="surepetcare:pet:bridge1:12345:photo"}
+String      UR_1e_TagIdentifier     "Pet Tag Identifier [%s]"               (dgPet) {channel="surepetcare:pet:bridge1:12345:tagIdentifier"}
+String      UR_1e_Location          "Pet Location [%s]"                     (dgPet) {channel="surepetcare:pet:bridge1:12345:location"}
+DateTime    UR_1e_LocationChanged   "Pet Loc. Updated [%1$ta. %1$tH:%1$tM]" (dgPet) {channel="surepetcare:pet:bridge1:12345:locationChanged"}
+String      UR_1e_LocationThrough   "Pet Entered / Left through [%s]"       (dgPet) {channel="surepetcare:pet:bridge1:12345:locationChangedThrough"}
+Number      UR_1e_Weight            "Pet Weight [%.1f kg]"                  (dgPet) {channel="surepetcare:pet:bridge1:12345:weight"}
+DateTime    UR_1e_DateOfBirth       "Pet Date of Birth [%1$td.%1$tm.%1$tY]" (dgPet) {channel="surepetcare:pet:bridge1:12345:dateOfBirth"}
+// Pet Feeder Data
+String      UR_1e_Device            "Device Name [%s]"                      (dgPet) {channel="surepetcare:pet:bridge1:12345:feederDevice"}
+Number:Mass UR_1e_Change            "Change: [%.2f %unit%]"                 (dgPet) {channel="surepetcare:pet:bridge1:12345:feederLastChange"}
+Number:Mass UR_1e_ChangeLeft        "Change: L [%.2f %unit%]"               (dgPet) {channel="surepetcare:pet:bridge1:12345:feederLastChangeLeft"}
+Number:Mass UR_1e_ChangeRight       "Change: R [%.2f %unit%]"               (dgPet) {channel="surepetcare:pet:bridge1:12345:feederLastChangeRight"}
+DateTime    UR_1e_FeedAt            "Last Feeding [%1$ta. %1$tH:%1$tM]"     (dgPet) {channel="surepetcare:pet:bridge1:12345:feederLastFeeding"}
+
+/* *****************************************
+ * Pet Feeder
+ * *****************************************/
+Number      UR_1f_Id                    "Feeder ID [%s]"                            (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:id"}
+String      UR_1f_Name                  "Feeder Name [%s]"                          (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:name"}
+String      UR_1f_Product               "Feeder Product [%s]"                       (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:product"}
+Number      UR_1f_Hardware              "Feeder Hardware [%s]"                      (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:hardwareVersion"}
+Number      UR_1f_Firmware              "Feeder Firmware [%s]"                      (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:firmwareVersion"}
+Switch      UR_1f_LowBattery            "Feeder Low Battery [%s]"                   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:lowBattery"}
+Number      UR_1f_BatteryLevel          "Feeder Battery Level [%.0f %%]"            (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:batteryLevel"}
+Number      UR_1f_BatteryVoltage        "Feeder Battery Voltage [%.2f V]"           (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:batteryVoltage"}
+String      UR_1f_Serial                "Feeder Serial [%s]"                        (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:serialNumber"}
+String      UR_1f_Mac                   "Feeder Mac [%s]"                           (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:macAddress"}
+DateTime    UR_1f_CreatedAt             "Created [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:createdAt"}
+DateTime    UR_1f_UpdatedAt             "Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:updatedAt"}
+DateTime    UR_1f_PairingAt             "Pairing [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:pairingAt"}
+String      UR_1f_BowlsType             "Feeder Bowls Type [%s]"                    (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowls"}
+String      UR_1f_BowlsFoodtype         "Feeder Food Type [%s]"                     (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsFood"}
+Number:Mass UR_1f_BowlsTarget           "Feeder Target [%.0f %unit%]"               (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsTarget"}
+String      UR_1f_BowlsFoodtypeLeft     "Feeder Food Type L [%s]"                   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsFoodLeft"}
+Number:Mass UR_1f_BowlsTargetLeft       "Feeder Target L [%.0f %unit%]"             (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsTargetLeft"}
+String      UR_1f_BowlsFoodtypeRight    "Feeder Food Type R [%s]"                   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsFoodRight"}
+Number:Mass UR_1f_BowlsTargetRight      "Feeder Target R [%.0f %unit%]"             (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsTargetRight"}
+String      UR_1f_BowlsLidCloseDelay    "Feeder Close Delay [%s]"                   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsCloseDelay"}
+String      UR_1f_BowlsTrainingMode     "Feeder Training Mode [%s]"                 (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsTrainingMode"}
+Switch      UR_1f_Online                "Feeder Status [%s]"                        (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:online"}
+Number      UR_1f_DeviceRSSI            "Feeder Device Signal [%.2f dB]"            (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:deviceRSSI"}
+Number      UR_1f_HubRSSI               "Feeder Hub Signal [%.2f dB]"               (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:hubRSSI"}
 ```
 
 ### Sitemap Configuration

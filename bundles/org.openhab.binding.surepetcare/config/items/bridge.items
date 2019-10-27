@@ -1,4 +1,3 @@
-Group      dgPet
-Switch     UR_1a_Online             "Bridge Online [%s]"                                                (dgPet)  { channel="surepetcare:bridge:bridge1:online" }
-Switch     UR_1a_Refresh            "Bridge Data Refresh [%s]"                                          (dgPet)  { channel="surepetcare:bridge:bridge1:refresh" }
-
+Group   dgPet                                               
+Switch  UR_1a_Online    "Bridge Online [%s]"        (dgPet) {channel="surepetcare:bridge:bridge1:online"}
+Switch  UR_1a_Refresh   "Bridge Data Refresh [%s]"  (dgPet) {channel="surepetcare:bridge:bridge1:refresh"}
