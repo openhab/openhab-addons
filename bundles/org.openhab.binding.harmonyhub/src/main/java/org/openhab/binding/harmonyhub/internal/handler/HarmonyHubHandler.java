@@ -104,7 +104,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
         logger.trace("Handling command '{}' for {}", command, channelUID);
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.warn("Hub is offline, ignoring command {} for channel {}", command, channelUID);
+            logger.debug("Hub is offline, ignoring command {} for channel {}", command, channelUID);
             return;
         }
 

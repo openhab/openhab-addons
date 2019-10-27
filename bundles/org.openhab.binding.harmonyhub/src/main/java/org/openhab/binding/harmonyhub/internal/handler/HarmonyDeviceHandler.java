@@ -91,13 +91,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         }
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.warn("Hub is offline, ignoring command {} for channel {}", command, channelUID);
-            return;
-        }
-
-        Channel channel = getThing().getChannel(channelUID.getId());
-        if (channel == null) {
-            logger.warn("No such channel: {}", channelUID);
+            logger.debug("Hub is offline, ignoring command {} for channel {}", command, channelUID);
             return;
         }
 
