@@ -31,6 +31,7 @@ This binding currently supports the following thing types:
 * **keypad** - Lutron seeTouch or Hybrid seeTouch Keypad
 * **ttkeypad** - Tabletop seeTouch Keypad
 * **intlkeypad** - International seeTouch Keypad (HomeWorks QS only)
+* **palladiomkeypad** - Palladiom Keypad (HomeWorks QS only)
 * **pico** - Pico Keypad
 * **grafikeyekeypad** - GRAFIK Eye QS Keypad (RadioRA 2/HomeWorks QS only)
 * **virtualkeypad** - Repeater virtual keypad
@@ -198,9 +199,9 @@ Thing configuration file example:
 Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true ]
 ```
 
-### International seeTouch Keypads (Homeworks QS)
+### International seeTouch Keypads (HomeWorks QS)
 
-International seeTouch keypads used in the Homeworks QS system use the **intlkeypad** thing.
+International seeTouch keypads used in the HomeWorks QS system use the **intlkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
@@ -218,6 +219,24 @@ Thing configuration file example:
 ```
 Thing intlkeypad kitchenkeypad [ integrationId=15, model="10BRL" autorelease=true ]
 ```
+
+### Palladiom Keypads (HomeWorks QS)
+
+Palladiom keypads used in the HomeWorks QS system use the **palladiomkeypad** thing.
+It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
+See the **keypad** section above for a full discussion of configuration and use.
+
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.95 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:palladiomkeypad:hwprocessor:kitchenkeypad`) from the openHAB CLI to list the channels.
+
+Supported settings for `model` parameter: 2W, 3W, 4W, RW, 22W, 24W, 42W, 44W, 2RW, 4RW, RRW
+
+Thing configuration file example:
+
+```
+Thing palladiomkeypad kitchenkeypad [ integrationId=16, model="4W" autorelease=true ]
+```
+
 
 ### Pico Keypads
 

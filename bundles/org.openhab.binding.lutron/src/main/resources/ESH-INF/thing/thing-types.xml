@@ -380,6 +380,45 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="palladiomkeypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Palladiom Keypad</label>
+		<description>Lutron Palladiom keypad (HomeWorks QS Only)</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of keypad in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>Keypad Model</label>
+				<description>Keypad/faceplate model number without the system prefix</description>
+				<options>
+					<option value="2W">2W</option>
+					<option value="3W">3W</option>
+					<option value="4W">4W</option>
+					<option value="RW">RW</option>
+					<option value="22W">22W</option>
+					<option value="24W">24W</option>
+					<option value="42W">42W</option>
+					<option value="44W">44W</option>
+					<option value="2RW">2RW</option>
+					<option value="4RW">4RW</option>
+					<option value="RRW">RRW</option>
+					<option value="Generic">Generic</option>
+				</options>
+				<default>Generic</default>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<thing-type id="pico">
 		<supported-bridge-type-refs>
