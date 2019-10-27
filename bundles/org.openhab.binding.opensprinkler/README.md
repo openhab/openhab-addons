@@ -1,12 +1,11 @@
 # OpenSprinkler Binding
 
-This binding allows allows basic control of the OpenSprinkler and OpenSprinkler PI (Plus) devices.
+This binding allows allows basic control of the OpenSprinkler devices.
 Stations can be controlled to be turned on or off and rain sensor state can be read.
 
 ## Supported Bridges
 
 *   HTTP (`http`) - The http bridge allows to communicate with an OpenSprinkler device through the network
-*   Pi (`pi`) - With the pi bridge, openHAB can communicate with an OpenSprinkler device which is installed on the same Pi as the openHAB system.
 
 ## Supported Things
 
@@ -35,24 +34,11 @@ Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, pasword="opendoor
 -   basicUsername: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
 -   basicPassword: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
 
-OpenSprinkler using the Pi interface
-
-```
-Bridge opensprinkler:pi:pi [stations=8, refresh=60] {
-    Thing station 01 [stationIndex=1]
-}
-```
-
--   stations: Number of stations to control.
--   refresh: Number of seconds in between refreshing the Thing state with the API.
-
 ### Station Thing Configuration
 
 The `station` thing can be used with both bridge and has the following configuration properties:
 
 -   stationIndex: The index of the station to communicate with, starting with 0 for the first station
-
-Be aware, that not all features of a station may be supported by the Pi interface bridge.
 
 ## Channels
 
