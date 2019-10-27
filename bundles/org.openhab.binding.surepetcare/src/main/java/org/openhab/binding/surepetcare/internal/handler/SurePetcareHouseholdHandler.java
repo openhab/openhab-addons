@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold;
-import org.openhab.binding.surepetcare.internal.data.SurePetcareHousehold.HouseholdUsers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,11 +49,6 @@ public class SurePetcareHouseholdHandler extends SurePetcareBaseObjectHandler {
             updateState(HOUSEHOLD_CHANNEL_TIMEZONE_ID, new DecimalType(household.getTimezoneId()));
             updateState(HOUSEHOLD_CHANNEL_CREATED_AT, new DateTimeType(household.getCreatedAtAsZonedDateTime()));
             updateState(HOUSEHOLD_CHANNEL_UPDATED_AT, new DateTimeType(household.getUpdatedAtAsZonedDateTime()));
-            int numUsers = household.getHouseholdUsers().size();
-            for (int i = 0; (i < numUsers); i++) {
-                HouseholdUsers user = household.getHouseholdUsers().get(i);
-                updateState(HOUSEHOLD_CHANNEL_USER_NAME + (i + 1), new StringType(user.getUser().getUserName()));
-            }
         } else {
             logger.debug("Trying to update unknown household: {}", thing.getUID().getId());
         }

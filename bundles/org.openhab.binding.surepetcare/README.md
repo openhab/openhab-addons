@@ -65,11 +65,6 @@ Channel names in **bold** are read/write, everything else is read-only
 | timezoneId | Number   | The id of the household's timezone           |
 | createdAt  | DateTime | The date when the household was created      |
 | updatedAt  | DateTime | The date when the household was last updated |
-| userName1  | Text     | The name of the first household user         |
-| userName2  | Text     | The name of the second household user        |
-| userName3  | Text     | The name of the third household user         |
-| userName4  | Text     | The name of the fourth household user        |
-| userName5  | Text     | The name of the fifth household user         |
 
 ### Hub Device Thing
 
