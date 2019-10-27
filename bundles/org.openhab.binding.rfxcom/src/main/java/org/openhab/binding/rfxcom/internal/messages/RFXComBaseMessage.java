@@ -42,7 +42,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         FAN_SF01(23, RFXComFanMessage.SubType.SF01),
         FAN_ITHO(23, RFXComFanMessage.SubType.CVE_RFT),
         FAN_LUCCI_DC(23, RFXComFanMessage.SubType.LUCCI_AIR_DC),
-        FAN_LUCCI_DCII(23, RFXComFanMessage.SubType.LUCCI_AIR_DCII),
+        FAN_LUCCI_DC_II(23, RFXComFanMessage.SubType.LUCCI_AIR_DC_II),
         FAN_SEAV(23, RFXComFanMessage.SubType.SEAV_TXS4),
         FAN_FT1211R(23, RFXComFanMessage.SubType.FT1211R),
         FAN_FALMEC(23, RFXComFanMessage.SubType.FALMEC),
