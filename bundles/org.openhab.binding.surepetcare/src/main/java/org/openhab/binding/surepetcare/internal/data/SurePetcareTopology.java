@@ -15,7 +15,7 @@ package org.openhab.binding.surepetcare.internal.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class SurePetcareTopology {
 
     private List<SurePetcareDevice> devices = new ArrayList<>();
@@ -31,6 +32,7 @@ public class SurePetcareTopology {
     private List<SurePetcarePet> pets = new ArrayList<>();
     private List<SurePetcarePhoto> photos = new ArrayList<>();
     private List<SurePetcareTag> tags = new ArrayList<>();
+    @Nullable
     private SurePetcareUser user;
 
     public List<SurePetcareDevice> getDevices() {
@@ -73,6 +75,7 @@ public class SurePetcareTopology {
         this.tags = tags;
     }
 
+    @Nullable
     public SurePetcareUser getUser() {
         return user;
     }
@@ -81,7 +84,7 @@ public class SurePetcareTopology {
         this.user = user;
     }
 
-    public @Nullable SurePetcareHousehold getHouseholdById(@NonNull String id) {
+    public @Nullable SurePetcareHousehold getHouseholdById(String id) {
         for (SurePetcareHousehold household : households) {
             if (id.equals(household.getId().toString())) {
                 return household;
@@ -90,7 +93,7 @@ public class SurePetcareTopology {
         return null;
     }
 
-    public @Nullable SurePetcareDevice getDeviceById(@NonNull String id) {
+    public @Nullable SurePetcareDevice getDeviceById(String id) {
         for (SurePetcareDevice device : devices) {
             if (id.equals(device.getId().toString())) {
                 return device;
@@ -99,7 +102,7 @@ public class SurePetcareTopology {
         return null;
     }
 
-    public @Nullable SurePetcarePet getPetById(@NonNull String id) {
+    public @Nullable SurePetcarePet getPetById(String id) {
         for (SurePetcarePet pet : pets) {
             if (id.equals(pet.getId().toString())) {
                 return pet;
@@ -108,7 +111,7 @@ public class SurePetcareTopology {
         return null;
     }
 
-    public @Nullable SurePetcarePhoto getPhotoById(@NonNull String id) {
+    public @Nullable SurePetcarePhoto getPhotoById(String id) {
         for (SurePetcarePhoto photo : photos) {
             if (id.equals(photo.getId().toString())) {
                 return photo;
@@ -117,7 +120,7 @@ public class SurePetcareTopology {
         return null;
     }
 
-    public @Nullable SurePetcareTag getTagById(@NonNull String id) {
+    public @Nullable SurePetcareTag getTagById(String id) {
         for (SurePetcareTag tag : tags) {
             if (id.equals(tag.getId().toString())) {
                 return tag;

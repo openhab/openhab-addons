@@ -16,7 +16,6 @@ import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -172,18 +171,15 @@ public class SurePetcareBridgeHandler extends BaseBridgeHandler {
     }
 
     public Iterable<SurePetcareHousehold> listHouseholds() {
-        List<SurePetcareHousehold> list = petcareAPI.getTopology().getHouseholds();
-        return list == null ? Collections.emptyList() : list;
+        return petcareAPI.getTopology().getHouseholds();
     }
 
     public Iterable<SurePetcarePet> listPets() {
-        List<SurePetcarePet> list = petcareAPI.getTopology().getPets();
-        return list == null ? Collections.emptyList() : list;
+        return petcareAPI.getTopology().getPets();
     }
 
     public Iterable<SurePetcareDevice> listDevices() {
-        List<SurePetcareDevice> list = petcareAPI.getTopology().getDevices();
-        return list == null ? Collections.emptyList() : list;
+        return petcareAPI.getTopology().getDevices();
     }
 
     protected synchronized void updateThings() {

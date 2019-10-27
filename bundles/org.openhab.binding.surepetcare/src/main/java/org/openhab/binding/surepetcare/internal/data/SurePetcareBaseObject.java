@@ -18,20 +18,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SurePetcareBaseObject} is the Java class used as a base DTO for other primary JSON objects.
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class SurePetcareBaseObject {
 
-    @NonNull
     protected Integer id = 0;
-    protected String version;
-    protected Date createdAt;
-    protected Date updatedAt;
+    protected String version = "";
+    protected Date createdAt = new Date();
+    protected Date updatedAt = new Date();
 
     public SurePetcareBaseObject() {
         super();
@@ -70,23 +70,21 @@ public class SurePetcareBaseObject {
     }
 
     public ZonedDateTime getCreatedAtAsZonedDateTime() {
-        return createdAt == null ? null : createdAt.toInstant().atZone(ZoneId.systemDefault());
+        return createdAt.toInstant().atZone(ZoneId.systemDefault());
     }
 
     public ZonedDateTime getUpdatedAtAsZonedDateTime() {
-        return updatedAt == null ? null : updatedAt.toInstant().atZone(ZoneId.systemDefault());
+        return updatedAt.toInstant().atZone(ZoneId.systemDefault());
     }
 
-    public @NonNull Map<String, Object> getThingProperties() {
+    public Map<String, Object> getThingProperties() {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("id", id.toString());
-        if (version != null) {
-            properties.put("version", version);
-        }
+        properties.put("version", version);
         return properties;
     }
 
-    public @NonNull SurePetcareBaseObject assign(SurePetcareBaseObject newdev) {
+    public SurePetcareBaseObject assign(SurePetcareBaseObject newdev) {
         this.id = newdev.id;
         this.version = newdev.version;
         this.createdAt = newdev.createdAt;
