@@ -12,14 +12,4 @@
   <artifactId>org.openhab.binding.opensprinkler</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: OpenSprinkler Binding</name>
-
-  <dependencies>
-    <dependency>
-      <groupId>com.pi4j</groupId>
-      <artifactId>pi4j-core</artifactId>
-      <version>1.2</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
-
 </project>

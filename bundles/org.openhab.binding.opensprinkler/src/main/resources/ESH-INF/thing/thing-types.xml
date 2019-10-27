@@ -42,28 +42,9 @@
 		</config-description>
 	</bridge-type>
 
-	<bridge-type id="pi">
-		<label>OpenSprinkler Pi Interface</label>
-		<description>A connection to a OpenSprinkler via GPIO.</description>
-
-		<config-description>
-			<parameter name="stations" type="integer" min="1" max="48">
-				<label>Stations</label>
-				<description>The number of stations to control.</description>
-				<default>8</default>
-			</parameter>
-			<parameter name="refresh" type="integer">
-				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in seconds.</description>
-				<default>60</default>
-			</parameter>
-		</config-description>
-	</bridge-type>
-
 	<thing-type id="station">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="http" />
-			<bridge-type-ref id="pi" />
 		</supported-bridge-type-refs>
 		<label>OpenSprinkler Station</label>
 		<description>Controls a station connected to the OpenSprinkler device.</description>
