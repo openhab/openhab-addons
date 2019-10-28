@@ -83,6 +83,7 @@ Pentair devices support the following channels:
 | temp-pooltemp       | Number    |
 | temp-spatemp        | Number    |
 | temp-airtemp        | Number    |
+| temp-soltemp        | Number    |
 | temp-tempunits      | String    |
 | temp-htpump         | Number    |
 | pump-pump1          | String    |
