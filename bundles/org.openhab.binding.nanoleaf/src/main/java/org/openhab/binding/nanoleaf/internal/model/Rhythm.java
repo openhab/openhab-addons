@@ -20,12 +20,12 @@ package org.openhab.binding.nanoleaf.internal.model;
 public class Rhythm {
 
     private boolean rhythmConnected;
-    private Boolean rhythmActive;
+    private boolean rhythmActive;
     private int rhythmId;
     private String hardwareVersion;
     private String firmwareVersion;
-    private Boolean auxAvailable;
-    private Integer rhythmMode;
+    private boolean auxAvailable;
+    private int rhythmMode;
     private RhythmPos rhythmPos;
 
     public boolean getRhythmConnected() {
@@ -36,11 +36,11 @@ public class Rhythm {
         this.rhythmConnected = rhythmConnected;
     }
 
-    public Boolean getRhythmActive() {
-        return rhythmActive == null ? Boolean.FALSE : rhythmActive;
+    public boolean getRhythmActive() {
+        return rhythmActive;
     }
 
-    public void setRhythmActive(Boolean rhythmActive) {
+    public void setRhythmActive(boolean rhythmActive) {
         this.rhythmActive = rhythmActive;
     }
 
@@ -68,19 +68,19 @@ public class Rhythm {
         this.firmwareVersion = firmwareVersion;
     }
 
-    public Boolean getAuxAvailable() {
-        return auxAvailable == null ? Boolean.FALSE : this.auxAvailable;
+    public boolean getAuxAvailable() {
+        return auxAvailable;
     }
 
-    public void setAuxAvailable(Boolean auxAvailable) {
+    public void setAuxAvailable(boolean auxAvailable) {
         this.auxAvailable = auxAvailable;
     }
 
-    public Integer getRhythmMode() {
-        return rhythmMode == null ? new Integer(-1) : rhythmMode;
+    public int getRhythmMode() {
+        return rhythmMode;
     }
 
-    public void setRhythmMode(Integer rhythmMode) {
+    public void setRhythmMode(int rhythmMode) {
         this.rhythmMode = rhythmMode;
     }
 

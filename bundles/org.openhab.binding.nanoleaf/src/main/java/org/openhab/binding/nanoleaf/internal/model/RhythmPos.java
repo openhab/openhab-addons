@@ -22,33 +22,33 @@ import com.google.gson.annotations.SerializedName;
 public class RhythmPos {
 
     @SerializedName("x")
-    private Float posX;
+    private float posX;
     @SerializedName("y")
-    private Float posY;
+    private float posY;
     @SerializedName("o")
-    private Float orientation;
+    private float orientation;
 
-    public Float getPosX() {
+    public float getPosX() {
         return posX;
     }
 
-    public void setPosX(Float x) {
+    public void setPosX(float x) {
         this.posX = x;
     }
 
-    public Float getPosY() {
+    public float getPosY() {
         return posY;
     }
 
-    public void setPosY(Float y) {
+    public void setPosY(float y) {
         this.posY = y;
     }
 
-    public Float getOrientation() {
+    public float getOrientation() {
         return orientation;
     }
 
-    public void setOrientation(Float o) {
+    public void setOrientation(float o) {
         this.orientation = o;
     }
 
