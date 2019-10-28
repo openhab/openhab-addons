@@ -19,31 +19,31 @@ package org.openhab.binding.nanoleaf.internal.model;
  */
 public class Palette {
 
-    private Integer hue;
-    private Integer saturation;
-    private Integer brightness;
+    private int hue;
+    private int saturation;
+    private int brightness;
 
-    public Integer getHue() {
+    public int getHue() {
         return hue;
     }
 
-    public void setHue(Integer hue) {
+    public void setHue(int hue) {
         this.hue = hue;
     }
 
-    public Integer getSaturation() {
+    public int getSaturation() {
         return saturation;
     }
 
-    public void setSaturation(Integer saturation) {
+    public void setSaturation(int saturation) {
         this.saturation = saturation;
     }
 
-    public Integer getBrightness() {
+    public int getBrightness() {
         return brightness;
     }
 
-    public void setBrightness(Integer brightness) {
+    public void setBrightness(int brightness) {
         this.brightness = brightness;
     }
 

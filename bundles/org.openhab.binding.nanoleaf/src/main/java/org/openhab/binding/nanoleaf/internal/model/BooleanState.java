@@ -19,7 +19,7 @@ package org.openhab.binding.nanoleaf.internal.model;
  */
 public interface BooleanState {
 
-    public Boolean getValue();
+    public boolean getValue();
 
-    public void setValue(Boolean value);
+    public void setValue(boolean value);
 }
