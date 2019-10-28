@@ -64,7 +64,7 @@ public class MqttChannelTypeProvider implements ThingTypeProvider, ChannelGroupT
     }
 
     @Override
-    public @Nullable Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
+    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
         return types.values();
     }
 
@@ -80,7 +80,7 @@ public class MqttChannelTypeProvider implements ThingTypeProvider, ChannelGroupT
     }
 
     @Override
-    public @Nullable Collection<ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
+    public Collection<ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
         return groups.values();
     }
 
