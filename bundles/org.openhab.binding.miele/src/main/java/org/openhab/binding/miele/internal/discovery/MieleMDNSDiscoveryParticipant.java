@@ -37,12 +37,16 @@ import org.slf4j.LoggerFactory;
  * {@link MDNSDiscoveryService}.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Martin Lepsy - Added check for Miele gateway for cleaner discovery
  *
  */
 @Component(immediate = true)
 public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(MieleMDNSDiscoveryParticipant.class);
+    private static final String PATH_TO_CHECK_FOR_XGW3000 = "/rest/";
+    private static final String SERVICE_NAME = "mieleathome";
+    private static final String PATH_PROPERTY_NAME = "path";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -56,8 +60,8 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
-        if (service.getApplication().contains("mieleathome")) {
-            ThingUID uid = getThingUID(service);
+        if (isMieleGateway(service)) {
+            ThingUID uid = getThingUID(service); // HIER
 
             if (uid != null) {
                 Map<String, Object> properties = new HashMap<>(2);
@@ -82,7 +86,7 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
             }
         }
         return null;
-    }
+    }    
 
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
@@ -94,6 +98,17 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
         }
 
         return null;
+    }
+
+    /**
+     * Checks if service is a Miele XGW3000 Gateway
+     * 
+     * application must be mieleathome
+     * must contain path with value /rest/
+     */
+    private boolean isMieleGateway(ServiceInfo service) {
+        return service.getApplication().contains(SERVICE_NAME) && service.getPropertyString(PATH_PROPERTY_NAME) != null
+            && service.getPropertyString(PATH_PROPERTY_NAME).equalsIgnoreCase(PATH_TO_CHECK_FOR_XGW3000);
     }
 
 }
