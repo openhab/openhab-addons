@@ -69,7 +69,7 @@ public class SurePetcareAPIHelper {
     private static final String API_URL = "https://app.api.surehub.io/api";
     private static final String TOPOLOGY_URL = API_URL + "/me/start";
     private static final String PET_BASE_URL = API_URL + "/pet";
-    private static final String PET_STATUS_URL = API_URL + "/pet/?with[]=status";
+    private static final String PET_STATUS_URL = API_URL + "/pet/?with[]=status&with[]=photo";
     private static final String DEVICE_BASE_URL = API_URL + "/device";
     private static final String LOGIN_URL = API_URL + "/auth/login";
 

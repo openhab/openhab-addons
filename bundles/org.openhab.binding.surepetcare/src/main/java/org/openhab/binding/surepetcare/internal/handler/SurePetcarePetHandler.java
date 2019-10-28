@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareApiException;
@@ -123,9 +124,8 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                 if (pet.getSpeciesId() != null) {
                     updateState(PET_CHANNEL_SPECIES, new StringType(pet.getSpeciesId().toString()));
                 }
-                if (pet.getPhoto() != null) {
-                    updateState(PET_CHANNEL_PHOTO, getPetPhotoImage(pet.getPhoto().getLocation()));
-                }
+                updateState(PET_CHANNEL_PHOTO,
+                        pet.getPhoto() == null ? UnDefType.UNDEF : getPetPhotoImage(pet.getPhoto().getLocation()));
                 SurePetcarePetActivity loc = pet.getPetStatus().getActivity();
                 if (loc != null) {
                     updateState(PET_CHANNEL_LOCATION, new StringType(loc.getWhere().toString()));
