@@ -304,6 +304,10 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                     notifyDiscovery(THING_TYPE_VCRX, device.getIntegrationId(), label);
                     break;
 
+                case WCI:
+                    notifyDiscovery(THING_TYPE_WCI, device.getIntegrationId(), label);
+                    break;
+
                 case MAIN_REPEATER:
                     notifyDiscovery(THING_TYPE_VIRTUALKEYPAD, device.getIntegrationId(), label);
                     break;
@@ -340,7 +344,6 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverKeypad(Device device, String label, ThingTypeUID ttUid, String description,
             KeypadConfig kpConfig) {
-
         List<Integer> buttons = getComponentIdList(device.getComponents(), ComponentType.BUTTON);
         String kpModel = kpConfig.determineModelFromComponentIds(buttons);
         if (kpModel == null) {
@@ -397,6 +400,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                     break;
 
                 case SYSTEM_SHADE:
+                case MOTOR:
                     notifyDiscovery(THING_TYPE_SHADE, output.getIntegrationId(), label);
                     break;
 
