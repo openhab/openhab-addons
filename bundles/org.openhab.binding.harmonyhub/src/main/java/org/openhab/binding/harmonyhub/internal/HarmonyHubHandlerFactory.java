@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
@@ -56,8 +57,10 @@ import org.osgi.service.component.annotations.Reference;
  * @author Wouter Born - Add null annotations
  */
 @NonNullByDefault
-@Component(service = { ThingHandlerFactory.class, ChannelTypeProvider.class }, configurationPid = "binding.harmonyhub")
-public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements ChannelTypeProvider {
+@Component(service = { ThingHandlerFactory.class, ChannelTypeProvider.class,
+        ChannelGroupTypeProvider.class }, configurationPid = "binding.harmonyhub")
+public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory
+        implements ChannelTypeProvider, ChannelGroupTypeProvider {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(HarmonyHubHandler.SUPPORTED_THING_TYPES_UIDS.stream(),
@@ -114,7 +117,7 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements
     }
 
     @Override
-    public @Nullable Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
+    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
         return channelTypes;
     }
 
@@ -140,7 +143,7 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements
     }
 
     @Override
-    public @Nullable Collection<ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
+    public Collection<ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
         return channelGroupTypes;
     }
 
