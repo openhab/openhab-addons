@@ -129,8 +129,8 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                 }
                 ZonedDateTime dob = pet.getDateOfBirthAsZonedDateTime();
                 updateState(PET_CHANNEL_DATE_OF_BIRTH, dob == null ? UnDefType.UNDEF : new DateTimeType(dob));
-                updateState(PET_CHANNEL_WEIGHT,
-                        pet.getWeight() == null ? UnDefType.UNDEF : new DecimalType(pet.getWeight()));
+                updateState(PET_CHANNEL_WEIGHT, pet.getWeight() == null ? UnDefType.UNDEF
+                        : new QuantityType<Mass>(pet.getWeight(), SIUnits.KILOGRAM));
                 if (pet.getTagId() != null) {
                     SurePetcareTag tag = petcareAPI.getTag(pet.getTagId().toString());
                     if (tag != null) {

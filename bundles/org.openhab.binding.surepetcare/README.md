@@ -162,7 +162,7 @@ Channel names in **bold** are read/write, everything else is read-only
 | **location**           | Text        | The current location of the pet (0=unknown, 1=inside, 2=outside) |
 | locationChanged        | DateTime    | The time when the location was last changed                      |
 | locationChangedThrough | Text        | The device name or username where the pet left/entered the house |
-| weight                 | Number      | The pet's weight                                                 |
+| weight                 | Number:Mass | The pet's weight (in kilogram)                                   |
 | dateOfBirth            | DateTime    | The pet's date of birth                                          |
 | feederDevice           | Text        | The device from which the pet last ate                           |
 | feederLastChange       | Number:Mass | The last eaten change in gram (big bowl)                         |
@@ -270,7 +270,7 @@ String      UR_1e_TagIdentifier     "Pet Tag Identifier [%s]"               (dgP
 String      UR_1e_Location          "Pet Location [%s]"                     (dgPet) {channel="surepetcare:pet:bridge1:12345:location"}
 DateTime    UR_1e_LocationChanged   "Pet Loc. Updated [%1$ta. %1$tH:%1$tM]" (dgPet) {channel="surepetcare:pet:bridge1:12345:locationChanged"}
 String      UR_1e_LocationThrough   "Pet Entered / Left through [%s]"       (dgPet) {channel="surepetcare:pet:bridge1:12345:locationChangedThrough"}
-Number      UR_1e_Weight            "Pet Weight [%.1f kg]"                  (dgPet) {channel="surepetcare:pet:bridge1:12345:weight"}
+Number:Mass UR_1e_Weight            "Pet Weight [%.1f %unit%]"              (dgPet) {channel="surepetcare:pet:bridge1:12345:weight"}
 DateTime    UR_1e_DateOfBirth       "Pet Date of Birth [%1$td.%1$tm.%1$tY]" (dgPet) {channel="surepetcare:pet:bridge1:12345:dateOfBirth"}
 // Pet Feeder Data
 String      UR_1e_Device            "Device Name [%s]"                      (dgPet) {channel="surepetcare:pet:bridge1:12345:feederDevice"}

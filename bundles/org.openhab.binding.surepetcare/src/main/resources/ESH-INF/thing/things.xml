@@ -420,10 +420,10 @@
 	</channel-type>
 
 	<channel-type id="weightType">
-		<item-type>Number</item-type>
+		<item-type>Number:Mass</item-type>
 		<label>Pet Weight</label>
 		<description>The pet weight</description>
-		<state readOnly="true" pattern="%.1f kg"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="feederDeviceType">
