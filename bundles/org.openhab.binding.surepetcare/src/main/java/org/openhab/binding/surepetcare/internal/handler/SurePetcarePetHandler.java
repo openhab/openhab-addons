@@ -109,21 +109,15 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
             if (pet != null) {
                 logger.debug("Updating all thing channels for pet : {}", pet);
                 updateState(PET_CHANNEL_ID, new DecimalType(pet.getId()));
-                if (pet.getName() != null) {
-                    updateState(PET_CHANNEL_NAME, new StringType(pet.getName()));
-                }
-                if (pet.getComments() != null) {
-                    updateState(PET_CHANNEL_COMMENT, new StringType(pet.getComments()));
-                }
-                if (pet.getGenderId() != null) {
-                    updateState(PET_CHANNEL_GENDER, new StringType(pet.getGenderId().toString()));
-                }
-                if (pet.getBreedId() != null) {
-                    updateState(PET_CHANNEL_BREED, new StringType(pet.getBreedId().toString()));
-                }
-                if (pet.getSpeciesId() != null) {
-                    updateState(PET_CHANNEL_SPECIES, new StringType(pet.getSpeciesId().toString()));
-                }
+                updateState(PET_CHANNEL_NAME, pet.getName() == null ? UnDefType.UNDEF : new StringType(pet.getName()));
+                updateState(PET_CHANNEL_COMMENT,
+                        pet.getComments() == null ? UnDefType.UNDEF : new StringType(pet.getComments()));
+                updateState(PET_CHANNEL_GENDER,
+                        pet.getGenderId() == null ? UnDefType.UNDEF : new StringType(pet.getGenderId().toString()));
+                updateState(PET_CHANNEL_BREED,
+                        pet.getBreedId() == null ? UnDefType.UNDEF : new StringType(pet.getBreedId().toString()));
+                updateState(PET_CHANNEL_SPECIES,
+                        pet.getSpeciesId() == null ? UnDefType.UNDEF : new StringType(pet.getSpeciesId().toString()));
                 updateState(PET_CHANNEL_PHOTO,
                         pet.getPhoto() == null ? UnDefType.UNDEF : getPetPhotoImage(pet.getPhoto().getLocation()));
                 SurePetcarePetActivity loc = pet.getPetStatus().getActivity();
@@ -134,12 +128,9 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                     }
                 }
                 ZonedDateTime dob = pet.getDateOfBirthAsZonedDateTime();
-                if (dob != null) {
-                    updateState(PET_CHANNEL_DATE_OF_BIRTH, new DateTimeType(dob));
-                }
-                if (pet.getWeight() != null) {
-                    updateState(PET_CHANNEL_WEIGHT, new DecimalType(pet.getWeight()));
-                }
+                updateState(PET_CHANNEL_DATE_OF_BIRTH, dob == null ? UnDefType.UNDEF : new DateTimeType(dob));
+                updateState(PET_CHANNEL_WEIGHT,
+                        pet.getWeight() == null ? UnDefType.UNDEF : new DecimalType(pet.getWeight()));
                 if (pet.getTagId() != null) {
                     SurePetcareTag tag = petcareAPI.getTag(pet.getTagId().toString());
                     if (tag != null) {
