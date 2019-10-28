@@ -41,7 +41,7 @@ public class SomfyTahomaGateHandler extends SomfyTahomaBaseThingHandler {
             return;
         } else {
             if (GATE_COMMAND.equals(channelUID.getId())) {
-                sendCommand(getGateCommand(command.toString().toLowerCase()), "[]");
+                sendCommand(getGateCommand(command.toString().toLowerCase()));
             }
         }
     }

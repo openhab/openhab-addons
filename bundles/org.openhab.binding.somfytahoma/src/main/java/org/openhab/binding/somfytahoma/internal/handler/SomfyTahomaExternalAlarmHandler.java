@@ -38,7 +38,7 @@ public class SomfyTahomaExternalAlarmHandler extends SomfyTahomaBaseThingHandler
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
         if (ALARM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
-            sendCommand(command.toString(), "[]");
+            sendCommand(command.toString());
         }
     }
 

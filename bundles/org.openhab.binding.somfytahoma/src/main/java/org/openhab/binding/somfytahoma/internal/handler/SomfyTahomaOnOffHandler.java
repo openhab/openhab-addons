@@ -39,7 +39,7 @@ public class SomfyTahomaOnOffHandler extends SomfyTahomaBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
         if (SomfyTahomaBindingConstants.SWITCH.equals(channelUID.getId()) && command instanceof OnOffType) {
-            sendCommand(command.toString().toLowerCase(), "[]");
+            sendCommand(command.toString().toLowerCase());
         }
     }
 }

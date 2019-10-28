@@ -51,7 +51,7 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
                     //Check if the awning is moving and MY is sent => STOP it
                     cancelExecution(executionId);
                 } else {
-                    sendCommand(COMMAND_MY, "[]");
+                    sendCommand(COMMAND_MY);
                 }
             } else {
                 String param = COMMAND_SET_DEPLOYMENT.equals(cmd) ? "[" + command.toString() + "]" : "[]";

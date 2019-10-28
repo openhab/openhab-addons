@@ -47,7 +47,7 @@ public class SomfyTahomaSirenHandler extends SomfyTahomaBaseThingHandler {
 
         //it is possible only to disable the siren
         if (ONOFF_STATE.equals(channelUID.getId()) && command.equals(OnOffType.OFF)) {
-            sendCommand(COMMAND_OFF, "[]");
+            sendCommand(COMMAND_OFF);
         }
 
         // highest or normal memorized volume

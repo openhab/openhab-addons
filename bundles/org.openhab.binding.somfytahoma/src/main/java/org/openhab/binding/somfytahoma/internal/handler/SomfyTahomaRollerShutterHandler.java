@@ -52,7 +52,7 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
                     //Check if the roller shutter is moving and MY is sent => STOP it
                     cancelExecution(executionId);
                 } else {
-                    sendCommand(COMMAND_MY, "[]");
+                    sendCommand(COMMAND_MY);
                 }
             } else {
                 String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
