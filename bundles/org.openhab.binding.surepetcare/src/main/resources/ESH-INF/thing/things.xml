@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<thing:thing-descriptions bindingId="surepetcare"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="surepetcare" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Supported Sure Petcare pets and features -->
 
@@ -49,16 +46,12 @@
 
 		<properties>
 			<property name="id" />
-            <property name="version" />
-            <property name="createdAt" />
-            <property name="updatedAt" />
-            <property name="householdId" />
-            <property name="productType" />
-            <property name="productName" />
-			<property name="macAddress" />
-			<property name="serialNumber" />
-			<property name="hardwareVersion" />
-			<property name="firmwareVersion" />
+			<property name="version" />
+			<property name="createdAt" />
+			<property name="updatedAt" />
+			<property name="householdId" />
+			<property name="productType" />
+			<property name="productName" />
 		</properties>
 
 	</thing-type>
@@ -95,18 +88,15 @@
 			<channel id="deviceRSSI" typeId="rssiDeviceType" />
 			<channel id="hubRSSI" typeId="rssiHubType" />
 		</channels>
+
 		<properties>
 			<property name="id" />
 			<property name="version" />
 			<property name="createdAt" />
-            <property name="updatedAt" />
-            <property name="householdId" />
-            <property name="productType" />
-            <property name="productName" />
-            <property name="macAddress" />
-            <property name="serialNumber" />
-            <property name="hardwareVersion" />
-            <property name="firmwareVersion" />
+			<property name="updatedAt" />
+			<property name="householdId" />
+			<property name="productType" />
+			<property name="productName" />
 			<property name="pairingAt" />
 		</properties>
 	</thing-type>
@@ -139,19 +129,16 @@
 			<channel id="bowlsCloseDelay" typeId="bowlsCloseDelayType" />
 			<channel id="bowlsTrainingMode" typeId="bowlsTrainingModeType" />
 		</channels>
+
 		<properties>
-            <property name="id" />
-            <property name="version" />
-            <property name="createdAt" />
-            <property name="updatedAt" />
-            <property name="householdId" />
-            <property name="productType" />
-            <property name="productName" />
-            <property name="macAddress" />
-            <property name="serialNumber" />
-            <property name="hardwareVersion" />
-            <property name="firmwareVersion" />
-            <property name="pairingAt" />
+			<property name="id" />
+			<property name="version" />
+			<property name="createdAt" />
+			<property name="updatedAt" />
+			<property name="householdId" />
+			<property name="productType" />
+			<property name="productName" />
+			<property name="pairingAt" />
 		</properties>
 	</thing-type>
 
@@ -183,12 +170,13 @@
 			<channel id="feederLastChangeLeft" typeId="feederLastChangeLeftType" />
 			<channel id="feederLastChangeRight" typeId="feederLastChangeRightType" />
 		</channels>
+
 		<properties>
 			<property name="id" />
 			<property name="version" />
 			<property name="createdAt" />
 			<property name="updatedAt" />
-            <property name="householdId" />
+			<property name="householdId" />
 		</properties>
 
 	</thing-type>
@@ -333,7 +321,7 @@
 	<channel-type id="photoType">
 		<item-type>Image</item-type>
 		<label>Pet Photo</label>
-		<description>The URL of the pet photo</description>
+		<description>The image of the pet</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -395,20 +383,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="hardwareVersionType" advanced="true">
-		<item-type>Number</item-type>
-		<label>Hardware Version</label>
-		<description>The version of the hardware</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-
-	<channel-type id="firmwareVersionType" advanced="true">
-		<item-type>Number</item-type>
-		<label>Firmware Version</label>
-		<description>The version of the firmware</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-
 	<channel-type id="onlineType">
 		<item-type>Switch</item-type>
 		<label>Online</label>
@@ -435,44 +409,6 @@
 		<label>Curfew Unlock Time</label>
 		<description>The time when the curfew finishes</description>
 		<state readOnly="false" pattern="%s"></state>
-	</channel-type>
-
-	<channel-type id="createdAtType" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Created At</label>
-		<description>The Time when the device was created.</description>
-		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
-	</channel-type>
-
-	<channel-type id="updatedAtType" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Updated At</label>
-		<description>The Time when the device was updated.</description>
-		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
-	</channel-type>
-
-	<channel-type id="pairingAtType" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Pairing At</label>
-		<description>The Time when the device was paired.</description>
-		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
-	</channel-type>
-
-	<channel-type id="serialNumberType" advanced="true">
-		<item-type>String</item-type>
-		<label>Serial Number</label>
-		<description>The serial number of the device.</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-
-	<channel-type id="macAddressType" advanced="true">
-		<item-type>String</item-type>
-		<label>MAC Address</label>
-		<description>The MAC address of the device.</description>
-		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="dateOfBirthType">

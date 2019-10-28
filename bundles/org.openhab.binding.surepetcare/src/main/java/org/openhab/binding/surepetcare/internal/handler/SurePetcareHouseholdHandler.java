@@ -15,7 +15,6 @@ package org.openhab.binding.surepetcare.internal.handler;
 import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -47,8 +46,6 @@ public class SurePetcareHouseholdHandler extends SurePetcareBaseObjectHandler {
             updateState(HOUSEHOLD_CHANNEL_ID, new DecimalType(household.getId()));
             updateState(HOUSEHOLD_CHANNEL_NAME, new StringType(household.getName()));
             updateState(HOUSEHOLD_CHANNEL_TIMEZONE_ID, new DecimalType(household.getTimezoneId()));
-            updateState(HOUSEHOLD_CHANNEL_CREATED_AT, new DateTimeType(household.getCreatedAtAsZonedDateTime()));
-            updateState(HOUSEHOLD_CHANNEL_UPDATED_AT, new DateTimeType(household.getUpdatedAtAsZonedDateTime()));
         } else {
             logger.debug("Trying to update unknown household: {}", thing.getUID().getId());
         }

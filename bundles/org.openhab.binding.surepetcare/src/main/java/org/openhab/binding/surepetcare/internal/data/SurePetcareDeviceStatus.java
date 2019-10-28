@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.surepetcare.internal.data;
 
-import java.math.BigDecimal;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -31,8 +29,8 @@ public class SurePetcareDeviceStatus {
 
     public class Version {
         public class Device {
-            public BigDecimal hardware;
-            public BigDecimal firmware;
+            public String hardware;
+            public String firmware;
         }
 
         public Device device = new Device();

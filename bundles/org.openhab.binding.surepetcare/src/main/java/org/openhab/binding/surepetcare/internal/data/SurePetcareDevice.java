@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.surepetcare.internal.data;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.thing.Thing;
 
 /**
  * The {@link SurePetcareDevice} is the Java class used
@@ -163,10 +162,10 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         properties.put("householdId", householdId.toString());
         properties.put("productType", productId.toString());
         properties.put("productName", ProductType.findByTypeId(productId).getName());
-        properties.put("macAddress", macAddress);
-        properties.put("serialNumber", serialNumber);
-        properties.put("hardwareVersion", status.getVersion().device.hardware.toString());
-        properties.put("firmwareVersion", status.getVersion().device.firmware.toString());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, status.getVersion().device.hardware);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, status.getVersion().device.firmware);
         if (pairingAt != null) {
             properties.put("pairingAt", pairingAt.toString());
         }
@@ -177,10 +176,6 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
     public String toString() {
         return "Device [id=" + id + ", name=" + name + ", product=" + ProductType.findByTypeId(productId).getName()
                 + "]";
-    }
-
-    public @NonNull ZonedDateTime getPairingAtAsZonedDateTime() {
-        return pairingAt.toInstant().atZone(ZoneId.systemDefault());
     }
 
     public SurePetcareDevice assign(SurePetcareDevice newdev) {

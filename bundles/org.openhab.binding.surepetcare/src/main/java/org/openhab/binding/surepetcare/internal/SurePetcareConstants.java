@@ -61,9 +61,6 @@ public class SurePetcareConstants {
     public static final String HOUSEHOLD_CHANNEL_ID = "id";
     public static final String HOUSEHOLD_CHANNEL_NAME = "name";
     public static final String HOUSEHOLD_CHANNEL_TIMEZONE_ID = "timezoneId";
-    public static final String HOUSEHOLD_CHANNEL_CREATED_AT = "createdAt";
-    public static final String HOUSEHOLD_CHANNEL_UPDATED_AT = "updatedAt";
-    public static final String HOUSEHOLD_CHANNEL_USER_NAME = "userName";
 
     // Device Channel Names
     public static final String DEVICE_CHANNEL_ID = "id";
@@ -71,8 +68,6 @@ public class SurePetcareConstants {
     public static final String DEVICE_CHANNEL_PRODUCT = "product";
     public static final String DEVICE_CHANNEL_LED_MODE = "ledMode";
     public static final String DEVICE_CHANNEL_PAIRING_MODE = "pairingMode";
-    public static final String DEVICE_CHANNEL_HARDWARE_VERSION = "hardwareVersion";
-    public static final String DEVICE_CHANNEL_FIRMWARE_VERSION = "firmwareVersion";
     public static final String DEVICE_CHANNEL_ONLINE = "online";
     public static final String DEVICE_CHANNEL_CURFEW_BASE = "curfew";
     public static final String DEVICE_CHANNEL_CURFEW_ENABLED = DEVICE_CHANNEL_CURFEW_BASE + "Enabled";
@@ -84,11 +79,6 @@ public class SurePetcareConstants {
     public static final String DEVICE_CHANNEL_LOW_BATTERY = "lowBattery";
     public static final String DEVICE_CHANNEL_DEVICE_RSSI = "deviceRSSI";
     public static final String DEVICE_CHANNEL_HUB_RSSI = "hubRSSI";
-    public static final String DEVICE_CHANNEL_CREATED_AT = "createdAt";
-    public static final String DEVICE_CHANNEL_UPDATED_AT = "updatedAt";
-    public static final String DEVICE_CHANNEL_PAIRING_AT = "pairingAt";
-    public static final String DEVICE_CHANNEL_SERIAL_NUMBER = "serialNumber";
-    public static final String DEVICE_CHANNEL_MAC_ADDRESS = "macAddress";
     public static final String DEVICE_CHANNEL_BOWLS_FOOD = "bowlsFood";
     public static final String DEVICE_CHANNEL_BOWLS_TARGET = "bowlsTarget";
     public static final String DEVICE_CHANNEL_BOWLS_FOOD_LEFT = "bowlsFoodLeft";
