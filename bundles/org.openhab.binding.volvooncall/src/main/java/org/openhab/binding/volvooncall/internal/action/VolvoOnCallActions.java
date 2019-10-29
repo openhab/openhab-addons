@@ -125,6 +125,24 @@ public class VolvoOnCallActions implements ThingActions {
         }
     }
 
+    @RuleAction(label = "Volvo On Call : Preclimatization Start", description = "Starts car heater")
+    public void preclimatizationStartCommand() {
+        logger.debug("preclimatizationStartCommand called");
+        if (handler != null) {
+            handler.actionPreclimatization(true);
+        } else {
+            logger.warn("VolvoOnCall Action service ThingHandler is null!");
+        }
+    }
+
+    public static void preclimatizationStartCommand(@Nullable ThingActions actions) {
+        if (actions instanceof VolvoOnCallActions) {
+            ((VolvoOnCallActions) actions).preclimatizationStartCommand();
+        } else {
+            throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
+        }
+    }
+
     @RuleAction(label = "Volvo On Call : Heater Stop", description = "Stops car heater")
     public void heaterStopCommand() {
         logger.debug("heaterStopCommand called");
@@ -138,6 +156,24 @@ public class VolvoOnCallActions implements ThingActions {
     public static void heaterStopCommand(@Nullable ThingActions actions) {
         if (actions instanceof VolvoOnCallActions) {
             ((VolvoOnCallActions) actions).heaterStopCommand();
+        } else {
+            throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
+        }
+    }
+
+    @RuleAction(label = "Volvo On Call : Preclimatization Stop", description = "Stops car heater")
+    public void preclimatizationStopCommand() {
+        logger.debug("preclimatizationStopCommand called");
+        if (handler != null) {
+            handler.actionPreclimatization(false);
+        } else {
+            logger.warn("VolvoOnCall Action service ThingHandler is null!");
+        }
+    }
+
+    public static void preclimatizationStopCommand(@Nullable ThingActions actions) {
+        if (actions instanceof VolvoOnCallActions) {
+            ((VolvoOnCallActions) actions).preclimatizationStopCommand();
         } else {
             throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
         }
@@ -161,5 +197,4 @@ public class VolvoOnCallActions implements ThingActions {
             throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
         }
     }
-
 }
