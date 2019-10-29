@@ -65,7 +65,7 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
 
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
-            logger.debug("Controller is not online.", bridgeStatusInfo.getStatus());
+            logger.debug("Controller is not online ({})", bridgeStatusInfo.getStatus());
             return;
         }
 
