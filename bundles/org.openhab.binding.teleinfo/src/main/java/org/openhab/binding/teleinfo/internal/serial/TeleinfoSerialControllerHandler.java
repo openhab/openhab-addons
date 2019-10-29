@@ -51,7 +51,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     private final Logger logger = LoggerFactory.getLogger(TeleinfoSerialControllerHandler.class);
 
     private static final int SERIAL_RECEIVE_TIMEOUT = 250;
-    private static final int SERIAL_PORT_MAX_RETRIES = 5;
     private static final int SERIAL_PORT_DELAY_RETRY_IN_SECONDS = 60;
 
     private SerialPortManager serialPortManager;
@@ -60,7 +59,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     private Timer keepAliveThread;
     private @Nullable TeleinfoSerialControllerConfiguration config;
     private long invalidFrameCounter = 0;
-    private long currentRetryCounter = 0;
 
     public TeleinfoSerialControllerHandler(@NonNull Bridge thing, SerialPortManager serialPortManager) {
         super(thing);
@@ -69,7 +67,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Teleinfo serial controller.");
+        logger.info("Initializing Teleinfo Serial port controller");
         invalidFrameCounter = 0;
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -93,7 +91,11 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             }
         }, 60000, 60000);
 
-        logger.info("Teleinfo Serial port is initialized");
+        if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
+            logger.info("Teleinfo Serial port is initialized, but the bridge is currently OFFLINE due to errors");
+        } else {
+            logger.info("Teleinfo Serial port is initialized");
+        }
     }
 
     @Override
@@ -113,10 +115,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     @Override
     public void onFrameReceived(@NonNull TeleinfoReceiveThread receiveThread, @NonNull Frame frame) {
         updateStatus(ThingStatus.ONLINE);
-        if (currentRetryCounter > 0) {
-            logger.info("Retry counter reset");
-            currentRetryCounter = 0;
-        }
         fireOnFrameReceivedEvent(frame);
     }
 
@@ -136,21 +134,13 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     @Override
     public boolean continueOnReadNextFrameTimeoutException(@NonNull TeleinfoReceiveThread receiveThread,
             @NonNull TimeoutException e) {
-        currentRetryCounter++;
-        if (currentRetryCounter > SERIAL_PORT_MAX_RETRIES) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
-            logger.error("Maximum retries reached");
+        logger.warn("Retry in progress. Next retry in {} seconds...", SERIAL_PORT_DELAY_RETRY_IN_SECONDS);
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
+        try {
+            Thread.sleep(SERIAL_PORT_DELAY_RETRY_IN_SECONDS * 1000);
+            return true;
+        } catch (InterruptedException e1) {
             return false;
-        } else {
-            logger.warn("Retry in progress ({}/{})...", currentRetryCounter, SERIAL_PORT_MAX_RETRIES);
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
-            try {
-                logger.warn("Next retry in " + SERIAL_PORT_DELAY_RETRY_IN_SECONDS + " seconds");
-                Thread.sleep(SERIAL_PORT_DELAY_RETRY_IN_SECONDS * 1000);
-                return true;
-            } catch (InterruptedException e1) {
-                return false;
-            }
         }
     }
 
@@ -189,15 +179,20 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             // Start event listener, which will just sleep and slow down event loop
             serialPort.addEventListener(receiveThread);
             serialPort.notifyOnDataAvailable(true);
+            logger.info("Connected to serial port '{}'", config.serialport);
         } catch (PortInUseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_INUSE);
+            logger.error(
+                    "An error occurred during serial port connection. Detail: \"port is currently already in use\"");
         } catch (UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_UNSUPPORTED);
+            logger.error("An error occurred during serial port connection. Detail: \"{}\"", e.getLocalizedMessage(), e);
         } catch (TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_LISTENERS);
+            logger.error("An error occurred during serial port connection. Detail: \"{}\"", e.getLocalizedMessage(), e);
         }
         logger.debug("startReceiving [end]");
     }
