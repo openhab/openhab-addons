@@ -29,6 +29,7 @@ import com.google.gson.JsonElement;
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
+ * @author Martin Lepsy - fixed handling of empty JSON results
  */
 public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> {
 
@@ -74,7 +75,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
                 }
             }
             // process result
-            if (result != null) {
+            if (isResultProcessable(result)) {
                 logger.debug("Result of operation is {}", result.getAsString());
             }
         } catch (IllegalArgumentException e) {
