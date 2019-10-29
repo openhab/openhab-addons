@@ -16,6 +16,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,8 +48,10 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
 
     protected ScheduledExecutorService scheduler;
     protected Collection<IDataUpdateListener> listeners;
+
     protected int retryCounter = 0;
     protected Socket socket;
+    private ISocketTimeOutListener stoListener;
 
     private final String ipAddress;
     private final int tcpPort;
@@ -67,7 +70,7 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
     }
 
     protected void initializeSocket() throws IOException, UnknownHostException {
-        if (socket != null) {
+        if (socket != null && !socket.isClosed()) {
             close();
         }
         socket = new Socket(ipAddress, tcpPort);
@@ -115,26 +118,29 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
         SyncQueue syncQueue = SyncQueue.getInstance();
         IRequest request = syncQueue.peekSendQueue();
         try {
-            logger.debug("Sending packet with request={}", request);
+            logger.trace("Sending packet with request={}", request);
             byte[] packetBytes = request.getRequestPayload().getBytes();
             ParadoxUtil.printPacket("Tx Packet:", packetBytes);
             tx.write(packetBytes);
             syncQueue.moveRequest();
-        } catch (IOException e) {
+        } catch (SocketException e) {
+            logger.debug("Socket time out occurred. Informing listener. Request={}. Exception=", request, e);
             syncQueue.removeSendRequest();
-            logger.debug("Error while sending packet with request={}. IOException={}. Will discard this request.",
-                    request, e.getMessage());
+            stoListener.onSocketTimeOutOccurred(e);
+        } catch (IOException e) {
+            logger.debug("Error while sending packet with request={}. IOException=", request, e);
+            syncQueue.removeSendRequest();
         }
     }
 
     protected void receivePacket() {
         SyncQueue syncQueue = SyncQueue.getInstance();
         try {
-            logger.debug("Found packet to receive in queue...");
+            logger.trace("Found packet to receive in queue...");
             byte[] result = new byte[256];
             int readBytes = rx.read(result);
             if (readBytes > 0 && result[1] > 0 && result[1] + 16 < 256) {
-                logger.debug("Successfully read valid packet from Rx");
+                logger.trace("Successfully read valid packet from Rx");
                 retryCounter = 0;
                 IRequest request = syncQueue.poll();
                 byte[] bytesData = Arrays.copyOfRange(result, 0, result[1] + 16);
@@ -142,13 +148,17 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
                 handleReceivedPacket(response);
             } else if (SyncQueue.getInstance().peekReceiveQueue()
                     .isTimeStampExpired(PACKET_EXPIRATION_TRESHOLD_MILLISECONDS)) {
-                logger.debug("Unable to receive proper package for {} time. Rescheduling...", retryCounter);
+                logger.trace("Unable to receive proper package for {} time. Rescheduling...", retryCounter);
             } else {
                 IRequest requestInQueue = syncQueue.poll();
-                logger.debug("Error receiving packet after reaching the set treshold of retries. Request: {}",
-                        requestInQueue);
+                logger.debug("Error receiving packet after reaching the set timeout of {}ms. Request: {}",
+                        PACKET_EXPIRATION_TRESHOLD_MILLISECONDS, requestInQueue);
                 retryCounter = 0;
             }
+        } catch (SocketException e) {
+            logger.debug("Socket time out occurred. Informing listener. Request={}. Exception=", e);
+            IRequest request = syncQueue.poll();
+            stoListener.onSocketTimeOutOccurred(e);
         } catch (IOException e) {
             IRequest request = syncQueue.poll();
             retryCounter = 0;
@@ -263,4 +273,13 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
     protected abstract void receiveEpromResponse(IResponse response) throws ParadoxException;
 
     protected abstract void receiveRamResponse(IResponse response) throws ParadoxException;
+
+    public ISocketTimeOutListener getStoListener() {
+        return stoListener;
+    }
+
+    @Override
+    public void setStoListener(ISocketTimeOutListener stoListener) {
+        this.stoListener = stoListener;
+    }
 }

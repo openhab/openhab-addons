@@ -17,7 +17,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
 /**
  * An Utility class to handle {@link ByteEnumWrapper} instances
  *
- * @author Martin van Wingerden - Simplify some code in the RFXCOM binding
+ * @author Martin van Wingerden - Initial contribution
  */
 public class ByteEnumUtil {
     private ByteEnumUtil() {

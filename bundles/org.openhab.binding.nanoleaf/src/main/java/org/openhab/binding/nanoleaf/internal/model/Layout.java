@@ -21,23 +21,23 @@ import java.util.List;
  */
 public class Layout {
 
-    private Integer numPanels;
-    private Integer sideLength;
+    private int numPanels;
+    private int sideLength;
     private List<PositionDatum> positionData = null;
 
-    public Integer getNumPanels() {
+    public int getNumPanels() {
         return numPanels;
     }
 
-    public void setNumPanels(Integer numPanels) {
+    public void setNumPanels(int numPanels) {
         this.numPanels = numPanels;
     }
 
-    public Integer getSideLength() {
+    public int getSideLength() {
         return sideLength;
     }
 
-    public void setSideLength(Integer sideLength) {
+    public void setSideLength(int sideLength) {
         this.sideLength = sideLength;
     }
 

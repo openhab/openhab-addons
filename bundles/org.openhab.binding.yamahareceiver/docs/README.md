@@ -162,7 +162,7 @@ http://<Your_Yamaha_ID>/YamahaRemoteControl/UnitDesc.xml
 ```
 
 As Yamaha introduces new models there may be variations between XML structure.
-In an attempt to improve the addon maintenance and troubleshooting selected model's `desc.xml`' has been collected from community users:
+In an attempt to improve the add-on maintenance and troubleshooting selected model's `desc.xml`' has been collected from community users:
 
 * [HTR-4069](desc_HTR-4069.xml) 
 * [RX-A2000](desc_RX-A2000.xml) 

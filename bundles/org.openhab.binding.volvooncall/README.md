@@ -20,7 +20,7 @@ The binding has no configuration options itself, all configuration is done at 'T
 The 'VolvoOnCall API' bridge uses the owner's email address and password in order to access the VOC Remote API.
 This is the same email address and password as used in the VolvoOnCall smartphone app, that allows to remotely control your car(s).
 
-Once the bridge created, you'll be able to launch discovery of the vehicles attached to it.
+Once the bridge created, you will be able to launch discovery of the vehicles attached to it.
 
 ## Channels
 
@@ -99,10 +99,12 @@ Multiple actions are supported by this binding. In classic rules these are acces
 Example
 
 ```
- val actions = getActions("volvooncall","volvooncall:vehicle:myVinNumber")
+ val actions = getActions("volvooncall","volvooncall:vehicle:bridgeId:thingId")
  if(null === actions) {
         logInfo("actions", "Actions not found, check thing ID")
         return
+ } else {
+        actions.openCarCommand()
  }
 ```
 

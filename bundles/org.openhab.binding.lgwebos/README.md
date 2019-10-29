@@ -33,7 +33,7 @@ If LocalIP is not set, the binding will use openHAB's primary IP address, which 
 TVs are auto discovered through SSDP in the local network.
 The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
 
-Please note, that if you are running openHAB in a docker container you need to use macvlan or host networking for this binding to work.
+Please note, that if you are running openHAB in a Docker container you need to use macvlan or host networking for this binding to work.
 
 ## Thing Configuration
 
@@ -47,8 +47,8 @@ Please note that at least one channel must be bound to an item before the bindin
 | power           | Switch    | Current power setting. TV can only be powered off, not on.                                                                                                                                                              | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
-| channel         | String    | Current channel number.                                                                                                               | RW         |
-| channelName     | String    | Current channel name.                                                                                                                                                                                                    | R          |
+| channel         | String    | Current channel number.                                                                                                                                                                                                 | RW         |
+| channelName     | String    | Current channel name.                                                                                                                                                                                                   | R          |
 | toast           | String    | Displays a short message on the TV screen. See also rules section.                                                                                                                                                      | W          |
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
@@ -183,7 +183,7 @@ Example
 
 ### showToast(text)
 
-Sends a toast message to a WebOS device with openHab icon.
+Sends a toast message to a WebOS device with openHAB icon.
 
 Parameters:
 

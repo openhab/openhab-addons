@@ -1,6 +1,6 @@
 # Loxone Binding
 
-This binding integrates [Loxone Miniserver](https://www.loxone.com/enen/products/miniserver-extensions/) with [openHAB](http://www.openhab.org/).
+This binding integrates [Loxone Miniserver](https://www.loxone.com/enen/products/miniserver-extensions/) with [openHAB](https://www.openhab.org/).
 Miniserver is represented as a [Thing](https://www.openhab.org/docs/configuration/things.html). Miniserver controls, that are visible in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/), are exposed as openHAB channels.
 
 ## Features
@@ -14,7 +14,7 @@ The following features are currently supported:
 *   Updates of openHAB channel's state in runtime according to control's state changes on the Miniserver
 *   Passing channel commands to the Miniserver's controls
 *   Hash-based and token-based authentication methods
-*    Command encryption and response decryption
+*   Command encryption and response decryption
 
 ## Things
 
@@ -186,7 +186,7 @@ Channels have the default tags as follows:
 
 ## Advanced Parameters
 
-This section describes the optional advanced parameters that can be configured for a Miniserver. They can be set using UI (e.g. PaperUI) or in a .things file.
+This section describes the optional advanced parameters that can be configured for a Miniserver. They can be set using UI (e.g. Paper UI) or in a .things file.
 If a parameter is not explicitly defined, binding will use its default value.
 
 To define a parameter value in a .things file, please refer to it by parameter's ID, for example:

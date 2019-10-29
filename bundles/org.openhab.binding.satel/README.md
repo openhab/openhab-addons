@@ -1,9 +1,14 @@
 # Satel Integra Alarm System Binding
 
-The Satel Integra Alarm System allows openHAB to connect to your alarm system via TCP/IP network with ETHM-1/ETHM-1 Plus module installed, or via RS-232 serial port with INT-RS/INT-RS Plus module installed. For ETHM-1 the binding uses integration protocol, so it must be enabled and properly configured.  
-Also it is always a good idea to update module/mainboard firmware to the latest version. For ETHM-1 and INT-RS modules it is a must. For "Plus" modules however it is not required.
+The Satel Integra Alarm System allows openHAB to connect to your alarm system via TCP/IP network with ETHM-1/ETHM-1 Plus module installed, or via RS-232 serial port with INT-RS/INT-RS Plus module installed.
+For ETHM-1 the binding uses integration protocol, so it must be enabled and properly configured.
+Also it is always a good idea to update module/mainboard firmware to the latest version.
+For ETHM-1 and INT-RS modules it is a must.
+For "Plus" modules however it is not required.
 
-In order to use encryption with ETHM-1/ETHM-1 Plus, Java Runtime Environment must support 192 bit AES keys. Oracle Java by default supports only 128 bit keys, therefore ["Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files"](http://www.oracle.com/technetwork/java/javase/downloads/index.html) must be installed. OpenJDK supports unlimited AES keys by default (but OpenJDK is sometimes discouraged for openHAB).
+In order to use encryption with ETHM-1/ETHM-1 Plus, Java Runtime Environment must support 192 bit AES keys.
+Oracle Java by default supports only 128 bit keys, therefore ["Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files"](https://www.oracle.com/technetwork/java/javase/downloads/index.html) must be installed.
+OpenJDK supports unlimited AES keys by default (but OpenJDK is sometimes discouraged for openHAB).
 
 More details and all documentation about Integra system you can find on their site: [satel.pl](https://www.satel.pl/pl/cat/2#cat15)
 
@@ -230,7 +235,7 @@ Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
 | Name            | Type     | Description                                                                                                                        |
 |-----------------|----------|------------------------------------------------------------------------------------------------------------------------------------|
 | date_time       | DateTime | Date and time on the alarm system                                                                                                  |
-| troubles        | Switch   | Active when the system has troubles (trouble led is blinking on a panel)                                                           |
+| troubles        | Switch   | Active when the system has troubles (trouble LED is blinking on a panel)                                                           |
 | troubles_memory | Switch   | Memorized state of system troubles                                                                                                 |
 | service_mode    | Switch   | Active when the system is in service mode                                                                                          |
 | acu100_present  | Switch   | Active when there is an ACU-100 module installed in the system                                                                     |
@@ -397,10 +402,10 @@ then
         // prevent initiating reading when index item is restored during OH startup
         EVENT_LOG_IDX.postUpdate(NULL)
     } else {
-		eventLogMsgBody += "\n" + (EVENT_LOG_TIME.state as DateTimeType).format("%1$tF %1$tR") + ": " + EVENT_LOG_DESCR.state
-		if (EVENT_LOG_DET.state != NULL && EVENT_LOG_DET.state != "") {
-			 eventLogMsgBody += " - " + EVENT_LOG_DET.state
-		}
+        eventLogMsgBody += "\n" + (EVENT_LOG_TIME.state as DateTimeType).format("%1$tF %1$tR") + ": " + EVENT_LOG_DESCR.state
+        if (EVENT_LOG_DET.state != NULL && EVENT_LOG_DET.state != "") {
+            eventLogMsgBody += " - " + EVENT_LOG_DET.state
+        }
         eventLogCounter += 1
         EVENT_LOG_IDX.sendCommand(EVENT_LOG_PREV.state)
     }
@@ -411,13 +416,14 @@ end
 
 ### binary items
 
-In OH2.x all channels have strict types, which means you cannot use other type then designated for a channel. 
+In openHAB all channels have strict types, which means you cannot use other type then designated for a channel. 
 In Satel binding all binary items are now of 'Switch' type. Using other item types, like 'Contact' is not possible in this version of the binding.
-For this reason, when migrating 1.x item files, besides changing binding configuration for each item, you must replace all 'Contact' items to 'Switch' type.  
+For this reason, when migrating 1.x item files, besides changing binding configuration for each item, you must replace all 'Contact' items to 'Switch' type.
 
 ### 'module' channels
 
-In version 2.x of the binding all 'module' channels have been removed. You can easily replace them with the following configuration:
+In version 2.x of the binding all 'module' channels have been removed.
+You can easily replace them with the following configuration:
 
 #### satel.items
 
@@ -458,11 +464,16 @@ end
 
 ### User for openHAB integration
 
-To control Integra partitions and outputs, you need to provide security code of a user in behalf of all those operations will be executed. It is highly recommended to use a separate user for openHAB integration with only required access rights set in Integra configuration, like access to certain partitions, etc. This allows you to distinguish actions made by openHAB and a user using Integra panel, also it will block unwanted operations in case someone breaks into your local network.
+To control Integra partitions and outputs, you need to provide security code of a user in behalf of all those operations will be executed.
+It is highly recommended to use a separate user for openHAB integration with only required access rights set in Integra configuration, like access to certain partitions, etc.
+This allows you to distinguish actions made by openHAB and a user using Integra panel, also it will block unwanted operations in case someone breaks into your local network.
 
 ### Disarming and clearing alarms
 
-Although this binding allows you to configure disarming a partition and clearing alarms for a partition, this should be used only in cases when security is not the priority. Don't forget both these operations can be executed in openHAB without specifying a user code, which is required to disarm or clear alarms using Integra panel. Consider adding a keypad in your sitemap to temporarily change user code to execute sensitive operations. You can find such keypad in the [Full Example](#full-example) section.
+Although this binding allows you to configure disarming a partition and clearing alarms for a partition, this should be used only in cases when security is not the priority.
+Don't forget both these operations can be executed in openHAB without specifying a user code, which is required to disarm or clear alarms using Integra panel.
+Consider adding a keypad in your sitemap to temporarily change user code to execute sensitive operations.
+You can find such keypad in the [Full Example](#full-example) section.
 
 ## Media
 

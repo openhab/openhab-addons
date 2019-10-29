@@ -54,26 +54,26 @@ public class SyncQueue {
     }
 
     public synchronized void add(IRequest request) {
-        logger.debug("Adding to queue request={}", request);
+        logger.trace("Adding to queue request={}", request);
         sendQueue.add(request);
     }
 
     public synchronized void moveRequest() {
         IRequest request = sendQueue.poll();
         request.setTimeStamp();
-        logger.debug("Moving from Tx to RX queue request={}", request);
+        logger.trace("Moving from Tx to RX queue request={}", request);
         receiveQueue.add(request);
     }
 
     public synchronized IRequest poll() {
         IRequest request = receiveQueue.poll();
-        logger.debug("Removing from queue request={}", request);
+        logger.trace("Removing from queue request={}", request);
         return request;
     }
 
     public synchronized IRequest removeSendRequest() {
         IRequest request = sendQueue.poll();
-        logger.debug("Removing from queue request={}", request);
+        logger.trace("Removing from queue request={}", request);
         return request;
     }
 

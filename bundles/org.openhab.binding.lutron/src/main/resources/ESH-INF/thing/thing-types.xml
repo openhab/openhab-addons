@@ -103,6 +103,37 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="blind">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Lutron Blind</label>
+		<description>Controls venetian and horizontal sheer blinds</description>
+		<category>Blinds</category>
+
+		<channels>
+			<channel id="blindliftlevel" typeId="blindLift"/>
+			<channel id="blindtiltlevel" typeId="blindTilt"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of blind in the Lutron system</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Type of blind</description>
+				<options>
+					<option value="Sheer">Sheer</option>
+					<option value="Venetian">Venetian</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
@@ -956,6 +987,22 @@
 		<description>Raise/lower the shade level</description>
 		<category>Rollershutter</category>
 		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="blindLift">
+		<item-type>Rollershutter</item-type>
+		<label>Blind Level</label>
+		<description>Raise/lower the blind level</description>
+		<category>Rollershutter</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="blindTilt">
+		<item-type>Rollershutter</item-type>
+		<label>Blind Tilt</label>
+		<description>Tilt the blinds up/down</description>
+		<category>Rollershutter</category>
+		<state min="0" max="50" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="switchState">

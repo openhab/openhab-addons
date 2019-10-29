@@ -9,11 +9,11 @@ This binding can be used to conrol Sony Projectors through:
 For serial connection, you have to use a D-Sub 9 Pin cross (reverse) cable also called null modem.
 For this cable, you will need a female connector on openHAB server side and a male connector on projector side (projector connector is female).
 For users without serial connector on server side, of course you can add a serial to USB adapter to this serial cable.
-Has been tested successfully using [this cable](https://www.amazon.fr/UGREEN-PL2303-Windows-Chrome-Connecteur/dp/B00QUZY4UG/ref=sr_1_3?ie=UTF8&qid=1548652565&sr=8-3&keywords=serial+usb) connected to a Windows 10 PC and Raspberry PI 2.
+Has been tested successfully using [this cable](https://www.amazon.fr/UGREEN-PL2303-Windows-Chrome-Connecteur/dp/B00QUZY4UG/ref=sr_1_3?ie=UTF8&qid=1548652565&sr=8-3&keywords=serial+usb) connected to a Windows 10 PC and Raspberry Pi 2.
 In such cases, setup a serial connection thing type in openHAB.
 
 You don't need to have your projector directly connected to your openHAB server.
-You can connect it for example to a Raspberry PI and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
+You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
 In such a case, setup a serial over IP connection thing type in openHAB.
 
 Here is the list of supported Sony projectors based on Sony protocol manuals:
@@ -131,7 +131,7 @@ The serial connection thing requires the following configuration parameters:
 Some notes:
 
 * On Linux, you may get an error stating the serial port cannot be opened when the SonyProjector binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. SonyProjector and RFXcom. See the wiki page for more on symlinking the USB ports [](https://github.com/openhab/openhab1-addons/wiki/symlinks).
+* Also on Linux you may have issues with the USB if using two serial USB devices e.g. SonyProjector and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 
 ### Serial over IP connection
 

@@ -14,9 +14,6 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.RaspiPin;
-
 /**
  * The {@link OpenSprinklerApiContents} class defines common constants, which are
  * used across OpenSprinkler API classes.
@@ -50,10 +47,4 @@ public class OpenSprinklerApiConstants {
     public static final String JSON_OPTION_STATION_COUNT = "nstations";
 
     public static final String JSON_OPTION_RESULT = "result";
-
-    /* These pin-outs are based on the common scheme used by Pi4J and wiringPi. */
-    public static final Pin SR_CLK_PIN = RaspiPin.GPIO_07; // rev1:4, rev2:4
-    public static final Pin SR_NOE_PIN = RaspiPin.GPIO_00; // rev1:17, rev2:17
-    public static final Pin SR_DAT_PIN = RaspiPin.GPIO_02; // rev1:21, rev2:27
-    public static final Pin SR_LAT_PIN = RaspiPin.GPIO_03; // rev1:22, rev2:22
 }

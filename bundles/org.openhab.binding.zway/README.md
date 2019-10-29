@@ -22,7 +22,7 @@ The existing, certified Z-Way stack can be used to build, configure and control 
 By using the REST API all devices are loaded from Z-Way and represented as openHAB elements.
 The sensor data and actuator states are constantly updated and commands are passed to the Z-Way system.
 
-The Binding uses the Z-Way library for Java ([Github](https://github.com/pathec/ZWay-library-for-Java)).
+The Binding uses the Z-Way library for Java ([GitHub](https://github.com/pathec/ZWay-library-for-Java)).
 
 ## Supported Things
 
@@ -44,7 +44,7 @@ On the other hand all virtual devices are mapped to *Z-Way Virtual Devices* with
 
 A discovery service for Z-Way servers scans local network and must always be started manually.
 Z-Way doesn't support any discovery protocol like UPnP for this purpose.
-That's why first all IP addresses in local network are checked on port 8083.
+That is why first all IP addresses in local network are checked on port 8083.
 If the server answers, a ZAutomation request (*/ZAutomation/api/v1/status*) is performed to ensure, the found server runs Z-Way.
 
 Another discovery service provides available devices (a configured bridge is necessary).
@@ -131,7 +131,7 @@ Currently unsupported Z-Way probe types:
 
 ### Universial channels for the devices
 
-The following channels represent universial channels if no further device information are available, only depending on the Z-Way device types (for available device types see [Z-Way Documentation](http://docs.zwayhomeautomation.apiary.io/#reference/devices/device)).
+The following channels represent universial channels if no further device information are available, only depending on the Z-Way device types (for available device types see [Z-Way Documentation](https://zwayhomeautomation.docs.apiary.io/#reference/devices)).
 
 | Channel Type ID  | Item Type | Category    | Assigned for Z-Way device type            |
 |------------------|-----------|-------------|-------------------------------------------|
@@ -151,12 +151,12 @@ Unsupported Z-Way device types: Camera, SensorMultiline, Text. The integration o
 
 ### Channels for the Z-Way Server (Bridge)
 
--| Channel Type ID | Item Type | Category | Description |
--| --------------- | --------- | -------- | ----------- |
--| actions         | String | -      | It is currently possible to update all devices. |
--| secureInclusion | Switch | Switch | Change inclusion type for further inclusions. |
--| inclusion       | Switch | Switch | Start inclusion mode (after a timeout the inclusion will be automatically finished). |
--| exclusion       | Switch | Switch | Start exclusion mode (after a timeout the exclusion will be automatically finished). ||
+| Channel Type ID | Item Type | Category | Description                                                                          |
+|-----------------|-----------|----------|--------------------------------------------------------------------------------------|
+| actions         | String    | -        | It is currently possible to update all devices.                                      |
+| secureInclusion | Switch    | Switch   | Change inclusion type for further inclusions.                                        |
+| inclusion       | Switch    | Switch   | Start inclusion mode (after a timeout the inclusion will be automatically finished). |
+| exclusion       | Switch    | Switch   | Start exclusion mode (after a timeout the exclusion will be automatically finished). |
 
 ## Locations
 
@@ -189,5 +189,4 @@ Because textual configuration isn't useful, follow the instructions in the [Gett
 -   Configuration of the Z-Wave network by the binding is currently not possible (physical device configuration)
 -   Only polling is available. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
 
-<br>
-![BMWi](./doc/BMWi_4C_Gef_en.jpg)
+![BMWi](doc/BMWi_4C_Gef_en.jpg)

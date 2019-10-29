@@ -1,6 +1,6 @@
 # Keba Binding
 
-This binding integrates the [Keba KeContact EV Charging Stations](http://www.keba.com).
+This binding integrates the [Keba KeContact EV Charging Stations](https://www.keba.com).
 
 ## Supported Things
 
