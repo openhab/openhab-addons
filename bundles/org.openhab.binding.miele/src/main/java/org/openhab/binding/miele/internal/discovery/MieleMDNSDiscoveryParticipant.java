@@ -61,7 +61,7 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
         if (isMieleGateway(service)) {
-            ThingUID uid = getThingUID(service); // HIER
+            ThingUID uid = getThingUID(service);
 
             if (uid != null) {
                 Map<String, Object> properties = new HashMap<>(2);
@@ -86,7 +86,7 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
             }
         }
         return null;
-    }    
+    }
 
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
@@ -102,9 +102,12 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     /**
      * Checks if service is a Miele XGW3000 Gateway
-     * 
+     *
      * application must be mieleathome
      * must contain path with value /rest/
+     *
+     * @param service the service to check
+     * @return true, if the discoverd service is a Miele XGW3000 Gateway
      */
     private boolean isMieleGateway(ServiceInfo service) {
         return service.getApplication().contains(SERVICE_NAME) && service.getPropertyString(PATH_PROPERTY_NAME) != null

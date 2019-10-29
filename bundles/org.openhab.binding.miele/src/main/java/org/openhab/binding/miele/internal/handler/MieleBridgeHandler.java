@@ -97,7 +97,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     // Data structures to de-JSONify whatever Miele appliances are sending us
     public class HomeDevice {
-     
+
         private static final String PROTOCOL_LAN = "LAN";
 
         public String Name;
@@ -117,7 +117,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
 
         public String getId() {
-            return getApplianceId().replaceAll("[^a-zA-Z0-9_]", "_");           
+            return getApplianceId().replaceAll("[^a-zA-Z0-9_]", "_");
         }
 
         public String getProtocol() {
@@ -263,8 +263,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                             previousHomeDevices = currentHomeDevices;
 
                             for (Thing appliance : getThing().getThings()) {
-                                if (appliance.getStatus() == ThingStatus.ONLINE) {                                                                        
-                                    String UID = appliance.getProperties().get(PROTOCOL_PROPERTY_NAME) 
+                                if (appliance.getStatus() == ThingStatus.ONLINE) {
+                                    String UID = appliance.getProperties().get(PROTOCOL_PROPERTY_NAME)
                                             + (String) appliance.getConfiguration().getProperties().get(APPLIANCE_ID);
 
                                     Object[] args = new Object[2];
@@ -428,11 +428,11 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     };
 
     public JsonElement invokeOperation(String UID, String modelID, String methodName) {
-        return invokeOperation(UID, modelID, methodName, "hdm:ZigBee:");      
+        return invokeOperation(UID, modelID, methodName, HDM_ZIGBEE);
     }
 
     public JsonElement invokeOperation(String UID, String modelID, String methodName, String protocol) {
-        
+
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             Object[] args = new Object[4];
             args[0] = protocol + UID;

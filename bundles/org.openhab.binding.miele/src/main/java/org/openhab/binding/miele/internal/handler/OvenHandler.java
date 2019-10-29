@@ -15,8 +15,6 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
 
-import com.google.gson.JsonElement;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -24,6 +22,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonElement;
 
 /**
  * The {@link OvenHandler} is responsible for handling commands,

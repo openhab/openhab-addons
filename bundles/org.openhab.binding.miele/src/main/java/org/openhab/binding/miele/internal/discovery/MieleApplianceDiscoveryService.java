@@ -47,7 +47,7 @@ import com.google.gson.JsonElement;
 public class MieleApplianceDiscoveryService extends AbstractDiscoveryService implements ApplianceStatusListener {
 
     private final Logger logger = LoggerFactory.getLogger(MieleApplianceDiscoveryService.class);
-        
+
     private static final int SEARCH_TIME = 60;
 
     private MieleBridgeHandler mieleBridgeHandler;
@@ -93,15 +93,15 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
         onApplianceAddedInternal(appliance);
     }
 
-    private void onApplianceAddedInternal(HomeDevice appliance) { 
+    private void onApplianceAddedInternal(HomeDevice appliance) {
         ThingUID thingUID = getThingUID(appliance);
         if (thingUID != null) {
             ThingUID bridgeUID = mieleBridgeHandler.getThing().getUID();
-            Map<String, Object> properties = new HashMap<>(2);                      
+            Map<String, Object> properties = new HashMap<>(2);
 
             properties.put(PROTOCOL_PROPERTY_NAME, appliance.getProtocol());
             properties.put(APPLIANCE_ID, appliance.getApplianceId());
-           
+
             for (JsonElement dc : appliance.DeviceClasses) {
                 if (dc.getAsString().contains("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele")
                         && !dc.getAsString().equals("com.miele.xgw3000.gateway.hdm.deviceclasses.MieleAppliance")) {
