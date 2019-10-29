@@ -8,7 +8,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Wall mounted Smoke Detector (WSD)</label>
+		<label>Wall Mounted Smoke Detector (WSD)</label>
 		<description>A battery powered smoke detector sensor with integrated alarm (first version).</description>
 
 		<channels>

@@ -63,7 +63,7 @@
 
 	<channel-type id="program_speed" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>Program speed</label>
+		<label>Program Speed</label>
 		<description>Speed of flash and gradient programs from 0 (slow) to 100 (fast).</description>
 	</channel-type>
 

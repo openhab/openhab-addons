@@ -30,7 +30,7 @@
 				<context>password</context>
 			</parameter>
 			<parameter name="polling" type="integer">
-				<label>Polling interval (s)</label>
+				<label>Polling Interval (s)</label>
 				<description>Polling interval in seconds (0=polling disabled).</description>
 				<default>120</default>
 			</parameter>

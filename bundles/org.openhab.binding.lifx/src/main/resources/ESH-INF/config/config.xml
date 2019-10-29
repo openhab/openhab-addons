@@ -6,7 +6,7 @@
 
 	<config-description uri="thing-type:lifx:light">
 		<parameter name="deviceId" type="text" pattern="([0-9A-Fa-f]{12})" required="false">
-			<label>LIFX device ID</label>
+			<label>LIFX Device ID</label>
 			<description>Identifies the light e.g. "D073D5A1A1A1"</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
@@ -15,7 +15,7 @@
 			<context>network-address</context>
 		</parameter>
 		<parameter name="fadetime" type="integer" required="false">
-			<label>Fade time</label>
+			<label>Fade Time</label>
 			<description>The time to fade to the new color value (in ms).</description>
 			<default>300</default>
 		</parameter>
@@ -23,27 +23,27 @@
 
 	<config-description uri="channel-type:lifx:brightness">
 		<parameter name="powerOnBrightness" type="integer" min="0" max="100" required="false" unit="%">
-			<label>Power on brightness</label>
+			<label>Power On Brightness</label>
 			<description>Brightness level used when switching on the light. Use empty value to leave brightness as is.</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="channel-type:lifx:color">
 		<parameter name="powerOnBrightness" type="integer" min="0" max="100" required="false" unit="%">
-			<label>Power on brightness</label>
+			<label>Power On Brightness</label>
 			<description>Brightness level used when switching on the light. Use empty value to leave brightness as is.</description>
 		</parameter>
 		<parameter name="powerOnColor" type="text"
 			pattern="(36[0]|3[0-5][0-9]|[12][0-9][0-9]|[1-9][0-9]|[0-9]),(100|[1-9][0-9]|[0-9]),(100|[1-9][0-9]|[0-9])"
 			required="false">
-			<label>Power on Color</label>
+			<label>Power On Color</label>
 			<description>Comma separated Hue (0-360), saturation (0-100) and brightness (0-100) levels used when switching on the light. Use empty value to leave it as is.</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="channel-type:lifx:temperature">
 		<parameter name="powerOnTemperature" type="integer" min="0" max="100" required="false" unit="%">
-			<label>Power on temperature</label>
+			<label>Power On Temperature</label>
 			<description>Color temperature level used when switching on the light. Use empty value to leave color temperature as is.</description>
 		</parameter>
 	</config-description>

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="ct_bulb">
-		<label>Yeelight White LED Bulb v2</label>
+		<label>Yeelight White LED Bulb V2</label>
 		<description>Yeelight White LED Bulb v2</description>
 
 		<channels>

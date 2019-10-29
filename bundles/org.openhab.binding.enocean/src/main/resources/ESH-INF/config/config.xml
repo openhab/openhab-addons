@@ -32,7 +32,7 @@
 			<default>channelA</default>
 		</parameter>
 		<parameter name="switchMode" type="text">
-			<label>Switch mode</label>
+			<label>Switch Mode</label>
 			<options>
 				<option value="rockerSwitch">Rocker switch</option>
 				<option value="toggleButtonDir1">Toggle button (upper button)</option>
@@ -44,11 +44,11 @@
 
 	<config-description uri="enocean:virtualRockerChannel:config">
 		<parameter name="duration" type="integer">
-			<label>Time in ms between Press and Release message</label>
+			<label>Time Between Press and Release Message (in ms)</label>
 			<default>250</default>
 		</parameter>
 		<parameter name="switchMode" type="text">
-			<label>Switch mode</label>
+			<label>Switch Mode</label>
 			<options>
 				<option value="rockerSwitch">Rocker switch</option>
 				<option value="toggleButtonDir1">Toggle button (upper button)</option>

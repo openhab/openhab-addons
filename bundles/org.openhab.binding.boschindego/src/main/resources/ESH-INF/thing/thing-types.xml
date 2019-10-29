@@ -26,7 +26,7 @@
 			<description>Password for the Bosch Indego account.</description>
 		</parameter>
 		<parameter name="refresh" type="integer" min="60">
-			<label>Refresh interval</label>
+			<label>Refresh Interval</label>
 			<description>Specifies the refresh interval in seconds.</description>
 			<default>180</default>
 		</parameter>
@@ -35,7 +35,7 @@
 
 	<channel-type id="state">
 		<item-type>Number</item-type>
-		<label>Numeric state</label>
+		<label>Numeric State</label>
 		<state readOnly="false">
 			<options>
 				<option value="1">Mow</option>
@@ -52,7 +52,7 @@
 	</channel-type>
 	<channel-type id="statecode" advanced="true">
 		<item-type>Number</item-type>
-		<label>State code</label>
+		<label>State Code</label>
 		<description>API-code of the Indego state</description>
 		<state readOnly="true">
 		<options>
@@ -90,7 +90,7 @@
 	</channel-type>
 	<channel-type id="mowed">
 		<item-type>Dimmer</item-type>
-		<label>Cut grass</label>
+		<label>Cut Grass</label>
 		<description></description>
 		<state readOnly="true" pattern="%d %%"></state>
 	</channel-type>

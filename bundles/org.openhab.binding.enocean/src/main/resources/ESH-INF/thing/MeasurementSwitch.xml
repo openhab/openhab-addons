@@ -24,12 +24,12 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="0" unit="s">
-				<label>Polling interval</label>
+				<label>Polling Interval</label>
 				<description>Time in seconds after a refresh is triggerd, 0 to disable</description>
 				<default>300</default>
 			</parameter>
 			<parameter name="sendingEEPId" type="text">
-				<label>EEP for sending commands</label>
+				<label>EEP for Sending Commands</label>
 				<options>
 					<option value="D2_01_00">Switching and energy measurement (EEP: D2_01_00)</option>
 					<option value="D2_01_01">Switching (EEP: D2_01_01)</option>
@@ -57,11 +57,11 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="broadcastMessages" type="boolean">
-				<label>Send broadcast messages</label>
+				<label>Send Broadcast Messages</label>
 				<default>false</default>
 			</parameter>
 			<parameter name="receivingEEPId" type="text" multiple="true">
-				<label>EEP for receiving commands</label>
+				<label>EEP for Receiving Commands</label>
 				<options>
 					<option value="D2_01_00">Switching and energy measurement (EEP: D2_01_00)</option>
 					<option value="D2_01_01">Switching (EEP: D2_01_01)</option>
@@ -91,7 +91,7 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="suppressRepeating" type="boolean">
-				<label>Suppress repeating of messages</label>
+				<label>Suppress Repeating of Messages</label>
 				<default>false</default>
 			</parameter>
 		</config-description>
