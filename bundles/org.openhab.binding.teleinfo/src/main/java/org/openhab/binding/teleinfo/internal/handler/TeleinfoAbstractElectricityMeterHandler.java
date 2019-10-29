@@ -69,14 +69,13 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
             return;
         }
 
-        logger.debug("Controller is ONLINE. Starting Electricity Meter thing initialisation");
+        logger.debug("Controller is ONLINE. Starting Electricity Meter thing initialization");
         updateStatus(ThingStatus.UNKNOWN);
-        // FIXME
 
         TeleinfoAbstractControllerHandler controllerHandler = (TeleinfoAbstractControllerHandler) getBridge()
                 .getHandler();
         controllerHandler.addListener(this);
-        logger.debug("Electricity Meter initialisation complete.");
+        logger.debug("Electricity Meter initialization complete.");
         updateStatus(ThingStatus.ONLINE);
     }
 
