@@ -55,9 +55,6 @@ Fragment-Host: org.openhab.binding.avmfritz
 	com.google.gson;version='[2.8.2,2.8.3)',\
 	org.apache.xbean.bundleutils;version='[4.12.0,4.12.1)',\
 	org.apache.xbean.finder;version='[4.12.0,4.12.1)',\
-	org.objectweb.asm;version='[7.0.0,7.0.1)',\
-	org.objectweb.asm.commons;version='[7.0.0,7.0.1)',\
-	org.objectweb.asm.tree;version='[7.0.0,7.0.1)',\
 	org.apache.servicemix.specs.activation-api-1.1;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.specs.jaxb-api-2.2;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.specs.stax-api-1.2;version='[2.9.0,2.9.1)',\
@@ -67,4 +64,7 @@ Fragment-Host: org.openhab.binding.avmfritz
 	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
 	net.bytebuddy.byte-buddy;version='[1.9.10,1.9.11)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.9.10,1.9.11)',\
-	org.mockito.mockito-core;version='[3.1.0,3.1.1)'
+	org.mockito.mockito-core;version='[3.1.0,3.1.1)',\
+	org.objectweb.asm;version='[7.1.0,7.1.1)',\
+	org.objectweb.asm.commons;version='[7.1.0,7.1.1)',\
+	org.objectweb.asm.tree;version='[7.1.0,7.1.1)'
