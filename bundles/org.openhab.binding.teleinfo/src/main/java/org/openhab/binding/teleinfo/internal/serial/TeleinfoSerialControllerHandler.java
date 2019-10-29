@@ -15,6 +15,8 @@ package org.openhab.binding.teleinfo.internal.serial;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeoutException;
 
@@ -55,6 +57,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     private SerialPortManager serialPortManager;
     private org.eclipse.smarthome.io.transport.serial.SerialPort serialPort;
     private TeleinfoReceiveThread receiveThread;
+    private Timer keepAliveThread;
     private @Nullable TeleinfoSerialControllerConfiguration config;
     private long invalidFrameCounter = 0;
     private long currentRetryCounter = 0;
@@ -67,8 +70,92 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     @Override
     public void initialize() {
         logger.debug("Initializing Teleinfo serial controller.");
-        updateStatus(ThingStatus.UNKNOWN);
         invalidFrameCounter = 0;
+        updateStatus(ThingStatus.UNKNOWN);
+
+        openSerialPortAndStartReceiving();
+
+        keepAliveThread = new Timer("Teleinfo-KeepAliveThread-timer", true);
+        keepAliveThread.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                logger.debug("Check Teleinfo receiveThread status...");
+                logger.debug("isInitialized() = {}", isInitialized());
+                if (receiveThread != null) {
+                    logger.debug("receiveThread.isAlive() = {}", receiveThread.isAlive());
+                }
+                if (isInitialized() && (receiveThread == null || (receiveThread != null && !receiveThread.isAlive()))) {
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
+                    logger.info("Try to restart Teleinfo receiving...");
+                    stopReceivingAndCloseSerialPort();
+                    openSerialPortAndStartReceiving();
+                }
+            }
+        }, 60000, 60000);
+
+        logger.info("Teleinfo Serial port is initialized");
+    }
+
+    @Override
+    public void dispose() {
+        keepAliveThread.cancel();
+        keepAliveThread = null;
+        stopReceivingAndCloseSerialPort();
+        logger.info("Stopped Teleinfo serial controller");
+
+        super.dispose();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    @Override
+    public void onFrameReceived(@NonNull TeleinfoReceiveThread receiveThread, @NonNull Frame frame) {
+        updateStatus(ThingStatus.ONLINE);
+        if (currentRetryCounter > 0) {
+            logger.info("Retry counter reset");
+            currentRetryCounter = 0;
+        }
+        fireOnFrameReceivedEvent(frame);
+    }
+
+    @Override
+    public void onInvalidFrameReceived(@NonNull TeleinfoReceiveThread receiveThread,
+            @NonNull InvalidFrameException error) {
+        invalidFrameCounter++;
+        updateState(THING_SERIAL_CONTROLLER_CHANNEL_INVALID_FRAME_COUNTER, new DecimalType(invalidFrameCounter));
+    }
+
+    @Override
+    public void OnSerialPortInputStreamIOException(@NonNull TeleinfoReceiveThread receiveThread,
+            @NonNull IOException e) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
+    }
+
+    @Override
+    public boolean continueOnReadNextFrameTimeoutException(@NonNull TeleinfoReceiveThread receiveThread,
+            @NonNull TimeoutException e) {
+        currentRetryCounter++;
+        if (currentRetryCounter > SERIAL_PORT_MAX_RETRIES) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            logger.error("Maximum retries reached");
+            return false;
+        } else {
+            logger.warn("Retry in progress (" + currentRetryCounter + "/" + SERIAL_PORT_MAX_RETRIES + ")...");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
+            try {
+                logger.warn("Next retry in " + SERIAL_PORT_DELAY_RETRY_IN_SECONDS + " seconds");
+                Thread.sleep(SERIAL_PORT_DELAY_RETRY_IN_SECONDS * 1000);
+                return true;
+            } catch (InterruptedException e1) {
+                return false;
+            }
+        }
+    }
+
+    private void openSerialPortAndStartReceiving() {
+        logger.debug("startReceiving [start]");
 
         config = getConfigAs(TeleinfoSerialControllerConfiguration.class);
 
@@ -102,8 +189,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             // Start event listener, which will just sleep and slow down event loop
             serialPort.addEventListener(receiveThread);
             serialPort.notifyOnDataAvailable(true);
-
-            logger.info("Teleinfo Serial port is initialized");
         } catch (PortInUseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_INUSE);
@@ -114,77 +199,26 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_LISTENERS);
         }
+        logger.debug("startReceiving [end]");
     }
 
-    /**
-     * Closes the connection to the ZWave controller.
-     */
-    @Override
-    public void dispose() {
+    private void stopReceivingAndCloseSerialPort() {
+        logger.debug("stopReceiving [start]");
+
         if (receiveThread != null) {
             receiveThread.interrupt();
             try {
                 receiveThread.join();
             } catch (InterruptedException e) {
             }
+            receiveThread.setListener(null);
             receiveThread = null;
         }
         if (serialPort != null) {
             serialPort.close();
             serialPort = null;
         }
-        logger.info("Stopped Teleinfo serial controller");
 
-        super.dispose();
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    @Override
-    public void onFrameReceived(@NonNull TeleinfoReceiveThread receiveThread, @NonNull Frame frame) {
-        updateStatus(ThingStatus.ONLINE);
-        if (currentRetryCounter > 0) {
-            logger.info("Retry counter reset");
-            currentRetryCounter = 0;
-        }
-        fireOnFrameReceivedEvent(frame);
-    }
-
-    @Override
-    public void onInvalidFrameReceived(@NonNull TeleinfoReceiveThread receiveThread,
-            @NonNull InvalidFrameException error) {
-        invalidFrameCounter++;
-        updateState(THING_SERIAL_CONTROLLER_CHANNEL_INVALID_FRAME_COUNTER, new DecimalType(invalidFrameCounter));
-    }
-
-    @Override
-    public boolean continueOnSerialPortInputStreamIOException(@NonNull IOException e) {
-        return continueOnError(e);
-    }
-
-    @Override
-    public boolean continueOnReadNextFrameTimeoutException(@NonNull TimeoutException e) {
-        return continueOnError(e);
-    }
-
-    private boolean continueOnError(@NonNull final Exception e) {
-        currentRetryCounter++;
-        if (currentRetryCounter > SERIAL_PORT_MAX_RETRIES) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
-            logger.warn("Maximum retries reached");
-            return false;
-        } else {
-            logger.warn("Retry in progress (" + currentRetryCounter + "/" + SERIAL_PORT_MAX_RETRIES + ")...");
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
-            try {
-                logger.warn("Next retry in " + SERIAL_PORT_DELAY_RETRY_IN_SECONDS + " seconds");
-                Thread.sleep(SERIAL_PORT_DELAY_RETRY_IN_SECONDS * 1000);
-                return true;
-            } catch (InterruptedException e1) {
-                return false;
-            }
-        }
+        logger.debug("stopReceiving [end]");
     }
 }

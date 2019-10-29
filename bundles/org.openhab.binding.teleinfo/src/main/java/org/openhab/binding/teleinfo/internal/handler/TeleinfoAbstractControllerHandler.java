@@ -42,7 +42,8 @@ public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandle
     }
 
     protected void fireOnFrameReceivedEvent(final Frame frame) {
-        for (TeleinfoControllerHandlerListener listener : listeners) {
+        for (int i = 0; i < listeners.size(); i++) {
+            TeleinfoControllerHandlerListener listener = listeners.get(i);
             listener.onFrameReceived(this, frame);
         }
     }

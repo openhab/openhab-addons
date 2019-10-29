@@ -31,7 +31,9 @@ public interface TeleinfoReceiveThreadListener {
     void onInvalidFrameReceived(@NonNull final TeleinfoReceiveThread receiveThread,
             @NonNull final InvalidFrameException error);
 
-    boolean continueOnSerialPortInputStreamIOException(@NonNull final IOException e);
+    void OnSerialPortInputStreamIOException(@NonNull final TeleinfoReceiveThread receiveThread,
+            @NonNull final IOException e);
 
-    boolean continueOnReadNextFrameTimeoutException(@NonNull final TimeoutException e);
+    boolean continueOnReadNextFrameTimeoutException(@NonNull final TeleinfoReceiveThread receiveThread,
+            @NonNull final TimeoutException e);
 }

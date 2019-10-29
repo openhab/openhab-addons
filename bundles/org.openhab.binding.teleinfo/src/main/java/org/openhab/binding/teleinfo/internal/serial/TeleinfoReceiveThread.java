@@ -45,7 +45,7 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
     }
 
     @Override
-    public void serialEvent(SerialPortEvent arg0) {
+    public void serialEvent(SerialPortEvent event) {
         try {
             logger.trace("RXTX library CPU load workaround, sleep forever");
             Thread.sleep(Long.MAX_VALUE);
@@ -57,45 +57,42 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
     public void run() {
         logger.debug("Starting Teleinfo thread: Receive");
         try (TeleinfoInputStream teleinfoStream = new TeleinfoInputStream(serialPort.getInputStream(),
-                TeleinfoInputStream.DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME * 10,
-                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME * 10)) {
+                TeleinfoInputStream.DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME * 100,
+                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME * 100)) {
             while (!interrupted()) {
                 try {
                     Frame nextFrame = teleinfoStream.readNextFrame();
                     listener.onFrameReceived(this, nextFrame);
-                } catch (TimeoutException e) {
-                    logger.error("Got timeout '{}' during receiving.", e.getLocalizedMessage());
-                    if (!listener.continueOnReadNextFrameTimeoutException(e)) {
-                        break;
-                    }
-                    skipInputStreamBuffer();
                 } catch (InvalidFrameException e) {
                     logger.error("Got invalid frame. Detail: '{}'", e.getLocalizedMessage());
                     listener.onInvalidFrameReceived(this, e);
-                } catch (IOException e) {
-                    logger.error("Got I/O exception. Detail: '{}'", e.getLocalizedMessage(), e);
-
-                    try {
-                        logger.debug("serialPort.getInputStream().available() = {}",
-                                serialPort.getInputStream().available());
-                    } catch (IOException e2) {
-                        logger.debug("serialPort.getInputStream().available() throws an IOException (message: {})",
-                                e2.getLocalizedMessage());
-                    }
-
-                    if (!listener.continueOnSerialPortInputStreamIOException(e)) {
+                } catch (TimeoutException e) {
+                    logger.error("Got timeout '{}' during receiving.", e.getLocalizedMessage());
+                    if (!listener.continueOnReadNextFrameTimeoutException(this, e)) {
                         break;
                     }
                     skipInputStreamBuffer();
+                } catch (IOException e) {
+                    logger.error("Got I/O exception. Detail: '{}'", e.getLocalizedMessage(), e);
+                    listener.OnSerialPortInputStreamIOException(this, e);
+                    break;
                 }
             }
         } catch (IOException e) {
-            logger.error("Exception during Teleinfo receive thread. ", e);
+            logger.error("An error occurred during serial port input stream opening", e);
         }
 
         logger.debug("Stopped Teleinfo receive thread");
 
         serialPort.removeEventListener();
+    }
+
+    public TeleinfoReceiveThreadListener getListener() {
+        return listener;
+    }
+
+    public void setListener(TeleinfoReceiveThreadListener listener) {
+        this.listener = listener;
     }
 
     @SuppressWarnings("null")
