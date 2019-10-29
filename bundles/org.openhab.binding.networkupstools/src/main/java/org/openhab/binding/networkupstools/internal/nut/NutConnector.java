@@ -93,14 +93,14 @@ class NutConnector {
                 } else {
                     return readFunction.apply(() -> readLine(localReader));
                 }
-            } catch (final NutException e) {
+            } catch (final NutException | RuntimeException e) {
                 retry--;
+                close();
                 if (retry == 0) {
                     throw e;
                 } else {
                     logger.debug("Error during command, retry: {}", retry, e);
                 }
-                close();
             }
         }
     }
@@ -137,6 +137,7 @@ class NutConnector {
         try {
             if (socket != null) {
                 socket.close();
+                socket = null;
             }
         } catch (final IOException e) {
             logger.debug("Closing socket failed", e);
@@ -145,10 +146,10 @@ class NutConnector {
 
     private void closeStreams() {
         try {
-            if (reader != null && !socket.isInputShutdown()) {
+            if (reader != null && socket != null && !socket.isInputShutdown()) {
                 reader.close();
             }
-            if (writer != null && !socket.isOutputShutdown()) {
+            if (writer != null && socket != null && !socket.isOutputShutdown()) {
                 writer.close();
             }
         } catch (final IOException e) {

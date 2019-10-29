@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.networkupstools.internal.nut;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -23,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @param <R> The type of the input value of the function
  */
 @FunctionalInterface
+@NonNullByDefault
 public interface NutFunction<T, R> {
 
     /**
