@@ -272,6 +272,7 @@ public class DeviceManager {
             case ceiling:
             case ceiling1:
             case ceiling3:
+            case ceiling4:
                 return "Yeelight LED Ceiling";
             case color:
                 return "Yeelight Color LED Bulb";
