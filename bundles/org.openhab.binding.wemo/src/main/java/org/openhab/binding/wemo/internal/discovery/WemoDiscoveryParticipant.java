@@ -18,9 +18,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
@@ -73,7 +75,7 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public ThingUID getThingUID(@Nullable RemoteDevice device) {
         if (device != null) {
             if (device.getDetails().getManufacturerDetails().getManufacturer() != null) {
                 if (device.getDetails().getManufacturerDetails().getManufacturer().toUpperCase().contains("BELKIN")) {
@@ -120,6 +122,11 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                             logger.debug("Discovered a WeMo Coffe Maker thing with UDN '{}'",
                                     device.getIdentity().getUdn().getIdentifierString());
                             return new ThingUID(THING_TYPE_COFFEE, device.getIdentity().getUdn().getIdentifierString());
+                        }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase().startsWith("dimmer")) {
+                            logger.debug("Discovered a WeMo Dimmer Switch thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_DIMMER, device.getIdentity().getUdn().getIdentifierString());
                         }
                     }
                 }

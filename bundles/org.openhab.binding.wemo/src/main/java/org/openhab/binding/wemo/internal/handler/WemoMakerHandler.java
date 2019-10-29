@@ -193,6 +193,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     /**
      * The {@link updateWemoState} polls the actual state of a WeMo Maker.
      */
+    @SuppressWarnings("null")
     protected void updateWemoState() {
         String action = "GetAttributes";
         String actionService = "deviceevent";

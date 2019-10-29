@@ -179,6 +179,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
         return this.wemoBridgeHandler;
     }
 
+    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -300,6 +301,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
      * The {@link getDeviceState} is used for polling the actual state of a WeMo Light and updating the according
      * channel states.
      */
+    @SuppressWarnings("null")
     public void getDeviceState() {
         logger.debug("Request actual state for LightID '{}'", wemoLightID);
         try {
@@ -348,6 +350,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     public void onServiceSubscribed(String service, boolean succeeded) {
     }
 
+    @SuppressWarnings("null")
     @Override
     public void onValueReceived(String variable, String value, String service) {
         logger.trace("Received pair '{}':'{}' (service '{}') for thing '{}'",
