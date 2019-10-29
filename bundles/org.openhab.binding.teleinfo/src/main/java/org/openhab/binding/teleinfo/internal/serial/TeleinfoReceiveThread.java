@@ -64,16 +64,16 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
                     Frame nextFrame = teleinfoStream.readNextFrame();
                     listener.onFrameReceived(this, nextFrame);
                 } catch (InvalidFrameException e) {
-                    logger.error("Got invalid frame. Detail: '{}'", e.getLocalizedMessage());
+                    logger.error("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());
                     listener.onInvalidFrameReceived(this, e);
                 } catch (TimeoutException e) {
-                    logger.error("Got timeout '{}' during receiving.", e.getLocalizedMessage());
+                    logger.error("Got timeout during frame reading. Detail: \"{}\"", e.getLocalizedMessage(), e);
                     if (!listener.continueOnReadNextFrameTimeoutException(this, e)) {
                         break;
                     }
-                    skipInputStreamBuffer();
+                    // skipInputStreamBuffer();
                 } catch (IOException e) {
-                    logger.error("Got I/O exception. Detail: '{}'", e.getLocalizedMessage(), e);
+                    logger.error("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
                     listener.OnSerialPortInputStreamIOException(this, e);
                     break;
                 }
