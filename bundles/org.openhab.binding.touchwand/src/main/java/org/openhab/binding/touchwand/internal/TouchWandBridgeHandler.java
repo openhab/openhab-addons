@@ -52,6 +52,8 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
     private Configuration config;
     private String host;
     private String port;
+    private int discoveryRefresh;
+    private boolean addSecondaryUnits;
 
     public TouchWandRestClient touchWandClient = new TouchWandRestClient();
 
@@ -67,6 +69,9 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
             InetAddress addr = InetAddress.getByName(config.get(HOST).toString()); // validate IP address
             host = config.get(HOST).toString();
             port = config.get(PORT).toString();
+            discoveryRefresh = Integer.parseInt((config.get(REFRESH).toString()));
+            addSecondaryUnits = Boolean.valueOf(config.get(ADD_SECONDARY_UNITS).toString());
+
         } catch (UnknownHostException e) {
             logger.warn("Bridge IP/PORT config is not set or not valid");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
@@ -98,6 +103,10 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
         // TODO Auto-generated method stub
 
+    }
+
+    public boolean isAddSecondaryControllerUnits() {
+        return addSecondaryUnits;
     }
 
 }

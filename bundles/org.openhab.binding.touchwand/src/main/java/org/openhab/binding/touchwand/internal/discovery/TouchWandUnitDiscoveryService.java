@@ -59,6 +59,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
     public TouchWandUnitDiscoveryService(TouchWandBridgeHandler touchWandBridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME, true);
         this.touchWandBridgeHandler = touchWandBridgeHandler;
+        removeOlderResults(getTimestampOfLastScan(), touchWandBridgeHandler.getThing().getUID());
         this.scanningRunnable = new TouchWandUnitScan();
         this.activate();
     }
@@ -67,6 +68,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
 
         if (touchWandBridgeHandler.touchWandClient == null) {
+            logger.warn("Could not scan units without bridge handler {}");
             return;
         }
 
@@ -88,6 +90,16 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                     String name = unitObj.get("name").getAsString();
                     String type = unitObj.get("type").getAsString();
                     String connectivity = unitObj.get("connectivity").getAsString();
+                    JsonElement idDataElement = unitObj.get("idData");
+                    if (!touchWandBridgeHandler.isAddSecondaryControllerUnits()) {
+                        if (!idDataElement.isJsonNull()) {
+                            if (!idDataElement.toString().equals("{}")) {
+                                logger.debug("Skipped secondary controller unit : {} idData {}", name,
+                                        idDataElement.toString());
+                                continue;
+                            }
+                        }
+                    }
                     TouchWandUnitData touchWandUnit = new TouchWandUnitData(unitId, name);
                     if (type.equals("Switch")) {
                         addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SWITCH);
@@ -97,27 +109,35 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                     logger.debug("id is {} name {} type {} connectivity {}", unitId, name, type, connectivity);
                 }
             }
-        } catch (JsonSyntaxException e) {
-            logger.warn("Could not parse list units response {}", e.getMessage());
+        } catch (
+
+        JsonSyntaxException msg) {
+            logger.warn("Could not parse list units response {}", msg);
         }
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        super.stopScan();
+        removeOlderResults(getTimestampOfLastScan());
     }
 
     public void activate() {
         super.activate(null);
         removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
-        logger.debug("activate");
+        logger.debug("activate discovery service");
     }
 
     @Override
     public void deactivate() {
         removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
         super.deactivate();
-        logger.warn("deactivate");
+        logger.debug("deactivate discovery services");
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.warn("Start TouchWand units background discovery");
+        logger.debug("Start TouchWand units background discovery");
         if (scanningJob == null || scanningJob.isCancelled()) {
             scanningJob = scheduler.scheduleWithFixedDelay(scanningRunnable, LINK_DISCOVERY_SERVICE_INITIAL_DELAY,
                     SCAN_INTERVAL, TimeUnit.SECONDS);
@@ -126,7 +146,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.warn("Stop TouchWand device units discovery");
+        logger.debug("Stop TouchWand device units discovery");
         if (scanningJob != null && !scanningJob.isCancelled()) {
             scanningJob.cancel(true);
             scanningJob = null;
@@ -147,7 +167,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>();
         properties.put("id", unit.getUnitId());
         properties.put("name", unit.getUnitName());
-        logger.debug("Discovered {}", thingUID);
         // @formatter:off
         thingDiscovered(DiscoveryResultBuilder.create(thingUID)
                 .withThingType(typeUID)

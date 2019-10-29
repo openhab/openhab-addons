@@ -78,6 +78,22 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
+    @Override
+    protected synchronized void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof TouchWandBridgeHandler) {
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+            if (serviceReg != null) {
+                // remove discovery service, if bridge handler is removed
+                TouchWandUnitDiscoveryService service = (TouchWandUnitDiscoveryService) bundleContext
+                        .getService(serviceReg.getReference());
+                serviceReg.unregister();
+                if (service != null) {
+                    service.deactivate();
+                }
+            }
+        }
+    }
+
     private synchronized void registerItemDiscoveryService(TouchWandBridgeHandler bridgeHandler) {
         TouchWandUnitDiscoveryService discoveryService = new TouchWandUnitDiscoveryService(bridgeHandler);
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext

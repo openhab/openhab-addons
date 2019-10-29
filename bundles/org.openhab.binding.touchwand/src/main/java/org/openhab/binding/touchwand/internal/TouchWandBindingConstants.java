@@ -48,6 +48,7 @@ public class TouchWandBindingConstants {
     public static final String USER = "username";
     public static final String PASS = "password";
     public static final String REFRESH = "refresh";
+    public static final String ADD_SECONDARY_UNITS = "addsecondaryunits";
 
     // commands
     public static final String SWITCH_STATUS_ON = "255";

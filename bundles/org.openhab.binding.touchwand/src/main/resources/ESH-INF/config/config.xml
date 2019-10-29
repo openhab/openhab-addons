@@ -39,7 +39,16 @@
 			<required>false</required>
 			<default>5</default>
 			<description>unit status refresh interval (seconds)</description>
-			<label>Refresh</label></parameter>
-
+			<label>Refresh</label>
+			<advanced>true</advanced>
+		</parameter>
+        <parameter name="addsecondaryunits" type="boolean">
+            <required>false</required>
+            <default>false</default>
+            <description>if the controller is primary , add seconaries unit as well</description>
+            <label>secondary</label>
+            <advanced>true</advanced>
+        </parameter>
+        
 		</config-description>		
 </config-description:config-descriptions>

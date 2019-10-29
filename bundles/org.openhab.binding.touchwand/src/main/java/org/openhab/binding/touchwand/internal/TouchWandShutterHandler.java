@@ -41,7 +41,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link TouchWandShutterHandler} is responsible for handling commands for Shutters
+ * The {@link TouchWandShutterHandler} is responsible for handling commands for Shutter units
  *
  * @author Roie Geron - Initial contribution
  *
