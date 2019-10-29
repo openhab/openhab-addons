@@ -17,7 +17,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.teleinfo.internal.reader.Frame;
 import org.openhab.binding.teleinfo.internal.reader.TeleinfoReader;
 import org.openhab.binding.teleinfo.internal.reader.TeleinfoReaderAdaptor;
@@ -61,7 +60,7 @@ public class TeleinfoSerialportReader extends TeleinfoReaderAdaptor {
 
         CommPortIdentifier portIdentifier;
         try {
-            logger.trace("serialPortName = " + serialPortName);
+            logger.trace("serialPortName = {}", serialPortName);
             System.setProperty("gnu.io.rxtx.SerialPorts", serialPortName); // Workaround to force serial port detection
                                                                            // on Linux
 
@@ -95,7 +94,7 @@ public class TeleinfoSerialportReader extends TeleinfoReaderAdaptor {
             logger.debug("set serial port parameters...");
             serialPort.setSerialPortParams(1200, SerialPort.DATABITS_7, SerialPort.STOPBITS_1, SerialPort.PARITY_EVEN);
 
-            logger.trace("getListeners().size() = " + getListeners().size());
+            logger.trace("getListeners().size() = {}", getListeners().size());
             if (getListeners().size() > 0) {
                 enableScheduler();
             }
@@ -192,46 +191,5 @@ public class TeleinfoSerialportReader extends TeleinfoReaderAdaptor {
         teleinfoSerialportReaderTimer.cancel();
 
         logger.trace("disableScheduler() [end]");
-    }
-
-    public static void main(String[] args) throws IOException, InterruptedException {
-        TeleinfoSerialportReader serialReader = new TeleinfoSerialportReader("/dev/tty.usbserial-DN04SF1T", 10 * 1000);
-        serialReader.addListener(new TeleinfoReaderListener() {
-            @Override
-            public void onOpening(TeleinfoReader reader) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onOpened(TeleinfoReader reader) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onFrameReceived(@NonNull TeleinfoReader reader, @NonNull Frame frame) {
-                System.out.println("frame = " + frame);
-            }
-
-            @Override
-            public void onClosing(TeleinfoReader reader) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onClosed(TeleinfoReader reader) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-
-        serialReader.open();
-
-        Thread.sleep(30000);
-
-        serialReader.close();
-        System.exit(0);
     }
 }

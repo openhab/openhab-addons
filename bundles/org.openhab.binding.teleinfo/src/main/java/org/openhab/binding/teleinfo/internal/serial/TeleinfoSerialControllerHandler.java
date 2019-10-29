@@ -142,7 +142,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             logger.error("Maximum retries reached");
             return false;
         } else {
-            logger.warn("Retry in progress (" + currentRetryCounter + "/" + SERIAL_PORT_MAX_RETRIES + ")...");
+            logger.warn("Retry in progress ({}/{})...", currentRetryCounter, SERIAL_PORT_MAX_RETRIES);
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
             try {
                 logger.warn("Next retry in " + SERIAL_PORT_DELAY_RETRY_IN_SECONDS + " seconds");

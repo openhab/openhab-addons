@@ -31,7 +31,7 @@ public class HhphcConverter implements Converter {
     public Object convert(String value) throws ConvertionException {
         logger.debug("convert(String) [start]");
         if (logger.isTraceEnabled()) {
-            logger.trace("value = " + value);
+            logger.trace("value = {}", value);
         }
 
         Hhphc convertedValue = null;
