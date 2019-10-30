@@ -35,7 +35,6 @@ This binding supports the following thing types
 | Feeder Device   | Thing      | Automatic |  A pet feeder                                                            |
 | Pet             | Thing      | Automatic |  A pet (dog or cat)                                                      |
 
-
 ## Getting started /  Discovery
 
 The binding consists of a Bridge (the API connection), and a number of Things, which relates to the individual hardware devices and pets.
@@ -55,7 +54,6 @@ Channel names in **bold** are read/write, everything else is read-only
 | online      | Switch | Parameter indicating if the bridge has a valid connection to the Sure Petcare API |
 | **refresh** | Switch | Trigger switch to force a full cache update                                       |
 
-
 ### Household Thing
 
 | Channel    | Type     | Description                                  |
@@ -63,8 +61,6 @@ Channel names in **bold** are read/write, everything else is read-only
 | id         | Number   | A unique id assigned by the Sure Petcare API |
 | name       | Text     | The name of the household                    |
 | timezoneId | Number   | The id of the household's timezone           |
-| createdAt  | DateTime | The date when the household was created      |
-| updatedAt  | DateTime | The date when the household was last updated |
 
 ### Hub Device Thing
 
@@ -75,13 +71,7 @@ Channel names in **bold** are read/write, everything else is read-only
 | product         | Text     | The type of product (1=hub)                                           |
 | **ledMode**     | Text     | The mode of the hub's LED ears                                        |
 | pairingMode     | Text     | The state of pairing                                                  |
-| hardwareVersion | Number   | The hub's hardware version number                                     |
-| firmwareVersion | Number   | The hub's firmware number                                             |
 | online          | Switch   | Indicator if the hub is connected to the internet                     |
-| serialNumber    | Text     | The serial number of the device                                       |
-| macAddress      | Text     | The mac address of the device                                         |
-| createdAt       | DateTime | The date when the device was created (could be the manufactured date) |
-| updatedAt       | DateTime | The date when the device was last updated (device settings changed)   |
 
 ### Flap Device Thing (Cat or Pet Flap)
 
@@ -103,19 +93,12 @@ Channel names in **bold** are read/write, everything else is read-only
 | **curfewLockTime4**   | Text     | The curfew #4 locking time (HH:MM)                                    |
 | **curfewUnlockTime4** | Text     | The curfew #4 unlocking time (HH:MM)                                  |
 | **lockingMode**       | Text     | The locking mode (e.g. in/out, in-only, out-only etc.)                |
-| hardwareVersion       | Number   | The flap's hardware version number                                    |
-| firmwareVersion       | Number   | The flap's firmware number                                            |
 | online                | Switch   | Indicator if the flap is connected to the hub                         |
 | lowBattery            | Switch   | Indicator if the battery voltage is low                               |
 | batteryLevel          | Number   | The battery voltage percentage                                        |
 | batteryVoltage        | Number   | The absolute battery voltage measurement                              |
 | deviceRSSI            | Number   | The received device signal strength in dB                             |
 | hubRSSI               | Number   | The received hub signal strength in dB                                |
-| serialNumber          | Text     | The serial number of the device                                       |
-| macAddress            | Text     | The mac address of the device                                         |
-| createdAt             | DateTime | The date when the device was created (could be the manufactured date) |
-| updatedAt             | DateTime | The date when the device was last updated (device settings changed)   |
-| pairingAt             | Datetime | The date when the device was included in the hub device               |
 
 ### Feeder Device Thing
 
@@ -124,19 +107,12 @@ Channel names in **bold** are read/write, everything else is read-only
 | id                | Number      | A unique id assigned by the Sure Petcare API                                                    |
 | name              | Text        | The name of the feeder                                                                          |
 | product           | Text        | The type of product                                                                             |
-| hardwareVersion   | Number      | The feeder's hardware version number                                                            |
-| firmwareVersion   | Number      | The feeder's firmware number                                                                    |
 | online            | Switch      | Indicator if the feeder is connected to the hub                                                 |
 | lowBattery        | Switch      | Indicator if the battery voltage is low                                                         |
 | batteryLevel      | Number      | The battery voltage percentage                                                                  |
 | batteryVoltage    | Number      | The absolute battery voltage measurement                                                        |
 | deviceRSSI        | Number      | The received device signal strength in dB                                                       |
 | hubRSSI           | Number      | The received hub signal strength in dB                                                          |
-| serialNumber      | Text        | The serial number of the device                                                                 |
-| macAddress        | Text        | The mac address of the device                                                                   |
-| createdAt         | DateTime    | The date when the device was created (could be the manufactured date)                           |
-| updatedAt         | DateTime    | The date when the device was last updated (device settings changed)                             |
-| pairingAt         | Datetime    | The date when the device was included in the hub device                                         |
 | bowls             | Text        | The feeder bowls type (1 big bowl or 2 half bowls)                                              |
 | bowlsFood         | Text        | The feeder big bowl food type (wet food, dry food or both)                                      |
 | bowlsTarget       | Number:Mass | The feeder big bowl target weight in gram (even if user setting is oz, API stores this in gram) |
@@ -149,27 +125,27 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### Pet Thing
 
-| Channel                | Type        | Description                                                      |
-|------------------------|-------------|------------------------------------------------------------------|
-| id                     | Number      | A unique id assigned by the Sure Petcare API                     |
-| name                   | Text        | The name of the pet                                              |
-| comment                | Text        | A user provided comment/description                              |
-| gender                 | Text        | The pet's gender                                                 |
-| breed                  | Text        | The pet's breed                                                  |
-| species                | Text        | The pet's species                                                |
-| photo                  | Image       | The image of the pet                                             |
-| tagIdentifier          | Text        | The unique identifier of the pet's micro chip or collar tag      |
-| **location**           | Text        | The current location of the pet (0=unknown, 1=inside, 2=outside) |
-| locationChanged        | DateTime    | The time when the location was last changed                      |
-| locationChangedThrough | Text        | The device name or username where the pet left/entered the house |
-| weight                 | Number:Mass | The pet's weight (in kilogram)                                   |
-| dateOfBirth            | DateTime    | The pet's date of birth                                          |
-| feederDevice           | Text        | The device from which the pet last ate                           |
-| feederLastChange       | Number:Mass | The last eaten change in gram (big bowl)                         |
-| feederLastChangeLeft   | Number:Mass | The last eaten change in gram (half bowl left)                   |
-| feederLastChangeRight  | Number:Mass | The last eaten change in gram (half bowl right)                  |
-| feederLastFeeding      | DateTime    | The pet's last eaten date                                        |
-
+| Channel                | Type        | Description                                                                         |
+|------------------------|-------------|-------------------------------------------------------------------------------------|
+| id                     | Number      | A unique id assigned by the Sure Petcare API                                        |
+| name                   | Text        | The name of the pet                                                                 |
+| comment                | Text        | A user provided comment/description                                                 |
+| gender                 | Text        | The pet's gender                                                                    |
+| breed                  | Text        | The pet's breed                                                                     |
+| species                | Text        | The pet's species                                                                   |
+| photo                  | Image       | The image of the pet                                                                |
+| tagIdentifier          | Text        | The unique identifier of the pet's micro chip or collar tag                         |
+| **location**           | Text        | The current location of the pet (0=unknown, 1=inside, 2=outside)                    |
+| locationChanged        | DateTime    | The time when the location was last changed                                         |
+| **locationTimeoffset** | String      | Time-Command to set the pet location with a time offset. (10, 30 or 60 minutes ago) |
+| locationChangedThrough | Text        | The device name or username where the pet left/entered the house                    |
+| weight                 | Number:Mass | The pet's weight (in kilogram)                                                      |
+| dateOfBirth            | DateTime    | The pet's date of birth                                                             |
+| feederDevice           | Text        | The device from which the pet last ate                                              |
+| feederLastChange       | Number:Mass | The last eaten change in gram (big bowl)                                            |
+| feederLastChangeLeft   | Number:Mass | The last eaten change in gram (half bowl left)                                      |
+| feederLastChangeRight  | Number:Mass | The last eaten change in gram (half bowl right)                                     |
+| feederLastFeeding      | DateTime    | The pet's last eaten date                                                           |
 
 ## Manual configuration
 
@@ -204,8 +180,6 @@ Switch  UR_1a_Refresh   "Bridge Data Refresh [%s]"  (dgPet) {channel="surepetcar
 Number      UR_1b_Id            "Household Id [%d]"                 (dgPet) {channel="surepetcare:household:bridge1:12345:id"}
 String      UR_1b_Name          "Household Name [%s]"               (dgPet) {channel="surepetcare:household:bridge1:12345:name"}
 Number      UR_1b_TimezoneId    "Household Timezone Id [%d]"        (dgPet) {channel="surepetcare:household:bridge1:12345:timezoneId"}
-DateTime    UR_1b_CreatedAt_1   "[%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:household:bridge1:12345:createdAt"}
-DateTime    UR_1b_UpdatedAt_1   "[%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:household:bridge1:12345:updatedAt"}
 
 /* *****************************************
  * Hub
@@ -215,12 +189,6 @@ String      UR_1c_Name              "Hub Name [%s]"                             
 String      UR_1c_Product           "Hub Product [%s]"                              (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:product"}
 String      UR_1c_LEDMode           "Hub LED Mode [%s]"                             (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:ledMode"}
 String      UR_1c_PairingMode       "Hub Pairing Mode [%s]"                         (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:pairingMode"}
-DateTime    UR_1c_CreatedAt         "Hub Created [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:createdAt"}
-DateTime    UR_1c_UpdatedAt         "Hub Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:updatedAt"}
-String      UR_1c_Serial            "Hub Serial [%s]"                               (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:serialNumber"}
-String      UR_1c_Mac               "Hub Mac [%s]"                                  (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:macAddress"}
-Number      UR_1c_HardwareVersion   "Hub Hardware Version [%s]"                     (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:hardwareVersion"}
-Number      UR_1c_FirmwareVersion   "Hub Firmware Version [%s]"                     (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:firmwareVersion"}
 Switch      UR_1c_Online            "Hub Online [%s]"                               (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:online"}
  
 /* *****************************************
@@ -229,11 +197,6 @@ Switch      UR_1c_Online            "Hub Online [%s]"                           
 Number      UR_1d_Id                "Flap Id [%d]"                              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:id"}
 String      UR_1d_Name              "Flap Name [%s]"                            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:name"}
 String      UR_1d_Product           "Flap Product [%s]"                         (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:product"}
-String      UR_1d_Serial_1          "Flap Serial [%s]"                          (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:serialNumber"}
-String      UR_1d_Mac_1             "Flap Mac [%s]"                             (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:macAddress"}
-DateTime    UR_1d_CreatedAt_1       "Created [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:createdAt"}
-DateTime    UR_1d_UpdatedAt_1       "Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:updatedAt"}
-DateTime    UR_1d_PairingAt_1       "Pairing [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:pairingAt"}
 Switch      UR_1d_CurfewEnabled1    "Flap Curfew 1 Enabled [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewEnabled1"}
 String      UR_1d_CurfewLockTime1   "Flap Curfew 1 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime1"}
 String      UR_1d_CurfewUnlockTime1 "Flap Curfew 1 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime1"}
@@ -247,8 +210,6 @@ Switch      UR_1d_CurfewEnabled4    "Flap Curfew 4 Enabled [%s]"                
 String      UR_1d_CurfewLockTime4   "Flap Curfew 4 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime4"}
 String      UR_1d_CurfewUnlockTime5 "Flap Curfew 4 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime4"}
 String      UR_1d_LockingMode       "Flap Locking Mode [%s]"                    (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:lockingMode"}
-Number      UR_1d_HardwareVersion   "Flap Hardware Version [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:hardwareVersion"}
-Number      UR_1d_FirmwareVersion   "Flap Firmware Version [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:firmwareVersion"}
 Switch      UR_1d_LowBattery        "Flap Low Battery [%s]"                     (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:lowBattery"}
 Number      UR_1d_BatteryLevel      "Flap Battery Level [%.0f %%]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:batteryLevel"}
 Number      UR_1d_BatteryVoltage    "Flap Battery Voltage [%.1f V]"             (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:batteryVoltage"}
@@ -286,16 +247,9 @@ DateTime    UR_1e_FeedAt            "Last Feeding [%1$ta. %1$tH:%1$tM]"     (dgP
 Number      UR_1f_Id                    "Feeder ID [%s]"                            (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:id"}
 String      UR_1f_Name                  "Feeder Name [%s]"                          (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:name"}
 String      UR_1f_Product               "Feeder Product [%s]"                       (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:product"}
-Number      UR_1f_Hardware              "Feeder Hardware [%s]"                      (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:hardwareVersion"}
-Number      UR_1f_Firmware              "Feeder Firmware [%s]"                      (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:firmwareVersion"}
 Switch      UR_1f_LowBattery            "Feeder Low Battery [%s]"                   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:lowBattery"}
 Number      UR_1f_BatteryLevel          "Feeder Battery Level [%.0f %%]"            (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:batteryLevel"}
 Number      UR_1f_BatteryVoltage        "Feeder Battery Voltage [%.2f V]"           (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:batteryVoltage"}
-String      UR_1f_Serial                "Feeder Serial [%s]"                        (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:serialNumber"}
-String      UR_1f_Mac                   "Feeder Mac [%s]"                           (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:macAddress"}
-DateTime    UR_1f_CreatedAt             "Created [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:createdAt"}
-DateTime    UR_1f_UpdatedAt             "Updated [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:updatedAt"}
-DateTime    UR_1f_PairingAt             "Pairing [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:pairingAt"}
 String      UR_1f_BowlsType             "Feeder Bowls Type [%s]"                    (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowls"}
 String      UR_1f_BowlsFoodtype         "Feeder Food Type [%s]"                     (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsFood"}
 Number:Mass UR_1f_BowlsTarget           "Feeder Target [%.0f %unit%]"               (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsTarget"}
@@ -402,7 +356,7 @@ sitemap surepetcare label="My home automation" {
 
 ```
 
-## Using Group Items
+### Using Group Items
 
 You can also set pet locations with a group item. Please Note: the location for each pet gets updated only if the current location is not already the location you want to set. This can be very useful if you have alot of pets that often enter the home by any window/door.
 Your .items file should contain this:
