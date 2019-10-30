@@ -13,12 +13,14 @@
 
 package org.openhab.binding.touchwand.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link TouchWandUnitData} implements unit property.
  *
  * @author Roie Geron - Initial contribution
  */
-
+@NonNullByDefault
 public class TouchWandUnitData {
 
     private String name;
@@ -28,11 +30,18 @@ public class TouchWandUnitData {
     private String connectivity;
     private String status;
     private int errorCode;
-    private int idData;
+    private String idData;
     private String currStatus;
 
     public TouchWandUnitData(String id, String name) {
         nodeId = id;
+        type = "";
+        epId = 0;
+        connectivity = "";
+        status = "";
+        errorCode = 0;
+        idData = "";
+        currStatus = "";
         this.name = name;
     }
 
@@ -48,11 +57,11 @@ public class TouchWandUnitData {
         return connectivity;
     }
 
-    public int getIdData() {
+    public String getIdData() {
         return idData;
     }
 
-    public void setIdData(int idData) {
+    public void setIdData(String idData) {
         this.idData = idData;
     }
 

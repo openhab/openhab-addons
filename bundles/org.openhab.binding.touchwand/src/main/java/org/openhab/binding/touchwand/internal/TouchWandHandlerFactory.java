@@ -22,8 +22,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -32,9 +32,11 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.touchwand.internal.discovery.TouchWandUnitDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link TouchWandHandlerFactory} is responsible for creating things and thing
@@ -43,7 +45,6 @@ import org.osgi.service.component.annotations.Component;
  * @author Roie Geron - Initial contribution
  */
 
-@NonNullByDefault
 @Component(configurationPid = "binding.touchwand", service = ThingHandlerFactory.class)
 public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
 
@@ -56,6 +57,8 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
                             TouchWandBridgeHandler.SUPPORTED_THING_TYPES.stream())
                     .flatMap(i -> i).collect(Collectors.toSet()));
 
+    private HttpClient httpClient;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -66,7 +69,7 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            TouchWandBridgeHandler handler = new TouchWandBridgeHandler((Bridge) thing);
+            TouchWandBridgeHandler handler = new TouchWandBridgeHandler((Bridge) thing, httpClient);
             registerItemDiscoveryService(handler);
             return handler;
         } else if (THING_TYPE_SWITCH.equals(thingTypeUID)) {
@@ -92,6 +95,15 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
     }
 
     private synchronized void registerItemDiscoveryService(TouchWandBridgeHandler bridgeHandler) {

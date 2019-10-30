@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -42,10 +42,6 @@ import org.slf4j.LoggerFactory;
 
 public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
 
-    public TouchWandBridgeHandler(Bridge bridge) {
-        super(bridge);
-    }
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(TouchWandBridgeHandler.class);
 
@@ -55,7 +51,14 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
     private int discoveryRefresh;
     private boolean addSecondaryUnits;
 
-    public TouchWandRestClient touchWandClient = new TouchWandRestClient();
+    public TouchWandRestClient touchWandClient;
+    private HttpClient httpClient;
+
+    public TouchWandBridgeHandler(Bridge bridge, HttpClient httpClient) {
+        super(bridge);
+        this.httpClient = httpClient;
+        touchWandClient = new TouchWandRestClient(httpClient);
+    }
 
     @Override
     public void initialize() {
@@ -94,15 +97,12 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     @Override
-    public @NonNull Collection<@NonNull ConfigStatusMessage> getConfigStatus() {
-        // TODO Auto-generated method stub
+    public Collection<ConfigStatusMessage> getConfigStatus() {
         return Collections.emptyList();
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
-        // TODO Auto-generated method stub
-
+    public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
     public boolean isAddSecondaryControllerUnits() {

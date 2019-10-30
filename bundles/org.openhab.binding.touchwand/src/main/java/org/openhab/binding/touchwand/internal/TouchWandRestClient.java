@@ -15,16 +15,24 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+//import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentProvider;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,26 +54,30 @@ public class TouchWandRestClient {
     private String touchWandPort;
     private boolean isConnected = false;
 
-    public static final String METHOD_GET = "GET";
-    public static final String METHOD_POST = "POST";
+    private static final HttpMethod METHOD_GET = HttpMethod.GET;
+    private static final HttpMethod METHOD_POST = HttpMethod.POST;
 
-    public static final String CMD_LOGIN = "login";
-    public static final String CMD_LIST_UNITS = "listunits";
-    public static final String CMD_LIST_SCENARIOS = "listsencarios";
-    public static final String CMD_UNIT_ACTION = "action";
-    public static final String CMD_GET_UNIT_BY_ID = "getunitbyid";
+    private static final String CMD_LOGIN = "login";
+    private static final String CMD_LIST_UNITS = "listunits";
+    private static final String CMD_LIST_SCENARIOS = "listsencarios";
+    private static final String CMD_UNIT_ACTION = "action";
+    private static final String CMD_GET_UNIT_BY_ID = "getunitbyid";
 
-    public static final String ACTION_SWITCH_OFF = "{\"id\":%s,\"value\":" + SWITCH_STATUS_OFF + "}";
-    public static final String ACTION_SWITCH_ON = "{\"id\":%s,\"value\":" + SWITCH_STATUS_ON + "}";
-    public static final String ACTION_SHUTTER_DOWN = "{\"id\":%s,\"value\":0,\"type\":\"height\"}";
-    public static final String ACTION_SHUTTER_UP = "{\"id\":%s,\"value\":255,\"type\":\"height\"}";
-    public static final String ACTION_SHUTTER_STOP = "{\"id\":%s,\"value\":0,\"type\":\"stop\"}";
-    public static final String ACTION_SHUTTER_POSITION = "{\"id\":%s,\"value\":%s}";
+    private static final String ACTION_SWITCH_OFF = "{\"id\":%s,\"value\":" + SWITCH_STATUS_OFF + "}";
+    private static final String ACTION_SWITCH_ON = "{\"id\":%s,\"value\":" + SWITCH_STATUS_ON + "}";
+    private static final String ACTION_SHUTTER_DOWN = "{\"id\":%s,\"value\":0,\"type\":\"height\"}";
+    private static final String ACTION_SHUTTER_UP = "{\"id\":%s,\"value\":255,\"type\":\"height\"}";
+    private static final String ACTION_SHUTTER_STOP = "{\"id\":%s,\"value\":0,\"type\":\"stop\"}";
+    private static final String ACTION_SHUTTER_POSITION = "{\"id\":%s,\"value\":%s}";
+
+    private static final String CONTENT_TYPE_APPLICATION_JSON = MimeTypes.Type.APPLICATION_JSON.asString();
 
     private static final int timeout = 10000; // 10 seconds
     private Map<String, String> commandmap = new HashMap<String, String>();
 
-    public TouchWandRestClient() {
+    private HttpClient httpClient = null;
+
+    public TouchWandRestClient(HttpClient httpClient) {
 
         commandmap.put(CMD_LOGIN, "/auth/login?");
         commandmap.put(CMD_LIST_UNITS, "/units/listUnits");
@@ -73,8 +85,7 @@ public class TouchWandRestClient {
         commandmap.put(CMD_UNIT_ACTION, "/units/action");
         commandmap.put(CMD_GET_UNIT_BY_ID, "/units/getUnitByID?");
 
-        CookieHandler.setDefault(cookieManager);
-
+        this.httpClient = httpClient;
     }
 
     public final boolean connect(String user, String pass, String ipAddr, String port) {
@@ -90,11 +101,9 @@ public class TouchWandRestClient {
 
         String command = buildUrl(CMD_LOGIN) + "user=" + user + "&" + "psw=" + pass;
         String response = sendCommand(command, METHOD_GET, null);
-
         if (response != null) {
             return true;
         }
-
         return false;
     }
 
@@ -102,12 +111,15 @@ public class TouchWandRestClient {
 
         String command = buildUrl(CMD_LIST_UNITS);
         String response = sendCommand(command, METHOD_GET, null);
+
         return response;
     }
 
     public String cmdGetUnitById(String id) {
+
         String command = buildUrl(CMD_GET_UNIT_BY_ID) + "id=" + id;
         String response = sendCommand(command, METHOD_GET, null);
+
         return response;
     }
 
@@ -156,47 +168,32 @@ public class TouchWandRestClient {
         return url;
     }
 
-    private String sendCommand(String command, String Method, String content) {
+    @SuppressWarnings("null")
+    private String sendCommand(String command, HttpMethod method, String content) {
+        ContentResponse response;
+        Request request;
 
-        HttpURLConnection connection;
-        String response = null;
-
+        URL url = null;
         try {
-            URL url = new URL(command);
-
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(timeout);
-            if (Method.equals("POST")) {
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json");
-                connection.setDoOutput(true);
-            } else if (Method.equals("GET")) {
-                connection.setRequestMethod("GET");
-            }
-
-            connection.connect();
-
-            if (Method.equals("POST") && (content != null)) {
-                byte[] postDataBytes = content.toString().getBytes("UTF-8");
-                connection.getOutputStream().write(postDataBytes);
-            }
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder stringBuilder = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line + "\n");
-            }
-
-            response = stringBuilder.toString();
-            logger.debug("Return string {}", response);
-
-        } catch (IOException e) {
-            logger.warn("Error open connecton to {} : {} ", touchWandIpAddr, e.getMessage());
+            url = new URL(command);
+        } catch (MalformedURLException e) {
+            logger.warn("Error building URL {} : {}", command, e.getMessage());
         }
 
-        return response;
+        request = httpClient.newRequest(url.toString()).timeout(timeout, TimeUnit.SECONDS).method(method);
+        if (method.equals(METHOD_POST) && (content != null)) {
+            ContentProvider contentProvider = new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON, content,
+                    StandardCharsets.UTF_8);
+            request = request.content(contentProvider);
+        }
 
+        try {
+            response = request.send();
+            logger.debug("Return string {}", response.getContentAsString());
+            return response.getContentAsString();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Error open connecton to {} : {} ", touchWandIpAddr, e.getMessage());
+        }
+        return null;
     }
-
 }
