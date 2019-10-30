@@ -61,7 +61,8 @@ public class A1EnvironmentalSensorHandler extends BroadlinkHandler{
         logger.warn("Channel {} cannot handle command {}",channelUID, command);
     }
 
-    private void refreshData() {
+    @Override
+    protected void refreshData() {
         try {
             EnvData envData = a1Device.getSensorsData();
             logger.debug("Retrieved data from device {}: {}", thing.getUID(), envData);

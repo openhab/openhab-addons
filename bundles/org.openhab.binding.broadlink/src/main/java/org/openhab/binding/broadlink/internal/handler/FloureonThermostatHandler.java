@@ -58,10 +58,7 @@ public class FloureonThermostatHandler extends BroadlinkHandler {
             updateStatus(ThingStatus.OFFLINE);
         }
 
-        authenticate();
 
-        // schedule a new scan every minute
-        scanJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, 1, TimeUnit.MINUTES);
     }
 
     @Override
@@ -129,7 +126,8 @@ public class FloureonThermostatHandler extends BroadlinkHandler {
         }
     }
 
-    private void refreshData() {
+    @Override
+    protected void refreshData() {
         try {
             BaseStatusInfo baseStatusInfo = floureonDevice.getBasicStatus();
             if(baseStatusInfo == null){

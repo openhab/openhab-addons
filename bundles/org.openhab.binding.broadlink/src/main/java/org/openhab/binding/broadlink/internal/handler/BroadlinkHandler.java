@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The {@link BroadlinkHandler} is the device handler class for a broadlink device.
@@ -58,8 +59,10 @@ public abstract class BroadlinkHandler extends BaseThingHandler {
     }
 
     protected void authenticate(){
+        logger.debug("Authenticating with broadlink device {}...",thing.getLabel());
         try {
             if (blDevice.auth()) {
+                logger.debug("Authentication for device {} successful", thing.getLabel());
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
@@ -68,7 +71,15 @@ public abstract class BroadlinkHandler extends BaseThingHandler {
         }
     }
 
+    @Override
+    public void initialize() {
+        authenticate();
 
+        // schedule a new scan every minute
+        scanJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, 1, TimeUnit.MINUTES);
+    }
+
+    protected void refreshData(){}
 
     @Override
     public void dispose() {
