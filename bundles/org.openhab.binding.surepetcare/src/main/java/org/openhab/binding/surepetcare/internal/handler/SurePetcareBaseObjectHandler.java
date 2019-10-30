@@ -57,7 +57,6 @@ public abstract class SurePetcareBaseObjectHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("BaseObjectHandler handleCommand called with command: {}", command);
         if (command instanceof RefreshType) {
             updateThingCache.getValue();
         }

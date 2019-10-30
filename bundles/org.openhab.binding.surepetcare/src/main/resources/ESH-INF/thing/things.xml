@@ -161,6 +161,7 @@
 			<channel id="tagIdentifier" typeId="tagIdentifierType" />
 			<channel id="location" typeId="locationType" />
 			<channel id="locationChanged" typeId="locationChangedType" />
+			<channel id="locationTimeoffset" typeId="locationTimeoffsetType" />
 			<channel id="locationChangedThrough" typeId="locationChangedThroughType" />
 			<channel id="dateOfBirth" typeId="dateOfBirthType" />
 			<channel id="weight" typeId="weightType" />
@@ -335,9 +336,10 @@
 	<channel-type id="locationType">
 		<item-type>String</item-type>
 		<label>Location</label>
-		<description>The current location of the pet (inside or outside)</description>
+		<description>The current location of the pet (inside/outside or unknown)</description>
 		<state readOnly="false">
 			<options>
+				<option value="0">0</option>
 				<option value="1">1</option>
 				<option value="2">2</option>
 			</options>
@@ -349,6 +351,19 @@
 		<label>Last Location Change Time</label>
 		<description>The time when the pet location has last changed</description>
 		<state readOnly="true" pattern="%1$tF %1$tR"></state>
+	</channel-type>
+
+	<channel-type id="locationTimeoffsetType">
+		<item-type>String</item-type>
+		<label>Location Update with Time Offset</label>
+		<description>The location update of the pet with time offset (10, 30, 60 minutes ago.)</description>
+		<state readOnly="false">
+			<options>
+				<option value="10">10</option>
+				<option value="30">30</option>
+				<option value="60">60</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="locationChangedThroughType">

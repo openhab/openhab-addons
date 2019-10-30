@@ -220,13 +220,14 @@ public class SurePetcareAPIHelper {
     /**
      * Updates the pet location through an API call to the Sure Petcare API.
      *
-     * @param pet the pet
+     * @param pet           the pet
      * @param newLocationId the id of the new location
      * @throws SurePetcareApiException
      */
-    public synchronized void setPetLocation(SurePetcarePet pet, Integer newLocationId) throws SurePetcareApiException {
+    public synchronized void setPetLocation(SurePetcarePet pet, Integer newLocationId, Date newSince)
+            throws SurePetcareApiException {
         pet.getPetStatus().getActivity().setWhere(newLocationId);
-        pet.getPetStatus().getActivity().setSince(new Date());
+        pet.getPetStatus().getActivity().setSince(newSince);
         String url = PET_BASE_URL + "/" + pet.getId().toString() + "/position";
         setDataThroughApi(url, HttpMethod.POST, pet.getPetStatus().getActivity());
     }
@@ -234,7 +235,7 @@ public class SurePetcareAPIHelper {
     /**
      * Updates the device locking mode through an API call to the Sure Petcare API.
      *
-     * @param device the device
+     * @param device           the device
      * @param newLockingModeId the id of the new locking mode
      * @throws SurePetcareApiException
      */
@@ -256,7 +257,7 @@ public class SurePetcareAPIHelper {
     /**
      * Updates the device led mode through an API call to the Sure Petcare API.
      *
-     * @param device the device
+     * @param device       the device
      * @param newLedModeId the id of the new led mode
      * @throws SurePetcareApiException
      */
@@ -278,7 +279,7 @@ public class SurePetcareAPIHelper {
     /**
      * Updates all curfews through an API call to the Sure Petcare API.
      *
-     * @param device the device
+     * @param device     the device
      * @param curfewList the list of curfews
      * @throws SurePetcareApiException
      */
@@ -324,7 +325,7 @@ public class SurePetcareAPIHelper {
      * Returns a unique device id used during the authentication process with the Sure Petcare API. The id is derived
      * from the local MAC address or hostname provided as arguments
      *
-     * @param interfaces a list of interface of this host
+     * @param interfaces       a list of interface of this host
      * @param localHostAddress the ip address of the localhost
      * @return a unique device id
      */
@@ -396,9 +397,9 @@ public class SurePetcareAPIHelper {
     /**
      * Sends a given object as a JSON payload to the API.
      *
-     * @param url the URL
+     * @param url           the URL
      * @param requestMethod the request method (POST, PUT etc.)
-     * @param payload an object used for the payload
+     * @param payload       an object used for the payload
      * @throws SurePetcareApiException
      */
     private void setDataThroughApi(String url, HttpMethod method, Object payload) throws SurePetcareApiException {
@@ -448,8 +449,8 @@ public class SurePetcareAPIHelper {
     /**
      * Uses the given request method to send a JSON string to an API.
      *
-     * @param url the URL
-     * @param method the required request method (POST, PUT etc.)
+     * @param url         the URL
+     * @param method      the required request method (POST, PUT etc.)
      * @param jsonPayload the JSON string
      * @throws SurePetcareApiException
      */

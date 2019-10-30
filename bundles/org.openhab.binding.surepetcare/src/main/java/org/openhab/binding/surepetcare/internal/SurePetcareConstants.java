@@ -99,6 +99,7 @@ public class SurePetcareConstants {
     public static final String PET_CHANNEL_PHOTO = "photo";
     public static final String PET_CHANNEL_LOCATION = "location";
     public static final String PET_CHANNEL_LOCATION_CHANGED = "locationChanged";
+    public static final String PET_CHANNEL_LOCATION_TIMEOFFSET = "locationTimeoffset";
     public static final String PET_CHANNEL_LOCATION_CHANGED_THROUGH = "locationChangedThrough";
     public static final String PET_CHANNEL_DATE_OF_BIRTH = "dateOfBirth";
     public static final String PET_CHANNEL_WEIGHT = "weight";

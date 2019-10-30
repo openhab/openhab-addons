@@ -59,8 +59,6 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("DeviceHandler handleCommand called with command: {}", command.toFullString());
-
         if (command instanceof RefreshType) {
             synchronized (petcareAPI) {
                 updateThingCache.getValue();

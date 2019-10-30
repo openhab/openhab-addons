@@ -15,6 +15,8 @@ package org.openhab.binding.surepetcare.internal.handler;
 import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
 import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Mass;
 
@@ -48,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * The {@link SurePetcarePetHandler} is responsible for handling the things created to represent Sure Petcare pets.
  *
  * @author Rene Scherer - Initial Contribution
- * @author Holger Eisold - Added pet feeder status
+ * @author Holger Eisold - Added pet feeder status, location time offset
  */
 @NonNullByDefault
 public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
@@ -65,8 +67,6 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("PetHandler handleCommand called with command: {}", command);
-
         if (command instanceof RefreshType) {
             updateThingCache.getValue();
         } else {
@@ -78,19 +78,64 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                             SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
                             if (pet != null) {
                                 String newLocationIdStr = ((StringType) command).toString();
+                                Integer newLocationId = Integer.valueOf(newLocationIdStr);
+                                // Only update if location has changed. (Needed for Group:Switch item)
+                                if ((pet.getPetStatus().getActivity().getWhere().equals(newLocationId))
+                                        || newLocationId.equals(0)) {
+                                    logger.debug("Location has not changed, skip pet id: {} with loc id: {}",
+                                            pet.getId(), newLocationId);
+                                } else {
+                                    try {
+                                        logger.debug("Received new location: {}", newLocationId);
+                                        petcareAPI.setPetLocation(pet, newLocationId, new Date());
+                                        updateState(PET_CHANNEL_LOCATION,
+                                                new StringType(pet.getPetStatus().getActivity().getWhere().toString()));
+                                        updateState(PET_CHANNEL_LOCATION_CHANGED, new DateTimeType(
+                                                pet.getPetStatus().getActivity().getLocationChanged()));
+                                    } catch (NumberFormatException e) {
+                                        logger.warn("Invalid location id: {}, ignoring command", newLocationIdStr);
+                                    } catch (SurePetcareApiException e) {
+                                        logger.warn("Error from SurePetcare API. Can't update location {} for pet {}",
+                                                newLocationIdStr, pet);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case PET_CHANNEL_LOCATION_TIMEOFFSET:
+                    logger.debug("Received location time offset update command: {}", command.toFullString());
+                    if (command instanceof StringType) {
+                        synchronized (petcareAPI) {
+                            SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
+                            if (pet != null) {
+                                String commandIdStr = ((StringType) command).toString();
                                 try {
-                                    Integer newLocationId = Integer.valueOf(newLocationIdStr);
-                                    logger.debug("Received new location: {}", newLocationId);
-                                    petcareAPI.setPetLocation(pet, newLocationId);
+                                    Integer commandId = Integer.valueOf(commandIdStr);
+                                    Integer currentLocation = pet.getPetStatus().getActivity().getWhere();
+                                    logger.debug("Received new location: {}", currentLocation == 1 ? 2 : 1);
+                                    // We set the location to the opposite state.
+                                    // We also set location to INSIDE (1) if currentLocation is Unknown (0)
+                                    if (commandId == 10) {
+                                        petcareAPI.setPetLocation(pet, currentLocation == 1 ? 2 : 1, new Date(
+                                                System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(commandId)));
+                                    } else if (commandId == 30) {
+                                        petcareAPI.setPetLocation(pet, currentLocation == 1 ? 2 : 1, new Date(
+                                                System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(commandId)));
+                                    } else if (commandId == 60) {
+                                        petcareAPI.setPetLocation(pet, currentLocation == 1 ? 2 : 1, new Date(
+                                                System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(commandId)));
+                                    }
                                     updateState(PET_CHANNEL_LOCATION,
                                             new StringType(pet.getPetStatus().getActivity().getWhere().toString()));
                                     updateState(PET_CHANNEL_LOCATION_CHANGED,
                                             new DateTimeType(pet.getPetStatus().getActivity().getLocationChanged()));
+                                    updateState(PET_CHANNEL_LOCATION_TIMEOFFSET, UnDefType.UNDEF);
                                 } catch (NumberFormatException e) {
-                                    logger.warn("Invalid location id: {}, ignoring command", newLocationIdStr);
+                                    logger.warn("Invalid location id: {}, ignoring command", commandIdStr);
                                 } catch (SurePetcareApiException e) {
                                     logger.warn("Error from SurePetcare API. Can't update location {} for pet {}",
-                                            newLocationIdStr, pet);
+                                            commandIdStr, pet);
                                 }
                             }
                         }

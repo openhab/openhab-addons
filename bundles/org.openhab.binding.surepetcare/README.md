@@ -268,6 +268,7 @@ String      UR_1e_Species           "Pet Species [%s]"                      (dgP
 Image       UR_1e_Photo             "Pet Photo"                             (dgPet) {channel="surepetcare:pet:bridge1:12345:photo"}
 String      UR_1e_TagIdentifier     "Pet Tag Identifier [%s]"               (dgPet) {channel="surepetcare:pet:bridge1:12345:tagIdentifier"}
 String      UR_1e_Location          "Pet Location [%s]"                     (dgPet) {channel="surepetcare:pet:bridge1:12345:location"}
+String      UR_1e_LocationTimeoffset"Pet Switch Location [%s]"              (gCats)	{channel="surepetcare:pet:bridge1:20584:locationTimeoffset"}
 DateTime    UR_1e_LocationChanged   "Pet Loc. Updated [%1$ta. %1$tH:%1$tM]" (dgPet) {channel="surepetcare:pet:bridge1:12345:locationChanged"}
 String      UR_1e_LocationThrough   "Pet Entered / Left through [%s]"       (dgPet) {channel="surepetcare:pet:bridge1:12345:locationChangedThrough"}
 Number:Mass UR_1e_Weight            "Pet Weight [%.1f %unit%]"              (dgPet) {channel="surepetcare:pet:bridge1:12345:weight"}
@@ -312,12 +313,113 @@ Number      UR_1f_HubRSSI               "Feeder Hub Signal [%.2f dB]"           
 ### Sitemap Configuration
 
 ```
+sitemap surepetcare label="My home automation" {
+  Frame label="Bridge" {
+    Text item=UR_1a_Online valuecolor=[ON="green", OFF="red"]
+    Switch item=UR_1a_Refresh
+  }
 
-### Sitemap configuration
+  Frame label="Single Pet/Cats items" {
+    Text item=UR_1e_Location valuecolor=[1="green", 2="red"]
+    // to see also the item state, just remove the brackets from the label
+    Switch item=UR_1e_Location label="Set Pet Location []" mappings=[1="Inside", 2="Outside"]
+    // Selection item=UR_1e_Location label="Set Pet Location []" mappings=[1="Im Haus", 2="Draußen"]
+    Text item=UR_1e_LocationChanged
+    Switch item=UR_1e_LocationTimeoffset label="Set Loc with time offset []" mappings=[10="-10min", 30="-30min", 60="-1h"]
+    Text item=UR_1e_LocationThrough
+    Text item=UR_1e_Id icon="text"
+    Text item=UR_1e_Name
+    Text item=UR_1e_Comment
+    Text item=UR_1e_Gender
+    Text item=UR_1e_Breed
+    Text item=UR_1e_Species
+    Text item=UR_1e_MicroChip
+    Text item=UR_1e_Weight icon="text"
+    Text item=UR_1e_DateOfBirth
+    Text item=UR_1e_FeedDevice
+    /*Text item=UR_1e_FeedChange icon="text"*/
+    Text item=UR_1e_FeedChangeLeft icon="text"
+    Text item=UR_1e_FeedChangeRight icon="text"
+    Text item=UR_1e_FeedAt
+    Image item=UR_1e_Photo
+  }
 
-sitemap surepetcare label="Sure Petcare Sitemap"
-TODO
+  Frame label="Hub Device" {
+    Text item=UR_1c_HubOnline valuecolor=[ON="green", OFF="red"]
+    Text item=UR_1c_HubId icon="text"
+    Text item=UR_1c_HubName
+    Text item=UR_1c_HubProduct
+    Switch item=UR_1c_HubLedMode mappings=[0="Off", 1="Bright", 4="Dimmed"]
+    Text item=UR_1c_HubPairingMode
+  }
 
+  Frame label="Flap Device" {
+    Text item=UR_1d_FlapOnline valuecolor=[ON="green", OFF="red"]
+    Text item=UR_1d_FlapId icon="text"
+    Text item=UR_1d_FlapName
+    Text item=UR_1d_FlapProduct
+    Switch item=UR_1d_FlapCurfewEnabled1
+    Text item=UR_1d_FlapCurfewLocktime1
+    Text item=UR_1d_FlapCurfewUnlocktime1
+    Switch item=UR_1d_FlapCurfewEnabled2
+    Text item=UR_1d_FlapCurfewLocktime2
+    Text item=UR_1d_FlapCurfewUnlocktime2
+    Switch item=UR_1d_FlapCurfewEnabled3
+    Text item=UR_1d_FlapCurfewLocktime3
+    Text item=UR_1d_FlapCurfewUnlocktime3
+    Switch item=UR_1d_FlapCurfewEnabled4
+    Text item=UR_1d_FlapCurfewLocktime4
+    Text item=UR_1d_FlapCurfewUnlocktime4
+    Text item=UR_1d_FlapLockingMode
+    Text item=UR_1d_FlapLowBattery valuecolor=[OFF="green", ON="red"]
+    Text item=UR_1d_FlapBatteryLevel icon="battery"
+    Text item=UR_1d_FlapBatteryVoltage icon="text"
+    Text item=UR_1d_FlapDeviceRSSI icon="network"
+    Text item=UR_1d_FlapHubRSSI icon="network"
+  }
+
+  Frame label="Feeder Device" {
+    Text item=UR_1f_FeederOnline valuecolor=[ON="green", OFF="red"]
+    Text item=UR_1f_FeederId icon="text"
+    Text item=UR_1f_FeederName
+    Text item=UR_1f_FeederProduct
+    Text item=UR_1f_FeederLowBattery valuecolor=[OFF="green", ON="red"]
+    Text item=UR_1f_FeederBatteryLevel icon="battery"
+    Text item=UR_1f_FeederBatteryVoltage icon="text"
+    Text item=UR_1f_FeederBowlsType
+    /*Text item=UR_1f_FeederBowlsFoodtype
+    Text item=UR_1f_FeederBowlsTarget icon="text"*/
+    Text item=UR_1f_FeederBowlsFoodtypeLeft
+    Text item=UR_1f_FeederBowlsTargetLeft icon="text"
+    Text item=UR_1f_FeederBowlsFoodtypeRight
+    Text item=UR_1f_FeederBowlsTargetRight icon="text"
+    Text item=UR_1f_FeederBowlsLidCloseDelay
+    Text item=UR_1f_FeederBowlsTrainingMode
+    Text item=UR_1f_FeederDeviceRSSI icon="network"
+    Text item=UR_1f_FeederHubRSSI icon="network"
+  }
+}
+
+```
+
+## Using Group Items
+
+You can also set pet locations with a group item. Please Note: the location for each pet gets updated only if the current location is not already the location you want to set. This can be very useful if you have alot of pets that often enter the home by any window/door.
+Your .items file should contain this:
+
+```
+Group:String:OR(1,2)	gLocation		"Cats inside [%d]"								
+String					UR_1e_Location	"Pet Location [%s]"		(dgPet, gLocation)		{channel="surepetcare:pet:bridge1:12345:location"}
+```
+
+And your .sitemap file could look like this:
+
+```
+Frame label="Group Pet/Cats items" {
+  Selection item=gLocation label="Set ALL cats to:" mappings=[1="Inside", 2="Outside"] icon="text"
+  Switch item=gLocation label="Set ALL cats to: []" mappings=[1="Inside", 2="Outside"]
+  Group item=gLocation
+}
 ```
  
 ## Troubleshooting
