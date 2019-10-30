@@ -127,7 +127,7 @@ DateTime		day0ForecastDate	"Forecast for [%1$tY/%1$tm/%1$td]"	<calendar>		(weath
 String			day0PCode			"Pictocode [%d]"					<iday>			(weatherDay0)		{channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}
 String			day0Cond			"Condition [%s]"					<iday>			(weatherDay0)		{channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}
 String			day0Icon			"Icon [%s]"											(weatherDay0)		{channel="meteoblue:weather:metBridge:A51:forecastToday#icon"}
-Number				day0UV				"UV Index [%d]"										(weatherDay0)		{channel="meteoblue:weather:metBridge:A51:forecastToday#UVIndex"}
+Number			day0UV				"UV Index [%d]"										(weatherDay0)		{channel="meteoblue:weather:metBridge:A51:forecastToday#UVIndex"}
 Number:Temperature	day0TempL			"Low Temp [%.2f °F]"				<temperature>	(weatherDay0)		{channel="meteoblue:weather:metBridge:A51:forecastToday#minTemperature"}
 Number:Temperature	day0TempH			"High Temp [%.2f °F]"				<temperature>	(weatherDay0)		{channel="meteoblue:weather:metBridge:A51:forecastToday#maxTemperature"}
 Number			day0HumM			"Mean Humidity [%d %%]"				<humidity>		(weatherDay0)		{channel="meteoblue:weather:metBridge:A51:forecastToday#relativeHumidityMean"}
