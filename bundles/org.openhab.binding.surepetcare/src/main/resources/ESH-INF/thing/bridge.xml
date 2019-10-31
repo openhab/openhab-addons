@@ -42,7 +42,7 @@
 		<item-type>Switch</item-type>
 		<label>Refresh</label>
 		<description>Triggers a cache refresh of everything (devices, pets etc.).</description>
-		<state readOnly="false" pattern="%s"></state>
+		<state readOnly="false" pattern="%s" />
 	</channel-type>
 
 </thing:thing-descriptions>
