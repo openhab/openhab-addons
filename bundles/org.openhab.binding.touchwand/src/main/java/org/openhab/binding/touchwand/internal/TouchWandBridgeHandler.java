@@ -48,15 +48,13 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
     private Configuration config;
     private String host;
     private String port;
-    private int discoveryRefresh;
+    private int statusRefreshRate;
     private boolean addSecondaryUnits;
 
     public TouchWandRestClient touchWandClient;
-    private HttpClient httpClient;
 
     public TouchWandBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        this.httpClient = httpClient;
         touchWandClient = new TouchWandRestClient(httpClient);
     }
 
@@ -72,7 +70,7 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
             InetAddress addr = InetAddress.getByName(config.get(HOST).toString()); // validate IP address
             host = config.get(HOST).toString();
             port = config.get(PORT).toString();
-            discoveryRefresh = Integer.parseInt((config.get(REFRESH).toString()));
+            statusRefreshRate = Integer.parseInt((config.get(STATUS_REFRESH_TIME).toString()));
             addSecondaryUnits = Boolean.valueOf(config.get(ADD_SECONDARY_UNITS).toString());
 
         } catch (UnknownHostException e) {
@@ -107,6 +105,10 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
 
     public boolean isAddSecondaryControllerUnits() {
         return addSecondaryUnits;
+    }
+
+    public int getStatusRefreshTime() {
+        return statusRefreshRate;
     }
 
 }

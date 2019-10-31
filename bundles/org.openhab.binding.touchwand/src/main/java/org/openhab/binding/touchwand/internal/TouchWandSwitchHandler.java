@@ -59,7 +59,6 @@ public class TouchWandSwitchHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TouchWandSwitchHandler.class);
 
-    private final static int STATUS_RERESH_RATE = 5;
     private final static int INITIAL_UPDATE_TIME = 10;
 
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -126,7 +125,8 @@ public class TouchWandSwitchHandler extends BaseThingHandler {
             thingReachable = !(response == null);
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                pollingJob = scheduler.scheduleWithFixedDelay(runnable, INITIAL_UPDATE_TIME, STATUS_RERESH_RATE,
+                int statusRefreshRate = bridgeHandler.getStatusRefreshTime();
+                pollingJob = scheduler.scheduleWithFixedDelay(runnable, INITIAL_UPDATE_TIME, statusRefreshRate,
                         TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

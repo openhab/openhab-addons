@@ -55,18 +55,13 @@ public class TouchWandShutterHandler extends BaseThingHandler {
 
     @NonNullByDefault({})
     private String unitId;
-
     private final Logger logger = LoggerFactory.getLogger(TouchWandShutterHandler.class);
-
-    private final static int STATUS_RERESH_RATE = 5;
     private final static int INITIAL_UPDATE_TIME = 10;
-
     private @Nullable ScheduledFuture<?> pollingJob;
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_SHUTTER));
 
     @NonNullByDefault({})
     private TouchWandBridgeHandler bridgeHandler;
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_SHUTTER));
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -127,7 +122,8 @@ public class TouchWandShutterHandler extends BaseThingHandler {
             thingReachable = !(response == null);
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                pollingJob = scheduler.scheduleWithFixedDelay(runnable, INITIAL_UPDATE_TIME, STATUS_RERESH_RATE,
+                int statusRefreshRate = bridgeHandler.getStatusRefreshTime();
+                pollingJob = scheduler.scheduleWithFixedDelay(runnable, INITIAL_UPDATE_TIME, statusRefreshRate,
                         TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

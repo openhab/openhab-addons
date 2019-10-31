@@ -47,7 +47,7 @@ public class TouchWandBindingConstants {
     public static final String PORT = "port";
     public static final String USER = "username";
     public static final String PASS = "password";
-    public static final String REFRESH = "refresh";
+    public static final String STATUS_REFRESH_TIME = "statusrefresh";
     public static final String ADD_SECONDARY_UNITS = "addsecondaryunits";
 
     // commands
