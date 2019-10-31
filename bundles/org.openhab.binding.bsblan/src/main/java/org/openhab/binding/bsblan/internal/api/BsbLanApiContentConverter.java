@@ -25,7 +25,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Peter Schraffl - Initial contribution
  */
 public class BsbLanApiContentConverter {
-    private final static Logger logger = LoggerFactory.getLogger(BsbLanApiCaller.class);
+    private final static Logger logger = LoggerFactory.getLogger(BsbLanApiContentConverter.class);
 
     public static String toJson(BsbLanApiContent request) {
         Gson gson = new Gson();

@@ -130,7 +130,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
         if (!channelId.equals(Channels.Parameter.NUMBER_VALUE)
          && !channelId.equals(Channels.Parameter.STRING_VALUE)
          && !channelId.equals(Channels.Parameter.SWITCH_VALUE)) {
-            logger.debug("Channel '{}' is read only. Ignoring command", command, channelId);
+            logger.debug("Channel '{}' is read only. Ignoring command", channelId);
             return;
         }
 
