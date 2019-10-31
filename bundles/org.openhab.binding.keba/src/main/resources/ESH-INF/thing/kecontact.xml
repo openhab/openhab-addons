@@ -221,13 +221,13 @@
 		<item-type>Switch</item-type>
 		<label>Authentication Required</label>
 		<description>Authentication required</description>
-		<state pattern="%d" readOnly="true"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="authon" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Authentication Enabled</label>
 		<description>Authentication enabled</description>
-		<state pattern="%d" readOnly="true"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="sessionrfidtag" advanced="true">
 		<item-type>String</item-type>
