@@ -33,10 +33,9 @@ import org.slf4j.LoggerFactory;
  */
 public class BsbLanParameterConverter {
 
-    private final static Logger logger = LoggerFactory.getLogger(BsbLanParameterConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BsbLanParameterConverter.class);
 
     public static State getState(String channelId, BsbLanApiParameter parameter) {
-
         switch (channelId) {
             case Channels.Parameter.NAME:
                 return getStateForNameChannel(parameter);
@@ -60,7 +59,7 @@ public class BsbLanParameterConverter {
                 return getStateForUnitChannel(parameter);
         }
 
-        logger.warn("unsupported channel '{}' while updating state", channelId);
+        LOGGER.warn("unsupported channel '{}' while updating state", channelId);
         return null;
     }
 
@@ -137,7 +136,7 @@ public class BsbLanParameterConverter {
                 return getValueForSwitchValueChannel(command);
 
             default:
-                logger.debug("Channel '{}' is read only. Ignoring command", channelId);
+                LOGGER.debug("Channel '{}' is read only. Ignoring command", channelId);
                 return null;
         }
     }
@@ -147,7 +146,7 @@ public class BsbLanParameterConverter {
         if (command.toString().matches("-?\\d+(\\.\\d+)?")) {
             return command.toString();
         }
-        logger.debug("Command '{}' is not a valid number value", command);
+        LOGGER.debug("Command '{}' is not a valid number value", command);
         return null;
     }
 
@@ -167,7 +166,7 @@ public class BsbLanParameterConverter {
         } else if (command.equals(OnOffType.OFF)) {
             return "0";
         }
-        logger.debug("Command '{}' is not a valid switch value", command);
+        LOGGER.debug("Command '{}' is not a valid switch value", command);
         return null;
     }
 }

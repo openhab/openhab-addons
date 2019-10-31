@@ -25,7 +25,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Peter Schraffl - Initial contribution
  */
 public class BsbLanApiContentConverter {
-    private final static Logger logger = LoggerFactory.getLogger(BsbLanApiContentConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BsbLanApiContentConverter.class);
 
     public static String toJson(BsbLanApiContent request) {
         Gson gson = new Gson();
@@ -38,11 +38,11 @@ public class BsbLanApiContentConverter {
             Gson gson = new Gson();
             T result = gson.fromJson(content, resultType);
             if (result == null) {
-                logger.debug("result null after json parsing (response = {})", content);
+                LOGGER.debug("result null after json parsing (response = {})", content);
             }
             return result;
         } catch (JsonSyntaxException e) {
-            logger.debug("Parsing JSON API response failed: {}", e.getMessage());
+            LOGGER.debug("Parsing JSON API response failed: {}", e.getMessage());
             return null;
         }
     }
