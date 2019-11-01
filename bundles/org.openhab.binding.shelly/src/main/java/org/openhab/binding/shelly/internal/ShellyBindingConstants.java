@@ -204,4 +204,54 @@ public class ShellyBindingConstants {
     public static final byte[] EMPTY_BYTE = new byte[0];
 
     public static int SHELLY_API_TIMEOUT = 2500;
+
+    public static final String SHELLY_API_MIN_FWVERSION = "v1.5.0";
+
+    public static final String SHELLY_NULL_URL = "null";
+    public static final String SHELLY_URL_DEVINFO = "/shelly";
+    public static final String SHELLY_URL_STATUS = "/status";
+    public static final String SHELLY_URL_SETTINGS = "/settings";
+    public static final String SHELLY_URL_SETTINGS_AP = "/settings/ap";
+    public static final String SHELLY_URL_SETTINGS_STA = "/settings/sta";
+    public static final String SHELLY_URL_SETTINGS_LOGIN = "/settings/sta";
+    public static final String SHELLY_URL_SETTINGS_CLOUD = "/settings/cloud";
+    public static final String SHELLY_URL_LIST_IR = "/ir/list";
+    public static final String SHELLY_URL_SEND_IR = "/ir/emit";
+
+    public static final String SHELLY_URL_SETTINGS_RELAY = "/settings/relay";
+    public static final String SHELLY_URL_STATUS_RELEAY = "/status/relay";
+    public static final String SHELLY_URL_CONTROL_RELEAY = "/relay";
+
+    public static final String SHELLY_URL_SETTINGS_EMETER = "/settings/emeter";
+    public static final String SHELLY_URL_STATUS_EMETER = "/emeter";
+    public static final String SHELLY_URL_DATA_EMETER = "/emeter/{0}/em_data.csv";
+
+    public static final String SHELLY_URL_CONTROL_ROLLER = "/roller";
+    public static final String SHELLY_URL_SETTINGS_ROLLER = "/settings/roller";
+
+    public static final String SHELLY_URL_SETTINGS_LIGHT = "/settings/light";
+    public static final String SHELLY_URL_STATUS_LIGHT = "/light";
+    public static final String SHELLY_URL_CONTROL_LIGHT = "/light";
+
+    public static final String SHELLY_URL_SETTINGS_DIMMER = "/settings/light";
+
+    public static final String SHELLY_CALLBACK_URI = "/shelly/event";
+    public static final String EVENT_TYPE_RELAY = "relay";
+    public static final String EVENT_TYPE_ROLLER = "roller";
+    public static final String EVENT_TYPE_SENSORDATA = "sensordata";
+    public static final String EVENT_TYPE_LIGHT = "light";
+
+    public static final String SHELLY_IR_CODET_STORED = "stored";
+    public static final String SHELLY_IR_CODET_PRONTO = "pronto";
+    public static final String SHELLY_IR_CODET_PRONTO_HEX = "pronto_hex";
+
+    public static final String HTTP_GET = "GET";
+    public static final String HTTP_PUT = "PUT";
+    public static final String HTTP_POST = "POST";
+    public static final String HTTP_DELETE = "DELETE";
+    public static final String HTTP_HEADER_AUTH = "Authorization";
+    public static final String HTTP_AUTH_TYPE_BASIC = "Basic";
+    public static final String HTTP_401_UNAUTHORIZED = "401 Unauthorized";
+    public static final String CONTENT_TYPE_XML = "text/xml; charset=UTF-8";
+    public static final String CHARSET_UTF8 = "utf-8";
 }

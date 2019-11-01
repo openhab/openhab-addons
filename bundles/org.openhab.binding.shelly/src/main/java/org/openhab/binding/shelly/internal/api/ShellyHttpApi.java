@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.shelly.internal.api;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyUtils.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
 
 import java.io.IOException;
@@ -47,7 +49,7 @@ import com.google.gson.Gson;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyHttpApi extends ShellyApiHelper {
+public class ShellyHttpApi {
     private final Logger logger = LoggerFactory.getLogger(ShellyHttpApi.class);
     ShellyThingConfiguration config;
     protected String localPort = OPENHAB_DEF_PORT;

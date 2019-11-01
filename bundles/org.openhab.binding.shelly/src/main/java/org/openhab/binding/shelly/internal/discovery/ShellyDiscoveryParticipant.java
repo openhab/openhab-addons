@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiHelper.HTTP_401_UNAUTHORIZED;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
 
 import java.io.IOException;
@@ -38,7 +37,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
-import org.openhab.binding.shelly.internal.handler.ShellyHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -152,7 +151,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 model = profile.settings.device.type;
                 mode = profile.mode;
 
-                properties = ShellyHandler.fillDeviceProperties(profile);
+                properties = ShellyBaseHandler.fillDeviceProperties(profile);
                 logger.trace("name={}, thingType={}, deviceType={}, mode={}", name, thingType, profile.deviceType,
                         mode.isEmpty() ? "<standard>" : mode);
             } catch (IOException e) {

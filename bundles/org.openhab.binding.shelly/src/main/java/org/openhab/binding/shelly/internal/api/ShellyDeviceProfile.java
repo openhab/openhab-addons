@@ -13,8 +13,8 @@
 package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLYDT_DIMMER;
+import static org.openhab.binding.shelly.internal.ShellyUtils.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
-import static org.openhab.binding.shelly.internal.handler.ShellyUpdater.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.openhab.binding.shelly.internal.ShellyBindingConstants;
+import org.openhab.binding.shelly.internal.ShellyUtils;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsGlobal;
 
 import com.google.gson.Gson;
@@ -91,7 +92,7 @@ public class ShellyDeviceProfile {
         Validate.notNull(profile.settings, "converted device settings must not be null!");
 
         // General settings
-        profile.deviceType = getString(profile.settings.device.type);
+        profile.deviceType = ShellyUtils.getString(profile.settings.device.type);
         profile.mac = getString(profile.settings.device.mac);
         profile.hostname = profile.settings.device.hostname != null && !profile.settings.device.hostname.isEmpty()
                 ? profile.settings.device.hostname.toLowerCase()

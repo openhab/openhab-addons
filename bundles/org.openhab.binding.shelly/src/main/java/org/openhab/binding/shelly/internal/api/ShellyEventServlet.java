@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.api;
 
-import static org.openhab.binding.shelly.internal.api.ShellyApiHelper.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.io.IOException;
 import java.util.HashMap;

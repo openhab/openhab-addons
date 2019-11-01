@@ -33,8 +33,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceListener;
-import org.openhab.binding.shelly.internal.handler.ShellyHandler;
-import org.openhab.binding.shelly.internal.handler.ShellyHandlerLight;
+import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyRelayHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.osgi.service.component.ComponentContext;
@@ -138,12 +138,11 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             if (thingTypeUID.getId().equals(THING_TYPE_SHELLYBULB.getId())
                     || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_COLOR.getId())
                     || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_WHITE.getId())) {
-                logger.debug("Create new thing of type {} using ShellyHandlerLight", thingTypeUID.getId());
-                return new ShellyHandlerLight(thing, this, bindingConfig, networkAddressService, coapServer);
-            }
-            if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                logger.debug("Create new thing of type {} using ShellyHandlerGeneric", thingTypeUID.getId());
-                return new ShellyHandler(thing, this, bindingConfig, networkAddressService, coapServer);
+                logger.debug("Create new thing of type {} using ShellyLightHandler", thingTypeUID.getId());
+                return new ShellyLightHandler(thing, this, bindingConfig, networkAddressService, coapServer);
+            } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                logger.debug("Create new thing of type {} using ShellyRelayHandler", thingTypeUID.getId());
+                return new ShellyRelayHandler(thing, this, bindingConfig, networkAddressService, coapServer);
             }
         } catch (RuntimeException e) {
             logger.debug("Shelly Binding: Exception in ShellyHandlerFactory.createHandler(): {} - {}", e.getMessage(),

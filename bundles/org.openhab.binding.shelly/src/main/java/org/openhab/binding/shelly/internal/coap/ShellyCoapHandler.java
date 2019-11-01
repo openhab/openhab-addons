@@ -13,9 +13,9 @@
 package org.openhab.binding.shelly.internal.coap;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyUtils.mkChannelId;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJson.SHELLY_MAX_ROLLER_POS;
 import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.*;
-import static org.openhab.binding.shelly.internal.handler.ShellyUpdater.mkChannelId;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -52,7 +52,7 @@ import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_GenericSens
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_Sensor;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_SensorTypeAdapter;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
-import org.openhab.binding.shelly.internal.handler.ShellyHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ import com.google.gson.GsonBuilder;
 public class ShellyCoapHandler implements ShellyCoapListener {
     private final Logger logger = LoggerFactory.getLogger(ShellyCoapHandler.class);
 
-    private final ShellyHandler thingHandler;
+    private final ShellyBaseHandler thingHandler;
     private final ShellyThingConfiguration config;
     private final GsonBuilder gsonBuilder;
     private final Gson gson;
@@ -88,7 +88,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private Map<String, CoIoT_Descr_blk> blockMap = new HashMap<String, CoIoT_Descr_blk>();
     private Map<String, CoIoT_Descr_sen> sensorMap = new HashMap<String, CoIoT_Descr_sen>();
 
-    public ShellyCoapHandler(ShellyThingConfiguration config, ShellyHandler thingHandler,
+    public ShellyCoapHandler(ShellyThingConfiguration config, ShellyBaseHandler thingHandler,
             @Nullable ShellyCoapServer coapServer) {
         Validate.notNull(thingHandler);
         Validate.notNull(coapServer);
@@ -433,7 +433,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 break;
                             case "position":
                                 // work around: Roller reports 101% instead max 100
-                                double pos = Math.min(s.value, SHELLY_MAX_ROLLER_POS);
+                                double pos = Math.max(0, Math.min(s.value, SHELLY_MAX_ROLLER_POS));
                                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
                                         new PercentType(new BigDecimal(SHELLY_MAX_ROLLER_POS - pos)));
                                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
@@ -734,7 +734,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         stop();
     }
 
-    private String completeUrl(String ipAddress, String uri) {
+    private static String completeUrl(String ipAddress, String uri) {
         return "coap://" + ipAddress + ":" + CoIoT_PORT + uri;
 
     }
