@@ -36,31 +36,7 @@ public class DarkSkyAPIConfiguration {
                     "sk", "sl", "sr", "sv", "tet", "tr", "uk", "x-pig-latin", "zh", "zh-tw")
             .collect(Collectors.toSet()));
 
-    private @Nullable String apikey;
-    private int refreshInterval;
-    private @Nullable String language;
-
-    public @Nullable String getApikey() {
-        return apikey;
-    }
-
-    public void setApikey(String apikey) {
-        this.apikey = apikey;
-    }
-
-    public int getRefreshInterval() {
-        return refreshInterval;
-    }
-
-    public void setRefreshInterval(int refreshInterval) {
-        this.refreshInterval = refreshInterval;
-    }
-
-    public @Nullable String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
+    public @Nullable String apikey;
+    public int refreshInterval = 60;
+    public @Nullable String language;
 }
