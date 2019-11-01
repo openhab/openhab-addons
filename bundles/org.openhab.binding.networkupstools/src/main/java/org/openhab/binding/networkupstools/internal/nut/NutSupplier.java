@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.networkupstools.internal.nut;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @param <T> The type returned by the supplier
  */
 @FunctionalInterface
+@NonNullByDefault
 public interface NutSupplier<T> {
 
     /**
