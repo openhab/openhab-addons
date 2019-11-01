@@ -30,11 +30,10 @@ import org.openhab.binding.darksky.internal.handler.DarkSkyAPIHandler;
 public class DarkSkyAPIConfiguration {
 
     // supported languages (see https://darksky.net/dev/docs#forecast-request)
-    public static final Set<String> SUPPORTED_LANGUAGES = Collections.unmodifiableSet(Stream
-            .of("ar", "az", "be", "bg", "bs", "ca", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "he", "hr",
-                    "hu", "id", "is", "it", "ja", "ka", "ko", "kw", "lv", "nb", "nl", "no", "pl", "pt", "ro", "ru",
-                    "sk", "sl", "sr", "sv", "tet", "tr", "uk", "x-pig-latin", "zh", "zh-tw")
-            .collect(Collectors.toSet()));
+    public static final Set<String> SUPPORTED_LANGUAGES = Collections.unmodifiableSet(Stream.of("ar", "az", "be", "bg",
+            "bn", "bs", "ca", "cs", "da", "de", "el", "en", "eo", "es", "et", "fi", "fr", "he", "hi", "hr", "hu", "id",
+            "is", "it", "ja", "ka", "kn", "ko", "kw", "lv", "mr", "nb", "nl", "no", "pa", "pl", "pt", "ro", "ru", "sk",
+            "sl", "sr", "sv", "ta", "te", "tet", "tr", "uk", "x-pig-latin", "zh", "zh-tw").collect(Collectors.toSet()));
 
     public @Nullable String apikey;
     public int refreshInterval = 60;
