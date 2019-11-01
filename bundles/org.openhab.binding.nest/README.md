@@ -5,6 +5,11 @@ The Nest binding integrates devices by [Nest](https://nest.com) using the [Nest 
 Because the Nest API runs on Nest's servers a connection with the Internet is required for sending and receiving information.
 The binding uses HTTPS to connect to the Nest API using ports 443 and 9553. Make sure outbound connections to these ports are not blocked by a firewall.
 
+> Note: This binding can only be used with Nest devices if you have an existing Nest developer account signed up for the Works with Nest (WWN) program.
+New integrations using the WWN program are no longer accepted because WWN is being retired.
+To keep using this binding do **NOT** migrate your Nest Account to a Google Account.
+For more information see [What's happening at Nest?](https://nest.com/whats-happening/).
+
 ## Supported Things
 
 The table below lists the Nest binding thing types:
