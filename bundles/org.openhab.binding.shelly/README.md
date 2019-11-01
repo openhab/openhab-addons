@@ -15,6 +15,8 @@ Latest **stable** release (master):     https://github.com/markus7017/org.openha
 Latest **snapshot** (work in progress): https://github.com/markus7017/org.openhab.binding.shelly/tree/snapshot
 
 ### 2.5-SNAPSHOT
+* fix: Roller returns position -1
+* Lots of re-factoring
 
 ### 2.4.2 release notes (stable)
 
