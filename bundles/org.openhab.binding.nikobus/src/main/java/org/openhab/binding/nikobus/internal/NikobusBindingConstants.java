@@ -42,7 +42,7 @@ public class NikobusBindingConstants {
     // Configuration parameters
     public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
     public static final String CONFIG_IMPACTED_MODULES = "impactedModules";
-
+    public static final String CONFIG_ADDRESS = "address";
     public static final String CONFIG_PORT_NAME = "port";
 
 }
