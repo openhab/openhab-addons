@@ -346,7 +346,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
 
     public void playMedia(String url) throws FreeboxException {
         if (bridgeHandler != null && url != null) {
-            bridgeHandler.getApiManager().stopMedia(airPlayName, airPlayPassword);
+            stopMedia();
             bridgeHandler.getApiManager().playMedia(url, airPlayName, airPlayPassword);
         }
     }
@@ -364,10 +364,16 @@ public class FreeboxThingHandler extends BaseThingHandler {
         }
     }
 
+    public void stopMedia() throws FreeboxException {
+        if (bridgeHandler != null) {
+            bridgeHandler.getApiManager().stopMedia(airPlayName, airPlayPassword);
+        }
+    }
+
     private void stopMedia(ChannelUID channelUID, Command command) {
         if (command instanceof OnOffType) {
             try {
-                bridgeHandler.getApiManager().stopMedia(airPlayName, airPlayPassword);
+                stopMedia();
             } catch (FreeboxException e) {
                 bridgeHandler.logCommandException(e, channelUID, command);
             }
