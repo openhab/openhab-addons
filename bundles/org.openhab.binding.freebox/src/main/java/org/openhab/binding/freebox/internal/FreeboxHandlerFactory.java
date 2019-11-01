@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
@@ -64,7 +65,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     private Map<ThingUID, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
     // url (scheme+server+port) to use for playing notification sounds
-    private String callbackUrl;
+    private @Nullable String callbackUrl;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(FreeboxBindingConstants.SUPPORTED_BRIDGE_TYPES_UIDS.stream(),
