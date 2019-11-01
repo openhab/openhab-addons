@@ -63,6 +63,10 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
 
     @Override
     protected void startScan() {
+        if (!bridge.isBridgeConnected()) {
+            logger.debug("Scan for Players not possible. HEOS Bridge is not connected");
+            return;
+        }
         logger.debug("Start scan for HEOS Player");
 
         Map<String, HeosPlayer> playerMap = new HashMap<>();
