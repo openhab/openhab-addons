@@ -35,64 +35,35 @@ This service can be configured through UI, or in the file `services/influxdb.cfg
 | password | habopen | Password of the database user that you chose in [Prerequisites](#prerequisites) above |
 | db       | openhab | Name of the database |
 | retentionPolicy | autogen | Name of the retentionPolicy. Please note starting with InfluxDB >= 1.0, the default retention policy name is no longer `default` but `autogen`. |
-| replaceUnderscore | false | Whether underscores "_" in item names should be replaced by a dot "." ("test_item" -> "test.item"). Only for measurement name, not for tags. Also applies to alias names. |
-| addCategoryTag | false | Should the category of the item be included as tag "category"? If no category is set, "n/a" is used. |
-| addTypeTag | false | Should the item type be included as tag "type"? |
-| addLabelTag | false | Should the item label be included as tag "label"? If no label is set, "n/a" is used. |
+| replaceUnderscore | false | Whether underscores "_" in item names should be replaced by a dot "." ("test_item" -> "test.item"). Only for *measurement* name, not for *tags*. Also applies to alias names. |
+| addCategoryTag | false | Should the category of the item be included as *tag* "category"? If no category is set, "n/a" is used. |
+| addTypeTag | false | Should the item type be included as *tag* "type"? |
+| addLabelTag | false | Should the item label be included as *tag* "label"? If no label is set, "n/a" is used. |
 
 All item- and event-related configuration is defined in the file `persistence/influxdb.persist`.
 
 ## Tags
 
-Tags are a great tool to manage your data when using not only OpenHAB, but for example also Grafana or Kapacitor for visualisation or alerting. This binding lets you add tags in two different ways:
+*Tags* are a great tool to manage your data when using not only OpenHAB, but for example also Grafana or Kapacitor for visualisation or alerting. This binding lets you add *tags* in two different ways:
 
 ### Configuration
 
-There are three options in the config to add tags for the item category, the item type and the item label.
+There are three options in the config to add *tags* for the item category, the item type and the item label.
 
 ### Metadata
 
-Item Metadata is data added to the item itself. The namespace for this binding is "influxdb". Every single key-value pair will be used as tag name - tag value. So for example the metadata
+Item Metadata is data added to the item itself. The namespace for this binding is "influxdb". Every single key-value pair will be used as *tag* name - *tag* value. So for example the metadata
     
     Number test {influxdb="" [foo="bar", baz="qux"]}
 
-will add tags "foo" and "baz" with the values "bar" and "qux" every time the value of the item "test" gets stored.
+will add *tags* "foo" and "baz" with the *values* "bar" and "qux" every time the value of the item "test" gets stored.
 
 ### Warning
 
-Be aware that using many tags will lead to an exponential increase of the number of time series, resulting in a huge amount of memory consumption. Use only tags you really need!
+Be aware that using many *tags* will lead to an exponential increase of the number of time series, resulting in a huge amount of memory consumption. Use only *tags* you really need!
 
-## Example
+## Examples
 
-Content of item file items/superduper.items:
+[01) Basic usage: temperature and humidity](examples/01-temperature.md "First example")
 
-    Group g_instantpower
-
-    Number:Power c_fridge_instantpower "Power fridge [%.1f W]" (g_instantpower) {influxdb="" [room="Kitchen", target="Fridge"]}
-
-    Number:Power c_dishwasher_instantpower "Power dishwasher [%.1f W]" (g_instantpower) {influxdb="" [room="Kitchen", target="Dishwasher"]}
-
-    Number:Power c_tv_instantpower "Power TV [%.1f W]" (g_instantpower) {influxdb="" [room="Living room", target="TV"]}
-
-Content of persistence file persistence/influxdb.persist:
-
-    Strategies {}
-
-    Items {
-        g_instantpower* -> "g_instantpower" : strategy = everyUpdate
-    }
-
-This will create a single measurement "g_instantpower":
-
-    SELECT * FROM "openhab"."autogen"."g_instantpower" ORDER BY time DESC LIMIT 6
-    name: g_instantpower
-    time                target     item                       room         value
-    ----                ------     ----                       ----         -----
-    1565175206339000000 Fridge     c_fridge_instantpower      Kitchen      80
-    1565175203349000000 Dishwasher c_dishwasher_instantpower  Kitchen      348
-    1565175199542000000 TV         c_tv_instantpower          Living room  63
-    1565175194696000000 Fridge     c_fridge_instantpower      Kitchen      81
-    1565175194185000000 Dishwasher c_dishwasher_instantpower  Kitchen      390
-    1565175193689000000 TV         c_tv_instantpower          Living room  70
-
-This will let you query the database for the specific iten, the target and the room. When adding more power meaters, you do not have to modify your Grafana dashboards or alert rules, the only thing you have to do is add them to the group "g_instantpower".
+[02) Advanced usage: power consumption](examples/02-powerconsumption.md "Second example")
