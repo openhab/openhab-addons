@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+    <config-description uri="thing-type:shelly:generic">
+            <parameter-group name="advancedOptions">
+                <label>Advanced Options</label>
+            </parameter-group>
+
+            <parameter name="userId" type="text" required="false">
+                <label>UserID</label>
+                <description>UserID for http API access.</description>
+            </parameter>
+            <parameter name="password" type="text" required="false">
+                <label>Password</label>
+                <description>Password for http API access.</description>
+                <context>password</context>
+            </parameter>
+            <parameter name="deviceIp" type="text" required="true">
+                <label>Device IP address</label>
+                <description>IP-Address of the Shelly device.</description>
+                <context>network-address</context>
+            </parameter>
+
+            <parameter name="eventsButton" type="boolean" required="false">
+                <label>Enable Button Events</label>
+                <description>True if the binding should register to get the Buttons Events.</description>
+                <advanced>true</advanced>
+                <default>false</default>
+            </parameter>
+            <parameter name="eventsSwitch" type="boolean" required="false">
+                <label>Enable Switch Events (Out on/off)</label>
+                <description>True if the binding should register to get the Relay Switch Events.</description>
+                <advanced>true</advanced>
+                <default>true</default>
+            </parameter>
+            <parameter name="eventsCoIoT" type="boolean" required="false">
+                <label>Enable CoIoT events</label>
+                <description>If enabled the Coap protocol will be used to receive status updates.</description>
+                <advanced>true</advanced>
+                <default>false</default>
+            </parameter>
+            <parameter name="channelCache" type="boolean" required="false">
+                <label>Enable Channel Cache</label>
+                <description>If disabled the binding does not update update for channel values. This is for testing only, because it could cause side effects.</description>
+                <advanced>true</advanced>
+                <default>true</default>
+            </parameter>
+            <parameter name="updateInterval" type="integer" required="true">
+                <label>Update Interval</label>
+                <description>Interval in seconds to query an update from the device.</description>
+                <default>60</default>
+                <unitLabel>sec</unitLabel>
+                <advanced>true</advanced>
+            </parameter>
+        </config-description>
+
+   <config-description uri="thing-type:shelly:battery">
+            <parameter name="userId" type="text" required="false">
+                <label>UserID</label>
+                <description>UserID for http API access.</description>
+            </parameter>
+            <parameter name="password" type="text" required="false">
+                <label>Password</label>
+                <description>Password for http API access.</description>
+                <context>password</context>
+            </parameter>
+            <parameter name="deviceIp" type="text" required="true">
+                <label>Device IP address</label>
+                <description>IP-Address of the Shelly device.</description>
+                <context>network-address</context>
+            </parameter>
+            <parameter name="lowBattery" type="integer" required="false">
+                <label>Low Battery</label>
+                <description>Threshold for the battery level, alert will be signed when battery level is below..</description>
+                <default>20</default>
+                <unitLabel>%</unitLabel>
+            </parameter>
+
+            <parameter name="eventsSensorReport" type="boolean" required="false">
+                <label>Enable Sensor Events</label>
+                <description>True: Register event URL for sensor updates. When settings this to false the sensor will not notify the binding about changes!</description>
+                <advanced>true</advanced>
+                <default>true</default>
+            </parameter>
+            <parameter name="eventsCoIoT" type="boolean" required="false">
+                <label>Enable CoIoT events</label>
+                <description>If enabled the Coap protocol will be used to receive status updates.</description>
+                <advanced>true</advanced>
+                <default>true</default>
+            </parameter>
+
+            <parameter name="channelCache" type="boolean" required="false">
+                <label>Enable Channel Cache</label>
+                <description>If disabled the binding does not update update for channel values. This is for testing only, because it could cause side effects.</description>
+                <advanced>true</advanced>
+                <default>true</default>
+            </parameter>
+            <parameter name="updateInterval" type="integer" required="true">
+                <label>Update Interval</label>
+                <description>Interval in seconds to query an update from the device.</description>
+                <default>3600</default>
+                <unitLabel>sec</unitLabel>
+            </parameter>
+        </config-description>
+
+</config-description:config-descriptions>
