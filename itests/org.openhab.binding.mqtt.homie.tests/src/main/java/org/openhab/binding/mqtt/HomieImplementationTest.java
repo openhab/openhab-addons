@@ -147,7 +147,7 @@ public class HomieImplementationTest extends JavaOSGiTest {
         futures.add(embeddedConnection.publish(propertyTestTopic + "/$datatype", "boolean".getBytes()));
 
         registeredTopics = futures.size();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1500, TimeUnit.MILLISECONDS);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
 
         scheduler = new ScheduledThreadPoolExecutor(6);
     }
@@ -156,7 +156,7 @@ public class HomieImplementationTest extends JavaOSGiTest {
     public void tearDown() throws InterruptedException, ExecutionException, TimeoutException {
         if (connection != null) {
             connection.removeConnectionObserver(failIfChange);
-            connection.stop().get(1000, TimeUnit.MILLISECONDS);
+            connection.stop().get(500, TimeUnit.MILLISECONDS);
         }
         scheduler.shutdownNow();
     }
