@@ -434,7 +434,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                             case "position":
                                 // work around: Roller reports 101% instead max 100
                                 double pos = Math.max(0, Math.min(s.value, SHELLY_MAX_ROLLER_POS));
-                                updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
+                                updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL,
                                         new PercentType(new BigDecimal(SHELLY_MAX_ROLLER_POS - pos)));
                                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
                                         new PercentType(new BigDecimal(pos)));

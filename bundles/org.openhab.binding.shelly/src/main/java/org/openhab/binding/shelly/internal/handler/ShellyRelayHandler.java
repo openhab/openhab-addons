@@ -160,7 +160,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     api.setRollerTurn(rIndex, SHELLY_ALWD_ROLLER_TURN_STOP);
                 } else {
 
-                    logger.info("{}: Set roller to position {} (channel {}", thingName, command.toString(),
+                    logger.info("{}: Set roller to position {} (channel {})", thingName, command.toString(),
                             channelUID.getIdWithoutGroup());
                     if (command instanceof PercentType) {
                         PercentType p = (PercentType) command;
@@ -183,9 +183,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
                 if (position != -1) {
                     // make sure both are in sync
-                    if (!isControl) {
-                        updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL, new PercentType(
-                                SHELLY_MAX_ROLLER_POS - Math.max(0, Math.min(position, SHELLY_MAX_ROLLER_POS))));
+                    if (isControl) {
+                        int pos = SHELLY_MAX_ROLLER_POS - Math.max(0, Math.min(position, SHELLY_MAX_ROLLER_POS));
+                        updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL, new PercentType(pos));
                     } else {
                         updateChannel(groupName, CHANNEL_ROL_CONTROL_POS, new PercentType(position));
                     }
