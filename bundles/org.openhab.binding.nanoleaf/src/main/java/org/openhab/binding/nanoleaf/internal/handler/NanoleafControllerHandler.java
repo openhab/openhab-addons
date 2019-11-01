@@ -102,6 +102,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private int port;
     private int refreshIntervall;
     private @Nullable String authToken;
+    private @Nullable String deviceType;
     private @Nullable ControllerInfo controllerInfo;
 
     public NanoleafControllerHandler(Bridge bridge, HttpClient httpClient) {
@@ -118,6 +119,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         setPort(config.port);
         setRefreshIntervall(config.refreshInterval);
         setAuthToken(config.authToken);
+        setDeviceType(config.deviceType);
 
         try {
             if (StringUtils.isEmpty(getAddress()) || StringUtils.isEmpty(String.valueOf(getPort()))) {
@@ -127,11 +129,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 stopAllJobs();
                 return;
             } else if (!StringUtils.isEmpty(getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION))
-                    && !OpenAPIUtils
-                            .checkRequiredFirmware(getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION))) {
+            && !OpenAPIUtils.checkRequiredFirmware(getThing().getProperties().get(Thing.PROPERTY_MODEL_ID), getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION))) {
                 logger.warn("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
                         getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION),
-                        NanoleafBindingConstants.API_MIN_FW_VER);
+                        NanoleafBindingConstants.API_MIN_FW_VER_LIGHTPANELS);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.nanoleaf.controller.incompatibleFirmware");
                 stopAllJobs();
@@ -254,6 +255,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         config.port = this.getPort();
         config.refreshInterval = this.getRefreshIntervall();
         config.authToken = this.getAuthToken();
+        config.deviceType = this.getDeviceType();
         return config;
     }
 
@@ -627,6 +629,14 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
+
+    private String getDeviceType() {
+        return StringUtils.defaultString(deviceType);
+    }
+
+    private void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }    
 
     private void stopAllJobs() {
         stopPairingJob();

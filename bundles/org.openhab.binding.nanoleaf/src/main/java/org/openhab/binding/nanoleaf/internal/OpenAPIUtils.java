@@ -44,8 +44,6 @@ public class OpenAPIUtils {
     // Regular expression for firmware version
     private static final Pattern FIRMWARE_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
 
-    private static final int[] requiredVer = getFirmwareVersionNumbers(NanoleafBindingConstants.API_MIN_FW_VER);
-
     public static Request requestBuilder(HttpClient httpClient, NanoleafControllerConfig controllerConfig,
             String apiOperation, HttpMethod method) throws NanoleafException, NanoleafUnauthorizedException {
         String path;
@@ -106,8 +104,11 @@ public class OpenAPIUtils {
         }
     }
 
-    public static boolean checkRequiredFirmware(String currentFirmwareVersion) {
+    public static boolean checkRequiredFirmware(String modelId, String currentFirmwareVersion) {
         int[] currentVer = getFirmwareVersionNumbers(currentFirmwareVersion);
+
+        int[] requiredVer = getFirmwareVersionNumbers(
+                modelId.equals(MODEL_ID_LIGHTPANLES) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
 
         for (int i = 0; i < currentVer.length; i++) {
             if (currentVer[i] != requiredVer[i]) {

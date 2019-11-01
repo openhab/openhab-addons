@@ -25,6 +25,15 @@
 				<description>@text/thing-type.config.nanoleaf.controller.refreshInterval.description</description>
 				<default>60</default>
 			</parameter>
++            <parameter name="deviceType" type="text">
+                <label>@text/thing-type.config.nanoleaf.controller.deviceType.label</label>             
+                <description>@text/thing-type.config.nanoleaf.controller.deviceType.description</description>
+                <default>lightPanels</default>
+                <options>
+                    <option value="lightPanels">Light Panels</option>
+                    <option value="canvas">Canvas</option>
+                </options>
+            </parameter>			
 	</config-description>
 	
 	<config-description uri="thing-type:nanoleaf:lightpanel">

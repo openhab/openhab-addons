@@ -34,6 +34,8 @@ public class NanoleafBindingConstants {
     public static final String CONFIG_ADDRESS = "address";
     public static final String CONFIG_PORT = "port";
     public static final String CONFIG_AUTH_TOKEN = "authToken";
+    public static final String CONFIG_DEVICE_TYPE_CANVAS = "canvas";
+    public static final String CONFIG_DEVICE_TYPE_LIGHTPANELS = "lightPanels";
 
     // Panel configuration settings
     public static final String CONFIG_PANEL_ID = "id";
@@ -60,7 +62,12 @@ public class NanoleafBindingConstants {
     public static final String API_SET_VALUE = "/state";
     public static final String API_EFFECT = "/effects";
     public static final String API_RHYTHM_MODE = "/rhythm/rhythmMode";
-    public static final String API_MIN_FW_VER = "1.5.0";
+
+    // Nanoleaf model IDs and minimum required firmware versions
+    public static final String API_MIN_FW_VER_LIGHTPANELS = "1.5.0";
+    public static final String API_MIN_FW_VER_CANVAS = "1.1.0";
+    public static final String MODEL_ID_LIGHTPANLES = "NL22";
+    public static final String MODEL_ID_CANVAS = "NL29";
 
     // mDNS discovery service type
     // see http://forum.nanoleaf.me/docs/openapi#_gf9l5guxt8r0
