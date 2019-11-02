@@ -1,0 +1,152 @@
+# Ism8 Binding
+
+_This binding can receive values of the Wolf heating system._
+
+The ISM8 card can be placed into the Wolf heating system. The card is usually used in combination with an object server, where the object server does forward those messages into the KNX bus system. In case there is no need to handle the heating system values directly in the KNX system you can use this binding to monitor and control your heating system without the need to buy an object server. 
+The system works in a way that the ISM8 connects to a partner and sends from time to time an update. The frequency depends on the change of the values. This binding is listening to those messages.
+After the first connection there is an active command send to the ISM8 in order to receive all available data points.
+ 
+
+## Supported Things
+
+_This binding does only support one Thing - the Ism8-Device._
+
+## Discovery
+
+_Auto-discovery is not supported._
+
+
+## Thing Configuration
+
+The intension was to have a generic ISM8 binding in order to offer the full flexibilty for the different heating systems.
+For this reason you need to create a Thing configuration, where basically only the port is required next to the channel configuration.
+(Thing ism8:device:heater "Wolf Heizung" [portNumber=12004])
+
+## Channels
+
+You can use any channel supported by the ISM8 as data point. Please have a look at the official manual from Wolf.
+Within this document you'll find a table containing all supported data points. The available data points are depending on your heating system configuration. 
+The Ism8 does currently support 4 different devices at the same moment of time (e.g. CGB-2, CWL Excellent, Solar, ...).
+
+Once you have an overview of your heating system set you can start to create the channels accordingly.
+Each channel should be created in the following way:
+
+	| Type   | Name    | Description                | Configuration   |
+	|--------|---------|----------------------------|-----------------|
+	| Number | DpId004 | "Kesseltemperatur"         | id, type, write |
+
+Type:
+
++ Switch use for boolean values
++ Number use for any number
++ Other types may work as well as this is more a OpenHab type
+
+Name:
+
++ Put here any name you'd like. This name is used for creating the binding.
+
+
+Description:
+
++ Put here any description you'd like. This helps you to identify the channels in the PaperUI
+
+
+Configuration:
+
++ id=1            - Please enter here the ID of the data point you'd like to map to this channel
++ type="1.001"    - Please enter here the knx type of the data point. You can find the data type in the Wolf ISM8 document.
++ write=true      - This parameter defines if the channel is bidirectional. The parameter is optional and by default false. 
+
+
+
+## Full Example
+
+_ism8.things_
+
+    Thing ism8:device:heater "Wolf Heizung"         [portNumber=12004]
+    {
+        Switch : DpId001 "Störung Heizgerät"            [id=1, type="1.001"]
+        Number : DpId002 "Betriebsart"                  [id=2, type="20.105"]
+        Number : DpId003 "Brennerleistung"              [id=3, type="5.001"] 
+        Number : DpId004 "Kesseltemperatur"             [id=4, type="9.001"] 
+        Number : DpId006 "Rücklauftemperatur"           [id=6, type="9.001"] 
+        Number : DpId007 "Warmwassertemperatur"         [id=7, type="9.001"] 
+        Number : DpId008 "Außentemperatur"              [id=8, type="9.001"] 
+        Switch : DpId009 "Status Flamme"                [id=9, type="1.001"] 
+        Number : DpId013 "Anlagendruck"                 [id=13, type="9.006"] 
+        Number : DpId053 "Störung Systemmodul"          [id=53, type="1.001"] 
+        Number : DpId054 "Außentemperatur Systemmodul"  [id=54, type="9.001"] 
+        Number : DpId056 "Sollwert Warmwasser"          [id=56, type="9.001", write=true] 
+        Number : DpId057 "Betriebsart Heizkreis"        [id=57, type="20.102", write=true] 
+        Number : DpId058 "Betriebsart Warmwasser"       [id=58, type="20.103", write=true] 
+        Number : DpId065 "Sollwertverschiebung"         [id=65, type="9.002", write=true] 
+        Number : DpId148 "CML Störung"                  [id=148, type="1.001"] 
+        Number : DpId149 "CWL Betriebsart"              [id=149, type="20.102", write=true] 
+        Number : DpId163 "CWL Lüftungsstufe"            [id=163, type="5.001"] 
+        Number : DpId164 "CWL Ablufttemperatur"         [id=164, type="9.001"] 
+        Number : DpId165 "CWL Zulufttemperatur"         [id=165, type="9.001"]
+        Number : DpId166 "CWL Luftdurchsatz Zuluft"     [id=166, type="13.002"]
+        Number : DpId167 "CWL Luftdurchsatz Abluft"     [id=167, type="13.002"]
+        Number : DpId192 "CML Filterwarnung"            [id=192, type="1.001"]    
+    }
+
+_ism8.items_
+
+	Switch	ISM_HeizungStoerung              "Störung Heizgerät"                      { channel="ism8:device:heater:DpId001" }
+	Number	ISM_HeizungBetriebsart           "Betriebsart"                            { channel="ism8:device:heater:DpId002" }
+	Number	ISM_HeizungBrennerleistung       "Brennerleistung [%.1f %%]"              { channel="ism8:device:heater:DpId003" }
+	Number	ISM_HeizungKesseltemperatur      "Kesseltemperatur [%.1f °C]"             { channel="ism8:device:heater:DpId004" }
+	Number	ISM_HeizungRuecklauftemperatur   "Rücklauftemperatur [%.1f °C]"           { channel="ism8:device:heater:DpId006" }
+	Number	ISM_HeizungWarmwassertemperatur  "Warmwassertemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId007" }
+	Number	ISM_HeizungAussentemperatur      "Außentemperatur [%.1f °C]"              { channel="ism8:device:heater:DpId008" }
+	Switch	ISM_HeizungStatusFlamme          "Status Flamme"                          { channel="ism8:device:heater:DpId009" }
+	Number	ISM_HeizungAnlagendruck          "Anlagendruck [%.2f bar]"                { channel="ism8:device:heater:DpId013" }
+	Switch	ISM_HeizungSysStoerung           "Störung Systemmodul"                    { channel="ism8:device:heater:DpId053" }
+	Number	ISM_HeizungSysAussentemperatur   "Außentemperatur Systemmodul [%.1f °C]"  { channel="ism8:device:heater:DpId054" }
+	Number	ISM_HeizungSollwertWarmwasser    "Sollwert Warmwasser [%.1f °C]"          { channel="ism8:device:heater:DpId056" }
+	Number	ISM_HeizungBetriebsartHeizkreis  "Betriebsart Heizkreis"                  { channel="ism8:device:heater:DpId057" }
+	Number	ISM_HeizungBetriebsartWarmwasser "Betriebsart Warmwasser"                 { channel="ism8:device:heater:DpId058" }
+	Number	ISM_HeizungSollwertverschiebung  "Sollwertverschiebung [%.1f °C]"         { channel="ism8:device:heater:DpId065" }
+	Switch	ISM_LueftungStoerung             "CML Störung"                            { channel="ism8:device:heater:DpId148" }
+	Number	ISM_LueftungBetriebsart          "CWL Betriebsart"                        { channel="ism8:device:heater:DpId149" }
+	Number	ISM_LueftungLueftungsstufe       "CWL Lüftungsstufe [%.1f %%]"            { channel="ism8:device:heater:DpId163" }
+	Number	ISM_LueftungAblufttemperatur     "CWL Ablufttemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId164" }
+	Number	ISM_LueftungZulufttemperatur     "CWL Zulufttemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId165" }
+	Number	ISM_LueftungLuftdurchsatzZuluft  "CWL Luftdurchsatz Zuluft [%.1f m³/h]"   { channel="ism8:device:heater:DpId166" }
+	Number	ISM_LueftungLuftdurchsatzAbluft  "CWL Luftdurchsatz Abluft [%.1f m³/h]"   { channel="ism8:device:heater:DpId167" }
+	Switch	ISM_LueftungFilterwarnung        "CML Filterwarnung"                      { channel="ism8:device:heater:DpId192" }
+	
+_demo.sitemap_
+
+    Frame label="Heizung"
+    {    
+        Text item=ISM_HeizungSysStoerung                icon="siren"
+        Text item=ISM_HeizungStoerung                   icon="siren"
+        Text item=ISM_HeizungAussentemperatur           icon="temperature"
+        Text item=ISM_HeizungBetriebsart                icon="radiator"          label="Modus [MAP(HVACContrMode.map):%s]"
+        Text item=ISM_HeizungAnlagendruck               icon="pressure"
+        Text item=ISM_HeizungBrennerleistung            icon="chart"
+        Selection item=ISM_HeizungBetriebsartHeizkreis  icon="radiator"          mappings=[0="Auto", 1="Komfort", 2="Stand By", 3="Eco", 4="Frost Schutz"]
+        Text item=ISM_HeizungStatusFlamme               icon="fire"
+        Text item=ISM_HeizungKesseltemperatur           icon="temperature"
+        Text item=ISM_HeizungRuecklauftemperatur        icon="temperature_cold"
+        Setpoint item=ISM_HeizungSollwertverschiebung   icon="radiator"          minValue=-5 maxValue=5 step=1
+    }
+    Frame label="Wasser"
+    {    
+        Text item=ISM_HeizungWarmwassertemperatur       icon="temperature_hot"
+        Setpoint item=ISM_HeizungSollwertWarmwasser     icon="temperature"       minValue=40 maxValue=60 step=1
+        Selection item=ISM_HeizungBetriebsartWarmwasser icon="faucet"            mappings=[0="Auto", 1="Legionellen Schutz", 2="Normal", 3="Eco", 4="Frost Schutz"]
+    }
+    Frame label="Lüftung"
+    {    
+        Text item=ISM_LueftungStoerung                  icon="siren"        
+        Selection item=ISM_LueftungBetriebsart          icon="fan"                mappings=[0="Auto", 1="Minimum", 2="Reduziert", 3="Normal", 4="Intensiv"]
+        Text item=ISM_LueftungLueftungsstufe            icon="qualityofservice"
+        Text item=ISM_LueftungFilterwarnung             icon="siren"
+        Text item=ISM_LueftungAblufttemperatur          icon="temperature_hot"
+        Text item=ISM_LueftungZulufttemperatur          icon="temperature_cold"
+        Text item=ISM_LueftungLuftdurchsatzZuluft       icon="flow"
+        Text item=ISM_LueftungLuftdurchsatzAbluft       icon="flow"
+    }
+
