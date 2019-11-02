@@ -56,6 +56,7 @@ import org.openhab.binding.lifx.internal.LifxLightState;
 import org.openhab.binding.lifx.internal.LifxLightStateChanger;
 import org.openhab.binding.lifx.internal.fields.HSBK;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
+import org.openhab.binding.lifx.internal.protocol.Effect;
 import org.openhab.binding.lifx.internal.protocol.GetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.protocol.GetLightPowerRequest;
 import org.openhab.binding.lifx.internal.protocol.GetRequest;
@@ -65,8 +66,6 @@ import org.openhab.binding.lifx.internal.protocol.Packet;
 import org.openhab.binding.lifx.internal.protocol.PowerState;
 import org.openhab.binding.lifx.internal.protocol.Product;
 import org.openhab.binding.lifx.internal.protocol.SignalStrength;
-import org.openhab.binding.lifx.internal.protocol.TileEffect;
-import org.openhab.binding.lifx.internal.protocol.TileEffect.TileEffectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +94,8 @@ public class LifxLightHandler extends BaseThingHandler {
     private @Nullable PercentType powerOnBrightness;
     private @Nullable HSBType powerOnColor;
     private @Nullable PercentType powerOnTemperature;
+    private Double effectMorphSpeed = 3.0;
+    private Double effectFlameSpeed = 4.0;
 
     private @NonNullByDefault({}) String logId;
 
@@ -202,19 +203,8 @@ public class LifxLightHandler extends BaseThingHandler {
         }
 
         @Override
-        public void setTileEffect(TileEffect effect) {
-            updateStateIfChanged(CHANNEL_TILE_EFFECT_TYPE, new DecimalType(effect.getEffectType().value()));
-            DecimalType speed = new DecimalType(effect.getSpeedInSeconds());
-            switch (effect.getEffectType()) {
-                case MORPH:
-                    updateStateIfChanged(CHANNEL_TILE_MORPH_SPEED, speed);
-                    break;
-                case FLAME:
-                    updateStateIfChanged(CHANNEL_TILE_FLAME_SPEED, speed);
-                    break;
-                default:
-                    break;
-            }
+        public void setTileEffect(Effect effect) {
+            updateStateIfChanged(CHANNEL_EFFECT, new DecimalType(effect.getType()));
             super.setTileEffect(effect);
         }
 
@@ -259,7 +249,14 @@ public class LifxLightHandler extends BaseThingHandler {
             powerOnBrightness = getPowerOnBrightness();
             powerOnColor = getPowerOnColor();
             powerOnTemperature = getPowerOnTemperature();
-
+            Double speed = getEffectSpeed(LifxBindingConstants.CONFIG_PROPERTY_EFFECT_MORPH_SPEED);
+            if (speed != null) {
+                effectMorphSpeed = speed;
+            }
+            speed = getEffectSpeed(LifxBindingConstants.CONFIG_PROPERTY_EFFECT_FLAME_SPEED);
+            if (speed != null) {
+                effectFlameSpeed = speed;
+            }
             channelStates.clear();
             currentLightState = new CurrentLightState();
             pendingLightState = new LifxLightState();
@@ -285,8 +282,6 @@ public class LifxLightHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Configure a Device ID or Host");
             }
-            updateState(CHANNEL_TILE_MORPH_SPEED, new DecimalType(TileEffect.TILE_MORPH.getSpeedInSeconds()));
-            updateState(CHANNEL_TILE_FLAME_SPEED, new DecimalType(TileEffect.TILE_FLAME.getSpeedInSeconds()));
         } catch (Exception e) {
             logger.debug("{} : Error occurred while initializing handler: {}", logId, e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -392,6 +387,23 @@ public class LifxLightHandler extends BaseThingHandler {
         return null;
     }
 
+    private @Nullable Double getEffectSpeed(String parameter) {
+        Channel channel = null;
+
+        if (product.hasFeature(TILE_EFFECT)) {
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), LifxBindingConstants.CHANNEL_EFFECT);
+            channel = getThing().getChannel(channelUID.getId());
+        }
+
+        if (channel == null) {
+            return null;
+        }
+
+        Configuration configuration = channel.getConfiguration();
+        Object speed = configuration.get(parameter);
+        return speed == null ? null : new Double(speed.toString());
+    }
+
     private Product getProduct() {
         Object propertyValue = getThing().getProperties().get(LifxBindingConstants.PROPERTY_PRODUCT_ID);
         try {
@@ -468,10 +480,10 @@ public class LifxLightHandler extends BaseThingHandler {
                 case CHANNEL_SIGNAL_STRENGTH:
                     sendPacket(new GetWifiInfoRequest());
                     break;
-                case CHANNEL_TILE_EFFECT_TYPE:
-                case CHANNEL_TILE_MORPH_SPEED:
-                case CHANNEL_TILE_FLAME_SPEED:
-                    sendPacket(new GetTileEffectRequest());
+                case CHANNEL_EFFECT:
+                    if (product.hasFeature(TILE_EFFECT)) {
+                        sendPacket(new GetTileEffectRequest());
+                    }
                     break;
                 default:
                     break;
@@ -521,25 +533,9 @@ public class LifxLightHandler extends BaseThingHandler {
                         supportedCommand = false;
                     }
                     break;
-                case CHANNEL_TILE_EFFECT_TYPE:
-                    if (command instanceof DecimalType) {
-                        handleTileEffectTypeCommand((DecimalType) command);
-                    } else {
-                        supportedCommand = false;
-                    }
-                    break;
-                case CHANNEL_TILE_MORPH_SPEED:
-                    if (command instanceof DecimalType) {
-                        handleTileSpeedCommand((DecimalType) command, TileEffectType.MORPH.value());
-                        channelStates.put(channelUID.getId(), (State) command);
-                    } else {
-                        supportedCommand = false;
-                    }
-                    break;
-                case CHANNEL_TILE_FLAME_SPEED:
-                    if (command instanceof DecimalType) {
-                        handleTileSpeedCommand((DecimalType) command, TileEffectType.FLAME.value());
-                        channelStates.put(channelUID.getId(), (State) command);
+                case CHANNEL_EFFECT:
+                    if (command instanceof DecimalType && product.hasFeature(TILE_EFFECT)) {
+                        handleTileEffectCommand((DecimalType) command);
                     } else {
                         supportedCommand = false;
                     }
@@ -681,38 +677,14 @@ public class LifxLightHandler extends BaseThingHandler {
         }
     }
 
-    private void handleTileEffectTypeCommand(DecimalType mode) {
-        logger.debug("handleTileEffectTypeCommand mode={}", mode);
-        TileEffect effect;
-        State speed;
-        switch (TileEffectType.fromValue(mode.intValue())) {
-            case MORPH:
-                effect = new TileEffect(TileEffect.TILE_MORPH);
-                speed = channelStates.get(CHANNEL_TILE_MORPH_SPEED);
-                break;
-            case FLAME:
-                effect = new TileEffect(TileEffect.TILE_FLAME);
-                speed = channelStates.get(CHANNEL_TILE_FLAME_SPEED);
-                break;
-            default:
-                effect = TileEffect.TILE_OFF;
-                speed = null;
-                break;
-        }
-        if (speed instanceof DecimalType) {
-            effect.setSpeedInSeconds(((DecimalType) speed).longValue());
-        }
-        getLightStateForCommand().setTileEffect(effect);
-    }
-
-    private void handleTileSpeedCommand(DecimalType command, Integer type) {
-        Long speed = command.longValue();
-        TileEffect effect = getLightStateForCommand().getTileEffect();
-        if (effect != null && effect.getEffectType().value().equals(type)
-                && !effect.getSpeedInSeconds().equals(speed)) {
-            TileEffect newEffect = new TileEffect(effect);
-            newEffect.setSpeedInSeconds(speed.longValue());
-            getLightStateForCommand().setTileEffect(newEffect);
+    private void handleTileEffectCommand(DecimalType mode) {
+        logger.debug("handleTileEffectCommand mode={}", mode);
+        Double morphSpeedInMSecs = effectMorphSpeed * 1000.0;
+        Double flameSpeedInMSecs = effectFlameSpeed * 1000.0;
+        Effect effect = Effect.createDefault(mode.intValue(), morphSpeedInMSecs.longValue(),
+                flameSpeedInMSecs.longValue());
+        if (effect != null) {
+            getLightStateForCommand().setTileEffect(effect);
         }
     }
 

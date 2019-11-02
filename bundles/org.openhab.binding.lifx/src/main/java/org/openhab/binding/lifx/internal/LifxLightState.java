@@ -29,7 +29,7 @@ import org.openhab.binding.lifx.internal.fields.HSBK;
 import org.openhab.binding.lifx.internal.listener.LifxLightStateListener;
 import org.openhab.binding.lifx.internal.protocol.PowerState;
 import org.openhab.binding.lifx.internal.protocol.SignalStrength;
-import org.openhab.binding.lifx.internal.protocol.TileEffect;
+import org.openhab.binding.lifx.internal.protocol.Effect;
 
 /**
  * The {@link LifxLightState} stores the properties that represent the state of a light.
@@ -43,7 +43,7 @@ public class LifxLightState {
     private @Nullable PercentType infrared;
     private @Nullable PowerState powerState;
     private @Nullable SignalStrength signalStrength;
-    private @Nullable TileEffect tileEffect;
+    private @Nullable Effect tileEffect;
 
     private LocalDateTime lastChange = LocalDateTime.MIN;
     private List<LifxLightStateListener> listeners = new CopyOnWriteArrayList<>();
@@ -84,7 +84,7 @@ public class LifxLightState {
         return signalStrength;
     }
 
-    public @Nullable TileEffect getTileEffect() {
+    public @Nullable Effect getTileEffect() {
         return tileEffect;
     }
 
@@ -172,9 +172,9 @@ public class LifxLightState {
         listeners.forEach(listener -> listener.handleSignalStrengthChange(oldSignalStrength, newSignalStrength));
     }
 
-    public void setTileEffect(TileEffect newEffect) {
+    public void setTileEffect(Effect newEffect) {
         // Caller has to take care that newEffect is another object
-        TileEffect oldEffect = tileEffect;
+        Effect oldEffect = tileEffect;
         tileEffect = newEffect;
         updateLastChange();
         listeners.forEach(listener -> listener.handleTileEffectChange(oldEffect, newEffect));

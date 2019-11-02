@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of SetTileEffect packet
- * 
+ *
  * @author Pawel Pieczul - Initial contribution
  */
 public class SetTileEffectRequest extends Packet {
@@ -63,7 +63,7 @@ public class SetTileEffectRequest extends Packet {
     private Integer reserved1 = 0;
     private Long reserved19to22 = 0L;
     private Long reserved23to26 = 0L;
-    private TileEffect effect;
+    private Effect effect;
 
     public SetTileEffectRequest() {
         setTagged(false);
@@ -71,7 +71,7 @@ public class SetTileEffectRequest extends Packet {
         setAckRequired(true);
     }
 
-    public SetTileEffectRequest(TileEffect effect) {
+    public SetTileEffectRequest(Effect effect) {
         this();
         this.effect = effect;
     }
@@ -105,7 +105,7 @@ public class SetTileEffectRequest extends Packet {
         for (int i = 0; i < pallette.length; i++) {
             pallette[i] = FIELD_PALETTE_60_TO_187.value(bytes);
         }
-        effect = new TileEffect(effectType, speed, duration, pallette);
+        effect = new Effect(effectType, speed, duration, pallette);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class SetTileEffectRequest extends Packet {
         buffer.put(FIELD_RESERVED_0.bytes(reserved0));
         buffer.put(FIELD_RESERVED_1.bytes(reserved1));
         buffer.put(FIELD_INSTANCE_ID.bytes(0L));
-        buffer.put(FIELD_TYPE.bytes(effect.getEffectType().value()));
+        buffer.put(FIELD_TYPE.bytes(effect.getType()));
         buffer.put(FIELD_SPEED.bytes(effect.getSpeed()));
         buffer.put(FIELD_DURATION.bytes(effect.getDuration()));
         buffer.put(FIELD_RESERVED_19_TO_26.bytes(reserved19to22));
@@ -132,8 +132,8 @@ public class SetTileEffectRequest extends Packet {
             buffer.put(FIELD_PALETTE_60_TO_187.bytes(hsbkZero));
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("SetTileEffectRequest: type={}, speed={}, duration={}, pallette_count={}",
-                    effect.getEffectType(), effect.getSpeed(), effect.getDuration(), pallette.length);
+            logger.debug("SetTileEffectRequest: type={}, speed={}, duration={}, pallette_count={}", effect.getType(),
+                    effect.getSpeed(), effect.getDuration(), pallette.length);
             for (int i = 0; i < pallette.length; i++) {
                 logger.debug("SetTileEffectRequest pallette[{}] = {}", i, pallette[i]);
             }

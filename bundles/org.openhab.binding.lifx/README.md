@@ -20,7 +20,7 @@ The following table lists the thing types of the supported LIFX devices:
 | LIFX Downlight               | colorlight   |
 | LIFX GU10                    | colorlight   |
 | LIFX Mini Color              | colorlight   |
-| LIFX Tile                    | tile         |
+| LIFX Tile                    | tilelight    |
 |                              |              |
 | LIFX+ A19                    | colorirlight |
 | LIFX+ BR30                   | colorirlight |
@@ -43,7 +43,7 @@ The following matrix lists the capabilities (channels) for each type:
 | colorirlight | X      |            | X     |            | X                 |                        | X        |              |
 | colormzlight | X      |            | X     | X          | X                 | X                      |          |              |
 | whitelight   | X      | X          |       |            | X                 |                        |          |              |
-| tile         | X      | X          | X     |            | X                 |                        |          | X            |
+| tilelight    | X      | X          | X     |            | X                 |                        |          | X            |
 
 ## Discovery
 

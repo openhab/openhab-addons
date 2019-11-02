@@ -54,28 +54,21 @@ public class LifxBindingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_ZONE = "colorzone";
+    public static final String CHANNEL_EFFECT = "effect";
     public static final String CHANNEL_INFRARED = "infrared";
     public static final String CHANNEL_SIGNAL_STRENGTH = "signalstrength";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_TEMPERATURE_ZONE = "temperaturezone";
-    public static final String CHANNEL_TILE_EFFECT_TYPE = "tileeffecttype";
-    public static final String CHANNEL_TILE_MORPH_SPEED = "tilemorphspeed";
-    public static final String CHANNEL_TILE_FLAME_SPEED = "tileflamespeed";
 
     // List of all Channel Type UIDs
     public static final ChannelTypeUID CHANNEL_TYPE_BRIGHTNESS = new ChannelTypeUID(BINDING_ID, CHANNEL_BRIGHTNESS);
     public static final ChannelTypeUID CHANNEL_TYPE_COLOR = new ChannelTypeUID(BINDING_ID, CHANNEL_COLOR);
     public static final ChannelTypeUID CHANNEL_TYPE_COLOR_ZONE = new ChannelTypeUID(BINDING_ID, CHANNEL_COLOR_ZONE);
+    public static final ChannelTypeUID CHANNEL_TYPE_EFFECT = new ChannelTypeUID(BINDING_ID, CHANNEL_EFFECT);
     public static final ChannelTypeUID CHANNEL_TYPE_INFRARED = new ChannelTypeUID(BINDING_ID, CHANNEL_INFRARED);
     public static final ChannelTypeUID CHANNEL_TYPE_TEMPERATURE = new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE);
     public static final ChannelTypeUID CHANNEL_TYPE_TEMPERATURE_ZONE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_TEMPERATURE_ZONE);
-    public static final ChannelTypeUID CHANNEL_TYPE_TILE_EFFECT_TYPE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_TILE_EFFECT_TYPE);
-    public static final ChannelTypeUID CHANNEL_TYPE_TILE_MORPH_SPEED = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_TILE_MORPH_SPEED);
-    public static final ChannelTypeUID CHANNEL_TYPE_TILE_FLAME_SPEED = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_TILE_FLAME_SPEED);
 
     // Config property for the LIFX device id
     public static final String CONFIG_PROPERTY_DEVICE_ID = "deviceId";
@@ -85,6 +78,8 @@ public class LifxBindingConstants {
     public static final String CONFIG_PROPERTY_POWER_ON_BRIGHTNESS = "powerOnBrightness";
     public static final String CONFIG_PROPERTY_POWER_ON_COLOR = "powerOnColor";
     public static final String CONFIG_PROPERTY_POWER_ON_TEMPERATURE = "powerOnTemperature";
+    public static final String CONFIG_PROPERTY_EFFECT_MORPH_SPEED = "effectMorphSpeed";
+    public static final String CONFIG_PROPERTY_EFFECT_FLAME_SPEED = "effectFlameSpeed";
 
     // Property keys
     public static final String PROPERTY_HOST = "host";
@@ -103,10 +98,10 @@ public class LifxBindingConstants {
     public static final ThingTypeUID THING_TYPE_COLORIRLIGHT = new ThingTypeUID(BINDING_ID, "colorirlight");
     public static final ThingTypeUID THING_TYPE_COLORMZLIGHT = new ThingTypeUID(BINDING_ID, "colormzlight");
     public static final ThingTypeUID THING_TYPE_WHITELIGHT = new ThingTypeUID(BINDING_ID, "whitelight");
-    public static final ThingTypeUID THING_TYPE_TILE = new ThingTypeUID(BINDING_ID, "tile");
+    public static final ThingTypeUID THING_TYPE_TILELIGHT = new ThingTypeUID(BINDING_ID, "tilelight");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_TYPE_COLORLIGHT,
-            THING_TYPE_COLORIRLIGHT, THING_TYPE_COLORMZLIGHT, THING_TYPE_WHITELIGHT, THING_TYPE_TILE)
+            THING_TYPE_COLORIRLIGHT, THING_TYPE_COLORMZLIGHT, THING_TYPE_WHITELIGHT, THING_TYPE_TILELIGHT)
             .collect(Collectors.toSet());
 
 }

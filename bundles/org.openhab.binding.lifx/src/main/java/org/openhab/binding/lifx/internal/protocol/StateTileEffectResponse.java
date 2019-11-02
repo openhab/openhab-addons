@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of StateTileEffect packet
- * 
+ *
  * @author Pawel Pieczul - Initial Contribution
  */
 public class StateTileEffectResponse extends Packet {
@@ -58,11 +58,11 @@ public class StateTileEffectResponse extends Packet {
     private Integer reserved0 = 0;
     private Long reserved18to21 = 0L;
     private Long reserved22to25 = 0L;
-    private TileEffect effect;
+    private Effect effect;
 
     private final Logger logger = LoggerFactory.getLogger(StateTileEffectResponse.class);
 
-    public TileEffect getEffect() {
+    public Effect getEffect() {
         return effect;
     }
 
@@ -94,7 +94,7 @@ public class StateTileEffectResponse extends Packet {
         for (int i = 0; i < pallette.length; i++) {
             pallette[i] = FIELD_PALETTE_59_TO_186.value(bytes);
         }
-        effect = new TileEffect(effectType, speed, duration, pallette);
+        effect = new Effect(effectType, speed, duration, pallette);
         if (logger.isDebugEnabled()) {
             logger.debug("StateTileEffectResponse: instanceId={}, type={}, speed={}, duration={}, pallette_count={}",
                     instanceId, effectType, speed, duration, palletteCount);
@@ -112,7 +112,7 @@ public class StateTileEffectResponse extends Packet {
         ByteBuffer buffer = ByteBuffer.allocate(packetLength());
         buffer.put(FIELD_RESERVED_0.bytes(reserved0));
         buffer.put(FIELD_INSTANCE_ID.bytes(0L));
-        buffer.put(FIELD_TYPE.bytes(effect.getEffectType().value()));
+        buffer.put(FIELD_TYPE.bytes(effect.getType()));
         buffer.put(FIELD_SPEED.bytes(effect.getSpeed()));
         buffer.put(FIELD_DURATION.bytes(effect.getDuration()));
         buffer.put(FIELD_RESERVED_18_TO_25.bytes(reserved18to21));

@@ -207,7 +207,7 @@ public enum Product {
     public ThingTypeUID getThingTypeUID() {
         if (hasFeature(COLOR)) {
             if (hasFeature(TILE_EFFECT)) {
-                return LifxBindingConstants.THING_TYPE_TILE;
+                return LifxBindingConstants.THING_TYPE_TILELIGHT;
             } else if (hasFeature(INFRARED)) {
                 return LifxBindingConstants.THING_TYPE_COLORIRLIGHT;
             } else if (hasFeature(MULTIZONE)) {
