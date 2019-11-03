@@ -14,18 +14,22 @@
 
   <name>openHAB Add-ons :: Bundles :: Doorbird Binding</name>
 
+  <properties>
+    <dep.noembedding>jna</dep.noembedding>
+  </properties>
+
   <dependencies>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.goterl.lazycode.lazysodium-java</artifactId>
+      <groupId>com.goterl.lazycode</groupId>
+      <artifactId>lazysodium-java</artifactId>
       <version>4.0.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
       <version>5.4.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
