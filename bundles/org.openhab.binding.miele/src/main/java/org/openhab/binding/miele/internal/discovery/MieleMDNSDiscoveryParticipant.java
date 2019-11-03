@@ -25,6 +25,7 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.mdns.internal.MDNSDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miele.internal.MieleBindingConstants;
@@ -107,11 +108,11 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
      * must contain path with value /rest/
      *
      * @param service the service to check
-     * @return true, if the discoverd service is a Miele XGW3000 Gateway
+     * @return true, if the discovered service is a Miele XGW3000 Gateway
      */
     private boolean isMieleGateway(ServiceInfo service) {
         return service.getApplication().contains(SERVICE_NAME) && service.getPropertyString(PATH_PROPERTY_NAME) != null
-            && service.getPropertyString(PATH_PROPERTY_NAME).equalsIgnoreCase(PATH_TO_CHECK_FOR_XGW3000);
+                && service.getPropertyString(PATH_PROPERTY_NAME).equalsIgnoreCase(PATH_TO_CHECK_FOR_XGW3000);
     }
 
 }
