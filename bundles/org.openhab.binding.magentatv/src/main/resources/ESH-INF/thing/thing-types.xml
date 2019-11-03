@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="magentatv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="receiver">
+		<label>MagentaTV Media Receiver</label>
+		<description>Represents a Telekom Media Receiver for MagentaTV</description>
+
+		<channel-groups>
+			<channel-group id="control" typeId="control">
+				<label>Control</label>
+			</channel-group>
+			<channel-group id="program" typeId="program">
+				<label>Program information</label>
+			</channel-group>
+			<channel-group id="status" typeId="status">
+				<label>Play Status</label>
+			</channel-group>
+		</channel-groups>
+
+
+		<config-description>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the Media Receiver</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="modelId" type="text">
+				<label>Receiver Model</label>
+				<description>Model type (MR4xx)</description>
+				<required>true</required>
+				<options>
+					<option value="Auto">AUTO</option>
+					<option value="DMS_TPB">MR400</option>
+					<option value="MR401B">MR401B</option>
+					<option value="MR201">MR201</option>
+				</options>
+			</parameter>
+			<parameter name="ipAddress" type="text">
+				<label>Receiver IP address</label>
+				<description>IP address of the receiver</description>
+				<required>true</required>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="text">
+				<label>Receiver Port</label>
+				<description>Port address for UPnP</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="accountName" type="text">
+				<label>Account name</label>
+				<description>Credentials: Login name (xxx@t-online.de)</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="accountPassword" type="text">
+				<label>Account password</label>
+				<description>Credentials: Account password</description>
+				<context>password</context>
+				<required>true</required>
+			</parameter>
+			<parameter name="userId" type="text">
+				<label>User ID</label>
+				<description>Technical User ID for pairing</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="control">
+		<label>Control</label>
+		<description>Control function for your Media Receiver</description>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="channelUp" typeId="channelUp" />
+			<channel id="channelDown" typeId="channelDown" />
+			<channel id="volumeUp" typeId="volumeUp" />
+			<channel id="volumeDown" typeId="volumeDown" />
+			<channel id="key" typeId="key" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="program">
+		<label>Program Information</label>
+		<description>Information on the running program</description>
+		<channels>
+			<channel id="programTitle" typeId="programTitle" />
+			<channel id="programText" typeId="programText" />
+			<channel id="programStart" typeId="programStart" />
+			<channel id="programDuration" typeId="programDuration" />
+			<channel id="programPosition" typeId="programPosition" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status">
+		<label>Play Status</label>
+		<description>Status information on media play</description>
+		<channels>
+			<channel id="channel" typeId="channel" />
+			<channel id="channelCode" typeId="channelCode" />
+			<channel id="runStatus" typeId="runStatus" />
+			<channel id="playMode" typeId="playMode" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="channel">
+		<item-type>String</item-type>
+		<label>Channel</label>
+		<description>Currently selected program</description>
+	</channel-type>
+	<channel-type id="channelCode" advanced="true">
+		<item-type>String</item-type>
+		<label>Channel Code</label>
+		<description>Channel code in the channel list</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="runStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Run status</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="playMode">
+		<item-type>String</item-type>
+		<label>Play mode</label>
+		<description>Play mode for running program</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="programTitle">
+		<item-type>String</item-type>
+		<label>Program</label>
+		<description>Running program</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>    
+	<channel-type id="programText">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Program description</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="programStart">
+		<item-type>String</item-type>
+		<label>Start</label>
+		<description>Program start time</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="programDuration">
+		<item-type>String</item-type>
+		<label>Duration</label>
+		<description>Duration of the program</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="programPosition">
+		<item-type>String</item-type>
+		<label>Play Position</label>
+		<description>Play position since program started</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Toggles STB power (on/off)</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="channelUp">
+		<item-type>Switch</item-type>
+		<label>Channel up</label>
+		<description>Next channel</description>
+	</channel-type>
+	<channel-type id="channelDown">
+		<item-type>Switch</item-type>
+		<label>Channel down</label>
+		<description>Previous channel</description>
+	</channel-type>
+	<channel-type id="volumeUp">
+		<item-type>Switch</item-type>
+		<label>Volume up</label>
+		<description>Increase volume</description>
+	</channel-type>
+	<channel-type id="volumeDown">
+		<item-type>Switch</item-type>
+		<label>Volume Down</label>
+		<description>Decrease volume</description>
+	</channel-type>
+	<channel-type id="key">
+		<item-type>String</item-type>
+		<label>Key</label>
+		<description>Send Key</description>
+		<state>
+			<options>
+				<option value="POWER">POWER</option>
+				<option value="MENU">Menu</option>
+				<option value="INFO">Info</option>
+				<option value="EPG">EPG</option>
+				<option value="RADIO">Radio</option>
+				<option value="MOVIE">Movies</option>
+				<option value="MEDIA">Media</option>
+				<option value="TTEXT">TeleText</option>
+				<option value="TV">TV</option>
+				<option value="0">0</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="SPACE">|_|</option>
+				<option value="OK">Ok</option>
+				<option value="ENTER ">Enter</option>
+				<option value="EXIT">Exit</option>
+				<option value="DELETE">Delete</option>
+				<option value="OPTION">Opt</option>
+				<option value="UP">Up</option>
+				<option value="DOWN">Down</option>
+				<option value="LEFT">Left</option>
+				<option value="RIGHT">Right</option>
+				<option value="BACK">Back</option>
+				<option value="NEXT">Next</option>
+				<option value="VOLUP">VolUp</option>
+				<option value="VOLDOWN">VolDown</option>
+				<option value="MUTE">Mute</option>
+				<option value="CHUP">ChanUp</option>
+				<option value="CHDOWN">ChanDown</option>
+				<option value="NEXTCH">ChanNext</option>
+				<option value="LASTCH">ChanPrev</option>
+				<option value="RED">red</option>
+				<option value="GREEN">green</option>
+				<option value="YELLOW">yellow</option>
+				<option value="BLUW">blue</option>
+				<option value="PLAY">Play</option>
+				<option value="PAUSE">Pause</option>
+				<option value="REWIND">Rewind</option>
+				<option value="FORWARD">FWD</option>
+				<option value="PREVCHAP">ChapPrev</option>
+				<option value="NEXTCHAP">ChapNext</option>
+				<option value="STOP">Stop</option>
+				<option value="RECORD">Record</option>
+				<option value="PAIR">PAIR</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
