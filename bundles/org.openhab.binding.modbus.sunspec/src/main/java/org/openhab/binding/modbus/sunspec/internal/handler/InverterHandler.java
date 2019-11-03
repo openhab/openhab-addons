@@ -101,7 +101,6 @@ public class InverterHandler extends AbstractSunSpecHandler {
                 getScaled(block.acEnergyLifetime, block.acEnergyLifetimeSF));
 
         resetCommunicationError();
-
     }
 
 }

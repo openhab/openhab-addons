@@ -271,12 +271,12 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             slaveId = slaveEndpointThingHandler.getSlaveId();
 
             @Nullable
-            ModbusSlaveEndpoint _endpoint = slaveEndpointThingHandler.asSlaveEndpoint();
+            ModbusSlaveEndpoint optionalEndpoint = slaveEndpointThingHandler.asSlaveEndpoint();
 
-            if (_endpoint == null) {
+            if (optionalEndpoint == null) {
                 endpoint = Optional.empty();
             } else {
-                endpoint = Optional.of(_endpoint);
+                endpoint = Optional.of(optionalEndpoint);
             }
         } catch (EndpointNotInitializedException e) {
             // this will be handled below as endpoint remains null
@@ -288,7 +288,6 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
             return;
         }
-
     }
 
     /**
@@ -324,7 +323,6 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             @Override
             public void onRegisters(@Nullable ModbusReadRequestBlueprint request,
                     @Nullable ModbusRegisterArray registers) {
-
                 if (registers == null) {
                     logger.info("Received empty register array on poll");
                     return;
@@ -335,7 +333,6 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
                 if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 }
-
             }
 
             @Override
@@ -350,14 +347,13 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         }));
 
         managerRef.get().registerRegularPoll(pollTask.get(), config.get().getRefreshMillis(), 1000);
-
     }
 
     /**
      * This method should handle incoming poll data, and update the channels
      * with the values received
      */
-    abstract protected void handlePolledData(ModbusRegisterArray registers);
+    protected abstract void handlePolledData(ModbusRegisterArray registers);
 
     @Override
     public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
@@ -384,7 +380,6 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         managerRef.get().unregisterRegularPoll(pollTask.get());
 
         pollTask = Optional.empty();
-
     }
 
     /**

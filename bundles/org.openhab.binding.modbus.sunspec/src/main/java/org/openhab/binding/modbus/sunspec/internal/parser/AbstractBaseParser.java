@@ -87,7 +87,6 @@ public class AbstractBaseParser {
     protected Optional<Long> extractOptionalAcc32(ModbusRegisterArray raw, int index) {
         return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.UINT32).map(DecimalType::longValue)
                 .filter(value -> value != 0);
-
     }
 
     /**
@@ -100,7 +99,6 @@ public class AbstractBaseParser {
      */
     protected Long extractAcc32(ModbusRegisterArray raw, int index, long def) {
         return extractOptionalAcc32(raw, index).orElse(def);
-
     }
 
     /**
@@ -113,7 +111,6 @@ public class AbstractBaseParser {
     protected Optional<Short> extractOptionalSunSSF(ModbusRegisterArray raw, int index) {
         return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.INT16).map(DecimalType::shortValue)
                 .filter(value -> value != (short) 0x8000);
-
     }
 
     /**
@@ -125,6 +122,5 @@ public class AbstractBaseParser {
      */
     protected Short extractSunSSF(ModbusRegisterArray raw, int index) {
         return extractOptionalSunSSF(raw, index).orElse((short) 1);
-
     }
 }
