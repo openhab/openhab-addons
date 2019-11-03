@@ -149,9 +149,10 @@ public class TouchWandShutterHandler extends BaseThingHandler {
         JsonParser jsonParser = new JsonParser();
         try {
             JsonObject unitObj = jsonParser.parse(response).getAsJsonObject();
-            String status = unitObj.get("currStatus").getAsString();
-            state = PercentType.valueOf(status);
-        } catch (JsonSyntaxException e) {
+            int status = unitObj.get("currStatus").getAsInt();
+            int convertStatus = 100 - status;
+            state = new PercentType(convertStatus);
+        } catch (JsonSyntaxException | IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn("Could not parse cmdGetUnitById response {}", getThing().getLabel());
         }

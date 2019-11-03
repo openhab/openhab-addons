@@ -168,7 +168,6 @@ public class TouchWandRestClient {
         return url;
     }
 
-    @SuppressWarnings("null")
     private String sendCommand(String command, HttpMethod method, String content) {
         ContentResponse response;
         Request request;
@@ -178,6 +177,7 @@ public class TouchWandRestClient {
             url = new URL(command);
         } catch (MalformedURLException e) {
             logger.warn("Error building URL {} : {}", command, e.getMessage());
+            return null;
         }
 
         request = httpClient.newRequest(url.toString()).timeout(timeout, TimeUnit.SECONDS).method(method);

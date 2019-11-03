@@ -156,8 +156,7 @@ public class TouchWandSwitchHandler extends BaseThingHandler {
             if (status.equals(SWITCH_STATUS_ON)) {
                 state = OnOffType.ON;
             }
-
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException | IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn("Could not parse cmdGetUnitById response {}", getThing().getLabel());
         }
