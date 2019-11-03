@@ -37,6 +37,9 @@ import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 @RunWith(Parameterized.class)
 public class BitUtilitiesExtractStringFromRegistersTest {
 

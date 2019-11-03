@@ -34,7 +34,7 @@
 			<channel id="fanart" typeId="fanart" />
 			<channel id="playfavorite" typeId="playfavorite" />
 			<channel id="playnotification" typeId="playnotification" />
-            <channel id="profile" typeId="profile" />
+			<channel id="profile" typeId="profile" />
 			<channel id="audio-name" typeId="name">
 				<label>Audio Name</label>
 			</channel>
