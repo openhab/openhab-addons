@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
  * Main OSGi service and HTTP servlet for MagentaTV NOTIFY.
  *
  * @author Markus Michels - Initial contribution
- * @author Gaël L'hopital - derived from Netatmo binding's servlet
  */
 @NonNullByDefault
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)

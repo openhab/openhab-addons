@@ -228,8 +228,8 @@ The binding has some global configuration options. Go to PaperUI:Configuration:A
 
 |Group     |Channel      |Type     |read-only|Desciption                                                                          |
 |----------|-------------|---------|---------|------------------------------------------------------------------------------------|
-|roller    |control      |String   |r/w      |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)|
-|          |rollerpos    |Percent  |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped        |
+|roller    |control      |Rollershutter   |r/w      |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)|
+|          |rollerpos    |Dimmer  |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped        |
 |          |direction    |String   |yes      |Last direction: open or close                                                       |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                |
 |          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode, OFF: normal mode (no calibration)                |
@@ -417,10 +417,28 @@ Note: PaperUI is recommended, if you want to use text files make sure to replace
 
 * .things
 
+/* Shelly 2.5 Roller */
+Thing shelly:shelly25-roller:XXXXX1 "Shelly 25 Roller e66954" @ "Home Theater" [deviceIp="x.x.x.x", userId="", password=""]
+Thing shelly:shelly25-roller:XXXXX2 "Shelly 25 Roller 00ac2e" @ "Living Room" [deviceIp="x.x.x.x", userId="admin", password="secret"]
+
+
+/* Shelly 2.5 Realys */
+Thing shelly:shelly25-relay:XXXXX3 "Shelly 25 Relay e6279d" @ "Hall Way" [deviceIp="x.x.x.x", userId="", password=""]
+Thing shelly:shelly25-relay:XXXXX4 "Shelly 25 Relay 00ab44" @ "Dining Room" [deviceIp="x.x.x.x", userId="", password=""]
+Thing shelly:shelly25-relay:XXXXX5 "Shelly 25 Relay 007f81" @ "Bed Room" [deviceIp="x.x.x.x", userId="", password=""]
+
 * .items
 
+Switch Shelly_XXXXX3_Relay "Garage Light" (garage) {channel="shelly:shelly1:XXXXX3:relay#output"}
+Switch Shelly_XXXXX3_OverPower "Garage Light Over Power" (garage) {channel="shelly:shelly1:XXXXX3:relay#overpower"}
+Switch Shelly_XXXXX3_OverTemp "Garage Light Over Temperature" (garage) {channel="shelly:shelly1:XXXXX3:relay#overtemperature"}
+Number Shelly_XXXXX3_AutoOnTimer "Garage Light Auto On Timer" (garage) {channel="shelly:shelly1:XXXXX3:relay#autoOn"}
+Number Shelly_XXXXX3_AutoOffTimer "Garage Light Auto Off Timer" (garage){channel="shelly:shelly1:BA2F18:relay#autoOff"}
+Switch Shelly__TimerActive "Garage Light Timer Active" (garage) {channel="shelly:shelly1:BA2F18:relay#timerActive"}
 
-* .sitemap
+/* Power Meter */
+Number Shelly_BA2F18_Power "Bath Room Light Power" (bathroom) {channel="shelly:shelly1:BA2F18:meter#currentWatts"}
+
 
 * .rules
 

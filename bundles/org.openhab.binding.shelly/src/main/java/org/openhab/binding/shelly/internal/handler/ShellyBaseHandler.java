@@ -53,8 +53,7 @@ import org.slf4j.LoggerFactory;
  * The {@link ShellyBaseHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Hans-Jörg Merk - Initial contribution
- * @author Markus Michels - Completely refactored
+ * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceListener {

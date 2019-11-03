@@ -47,8 +47,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ShellyHandlerFactory} is responsible for creating things and thing handlers.
  *
- * @author Hans-Jörg Merk - Initial contribution
- * @author Markus Michels - refactored
+ * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class,

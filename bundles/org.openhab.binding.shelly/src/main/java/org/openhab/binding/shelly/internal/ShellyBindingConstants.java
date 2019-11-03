@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link ShellyBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Hans-Jörg Merk - Initial contribution
+ * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class ShellyBindingConstants {

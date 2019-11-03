@@ -17,8 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link ShellyThingConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Hans-Jörg - Initial contribution
- * @author Markus Michels - refactored
+ * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class ShellyThingConfiguration {
