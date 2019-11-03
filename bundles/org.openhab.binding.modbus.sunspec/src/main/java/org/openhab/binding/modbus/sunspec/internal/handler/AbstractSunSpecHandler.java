@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.sunspec.internal.handler;
 
-import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.PROPERTY_UNIQUE_ADDRESS;
+import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -152,7 +152,13 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return;
         }
 
-        Optional<ModelBlock> mainBlock = getAddressFromConfig();
+        // Try properties first
+        Optional<ModelBlock> mainBlock = getAddressFromProperties();
+
+        if (!mainBlock.isPresent()) {
+            mainBlock = getAddressFromConfig();
+        }
+
         if (mainBlock.isPresent()) {
             publishUniqueAddress(mainBlock.get());
             updateStatus(ThingStatus.UNKNOWN);
@@ -161,6 +167,26 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "SunSpec item should either have the address and length configuration set or should been created by auto discovery");
             return;
+        }
+    }
+
+    /**
+     * Load and parse configuration from the properties
+     * These will be set by the auto discovery process
+     */
+    private Optional<ModelBlock> getAddressFromProperties() {
+        Map<String, String> properties = thing.getProperties();
+        if (!properties.containsKey(PROPERTY_BLOCK_ADDRESS) || !properties.containsKey(PROPERTY_BLOCK_LENGTH)) {
+            return Optional.empty();
+        }
+        try {
+            ModelBlock block = new ModelBlock();
+            block.address = (int) Double.parseDouble(thing.getProperties().get(PROPERTY_BLOCK_ADDRESS));
+            block.length = (int) Double.parseDouble(thing.getProperties().get(PROPERTY_BLOCK_LENGTH));
+            return Optional.of(block);
+        } catch (NumberFormatException ex) {
+            logger.debug("Could not parse address and length properties, error: {}", ex.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -345,8 +371,9 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         });
 
         long refreshMillis = myconfig.getRefreshMillis();
-        if (pollTask != null) {
-            PollTask task = pollTask;
+        @Nullable
+        PollTask task = pollTask;
+        if (task != null) {
             managerRef.registerRegularPoll(task, refreshMillis, 1000);
         }
     }
