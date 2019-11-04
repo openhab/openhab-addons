@@ -69,7 +69,7 @@
 
     <bnd.version>4.2.0</bnd.version>
     <karaf.version>4.2.6</karaf.version>
-    <sat.version>0.7.0</sat.version>
+    <sat.version>0.8.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage></bnd.importpackage>
@@ -577,9 +577,9 @@ Import-Package: \\
           </configuration>
           <dependencies>
             <dependency>
-              <groupId>org.openhab.core.tools.codestyle</groupId>
-              <artifactId>org.openhab.core.reactor.tools.codestyle</artifactId>
-              <version>${project.version}</version>
+              <groupId>org.openhab.tools</groupId>
+              <artifactId>openhab-codestyle</artifactId>
+              <version>${sat.version}</version>
             </dependency>
           </dependencies>
           <executions>
