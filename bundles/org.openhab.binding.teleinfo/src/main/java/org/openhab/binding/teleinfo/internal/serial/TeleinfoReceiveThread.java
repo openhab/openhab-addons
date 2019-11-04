@@ -67,7 +67,7 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
                     logger.error("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());
                     listener.onInvalidFrameReceived(this, e);
                 } catch (TimeoutException e) {
-                    logger.error("Got timeout during frame reading. Detail: \"{}\"", e.getLocalizedMessage(), e);
+                    logger.error("Got timeout during frame reading", e);
                     if (!listener.continueOnReadNextFrameTimeoutException(this, e)) {
                         break;
                     }
@@ -82,7 +82,7 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
             logger.error("An error occurred during serial port input stream opening", e);
         }
 
-        logger.debug("Stopped Teleinfo receive thread");
+        logger.debug("Terminates Teleinfo receive thread");
 
         serialPort.removeEventListener();
     }
