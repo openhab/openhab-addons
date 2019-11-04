@@ -67,7 +67,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
     @Override
     public void initialize() {
-        logger.info("Initializing Teleinfo Serial port controller");
+        logger.info("Initializing Teleinfo Serial controller");
         invalidFrameCounter = 0;
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -92,18 +92,19 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
         }, 60000, 60000);
 
         if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
-            logger.info("Teleinfo Serial port is initialized, but the bridge is currently OFFLINE due to errors");
+            logger.info("Teleinfo Serial is initialized, but the bridge is currently OFFLINE due to errors");
         } else {
-            logger.info("Teleinfo Serial port is initialized");
+            logger.info("Teleinfo Serial is initialized");
         }
     }
 
     @Override
     public void dispose() {
+        logger.info("Teleinfo Serial is stopping...");
         keepAliveThread.cancel();
         keepAliveThread = null;
         stopReceivingAndCloseSerialPort();
-        logger.info("Stopped Teleinfo serial controller");
+        logger.info("Teleinfo Serial is stopped");
 
         super.dispose();
     }
