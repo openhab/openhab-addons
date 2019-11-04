@@ -16,8 +16,6 @@
 		</channels>
 		<config-description-ref uri="thing-types:touchwand:switch" />
 	</thing-type>
-	
-	   <!-- Switch Channel -->
     <channel-type id="switch">
         <item-type>Switch</item-type>
         <label>Switch</label>
