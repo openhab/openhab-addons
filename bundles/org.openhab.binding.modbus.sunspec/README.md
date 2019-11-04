@@ -207,6 +207,8 @@ Textual configuration is optional, you can set up everything using PaperUI. Afte
 
 ### Thing Configuration
 
+The preferred way to add a SunSpec compatible Thing is through auto-discovery. Whoever if the auto-discovery would not work, advanced users could set up the thing through the config file.
+
 Please note that the nested bridge configuration does not work at the moment. Use the following flat format to set up the bridge and the inverter thing:
 
 ```
@@ -258,9 +260,9 @@ If you want to extend the bundle yourself, you have to do the followings:
 
  - The preferred way to parse the raw data is to write a parser for you model block type. Your class should implement the `SunspecParser` class and it is preferred to extend the `AbstractBaseParser` class. This base class has methods to accurately extract fields from the register array.
 
- - The parser should only retrieve the data from the register array and return them in a block descriptor class that extends the `AbstractSunSpecMessageBlock`. Scaling and other higher level transformation should be done by the handler itself.
+ - The parser should only retrieve the data from the register array and return them in a block descriptor class. Scaling and other higher level transformation should be done by the handler itself.
  
  - To include your block type in auto discovery you have to add its id to the `SUPPORTED_THING_TYPES_UIDS` map in `SunSpecConstants`. This is enough for our discovery process to include your thing type in the results.
 
- If you have questions or need help don't hesitate to contact us.
+If you have questions or need help don't hesitate to contact us.
  
