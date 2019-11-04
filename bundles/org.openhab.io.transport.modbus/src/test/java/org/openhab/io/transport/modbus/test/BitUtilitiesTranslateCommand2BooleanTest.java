@@ -24,6 +24,9 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.junit.Test;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 public class BitUtilitiesTranslateCommand2BooleanTest {
 
     @Test

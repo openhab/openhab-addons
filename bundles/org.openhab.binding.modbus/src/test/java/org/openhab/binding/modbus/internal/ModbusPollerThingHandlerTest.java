@@ -62,6 +62,9 @@ import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.PollTask;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 @RunWith(MockitoJUnitRunner.class)
 @Ignore("Tests fail because the thingRegistry field has been removed from BaseThingHandler, "
         + "see: https://github.com/openhab/openhab2-addons/issues/6171")
