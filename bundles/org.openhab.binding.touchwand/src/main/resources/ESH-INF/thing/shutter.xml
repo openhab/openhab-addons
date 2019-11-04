@@ -4,23 +4,23 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="shutter">
+	<thing-type id="shutter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" ></bridge-type-ref>
 		</supported-bridge-type-refs>
 		<label>TouchWand Shutter Unit</label>
-        <channels>
+		<channels>
 			<channel id="shutter" typeId="shutter">
 				<description>Shutter control</description>
 			</channel>
-        </channels>
-        <config-description-ref uri="thing-types:touchwand:shutter" />
-    </thing-type>
-    <channel-type id="shutter">
-        <item-type>Rollershutter</item-type>
-        <label>Shutter</label>
-        <description>The switch channel allows to switch the light on and off.
-        </description>
-        <category>Device control (UP, DOWN, MY/STOP, closure 0-100%)</category>
-    </channel-type>
+		</channels>
+		<config-description-ref uri="thing-types:touchwand:shutter" />
+	</thing-type>
+	<channel-type id="shutter">
+		<item-type>Rollershutter</item-type>
+		<label>Shutter</label>
+		<description>The switch channel allows to switch the light on and off.
+		</description>
+		<category>Device control (UP, DOWN, MY/STOP, closure 0-100%)</category>
+	</channel-type>
 </thing:thing-descriptions>
