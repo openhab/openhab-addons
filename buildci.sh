@@ -50,8 +50,8 @@ fi
 if [[ ! -z "$CHANGED_DIR" ]] && [[ -e "bundles/$CHANGED_DIR" ]]; then
     echo "Single addon pull request: Building $CHANGED_DIR"
     echo "MAVEN_OPTS='-Xms1g -Xmx2g -Dorg.slf4j.simpleLogger.log.org.openhab.tools.analysis.report.ReportUtility=DEBUG -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN'" > ~/.mavenrc
-    cd "bundles/$CHANGED_DIR"
-    mvn clean install -B 2>&1 |
+    ARTIFACT_ID=$(mvn -f bundles/${CHANGED_DIR}/pom.xml help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+    mvn clean install -B -am -pl ":$ARTIFACT_ID" 2>&1 |
 	    stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
 	    stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
 	    tee ${CDIR}/.build.log
@@ -60,9 +60,9 @@ if [[ ! -z "$CHANGED_DIR" ]] && [[ -e "bundles/$CHANGED_DIR" ]]; then
     fi
 
     # add the postfix to make sure we actually find the correct itest
-    if [[ -e "../itests/$CHANGED_DIR.tests" ]]; then
+    if [[ -e "itests/$CHANGED_DIR.tests" ]]; then
         echo "Single addon pull request: Building itest $CHANGED_DIR"
-        cd "../itests/$CHANGED_DIR.tests"
+        cd "itests/$CHANGED_DIR.tests"
         mvn clean install -B 2>&1 |
 	      stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
 	      stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
