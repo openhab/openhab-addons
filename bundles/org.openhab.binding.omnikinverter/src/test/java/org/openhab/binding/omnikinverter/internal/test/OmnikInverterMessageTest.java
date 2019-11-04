@@ -22,6 +22,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.omnikinverter.internal.OmnikInverterMessage;
 
+/**
+ * @author Hans van den Bogert - Initial contribution
+ */
 public class OmnikInverterMessageTest {
 
     private OmnikInverterMessage message;

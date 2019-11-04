@@ -60,9 +60,7 @@ import net.wimpi.modbus.util.AtomicCounter;
 import net.wimpi.modbus.util.SerialParameters;
 
 /**
- *
- * @author Sami Salonen
- *
+ * @author Sami Salonen - Initial contribution
  */
 public class IntegrationTestSupport extends JavaTest {
 
