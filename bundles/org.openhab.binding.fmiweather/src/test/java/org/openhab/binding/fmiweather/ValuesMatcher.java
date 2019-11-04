@@ -22,18 +22,26 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
+/**
+ * Hamcrest matcher for values
+ *
+ * @author Sami Salonen - Initial contribution
+ */
 @NonNullByDefault
 public class ValuesMatcher extends TypeSafeMatcher<@Nullable BigDecimal[]> {
 
     private Object[] values;
 
-    public ValuesMatcher(String... values) {
+    public ValuesMatcher(@Nullable String... values) {
         this.values = Stream.of(values).map(s -> s == null ? null : new BigDecimal(s)).toArray();
     }
 
     @SuppressWarnings("null")
     @Override
     public void describeTo(@Nullable Description description) {
+        if (description == null) {
+            return;
+        }
         description.appendText(Arrays.deepToString(values));
     }
 

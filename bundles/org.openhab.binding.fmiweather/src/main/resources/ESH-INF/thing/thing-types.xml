@@ -146,7 +146,7 @@
 			<channel id="wind-speed" typeId="wind-speed-channel" />
 			<channel id="wind-gust" typeId="wind-gust-channel" />
 			<channel id="pressure" typeId="pressure-channel" />
-            <channel id="precipitation-intensity" typeId="precipitation-intensity-channel" />
+			<channel id="precipitation-intensity" typeId="precipitation-intensity-channel" />
 			<channel id="total-cloud-cover" typeId="total-cloud-cover-channel" />
 			<channel id="weather-id" typeId="weather-id-channel" />
 		</channels>
@@ -330,52 +330,52 @@ preceding hour but not at the time of observation -->
 		</state>
 	</channel-type>
 	<channel-type id="total-cloud-cover-channel">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Total Cloud Cover</label>
-        <state readOnly="true" pattern="%.1f %unit%" />
-    </channel-type>
-    <channel-type id="precipitation-intensity-channel">
-        <item-type>Number:Speed</item-type>
-        <label>Precipitation Intensity</label>
-        <description>Equivalent to the precipitation amount if the same intensity prevails for an hour. </description>
-        <state readOnly="true" pattern="%.1f %unit%" />
-    </channel-type>
-    
+		<item-type>Number:Dimensionless</item-type>
+		<label>Total Cloud Cover</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="precipitation-intensity-channel">
+		<item-type>Number:Speed</item-type>
+		<label>Precipitation Intensity</label>
+		<description>Equivalent to the precipitation amount if the same intensity prevails for an hour. </description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	
 	<channel-type id="weather-id-channel">
 		<item-type>Number</item-type>
 		<label>Prevailing weather id</label>
 		<category>Pressure</category>
 		<state readOnly="true" min="1" max="177" pattern="%s">
 			<options>
-			    <!-- This corresponds to WeatherSymbol3 -->
+				<!-- This corresponds to WeatherSymbol3 -->
 				<!-- Finnish descriptions: https://ilmatieteenlaitos.fi/latauspalvelun-pikaohje -->				
-                 <option value="1">clear</option>
-                 <option value="2">partly cloudy</option>
-                 <option value="21">light showers</option>
-                 <option value="22">moderate showers</option>
-                 <option value="23">heavy showers</option>
-                 <option value="3">cloudy</option>
-                 <option value="31">light rain</option>
-                 <option value="32">moderate rain</option>
-                 <option value="33">heavy rain</option>
-                 <option value="41">light snow showers</option>
-                 <option value="42">moderate snow showers</option>
-                 <option value="43">heavy snow showers</option>
-                 <option value="51">light snowfall</option>
-                 <option value="52">moderate snowfall</option>
-                 <option value="53">heavy snowfall</option>
-                 <option value="61">thundershowers</option>
-                 <option value="62">heavy thundershowers</option>
-                 <option value="63">thunder</option>
-                 <option value="64">heavy thunder</option>
-                 <option value="71">light sleet showers</option>
-                 <option value="72">moderate sleet showers</option>
-                 <option value="73">heavy sleet showers</option>
-                 <option value="81">light sleet</option>
-                 <option value="82">moderate sleet</option>
-                 <option value="83">heavy sleet</option>
-                 <option value="91">haze</option>
-                 <option value="92">fog</option>
+				 <option value="1">clear</option>
+				 <option value="2">partly cloudy</option>
+				 <option value="21">light showers</option>
+				 <option value="22">moderate showers</option>
+				 <option value="23">heavy showers</option>
+				 <option value="3">cloudy</option>
+				 <option value="31">light rain</option>
+				 <option value="32">moderate rain</option>
+				 <option value="33">heavy rain</option>
+				 <option value="41">light snow showers</option>
+				 <option value="42">moderate snow showers</option>
+				 <option value="43">heavy snow showers</option>
+				 <option value="51">light snowfall</option>
+				 <option value="52">moderate snowfall</option>
+				 <option value="53">heavy snowfall</option>
+				 <option value="61">thundershowers</option>
+				 <option value="62">heavy thundershowers</option>
+				 <option value="63">thunder</option>
+				 <option value="64">heavy thunder</option>
+				 <option value="71">light sleet showers</option>
+				 <option value="72">moderate sleet showers</option>
+				 <option value="73">heavy sleet showers</option>
+				 <option value="81">light sleet</option>
+				 <option value="82">moderate sleet</option>
+				 <option value="83">heavy sleet</option>
+				 <option value="91">haze</option>
+				 <option value="92">fog</option>
 			</options>
 		</state>
 	</channel-type>

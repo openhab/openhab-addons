@@ -19,12 +19,14 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -34,10 +36,16 @@ import org.openhab.binding.fmiweather.internal.client.Data;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
 import org.openhab.binding.fmiweather.internal.client.Location;
 
+/**
+ * Base class for response parsing tests
+ *
+ * @author Sami Salonen - Initial contribution
+ */
+@NonNullByDefault
 public class AbstractFMIResponseParsingTest {
 
+    @NonNullByDefault({})
     protected Client client;
-    private Charset UTF8 = Charset.forName("UTF-8");
 
     @Before
     public void setUpClient() throws Throwable {
@@ -49,7 +57,8 @@ public class AbstractFMIResponseParsingTest {
             return Paths.get(getClass().getResource(filename).toURI());
         } catch (URISyntaxException e) {
             fail(e.getMessage());
-            return null;
+            // Make the compiler happy by throwing here, fails already above
+            throw new IllegalStateException();
         }
     }
 
@@ -59,7 +68,7 @@ public class AbstractFMIResponseParsingTest {
 
     protected String readTestResourceUtf8(Path path) {
         try {
-            BufferedReader reader = Files.newBufferedReader(path, UTF8);
+            BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
             StringBuilder content = new StringBuilder();
             char[] buffer = new char[1024];
             int read = -1;
@@ -69,7 +78,8 @@ public class AbstractFMIResponseParsingTest {
             return content.toString();
         } catch (IOException e) {
             fail(e.getMessage());
-            return null;
+            // Make the compiler happy by throwing here, fails already above
+            throw new IllegalStateException();
         }
     }
 
@@ -84,7 +94,10 @@ public class AbstractFMIResponseParsingTest {
             private ValuesMatcher valuesMatcher = new ValuesMatcher(values);
 
             @Override
-            public void describeTo(Description description) {
+            public void describeTo(@Nullable Description description) {
+                if (description == null) {
+                    return;
+                }
                 description.appendDescriptionOf(timestampMatcher);
                 description.appendText(" and ");
                 description.appendDescriptionOf(valuesMatcher);
@@ -109,7 +122,8 @@ public class AbstractFMIResponseParsingTest {
         } catch (Exception e) {
             fail(String.format("Unexpected reflection error (code changed?) %s: %s", e.getClass().getName(),
                     e.getMessage()));
-            return null;
+            // Make the compiler happy by throwing here, fails already above
+            throw new IllegalStateException();
         }
     }
 
@@ -124,7 +138,8 @@ public class AbstractFMIResponseParsingTest {
         } catch (Exception e) {
             fail(String.format("Unexpected reflection error (code changed?) %s: %s", e.getClass().getName(),
                     e.getMessage()));
-            return null;
+            // Make the compiler happy by throwing here, fails already above
+            throw new IllegalStateException();
         }
     }
 }

@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
 
@@ -26,6 +27,7 @@ import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseExcep
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class FMIResponseParsingExceptionReportTest extends AbstractFMIResponseParsingTest {
 
     private Path error1 = getTestResource("error1.xml");

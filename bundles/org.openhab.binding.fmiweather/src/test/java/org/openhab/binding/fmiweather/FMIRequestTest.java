@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.fmiweather.internal.client.FMISID;
 import org.openhab.binding.fmiweather.internal.client.ForecastRequest;
@@ -28,6 +29,12 @@ import org.openhab.binding.fmiweather.internal.client.LatLon;
 import org.openhab.binding.fmiweather.internal.client.ObservationRequest;
 import org.openhab.binding.fmiweather.internal.client.QueryParameter;
 
+/**
+ * Tests for converting Request objects to URLs
+ *
+ * @author Sami Salonen - Initial contribution
+ */
+@NonNullByDefault
 public class FMIRequestTest {
 
     @Test

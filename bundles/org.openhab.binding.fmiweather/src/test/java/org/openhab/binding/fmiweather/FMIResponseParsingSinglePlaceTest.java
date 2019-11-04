@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.fmiweather.internal.client.Data;
@@ -34,11 +35,14 @@ import org.openhab.binding.fmiweather.internal.client.Location;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class FMIResponseParsingSinglePlaceTest extends AbstractFMIResponseParsingTest {
 
     private Path observations1 = getTestResource("observations_single_place.xml");
 
+    @NonNullByDefault({})
     private FMIResponse observationsResponse1;
+    @NonNullByDefault({})
     private FMIResponse observationsResponse1NaN;
     private Location emasalo = new Location("Porvoo Emäsalo", "101023", new BigDecimal("60.20382"),
             new BigDecimal("25.62546"));

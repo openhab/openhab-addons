@@ -12,9 +12,17 @@
  */
 package org.openhab.binding.fmiweather;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
+/**
+ * Hamcrest matcher for timestamps
+ *
+ * @author Sami Salonen - Initial contribution
+ */
+@NonNullByDefault
 public class TimestampMatcher extends TypeSafeMatcher<long[]> {
 
     private long start;
@@ -28,7 +36,10 @@ public class TimestampMatcher extends TypeSafeMatcher<long[]> {
     }
 
     @Override
-    public void describeTo(Description description) {
+    public void describeTo(@Nullable Description description) {
+        if (description == null) {
+            return;
+        }
         description.appendText(new StringBuilder("start=").append(start).append(", length=").append(steps)
                 .append(", interval=").append(intervalMinutes).toString());
     }

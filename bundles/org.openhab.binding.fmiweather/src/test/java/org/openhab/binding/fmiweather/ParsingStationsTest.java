@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.fmiweather.internal.client.Location;
 
@@ -27,6 +28,7 @@ import org.openhab.binding.fmiweather.internal.client.Location;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class ParsingStationsTest extends AbstractFMIResponseParsingTest {
 
     private Path stations_xml = getTestResource("stations.xml");

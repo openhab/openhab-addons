@@ -15,27 +15,39 @@ package org.openhab.binding.fmiweather;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.openhab.binding.fmiweather.internal.client.Location;
 
+/**
+ * Hamcrest matcher for Location objects
+ *
+ * @author Sami Salonen - Initial contribution
+ */
+@NonNullByDefault
 public class ResponseLocationMatcher extends TypeSafeMatcher<Location> {
 
     public final String name;
     public final String id;
+    @Nullable
     public final BigDecimal latitude;
+    @Nullable
     public final BigDecimal longitude;
 
     public ResponseLocationMatcher(Location template) {
         this(template.name, template.id, template.latitude, template.longitude);
     }
 
-    public ResponseLocationMatcher(String name, String id, String latitude, String longitude) {
+    public ResponseLocationMatcher(String name, String id, @Nullable String latitude, @Nullable String longitude) {
         this(name, id, latitude == null ? null : new BigDecimal(latitude),
                 longitude == null ? null : new BigDecimal(longitude));
     }
 
-    public ResponseLocationMatcher(String name, String id, BigDecimal latitude, BigDecimal longitude) {
+    public ResponseLocationMatcher(String name, String id, @Nullable BigDecimal latitude,
+            @Nullable BigDecimal longitude) {
         super();
         this.name = name;
         this.id = id;
@@ -44,8 +56,13 @@ public class ResponseLocationMatcher extends TypeSafeMatcher<Location> {
     }
 
     @Override
-    public void describeTo(Description description) {
-        description.appendText(new Location(name, id, latitude, longitude).toString());
+    public void describeTo(@Nullable Description description) {
+        if (description == null) {
+            return;
+        }
+        description
+                .appendText(new Location(name, id, latitude == null ? BigDecimal.ZERO : (@NonNull BigDecimal) latitude,
+                        longitude == null ? BigDecimal.ZERO : (@NonNull BigDecimal) longitude).toString());
     }
 
     @Override

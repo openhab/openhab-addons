@@ -1,8 +1,8 @@
 /**
- * Copyright (c) 2014,2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.fmiweather.internal.client.Data;
@@ -33,13 +34,17 @@ import org.openhab.binding.fmiweather.internal.client.Location;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponseParsingTest {
 
     private Path observationsMultiplePlaces = getTestResource("observations_multiple_places.xml");
     private Path forecastsMultiplePlaces = getTestResource("forecast_multiple_places.xml");
 
+    @NonNullByDefault({})
     private FMIResponse observationsMultiplePlacesResponse;
+    @NonNullByDefault({})
     private FMIResponse observationsMultiplePlacesNaNResponse;
+    @NonNullByDefault({})
     private FMIResponse forecastsMultiplePlacesResponse;
 
     // observation station points (observations_multiple_places.xml) have fmisid as their id

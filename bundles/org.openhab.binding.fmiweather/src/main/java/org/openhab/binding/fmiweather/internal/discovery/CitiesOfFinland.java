@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.fmiweather.internal.client.Location;
 
 /**
@@ -35,6 +36,7 @@ import org.openhab.binding.fmiweather.internal.client.Location;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public final class CitiesOfFinland {
 
     public static final Set<Location> CITIES_OF_FINLAND = new HashSet<>();

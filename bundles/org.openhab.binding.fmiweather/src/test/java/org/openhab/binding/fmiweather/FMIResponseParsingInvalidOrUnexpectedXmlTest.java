@@ -1,8 +1,8 @@
 /**
- * Copyright (c) 2014,2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -15,6 +15,7 @@ package org.openhab.binding.fmiweather;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
 import org.xml.sax.SAXParseException;
@@ -24,6 +25,7 @@ import org.xml.sax.SAXParseException;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class FMIResponseParsingInvalidOrUnexpectedXmlTest extends AbstractFMIResponseParsingTest {
 
     private Path observations1 = getTestResource("observations_single_place.xml");
