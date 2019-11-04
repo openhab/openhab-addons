@@ -156,8 +156,9 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
         }
 
         logger.info("Connecting to serial port '{}'...", config.serialport);
+        String currentOwner = null;
         try {
-            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.serialport);
+            final SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.serialport);
             logger.debug("portIdentifier = {}", portIdentifier);
             if (portIdentifier == null) {
                 logger.error("No port identifier for '{}'", config.serialport);
@@ -166,6 +167,8 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
                 return;
             }
             logger.debug("Opening portIdentifier");
+            currentOwner = portIdentifier.getCurrentOwner();
+            logger.debug("portIdentifier.getCurrentOwner() = {}", currentOwner);
             SerialPort commPort = portIdentifier.open("org.openhab.binding.teleinfo", 5000);
             serialPort = commPort;
 
@@ -185,7 +188,8 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_INUSE);
             logger.error(
-                    "An error occurred during serial port connection. Detail: \"port is currently already in use\"");
+                    "An error occurred during serial port connection. Detail: \"port is currently already in use (by '{}')\"",
+                    currentOwner);
         } catch (UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_UNSUPPORTED);
