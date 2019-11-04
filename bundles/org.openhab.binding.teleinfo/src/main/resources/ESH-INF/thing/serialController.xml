@@ -17,6 +17,7 @@
                 <label>Serial Port</label>
                 <context>serial-port</context>
                 <description>Serial port of Teleinfo device (e.g.: /dev/ttyUSB0 on Linux, COM1 on Windows)</description>
+                <limitToOptions>false</limitToOptions>
             </parameter>
         </config-description>
     </bridge-type>
