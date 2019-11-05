@@ -29,6 +29,23 @@ Things support the following channels:
 |-----------------|-----------|-------------------------------------------|
 | message         | Text      | This channel lets send message to account |
 
+## Rule Actions
+
+This binding includes a rule action, which allows to send a message to a configured account.
+There is a separated instance for each account.
+
+```
+var actions = getActions()
+```
+
+```
+actions.sendMessage()
+```
+
+| Parameter | Description          |
+|-----------|----------------------|
+| message   | The message to send. |
+
 ## Full Example
 
 demo.things:

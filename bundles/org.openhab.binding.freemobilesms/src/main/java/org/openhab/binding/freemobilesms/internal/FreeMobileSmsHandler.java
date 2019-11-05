@@ -15,6 +15,8 @@ package org.openhab.binding.freemobilesms.internal;
 import static org.openhab.binding.freemobilesms.internal.FreeMobileSmsBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +26,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.slf4j.Logger;
@@ -97,5 +100,10 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
         }
 
         logger.debug("Finished initializing!");
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(FreeMobileSmsActions.class);
     }
 }
