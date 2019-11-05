@@ -34,9 +34,13 @@ public class FMIResponseParsingEmptyTest extends AbstractFMIResponseParsingTest 
     private FMIResponse observationsResponse;
 
     @Before
-    public void setUp() throws Throwable {
+    public void setUp() {
         client = new Client();
-        observationsResponse = parseMultiPointCoverageXml(readTestResourceUtf8(observations));
+        try {
+            observationsResponse = parseMultiPointCoverageXml(readTestResourceUtf8(observations));
+        } catch (Throwable e) {
+            throw new RuntimeException("Test data malformed", e);
+        }
         assertNotNull(observationsResponse);
     }
 

@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,18 +61,21 @@ public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponsePar
             new BigDecimal("19.90000"));
 
     @Before
-    public void setUp() throws Throwable {
-        observationsMultiplePlacesResponse = parseMultiPointCoverageXml(
-                readTestResourceUtf8(observationsMultiplePlaces));
-        observationsMultiplePlacesNaNResponse = parseMultiPointCoverageXml(
-                readTestResourceUtf8(observationsMultiplePlaces).replace("276.0", "NaN"));
-        forecastsMultiplePlacesResponse = parseMultiPointCoverageXml(readTestResourceUtf8(forecastsMultiplePlaces));
-
+    public void setUp() {
+        try {
+            observationsMultiplePlacesResponse = parseMultiPointCoverageXml(
+                    readTestResourceUtf8(observationsMultiplePlaces));
+            observationsMultiplePlacesNaNResponse = parseMultiPointCoverageXml(
+                    readTestResourceUtf8(observationsMultiplePlaces).replace("276.0", "NaN"));
+            forecastsMultiplePlacesResponse = parseMultiPointCoverageXml(readTestResourceUtf8(forecastsMultiplePlaces));
+        } catch (Throwable e) {
+            throw new RuntimeException("Test data malformed", e);
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testLocationsMultiplePlacesObservations() throws Throwable {
+    public void testLocationsMultiplePlacesObservations() {
         // locations
         assertThat(observationsMultiplePlacesResponse.getLocations().size(), is(3));
         assertThat(observationsMultiplePlacesResponse.getLocations(),
@@ -82,7 +84,7 @@ public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponsePar
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testLocationsMultiplePlacesForecasts() throws Throwable {
+    public void testLocationsMultiplePlacesForecasts() {
         // locations
         assertThat(forecastsMultiplePlacesResponse.getLocations().size(), is(2));
         assertThat(forecastsMultiplePlacesResponse.getLocations(),
@@ -90,29 +92,27 @@ public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponsePar
     }
 
     @Test
-    public void testParametersMultipleObservations() throws Throwable {
+    public void testParametersMultipleObservations() {
         for (Location location : new Location[] { emasalo, kilpilahti, harabacka }) {
-            Optional<@NonNull Set<@NonNull String>> parametersOptional = observationsMultiplePlacesResponse
-                    .getParameters(location);
-            Set<@NonNull String> parameters = parametersOptional.get();
+            Optional<Set<String>> parametersOptional = observationsMultiplePlacesResponse.getParameters(location);
+            Set<String> parameters = parametersOptional.get();
             assertThat(parameters.size(), is(6));
             assertThat(parameters, hasItems("wd_10min", "wg_10min", "rh", "p_sea", "ws_10min", "t2m"));
         }
     }
 
     @Test
-    public void testParametersMultipleForecasts() throws Throwable {
+    public void testParametersMultipleForecasts() {
         for (Location location : new Location[] { maarianhamina, pointWithNoName }) {
-            Optional<@NonNull Set<@NonNull String>> parametersOptional = forecastsMultiplePlacesResponse
-                    .getParameters(location);
-            Set<@NonNull String> parameters = parametersOptional.get();
+            Optional<Set<String>> parametersOptional = forecastsMultiplePlacesResponse.getParameters(location);
+            Set<String> parameters = parametersOptional.get();
             assertThat(parameters.size(), is(2));
             assertThat(parameters, hasItems("Temperature", "Humidity"));
         }
     }
 
     @Test
-    public void testParseObservationsMultipleData() throws Throwable {
+    public void testParseObservationsMultipleData() {
         Data wd_10min = observationsMultiplePlacesResponse.getData(emasalo, "wd_10min").get();
         assertThat(wd_10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
                 "243.0", "252.0", "262.0", "276.0")));
@@ -122,7 +122,7 @@ public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponsePar
     }
 
     @Test
-    public void testParseForecastsMultipleData() throws Throwable {
+    public void testParseForecastsMultipleData() {
         Data temperature = forecastsMultiplePlacesResponse.getData(maarianhamina, "Temperature").get();
         assertThat(temperature, is(deeplyEqualTo(1553688000, 360, "3.84", "2.62", "2.26", "1.22", "5.47", "5.52",
                 "5.42", "4.78", "8.34", "7.15", null, null, null, null)));
@@ -139,7 +139,7 @@ public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponsePar
     }
 
     @Test
-    public void testParseObservations1NaN() throws Throwable {
+    public void testParseObservations1NaN() {
         // last value is null, due to NaN measurement value
         Data wd_10min = observationsMultiplePlacesNaNResponse.getData(emasalo, "wd_10min").get();
         assertThat(wd_10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",

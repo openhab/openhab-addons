@@ -1,8 +1,8 @@
 /**
- * Copyright (c) 2014,2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,31 +47,34 @@ public class FMIResponseParsingSinglePlaceTest extends AbstractFMIResponseParsin
             new BigDecimal("25.62546"));
 
     @Before
-    public void setUp() throws Throwable {
-        observationsResponse1 = parseMultiPointCoverageXml(readTestResourceUtf8(observations1));
-        observationsResponse1NaN = parseMultiPointCoverageXml(
-                readTestResourceUtf8(observations1).replace("276.0", "NaN"));
-
+    public void setUp() {
+        try {
+            observationsResponse1 = parseMultiPointCoverageXml(readTestResourceUtf8(observations1));
+            observationsResponse1NaN = parseMultiPointCoverageXml(
+                    readTestResourceUtf8(observations1).replace("276.0", "NaN"));
+        } catch (Throwable e) {
+            throw new RuntimeException("Test data malformed", e);
+        }
         assertNotNull(observationsResponse1);
     }
 
     @Test
-    public void testLocationsSinglePlace() throws Throwable {
+    public void testLocationsSinglePlace() {
         assertThat(observationsResponse1.getLocations().size(), is(1));
         assertThat(observationsResponse1.getLocations().stream().findFirst().get(), deeplyEqualTo(emasalo));
     }
 
     @Test
-    public void testParameters() throws Throwable {
+    public void testParameters() {
         // parameters
-        Optional<@NonNull Set<@NonNull String>> parametersOptional = observationsResponse1.getParameters(emasalo);
-        Set<@NonNull String> parameters = parametersOptional.get();
+        Optional<Set<String>> parametersOptional = observationsResponse1.getParameters(emasalo);
+        Set<String> parameters = parametersOptional.get();
         assertThat(parameters.size(), is(6));
         assertThat(parameters, hasItems("wd_10min", "wg_10min", "rh", "p_sea", "ws_10min", "t2m"));
     }
 
     @Test
-    public void testGetDataWithInvalidArguments() throws Throwable {
+    public void testGetDataWithInvalidArguments() {
         Location loc = observationsResponse1.getLocations().stream().findAny().get();
         // Invalid parameter or location (fmisid)
         assertThat(observationsResponse1.getData(loc, "foobar"), is(Optional.empty()));
@@ -82,14 +84,14 @@ public class FMIResponseParsingSinglePlaceTest extends AbstractFMIResponseParsin
     }
 
     @Test
-    public void testParseObservations1Data() throws Throwable {
+    public void testParseObservations1Data() {
         Data wd_10min = observationsResponse1.getData(emasalo, "wd_10min").get();
         assertThat(wd_10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
                 "243.0", "252.0", "262.0", "276.0")));
     }
 
     @Test
-    public void testParseObservations1NaN() throws Throwable {
+    public void testParseObservations1NaN() {
         // last value is null, due to NaN measurement value
         Data wd_10min = observationsResponse1NaN.getData(emasalo, "wd_10min").get();
         assertThat(wd_10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",

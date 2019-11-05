@@ -15,7 +15,6 @@ package org.openhab.binding.fmiweather;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.hamcrest.Description;
@@ -60,9 +59,9 @@ public class ResponseLocationMatcher extends TypeSafeMatcher<Location> {
         if (description == null) {
             return;
         }
-        description
-                .appendText(new Location(name, id, latitude == null ? BigDecimal.ZERO : (@NonNull BigDecimal) latitude,
-                        longitude == null ? BigDecimal.ZERO : (@NonNull BigDecimal) longitude).toString());
+        description.appendText("Location(name=\"").appendText(name).appendText("\", id=\"").appendText(id)
+                .appendText("\", latitude=").appendText(Objects.toString(latitude)).appendText(", longitude=")
+                .appendText(Objects.toString(longitude)).appendText(")");
     }
 
     @Override

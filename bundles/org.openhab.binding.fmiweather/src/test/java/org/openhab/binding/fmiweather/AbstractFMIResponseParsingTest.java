@@ -48,7 +48,7 @@ public class AbstractFMIResponseParsingTest {
     protected Client client;
 
     @Before
-    public void setUpClient() throws Throwable {
+    public void setUpClient() {
         client = new Client();
     }
 
@@ -112,6 +112,14 @@ public class AbstractFMIResponseParsingTest {
 
     }
 
+    /**
+     *
+     * @param content
+     * @return
+     * @throws Throwable exception raised by parseMultiPointCoverageXml
+     * @throws AssertionError exception raised when parseMultiPointCoverageXml method signature does not match excepted
+     *             (test & implementation is out-of-sync)
+     */
     protected FMIResponse parseMultiPointCoverageXml(String content) throws Throwable {
         try {
             Method parseMethod = Client.class.getDeclaredMethod("parseMultiPointCoverageXml", String.class);
@@ -128,13 +136,13 @@ public class AbstractFMIResponseParsingTest {
     }
 
     @SuppressWarnings("unchecked")
-    protected Set<Location> parseStations(String content) throws Throwable {
+    protected Set<Location> parseStations(String content) {
         try {
             Method parseMethod = Client.class.getDeclaredMethod("parseStations", String.class);
             parseMethod.setAccessible(true);
             return (Set<Location>) parseMethod.invoke(client, content);
         } catch (InvocationTargetException e) {
-            throw e.getTargetException();
+            throw new RuntimeException(e.getTargetException());
         } catch (Exception e) {
             fail(String.format("Unexpected reflection error (code changed?) %s: %s", e.getClass().getName(),
                     e.getMessage()));

@@ -1,8 +1,8 @@
 /**
- * Copyright (c) 2014,2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -35,7 +35,7 @@ public class ParsingStationsTest extends AbstractFMIResponseParsingTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testParseStations() throws Throwable {
+    public void testParseStations() {
         Set<Location> stations = parseStations(readTestResourceUtf8(stations_xml));
         assertNotNull(stations);
         assertThat(stations.size(), is(3));

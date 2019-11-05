@@ -36,7 +36,7 @@ public class FMIResponse {
      * Builder class for FMIResponse
      *
      * @author Sami Salonen
-     *         uthor Sami Salonen - Initial contribution/
+     *         author Sami Salonen - Initial contribution/
      *
      */
     public static class Builder {

@@ -1,8 +1,8 @@
 /**
- * Copyright (c) 2014,2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -15,7 +15,6 @@ package org.openhab.binding.fmiweather;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,7 +32,7 @@ public class FMIResponseParsingExceptionReportTest extends AbstractFMIResponsePa
     private Path error1 = getTestResource("error1.xml");
 
     @Test
-    public void testErrorResponse() throws IOException, Throwable {
+    public void testErrorResponse() {
         try {
             parseMultiPointCoverageXml(readTestResourceUtf8(error1));
         } catch (FMIResponseException e) {
@@ -41,7 +40,7 @@ public class FMIResponseParsingExceptionReportTest extends AbstractFMIResponsePa
             assertThat(e.getMessage(), is(
                     "Exception report (OperationParsingFailed): [Invalid time interval!, The start time is later than the end time., URI: /wfs?endtime=1900-03-10T20%3A10%3A00Z&fmisid=101023&parameters=t2m%2Crh%2Cwd_10min%2Cws_10min%2Cwg_10min%2Cp_sea&request=getFeature&service=WFS&starttime=2019-03-10T10%3A10%3A00Z&storedquery_id=fmi%3A%3Aobservations%3A%3Aweather%3A%3Amultipointcoverage&timestep=60&version=2.0.0]"));
             return;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             fail("Wrong exception, was " + e.getClass().getName());
         }
         fail("FMIResponseException expected");
