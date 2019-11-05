@@ -94,9 +94,20 @@ sitemap voc label="Volvo On Call" {
 
 ## Rule Actions
 
-Multiple actions are supported by this binding. In classic rules these are accessible as shown in this example (adjust getActions with your ThingId):
+Multiple actions are supported by this binding. In classic rules these are accessible as shown in the example below:
 
-Example
+Example 1a: If Thing has been created using autodiscovery
+
+```
+ val actions = getActions("volvooncall","volvooncall:vehicle:thingId")
+ if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+ } else {
+        actions.openCarCommand()
+ }
+```
+Example 1b: If Thing has been created using script
 
 ```
  val actions = getActions("volvooncall","volvooncall:vehicle:bridgeId:thingId")
@@ -128,11 +139,19 @@ Sends the command to start the engine for a given runtime. Default 5 minutes.
 
  ### heaterStartCommand()
 
-Sends the command to start the car heater.
+Sends the command to start the car heater (if remoteHeaterSupported).
 
  ### heaterStopCommand()
 
-Sends the command to stop the car heater.
+Sends the command to stop the car heater (if remoteHeaterSupported).
+
+ ### preclimatizationStartCommand()
+
+Sends the command to start the car heater (if preclimatizationSupported).
+
+ ### preclimatizationStopCommand()
+
+Sends the command to stop the car heater (if preclimatizationSupported).
 
  ### honkBlinkCommand(honk, blink)
 
