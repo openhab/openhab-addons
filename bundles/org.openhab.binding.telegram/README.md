@@ -58,7 +58,7 @@ Please note that the things cannot be used to send messages. In order to send a 
 | Channel Type ID                      | Item Type | Description                                                     |
 |--------------------------------------|-----------|-----------------------------------------------------------------|
 | lastMessageText                      | String    | The last received message                                       |
-| lastMessageDate                      | String    | The date of the last received message                           |
+| lastMessageDate                      | DateTime  | The date of the last received message (UTC)                     |
 | lastMessageName                      | String    | The full name of the sender of the last received message        |
 | lastMessageUsername                  | String    | The username of the sender of the last received message         |
 | chatId                               | String    | The id of the chat of the last received meesage                 |

@@ -14,11 +14,12 @@ package org.openhab.binding.telegram.internal;
 
 import static org.openhab.binding.telegram.internal.TelegramBindingConstants.*;
 
-import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -35,11 +37,14 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.telegram.bot.TelegramActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.pengrad.telegrambot.ExceptionHandler;
 import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.TelegramException;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
@@ -121,6 +126,7 @@ public class TelegramHandler extends BaseThingHandler {
         TelegramConfiguration config = getConfigAs(TelegramConfiguration.class);
 
         String botToken = config.getBotToken();
+        chatIds.clear();
         for (String chatIdStr : config.getChatIds()) {
             try {
                 chatIds.add(Long.valueOf(chatIdStr));
@@ -146,55 +152,84 @@ public class TelegramHandler extends BaseThingHandler {
             @NonNullByDefault({})
             public int process(List<Update> updates) {
                 for (Update update : updates) {
+                    String lastMessageText = null;
+                    Integer lastMessageDate = null;
+                    String lastMessageFirstName = null;
+                    String lastMessageLastName = null;
+                    String lastMessageUsername = null;
+                    Long chatId = null;
+                    String replyId = null;
                     if (update.message() != null && update.message().text() != null) {
                         Message message = update.message();
-                        Long chatId = message.chat().id();
+                        chatId = message.chat().id();
                         if (!chatIds.contains(chatId)) {
+                            LOGGER.warn(
+                                    "Ignored message from unknown chat id {}. If you know the sender of that chat, add it to the list of chat ids in the thing configuration to authorize it",
+                                    chatId);
                             continue; // this is very important regarding security to avoid commands from an unknown
                                       // chat
                         }
 
-                        String lastMessageText = message.text();
-                        String lastMessageDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
-                                .format(new Date(message.date().longValue() * 1000));
-                        String lastMessageName = message.from().firstName() + " " + message.from().lastName();
-                        String lastMessageUsername = message.from().username();
-
-                        updateChannel(LASTMESSAGETEXT, lastMessageText);
-                        updateChannel(LASTMESSAGEDATE, lastMessageDate);
-                        updateChannel(LASTMESSAGENAME, lastMessageName);
-                        updateChannel(LASTMESSAGEUSERNAME, lastMessageUsername);
-                        updateChannel(CHATID, chatId.toString());
+                        lastMessageText = message.text();
+                        lastMessageDate = message.date();
+                        lastMessageFirstName = message.from().firstName();
+                        lastMessageLastName = message.from().lastName();
+                        lastMessageUsername = message.from().username();
                     } else if (update.callbackQuery() != null && update.callbackQuery().message() != null
                             && update.callbackQuery().message().text() != null) {
                         String[] callbackData = update.callbackQuery().data().split(" ", 2);
 
                         if (callbackData.length == 2) {
-                            String replyId = callbackData[0];
-                            String lastMessageText = callbackData[1];
-                            String lastMessageDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
-                                    .format(System.currentTimeMillis());
-                            String lastMessageName = update.callbackQuery().from().firstName() + " "
-                                    + update.callbackQuery().from().lastName();
-                            String lastMessageUsername = update.callbackQuery().message().from().username();
-                            Long chatId = update.callbackQuery().message().chat().id();
+                            replyId = callbackData[0];
+                            lastMessageText = callbackData[1];
+                            lastMessageDate = update.callbackQuery().message().date();
+                            lastMessageFirstName = update.callbackQuery().from().firstName();
+                            lastMessageLastName = update.callbackQuery().from().lastName();
+                            lastMessageUsername = update.callbackQuery().message().from().username();
+                            chatId = update.callbackQuery().message().chat().id();
                             replyIdToCallbackId.put(new ReplyKey(chatId, replyId), update.callbackQuery().id());
                             LOGGER.debug("Received callbackId {} for chatId {} and replyId {}",
                                     update.callbackQuery().id(), chatId, replyId);
-                            updateChannel(LASTMESSAGETEXT, lastMessageText);
-                            updateChannel(LASTMESSAGEDATE, lastMessageDate);
-                            updateChannel(LASTMESSAGENAME, lastMessageName);
-                            updateChannel(LASTMESSAGEUSERNAME, lastMessageUsername);
-                            updateChannel(CHATID, chatId.toString());
-                            updateChannel(REPLYID, replyId);
                         } else {
                             LOGGER.warn(
                                     "The received callback query {} has not the right format (must be seperated by spaces)",
                                     update.callbackQuery().data());
                         }
                     }
+                    updateChannel(LASTMESSAGETEXT,
+                            lastMessageText != null ? new StringType(lastMessageText) : UnDefType.NULL);
+                    updateChannel(LASTMESSAGEDATE,
+                            lastMessageDate != null
+                                    ? new DateTimeType(ZonedDateTime.ofInstant(
+                                            Instant.ofEpochSecond(lastMessageDate.intValue()), ZoneOffset.UTC))
+                                    : UnDefType.NULL);
+                    updateChannel(LASTMESSAGENAME,
+                            (lastMessageFirstName != null || lastMessageLastName != null)
+                                    ? new StringType((lastMessageFirstName != null ? lastMessageFirstName + " " : "")
+                                            + (lastMessageLastName != null ? lastMessageLastName : ""))
+                                    : UnDefType.NULL);
+                    updateChannel(LASTMESSAGEUSERNAME,
+                            lastMessageUsername != null ? new StringType(lastMessageUsername) : UnDefType.NULL);
+                    updateChannel(CHATID, chatId != null ? new StringType(chatId.toString()) : UnDefType.NULL);
+                    updateChannel(REPLYID, replyId != null ? new StringType(replyId) : UnDefType.NULL);
                 }
                 return UpdatesListener.CONFIRMED_UPDATES_ALL;
+            }
+        }, new ExceptionHandler() {
+
+            @Override
+            public void onException(@Nullable TelegramException exception) {
+                if (exception != null) {
+                    LOGGER.warn("Telegram exception: {}", exception.getMessage());
+                    if (exception.response() != null) {
+                        BaseResponse localResponse = exception.response();
+                        if (localResponse.errorCode() == 401) {
+                            LOGGER.error("Bot token invalid, disable thing {}", getThing().getUID());
+                            localBot.removeGetUpdatesListener();
+                            updateStatus(ThingStatus.OFFLINE);
+                        }
+                    }
+                }
             }
         });
     }
@@ -213,9 +248,8 @@ public class TelegramHandler extends BaseThingHandler {
         super.dispose();
     }
 
-    public void updateChannel(String channelName, String stateString) {
-        State messageState = new StringType(stateString);
-        updateState(new ChannelUID(getThing().getUID(), channelName), messageState);
+    public void updateChannel(String channelName, State state) {
+        updateState(new ChannelUID(getThing().getUID(), channelName), state);
     }
 
     @Override
