@@ -109,7 +109,6 @@ public class AbstractFMIResponseParsingTest {
                         && valuesMatcher.matches(dataValues.values);
             }
         };
-
     }
 
     /**
