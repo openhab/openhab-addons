@@ -217,6 +217,8 @@ public class VehicleHandler extends BaseThingHandler {
                 actionStart(5);
             } else if (REMOTE_HEATER.equals(channelID)) {
                 actionHeater(onOffCommand == OnOffType.ON);
+            } else if (PRECLIMATIZATION.equals(channelID)) {
+                actionPreclimatization(onOffCommand == OnOffType.ON);
             } else if (CAR_LOCKED.equals(channelID)) {
                 if (onOffCommand == OnOffType.ON) {
                     actionClose();
@@ -362,7 +364,8 @@ public class VehicleHandler extends BaseThingHandler {
             if (activeOptions.containsKey(action)) {
                 if (vehicleStatus.carLocked != controlState) {
                     try {
-                        bridgeHandler.postURL(SERVICE_URL + "vehicles/" + configuration.vin + "/" + action, null);
+                        String address = SERVICE_URL + "vehicles/" + configuration.vin + "/" + action;
+                        bridgeHandler.postURL(address, "{}");
                     } catch (JsonSyntaxException | IOException e) {
                         logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -381,8 +384,15 @@ public class VehicleHandler extends BaseThingHandler {
         if (bridgeHandler != null) {
             if (activeOptions.containsKey(action)) {
                 try {
-                    String command = start ? "start" : "stop";
-                    bridgeHandler.postURL(SERVICE_URL + "vehicles/" + configuration.vin + "/heater/" + command, null);
+                    if (action.contains(REMOTE_HEATER)) {
+                        String command = start ? "start" : "stop";
+                        String address = SERVICE_URL + "vehicles/" + configuration.vin + "/heater/" + command;
+                        bridgeHandler.postURL(address, start ? "{}" : null);
+                    } else if (action.contains(PRECLIMATIZATION)) {
+                        String command = start ? "start" : "stop";
+                        String address = SERVICE_URL + "vehicles/" + configuration.vin + "/preclimatization/" + command;
+                        bridgeHandler.postURL(address, start ? "{}" : null);
+                    }
                 } catch (JsonSyntaxException | IOException e) {
                     logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -397,6 +407,10 @@ public class VehicleHandler extends BaseThingHandler {
         actionHeater(REMOTE_HEATER, start);
     }
 
+    public void actionPreclimatization(Boolean start) {
+        actionHeater(PRECLIMATIZATION, start);
+    }
+
     public void actionOpen() {
         actionOpenClose(UNLOCK, OnOffType.OFF);
     }
@@ -409,8 +423,8 @@ public class VehicleHandler extends BaseThingHandler {
         VolvoOnCallBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             if (activeOptions.containsKey(ENGINE_START)) {
-                String url = new String(SERVICE_URL + "vehicles/" + vehicle.vehicleId + "/engine/start");
-                String json = new String("{\"runtime\":" + runtime.toString() + "}");
+                String url = SERVICE_URL + "vehicles/" + vehicle.vehicleId + "/engine/start";
+                String json = "{\"runtime\":" + runtime.toString() + "}";
 
                 try {
                     bridgeHandler.postURL(url, json);
@@ -451,5 +465,4 @@ public class VehicleHandler extends BaseThingHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(VolvoOnCallActions.class);
     }
-
 }
