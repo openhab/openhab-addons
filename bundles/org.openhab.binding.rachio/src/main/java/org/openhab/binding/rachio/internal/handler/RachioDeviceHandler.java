@@ -332,7 +332,6 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
                     e.getMessage());
             return false;
         }
-
     }
 
     @SuppressWarnings("null")

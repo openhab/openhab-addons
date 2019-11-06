@@ -56,14 +56,14 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         @Nullable
         RachioBridgeHandler cloudHandler;
         @Nullable
-        ThingUID uid;
+        ThingUID            uid;
     }
 
-    private final Logger logger = LoggerFactory.getLogger(RachioHandlerFactory.class);
+    private final Logger                                logger              = LoggerFactory.getLogger(RachioHandlerFactory.class);
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
-    private final HashMap<String, RachioBridge> bridgeList;
-    private final RachioConfiguration bindingConfig = new RachioConfiguration();
-    private final RachioNetwork rachioNetwork = new RachioNetwork();
+    private final HashMap<String, RachioBridge>         bridgeList;
+    private final RachioConfiguration                   bindingConfig       = new RachioConfiguration();
+    private final RachioNetwork                         rachioNetwork       = new RachioNetwork();
 
     /**
      * OSGi activation callback.
@@ -156,7 +156,6 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
             return false;
         } catch (Exception e) {
             logger.error("RachioEvent: Unable to process event: {}", e.getMessage());
-
         }
         logger.debug("RachioEvent: Unable to route event to bridge, externalId='{}', deviceId='{}'", event.externalId,
                 event.deviceId);

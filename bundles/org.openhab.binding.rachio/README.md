@@ -53,6 +53,7 @@ Bridge rachio:cloud:1 [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx", pollingInterv
 {
 }
 ```
+
 |Parameter|Description|
 |:---|:---|
 |apikey|This is a token required to access the Rachio Cloud account. Go to [Rachio Web App](https://rachio.com->login), click on Account Settings in the left navigation. At the bottom you'll find a link "Get API key". Copy the copy and post it to the bridge configuration: apikey=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx.|

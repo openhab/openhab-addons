@@ -141,7 +141,6 @@ public class RachioWebHookServlet extends HttpServlet {
                 logger.error("RachioWebHook: Exception processing callback: {}, data='{}'", e.getMessage(), data);
             } else {
                 logger.error("RachioWebHook: Exception processing callback: {}", e.getMessage());
-
             }
         } finally {
             setHeaders(resp);

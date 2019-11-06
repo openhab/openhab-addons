@@ -155,34 +155,11 @@ public class RachioNetwork {
             logger.debug("RachioNetwork: Port mapping added ({}->{}, timeout {}); {}", externalPort, internalPort,
                     timeoutSec, mappedPort.toString());
             return true;
-
         } catch (Exception e) {
             logger.error("RachioNetwork: Unable to create port mapping ({}->{}, timeout {}): {}", externalPort,
                     internalPort, timeoutSec, e.getMessage());
         }
 
-        return false;
-    }
-
-    public boolean refreshPortMapping() {
-        try {
-            if (lastRefresh == 0) {
-                // port mapping not initialized
-                return true;
-            }
-            // Refresh mapping half-way through the lifetime of the mapping (for example,
-            // if the mapping is available for 40 seconds, refresh it every 20 seconds)
-            long lifetime = 60; // mappedPort.getLifetime()
-            if (System.currentTimeMillis() - lastRefresh >= lifetime * 1000 / 2L) {
-                // mappedPort = mapper.refreshPort(mappedPort, mappedPort.getLifetime() / 2L);
-                logger.debug("RachioNetwork: Port mapping refreshed: {}", mappedPort.toString());
-            }
-            return true;
-
-        } catch (Exception e) {
-            logger.error("RachioNetwork: Unable to update port mapping ({}): {}", mappedPort.toString(),
-                    e.getMessage());
-        }
         return false;
     }
 }

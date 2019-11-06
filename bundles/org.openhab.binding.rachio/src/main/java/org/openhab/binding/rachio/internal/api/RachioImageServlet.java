@@ -93,7 +93,6 @@ public class RachioImageServlet extends HttpServlet {
     @Override
     protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
-
         InputStream reader = null;
         OutputStream writer = null;
         try {
@@ -129,7 +128,6 @@ public class RachioImageServlet extends HttpServlet {
             while (((n = reader.read(data)) != -1)) {
                 writer.write(data, 0, n);
             }
-
         } catch (Exception e) {
             logger.error("RachioImage: Unable to process request: {}", e.getMessage());
         } finally {

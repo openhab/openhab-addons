@@ -1,263 +1,263 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="rachio"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-    <bridge-type id="cloud">
-        <label>Rachio Cloud Connector</label>
-        <description>Rachio Sprinkler Controller.</description>
+	<bridge-type id="cloud">
+		<label>Rachio Cloud Connector</label>
+		<description>Rachio Sprinkler Controller.</description>
 
-        <properties>
-            <property name="vendor">Rachio</property>
-        </properties>
-        
-         <config-description>
-            <parameter name="apikey" type="text">
-                <label>Rachio apikey</label>
-                <description>Visit Rachio Cloud Portal to create an apikey</description>
-                <required>false</required>
-            </parameter>
-            <parameter name="pollingInterval" type="integer" min="30" step="30">
-                <label>Polling/Refresh Interval</label>
-                <description>Seconds between fetching values from the cloud service</description>
-                <required>false</required>
-                <default>60</default>
-            </parameter>
-            <parameter name="defaultRuntime" type="integer" min="30" step="30">
-                <label>Default Runtime</label>
-                <description>Number of seconds to run a zone if no runtime is specified (=0)</description>
-                <required>false</required>
-                <default>120</default>
-            </parameter>
-            <parameter name="callbackUrl" type="text">
-                <label>Callback URL</label>
-                <description>https://host.domain:port/rachio/webhook; make sure the selected port is forwarded to your openHAB node.</description>
-                <required>false</required>
-            </parameter>
-            <parameter name="clearAllCallbacks" type="boolean">
-                <label>Clear Callbacks</label>
-                <description>If true all callbacks will be cleared on registrations.</description>
-                <required>false</required>
-                <default>false</default>
-            </parameter>
-            <parameter name="ipFilter" type="text">
-                <label>IP Filter Address or List</label>
-                <description>Only accept events from the given IP address or subnet list, e.g. '192.168.1.1' or "192.168.1.0/24;192.168.2.0/24"</description>
-                <required>false</required>
-            </parameter>
-        </config-description>
-    </bridge-type>
+		<properties>
+			<property name="vendor">Rachio</property>
+		</properties>
+		
+		 <config-description>
+			<parameter name="apikey" type="text">
+				<label>Rachio apikey</label>
+				<description>Visit Rachio Cloud Portal to create an apikey</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="30" step="30">
+				<label>Polling/Refresh Interval</label>
+				<description>Seconds between fetching values from the cloud service</description>
+				<required>false</required>
+				<default>60</default>
+			</parameter>
+			<parameter name="defaultRuntime" type="integer" min="30" step="30">
+				<label>Default Runtime</label>
+				<description>Number of seconds to run a zone if no runtime is specified (=0)</description>
+				<required>false</required>
+				<default>120</default>
+			</parameter>
+			<parameter name="callbackUrl" type="text">
+				<label>Callback URL</label>
+				<description>https://host.domain:port/rachio/webhook; make sure the selected port is forwarded to your openHAB node.</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="clearAllCallbacks" type="boolean">
+				<label>Clear Callbacks</label>
+				<description>If true all callbacks will be cleared on registrations.</description>
+				<required>false</required>
+				<default>false</default>
+			</parameter>
+			<parameter name="ipFilter" type="text">
+				<label>IP Filter Address or List</label>
+				<description>Only accept events from the given IP address or subnet list, e.g. '192.168.1.1' or "192.168.1.0/24;192.168.2.0/24"</description>
+				<required>false</required>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
-    <thing-type id="device">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="cloud" />
-        </supported-bridge-type-refs>
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud" />
+		</supported-bridge-type-refs>
 
-        <label>Rachio Sprinkler Controller</label>
-        <description>The things controls one sprinkler controller, which might have multiple zones.</description>
+		<label>Rachio Sprinkler Controller</label>
+		<description>The things controls one sprinkler controller, which might have multiple zones.</description>
 
-        <channels>
-            <channel id="name"          typeId="dev_name"/>
-            <channel id="active"        typeId="dev_active"/>
-            <channel id="online"        typeId="dev_online"/>
-            <channel id="paused"        typeId="dev_paused"/>
-            <channel id="stop"          typeId="dev_stop"/>
-            <channel id="run"           typeId="dev_run"/>
-            <channel id="runZones"      typeId="dev_runZones"/>
-            <channel id="runTime"       typeId="dev_runTime"/>
-            <channel id="rainDelay"     typeId="dev_rainDelay"/>
-            <channel id="devEvent"      typeId="dev_event"/>
-            <channel id="latitude"      typeId="dev_latitude"/>
-            <channel id="longitude"     typeId="dev_longitude"/>
-            <channel id="scheduleName"  typeId="dev_schedule"/>
-        </channels>
-    </thing-type>
+		<channels>
+			<channel id="name"		  typeId="dev_name"/>
+			<channel id="active"		typeId="dev_active"/>
+			<channel id="online"		typeId="dev_online"/>
+			<channel id="paused"		typeId="dev_paused"/>
+			<channel id="stop"		  typeId="dev_stop"/>
+			<channel id="run"		   typeId="dev_run"/>
+			<channel id="runZones"	  typeId="dev_runZones"/>
+			<channel id="runTime"	   typeId="dev_runTime"/>
+			<channel id="rainDelay"	 typeId="dev_rainDelay"/>
+			<channel id="devEvent"	  typeId="dev_event"/>
+			<channel id="latitude"	  typeId="dev_latitude"/>
+			<channel id="longitude"	 typeId="dev_longitude"/>
+			<channel id="scheduleName"  typeId="dev_schedule"/>
+		</channels>
+	</thing-type>
 
-    <channel-type id="dev_name">
-        <item-type>String</item-type>
-        <label>Name</label>
-        <description>The name of the sprinkler controller. This could be configured using the Rachio App.</description>
-    </channel-type>
-    <channel-type id="dev_active">
-        <item-type>Switch</item-type>
-        <label>Active</label>
-        <description>ON: Controller is active, OFF: Controller is suspended</description>
-    </channel-type>
-    <channel-type id="dev_online">
-        <item-type>Switch</item-type>
-        <label>Online</label>
-        <description>ON: Controller is online, OFF: Controller is offline, check internet connection</description>
-    </channel-type>
-    <channel-type id="dev_paused">
-        <item-type>Switch</item-type>
-        <label>Paused</label>
-        <description>OFF: Watering scheduled is enabled, ON: Watering schedule is paused</description>
-    </channel-type>
-    <channel-type id="dev_stop">
-        <item-type>Switch</item-type>
-        <label>Stop Watering</label>
-        <description>ON: stop watering for all zones, OFF: n/a</description>
-    </channel-type>
-    <channel-type id="dev_run">
-        <item-type>Switch</item-type>
-        <label>Run Multiple Zones</label>
-        <description>ON: start watering for selected zones (''=ALL), OFF: n/a</description>
-    </channel-type>
-    <channel-type id="dev_runZones">
-        <item-type>String</item-type>
-        <label>Run Zone List</label>
-        <description>Zones to run at the same time (''=run ALL)</description>
-    </channel-type>
-    <channel-type id="dev_runTime">
-        <item-type>Number</item-type>
-        <label>Run Time</label>
-        <description>=0, use default run time, >0: Start zones for given number of seconds</description>
-    </channel-type>
-    <channel-type id="dev_rainDelay">
-        <item-type>Number</item-type>
-        <label>Rain Delay</label>
-        <description>>0: Rain delay device</description>
-    </channel-type>
-    <channel-type id="dev_event">
-        <item-type>String</item-type>
-        <label>Last Device Event</label>
-        <description>Events can be received when callback is configured.</description>
-    </channel-type>
-    <channel-type id="dev_latitude" advanced="true">
-        <item-type>Number</item-type>
-        <label>Latitude</label>
-        <description>Latitude of the device location</description>
-        <state readOnly="true" pattern="%s">
-        </state>
-    </channel-type>
-    <channel-type id="dev_longitude" advanced="true">
-        <item-type>Number</item-type>
-        <label>Longitude</label>
-        <description>Longitude of the device location</description>
-        <state readOnly="true" pattern="%s">
-        </state>
-    </channel-type>
-    <channel-type id="dev_schedule" advanced="true">
-        <item-type>String</item-type>
-        <label>Running schedule</label>
-        <description>Currently running schedule, if empty no schedule is running</description>
-        <state readOnly="true" pattern="%s">
-        </state>
-    </channel-type>
+	<channel-type id="dev_name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>The name of the sprinkler controller. This could be configured using the Rachio App.</description>
+	</channel-type>
+	<channel-type id="dev_active">
+		<item-type>Switch</item-type>
+		<label>Active</label>
+		<description>ON: Controller is active, OFF: Controller is suspended</description>
+	</channel-type>
+	<channel-type id="dev_online">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<description>ON: Controller is online, OFF: Controller is offline, check internet connection</description>
+	</channel-type>
+	<channel-type id="dev_paused">
+		<item-type>Switch</item-type>
+		<label>Paused</label>
+		<description>OFF: Watering scheduled is enabled, ON: Watering schedule is paused</description>
+	</channel-type>
+	<channel-type id="dev_stop">
+		<item-type>Switch</item-type>
+		<label>Stop Watering</label>
+		<description>ON: stop watering for all zones, OFF: n/a</description>
+	</channel-type>
+	<channel-type id="dev_run">
+		<item-type>Switch</item-type>
+		<label>Run Multiple Zones</label>
+		<description>ON: start watering for selected zones (''=ALL), OFF: n/a</description>
+	</channel-type>
+	<channel-type id="dev_runZones">
+		<item-type>String</item-type>
+		<label>Run Zone List</label>
+		<description>Zones to run at the same time (''=run ALL)</description>
+	</channel-type>
+	<channel-type id="dev_runTime">
+		<item-type>Number</item-type>
+		<label>Run Time</label>
+		<description>=0, use default run time, >0: Start zones for given number of seconds</description>
+	</channel-type>
+	<channel-type id="dev_rainDelay">
+		<item-type>Number</item-type>
+		<label>Rain Delay</label>
+		<description>>0: Rain delay device</description>
+	</channel-type>
+	<channel-type id="dev_event">
+		<item-type>String</item-type>
+		<label>Last Device Event</label>
+		<description>Events can be received when callback is configured.</description>
+	</channel-type>
+	<channel-type id="dev_latitude" advanced="true">
+		<item-type>Number</item-type>
+		<label>Latitude</label>
+		<description>Latitude of the device location</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="dev_longitude" advanced="true">
+		<item-type>Number</item-type>
+		<label>Longitude</label>
+		<description>Longitude of the device location</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="dev_schedule" advanced="true">
+		<item-type>String</item-type>
+		<label>Running schedule</label>
+		<description>Currently running schedule, if empty no schedule is running</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
 
 
 
-    <thing-type id="zone">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="cloud" />
-        </supported-bridge-type-refs>
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud" />
+		</supported-bridge-type-refs>
 
-        <label>Rachio Sprinkler Zone</label>
-        <description>A zone of a Rachio Sprinkler Controller</description>
+		<label>Rachio Sprinkler Zone</label>
+		<description>A zone of a Rachio Sprinkler Controller</description>
 
-        <channels>
-            <channel id="name"            typeId="zone_name"/>
-            <channel id="number"          typeId="zone_number"/>
-            <channel id="enabled"         typeId="zone_enabled"/>
-            <channel id="run"             typeId="zone_run"/>
-            <channel id="runTime"         typeId="zone_runTime"/>
-            <channel id="runTotal"        typeId="zone_runTotal"/>
-            <channel id="imageUrl"        typeId="zone_imageUrl"/>
-            <channel id="zoneEvent"       typeId="zone_event"/>
-            <!-- channel id="avlWater"        typeId="zone_avlWater"/ -->
-            <!-- channel id="rootDepth"       typeId="zone_rootDepth"/ -->
-            <!-- channel id="efficiency"      typeId="zone_efficiency"/ -->
-            <!--  channel id="yardSqft"        typeId="zone_yardSqft"/ -->
-            <!-- channel id="watherDepth"     typeId="zone_waterDepth"/ -->
-            <!-- channel id="nozzleHeadCat"   typeId="zone_nozzleHeadCat"/ -->
-            <!-- channel id="nozzleIph"       typeId="zone_nozzleIph"/ -->
-            <!-- channel id="nozzleImageUrl"  typeId="zone_nozzleImageUrl"/ -->
-        </channels>
-    </thing-type>
+		<channels>
+			<channel id="name"			typeId="zone_name"/>
+			<channel id="number"		  typeId="zone_number"/>
+			<channel id="enabled"		 typeId="zone_enabled"/>
+			<channel id="run"			 typeId="zone_run"/>
+			<channel id="runTime"		 typeId="zone_runTime"/>
+			<channel id="runTotal"		typeId="zone_runTotal"/>
+			<channel id="imageUrl"		typeId="zone_imageUrl"/>
+			<channel id="zoneEvent"	   typeId="zone_event"/>
+			<!-- channel id="avlWater"		typeId="zone_avlWater"/ -->
+			<!-- channel id="rootDepth"	   typeId="zone_rootDepth"/ -->
+			<!-- channel id="efficiency"	  typeId="zone_efficiency"/ -->
+			<!--  channel id="yardSqft"		typeId="zone_yardSqft"/ -->
+			<!-- channel id="watherDepth"	 typeId="zone_waterDepth"/ -->
+			<!-- channel id="nozzleHeadCat"   typeId="zone_nozzleHeadCat"/ -->
+			<!-- channel id="nozzleIph"	   typeId="zone_nozzleIph"/ -->
+			<!-- channel id="nozzleImageUrl"  typeId="zone_nozzleImageUrl"/ -->
+		</channels>
+	</thing-type>
 
-    <channel-type id="zone_name">
-        <item-type>String</item-type>
-        <label>Zone Name</label>
-        <description>Name of the zone as configured in the Rachip App</description>
-        <state readOnly="true" pattern="%s">
-        </state>
-    </channel-type>
-    <channel-type id="zone_number">
-        <item-type>Number</item-type>
-        <label>Zone Number</label>
-        <description>Zone Number (1-16)</description>
-        <state readOnly="true" pattern="%d">
-        </state>
-    </channel-type>
-    <channel-type id="zone_enabled">
-        <item-type>Switch</item-type>
-        <label>Zone Enabled</label>
-        <description>ON: Zone is enabled, OFF: zone is disabled)</description>
-    </channel-type>
-    <channel-type id="zone_run">
-        <item-type>Switch</item-type>
-        <label>Run Zone</label>
-        <description>ON: start watering, OFF: stop watering</description>
-    </channel-type>
-    <channel-type id="zone_runTime">
-        <item-type>Number</item-type>
-        <label>Zone Runtime</label>
-        <description>Set > 0 to start zone for given secs</description>
-    </channel-type>
-    <channel-type id="zone_event">
-        <item-type>String</item-type>
-        <label>Last Zone Event</label>
-        <description>Events can be received when callback is configured.</description>
-    </channel-type>
-    <channel-type id="zone_avlWater">
-        <item-type>Number</item-type>
-        <label>Available Water</label>
-        <description>Available water for the zone.</description>
-    </channel-type>
-    <channel-type id="zone_rootDepth">
-        <item-type>Number</item-type>
-        <label>Root Depth</label>
-        <description>Depth of the root for this zone.</description>
-    </channel-type>
+	<channel-type id="zone_name">
+		<item-type>String</item-type>
+		<label>Zone Name</label>
+		<description>Name of the zone as configured in the Rachip App</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="zone_number">
+		<item-type>Number</item-type>
+		<label>Zone Number</label>
+		<description>Zone Number (1-16)</description>
+		<state readOnly="true" pattern="%d">
+		</state>
+	</channel-type>
+	<channel-type id="zone_enabled">
+		<item-type>Switch</item-type>
+		<label>Zone Enabled</label>
+		<description>ON: Zone is enabled, OFF: zone is disabled)</description>
+	</channel-type>
+	<channel-type id="zone_run">
+		<item-type>Switch</item-type>
+		<label>Run Zone</label>
+		<description>ON: start watering, OFF: stop watering</description>
+	</channel-type>
+	<channel-type id="zone_runTime">
+		<item-type>Number</item-type>
+		<label>Zone Runtime</label>
+		<description>Set > 0 to start zone for given secs</description>
+	</channel-type>
+	<channel-type id="zone_event">
+		<item-type>String</item-type>
+		<label>Last Zone Event</label>
+		<description>Events can be received when callback is configured.</description>
+	</channel-type>
+	<channel-type id="zone_avlWater">
+		<item-type>Number</item-type>
+		<label>Available Water</label>
+		<description>Available water for the zone.</description>
+	</channel-type>
+	<channel-type id="zone_rootDepth">
+		<item-type>Number</item-type>
+		<label>Root Depth</label>
+		<description>Depth of the root for this zone.</description>
+	</channel-type>
    <channel-type id="zone_efficiency">
-        <item-type>Number</item-type>
-        <label>Efficiency</label>
-        <description></description>
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>Efficiency</label>
+		<description></description>
+	</channel-type>
    <channel-type id="zone_yardSqft">
-        <item-type>Number</item-type>
-        <label>Size of the zone in sqft</label>
-        <description></description>
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>Size of the zone in sqft</label>
+		<description></description>
+	</channel-type>
    <channel-type id="zone_waterDepth">
-        <item-type>Number</item-type>
-        <label>Water Depth</label>
-        <description></description>
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>Water Depth</label>
+		<description></description>
+	</channel-type>
    <channel-type id="zone_runTotal">
-        <item-type>Number</item-type>
-        <label>Total Runtime</label>
-        <description>Total runtime of the zone.</description>
-    </channel-type>
-    <channel-type id="zone_imageUrl">
-        <item-type>String</item-type>
-        <label>Zone Image URL</label>
-        <description>URL for the zone picture/image.</description>
-    </channel-type>
-    <channel-type id="zone_nozzleHeadCat">
-        <item-type>String</item-type>
-        <label>Nozzle Head Category</label>
-        <description>Type of the nozzle's head.</description>
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>Total Runtime</label>
+		<description>Total runtime of the zone.</description>
+	</channel-type>
+	<channel-type id="zone_imageUrl">
+		<item-type>String</item-type>
+		<label>Zone Image URL</label>
+		<description>URL for the zone picture/image.</description>
+	</channel-type>
+	<channel-type id="zone_nozzleHeadCat">
+		<item-type>String</item-type>
+		<label>Nozzle Head Category</label>
+		<description>Type of the nozzle's head.</description>
+	</channel-type>
    <channel-type id="zone_nozzleIph">
-        <item-type>Number</item-type>
-        <label>Nozzle Inches per Hour</label>
-        <description>Nozzle's inches per hour</description>
-    </channel-type>
-    <channel-type id="zone_nozzleImageUrl">
-        <item-type>String</item-type>
-        <label>Nozzle Image URL</label>
-        <description>URL for a nozzle image</description>
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>Nozzle Inches per Hour</label>
+		<description>Nozzle's inches per hour</description>
+	</channel-type>
+	<channel-type id="zone_nozzleImageUrl">
+		<item-type>String</item-type>
+		<label>Nozzle Image URL</label>
+		<description>URL for a nozzle image</description>
+	</channel-type>
 </thing:thing-descriptions>

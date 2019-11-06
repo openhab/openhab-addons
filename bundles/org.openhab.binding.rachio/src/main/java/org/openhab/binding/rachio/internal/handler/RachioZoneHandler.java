@@ -127,7 +127,7 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
             } else if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_ENABLED)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                    } else {
+                        logger.info("RachioZone: Enabling zone '{} [{}]'", zone.name, zone.zoneNumber);
                     }
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_RUN)) {
@@ -272,7 +272,6 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
         } else {
             // value changed -> update
             channelData.replace(channelName, newValue);
-
         }
 
         updateState(channelName, newValue);

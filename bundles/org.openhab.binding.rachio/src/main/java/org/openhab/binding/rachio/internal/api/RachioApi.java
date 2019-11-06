@@ -43,7 +43,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class RachioApi {
-    private static final Logger logger             = LoggerFactory.getLogger(RachioApi.class);
+    private final Logger        logger             = LoggerFactory.getLogger(RachioApi.class);
     private static final String MD5_HASH_ALGORITHM = "MD5";
     private static final String UTF8_CHAR_SET      = "UTF-8";
 
@@ -459,7 +459,7 @@ public class RachioApi {
 
             return digest;
         } catch (RuntimeException | UnsupportedEncodingException | NoSuchAlgorithmException e) {
-            logger.warn("Unexpected exception while generating MD5: {} ({})", e.getMessage(), e.getClass());
+            // logger.warn("Unexpected exception while generating MD5: {} ({})", e.getMessage(), e.getClass());
             return null;
         }
     }
@@ -500,13 +500,13 @@ public class RachioApi {
                         t.setAccessible(true);
                         t.set(toObj, a != null ? a.clone() : null);
                     } else {
-                        logger.debug("RachioApiInternal: Unable to update field '{}', '{}'", t.getName(), t.getType());
+                        // logger.debug("RachioApiInternal: Unable to update field '{}', '{}'", t.getName(), t.getType());
                     }
                 }
             } catch (NoSuchFieldException ex) {
                 // skip it
             } catch (IllegalAccessException ex) {
-                logger.error("Unable to copy field: {}", f.getName());
+                // logger.error("Unable to copy field: {}", f.getName());
             }
         }
     }
