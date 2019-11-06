@@ -12,7 +12,7 @@
 			<property name="vendor">Rachio</property>
 		</properties>
 		
-		 <config-description>
+		<config-description>
 			<parameter name="apikey" type="text">
 				<label>Rachio apikey</label>
 				<description>Visit Rachio Cloud Portal to create an apikey</description>
