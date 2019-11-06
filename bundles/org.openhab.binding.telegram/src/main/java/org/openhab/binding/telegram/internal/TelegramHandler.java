@@ -95,7 +95,7 @@ public class TelegramHandler extends BaseThingHandler {
     }
 
     private final List<Long> chatIds = new ArrayList<Long>();
-    private final Logger LOGGER = LoggerFactory.getLogger(TelegramHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TelegramHandler.class);
 
     // Keep track of the callback id created by Telegram. This must be sent back in the answerCallbackQuery
     // to stop the progress bar in the Telegram client
@@ -104,13 +104,10 @@ public class TelegramHandler extends BaseThingHandler {
     // answer and need the id of the original message
     private final Map<ReplyKey, Integer> replyIdToMessageId = new HashMap<>();
 
-    @Nullable
-    private TelegramBot bot;
-    @Nullable
-    private OkHttpClient client;
-
-    @Nullable
-    private ParseMode parseMode;
+    
+    private @Nullable TelegramBot bot;
+    private @Nullable OkHttpClient client;
+    private @Nullable ParseMode parseMode;
 
     public TelegramHandler(Thing thing) {
         super(thing);
@@ -131,14 +128,14 @@ public class TelegramHandler extends BaseThingHandler {
             try {
                 chatIds.add(Long.valueOf(chatIdStr));
             } catch (NumberFormatException e) {
-                LOGGER.warn("The chat id {} is not a number and will be ignored", chatIdStr);
+                logger.warn("The chat id {} is not a number and will be ignored", chatIdStr);
             }
         }
         if (config.getParseMode() != null) {
             try {
                 parseMode = ParseMode.valueOf(config.getParseMode());
             } catch (IllegalArgumentException e) {
-                LOGGER.warn("parseMode is invalid and will be ignored. Only Markdown or HTML are allowed values");
+                logger.warn("parseMode is invalid and will be ignored. Only Markdown or HTML are allowed values");
             }
         }
 
@@ -146,11 +143,7 @@ public class TelegramHandler extends BaseThingHandler {
                 .build();
         updateStatus(ThingStatus.ONLINE);
         TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(client).build();
-        localBot.setUpdatesListener(new UpdatesListener() {
-
-            @Override
-            @NonNullByDefault({})
-            public int process(List<Update> updates) {
+        localBot.setUpdatesListener(updates -> {
                 for (Update update : updates) {
                     String lastMessageText = null;
                     Integer lastMessageDate = null;
@@ -163,7 +156,7 @@ public class TelegramHandler extends BaseThingHandler {
                         Message message = update.message();
                         chatId = message.chat().id();
                         if (!chatIds.contains(chatId)) {
-                            LOGGER.warn(
+                            logger.warn(
                                     "Ignored message from unknown chat id {}. If you know the sender of that chat, add it to the list of chat ids in the thing configuration to authorize it",
                                     chatId);
                             continue; // this is very important regarding security to avoid commands from an unknown
@@ -188,10 +181,10 @@ public class TelegramHandler extends BaseThingHandler {
                             lastMessageUsername = update.callbackQuery().message().from().username();
                             chatId = update.callbackQuery().message().chat().id();
                             replyIdToCallbackId.put(new ReplyKey(chatId, replyId), update.callbackQuery().id());
-                            LOGGER.debug("Received callbackId {} for chatId {} and replyId {}",
+                            logger.debug("Received callbackId {} for chatId {} and replyId {}",
                                     update.callbackQuery().id(), chatId, replyId);
                         } else {
-                            LOGGER.warn(
+                            logger.warn(
                                     "The received callback query {} has not the right format (must be seperated by spaces)",
                                     update.callbackQuery().data());
                         }
@@ -214,36 +207,31 @@ public class TelegramHandler extends BaseThingHandler {
                     updateChannel(REPLYID, replyId != null ? new StringType(replyId) : UnDefType.NULL);
                 }
                 return UpdatesListener.CONFIRMED_UPDATES_ALL;
-            }
-        }, new ExceptionHandler() {
-
-            @Override
-            public void onException(@Nullable TelegramException exception) {
+        }, exception -> {
                 if (exception != null) {
-                    LOGGER.warn("Telegram exception: {}", exception.getMessage());
+                    logger.warn("Telegram exception: {}", exception.getMessage());
                     if (exception.response() != null) {
                         BaseResponse localResponse = exception.response();
                         if (localResponse.errorCode() == 401) {
-                            LOGGER.error("Bot token invalid, disable thing {}", getThing().getUID());
+                            logger.error("Bot token invalid, disable thing {}", getThing().getUID());
                             localBot.removeGetUpdatesListener();
                             updateStatus(ThingStatus.OFFLINE);
                         }
                     }
-                }
             }
         });
     }
 
     @Override
     public void dispose() {
-        LOGGER.debug("Trying to dispose Telegram client");
+        logger.debug("Trying to dispose Telegram client");
         OkHttpClient localClient = client;
         TelegramBot localBot = bot;
         if (localClient != null && localBot != null) {
             localBot.removeGetUpdatesListener();
             localClient.dispatcher().executorService().shutdown();
             localClient.connectionPool().evictAll();
-            LOGGER.debug("Telegram client closed");
+            logger.debug("Telegram client closed");
         }
         super.dispose();
     }

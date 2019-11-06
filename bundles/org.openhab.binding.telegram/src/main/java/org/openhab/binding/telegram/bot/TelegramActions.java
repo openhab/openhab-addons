@@ -93,14 +93,12 @@ public class TelegramActions implements ThingActions {
             Integer messageId = localHandler.removeMessageId(chatId, replyId);
             logger.debug("remove messageId {} for chatId {} and replyId {}", messageId, chatId, replyId);
 
-            // for (Long chatId : localHandler.getChatIds()) {
             EditMessageReplyMarkup editReplyMarkup = new EditMessageReplyMarkup(chatId, messageId.intValue())
                     .replyMarkup(new InlineKeyboardMarkup(new InlineKeyboardButton[0]));// remove reply markup from
                                                                                         // old message
             if (!evaluateResponse(localHandler.execute(editReplyMarkup))) {
                 return false;
             }
-            // }
             return message != null ? sendTelegram(chatId, message) : true;
 
         }
@@ -312,7 +310,7 @@ public class TelegramActions implements ThingActions {
         if (actions instanceof TelegramActions) {
             return ((TelegramActions) actions).sendTelegram(format, args);
         } else {
-            throw new IllegalArgumentException("Instance is not an TelegramActions class.");
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
     }
 
@@ -321,7 +319,7 @@ public class TelegramActions implements ThingActions {
         if (actions instanceof TelegramActions) {
             return ((TelegramActions) actions).sendTelegramQuery(message, replyId, buttons);
         } else {
-            throw new IllegalArgumentException("Instance is not an TelegramActions class.");
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
     }
 
@@ -330,7 +328,7 @@ public class TelegramActions implements ThingActions {
         if (actions instanceof TelegramActions) {
             return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption);
         } else {
-            throw new IllegalArgumentException("Instance is not an TelegramActions class.");
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
     }
 
@@ -339,7 +337,7 @@ public class TelegramActions implements ThingActions {
         if (actions instanceof TelegramActions) {
             return ((TelegramActions) actions).sendTelegramAnswer(replyId, message);
         } else {
-            throw new IllegalArgumentException("Instance is not an TelegramActions class.");
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
     }
 
@@ -348,7 +346,7 @@ public class TelegramActions implements ThingActions {
         if (actions instanceof TelegramActions) {
             return ((TelegramActions) actions).sendTelegram(chatId, format, args);
         } else {
-            throw new IllegalArgumentException("Instance is not an TelegramActions class.");
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
     }
 
@@ -357,7 +355,7 @@ public class TelegramActions implements ThingActions {
         if (actions instanceof TelegramActions) {
             return ((TelegramActions) actions).sendTelegramQuery(chatId, message, replyId, buttons);
         } else {
-            throw new IllegalArgumentException("Instance is not an TelegramActions class.");
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
     }
 
@@ -366,7 +364,7 @@ public class TelegramActions implements ThingActions {
         if (actions instanceof TelegramActions) {
             return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption);
         } else {
-            throw new IllegalArgumentException("Instance is not an TelegramActions class.");
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
     }
 
@@ -375,7 +373,7 @@ public class TelegramActions implements ThingActions {
         if (actions instanceof TelegramActions) {
             return ((TelegramActions) actions).sendTelegramAnswer(chatId, replyId, message);
         } else {
-            throw new IllegalArgumentException("Instance is not an TelegramActions class.");
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
     }
 
@@ -384,7 +382,7 @@ public class TelegramActions implements ThingActions {
         if (actions instanceof TelegramActions) {
             return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
         } else {
-            throw new IllegalArgumentException("Instance is not an TelegramActions class.");
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
     }
 

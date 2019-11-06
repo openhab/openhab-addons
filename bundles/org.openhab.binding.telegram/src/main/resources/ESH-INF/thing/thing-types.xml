@@ -19,15 +19,20 @@
 
 		<config-description>
 			<parameter name="botToken" type="text" required="true">
-				<label>botToken</label>
-				<description>Enter the BotToken you received from the "BotFather".</description>
+				<label>Bot Token</label>
+				<description>Enter the bot token you received from the "BotFather".</description>
 			</parameter>
 			<parameter name="chatIds" type="text" required="true" multiple="true">
-				<label>chatIds</label>
-				<description>Enter your ChatID. Only Messages from this ID will be send to OpenHAB.</description>
+				<label>Chat Ids</label>
+				<description>Enter your chat id. Only messages from this id will be send to openHAB.</description>
 			</parameter>
 			<parameter name="parseMode" type="text" required="false">
-				<label>parseMode</label>
+				<label>Parse Mode</label>
+				<options>
+					<option value="">No Formatting</option>
+					<option value="HTML">HTML</option>
+					<option value="Markdown">Markdown</option>
+				</options>
 				<description>Support for formatted messages, values: Markdown or HTML. Default: no formatting is used.</description>
 			</parameter>
 		</config-description>
