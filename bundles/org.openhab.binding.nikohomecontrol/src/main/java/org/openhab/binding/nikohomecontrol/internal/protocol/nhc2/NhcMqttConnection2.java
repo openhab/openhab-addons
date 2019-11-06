@@ -41,7 +41,6 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.eclipse.smarthome.io.transport.mqtt.MqttException;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
-import org.eclipse.smarthome.io.transport.mqtt.sslcontext.SSLContextProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +71,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private MqttConnectionObserver connectionObserver;
 
     private Path persistenceBasePath;
-    private SSLContextProvider sslContextProvider;
+    private TrustManager trustManagers[];
     private @Nullable String clientId;
 
     private volatile String cocoAddress = "";
@@ -81,13 +80,13 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     NhcMqttConnection2(String clientId, String persistencePath, MqttMessageSubscriber messageSubscriber,
             MqttConnectionObserver connectionObserver) throws CertificateException {
         persistenceBasePath = Paths.get(persistencePath).resolve("nikohomecontrol");
-        sslContextProvider = getSSLContext();
+        trustManagers = getTrustManagers();
         this.clientId = clientId;
         this.messageSubscriber = messageSubscriber;
         this.connectionObserver = connectionObserver;
     }
 
-    private SSLContextProvider getSSLContext() throws CertificateException {
+    private TrustManager[] getTrustManagers() throws CertificateException {
         ResourceBundle certificatesBundle = ResourceBundle.getBundle("nikohomecontrol/certificates");
 
         try {
@@ -108,11 +107,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
             // Create trust managers used to validate server
             TrustManagerFactory tmFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmFactory.init(keyStore);
-            TrustManager[] trustManagers = tmFactory.getTrustManagers();
-
-            // Return the SSL context provider
-            return new NhcSSLContextProvider2(trustManagers);
-
+            return tmFactory.getTrustManagers();
         } catch (CertificateException | KeyStoreException | NoSuchAlgorithmException | IOException e) {
             logger.warn("Niko Home Control: error with SSL context creation: {} ", e.getMessage());
             throw new CertificateException("SSL context creation exception", e);
@@ -229,7 +224,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         Path persistencePath = persistenceBasePath.resolve(clientId);
         MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
         connection.setPersistencePath(persistencePath);
-        connection.setSSLContextProvider(sslContextProvider);
+        connection.setTrustManagers(trustManagers);
         connection.setCredentials(username, password);
         connection.setQos(1);
         return connection;
