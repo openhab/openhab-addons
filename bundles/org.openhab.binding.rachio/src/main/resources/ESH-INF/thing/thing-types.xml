@@ -230,12 +230,12 @@
 		<label>Size of the zone in sqft</label>
 		<description></description>
 	</channel-type>
-   <channel-type id="zone_waterDepth">
+	<channel-type id="zone_waterDepth">
 		<item-type>Number</item-type>
 		<label>Water Depth</label>
 		<description></description>
 	</channel-type>
-   <channel-type id="zone_runTotal">
+	<channel-type id="zone_runTotal">
 		<item-type>Number</item-type>
 		<label>Total Runtime</label>
 		<description>Total runtime of the zone.</description>
@@ -250,7 +250,7 @@
 		<label>Nozzle Head Category</label>
 		<description>Type of the nozzle's head.</description>
 	</channel-type>
-   <channel-type id="zone_nozzleIph">
+	<channel-type id="zone_nozzleIph">
 		<item-type>Number</item-type>
 		<label>Nozzle Inches per Hour</label>
 		<description>Nozzle's inches per hour</description>
