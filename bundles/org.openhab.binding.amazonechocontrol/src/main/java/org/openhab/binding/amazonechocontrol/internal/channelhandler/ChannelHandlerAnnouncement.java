@@ -33,8 +33,11 @@ import com.google.gson.JsonSyntaxException;
 public class ChannelHandlerAnnouncement extends ChannelHandler {
     private static final String CHANNEL_NAME = "announcement";
 
-    public ChannelHandlerAnnouncement(IAmazonThingHandler thingHandler, Gson gson) {
+    protected final IEchoThingHandler thingHandler;
+
+    public ChannelHandlerAnnouncement(IEchoThingHandler thingHandler, Gson gson) {
         super(thingHandler, gson);
+        this.thingHandler = thingHandler;
     }
 
     @Override

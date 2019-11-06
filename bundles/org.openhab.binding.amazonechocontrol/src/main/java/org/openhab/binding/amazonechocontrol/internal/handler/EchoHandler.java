@@ -102,7 +102,7 @@ import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandler;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerAnnouncement;
-import org.openhab.binding.amazonechocontrol.internal.channelhandler.IAmazonThingHandler;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.IEchoThingHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.Description;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
@@ -138,7 +138,7 @@ import com.google.gson.Gson;
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler {
+public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private Gson gson;
