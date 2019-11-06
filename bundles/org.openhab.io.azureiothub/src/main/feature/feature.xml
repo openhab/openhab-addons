@@ -4,7 +4,7 @@
 
     <feature name="openhab-misc-azureiothub" description="Azure IoT Hub Connector" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-mqtt</feature>
+        <bundle dependency="true">mvn:org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.2.1</bundle>
         <bundle dependency="true">mvn:org.openhab.osgiify/com.microsoft.azure.sdk.iot.iot-device-client/1.2.27</bundle>
         <bundle dependency="true">mvn:org.openhab.osgiify/com.microsoft.azure.sdk.iot.iot-service-client/1.4.20</bundle>
         <bundle dependency="true">mvn:org.openhab.osgiify/com.microsoft.azure.azure-eventhubs/0.14.0</bundle>

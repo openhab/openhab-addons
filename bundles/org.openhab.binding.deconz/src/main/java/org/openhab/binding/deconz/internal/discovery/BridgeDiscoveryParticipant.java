@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deconz.internal.discovery;
 
+import static org.openhab.binding.deconz.internal.BindingConstants.*;
+
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
@@ -27,7 +29,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.RemoteDevice;
-import org.openhab.binding.deconz.internal.BindingConstants;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -45,7 +46,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(BindingConstants.BRIDGE_TYPE);
+        return Collections.singleton(BRIDGE_TYPE);
     }
 
     @Override
@@ -64,12 +65,14 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
             name = name.substring(0, name.indexOf('(') - 1);
         }
         // Add host+port
-        String host = descriptorURL.getHost() + ":" + String.valueOf(descriptorURL.getPort());
-        name = name + " (" + host + ")";
+        String host = descriptorURL.getHost();
+        int port = descriptorURL.getPort();
+        name = name + " (" + host + ":" + String.valueOf(port) + ")";
 
         Map<String, Object> properties = new TreeMap<>();
 
-        properties.put(BindingConstants.CONFIG_HOST, host);
+        properties.put(CONFIG_HOST, host);
+        properties.put(CONFIG_HTTP_PORT, port);
 
         return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(name)
                 .withRepresentationProperty(UDN).build();
@@ -80,7 +83,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
         DeviceDetails details = device.getDetails();
         if (details != null && details.getManufacturerDetails() != null
                 && "dresden elektronik".equals(details.getManufacturerDetails().getManufacturer())) {
-            return new ThingUID(BindingConstants.BRIDGE_TYPE, details.getSerialNumber());
+            return new ThingUID(BRIDGE_TYPE, details.getSerialNumber());
         }
         return null;
     }

@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lutron.internal.KeypadComponent;
+import org.openhab.binding.lutron.internal.keypadconfig.KeypadConfig;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,16 +72,45 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     protected abstract void configureComponents(String model);
 
-    protected abstract boolean isLed(int id);
-
-    protected abstract boolean isButton(int id);
-
-    protected abstract boolean isCCI(int id);
-
     private final Object asyncInitLock = new Object();
+
+    protected KeypadConfig kp;
 
     public BaseKeypadHandler(Thing thing) {
         super(thing);
+    }
+
+    /**
+     * Determine if keypad component with the specified id is a LED. Keypad handlers which do not use a KeypadConfig
+     * object must override this to provide their own test.
+     *
+     * @param id The component id.
+     * @return True if the component is a LED.
+     */
+    protected boolean isLed(int id) {
+        return kp.isLed(id);
+    }
+
+    /**
+     * Determine if keypad component with the specified id is a button. Keypad handlers which do not use a KeypadConfig
+     * object must override this to provide their own test.
+     *
+     * @param id The component id.
+     * @return True if the component is a button.
+     */
+    protected boolean isButton(int id) {
+        return kp.isButton(id);
+    }
+
+    /**
+     * Determine if keypad component with the specified id is a CCI. Keypad handlers which do not use a KeypadConfig
+     * object must override this to provide their own test.
+     *
+     * @param id The component id.
+     * @return True if the component is a CCI.
+     */
+    protected boolean isCCI(int id) {
+        return kp.isCCI(id);
     }
 
     protected void configureChannels() {

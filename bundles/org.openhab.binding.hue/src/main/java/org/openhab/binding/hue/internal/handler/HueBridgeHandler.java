@@ -285,6 +285,24 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     @Override
+    public void updateSensorState(FullSensor sensor, StateUpdate stateUpdate) {
+        if (hueBridge != null) {
+            hueBridge.setSensorState(sensor, stateUpdate).thenAccept(result -> {
+                try {
+                    hueBridge.handleErrors(result);
+                } catch (Exception e) {
+                    handleStateUpdateException(sensor, stateUpdate, e);
+                }
+            }).exceptionally(e -> {
+                handleStateUpdateException(sensor, stateUpdate, e);
+                return null;
+            });
+        } else {
+            logger.warn("No bridge connected or selected. Cannot set sensor state.");
+        }
+    }
+    
+    @Override
     public void updateSensorConfig(FullSensor sensor, ConfigUpdate configUpdate) {
         if (hueBridge != null) {
             hueBridge.updateSensorConfig(sensor, configUpdate).thenAccept(result -> {
@@ -325,6 +343,20 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
     }
 
+    private void handleStateUpdateException(FullSensor sensor, StateUpdate stateUpdate, Throwable e) {
+        if (e instanceof IOException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } else if (e instanceof EntityNotAvailableException) {
+            logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
+            notifySensorStatusListeners(sensor, STATE_GONE);
+        } else if (e instanceof ApiException) {
+            // This should not happen - if it does, it is most likely some bug that should be reported.
+            logger.warn("Error while accessing sensor: {}", e.getMessage(), e);
+        } else if (e instanceof IllegalStateException) {
+            logger.trace("Error while accessing sensor: {}", e.getMessage());
+        }
+    }
+    
     private void handleConfigUpdateException(FullSensor sensor, ConfigUpdate configUpdate, Throwable e) {
         if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -446,7 +478,10 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             Config config = fullConfig.getConfig();
             if (config != null) {
                 Map<String, String> properties = editProperties();
-                properties.put(PROPERTY_SERIAL_NUMBER, config.getMACAddress().replaceAll(":", "").toLowerCase());
+                String serialNumber = config.getBridgeId().substring(0, 6) + config.getBridgeId().substring(10);
+                properties.put(PROPERTY_SERIAL_NUMBER, serialNumber);
+                properties.put(PROPERTY_MODEL_ID, config.getModelId());
+                properties.put(PROPERTY_MAC_ADDRESS, config.getMACAddress());
                 properties.put(PROPERTY_FIRMWARE_VERSION, config.getSoftwareVersion());
                 updateProperties(properties);
                 propertiesInitializedSuccessfully = true;

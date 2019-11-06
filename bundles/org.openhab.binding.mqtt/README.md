@@ -7,7 +7,7 @@ MQTT is a server/client architecture.
 
 A server, also called broker is not provided within this binding.
 You can use any of the freely available MQTT Brokers like [Mosquitto](https://mosquitto.org/)
-or [Moquette](https://moquette-io.github.io/moquette/) or install the [included Moquette broker](https://www.openhab.org/addons/integrations/mqttembeddedbroker/) as addon.
+or [Moquette](https://moquette-io.github.io/moquette/) or install the [included Moquette broker](https://www.openhab.org/addons/integrations/mqttembeddedbroker/) as add-on.
 
 This particular binding allows to configure connections to brokers via openHAB Things.
 This binding does NOT allow you to link Channels to MQTT topics or perform auto-discovery of available
@@ -32,7 +32,6 @@ Additionally the following parameters can be set:
 
 * __qos__: Quality of Service. Can be 0, 1 or 2. Please read the MQTT specification for details. Defaults to 0.
 * __clientID__: Use a fixed client ID. Defaults to empty which means a user ID is generated for this connection.
-* __retainMessages__: Retain messages. Defaults to false.
 
 Reconnect parameters are:
 

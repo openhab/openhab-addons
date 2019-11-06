@@ -28,7 +28,9 @@ public class Config {
     private String name;
     private String swversion;
     private String apiversion;
+    private String bridgeid;
     private String mac;
+    private String modelid;
     private boolean dhcp;
     private String ipaddress;
     private String netmask;
@@ -62,12 +64,30 @@ public class Config {
     }
 
     /**
+     * Returns the bridge id
+     *
+     * @return bridge id
+     */
+    public String getBridgeId() {
+        return bridgeid;
+    }
+
+    /**
      * Returns the MAC address.
      *
      * @return mac address of bridge
      */
     public String getMACAddress() {
         return mac;
+    }
+
+    /**
+     * Returns the model id
+     *
+     * @return model id
+     */
+    public String getModelId() {
+        return modelid;
     }
 
     /**

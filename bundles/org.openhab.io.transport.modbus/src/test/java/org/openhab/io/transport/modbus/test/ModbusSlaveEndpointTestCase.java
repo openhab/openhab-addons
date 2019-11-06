@@ -22,9 +22,7 @@ import gnu.io.SerialPort;
 import net.wimpi.modbus.Modbus;
 
 /**
- *
- * @author Sami Salonen
- *
+ * @author Sami Salonen - Initial contribution
  */
 public class ModbusSlaveEndpointTestCase {
 

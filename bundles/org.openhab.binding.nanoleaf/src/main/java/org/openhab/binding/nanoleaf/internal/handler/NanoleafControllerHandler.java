@@ -432,25 +432,26 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         boolean isOn = controllerInfo.getState().getOn().getValue();
         updateState(CHANNEL_POWER, isOn ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_COLOR_TEMPERATURE_ABS,
-                new DecimalType(controllerInfo.getState().getColorTemperature().getValue().intValue()));
-        Float colorTempPercent = (controllerInfo.getState().getColorTemperature().getValue().floatValue()
-                - controllerInfo.getState().getColorTemperature().getMin().floatValue())
-                / (controllerInfo.getState().getColorTemperature().getMax().floatValue()
-                        - controllerInfo.getState().getColorTemperature().getMin().floatValue())
+                new DecimalType(controllerInfo.getState().getColorTemperature().getValue()));
+        float colorTempPercent = (controllerInfo.getState().getColorTemperature().getValue()
+                - controllerInfo.getState().getColorTemperature().getMin())
+                / (controllerInfo.getState().getColorTemperature().getMax()
+                        - controllerInfo.getState().getColorTemperature().getMin())
                 * PercentType.HUNDRED.intValue();
-        updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(colorTempPercent.intValue()));
+        updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(Float.toString(colorTempPercent)));
         updateState(CHANNEL_EFFECT, new StringType(controllerInfo.getEffects().getSelect()));
         updateState(CHANNEL_COLOR,
                 new HSBType(new DecimalType(controllerInfo.getState().getHue().getValue()),
                         new PercentType(controllerInfo.getState().getSaturation().getValue()),
                         new PercentType(isOn ? controllerInfo.getState().getBrightness().getValue() : 0)));
         updateState(CHANNEL_COLOR_MODE, new StringType(controllerInfo.getState().getColorMode()));
-        updateState(CHANNEL_RHYTHM_ACTIVE,
-                controllerInfo.getRhythm().getRhythmActive().booleanValue() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode().intValue()));
-        updateState(CHANNEL_RHYTHM_STATE,
-                controllerInfo.getRhythm().getRhythmConnected().booleanValue() ? OnOffType.ON : OnOffType.OFF);
-
+        if (controllerInfo.getRhythm() != null) {
+            updateState(CHANNEL_RHYTHM_ACTIVE,
+                    controllerInfo.getRhythm().getRhythmActive() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode()));
+            updateState(CHANNEL_RHYTHM_STATE,
+                    controllerInfo.getRhythm().getRhythmConnected() ? OnOffType.ON : OnOffType.OFF);
+        }
         // update bridge properties which may have changed, or are not present during discovery
         Map<String, String> properties = editProperties();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, controllerInfo.getSerialNo());
@@ -515,10 +516,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     if (controllerInfo != null) {
                         Brightness brightness = controllerInfo.getState().getBrightness();
                         if (command.equals(IncreaseDecreaseType.INCREASE)) {
-                            brightness.setValue(Math.min(brightness.getMax().intValue(),
+                            brightness.setValue(Math.min(brightness.getMax(),
                                     brightness.getValue() + BRIGHTNESS_STEP_SIZE));
                         } else {
-                            brightness.setValue(Math.max(brightness.getMin().intValue(),
+                            brightness.setValue(Math.max(brightness.getMin(),
                                     brightness.getValue() - BRIGHTNESS_STEP_SIZE));
                         }
                         stateObject.setState(brightness);

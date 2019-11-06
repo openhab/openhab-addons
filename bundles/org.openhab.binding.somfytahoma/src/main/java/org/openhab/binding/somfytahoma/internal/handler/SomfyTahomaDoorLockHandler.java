@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.LOCK;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.OPEN;
+
+import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -20,10 +25,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
-
-import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaDoorLockHandler} is responsible for handling commands,
@@ -38,15 +39,13 @@ public class SomfyTahomaDoorLockHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaDoorLockHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put(OPEN, "core:OpenClosedState");
-            put(LOCK, "core:LockedUnlockedState");
-        }};
+        stateNames.put(OPEN, "core:OpenClosedState");
+        stateNames.put(LOCK, "core:LockedUnlockedState");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("DoorLock channel: {} received command: {}", channelUID.getId(),command.toString());
+        logger.debug("DoorLock channel: {} received command: {}", channelUID.getId(), command);
         if (OPEN.equals(channelUID.getId()) && command instanceof OnOffType) {
             sendCommand(command.equals(OnOffType.ON) ? "open" : "close", "[]");
         }

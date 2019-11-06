@@ -3,7 +3,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="radio">
 		<label>Internet Radio</label>
 		<description>An internet radio device based on the Frontier Silicon chipset.</description>

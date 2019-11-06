@@ -11,3 +11,21 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+json-path
+* License: Apache 2.0
+* Project: https://github.com/jayway/JsonPath
+* Source:  https://github.com/jayway/JsonPath
+
+json-smart, accessors-smart
+* License: Apache 2.0
+* Project: https://github.com/netplex/json-smart-v2
+* Source:  https://github.com/netplex/json-smart-v2
+
+asm
+* License: BSD
+* Project: https://asm.ow2.io/index.html
+* Source:  https://gitlab.ow2.org/asm/asm
+

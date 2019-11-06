@@ -98,7 +98,7 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
             throw new IllegalStateException("BlueZ JNI connection cannot be established.", e);
         } catch (RuntimeException e) {
             // we do not get anything more specific from TinyB here
-            if (e.getMessage().contains("AccessDenied")) {
+            if (e.getMessage() != null && e.getMessage().contains("AccessDenied")) {
                 throw new IllegalStateException(
                         "Cannot access BlueZ stack due to permission problems. Make sure that your OS user is part of the 'bluetooth' group of BlueZ.");
             } else {

@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.Thing;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.CONTROL;
 
 import java.util.HashMap;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.Thing;
 
 /**
  * The {@link SomfyTahomaPergolaHandler} is responsible for handling commands,
@@ -30,8 +30,6 @@ public class SomfyTahomaPergolaHandler extends SomfyTahomaAwningHandler {
 
     public SomfyTahomaPergolaHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put(CONTROL, "core:TargetClosureState");
-        }};
+        stateNames.put(CONTROL, "core:TargetClosureState");
     }
 }

@@ -33,7 +33,7 @@ public class OpenWeatherMapAPIConfiguration {
     // supported languages (see https://openweathermap.org/current#multi)
     public static final Set<String> SUPPORTED_LANGUAGES = Collections.unmodifiableSet(Stream.of("ar", "bg", "ca", "cz",
             "de", "el", "en", "es", "fa", "fi", "fr", "gl", "hr", "hu", "it", "ja", "kr", "la", "lt", "mk", "nl", "pl",
-            "pt", "ro", "ru", "sk", "sl", "sw", "tr", "ua", "vi", "zh_cn", "zh_tw").collect(Collectors.toSet()));
+            "pt", "ro", "ru", "se", "sk", "sl", "tr", "ua", "vi", "zh_cn", "zh_tw").collect(Collectors.toSet()));
 
     private @Nullable String apikey;
     private int refreshInterval;

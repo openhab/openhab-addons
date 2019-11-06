@@ -84,7 +84,7 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService imp
                     PositionDatum panel = iterator.next();
                     panel.getPanelId();
                     ThingUID newPanelThingUID = new ThingUID(NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL, bridge,
-                            panel.getPanelId().toString());
+                            Integer.toString(panel.getPanelId()));
 
                     final Map<String, Object> properties = new HashMap<>(1);
                     properties.put(CONFIG_PANEL_ID, panel.getPanelId());

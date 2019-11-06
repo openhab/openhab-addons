@@ -47,7 +47,11 @@ public class PartitionState {
     private boolean areAllZoneclosed;
 
     public String getMainState() {
-        return isArmed | isArmedInAway | isArmedInNoEntry | isArmedInStay ? "Armed" : "Disarmed";
+        if (isInAlarm) {
+            return "InAlarm";
+        } else {
+            return isArmed ? "Armed" : "Disarmed";
+        }
     }
 
     public String getAdditionalState() {
@@ -115,12 +119,17 @@ public class PartitionState {
 
     @Override
     public String toString() {
-        return "PartitionState [isArmed=" + isArmed + ", isArmedInAway=" + isArmedInAway + ", isArmedInStay=" + isArmedInStay + ", isArmedInNoEntry=" + isArmedInNoEntry + ", isInAlarm=" + isInAlarm +
-                ", isInSilentAlarm=" + isInSilentAlarm + ", isInAudibleAlarm=" + isInAudibleAlarm + ", isInFireAlarm=" + isInFireAlarm + ", isReadyToArm=" + isReadyToArm + ", isInExitDelay=" +
-                isInExitDelay + ", isInEntryDelay=" + isInEntryDelay + ", isInTrouble=" + isInTrouble + ", hasAlarmInMemory=" + hasAlarmInMemory + ", isInZoneBypass=" + isInZoneBypass +
-                ", hasZoneInTamperTrouble=" + hasZoneInTamperTrouble + ", hasZoneInLowBatteryTrouble=" + hasZoneInLowBatteryTrouble + ", hasZoneInFireLoopTrouble=" + hasZoneInFireLoopTrouble +
-                ", hasZoneInSupervisionTrouble=" + hasZoneInSupervisionTrouble + ", isStayInstantReady=" + isStayInstantReady + ", isForceReady=" + isForceReady + ", isBypassReady=" + isBypassReady +
-                ", isInhibitReady=" + isInhibitReady + ", areAllZoneclosed=" + areAllZoneclosed + "]";
+        return "PartitionState [isArmed=" + isArmed + ", isArmedInAway=" + isArmedInAway + ", isArmedInStay="
+                + isArmedInStay + ", isArmedInNoEntry=" + isArmedInNoEntry + ", isInAlarm=" + isInAlarm
+                + ", isInSilentAlarm=" + isInSilentAlarm + ", isInAudibleAlarm=" + isInAudibleAlarm + ", isInFireAlarm="
+                + isInFireAlarm + ", isReadyToArm=" + isReadyToArm + ", isInExitDelay=" + isInExitDelay
+                + ", isInEntryDelay=" + isInEntryDelay + ", isInTrouble=" + isInTrouble + ", hasAlarmInMemory="
+                + hasAlarmInMemory + ", isInZoneBypass=" + isInZoneBypass + ", hasZoneInTamperTrouble="
+                + hasZoneInTamperTrouble + ", hasZoneInLowBatteryTrouble=" + hasZoneInLowBatteryTrouble
+                + ", hasZoneInFireLoopTrouble=" + hasZoneInFireLoopTrouble + ", hasZoneInSupervisionTrouble="
+                + hasZoneInSupervisionTrouble + ", isStayInstantReady=" + isStayInstantReady + ", isForceReady="
+                + isForceReady + ", isBypassReady=" + isBypassReady + ", isInhibitReady=" + isInhibitReady
+                + ", areAllZoneclosed=" + areAllZoneclosed + "]";
     }
 
     public boolean isArmed() {

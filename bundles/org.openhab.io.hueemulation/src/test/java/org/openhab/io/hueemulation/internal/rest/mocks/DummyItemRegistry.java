@@ -23,8 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.registry.RegistryChangeListener;
 import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.items.ItemNotFoundException;
-import org.eclipse.smarthome.core.items.ItemNotUniqueException;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.RegistryHook;
 
@@ -46,14 +44,13 @@ public class DummyItemRegistry implements ItemRegistry {
         return items.values();
     }
 
-    @NonNullByDefault({})
     @Override
     public Stream<Item> stream() {
         return items.values().stream();
     }
 
     @Override
-    public @Nullable Item get(@Nullable String key) {
+    public @Nullable Item get(String key) {
         return items.get(key);
     }
 
@@ -90,7 +87,7 @@ public class DummyItemRegistry implements ItemRegistry {
     }
 
     @Override
-    public Item getItem(@Nullable String name) {
+    public Item getItem(String name) {
         return items.get(name);
     }
 
@@ -114,19 +111,16 @@ public class DummyItemRegistry implements ItemRegistry {
         return items.values();
     }
 
-    @NonNullByDefault({})
     @Override
     public Collection<Item> getItemsByTag(String... tags) {
         return items.values();
     }
 
-    @NonNullByDefault({})
     @Override
     public Collection<Item> getItemsByTagAndType(String type, String... tags) {
         return items.values();
     }
 
-    @NonNullByDefault({})
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Item> Collection<T> getItemsByTag(Class<T> typeFilter, String... tags) {
@@ -142,13 +136,11 @@ public class DummyItemRegistry implements ItemRegistry {
         return put;
     }
 
-    @NonNullByDefault({})
     @Override
     public void addRegistryHook(RegistryHook<Item> hook) {
 
     }
 
-    @NonNullByDefault({})
     @Override
     public void removeRegistryHook(RegistryHook<Item> hook) {
 

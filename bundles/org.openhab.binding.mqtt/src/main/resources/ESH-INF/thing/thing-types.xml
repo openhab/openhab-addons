@@ -47,15 +47,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="retain" type="boolean">
-				<label>Retain messages</label>
-				<description>Retained messages are stored on the MQTT broker and
-					other clients can retrieve the value at any time</description>
-				<default>true</default>
-				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="reconnect_time" type="integer">
+			<parameter name="reconnectTime" type="integer">
 				<label>Reconnect time</label>
 				<description>Reconnect time in ms. If a connection is lost, the
 					binding will wait this time before it tries to reconnect.</description>
@@ -63,7 +55,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="keep_alive_time" type="integer">
+			<parameter name="keepAlive" type="integer">
 				<label>Heartbeat</label>
 				<description>Keep alive / heartbeat timer in ms. It can take up to
 					this time to determine if a server connection is lost. A lower
@@ -73,20 +65,20 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="lastwill_message" type="text">
-				<label>Last will message</label>
+			<parameter name="lwtMessage" type="text">
+				<label>Last Will message</label>
 				<description>The last will message.</description>
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="lastwill_topic" type="text">
-				<label>Last will topic</label>
+			<parameter name="lwtTopic" type="text">
+				<label>Last Will topic</label>
 				<description>Defaults to empty and therefore disables the last will.</description>
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="lastwill_qos" type="integer">
-				<label>Last will QoS</label>
+			<parameter name="lwtQos" type="integer">
+				<label>Last Will QoS</label>
 				<description>The quality of service parameter of the last will.</description>
 				<options>
 					<option value="0">At most once (0)</option>
@@ -94,6 +86,13 @@
 					<option value="2">Exactly once (2)</option>
 				</options>
 				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="lwtRetain" type="boolean">
+				<label>Last Will Retain</label>
+				<description>True if last Will should be retained (defaults to false)</description>
+				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
 
