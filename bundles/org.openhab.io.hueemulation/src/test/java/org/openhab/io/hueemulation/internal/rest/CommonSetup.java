@@ -93,7 +93,7 @@ public class CommonSetup {
             if (name.equals("hueEmulationUsers")) {
                 return (Storage<T>) new DummyUsersStorage();
             }
-            return null;
+            throw new IllegalStateException();
         }
     };
 

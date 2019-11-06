@@ -38,6 +38,7 @@ import org.openhab.binding.lutron.internal.discovery.LutronDeviceDiscoveryServic
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
+import org.openhab.binding.lutron.internal.handler.BlindHandler;
 import org.openhab.binding.lutron.internal.handler.CcoHandler;
 import org.openhab.binding.lutron.internal.handler.DimmerHandler;
 import org.openhab.binding.lutron.internal.handler.GrafikEyeKeypadHandler;
@@ -81,12 +82,12 @@ import org.slf4j.LoggerFactory;
 public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by LutronDeviceDiscoveryService to discover these types
-    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD,
-                    THING_TYPE_TTKEYPAD, THING_TYPE_INTLKEYPAD, THING_TYPE_PICO, THING_TYPE_VIRTUALKEYPAD,
-                    THING_TYPE_VCRX, THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED, THING_TYPE_SHADE,
-                    THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE, THING_TYPE_QSIO, THING_TYPE_GRAFIKEYEKEYPAD)
-            .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR,
+                    THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_INTLKEYPAD, THING_TYPE_PICO,
+                    THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX, THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED,
+                    THING_TYPE_SHADE, THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE, THING_TYPE_QSIO,
+                    THING_TYPE_GRAFIKEYEKEYPAD, THING_TYPE_BLIND).collect(Collectors.toSet()));
 
     // Used by the HwDiscoveryService
     public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
@@ -167,6 +168,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new GreenModeHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_QSIO)) {
             return new QSIOHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_BLIND)) {
+            return new BlindHandler(thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_PRGBRIDGE)) {
             return new PrgBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {

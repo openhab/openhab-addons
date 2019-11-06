@@ -1,12 +1,14 @@
 # tado° Binding
 
-The tado° binding integrates devices from [tado°](http://www.tado.com).
+The tado° binding integrates devices from [tado°](https://www.tado.com).
 
-It requires a fully functional tado° installation. You can then monitor and control all zone types (Heating, AC, Hot Water) as well as retrieve the HOME/AWAY status of mobile devices.
+It requires a fully functional tado° installation.
+You can then monitor and control all zone types (Heating, AC, Hot Water) as well as retrieve the HOME/AWAY status of mobile devices.
 
 ## `home` Thing (the Bridge)
 
-The binding supports discovery, but a `home` thing type has to be configured first. It serves as bridge to the tado° cloud services.
+The binding supports discovery, but a `home` thing type has to be configured first.
+It serves as bridge to the tado° cloud services.
 
 Parameter | Required | Description
 -|-|-
@@ -24,7 +26,9 @@ Afterwards the discovery will show all zones and mobile devices associated with 
 
 ## `zone` Thing
 
-A *zone* is an area/room of your home. You've defined them during installation. One zone relates to one page in the tado° mobile- or webapp.
+A *zone* is an area/room of your home.
+You have defined them during installation.
+One zone relates to one page in the tado° mobile- or webapp.
 
 Parameter | Required | Description | Default
 -|-|-|-
@@ -49,7 +53,8 @@ Zone id and name can be found in discovery results.
 ### Channels
 
 A zone is either of type `HEATING`, `AC` or `DHW` (domestic hot water).
-The availability of items as well as their allowed values depend on type and capabilities of the HVAC setup. If you are unsure, have a look at the tado° app and see if the functionality is available and what values are supported.
+The availability of items as well as their allowed values depend on type and capabilities of the HVAC setup.
+If you are unsure, have a look at the tado° app and see if the functionality is available and what values are supported.
 
 Name | Type | Description | Read/Write | Zone type
 -|-|-|-|-
@@ -73,11 +78,13 @@ The `RW` items are used to either override the schedule or to return to it (if `
 
 Item changes are not immediately applied, but instead collected and only when no change is done for 5 seconds (by default - see `hvacChangeDebounce` above), the combined HVAC change is sent to the server.
 This way, you can for example set a timer for 15 minutes, with target temperature 22° and mode `HEAT` in one go, without intermediate partial overrides.
-It's still fine to only change one item, like setting the target temperature to 22°, but you have the opportunity to set more items and have less defaults applied.
+It is still fine to only change one item, like setting the target temperature to 22°, but you have the opportunity to set more items and have less defaults applied.
 
 ### Default Handling
 
-To set an override, the tado° cloud API requires a full setting (`hvacMode`, `targetTemperature`, `fanspeed`, `swing`) and a termination condition (`operationMode`, `timerDuration`). If only some of the properties are set, the binding fills the missing pieces automatically. It tries to keep the current state wherever possible.
+To set an override, the tado° cloud API requires a full setting (`hvacMode`, `targetTemperature`, `fanspeed`, `swing`) and a termination condition (`operationMode`, `timerDuration`).
+If only some of the properties are set, the binding fills the missing pieces automatically.
+It tries to keep the current state wherever possible.
 
 If parts of the setting are missing, then the currently active zone setting is used to fill the gap. Only if the setting is not compatible with the requested change, then hard-coded defaults are applied.
 
@@ -86,7 +93,9 @@ If parts of the setting are missing, then the currently active zone setting is u
 - `fanspeed` is set to first supported value, for example `AUTO`
 - `swing` is set to `OFF`, if supported
 
-If the termination condition is missing, the binding first checks if an override is active. If that's the case, the existing termination condition is used. An existing timer, for example, just keeps running. 
+If the termination condition is missing, the binding first checks if an override is active.
+If that is the case, the existing termination condition is used.
+An existing timer, for example, just keeps running. 
 In case the zone is currently in smart-schedule mode and thus doesn't have a termination condition, then the default termination condition is used, as configured in the tado° app (settings -> select zone -> manual control on tado° device).
 
 ## `mobiledevice` Thing
@@ -98,7 +107,8 @@ Parameter | Required | Description | Default
 `id` | yes | Mobile Device Id | -
 `refreshInterval` | no | Refresh interval of state updates in seconds | 60
 
-Mobile devices are part of discovery, but can also be configured manually. It's again easiest to refer to discovery in order to find the `id`.
+Mobile devices are part of discovery, but can also be configured manually.
+It is again easiest to refer to discovery in order to find the `id`.
 
 Example `tado.things`:
 

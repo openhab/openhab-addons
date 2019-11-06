@@ -77,15 +77,16 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         int ramBlockNumber = request.getRamBlockNumber();
 
         byte[] parsedResult = parsePacket(response);
-        if (parsedResult != null) {
+        if (parsedResult != null && parsedResult.length == RAM_BLOCK_SIZE) {
             memoryMap.updateElement(ramBlockNumber, parsedResult);
             logger.trace("Result for ramBlock={} is [{}]", ramBlockNumber, parsedResult);
         } else {
             logger.debug("Wrong parsed result. Probably wrong data received in response");
+            return;
         }
 
         // Trigger listeners update when last memory page update is received
-        if (ramBlockNumber == panelType.getRamPagesNumber() && listeners != null && !listeners.isEmpty()) {
+        if (ramBlockNumber == panelType.getRamPagesNumber()) {
             updateListeners();
         }
     }
@@ -105,7 +106,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         try {
             IPPacketPayload payload = new EpromRequestPayload(address, labelLength);
             ParadoxIPPacket readEpromIPPacket = new ParadoxIPPacket(payload)
-                    .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
+                .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
 
             IRequest epromRequest = new EpromRequest(partitionNo, EntityType.PARTITION, readEpromIPPacket);
             submitRequest(epromRequest);
@@ -221,15 +222,15 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
     private void readRAM(int blockNo) {
         try {
-            logger.debug("Creating RAM page {} read request", blockNo);
+            logger.trace("Creating RAM page {} read request", blockNo);
             IPPacketPayload payload = new RamRequestPayload(blockNo, RAM_BLOCK_SIZE);
             ParadoxIPPacket ipPacket = createParadoxIpPacket(payload);
             IRequest ramRequest = new RamRequest(blockNo, ipPacket);
             submitRequest(ramRequest);
         } catch (ParadoxException e) {
             logger.debug(
-                    "Unable to create request payload from provided bytes to read. blockNo={}, bytes to read={}. Exception={}",
-                    blockNo, RAM_BLOCK_SIZE, e.getMessage());
+                "Unable to create request payload from provided bytes to read. blockNo={}, bytes to read={}. Exception={}",
+                blockNo, RAM_BLOCK_SIZE, e.getMessage());
         }
     }
 

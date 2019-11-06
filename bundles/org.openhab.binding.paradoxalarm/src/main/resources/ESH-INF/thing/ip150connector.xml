@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="paradoxalarm"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="ip150">
 		<label>Paradox IP150 Module Connector</label>
@@ -42,6 +42,11 @@
 				<label>Port</label>
 				<description>Port to connect to IP150</description>
 				<default>10000</default>
+			</parameter>
+			<parameter name="reconnectWaitTime" type="integer" required="true">
+				<label>Reconnect wait time [seconds])</label>
+				<description>The time to wait before a reconnect occurs after socket timeout. Value is in seconds</description>
+				<default>30</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

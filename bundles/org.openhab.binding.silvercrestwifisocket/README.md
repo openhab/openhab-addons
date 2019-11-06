@@ -4,21 +4,25 @@ This binding integrates the Silvercrest Wifi Socket SWS-A1 sold by Lidl and the 
 
 ## Supported Things
 
--   Silvercrest Wifi Socket SWS-A1 - [(Owner Manual)](http://www.lidl-service.com/static/118127777/103043_FI.pdf)   --   Tested with firmware version: 1.41, 1.60, 1.70
+-   Silvercrest Wifi Socket SWS-A1 - [(Owner Manual)](https://www.lidl-service.com/static/118127777/103043_FI.pdf)   --   Tested with firmware version: 1.41, 1.60, 1.70
 -   EasyHome Wifi Socket DIS-124 <https://www.aldi-sued.de/de/infos/aldi-sued-a-bis-z/s/serviceportal/ergebnisliste/sis/si/wifi-steckdose/>
 
 
 ## Discovery
 
-The Discovery of Wifi Sockets is always running in the background. If a command is sent to wifi socket using the Android/iOS app or if the physical button in the device is pressed, the device will be recognized and will be placed in the Inbox.
+The Discovery of Wifi Sockets is always running in the background.
+If a command is sent to wifi socket using the Android/iOS app or if the physical button in the device is pressed, the device will be recognized and will be placed in the Inbox.
 
 ## Binding Configuration
 
-The binding does not require any special configuration. The Wifi Socket should be connected to the same wifi network.
+The binding does not require any special configuration.
+The Wifi Socket should be connected to the same wifi network.
 
 ## Thing Configuration
 
-To configure a Wifi Socket manually the mac address and the vendor is required. You can check the Wifi Socket mac address in your router or using some mobile app. Supported vendors are either Silvercrest (Lidl) or EasyHome (Aldi).
+To configure a Wifi Socket manually the mac address and the vendor is required.
+You can check the Wifi Socket mac address in your router or using some mobile app.
+Supported vendors are either Silvercrest (Lidl) or EasyHome (Aldi).
 
 Wifi Socket thing parameters:
 

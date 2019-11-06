@@ -100,7 +100,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<thing-type id="speedtest">
 		<label>SpeedTest</label>
 		<description>Provides information about bandwidth speed.</description>
@@ -113,7 +113,7 @@
 			<channel id="testStart" typeId="Timestamp">
 				<label>Test Start</label>
 			</channel>
-			 <channel id="testEnd" typeId="Timestamp">
+			<channel id="testEnd" typeId="Timestamp">
 				<label>Test End</label>
 			</channel>
 		</channels>
@@ -128,7 +128,7 @@
 				<label>Initial Delay</label>
 				<description>Delay before starting the first speed test (minutes) after initialization of the binding.</description>
 				<default>5</default>
-                <advanced>true</advanced>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="uploadSize" type="integer" min="5000">
 				<label>Upload size</label>
@@ -145,21 +145,21 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-type id="isRunning">
 		<item-type>Switch</item-type>
 		<label>Test Running</label>
 		<description>Indicates if a test is currently ongoing</description>
 		<state readOnly="false"></state>
 	</channel-type>
-	
+
 	<channel-type id="progress">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Progress</label>
 		<description>Current Test progression</description>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%" />
 	</channel-type>
-	
+
 	<channel-type id="rateUp">
 		<item-type>Number:DataTransferRate</item-type>
 		<label>Upload Rate</label>
@@ -173,7 +173,7 @@
 		<description>Current download rate</description>
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
-	
+
 	<channel-type id="Timestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>

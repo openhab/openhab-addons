@@ -47,6 +47,7 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_GREENMODE = new ThingTypeUID(BINDING_ID, "greenmode");
     public static final ThingTypeUID THING_TYPE_QSIO = new ThingTypeUID(BINDING_ID, "qsio");
     public static final ThingTypeUID THING_TYPE_GRAFIKEYEKEYPAD = new ThingTypeUID(BINDING_ID, "grafikeyekeypad");
+    public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
@@ -60,6 +61,8 @@ public class LutronBindingConstants {
     public static final String CHANNEL_ENABLEEVENT = "enableevent";
     public static final String CHANNEL_DISABLEEVENT = "disableevent";
     public static final String CHANNEL_STEP = "step";
+    public static final String CHANNEL_BLINDLIFTLEVEL = "blindliftlevel";
+    public static final String CHANNEL_BLINDTILTLEVEL = "blindtiltlevel";
 
     // Bridge config properties (used by discovery service)
     public static final String HOST = "ipAddress";
@@ -79,4 +82,9 @@ public class LutronBindingConstants {
 
     // GreenMode config properties
     public static final String POLL_INTERVAL = "pollInterval";
+
+    // Blind types
+    public static final String BLIND_TYPE_PARAMETER = "type";
+    public static final String BLIND_TYPE_SHEER = "Sheer";
+    public static final String BLIND_TYPE_VENETIAN = "Venetian";
 }

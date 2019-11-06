@@ -103,17 +103,17 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
         ColorValue value = new ColorValue(true, channelConfiguration.payload_on, channelConfiguration.payload_off, 100);
 
         // Create three MQTT subscriptions and use this class object as update listener
-        switchChannel = buildChannel(switchChannelID, value, channelConfiguration.name).listener(this)//
+        switchChannel = buildChannel(switchChannelID, value, channelConfiguration.name, this)//
                 .stateTopic(channelConfiguration.state_topic, channelConfiguration.state_value_template)//
                 .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain)//
                 .build(false);
 
-        colorChannel = buildChannel(colorChannelID, value, channelConfiguration.name).listener(this)//
+        colorChannel = buildChannel(colorChannelID, value, channelConfiguration.name, this)//
                 .stateTopic(channelConfiguration.rgb_state_topic, channelConfiguration.rgb_value_template)//
                 .commandTopic(channelConfiguration.rgb_command_topic, channelConfiguration.retain)//
                 .build(false);
 
-        brightnessChannel = buildChannel(brightnessChannelID, value, channelConfiguration.name).listener(this)//
+        brightnessChannel = buildChannel(brightnessChannelID, value, channelConfiguration.name, this)//
                 .stateTopic(channelConfiguration.brightness_state_topic, channelConfiguration.brightness_value_template)//
                 .commandTopic(channelConfiguration.brightness_command_topic, channelConfiguration.retain)//
                 .build(false);

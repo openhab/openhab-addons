@@ -31,4 +31,11 @@ public class RamRequest extends Request {
     public int getRamBlockNumber() {
         return ramBlockNumber;
     }
+
+    @Override
+    public String toString() {
+        return "RamRequest [getType()=" + getType() + ", getRamBlockNumber()=" + getRamBlockNumber() + "]";
+    }
+
+
 }

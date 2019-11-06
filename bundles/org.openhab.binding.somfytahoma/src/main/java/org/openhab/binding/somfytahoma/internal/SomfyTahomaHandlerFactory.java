@@ -115,6 +115,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaTemperatureSensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GATE)) {
             return new SomfyTahomaGateHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_CURTAIN)){
+            return new SomfyTahomaCurtainHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ELECTRICITYSENSOR)) {
             return new SomfyTahomaElectricitySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_DOCK)) {

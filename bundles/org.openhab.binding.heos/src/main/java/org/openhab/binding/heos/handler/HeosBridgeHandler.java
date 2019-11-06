@@ -13,7 +13,7 @@
 package org.openhab.binding.heos.handler;
 
 import static org.openhab.binding.heos.HeosBindingConstants.*;
-//import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,7 +124,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 logger.debug("Can't log in. Username or password not set.");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can't log in. Username or password not set.");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        " Username or password not set or incorrect. Please Log-In to enable all HEOS features");
             }
         }, 5, TimeUnit.SECONDS);
     }
@@ -301,14 +302,12 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                 if (SUCCESS.equals(result)) {
                     if (!loggedIn) {
                         loggedIn = true;
-                        addFavorites();
                         addPlaylists();
                     }
                 }
             } else if (USER_CHANGED.equals(command)) {
                 if (!loggedIn) {
                     loggedIn = true;
-                    addFavorites();
                     addPlaylists();
                 }
             }
@@ -319,13 +318,6 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         if (loggedIn) {
             heosPlaylists.clear();
             heosPlaylists = heos.getPlaylists();
-        }
-    }
-
-    public void addFavorites() {
-        if (loggedIn) {
-            logger.debug("Adding HEOS Favorite Channels");
-            updateThingChannels(channelManager.addFavoriteChannels(heos.getFavorites()));
         }
     }
 
@@ -433,5 +425,9 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
 
     public boolean isLoggedin() {
         return loggedIn;
+    }
+
+    public boolean isBridgeConnected() {
+        return bridgeIsConnected;
     }
 }

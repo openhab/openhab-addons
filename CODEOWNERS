@@ -35,6 +35,7 @@
 /bundles/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @J-N-K
+/bundles/org.openhab.binding.doorbird/ @mhilbush
 /bundles/org.openhab.binding.dscalarm/ @RSStephens
 /bundles/org.openhab.binding.dsmr/ @Hilbrand
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
@@ -109,6 +110,7 @@
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
+/bundles/org.openhab.binding.networkupstools/ @Hilbrand
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
 /bundles/org.openhab.binding.nibeuplink/ @alexf2015
 /bundles/org.openhab.binding.nikobus/ @crnjan

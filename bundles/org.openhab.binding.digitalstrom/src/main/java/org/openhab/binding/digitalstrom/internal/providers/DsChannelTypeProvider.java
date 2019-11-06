@@ -25,7 +25,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
@@ -185,7 +184,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
         return null;
     }
 
-    private static List<String> supportedOutputChannelTypes = new ArrayList<>();
+    private static final List<String> SUPPORTED_OUTPUT_CHANNEL_TYPES = new ArrayList<>();
 
     /**
      * Returns true, if the given channel type id is a output channel.
@@ -194,7 +193,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
      * @return true, if channel type id is output channel
      */
     public static boolean isOutputChannel(String channelTypeID) {
-        return supportedOutputChannelTypes.contains(channelTypeID);
+        return SUPPORTED_OUTPUT_CHANNEL_TYPES.contains(channelTypeID);
     }
 
     @Activate
@@ -229,19 +228,19 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
             }
             if (i == 2) {
                 channelIDpre = HEATING;
-                supportedOutputChannelTypes.add(buildIdentifier(channelIDpre, TEMPERATURE_CONTROLLED));
+                SUPPORTED_OUTPUT_CHANNEL_TYPES.add(buildIdentifier(channelIDpre, TEMPERATURE_CONTROLLED));
             }
-            supportedOutputChannelTypes.add(buildIdentifier(channelIDpre, SWITCH));
-            supportedOutputChannelTypes.add(buildIdentifier(channelIDpre, DIMMER));
+            SUPPORTED_OUTPUT_CHANNEL_TYPES.add(buildIdentifier(channelIDpre, SWITCH));
+            SUPPORTED_OUTPUT_CHANNEL_TYPES.add(buildIdentifier(channelIDpre, DIMMER));
             if (i < 2) {
-                supportedOutputChannelTypes.add(buildIdentifier(channelIDpre, "2", STAGE));
-                supportedOutputChannelTypes.add(buildIdentifier(channelIDpre, "3", STAGE));
+                SUPPORTED_OUTPUT_CHANNEL_TYPES.add(buildIdentifier(channelIDpre, "2", STAGE));
+                SUPPORTED_OUTPUT_CHANNEL_TYPES.add(buildIdentifier(channelIDpre, "3", STAGE));
             }
         }
         channelIDpre = SHADE;
-        supportedOutputChannelTypes.add(channelIDpre);
-        supportedOutputChannelTypes.add(buildIdentifier(channelIDpre, ANGLE));
-        supportedOutputChannelTypes.add(SCENE);
+        SUPPORTED_OUTPUT_CHANNEL_TYPES.add(channelIDpre);
+        SUPPORTED_OUTPUT_CHANNEL_TYPES.add(buildIdentifier(channelIDpre, ANGLE));
+        SUPPORTED_OUTPUT_CHANNEL_TYPES.add(SCENE);
     }
 
     private String getSensorCategory(SensorEnum sensorType) {
@@ -455,8 +454,8 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
 
     @Override
     public Collection<ChannelType> getChannelTypes(Locale locale) {
-        List<ChannelType> channelTypeList = new LinkedList<ChannelType>();
-        for (String channelTypeId : supportedOutputChannelTypes) {
+        List<ChannelType> channelTypeList = new LinkedList<>();
+        for (String channelTypeId : SUPPORTED_OUTPUT_CHANNEL_TYPES) {
             channelTypeList.add(
                     getChannelType(new ChannelTypeUID(DigitalSTROMBindingConstants.BINDING_ID, channelTypeId), locale));
         }
@@ -464,19 +463,16 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
             channelTypeList.add(getChannelType(
                     new ChannelTypeUID(DigitalSTROMBindingConstants.BINDING_ID, buildIdentifier(sensorType)), locale));
         }
-
         for (MeteringTypeEnum meteringType : MeteringTypeEnum.values()) {
             channelTypeList.add(getChannelType(new ChannelTypeUID(DigitalSTROMBindingConstants.BINDING_ID,
                     buildIdentifier(meteringType, MeteringUnitsEnum.WH)), locale));
             channelTypeList.add(getChannelType(new ChannelTypeUID(DigitalSTROMBindingConstants.BINDING_ID,
                     buildIdentifier(TOTAL_PRE, meteringType, MeteringUnitsEnum.WH)), locale));
         }
-
         for (DeviceBinarayInputEnum binaryInput : DeviceBinarayInputEnum.values()) {
             channelTypeList.add(getChannelType(new ChannelTypeUID(DigitalSTROMBindingConstants.BINDING_ID,
                     buildIdentifier(BINARY_INPUT_PRE, binaryInput)), locale));
         }
-
         return channelTypeList;
     }
 
@@ -491,7 +487,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
                         .withTags(getSimpleTags(channelID, locale))
                         .withStateDescription(getSensorStateDescription(sensorType)).build();
             } catch (IllegalArgumentException e) {
-                if (supportedOutputChannelTypes.contains(channelID)) {
+                if (SUPPORTED_OUTPUT_CHANNEL_TYPES.contains(channelID)) {
                     return ChannelTypeBuilder
                             .state(channelTypeUID, getLabelText(channelID, locale), getItemType(channelID))
                             .withDescription(getDescText(channelID, locale)).withCategory(getCategory(channelID))
@@ -524,20 +520,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
                     // ignore
                 }
             }
-
         }
-
-        return null;
-
-    }
-
-    @Override
-    public ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID, Locale locale) {
-        return null;
-    }
-
-    @Override
-    public Collection<ChannelGroupType> getChannelGroupTypes(Locale locale) {
         return null;
     }
 

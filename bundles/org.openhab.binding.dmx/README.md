@@ -34,11 +34,12 @@ Chaser things define a control channel that can be used to dynamically change th
 
 ## Discovery
 
-Discovery is not supported at the moment. You have to add all bridges and things manually.  
+Discovery is not supported at the moment.
+You have to add all bridges and things manually.
 
 ## Thing Configuration
 
-Since the brightness perception of the human eye is not linear, all bridges support `applycurve`,  a list of channels `applycurve` that have a CIE 1931 lightness correction (cf. [Poynton, C.A.: “Gamma” and its Disguises: The Nonlinear Mappings of Intensity in Perception, CRTs, Film and Video, SMPTE Journal Dec. 1993, pp. 1099 - 1108](http://www.poynton.com/PDFs/SMPTE93_Gamma.pdf)) applied. 
+Since the brightness perception of the human eye is not linear, all bridges support `applycurve`,  a list of channels `applycurve` that have a CIE 1931 lightness correction (cf. [Poynton, C.A.: “Gamma” and its Disguises: The Nonlinear Mappings of Intensity in Perception, CRTs, Film and Video, SMPTE Journal Dec. 1993, pp. 1099 - 1108](https://www.poynton.com/PDFs/SMPTE93_Gamma.pdf)) applied. 
 This list follows the format of the thing channel definition. 
 This is used regardless of the thing(s) that are associated to the channel.
 
@@ -204,7 +205,8 @@ The next `ON` command uses these values instead of the default (or configuration
 |switch           |chaser               |Switch                | turns the chaser ON or OFF                         |
 |mute             |(all bridges)        |Switch                | mutes the DMX output of the bridge                 |
 
-*Note:* the string send to the control channel of chaser things has to be formatted like the `steps` configuration of the chaser thing. If the new string is invalid, the old configuration will be used.
+*Note:* the string send to the control channel of chaser things has to be formatted like the `steps` configuration of the chaser thing.
+If the new string is invalid, the old configuration will be used.
 
 ## Rule Actions
 
@@ -227,7 +229,7 @@ Defining more than one step in `fadeString` is supported, too.
 
 ## Full Example
 
-This example defines a sACN/E1.31 bridge in unicast mode which transmits universe 2 and three things: a three channel dimmer used to control a RGB light, which takes 1s to fade from one color to another and 10s from 0-100% on incremental dim commands, a single channel dimmer which will turn on only to 90% if it receives a ON command and does not fully switch off (to 10%) if it receives an OFF command and chaser which changes the colors like a traffic light.
+This example defines a sACN/E1.31 bridge in unicast mode which transmits universe 2 and three things: a three channel dimmer used to control a RGB light, which takes 1s to fade from one color to another and 10s from 0-100% on incremental dim commands, a single channel dimmer which will turn on only to 90% if it receives an ON command and does not fully switch off (to 10%) if it receives an OFF command and chaser which changes the colors like a traffic light.
 
 ### demo.things:
 

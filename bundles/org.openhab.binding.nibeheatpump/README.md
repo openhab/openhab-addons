@@ -1,14 +1,16 @@
 # Nibe Heatpump Binding
 
-The Nibe Heatpump binding is used to get live data from from Nibe heat pumps without using expensive MODBUS40 adapter.
-This binding should be compatible at least the F750, F1145, F1245, F1155, F1255 and F470 heat pump models.
+The Nibe Heatpump binding is used to get live data from Nibe heat pumps without using an expensive MODBUS40 adapter.
+This binding is compatible with the F750, F1145, F1245, F1155, F1255 and F470 heat pump models.
 
-The binding support data telegrams (contains max 20 registers) from the heat pump, but binding can also read other registers from the pump.
-It's recommend to add most changed variables to telegram, binding will then read all other registers automatically from the pump when channels are linked to item.
-Register reading need to be enabled from the thing configuration.
-Binding have also experimental support for register writing.
-This can be used to configure heat pump.
-Write mode need to enabled from thing configuration and for safety reason all register identifiers need to explicitly defined.
+The binding supports data telegrams (containing a maximum of 20 registers) from the heat pump.
+The binding can also read other registers from the pump.
+It is recommended to add the most often updated variables to a telegram.
+The binding will then read all other registers automatically from the pump when channels are linked to an item.
+Register reading needs to be enabled in the thing configuration.
+The binding also has experimental support for writing registers.
+This can be used to configure the heat pump.
+Write mode needs to be enabled in the thing configuration and for safety reasons all register identifiers need to be explicitly defined.
 
 ## Supported Things
 
@@ -31,46 +33,49 @@ This binding supports direct serial port connection (RS-485 adapter needed) to h
 
 ## Discovery
 
-Discovery is not supported, therefore binding and things need to be configured via Paper UI or thing files. 
+Discovery is not supported, therefore the binding and things need to be configured via Paper UI or thing files. 
 
 ## Prerequisites
 
-When Modbus adapter support is enabled from the heat pump UI, the heat pump will start to send telegrams every now and then. A telegram contains a maximum of 20 registers.
+When Modbus adapter support is enabled from the heat pump UI, the heat pump will start to send telegrams every now and then.
+A telegram contains a maximum of 20 registers.
 Those 20 registers can be configured via the Nibe ModbusManager application.
 
-Unfortunately Nibe has made this tricky: telegram from heat pump should be acknowledged, otherwise heat pump will raise an alarm and go in alarm state.
-Acknowledge (ACK or NAK) should be sent accurately.
-Binding support also direct serial port connections to heat pump, but heat pump will raise an alarm when openHAB binding not running e.g. during openHAB updates.
+Unfortunately Nibe has made this tricky.
+A telegram from the heat pump must be acknowledged, otherwise the heat pump will raise an alarm and go into the alarm state.
+Acknowledgement (ACK or NAK) responses should be sent correctly.
+The binding also supports direct serial port connections to the heat pump, but the heat pump will raise an alarm when the openHAB binding is not running e.g. during openHAB updates.
 This problem can be resolved by using the `nibegw` program, which can be run on Unix/Linux (such as a Raspberry Pi) or Arduino-based boards.
-If you are running openHAB on Raspberry Pi `nibegw` program can run also on the same machine, then when openHAB is not running `nibegw` will still acknowledge packets to heat pump.
-Obviously, this doesn't solve the problem when whole Raspberry Pi is down, therefore Arduino based solution is recommended.
+If you are running openHAB on a Raspberry Pi, the `nibegw` program can also run on the same machine.
+Then when openHAB is not running , `nibegw` will acknowledge packets from the heat pump.
+Obviously, this doesn't solve the problem when the Raspberry Pi is down, therefore an Arduino based solution is recommended.
 
-`nibegw` is an application that read telegrams from a serial port (which requires an RS-485 adapter), sends ACK/NAK to the heat pump and relays untouched telegrams to openHAB via UDP packets.
+`nibegw` is an application that reads telegrams from a serial port (which requires an RS-485 adapter), sends ACK/NAK to the heat pump and relays untouched telegrams to openHAB via UDP packets.
 The Nibe Heat Pump binding will listen to a UDP port and parse register data from UDP telegrams.
 
 ### Arduino
 
-Arduino-based solution is tested with Arduino uno + RS485 and Ethernet shields.
-Also [ProDiNo](https://www.kmpelectronics.eu/en-us/products/prodinoethernet.aspx) NetBoards are supported.
-ProDiNo have both Ethernet and RS-485 ports on the board.
+An Arduino-based solution has been tested with Arduino uno + RS485 and Ethernet shields.
+The [ProDiNo](https://www.kmpelectronics.eu/en-us/products/prodinoethernet.aspx) NetBoards are also supported.
+A ProDiNo has an Ethernet and RS-485 port on the board.
 
-Arduino code is available [here](https://github.com/openhab/openhab2-addons/tree/master/addons/binding/org.openhab.binding.nibeheatpump/NibeGW/Arduino/)
+Arduino code is available [here](https://github.com/openhab/openhab2-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
 
-Arduino code can be builded via Arduino IDE. See more details from [www.arduino.cc](https://www.arduino.cc/en/Main/Software). 
-NibeGW configuration(such IP addresses, ports, etc) can be adapted directly editing the code files.
+Arduino code can be build via Arduino IDE.
+For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software). 
+NibeGW configuration (such IP addresses, ports, etc) can be adapted directly by editing the code files.
 
 ### Raspberry Pi (or other Linux/Unix based boards)
 
-C code is available on [here](https://github.com/openhab/openhab2-addons/tree/master/addons/binding/org.openhab.binding.nibeheatpump/NibeGW/RasPi/)
+C code is available [here](https://github.com/openhab/openhab2-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
 
-build C code: 
+To build the C code use: 
 
 ```shell
 gcc -std=gnu99 -o nibegw nibegw.c
 ```
 
-
-help:
+For getting all command options execute the command using the help switch:
 
 ```shell
 nibegw -h
@@ -94,7 +99,7 @@ nibegw -h
 
 ```
 
-run example:
+Usage example:
 
 ```shell
 nibegw -v -d /dev/ttyUSB0 -a 192.168.1.10
@@ -106,7 +111,8 @@ No binding configuration required.
 
 ## Thing Configuration
 
-Things can be fully configured via Paper Ui, but following information is usefull if you want to configure things via thing configuration files.
+Things can be fully configured via Paper UI.
+The following information is useful when configuring things via thing configuration files.
 
 ### UDP connection
 
