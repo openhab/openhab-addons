@@ -176,7 +176,6 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[11];
 
         data[0] = 0x0A;
@@ -204,7 +203,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
      * Convert a 0-31 scale value to a percent type.
      *
      * @param pt
-     *               percent type to convert
+     *            percent type to convert
      * @return converted value 0-31
      */
     public static int getDimLevelFromPercentType(PercentType pt) {
@@ -216,7 +215,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
      * Convert a 0-31 scale value to a percent type.
      *
      * @param value
-     *                  percent type to convert
+     *            percent type to convert
      * @return converted value 0-31
      */
     public static PercentType getPercentTypeFromDimLevel(int value) {
@@ -228,7 +227,6 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_MOOD:
                 switch (command) {
@@ -308,7 +306,6 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {

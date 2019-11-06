@@ -16,6 +16,8 @@ import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN_LUCCI_DC;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.LUCCI_AIR_DC;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
@@ -27,8 +29,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComFanLucciAirDcMessageTest {
 
     @Test
@@ -64,8 +67,8 @@ public class RFXComFanLucciAirDcMessageTest {
                 StringType.valueOf("PAIR"));
     }
 
-    private void testCommand(String channel, State inputValue, State expectedLightCommand, State expectedFanSpeed,
-            State expectedCommandString) throws RFXComException {
+    private void testCommand(String channel, State inputValue, State expectedLightCommand,
+            @Nullable State expectedFanSpeed, State expectedCommandString) throws RFXComException {
         RFXComFanMessageTest.testCommand(LUCCI_AIR_DC, channel, inputValue, null, expectedLightCommand,
                 expectedFanSpeed, expectedCommandString, FAN_LUCCI_DC);
     }

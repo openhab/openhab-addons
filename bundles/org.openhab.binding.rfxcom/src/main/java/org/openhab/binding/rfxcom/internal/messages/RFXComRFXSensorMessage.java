@@ -160,7 +160,7 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
 

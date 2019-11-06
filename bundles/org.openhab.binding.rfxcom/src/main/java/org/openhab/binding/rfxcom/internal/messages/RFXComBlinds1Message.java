@@ -29,7 +29,7 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
  * RFXCOM data class for blinds1 message.
  *
  * @author Peter Janson / Pål Edman - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migration to OH2
  */
 public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage<RFXComBlinds1Message.SubType> {
 

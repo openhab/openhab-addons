@@ -18,6 +18,8 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComRFXSensorMessag
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.junit.Test;
@@ -27,14 +29,16 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComRFXSensorMessageTest {
     private final MockDeviceState mockedDeviceState = new MockDeviceState();
 
     private void testMessage(String hexMsg, RFXComRFXSensorMessage.SubType subType, int seqNbr, String deviceId,
-            Double temperature, Double voltage, Double referenceVoltage, Double expectedPressure,
-            Double expectedHumidity, int signalLevel, DeviceState deviceState) throws RFXComException {
+            @Nullable Double temperature, @Nullable Double voltage, @Nullable Double referenceVoltage,
+            @Nullable Double expectedPressure, @Nullable Double expectedHumidity, int signalLevel,
+            DeviceState deviceState) throws RFXComException {
         final RFXComRFXSensorMessage msg = (RFXComRFXSensorMessage) RFXComMessageFactory
                 .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
         assertEquals("SubType", subType, msg.subType);
@@ -78,16 +82,17 @@ public class RFXComRFXSensorMessageTest {
         testMessage("077001020800F470", A_D, 2, "8", null, 2.44, null, 650.0, 52.6821, 7, deviceState);
     }
 
-    private Double getChannelAsDouble(String channelId, RFXComRFXSensorMessage msg, DeviceState deviceState)
+    private @Nullable Double getMessageTemperature(RFXComRFXSensorMessage msg, DeviceState deviceState)
+            throws RFXComException {
+        return getChannelAsDouble(CHANNEL_TEMPERATURE, msg, deviceState);
+    }
+
+    private @Nullable Double getChannelAsDouble(String channelId, RFXComRFXSensorMessage msg, DeviceState deviceState)
             throws RFXComException {
         return getStateAsDouble(msg.convertToState(channelId, deviceState));
     }
 
-    private Double getMessageTemperature(RFXComRFXSensorMessage msg, DeviceState deviceState) throws RFXComException {
-        return getChannelAsDouble(CHANNEL_TEMPERATURE, msg, deviceState);
-    }
-
-    private Double getStateAsDouble(State state) {
+    private @Nullable Double getStateAsDouble(State state) {
         if (state instanceof DecimalType) {
             return ((DecimalType) state).doubleValue();
         } else {

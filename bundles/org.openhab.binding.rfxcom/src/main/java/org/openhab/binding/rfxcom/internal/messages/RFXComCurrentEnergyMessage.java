@@ -26,7 +26,7 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 /**
  * RFXCOM data class for Current and Energy message.
  *
- * @author Damien Servant
+ * @author Damien Servant - Initial contribution
  */
 public class RFXComCurrentEnergyMessage extends RFXComBatteryDeviceMessage<RFXComCurrentEnergyMessage.SubType> {
     private static final float TOTAL_USAGE_CONVERSION_FACTOR = 223.666F;

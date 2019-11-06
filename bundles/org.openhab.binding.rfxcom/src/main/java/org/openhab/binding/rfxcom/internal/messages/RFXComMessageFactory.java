@@ -117,7 +117,6 @@ public class RFXComMessageFactory {
             0x00, 0x00, 0x00, 0x00, 0x00 };
 
     public static RFXComMessage createMessage(PacketType packetType) throws RFXComException {
-
         try {
             Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);
             if (cl == null) {
@@ -130,7 +129,7 @@ public class RFXComMessageFactory {
     }
 
     public static RFXComMessage createMessage(byte[] packet) throws RFXComException {
-        PacketType packetType = ByteEnumUtil.fromByte(PacketType.class, (int) packet[1]);
+        PacketType packetType = ByteEnumUtil.fromByte(PacketType.class, packet[1]);
 
         try {
             Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);
@@ -151,7 +150,6 @@ public class RFXComMessageFactory {
     }
 
     public static PacketType convertPacketType(String packetType) throws IllegalArgumentException {
-
         for (PacketType p : PacketType.values()) {
             if (p.toString().replace("_", "").equals(packetType.replace("_", ""))) {
                 return p;

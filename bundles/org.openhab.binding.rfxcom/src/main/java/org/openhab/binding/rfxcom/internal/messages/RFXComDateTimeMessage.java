@@ -26,7 +26,7 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 /**
  * RFXCOM data class for Date and Time message.
  *
- * @author Damien Servant
+ * @author Damien Servant - Initial contribution
  */
 public class RFXComDateTimeMessage extends RFXComBatteryDeviceMessage<RFXComDateTimeMessage.SubType> {
 
@@ -131,7 +131,7 @@ public class RFXComDateTimeMessage extends RFXComBatteryDeviceMessage<RFXComDate
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
 

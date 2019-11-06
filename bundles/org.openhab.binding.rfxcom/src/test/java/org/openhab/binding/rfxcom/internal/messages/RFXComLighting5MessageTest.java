@@ -18,6 +18,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.Pac
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.Commands.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.IT;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.util.HexUtils;
@@ -28,8 +29,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelEx
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComLighting5MessageTest {
     private final MockDeviceState deviceState = new MockDeviceState();
 

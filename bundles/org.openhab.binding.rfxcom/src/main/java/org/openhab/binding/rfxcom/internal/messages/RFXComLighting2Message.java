@@ -36,7 +36,6 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighting2Message.SubType> {
-
     public enum SubType implements ByteEnumWrapper {
         AC(0),
         HOME_EASY_EU(1),
@@ -124,7 +123,6 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[12];
 
         data[0] = 0x0B;
@@ -153,7 +151,7 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
      * Convert a 0-15 scale value to a percent type.
      *
      * @param pt
-     *               percent type to convert
+     *            percent type to convert
      * @return converted value 0-15
      */
     public static int getDimLevelFromPercentType(PercentType pt) {
@@ -165,7 +163,7 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
      * Convert a 0-15 scale value to a percent type.
      *
      * @param value
-     *                  percent type to convert
+     *            percent type to convert
      * @return converted value 0-15
      */
     public static PercentType getPercentTypeFromDimLevel(int value) {
@@ -177,7 +175,6 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_DIMMING_LEVEL:
                 return RFXComLighting2Message.getPercentTypeFromDimLevel(dimmingLevel);
@@ -226,7 +223,6 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
-
         String[] ids = deviceId.split("\\" + ID_DELIMITER);
         if (ids.length != 2) {
             throw new RFXComException("Invalid device id '" + deviceId + "'");
@@ -244,7 +240,6 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {

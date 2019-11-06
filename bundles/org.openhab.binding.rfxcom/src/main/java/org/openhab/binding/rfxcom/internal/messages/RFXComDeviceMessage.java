@@ -30,7 +30,7 @@ public interface RFXComDeviceMessage<T> extends RFXComMessage {
     /**
      * Procedure for converting RFXCOM value to openHAB command.
      *
-     * @param channelId   id of the channel
+     * @param channelId id of the channel
      * @param deviceState
      * @return openHAB command.
      * @throws RFXComUnsupportedChannelException if the channel is not supported
@@ -40,7 +40,7 @@ public interface RFXComDeviceMessage<T> extends RFXComMessage {
     /**
      * Procedure for converting RFXCOM value to openHAB state.
      *
-     * @param channelId   id of the channel
+     * @param channelId id of the channel
      * @param deviceState
      * @return openHAB state.
      * @throws RFXComUnsupportedChannelException if the channel is not supported

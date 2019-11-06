@@ -26,7 +26,7 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 /**
  * RFXCOM data class for Temperature and Rain message.
  *
- * @author Damien Servant
+ * @author Damien Servant - Initial contribution
  * @author Martin van Wingerden - ported to openHAB 2.0
  */
 public class RFXComTemperatureRainMessage extends RFXComBatteryDeviceMessage<RFXComTemperatureRainMessage.SubType> {
@@ -134,7 +134,7 @@ public class RFXComTemperatureRainMessage extends RFXComBatteryDeviceMessage<RFX
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
 
@@ -149,7 +149,7 @@ public class RFXComTemperatureRainMessage extends RFXComBatteryDeviceMessage<RFX
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         throw new UnsupportedOperationException();
     }
 }

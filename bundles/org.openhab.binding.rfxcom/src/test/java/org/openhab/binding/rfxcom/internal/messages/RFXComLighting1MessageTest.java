@@ -15,6 +15,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -27,8 +28,9 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComLighting1Message.Comma
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComLighting1MessageTest {
     private final MockDeviceState deviceState = new MockDeviceState();
 

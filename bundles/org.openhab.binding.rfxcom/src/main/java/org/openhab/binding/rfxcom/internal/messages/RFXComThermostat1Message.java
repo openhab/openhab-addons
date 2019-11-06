@@ -30,7 +30,7 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
  * Digimax 210 Thermostat RF sensor operational
  *
  * @author Les Ashworth - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated for OH2
  */
 public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComThermostat1Message.SubType> {
 
@@ -156,7 +156,6 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
 
     @Override
     public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
                 return new DecimalType(temperature);
@@ -185,12 +184,12 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
 

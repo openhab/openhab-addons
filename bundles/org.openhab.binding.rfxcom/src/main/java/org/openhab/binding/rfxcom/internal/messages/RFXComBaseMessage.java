@@ -108,7 +108,6 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
     public byte id2;
 
     public RFXComBaseMessage() {
-
     }
 
     public RFXComBaseMessage(PacketType packetType) {
@@ -117,7 +116,6 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         rawMessage = data;
 
         packetId = data[1];

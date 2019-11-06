@@ -26,7 +26,7 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 /**
  * A base class for all device messages, so this is not about things as interface messages
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
 abstract class RFXComDeviceMessageImpl<T> extends RFXComBaseMessage implements RFXComDeviceMessage<T> {
     byte signalLevel;

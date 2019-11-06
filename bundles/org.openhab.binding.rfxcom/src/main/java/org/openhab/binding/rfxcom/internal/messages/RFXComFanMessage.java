@@ -156,9 +156,9 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
 
     private static final List<Commands> LIGHT_ON_COMMANDS = Arrays.asList(LIGHT, LUCCI_AIR_DC_LIGHT,
             LUCCI_AIR_DC_II_LIGHT, FALMEC_LIGHT_ON);
-    private static final List<Commands> ON_COMMANDS = Arrays.asList(Commands.HI, MED, LOW, FALMEC_SPEED_1, FALMEC_SPEED_2,
-            FALMEC_SPEED_3, FALMEC_SPEED_4, LUCCI_AIR_DC_II_SPEED_1, LUCCI_AIR_DC_II_SPEED_2, LUCCI_AIR_DC_II_SPEED_3,
-            LUCCI_AIR_DC_II_SPEED_4, LUCCI_AIR_DC_II_SPEED_5, LUCCI_AIR_DC_II_SPEED_6);
+    private static final List<Commands> ON_COMMANDS = Arrays.asList(Commands.HI, MED, LOW, FALMEC_SPEED_1,
+            FALMEC_SPEED_2, FALMEC_SPEED_3, FALMEC_SPEED_4, LUCCI_AIR_DC_II_SPEED_1, LUCCI_AIR_DC_II_SPEED_2,
+            LUCCI_AIR_DC_II_SPEED_3, LUCCI_AIR_DC_II_SPEED_4, LUCCI_AIR_DC_II_SPEED_5, LUCCI_AIR_DC_II_SPEED_6);
     private static final List<Commands> OFF_COMMANDS = Arrays.asList(OFF, FALMEC_POWER_OFF, LUCCI_AIR_DC_II_POWER_OFF);
 
     private SubType subType;
@@ -240,7 +240,7 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         sensorId = Integer.parseInt(deviceId);
     }
 

@@ -29,7 +29,7 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
  * RFXCOM data class for curtain1 message. See Harrison.
  *
  * @author Evert van Es - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated to OH2
  */
 public class RFXComCurtain1Message extends RFXComBatteryDeviceMessage<RFXComCurtain1Message.SubType> {
 

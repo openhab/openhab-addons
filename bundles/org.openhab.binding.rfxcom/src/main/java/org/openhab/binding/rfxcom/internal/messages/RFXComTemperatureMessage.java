@@ -142,12 +142,12 @@ public class RFXComTemperatureMessage extends RFXComBatteryDeviceMessage<RFXComT
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
 

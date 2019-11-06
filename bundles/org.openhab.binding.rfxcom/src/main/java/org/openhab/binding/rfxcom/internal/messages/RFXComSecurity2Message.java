@@ -55,10 +55,10 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage<RFXComSec
     public int sensorId;
     public int buttonStatus;
 
-    private final int BUTTON_0_BIT = 0x02;
-    private final int BUTTON_1_BIT = 0x04;
-    private final int BUTTON_2_BIT = 0x08;
-    private final int BUTTON_3_BIT = 0x01;
+    private static final int BUTTON_0_BIT = 0x02;
+    private static final int BUTTON_1_BIT = 0x04;
+    private static final int BUTTON_2_BIT = 0x08;
+    private static final int BUTTON_3_BIT = 0x01;
 
     public RFXComSecurity2Message() {
         super(PacketType.SECURITY2);
@@ -140,7 +140,7 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage<RFXComSec
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         sensorId = Integer.parseInt(deviceId);
     }
 

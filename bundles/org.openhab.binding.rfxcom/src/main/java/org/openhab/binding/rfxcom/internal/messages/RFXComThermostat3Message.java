@@ -130,7 +130,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
 
         subType = fromByte(SubType.class, super.subType);
         unitId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
-        command = fromByte(Commands.class, (int) data[7], subType);
+        command = fromByte(Commands.class, data[7], subType);
         signalLevel = (byte) ((data[8] & 0xF0) >> 4);
     }
 
@@ -257,7 +257,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         this.unitId = Integer.parseInt(deviceId);
     }
 }

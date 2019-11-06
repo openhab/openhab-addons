@@ -64,9 +64,15 @@ public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.
 
     @Override
     public String toString() {
-        return super.toString() + ", Sub type = " + subType + ", Device Id = " + getDeviceId() + ", UV = " + uv
-                + ", Temperature = " + temperature + ", Signal level = " + signalLevel + ", Battery level = "
-                + batteryLevel;
+        //@formatter:off
+        return super.toString()
+                + ", Sub type = " + subType
+                + ", Device Id = " + getDeviceId()
+                + ", UV = " + uv
+                + ", Temperature = " + temperature
+                + ", Signal level = " + signalLevel
+                + ", Battery level = " + batteryLevel;
+        //@formatter:on
     }
 
     @Override
@@ -138,12 +144,12 @@ public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
 

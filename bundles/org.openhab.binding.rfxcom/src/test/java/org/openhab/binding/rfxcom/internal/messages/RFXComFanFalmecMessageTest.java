@@ -17,6 +17,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.Pac
 import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.FALMEC;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessageTest.testCommand;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -27,8 +28,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComFanFalmecMessageTest {
 
     @Test

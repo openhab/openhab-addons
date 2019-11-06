@@ -17,6 +17,8 @@ import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.THERMOSTAT3;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -33,6 +35,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelEx
  *
  * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComThermostat3MessageTest {
     private final MockDeviceState deviceState = new MockDeviceState();
 
@@ -62,7 +65,8 @@ public class RFXComThermostat3MessageTest {
 
     private void testMessage(String hexMessage, RFXComThermostat3Message.SubType subtype, int sequenceNumber,
             String sensorId, RFXComThermostat3Message.Commands command, byte signalLevel, State commandChannel,
-            State secondCommandChannel, State controlChannel, State commandStringChannel) throws RFXComException {
+            @Nullable State secondCommandChannel, State controlChannel, State commandStringChannel)
+            throws RFXComException {
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComThermostat3Message msg = (RFXComThermostat3Message) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", subtype, msg.subType);

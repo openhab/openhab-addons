@@ -30,8 +30,8 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 /**
  * RFXCOM data class for undecoded messages.
  *
- * @author Ivan Martinez
- * @author James Hewitt-Thomas
+ * @author Ivan Martinez - Initial contribution
+ * @author James Hewitt-Thomas - Migrated for OH2
  */
 public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUndecodedRFMessage.SubType> {
 
@@ -155,12 +155,12 @@ public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUnde
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
 

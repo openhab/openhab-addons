@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * (ReceiveCommand ON/OFF Command )
  *
  * @author Alessandro Ballini (ITA) - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated to OH2
  * @author Martin van Wingerden - Extended support for more complex PT2262 devices
  */
 public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighting4Message.SubType> {
@@ -176,7 +176,6 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[10];
 
         data[0] = 0x09;
@@ -206,7 +205,6 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_COMMAND:
             case CHANNEL_MOTION:
@@ -229,7 +227,7 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         sensorId = Integer.parseInt(deviceId);
     }
 

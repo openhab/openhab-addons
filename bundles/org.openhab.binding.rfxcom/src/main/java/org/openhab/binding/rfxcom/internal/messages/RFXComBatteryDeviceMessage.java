@@ -22,7 +22,7 @@ import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 /**
  * A base class for all battery device messages
  *
- * @author Martin van Wingerden - Simplify some code in the RFXCOM binding
+ * @author Martin van Wingerden - Initial contribution
  */
 abstract class RFXComBatteryDeviceMessage<T> extends RFXComDeviceMessageImpl<T> {
     int batteryLevel;
