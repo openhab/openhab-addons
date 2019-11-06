@@ -214,6 +214,7 @@
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.vektiva</module>
     <module>org.openhab.binding.velbus</module>
+    <module>org.openhab.binding.velux</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.volvooncall</module>
     <module>org.openhab.binding.weatherunderground</module>
