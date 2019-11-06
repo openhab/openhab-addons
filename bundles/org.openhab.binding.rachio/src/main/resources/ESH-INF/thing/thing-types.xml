@@ -220,12 +220,12 @@
 		<label>Root Depth</label>
 		<description>Depth of the root for this zone.</description>
 	</channel-type>
-   <channel-type id="zone_efficiency">
+	<channel-type id="zone_efficiency">
 		<item-type>Number</item-type>
 		<label>Efficiency</label>
 		<description></description>
 	</channel-type>
-   <channel-type id="zone_yardSqft">
+	<channel-type id="zone_yardSqft">
 		<item-type>Number</item-type>
 		<label>Size of the zone in sqft</label>
 		<description></description>
