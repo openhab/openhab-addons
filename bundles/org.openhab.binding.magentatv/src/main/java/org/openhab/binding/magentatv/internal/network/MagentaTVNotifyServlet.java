@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
-import org.openhab.binding.magentatv.internal.utils.MagentaTVLogger;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -37,6 +36,8 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main OSGi service and HTTP servlet for MagentaTV NOTIFY.
@@ -48,7 +49,7 @@ import org.osgi.service.http.NamespaceException;
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 public class MagentaTVNotifyServlet extends HttpServlet {
     private static final long serialVersionUID = 2119809008606371618L;
-    private final MagentaTVLogger logger = new MagentaTVLogger(MagentaTVNotifyServlet.class, "NotifyServlet");
+    private final Logger logger = LoggerFactory.getLogger(MagentaTVNotifyServlet.class);
 
     private @Nullable HttpService httpService;
     private @Nullable MagentaTVHandlerFactory handlerFactory;
@@ -58,12 +59,12 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     protected void activate(Map<String, Object> config) {
         try {
             httpService.registerServlet(PAIRING_NOTIFY_URI, this, null, httpService.createDefaultHttpContext());
-            logger.info("Servlet started at {0}", PAIRING_NOTIFY_URI);
+            logger.info("Servlet started at {}", PAIRING_NOTIFY_URI);
             if ((handlerFactory != null) && !handlerFactory.getNotifyServletStatus()) {
                 handlerFactory.setNotifyServletStatus(true);
             }
         } catch (ServletException | NamespaceException e) {
-            logger.exception(e, "Could not start");
+            logger.debug("Could not start MagentaTVNotifyServlet: {}", e.getMessage());
         }
     }
 
@@ -71,7 +72,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     @Deactivate
     protected void deactivate() {
         httpService.unregister(PAIRING_NOTIFY_URI);
-        logger.info("Servlet stopped");
+        logger.debug("MagentaTV Servlet stopped");
     }
 
     /**
@@ -106,10 +107,10 @@ public class MagentaTVNotifyServlet extends HttpServlet {
                 ipAddress = request.getRemoteAddr();
             }
             String path = request.getRequestURI();
-            logger.trace("Reqeust from {0}:{1}{2} ({3}, {4})", ipAddress, request.getRemotePort(), path,
+            logger.trace("Reqeust from {}:{}{} ({}, {})", ipAddress, request.getRemotePort(), path,
                     request.getRemoteHost(), request.getProtocol());
             if (!path.equalsIgnoreCase(PAIRING_NOTIFY_URI)) {
-                logger.fatal("Invalid request received - path = {0}", path);
+                logger.debug("Invalid request received - path = {}", path);
                 return;
             }
 
@@ -118,9 +119,9 @@ public class MagentaTVNotifyServlet extends HttpServlet {
                         data.indexOf("</uniqueDeviceID>"));
                 String pairingCode = data.substring(data.indexOf(NOTIFY_PAIRING_CODE) + NOTIFY_PAIRING_CODE.length(),
                         data.indexOf("</messageBody>"));
-                logger.debug("Pairing code {0} received for deviceID {1}", pairingCode, deviceId);
+                logger.debug("Pairing code {} received for deviceID {}", pairingCode, deviceId);
                 if (!handlerFactory.notifyPairingResult(deviceId, ipAddress, pairingCode)) {
-                    logger.trace("Pairing data={0}", data);
+                    logger.trace("Pairing data={}", data);
                 }
             } else {
                 if (data.contains("STB_")) {
@@ -132,22 +133,17 @@ public class MagentaTVNotifyServlet extends HttpServlet {
                     } else if (data.contains("<STB_EitChanged>")) {
                         stbEvent = StringUtils.substringBetween(data, "<STB_EitChanged>", "</STB_EitChanged>");
                     } else {
-                        logger.debug("Unknown STB event: {0}", data);
+                        logger.debug("Unknown STB event: {}", data);
                     }
                     if (!stbEvent.isEmpty()) {
                         if (!handlerFactory.notifyMREvent(stbMac, stbEvent)) {
-                            logger.debug("Event not processed, data={0}", data);
+                            logger.debug("Event not processed, data={}", data);
                         }
                     }
                 }
             }
-
         } catch (RuntimeException e) {
-            if (data != null) {
-                logger.exception(e, "Unable to process http request, data={0}", data);
-            } else {
-                logger.exception(e, "Unable to process http request");
-            }
+            logger.debug("Unable to process http request, data={}", data != null ? data : "<empty>");
         } finally {
             // send response
             resp.setCharacterEncoding(CHARSET_UTF8);

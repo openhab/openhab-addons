@@ -25,7 +25,8 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
-import org.openhab.binding.magentatv.internal.utils.MagentaTVLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MagentaTVPoweroffListener} implements a UPnP listener to detect
@@ -35,7 +36,8 @@ import org.openhab.binding.magentatv.internal.utils.MagentaTVLogger;
  */
 @NonNullByDefault
 public class MagentaTVPoweroffListener extends Thread {
-    private final MagentaTVLogger logger = new MagentaTVLogger(MagentaTVPoweroffListener.class, "UPnP");
+    private final Logger logger = LoggerFactory.getLogger(MagentaTVPoweroffListener.class);
+
     private final MagentaTVHandlerFactory handlerFactory;
 
     public static final String UPNP_MULTICAST_ADDRESS = "239.255.255.250";
@@ -56,7 +58,7 @@ public class MagentaTVPoweroffListener extends Thread {
 
     @Override
     public void start() {
-        logger.debug("Listring to SSDP shutdown messages");
+        logger.debug("Listening to SSDP shutdown messages");
         super.start();
     }
 
@@ -100,11 +102,11 @@ public class MagentaTVPoweroffListener extends Thread {
                         }
                     }
                 } catch (RuntimeException e) {
-                    logger.exception(e, "Unable to process SSDP message: {0}", message);
+                    logger.debug("Unable to process SSDP message: {}", message);
                 }
             }
         } catch (IOException | RuntimeException e) {
-            logger.exception(e, "Poweroff listener failure");
+            logger.debug("Poweroff listener failure: {}", e.getMessage());
         } finally {
             close();
         }

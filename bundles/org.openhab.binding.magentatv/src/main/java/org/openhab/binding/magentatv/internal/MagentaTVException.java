@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.magentatv.internal.utils;
+package org.openhab.binding.magentatv.internal;
 
 import java.text.MessageFormat;
 

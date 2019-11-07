@@ -15,7 +15,7 @@ package org.openhab.binding.magentatv.internal.handler;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.magentatv.internal.utils.MagentaTVException;
+import org.openhab.binding.magentatv.internal.MagentaTVException;
 
 /**
  * The {@link MagentaTVListener} defines the interface to pass back the pairing

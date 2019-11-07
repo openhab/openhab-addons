@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.magentatv.internal.handler;
+package org.openhab.binding.magentatv.internal;
 
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
 

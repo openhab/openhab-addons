@@ -30,26 +30,25 @@ import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
-import org.openhab.binding.magentatv.internal.MagentaTVHandler;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
-import org.openhab.binding.magentatv.internal.utils.MagentaTVLogger;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MagentaTVDiscoveryParticipant} is responsible for discovering new
  * and removed MagentaTV receivers. It uses the central UpnpDiscoveryService.
  *
- * @author Hans-Jörg Merk - Initial contribution (hmerck)
- * @author Markus Michels - Discovery more attributes, which allow to
- *         differentiate various models (markus7017)
+ * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 @Component(service = UpnpDiscoveryParticipant.class, immediate = true)
 public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
-    private final MagentaTVLogger logger = new MagentaTVLogger(MagentaTVHandler.class, "Discovery");
+    private final Logger logger = LoggerFactory.getLogger(MagentaTVDiscoveryParticipant.class);
+
     private @Nullable MagentaTVHandlerFactory handlerFactory;
 
     @Override
@@ -65,16 +64,16 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         DiscoveryResult result = null;
         try {
-            logger.trace("Device discovered: {0} - {1}", device.getDetails().getManufacturerDetails().getManufacturer(),
+            logger.trace("Device discovered: {} - {}", device.getDetails().getManufacturerDetails().getManufacturer(),
                     device.getDetails().getModelDetails().getModelName());
             if (handlerFactory == null) {
-                logger.fatal("handlerFactory not yet initialized!");
+                logger.debug("handlerFactory not yet initialized!");
                 return null;
             }
 
             ThingUID uid = getThingUID(device);
             if (uid != null) {
-                logger.debug("Discovered an MagentaTV Media Receiver {0}, UDN: {1}, Model {2}.{3}",
+                logger.debug("Discovered an MagentaTV Media Receiver {}, UDN: {}, Model {}.{}",
                         device.getDetails().getFriendlyName(), device.getIdentity().getUdn().getIdentifierString(),
                         device.getDetails().getModelDetails().getModelName(),
                         device.getDetails().getModelDetails().getModelNumber());
@@ -97,8 +96,8 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                         + hex.substring(6, 8) + ":" + hex.substring(8, 10) + ":" + hex.substring(10, 12);
                 properties.put(PROPERTY_MAC_ADDRESS, mac);
 
-                logger.debug("Create Thing for device {0} with UDN {1}, Model{2}",
-                        device.getDetails().getFriendlyName(), device.getIdentity().getUdn().getIdentifierString(),
+                logger.debug("Create Thing for device {} with UDN {}, Model{}", device.getDetails().getFriendlyName(),
+                        device.getIdentity().getUdn().getIdentifierString(),
                         device.getDetails().getModelDetails().getModelName());
                 // TO-DO: Check if thing with this name already exist
                 result = DiscoveryResultBuilder.create(uid).withProperties(properties)
@@ -108,8 +107,8 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 handlerFactory.deviceDiscoverd(properties);
             }
         } catch (Exception e) {
-            logger.exception(e, "Unable to create thing for device {0}/{1}", device.getDetails().getFriendlyName(),
-                    device.getIdentity().getUdn().getIdentifierString());
+            logger.debug("Unable to create thing for device {}/{} - {}", device.getDetails().getFriendlyName(),
+                    device.getIdentity().getUdn().getIdentifierString(), e.getMessage());
         }
         return result;
     }

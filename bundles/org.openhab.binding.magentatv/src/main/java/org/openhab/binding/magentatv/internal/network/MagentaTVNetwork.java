@@ -27,8 +27,9 @@ import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
-import org.openhab.binding.magentatv.internal.utils.MagentaTVException;
-import org.openhab.binding.magentatv.internal.utils.MagentaTVLogger;
+import org.openhab.binding.magentatv.internal.MagentaTVException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MagentaTVNetwork} supplies network functions.
@@ -37,8 +38,7 @@ import org.openhab.binding.magentatv.internal.utils.MagentaTVLogger;
  */
 @NonNullByDefault
 public class MagentaTVNetwork {
-
-    private final MagentaTVLogger logger = new MagentaTVLogger(MagentaTVNetwork.class, "Network");
+    private final Logger logger = LoggerFactory.getLogger(MagentaTVNetwork.class);
 
     private String localIP = "";
     private String localPort = "";
@@ -58,7 +58,7 @@ public class MagentaTVNetwork {
             String portEnv = env.get(OPENHAB_HTTP_PORT);
             localPort = (portEnv != null) ? portEnv : DEF_LOCAL_PORT;
             // }
-            logger.trace("initLocalNet(): local OH port = {0}", localPort);
+            logger.trace("initLocalNet(): local OH port = {}", localPort);
             System.setProperty("java.net.preferIPv4Stack", "true");
 
             if (networkAddressService == null) {
@@ -82,21 +82,21 @@ public class MagentaTVNetwork {
                     if (iface.isLoopback() || iface.isVirtual() || iface.isPointToPoint()
                             || iface.getName().contains("tun") || iface.getName().contains("awd")
                             || iface.getName().contains("bridge")) {
-                        logger.trace("skipping interface {0}", iface.getName());
+                        logger.trace("skipping interface {}", iface.getName());
                         continue;
                     }
 
                     // Iterate all IP addresses assigned to each card...
                     for (Enumeration<InetAddress> inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements();) {
                         InetAddress inetAddr = inetAddrs.nextElement();
-                        logger.trace("interface {0}: ip={1}", iface.getName(), inetAddr.getHostAddress());
+                        logger.trace("interface {}: ip={}", iface.getName(), inetAddr.getHostAddress());
                         if (inetAddr.getHostAddress().contains(":")) {
-                            logger.trace("skip IPv6 address {0}", inetAddr.getHostAddress());
+                            logger.trace("skip IPv6 address {}", inetAddr.getHostAddress());
                         }
                         if (!inetAddr.isLoopbackAddress()) {
                             if (inetAddr.isSiteLocalAddress()) {
                                 // Found non-loopback site-local address. Return it immediately...
-                                logger.trace("site-local address: {0}", inetAddr.getHostAddress());
+                                logger.trace("site-local address: {}", inetAddr.getHostAddress());
                                 localIP = inetAddr.getHostAddress();
                                 localInterface = iface;
                                 break;
@@ -109,7 +109,7 @@ public class MagentaTVNetwork {
                                 // be non-null.
                                 candidateAddress = inetAddr;
                                 condidateIFace = iface;
-                                logger.trace("local address candidate: {0}", candidateAddress.getHostAddress());
+                                logger.trace("local address candidate: {}", candidateAddress.getHostAddress());
                             }
                         }
                     }
@@ -120,7 +120,7 @@ public class MagentaTVNetwork {
                     // Server might have a non-site-local address assigned to its NIC
                     // (or it might be running IPv6 which deprecates the "site-local" concept)
                     // So return this non-loopback candidate address...
-                    logger.trace("founbd local interface address: {0}", candidateAddress.getHostAddress());
+                    logger.trace("founbd local interface address: {}", candidateAddress.getHostAddress());
                     localIP = candidateAddress.getHostAddress();
                     localInterface = condidateIFace;
 
@@ -142,13 +142,13 @@ public class MagentaTVNetwork {
                                 "The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
                     }
                     localIP = jdkSuppliedAddress.getHostAddress();
-                    logger.trace("jdkSuppliedAddress: {0}", jdkSuppliedAddress.getHostAddress());
+                    logger.trace("jdkSuppliedAddress: {}", jdkSuppliedAddress.getHostAddress());
                 }
             }
 
             if (localIP.isEmpty() || localIP.equals("0.0.0.0") || localIP.equals("127.0.0.1")) {
                 {
-                    logger.fatal("Unable to detect local ip address!");
+                    logger.warn("Unable to detect local ip address!");
                     return false;
                 }
             }
@@ -164,7 +164,7 @@ public class MagentaTVNetwork {
                     sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));
                 }
                 localMAC = sb.toString();
-                logger.info("Local IP address={0}, Local MAC address = {1}", localIP, localMAC);
+                logger.debug("Local IP address={}, Local MAC address = {}", localIP, localMAC);
                 return true;
             }
         } catch (IOException | RuntimeException e) {
@@ -246,9 +246,9 @@ public class MagentaTVNetwork {
             socket.send(packet);
             socket.close();
 
-            logger.debug("Wake-on-LAN packet sent to {0} / {1}", ipAddr, macAddress);
+            logger.debug("Wake-on-LAN packet sent to {} / {}", ipAddr, macAddress);
         } catch (IOException e) {
-            throw new MagentaTVException(e, "Unable to send Wake-on-LAN packet to {0} / {1}", ipAddr, macAddress);
+            throw new MagentaTVException(e, "Unable to send Wake-on-LAN packet to {} / {}", ipAddr, macAddress);
         }
 
     }

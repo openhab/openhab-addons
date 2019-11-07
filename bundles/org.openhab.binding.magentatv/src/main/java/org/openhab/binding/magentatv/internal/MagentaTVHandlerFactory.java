@@ -30,16 +30,17 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.magentatv.internal.handler.MagentaTVHandler;
 import org.openhab.binding.magentatv.internal.network.MagentaTVNetwork;
 import org.openhab.binding.magentatv.internal.network.MagentaTVPoweroffListener;
-import org.openhab.binding.magentatv.internal.utils.MagentaTVException;
-import org.openhab.binding.magentatv.internal.utils.MagentaTVLogger;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MagentaTVHandlerFactory} is responsible for creating things and thing
@@ -51,7 +52,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 @Component(service = { ThingHandlerFactory.class, MagentaTVHandlerFactory.class }, configurationPid = "binding."
         + BINDING_ID)
 public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
-    private final MagentaTVLogger logger = new MagentaTVLogger(MagentaTVHandlerFactory.class, "Factory");
+    private final Logger logger = LoggerFactory.getLogger(MagentaTVHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RECEIVER);
 
@@ -98,12 +99,12 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        logger.debug("Create thing type {0}", thing.getThingTypeUID().getAsString());
+        logger.debug("Create thing type {}", thing.getThingTypeUID().getAsString());
         if (THING_TYPE_RECEIVER.equals(thingTypeUID)) {
             try {
                 return new MagentaTVHandler(this, thing, network);
             } catch (RuntimeException e) {
-                logger.exception(e, "Network initialization failed");
+                logger.info("Unable to create ThingHandler: {}", e.getMessage());
 
             }
         }
@@ -120,13 +121,13 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     @SuppressWarnings({ "null", "unused" })
     public void deviceDiscoverd(Map<String, Object> discoveryProperties) {
         String discoveredUDN = discoveryProperties.get(PROPERTY_UDN).toString().toUpperCase();
-        logger.trace("Discovered device with UDN {0}", discoveredUDN);
+        logger.trace("Discovered device with UDN {}", discoveredUDN);
         try {
             MagentaTVDevice dev = null;
             synchronized (deviceList) {
                 dev = deviceList.get(discoveredUDN);
                 if (dev != null) {
-                    logger.trace("Known device with UDN {0}, update properties", discoveredUDN);
+                    logger.trace("Known device with UDN {}, update properties", discoveredUDN);
                     dev.properties = discoveryProperties;
                     deviceList.replace(discoveredUDN, dev);
                     if (dev.thingHandler != null) {
@@ -141,7 +142,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         } catch (MagentaTVException | RuntimeException e) {
-            logger.exception(e, "Unable to process discovered device, UDN={0}", discoveredUDN);
+            logger.debug("Unable to process discovered device, UDN={} - {}", discoveredUDN, e.getMessage());
         }
     }
 
@@ -154,7 +155,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
      * @param handler The corresponding thing handler
      */
     public void registerDevice(String udn, String deviceId, String ipAddress, MagentaTVHandler handler) {
-        logger.trace("Register new device, UDN={0}, deviceId={1}, ipAddress={2}", udn, deviceId, ipAddress);
+        logger.trace("Register new device, UDN={}, deviceId={}, ipAddress={}", udn, deviceId, ipAddress);
         addNewDevice(udn, deviceId, ipAddress, null, null, handler);
     }
 
@@ -192,7 +193,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 deviceList.replace(dev.udn, dev);
             }
         }
-        logger.debug("Device {0} (UDN={1} ,deviceId={2}, ipAddress={3}, macAddress={4}), now {5} devices.",
+        logger.debug("{}: (UDN={} ,deviceId={}, ipAddress={}, macAddress={}), now {} devices.",
                 newDev ? "added" : "updated", udn, deviceId, ipAddress, mac, deviceList.size());
     }
 
@@ -205,7 +206,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
         MagentaTVDevice dev = lookupDevice(deviceId);
         if (dev != null) {
             synchronized (deviceList) {
-                logger.trace("Device with UDN {0} removed from table, new site={1}", dev.udn, deviceList.size());
+                logger.trace("Device with UDN {} removed from table, new site={}", dev.udn, deviceList.size());
                 deviceList.remove(dev.udn);
             }
         }
@@ -222,14 +223,14 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     private @Nullable MagentaTVDevice lookupDevice(String uniqueId) {
         @Nullable
         MagentaTVDevice dev = null;
-        logger.trace("Lookup device, uniqueId={0}", uniqueId);
+        logger.trace("Lookup device, uniqueId={}", uniqueId);
         int i = 0;
         for (String key : deviceList.keySet()) {
             synchronized (deviceList) {
                 dev = deviceList.get(key);
                 Validate.notNull(dev);
                 if (dev != null) {
-                    logger.trace("Devies[{0}]: deviceId={1}, UDN={2}, ipAddress={3}, macAddress={4}", i++, dev.deviceId,
+                    logger.trace("Devies[{}]: deviceId={}, UDN={}, ipAddress={}, macAddress={}", i++, dev.deviceId,
                             dev.udn, dev.ipAddress, dev.mac);
                     if (dev.udn.equalsIgnoreCase(uniqueId) || dev.ipAddress.equalsIgnoreCase(uniqueId)
                             || dev.deviceId.equalsIgnoreCase(uniqueId) || dev.mac.equalsIgnoreCase(uniqueId)) {
@@ -238,7 +239,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
-        logger.debug("Device with id {0} was not found in table ({1} entries", uniqueId, deviceList.size());
+        logger.debug("Device with id {} was not found in table ({} entries", uniqueId, deviceList.size());
         return null;
     }
 
@@ -255,7 +256,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
             return dev.properties;
         }
         if (deviceList.size() > 0) {
-            logger.debug("getDiscoveredProperties(): Unknown UDN: {0}", udn);
+            logger.debug("getDiscoveredProperties(): Unknown UDN: {}", udn);
         }
         return null;
     }
@@ -279,21 +280,21 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     @SuppressWarnings("null")
     public boolean notifyPairingResult(String notifyDeviceId, String ipAddress, String pairingCode) {
         try {
-            logger.trace("PairingResult: Check {0} devices for id {1}, ipAddress {2}", deviceList.size(),
-                    notifyDeviceId, ipAddress);
+            logger.trace("PairingResult: Check {} devices for id {}, ipAddress {}", deviceList.size(), notifyDeviceId,
+                    ipAddress);
             MagentaTVDevice dev = lookupDevice(ipAddress);
             if ((dev != null) && (dev.thingHandler != null)) {
                 if ((dev.deviceId == null) || dev.deviceId.isEmpty()) {
-                    logger.trace("deviceId {0} assigned for ipAddress {1}", notifyDeviceId, ipAddress);
+                    logger.trace("deviceId {} assigned for ipAddress {}", notifyDeviceId, ipAddress);
                     dev.deviceId = notifyDeviceId;
                 }
                 dev.thingHandler.onPairingResult(pairingCode);
                 return true;
             }
 
-            logger.fatal("Received pairingCode {0} for unregistered device {1}!", pairingCode, ipAddress);
+            logger.debug("Received pairingCode {} for unregistered device {}!", pairingCode, ipAddress);
         } catch (RuntimeException | MagentaTVException e) {
-            logger.exception(e, "Unable to process pairing result for deviceID {0}", notifyDeviceId);
+            logger.debug("Unable to process pairing result for deviceID {}: {}", notifyDeviceId, e.getMessage());
         }
         return false;
     }
@@ -308,15 +309,15 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     @SuppressWarnings("null")
     public boolean notifyMREvent(String mrMac, String jsonEvent) {
         try {
-            logger.trace("Received MR event from MAC {0}, JSON={1}", mrMac, jsonEvent);
+            logger.trace("Received MR event from MAC {}, JSON={}", mrMac, jsonEvent);
             MagentaTVDevice dev = lookupDevice(mrMac);
             if ((dev != null) && (dev.thingHandler != null)) {
                 dev.thingHandler.onMREvent(jsonEvent);
                 return true;
             }
-            logger.fatal("Received event for unregistered MR MAC address {0}, JSON={1}", mrMac);
+            logger.debug("Received event for unregistered MR: MAC address {}, JSON={}", mrMac, jsonEvent);
         } catch (RuntimeException e) {
-            logger.exception(e, "Unable to process MR event! json={0}", jsonEvent);
+            logger.debug("Unable to process MR event! json={}", jsonEvent);
         }
         return false;
     }
@@ -330,28 +331,18 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     @SuppressWarnings("null")
     public void onPowerOff(String ipAddress) {
         try {
-            logger.debug("ByeBye message received for IP {0}", ipAddress);
+            logger.debug("ByeBye message received for IP {}", ipAddress);
             MagentaTVDevice dev = lookupDevice(ipAddress);
             if ((dev != null) && (dev.thingHandler != null)) {
-                logger.trace("Continue with UDN {0}", dev.udn);
+                logger.trace("Continue with UDN {}", dev.udn);
                 dev.thingHandler.onPowerOff();
             }
         } catch (RuntimeException | MagentaTVException e) {
-            logger.exception(e, "Unable to process SSDP message for IP {0}", ipAddress);
+            logger.debug("Unable to process SSDP message for IP {} - {}", ipAddress, e.getMessage());
         }
 
     }
 
-    /*
-     * @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-     * public void setMagentaTVNotifyServlet(MagentaTVNotifyServlet servlet) {
-     * logger.debug("NotifyServlet bound");
-     * }
-     *
-     * public void unsetMagentaTVNotifyServlet(MagentaTVNotifyServlet servlet) {
-     * logger.debug("NotifyServlet unbound");
-     * }
-     */
     @SuppressWarnings("null")
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
@@ -365,7 +356,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 upnpListener.start();
             }
         } catch (MagentaTVException e) {
-            logger.exception(e, "Unable to initialize network access");
+            logger.warn("Unable to initialize network access");
         }
     }
 

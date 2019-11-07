@@ -30,8 +30,9 @@ import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.magentatv.internal.utils.MagentaTVException;
-import org.openhab.binding.magentatv.internal.utils.MagentaTVLogger;
+import org.openhab.binding.magentatv.internal.MagentaTVException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MagentaTVHttp} supplies network functions.
@@ -40,8 +41,7 @@ import org.openhab.binding.magentatv.internal.utils.MagentaTVLogger;
  */
 @NonNullByDefault
 public class MagentaTVHttp {
-
-    private final MagentaTVLogger logger = new MagentaTVLogger(MagentaTVHttp.class, "Http");
+    private final Logger logger = LoggerFactory.getLogger(MagentaTVHttp.class);
 
     @SuppressWarnings("null")
     public String httpGet(String host, String urlBase, String urlParameters) throws MagentaTVException {
@@ -54,7 +54,7 @@ public class MagentaTVHttp {
             httpHeader.setProperty(HEADER_HOST, host);
             httpHeader.setProperty(HEADER_ACCEPT, "*/*");
             response = HttpUtil.executeUrl(HTTP_GET, url, httpHeader, null, null, NETWORK_TIMEOUT);
-            logger.trace("GET {0} - Response={1}", url, response);
+            logger.trace("GET {} - Response={}", url, response);
             return response;
         } catch (IOException e) {
             throw new MagentaTVException(e, "HTTP GET {0} failed: {1}, response={2}", url, e.getMessage(), response);
@@ -89,10 +89,10 @@ public class MagentaTVHttp {
                 httpHeader.setProperty(HEADER_CONNECTION, connection);
             }
 
-            logger.trace("POST {0} - SoapAction={1}, Data = {2}", url, postData, soapAction);
+            logger.trace("POST {} - SoapAction={}, Data = {}", url, postData, soapAction);
             InputStream dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName("UTF-8")));
             httpResponse = HttpUtil.executeUrl(HTTP_POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT);
-            logger.trace("POST {0} - Response = {1}", url, httpResponse);
+            logger.trace("POST {} - Response = {}", url, httpResponse);
             return httpResponse;
         } catch (IOException e) {
             throw new MagentaTVException(e, "HTTP POST {0} failed: {1}, response={2}", url, e.getMessage(),
@@ -115,8 +115,7 @@ public class MagentaTVHttp {
         String errorMessage = "";
 
         try {
-            // logger.trace("Sending data to {0}:{1}: {2}", remoteIp,
-            // remotePort, data);
+            // logger.trace("Sending data to {}:{}: {}", remoteIp, remotePort, data);
             socket = new Socket();
             socket.setSoTimeout(4 * 1000); // set read timeout < 5s
             socket.connect(new InetSocketAddress(remoteIp, Integer.parseInt(remotePort)), 3000);
