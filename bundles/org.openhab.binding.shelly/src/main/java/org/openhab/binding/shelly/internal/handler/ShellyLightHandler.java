@@ -405,7 +405,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
     }
 
-    @SuppressWarnings("null")
     private void sendColors(@Nullable ShellyDeviceProfile profile, Integer lightId, ShellyColorUtils oldCol,
             ShellyColorUtils newCol) throws IOException {
         Validate.notNull(profile);
