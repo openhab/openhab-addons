@@ -33,9 +33,6 @@ Fragment-Host: org.openhab.binding.feed
 	org.apache.servicemix.bundles.xstream;version='[1.4.7,1.4.8)',\
 	org.apache.xbean.bundleutils;version='[4.12.0,4.12.1)',\
 	org.apache.xbean.finder;version='[4.12.0,4.12.1)',\
-	org.objectweb.asm;version='[7.0.0,7.0.1)',\
-	org.objectweb.asm.commons;version='[7.0.0,7.0.1)',\
-	org.objectweb.asm.tree;version='[7.0.0,7.0.1)',\
 	org.openhab.binding.feed;version='[2.5.0,2.5.1)',\
 	org.openhab.binding.feed.tests;version='[2.5.0,2.5.1)',\
 	org.openhab.core;version='[2.5.0,2.5.1)',\
@@ -70,4 +67,7 @@ Fragment-Host: org.openhab.binding.feed
 	slf4j.api;version='[1.7.16,1.7.17)',\
 	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
 	tec.uom.se;version='[1.0.10,1.0.11)',\
-	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)'
+	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)',\
+	org.objectweb.asm;version='[7.1.0,7.1.1)',\
+	org.objectweb.asm.commons;version='[7.1.0,7.1.1)',\
+	org.objectweb.asm.tree;version='[7.1.0,7.1.1)'
