@@ -60,9 +60,6 @@ Fragment-Host: org.openhab.io.hueemulation
 	org.eclipse.jetty.websocket.common;version='[9.4.11,9.4.12)',\
 	org.eclipse.jetty.xml;version='[9.4.11,9.4.12)',\
 	org.jupnp;version='[2.5.2,2.5.3)',\
-	org.objectweb.asm;version='[7.0.0,7.0.1)',\
-	org.objectweb.asm.commons;version='[7.0.0,7.0.1)',\
-	org.objectweb.asm.tree;version='[7.0.0,7.0.1)',\
 	org.openhab.core.automation;version='[2.5.0,2.5.1)',\
 	org.openhab.core.io.console;version='[2.5.0,2.5.1)',\
 	org.openhab.core.io.net;version='[2.5.0,2.5.1)',\
@@ -83,5 +80,7 @@ Fragment-Host: org.openhab.io.hueemulation
 	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)',\
 	jollyday;version='[0.5.9,0.5.10)',\
 	org.openhab.core.ephemeris;version='[2.5.0,2.5.1)',\
+	org.objectweb.asm;version='[7.1.0,7.1.1)',\
+	org.objectweb.asm.commons;version='[7.1.0,7.1.1)',\
+	org.objectweb.asm.tree;version='[7.1.0,7.1.1)',\
 	org.threeten.extra;version='[1.5.0,1.5.1)'
-
