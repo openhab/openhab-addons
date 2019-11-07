@@ -22,7 +22,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 /**
- * The {@link ShellyCoapJSon} helps mapping COAP Json into Java objects
+ * The {@link ShellyCoapJSon} helps the CoIoT Json into Java objects
  *
  * @author Markus Michels - Initial contribution
  */

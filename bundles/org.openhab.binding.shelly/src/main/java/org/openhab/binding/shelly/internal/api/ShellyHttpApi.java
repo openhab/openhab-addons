@@ -44,7 +44,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * Wrapper for the Shelly http api
+ * {@link ShellyHttpApi} wraps the Shelly REST API and provides various low level function to access the device api (not
+ * cloud api).
  *
  * @author Markus Michels - Initial contribution
  */

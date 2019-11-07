@@ -37,8 +37,6 @@ Check  https://community.openhab.org/t/shelly-binding/56862/213 for more informa
 Please delete and re-discover all things!
 
 
-## Supported Devices
-
 ## Supported Things
 
 |Thing             |Type                                                    | Status                                                   |
@@ -375,14 +373,14 @@ Note: PaperUI is recommended, if you want to use text files make sure to replace
 * .things
 
 /* Shelly 2.5 Roller */
-Thing shelly:shelly25-roller:XXXXX1 "Shelly 25 Roller e66954" @ "Home Theater" [deviceIp="x.x.x.x", userId="", password=""]
-Thing shelly:shelly25-roller:XXXXX2 "Shelly 25 Roller 00ac2e" @ "Living Room" [deviceIp="x.x.x.x", userId="admin", password="secret"]
+Thing shelly:shelly25-roller:XXXXX1 "Shelly 25 Roller XXXXX1" @ "Home Theater" [deviceIp="x.x.x.x", userId="", password=""]
+Thing shelly:shelly25-roller:XXXXX2 "Shelly 25 Roller XXXXX2" @ "Living Room" [deviceIp="x.x.x.x", userId="admin", password="secret"]
 
 
-/* Shelly 2.5 Realys */
-Thing shelly:shelly25-relay:XXXXX3 "Shelly 25 Relay e6279d" @ "Hall Way" [deviceIp="x.x.x.x", userId="", password=""]
-Thing shelly:shelly25-relay:XXXXX4 "Shelly 25 Relay 00ab44" @ "Dining Room" [deviceIp="x.x.x.x", userId="", password=""]
-Thing shelly:shelly25-relay:XXXXX5 "Shelly 25 Relay 007f81" @ "Bed Room" [deviceIp="x.x.x.x", userId="", password=""]
+/* Shelly 2.5 Relays */
+Thing shelly:shelly25-relay:XXXXX3 "Shelly 25 Relay XXXXX3" @ "Hall Way" [deviceIp="x.x.x.x", userId="", password=""]
+Thing shelly:shelly25-relay:XXXXX4 "Shelly 25 Relay XXXXX4" @ "Dining Room" [deviceIp="x.x.x.x", userId="", password=""]
+Thing shelly:shelly25-relay:XXXXX5 "Shelly 25 Relay XXXXX5" @ "Bed Room" [deviceIp="x.x.x.x", userId="", password=""]
 
 * .items
 
@@ -401,14 +399,8 @@ Number Shelly_BA2F18_Power "Bath Room Light Power" (bathroom) {channel="shelly:s
 
 reading colors from color picker:
 import org.openhab.core.library.types.*
- 
-var HSBType hsbValue
-var int redValue
-var int greenValue
-var int blueValue
-var String RGBvalues
 
-rule "color" // The unique name for the rule
+rule "color" 
 when
     Item ShellyColor changed
 then

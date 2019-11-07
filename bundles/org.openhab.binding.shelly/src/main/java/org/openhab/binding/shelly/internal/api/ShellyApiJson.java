@@ -15,12 +15,10 @@ package org.openhab.binding.shelly.internal.api;
 import java.util.ArrayList;
 
 /**
- * Json/Gson mapping
+ * The {@link ShellyApiJson} is used for the JSon/GSon mapping
  *
  * @author Markus Michels - Initial contribution
- *
  */
-
 public class ShellyApiJson {
 
     public static final String SHELLY_API_ON = "on";
@@ -514,6 +512,7 @@ public class ShellyApiJson {
         public ArrayList<ShellyStatusLightChannel> lights;
         public ArrayList<ShellySettingsMeter> meters;
 
+        // not yet used:
         // public String mode; // COLOR or WHITE
         // public Integer input;
         // public Boolean has_update;
@@ -551,14 +550,14 @@ public class ShellyApiJson {
     public static final String SHELLY_COLOR_TEMP = "temp";
     public static final String SHELLY_COLOR_EFFECT = "effect";
 
-    public static final Integer SHELLY_MIN_ROLLER_POS = 0;
-    public static final Integer SHELLY_MAX_ROLLER_POS = 100;
-    public static final Integer SHELLY_MIN_BRIGHTNESS = 0;
-    public static final Integer SHELLY_MAX_BRIGHTNESS = 100;
+    public static final int SHELLY_MIN_ROLLER_POS = 0;
+    public static final int SHELLY_MAX_ROLLER_POS = 100;
+    public static final int SHELLY_MIN_BRIGHTNESS = 0;
+    public static final int SHELLY_MAX_BRIGHTNESS = 100;
     public static final int SHELLY_MIN_GAIN = 0;
-    public static final Integer SHELLY_MAX_GAIN = 100;
-    public static final Integer SHELLY_MIN_COLOR = 0;
-    public static final Integer SHELLY_MAX_COLOR = 255;
+    public static final int SHELLY_MAX_GAIN = 100;
+    public static final int SHELLY_MIN_COLOR = 0;
+    public static final int SHELLY_MAX_COLOR = 255;
     public static final int SHELLY_DIM_STEPSIZE = 10;
 
     // color temperature: 3000 = warm, 4750 = white, 6565 = cold; gain: 0..100

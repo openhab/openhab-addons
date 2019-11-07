@@ -41,7 +41,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main OSGi service and HTTP servlet for MagentaTV NOTIFY.
+ * {@link ShellyEventServlet} implements a servlet. which is called by the Shelly device to signnal events (button,
+ * relay output, sensor data). The binding automatically sets those vent urls on startup (when not disabled in the thing
+ * config).
  *
  * @author Markus Michels - Initial contribution
  */

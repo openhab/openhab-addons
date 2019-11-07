@@ -61,7 +61,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * The {@link ShellyCoapHandler} handles the coap registration and events.
+ * The {@link ShellyCoapHandler} handles the CoIoT/Coap registration and events.
  *
  * @author Markus Michels - Initial contribution
  */

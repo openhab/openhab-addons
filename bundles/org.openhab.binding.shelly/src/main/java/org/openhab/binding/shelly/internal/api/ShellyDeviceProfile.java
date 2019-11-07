@@ -29,9 +29,8 @@ import com.google.gson.Gson;
 
 /**
  * The {@link ShellyDeviceProfile} creates a device profile based on the settings returned from the API's /settings
- * call. This is used to be more
- * dynamic in controlling the device, but also to overcome some issues in the API (e.g. RGBW2 returns "no meter" even it
- * has one)
+ * call. This is used to be more dynamic in controlling the device, but also to overcome some issues in the API (e.g.
+ * RGBW2 returns "no meter" even it has one)
  *
  * @author Markus Michels - Initial contribution
  */

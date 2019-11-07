@@ -23,8 +23,5 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public interface ShellyCoapListener {
-    /**
-     * This method is called when a Coap request was received.
-     */
     public void processResponse(@Nullable Response response);
 }
