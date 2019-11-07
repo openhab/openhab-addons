@@ -30,11 +30,9 @@ import org.eclipse.smarthome.core.library.types.PercentType;
  */
 @NonNullByDefault
 public class ShellyColorUtils {
-
     // private final Logger logger = LoggerFactory.getLogger(ShellyColorUtils.class);
 
     public ShellyColorUtils() {
-
     }
 
     public ShellyColorUtils(ShellyColorUtils col) {

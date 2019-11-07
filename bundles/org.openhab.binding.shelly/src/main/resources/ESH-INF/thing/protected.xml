@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="shelly"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/smarthome/schemas/thing-description/v1.0.0 https://openhab.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-
-    <thing-type id="shelly-protected">
-        <label>Password protected Shelly device, go the Configuration:Bindings and set userid/password</label>
-        <description>A password protected device was detected. You need to set userid/password in the binding settings</description>
-    </thing-type>
+	<thing-type id="shelly-protected">
+		<label>Password protected Shelly device, go the Configuration:Bindings and set userid/password</label>
+		<description>A password protected device was detected. You need to set userid/password in the binding settings</description>
+	</thing-type>
 
 </thing:thing-descriptions>
  

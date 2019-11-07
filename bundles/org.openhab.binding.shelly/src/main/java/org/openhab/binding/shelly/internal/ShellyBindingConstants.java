@@ -144,11 +144,9 @@ public class ShellyBindingConstants {
 
     public static final String CHANNEL_GROUP_SENSOR = "sensors";
     public static final String CHANNEL_SENSOR_TEMP = "temperature";
-    public static final String CHANNEL_SENSOR_TUNIT = "tempUnit";
     public static final String CHANNEL_SENSOR_HUM = "humidity";
     public static final String CHANNEL_SENSOR_LUX = "lux";
     public static final String CHANNEL_SENSOR_FLOOD = "flood";
-    public static final String CHANNEL_RAIN_MODE = "rainMode";
     public static final String CHANNEL_SENSOR_MOTION = "motion";
     public static final String CHANNEL_SENSOR_CHARGER = "charger";
     public static final String CHANNEL_SENSOR_LASTUPDATE = "last_update";

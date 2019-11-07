@@ -120,8 +120,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
     @Override
     public void initialize() {
-
-        // Example for background initialization:
+        // start background initialization:
         scheduler.schedule(() -> {
             try {
                 initializeThingConfig();
@@ -278,7 +277,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (command instanceof RefreshType) {
-                // TODO: handle data refresh
                 return;
             }
 
@@ -372,14 +370,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     String time = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(datetime);
                     updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LASTUPDATE, new StringType(time));
                 }
-
-                // update some properties
-                if (skipUpdate % (60 / UPDATE_STATUS_INTERVAL) == 0) {
-                    // updateProperties(profile, status);
-                }
-            } else {
-                // logger.trace("Update skipped {}/{}", (skipUpdate - 1) % skipCount,
-                // skipCount);
             }
         } catch (IOException e) {
             // http call failed: go offline except for battery devices, which might be in

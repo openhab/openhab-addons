@@ -15,15 +15,19 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.SHELLY_TEMP_CELSIUS;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
 
 import java.io.IOException;
+
+import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsMeter;
@@ -40,6 +44,8 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
  */
 @NonNullByDefault
 public class ShellyComponents {
+    public static final Unit<Temperature> TEMPERATURE_UNIT_C = SIUnits.CELSIUS;
+
     /**
      * Update Meter channel
      *
@@ -173,12 +179,15 @@ public class ShellyComponents {
             ShellyStatusSensor sdata = th.api.getSensorStatus();
             if (sdata != null) {
                 if (getBool(sdata.tmp.is_valid)) {
+                    DecimalType temp = getString(sdata.tmp.units).toUpperCase().equals(SHELLY_TEMP_CELSIUS)
+                            ? getDecimal(sdata.tmp.tC)
+                            : getDecimal(sdata.tmp.tF);
+                    if (getString(sdata.tmp.units).toUpperCase().equals(SHELLY_TEMP_FAHRENHEIT)) {
+                        // convert Fahrenheit to Celsius
+                        temp = new DecimalType((temp.floatValue() - 32) * 5 / 9.0);
+                    }
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
-                            getString(sdata.tmp.units).toUpperCase().equals(SHELLY_TEMP_CELSIUS)
-                                    ? getDecimal(sdata.tmp.tC)
-                                    : getDecimal(sdata.tmp.tF));
-                    updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TUNIT,
-                            getStringType(sdata.tmp.units));
+                            toQuantityType(temp.floatValue(), SIUnits.CELSIUS));
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM, getDecimal(sdata.hum.value));
                 }
                 if ((sdata.lux != null) && getBool(sdata.lux.is_valid)) {
@@ -186,7 +195,6 @@ public class ShellyComponents {
                 }
                 if (sdata.flood != null) {
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD, getOnOff(sdata.flood));
-                    updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_RAIN_MODE, getOnOff(sdata.rain_sensor));
                 }
                 if (sdata.bat != null) {
                     th.logger.trace("{}: Updating battery", th.thingName);

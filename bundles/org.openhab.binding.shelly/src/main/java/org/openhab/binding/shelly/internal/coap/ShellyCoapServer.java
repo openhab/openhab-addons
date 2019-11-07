@@ -93,7 +93,7 @@ public class ShellyCoapServer {
     }
 
     @SuppressWarnings("null")
-    synchronized public void init(String localIp) throws UnknownHostException {
+    synchronized void init(String localIp) throws UnknownHostException {
         if (server == null) {
             logger.debug("Initializing CoIoT listener (local IP={}", localIp);
             NetworkConfig nc = NetworkConfig.getStandard();

@@ -4,17 +4,12 @@
 This openHAB 2 Binding implements control for the Shelly series of devices. This includes sending commands to the devices as well as reding the device status and sensor data.
 
 Author: Markus Michels (markus7017)
-Check  https://community.openhab.org/t/shelly-binding/56862/213 for more information, questions and contributing ideas. Any comment is welcome!
+Check  https://community.openhab.org/t/shelly-binding/56862/213 for more information, questions and contributing ideas. Any comments are welcome!
 
 ---
 
-## Releases of this binding
-
-Repo / Branches:
-Latest **stable** release (master):     https://github.com/markus7017/org.openhab.binding.shelly/tree/master
-Latest **snapshot** (work in progress): https://github.com/markus7017/org.openhab.binding.shelly/tree/snapshot
-
 ### 2.5-SNAPSHOT
+
 * fix: Roller returns position -1
 * Lots of re-factoring
 
@@ -39,46 +34,8 @@ Latest **snapshot** (work in progress): https://github.com/markus7017/org.openha
 * various bug fixes and improvements
 * refactoring started to get ready for 2.5 PR
 
-
 Please delete and re-discover all things!
 
-## Installation
-
-### Before installing a new build
-
-- delete all Shelly things in PaperUI:Configuration:Things and PaperUI:Inbox
-- stop OH
-- make sure the JSON DB files have no left-overs on Shelly definitions, delete the entries
-- run "openhab-cli clean-cache"
-- maybe empty your log
-
-### General installation
-
-- copy the jar into you OH's addons folder.
-- start OH, wait until initialized
-- run the thing discovery from the Inbox
-
-
----
-
-## Hall of Frame - Contibutors
-
-@Igi:     lot of testing around RGBW2 and in general!
-@mherbst: supported Bulb and Sense testing
-@hmerck:  concept, testing, supporting on coap implementation
-@alexxio: testing, feedback
-
-Thanks guys for supporting the community.
-
----
-
-Please note:
-This is a beta release, it has bugs, requires manual install etc. Questions, feedback and contributions are welcome (e.g. improving this documentation).
-
-
-Looking for contribution: If you are familar with HTML and CSS you are welcome to contribute a nice HABpanel widget. ;-)
-
----
 
 ## Supported Devices
 

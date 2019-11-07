@@ -16,8 +16,11 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+
+import javax.measure.Unit;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -25,7 +28,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
  * {@link ShellyUtils} provides general utility functions
@@ -78,6 +84,18 @@ public class ShellyUtils {
 
     public static OnOffType getOnOff(@Nullable Boolean value) {
         return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
+    }
+
+    public static State toQuantityType(@Nullable Float value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    }
+
+    public static State toQuantityType(@Nullable Double value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    }
+
+    public static State toQuantityType(@Nullable BigDecimal value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
     }
 
     public static void validateRange(String name, Integer value, Integer min, Integer max) {

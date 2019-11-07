@@ -79,7 +79,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     @SuppressWarnings("null")
     @Override
     public boolean handleDeviceCommand(ChannelUID channelUID, Command command) throws IOException {
-
         // Process command
         String groupName = channelUID.getGroupId();
         Integer rIndex = 0;
@@ -159,7 +158,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     logger.debug("{}: Stop roller", thingName);
                     api.setRollerTurn(rIndex, SHELLY_ALWD_ROLLER_TURN_STOP);
                 } else {
-
                     logger.debug("{}: Set roller to position {} (channel {})", thingName, command.toString(),
                             channelUID.getIdWithoutGroup());
                     if (command instanceof PercentType) {

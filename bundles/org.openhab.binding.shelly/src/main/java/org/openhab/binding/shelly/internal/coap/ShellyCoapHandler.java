@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.coap;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyUtils.mkChannelId;
+import static org.openhab.binding.shelly.internal.ShellyUtils.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJson.SHELLY_MAX_ROLLER_POS;
 import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.*;
 
@@ -41,6 +41,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_Descr_P;
@@ -380,7 +381,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 switch (sen.T.toLowerCase()) /* CoIoT_STypes.valueOf(sen.T) */ {
                     case "t" /* Temperature */:
                         Validate.isTrue(type.contains("sensors"), "Temp update for non-sensor");
-                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP, new DecimalType(s.value));
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
+                                toQuantityType(s.value, SIUnits.CELSIUS));
                         break;
                     case "h" /* Humidity */:
                         Validate.isTrue(type.contains("sensors"), "Humidity update for non-sensor");
