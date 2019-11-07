@@ -57,11 +57,11 @@
 
 			<parameter name="keepAlive" type="integer">
 				<label>Heartbeat</label>
-				<description>Keep alive / heartbeat timer in ms. It can take up to
+				<description>Keep alive / heartbeat timer in s. It can take up to
 					this time to determine if a server connection is lost. A lower
 					value may keep the broker unnecessarily busy for no or little
 					additional value.</description>
-				<default>60000</default>
+				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
 
