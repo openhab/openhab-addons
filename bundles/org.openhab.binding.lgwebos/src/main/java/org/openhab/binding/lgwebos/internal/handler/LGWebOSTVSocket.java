@@ -447,7 +447,10 @@ public class LGWebOSTVSocket {
 
     public ServiceSubscription<Float> subscribeVolume(ResponseListener<Float> listener) {
         ServiceSubscription<Float> request = new ServiceSubscription<>(VOLUME, null,
-                jsonObj -> (float) (jsonObj.get("volume").getAsInt() / 100.0), listener);
+                jsonObj -> "mastervolume_tv_speaker".equals(jsonObj.get("scenario").getAsString())
+                        ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
+                        : Float.NaN,
+                listener);
         sendCommand(request);
         return request;
     }
