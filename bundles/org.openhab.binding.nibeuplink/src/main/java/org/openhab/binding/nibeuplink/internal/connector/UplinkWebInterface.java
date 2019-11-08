@@ -65,7 +65,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
     /**
      * HTTP client for asynchronous calls
      */
-    private final HttpClient httpClient;
+    private final @Nullable HttpClient httpClient;
 
     /**
      * the scheduler which periodically sends web requests to the solaredge API. Should be initiated with the thing's
@@ -171,7 +171,8 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      *
      * @param config the Bridge configuration
      */
-    public UplinkWebInterface(ScheduledExecutorService scheduler, NibeUplinkHandler handler, HttpClient httpClient) {
+    public UplinkWebInterface(ScheduledExecutorService scheduler, NibeUplinkHandler handler,
+            @Nullable HttpClient httpClient) {
         this.config = handler.getConfiguration();
         this.uplinkHandler = handler;
         this.scheduler = scheduler;

@@ -57,9 +57,8 @@ public final class CustomChannels extends AbstractChannels {
                             customChannel.getUID().getId());
             }
         } catch (ValidationException ex) {
-            logger.warn(ex.getMessage());
+            logger.warn("{}", ex.getMessage());
         }
-
     }
 
     public void clearList() {

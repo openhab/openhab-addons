@@ -14,11 +14,15 @@ package org.openhab.binding.nibeuplink.internal.model;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * interface which contains the public methods of the channellist classes
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public interface ChannelList {
 
     /**
@@ -34,5 +38,6 @@ public interface ChannelList {
      * @param channelCode the channelCode which identifies the channel
      * @return channel which belongs to the code. might be null if there is no channel found.
      */
+    @Nullable
     NibeChannel fromCode(String channelCode);
 }

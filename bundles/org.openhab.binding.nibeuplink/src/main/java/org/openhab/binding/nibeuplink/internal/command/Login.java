@@ -14,6 +14,8 @@ package org.openhab.binding.nibeuplink.internal.command;
 
 import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.FormContentProvider;
@@ -28,6 +30,7 @@ import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class Login extends AbstractUplinkCommandCallback implements NibeUplinkCommand {
 
     public Login(NibeUplinkHandler handler, StatusUpdateListener listener) {
@@ -56,7 +59,7 @@ public class Login extends AbstractUplinkCommandCallback implements NibeUplinkCo
     }
 
     @Override
-    public void onComplete(Result result) {
+    public void onComplete(@Nullable Result result) {
         StatusUpdateListener listener = getListener();
         if (listener != null) {
             listener.update(getCommunicationStatus());

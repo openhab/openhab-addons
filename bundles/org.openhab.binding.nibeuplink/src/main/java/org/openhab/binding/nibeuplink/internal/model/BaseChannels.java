@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -26,6 +28,7 @@ import org.openhab.binding.nibeuplink.internal.model.ScaledChannel.ScaleFactor;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class BaseChannels extends AbstractChannels {
 
     /**
@@ -55,7 +58,7 @@ public class BaseChannels extends AbstractChannels {
      * @return channel which belongs to the code. might be null if there is no channel found.
      */
     @Override
-    public NibeChannel fromCode(String channelCode) {
+    public @Nullable NibeChannel fromCode(String channelCode) {
         NibeChannel channel = super.fromCode(channelCode);
 
         // also check channels in this class if called from an inherited class
@@ -85,8 +88,8 @@ public class BaseChannels extends AbstractChannels {
     }
 
     // General
-    public static final NibeChannel CH_40004 = INSTANCE.addChannel(new QuantityChannel("40004", "BT1 Outdoor Temperature",
-            ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final NibeChannel CH_40004 = INSTANCE.addChannel(new QuantityChannel("40004",
+            "BT1 Outdoor Temperature", ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_40067 = INSTANCE.addChannel(
             new QuantityChannel("40067", "BT1 Average", ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_43005 = INSTANCE.addChannel(new ScaledChannel("43005", "Degree Minutes (16 bit)",
@@ -146,8 +149,9 @@ public class BaseChannels extends AbstractChannels {
             new QuantityChannel("40013", "BT7 HW Top", ChannelGroup.HOTWATER, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_40014 = INSTANCE.addChannel(
             new QuantityChannel("40014", "BT6 HW Load", ChannelGroup.HOTWATER, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final NibeChannel CH_44306 = INSTANCE.addChannel(new QuantityChannel("44306", "Heat Meter - HW Cpr EP14",
-            ChannelGroup.HOTWATER, ScaleFactor.DIV_10, MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR)));
+    public static final NibeChannel CH_44306 = INSTANCE
+            .addChannel(new QuantityChannel("44306", "Heat Meter - HW Cpr EP14", ChannelGroup.HOTWATER,
+                    ScaleFactor.DIV_10, MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR)));
     public static final NibeChannel CH_44298 = INSTANCE
             .addChannel(new QuantityChannel("44298", "Heat Meter - HW Cpr and Add EP14", ChannelGroup.HOTWATER,
                     ScaleFactor.DIV_10, MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR)));

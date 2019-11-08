@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,59 +29,68 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class GenericDataResponse implements DataResponse {
     private final Logger logger = LoggerFactory.getLogger(GenericDataResponse.class);
 
     public static class Value {
         @SerializedName("VariableId")
+        @Nullable
         private String variableId;
         @SerializedName("CurrentValue")
+        @Nullable
         private String currentValue;
         @SerializedName("CurrentIntValue")
+        @Nullable
         private Long currentIntValue;
         @SerializedName("IsLoading")
         private boolean isLoading;
     }
 
     @SerializedName("IsOffline")
+    @Nullable
     private String isOffline;
     @SerializedName("OnlineImage")
+    @Nullable
     private String onlineImage;
     @SerializedName("Date")
+    @Nullable
     private String date;
     @SerializedName("FuzzyDate")
+    @Nullable
     private String fuzzyDate;
     @SerializedName("Values")
     private List<Value> values = new ArrayList<>();
 
     @Override
-    public Map<String, Long> getValues() {
-        Map<String, Long> valueMap = new HashMap<>();
+    public Map<String, @Nullable Long> getValues() {
+        Map<String, @Nullable Long> valueMap = new HashMap<>();
         for (Value value : values) {
-            if (!value.isLoading) {
+            String id = value.variableId;
+            if (!value.isLoading && id != null) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Channel {} updated to: {} ({})", value.variableId, value.currentIntValue,
                             value.currentValue);
                 }
-                valueMap.put(value.variableId, value.currentIntValue);
+                valueMap.put(id, value.currentIntValue);
             }
         }
         return valueMap;
     }
 
-    public String getIsOffline() {
+    public @Nullable String getIsOffline() {
         return isOffline;
     }
 
-    public String getOnlineImage() {
+    public @Nullable String getOnlineImage() {
         return onlineImage;
     }
 
-    public String getDate() {
+    public @Nullable String getDate() {
         return date;
     }
 
-    public String getFuzzyDate() {
+    public @Nullable String getFuzzyDate() {
         return fuzzyDate;
     }
 

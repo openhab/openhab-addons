@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -22,6 +23,7 @@ import org.openhab.binding.nibeuplink.internal.model.ScaledChannel.ScaleFactor;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public final class VVM310Channels extends BaseChannels {
 
     /**
@@ -45,8 +47,8 @@ public final class VVM310Channels extends BaseChannels {
     }
 
     // General
-    public static final NibeChannel CH_44270 = INSTANCE.addChannel(new QuantityChannel("44270", "Calc. Cooling Supply S1",
-            ChannelGroup.GENERAL, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final NibeChannel CH_44270 = INSTANCE.addChannel(new QuantityChannel("44270",
+            "Calc. Cooling Supply S1", ChannelGroup.GENERAL, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_40121 = INSTANCE.addChannel(new QuantityChannel("40121", "BT63 Add Supply Temp",
             ChannelGroup.GENERAL, ScaleFactor.DIV_10, SIUnits.CELSIUS));
 
@@ -78,8 +80,8 @@ public final class VVM310Channels extends BaseChannels {
             "EB101-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
     public static final NibeChannel CH_44069 = INSTANCE
             .addChannel(new NibeChannel("44069", "EB101-EP14 Compressor starts", ChannelGroup.COMPRESSOR));
-    public static final NibeChannel CH_44061 = INSTANCE.addChannel(new QuantityChannel("44061", "EB101-EP14-BT17 Suction",
-            ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final NibeChannel CH_44061 = INSTANCE.addChannel(new QuantityChannel("44061",
+            "EB101-EP14-BT17 Suction", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_44060 = INSTANCE.addChannel(new QuantityChannel("44060",
             "EB101-EP14-BT15 Liquid Line", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_44059 = INSTANCE.addChannel(new QuantityChannel("44059",
@@ -106,10 +108,10 @@ public final class VVM310Channels extends BaseChannels {
             .addChannel(new NibeChannel("44457", "EB101-EP14 Compressor State", ChannelGroup.COMPRESSOR));
 
     // Airsupply
-    public static final NibeChannel CH_40025 = INSTANCE.addChannel(new QuantityChannel("40025", "BT20 Exhaust air temp. 1",
-            ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final NibeChannel CH_40026 = INSTANCE.addChannel(new QuantityChannel("40026", "BT21 Vented air temp. 1",
-            ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final NibeChannel CH_40025 = INSTANCE.addChannel(new QuantityChannel("40025",
+            "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final NibeChannel CH_40026 = INSTANCE.addChannel(new QuantityChannel("40026",
+            "BT21 Vented air temp. 1", ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_40075 = INSTANCE.addChannel(new QuantityChannel("40075", "BT22 Supply air temp.",
             ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_40183 = INSTANCE.addChannel(new QuantityChannel("40183",
@@ -120,6 +122,6 @@ public final class VVM310Channels extends BaseChannels {
             "External ERS accessory GQ3speed", ChannelGroup.AIRSUPPLY, SmartHomeUnits.PERCENT));
     public static final NibeChannel CH_40942 = INSTANCE
             .addChannel(new SwitchChannel("40942", "External ERS accessory blockstatus", ChannelGroup.AIRSUPPLY));
-    public static final NibeChannel CH_47260 = INSTANCE
-            .addChannel(new NibeChannel("47260", "Selected Fan speed", ChannelGroup.AIRSUPPLY, "/Manage/1.2", "[01234]"));
+    public static final NibeChannel CH_47260 = INSTANCE.addChannel(
+            new NibeChannel("47260", "Selected Fan speed", ChannelGroup.AIRSUPPLY, "/Manage/1.2", "[01234]"));
 }

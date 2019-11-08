@@ -38,7 +38,7 @@ public class GenericHandler extends UplinkBaseHandler {
      * @param httpClient the httpclient that communicates with the API
      * @param channelList the specific channellist
      */
-    public GenericHandler(Thing thing, HttpClient httpClient, ChannelList channelList) {
+    public GenericHandler(Thing thing, @Nullable HttpClient httpClient, ChannelList channelList) {
         super(thing, httpClient);
         this.channelList = channelList;
     }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -22,6 +23,7 @@ import org.openhab.binding.nibeuplink.internal.model.ScaledChannel.ScaleFactor;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public final class F1155Channels extends BaseChannels {
 
     /**
@@ -56,8 +58,8 @@ public final class F1155Channels extends BaseChannels {
             "EB100-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
     public static final NibeChannel CH_43416 = INSTANCE
             .addChannel(new NibeChannel("43416", "EB100-EP14 Compressor starts", ChannelGroup.COMPRESSOR));
-    public static final NibeChannel CH_40022 = INSTANCE.addChannel(new QuantityChannel("40022", "EB100-EP14-BT17 Suction",
-            ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final NibeChannel CH_40022 = INSTANCE.addChannel(new QuantityChannel("40022",
+            "EB100-EP14-BT17 Suction", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_40019 = INSTANCE.addChannel(new QuantityChannel("40019",
             "EB100-EP14-BT15 Liquid Line", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_40018 = INSTANCE.addChannel(new QuantityChannel("40018",
@@ -66,10 +68,10 @@ public final class F1155Channels extends BaseChannels {
             "EB100-EP14-BT12 Condensor Out", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_43136 = INSTANCE.addChannel(new QuantityChannel("43136",
             "Compressor Frequency, Actual", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
-    public static final NibeChannel CH_43122 = INSTANCE.addChannel(new QuantityChannel("43122", "Compr. current min.freq.",
-            ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
-    public static final NibeChannel CH_43123 = INSTANCE.addChannel(new QuantityChannel("43123", "Compr. current max.freq.",
-            ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
+    public static final NibeChannel CH_43122 = INSTANCE.addChannel(new QuantityChannel("43122",
+            "Compr. current min.freq.", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
+    public static final NibeChannel CH_43123 = INSTANCE.addChannel(new QuantityChannel("43123",
+            "Compr. current max.freq.", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
     public static final NibeChannel CH_40015 = INSTANCE.addChannel(new QuantityChannel("40015",
             "EB100-EP14-BT10 Brine In Temperature", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final NibeChannel CH_40016 = INSTANCE.addChannel(new QuantityChannel("40016",
@@ -78,9 +80,9 @@ public final class F1155Channels extends BaseChannels {
             new QuantityChannel("43439", "EP14-GP2 Brine Pump Speed", ChannelGroup.COMPRESSOR, SmartHomeUnits.PERCENT));
 
     // Airsupply
-    public static final NibeChannel CH_40025 = INSTANCE.addChannel(new QuantityChannel("40025", "BT20 Exhaust air temp. 1",
-            ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final NibeChannel CH_40026 = INSTANCE.addChannel(new QuantityChannel("40026", "BT21 Vented air temp. 1",
-            ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final NibeChannel CH_40025 = INSTANCE.addChannel(new QuantityChannel("40025",
+            "BT20 Exhaust air temp. 1", ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final NibeChannel CH_40026 = INSTANCE.addChannel(new QuantityChannel("40026",
+            "BT21 Vented air temp. 1", ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
 
 }
