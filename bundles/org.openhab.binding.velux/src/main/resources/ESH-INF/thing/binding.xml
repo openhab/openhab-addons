@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Velux Binding -->
+<thing:thing-descriptions bindingId="velux"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<!-- -->
+	<!-- Velux binding Binding -->
+	<!-- -->
+	<thing-type id="binding">
+		<label>@text/thing-type.velux.binding.label</label>
+		<description>@text/thing-type.velux.binding.description</description>
+		<category>Other</category>
+		<channels>
+			<channel id="information" typeId="information" />
+		</channels>
+		<properties>
+			<property name="bundleVersion">N/A</property>
+		</properties>
+	</thing-type>
+</thing:thing-descriptions>
+<!-- ==================================== -->
+<!-- end-of-ESH-INF/thing/binding.xml -->
+<!-- ==================================== -->

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Velux Binding -->
+<thing:thing-descriptions bindingId="velux"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel Type - of Binding -->
+
+	<channel-type id="information">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.information.label</label>
+		<description>@text/channel-type.velux.information.description</description>
+		<category>Binding</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+
+	<!-- Channel Type - of Bridge -->
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.status.label</label>
+		<description>@text/channel-type.velux.status.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="reload">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.velux.reload.label</label>
+		<description>@text/channel-type.velux.reload.description</description>
+		<category>Bridge</category>
+	</channel-type>
+
+	<channel-type id="timestamp" advanced="true">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.velux.timestamp.label</label>
+		<description>@text/channel-type.velux.timestamp.description</description>
+		<category>Bridge</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="doDetection" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.velux.doDetection.label</label>
+		<description>@text/channel-type.velux.doDetection.description</description>
+		<category>Bridge</category>
+	</channel-type>
+
+	<channel-type id="firmware" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.firmware.label</label>
+		<description>@text/channel-type.velux.firmware.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="ipAddress" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.ipAddress.label</label>
+		<description>@text/channel-type.velux.ipAddress.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="subnetMask" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.subnetMask.label</label>
+		<description>@text/channel-type.velux.subnetMask.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="defaultGW" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.defaultGW.label</label>
+		<description>@text/channel-type.velux.defaultGW.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="DHCP" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.velux.DHCP.label</label>
+		<description>@text/channel-type.velux.DHCP.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="WLANSSID" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.WLANSSID.label</label>
+		<description>@text/channel-type.velux.WLANSSID.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="WLANPassword" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.WLANPassword.label</label>
+		<description>@text/channel-type.velux.WLANPassword.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="products" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.products.label</label>
+		<description>@text/channel-type.velux.products.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="scenes" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.scenes.label</label>
+		<description>@text/channel-type.velux.scenes.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="check" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.velux.check.label</label>
+		<description>@text/channel-type.velux.check.description</description>
+		<category>Bridge</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- Channel Type - Generic Things -->
+
+	<channel-type id="position">
+		<item-type>Rollershutter</item-type>
+		<label>@text/channel-type.velux.position.label</label>
+		<description>@text/channel-type.velux.position.description</description>
+		<category>Rollershutter</category>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.velux.state.label</label>
+		<description>@text/channel-type.velux.state.description</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="limitation" advanced="true">
+		<item-type>Rollershutter</item-type>
+		<label>@text/channel-type.velux.limitation.label</label>
+		<description>@text/channel-type.velux.limitation.description</description>
+		<category>Rollershutter</category>
+	</channel-type>
+
+
+	<channel-type id="action">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.velux.action.label</label>
+		<description>@text/channel-type.velux.action.description</description>
+		<category>Scene</category>
+	</channel-type>
+
+	<channel-type id="silentMode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.velux.silentMode.label</label>
+		<description>@text/channel-type.velux.silentMode.description</description>
+		<category>Scene</category>
+	</channel-type>
+
+	<channel-type id="vposition">
+		<item-type>Rollershutter</item-type>
+		<label>@text/channel-type.velux.vposition.label</label>
+		<description>@text/channel-type.velux.vposition.description</description>
+		<category>Rollershutter</category>
+	</channel-type>
+
+</thing:thing-descriptions>
+
+<!-- ==================================== -->
+<!-- end-of-ESH-INF/thing/channels.xml -->
+<!-- ==================================== -->
+

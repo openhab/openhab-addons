@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Velux Bridge Things Binding -->
+<thing:thing-descriptions bindingId="velux"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Velux Bridge Binding -->
+	<bridge-type id="klf200">
+		<label>@text/bridge-type.velux.klf200.label</label>
+		<description>@text/bridge-type.velux.klf200.description</description>
+
+		<channels>
+			<channel id="status" typeId="status" />
+			<channel id="reload" typeId="reload" />
+			<channel id="timestamp" typeId="timestamp" />
+			<channel id="doDetection" typeId="doDetection" />
+
+			<channel id="firmware" typeId="firmware" />
+			<channel id="ipAddress" typeId="ipAddress" />
+			<channel id="subnetMask" typeId="subnetMask" />
+			<channel id="defaultGW" typeId="defaultGW" />
+			<channel id="DHCP" typeId="DHCP" />
+			<channel id="WLANSSID" typeId="WLANSSID" />
+			<channel id="WLANPassword" typeId="WLANPassword" />
+			<channel id="products" typeId="products" />
+			<channel id="scenes" typeId="scenes" />
+			<channel id="check" typeId="check" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Velux</property>
+		</properties>
+
+		<config-description-ref uri="bridge-type:velux:bridge" />
+
+	</bridge-type>
+
+</thing:thing-descriptions>
+
+<!-- ==================================== -->
+<!-- end-of-ESH-INF/thing/bridge.xml -->
+<!-- ==================================== -->
