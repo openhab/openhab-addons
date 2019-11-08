@@ -8,51 +8,51 @@ The following TP-Link Smart Devices are supported:
 
 ### HS100 Smart Wi-Fi Plug
 
-* Switch On/Off
+* Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### HS103 Smart Wi-Fi Plug Lite
 
-* Switch On/Off
+* Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### HS105 Smart Wi-Fi Plug
 
-* Switch On/Off
+* Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### HS107 Smart Wi-Fi Plug, 2-Outlets
 
-* Switch On/Off Group
-* Switch On/Off Outlets
+* Power On/Off Group
+* Power On/Off Outlets
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### HS110 Smart Wi-Fi Plug
 
-* Switch On/Off
+* Power On/Off
 * Energy readings
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### HS200 Smart Wi-Fi Switch
 
-* Switch On/Off
+* Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### HS210 Smart Wi-Fi Light Switch 3-Way Kit
 
-* Switch On/Off
+* Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### HS220 Smart Wi-Fi Light Switch, Dimmer
 
-* Switch On/Off
+* Power On/Off
 * Adjust the brightness
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
@@ -67,15 +67,15 @@ Switching via openHAB activates the switch directly.
 
 ### HS300 Smart Wi-Fi Power Strip
 
-* Switch On/Off Group
-* Switch On/Off Outlets
+* Power On/Off Group
+* Power On/Off Outlets
 * Energy readings Outlets
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### KB100 Kasa Smart Light Bulb
 
-* Switch On/Off
+* Power On/Off
 * Adjust the brightness
 * Actual power usage
 * Wi-Fi signal strength (RSSI)
@@ -84,7 +84,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 ### KB130 Kasa Multi-color Smart Light Bulb
 
-* Switch On/Off
+* Power On/Off
 * Fine-tune colors
 * Adjust light appearance from soft white (2500k) to daylight (9000k)
 * Adjust the brightness
@@ -95,27 +95,27 @@ Switching, Brightness and Color is done using the `color` channel.
 
 ### KP100 Kasa Wi-Fi Smart Plug - Slim Edition
 
-* Switch On/Off
+* Power On/Off
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### KP200 Smart Wi-Fi Power Outlet, 2-Sockets
 
-* Switch On/Off Group
-* Switch On/Off Outlets
+* Power On/Off Group
+* Power On/Off Outlets
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### KP400 Smart Outdoor Plug
 
-* Switch On/Off Group
-* Switch On/Off Outlets
+* Power On/Off Group
+* Power On/Off Outlets
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
 ### LB100 Smart Wi-Fi LED Bulb with Dimmable Light
 
-* Switch On/Off
+* Power On/Off
 * Adjust the brightness
 * Actual power usage
 * Wi-Fi signal strength (RSSI)
@@ -124,7 +124,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 ### LB110 Smart Wi-Fi LED Bulb with Dimmable Light
 
-* Switch On/Off
+* Power On/Off
 * Adjust the brightness
 * Actual power usage
 * Wi-Fi signal strength (RSSI)
@@ -133,7 +133,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 ### LB120 Smart Wi-Fi LED Bulb with Tunable White Light
 
-* Switch On/Off
+* Power On/Off
 * Adjust light appearance from soft white (2700k) to daylight (6500k)
 * Adjust the brightness
 * Actual power usage
@@ -143,7 +143,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 ### LB130 Smart Wi-Fi LED Bulb with Color Changing Hue
 
-* Switch On/Off
+* Power On/Off
 * Fine-tune colors
 * Adjust light appearance from soft white (2500k) to daylight (9000k)
 * Adjust the brightness
@@ -154,7 +154,7 @@ Switching, Brightness and Color is done using the `color` channel.
 
 ### LB200 Smart Wi-Fi LED Bulb with Dimmable Light
 
-* Switch On/Off
+* Power On/Off
 * Adjust the brightness
 * Actual power usage
 * Wi-Fi signal strength (RSSI)
@@ -163,7 +163,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 ### LB230 Smart Wi-Fi LED Bulb with Color Changing Hue
 
-* Switch On/Off
+* Power On/Off
 * Fine-tune colors
 * Adjust light appearance from soft white (2500k) to daylight (9000k)
 * Adjust the brightness
@@ -174,7 +174,7 @@ Switching, Brightness and Color is done using the `color` channel.
 
 ### KL110 Smart Wi-Fi LED Bulb with Dimmable Light
 
-* Switch On/Off
+* Power On/Off
 * Adjust the brightness
 * Actual power usage
 * Wi-Fi signal strength (RSSI)
@@ -183,7 +183,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 ### KL120 Smart Wi-Fi LED Bulb with Tunable White Light
 
-* Switch On/Off
+* Power On/Off
 * Adjust light appearance from soft white (2700k) to daylight (6500k)
 * Adjust the brightness
 * Actual power usage
@@ -193,7 +193,7 @@ Switching and Brightness is done using the `brightness` channel.
 
 ### KL130 Smart Wi-Fi LED Bulb with Color Changing Hue
 
-* Switch On/Off
+* Power On/Off
 * Fine-tune colors
 * Adjust light appearance from soft white (2500k) to daylight (9000k)
 * Adjust the brightness
@@ -204,12 +204,12 @@ Switching, Brightness and Color is done using the `color` channel.
 
 ### RE270K AC750 Wi-Fi Range Extender with Smart Plug
 
-* Switch On/Off (readonly)
+* Power On/Off (readonly)
 * Wi-Fi signal strength (RSSI)
 
 ### RE370K AC1200 Wi-Fi Range Extender with Smart Plug
 
-* Switch On/Off (readonly)
+* Power On/Off (readonly)
 * Wi-Fi signal strength (RSSI)
 
 It is not possible to set the switch state on the Range Extender.
@@ -223,7 +223,7 @@ This can be done using the TP-Link provided mobile app Kasa.
 ## Discovery
 
 Devices can be auto discovered in the same local network as the openHAB application.
-It is possible to connect to devices on a different network, but these must be added manually by ipAddress.
+It is possible to connect to devices on a different network, but these must be added manually by `ipAddress`.
 It is not possible to connect to devices on a different network using `deviceId` as configuration.
 
 ## Thing Configuration
@@ -233,6 +233,10 @@ The thingId is the product type in lower case. For example `HS100` has thingId `
 The thing can be configured by `ipAddress` or by `deviceId`.
 If the one of them is used the other is automatically set by the binding.
 When manually configured it is preferred to set the `deviceId` because if the ip address of the device would change this will be automatically updated.
+The `deviceId` is the unique identifier each TP-Link device has.
+The `deviceId` can be seen when using discovery in openHAB.
+Discovery will set the `deviceId` automatically.
+
 Using a configuration with `deviceId` depends on the discovery service of the binding.
 The binding supports background discovery and this will update the ip address in case it changes within a minute.
 With background discovery disabled the ip address, which is needed to communicate with the device, needs to be set by starting a manual discovery.
@@ -243,7 +247,7 @@ The thing has the following configuration parameters:
 
 | Parameter          | Description                                                                                  |
 |--------------------|----------------------------------------------------------------------------------------------|
-| deviceId           | The id of the device.                                                                        |
+| deviceId           | The TP-Link id of the device.                                                                |
 | ipAddress          | IP Address of the device.                                                                    |
 | refresh            | Refresh interval in seconds. Optional. The default is 30 seconds, and 1 second for switches. |
 | transitionPeriod   | Duration of state changes in milliseconds, only for light bulbs, default 0.                  |
@@ -254,19 +258,19 @@ Either `deviceId` or `ipAddress` must be set.
 
 All devices support some of the following channels:
 
-| Channel Type ID     | Item Type                | Description                                        | Thing types supporting this channel                                                         |
-|---------------------|--------------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------|
-| switch              | Switch                   | Switch the Smart Home device on or off.            | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP200, KP400, RE270K, RE370K |
-| brightness          | Dimmer                   | Set the brightness of Smart Home device or dimmer. | HS220, KB100, KL110, KL120, LB100, LB110, LB120, LB200                                      |
-| colorTemperature    | Dimmer                   | Set the color temperature in percentage.           | KB130, KL120, KL130, LB120, LB130, LB230                                                    |
-| colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.               | KB130, KL120, KL130, LB120, LB130, LB230                                                    |
-| color               | Color                    | Set the color of the Smart Home light.             | KB130, KL130, LB130, LB230                                                                  |
-| power               | Number:Power             | Actual energy usage in Watt.                       | HS110, HS300, KLxxx, LBxxx                                                                  |
-| eneryUsage          | Number:Energy            | Energy Usage in kWh.                               | HS110, HS300                                                                                |
-| current             | Number:ElectricCurrent   | Actual current usage in Ampere.                    | HS110, HS300                                                                                |
-| voltage             | Number:ElectricPotential | Actual voltage usage in Volt.                      | HS110, HS300                                                                                |
-| led                 | Switch                   | Switch the status LED on the device on or off.     | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP200, KP400          |
-| rssi                | Number:Power             | Wi-Fi signal strength indicator in dBm.            | All                                                                                         |
+| Channel Type ID     | Item Type                | Description                                    | Thing types supporting this channel                                                         |
+|---------------------|--------------------------|------------------------------------------------|---------------------------------------------------------------------------------------------|
+| switch              | Switch                   | Power the device on or off.                    | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP200, KP400, RE270K, RE370K |
+| brightness          | Dimmer                   | Set the brightness of device or dimmer.        | HS220, KB100, KL110, KL120, LB100, LB110, LB120, LB200                                      |
+| colorTemperature    | Dimmer                   | Set the color temperature in percentage.       | KB130, KL120, KL130, LB120, LB130, LB230                                                    |
+| colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.           | KB130, KL120, KL130, LB120, LB130, LB230                                                    |
+| color               | Color                    | Set the color of the light.                    | KB130, KL130, LB130, LB230                                                                  |
+| power               | Number:Power             | Actual energy usage in Watt.                   | HS110, HS300, KLxxx, LBxxx                                                                  |
+| eneryUsage          | Number:Energy            | Energy Usage in kWh.                           | HS110, HS300                                                                                |
+| current             | Number:ElectricCurrent   | Actual current usage in Ampere.                | HS110, HS300                                                                                |
+| voltage             | Number:ElectricPotential | Actual voltage usage in Volt.                  | HS110, HS300                                                                                |
+| led                 | Switch                   | Switch the status LED on the device on or off. | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP200, KP400          |
+| rssi                | Number:Power             | Wi-Fi signal strength indicator in dBm.        | All                                                                                         |
 
 The outlet devices (HS107, HS300, KP200, KP400) have group channels.
 This means the channel is prefixed with the group id.
@@ -274,7 +278,7 @@ The following group ids are available:
 
 | Group ID          | Description                                                                                           |
 |-------------------|-------------------------------------------------------------------------------------------------------|
-| groupSwitch       | General channels. e.g. `groupSwitch#switch`                                                           |
+| groupSwitch       | Group id for all general channels. e.g. `groupSwitch#switch`                                          |
 | outlet&lt;number> | The outlet to control. &lt;number> is the number of the outlet (starts with 1). e.g. `outlet1#switch` |
 
 ### Channel Refresh
