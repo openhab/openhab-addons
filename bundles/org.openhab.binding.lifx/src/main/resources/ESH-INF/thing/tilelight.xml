@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="tilelight">
-		<label>LIFX Tile</label>
+		<label>LIFX Tile Light</label>
 		<channels>
 			<channel id="color" typeId="color" />
 			<channel id="temperature" typeId="temperature" />

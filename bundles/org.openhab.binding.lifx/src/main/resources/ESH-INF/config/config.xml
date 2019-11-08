@@ -49,12 +49,12 @@
 	</config-description>
 
 	<config-description uri="channel-type:lifx:effect">
-		<parameter name="effectMorphSpeed" type="decimal" min="0" max="25" step="0.1" required="false" unit="s">
+		<parameter name="effectMorphSpeed" type="decimal" min="0" max="120" step="0.1" required="false" unit="s">
 			<label>Morph effect speed</label>
 			<description>Speed of the morph effect in seconds.</description>
 			<default>3</default>
 		</parameter>
-		<parameter name="effectFlameSpeed" type="decimal" min="0" max="25" step="0.1" required="false" unit="s">
+		<parameter name="effectFlameSpeed" type="decimal" min="0" max="120" step="0.1" required="false" unit="s">
 			<label>Flame effect speed</label>
 			<description>Speed of the flame effect in seconds.</description>
 			<default>4</default>

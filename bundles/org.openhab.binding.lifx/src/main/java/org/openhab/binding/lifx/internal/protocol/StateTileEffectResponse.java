@@ -52,7 +52,7 @@ public class StateTileEffectResponse extends Packet {
     private static final Field<Long> FIELD_DURATION = new UInt64Field().little();
     private static final Field<Long> FIELD_RESERVED_18_TO_25 = new UInt32Field().little();
     private static final Field<Long> FIELD_PARAMETER_26_TO_57 = new UInt32Field().little();
-    private static final Field<Integer> FIELD_PALLETTE_COUNT = new UInt8Field();
+    private static final Field<Integer> FIELD_PALETTE_COUNT = new UInt8Field();
     private static final Field<HSBK> FIELD_PALETTE_59_TO_186 = new HSBKField();
 
     private Integer reserved0 = 0;
@@ -89,20 +89,25 @@ public class StateTileEffectResponse extends Packet {
         for (int i = 0; i < 8; i++) {
             parameters[i] = FIELD_PARAMETER_26_TO_57.value(bytes);
         }
-        Integer palletteCount = FIELD_PALLETTE_COUNT.value(bytes);
-        HSBK[] pallette = new HSBK[palletteCount];
-        for (int i = 0; i < pallette.length; i++) {
-            pallette[i] = FIELD_PALETTE_59_TO_186.value(bytes);
+        Integer paletteCount = FIELD_PALETTE_COUNT.value(bytes);
+        HSBK[] palette = new HSBK[paletteCount];
+        for (int i = 0; i < palette.length; i++) {
+            palette[i] = FIELD_PALETTE_59_TO_186.value(bytes);
         }
-        effect = new Effect(effectType, speed, duration, pallette);
+        try {
+            effect = new Effect(effectType, speed, duration, palette);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Wrong effect type received: {}", effectType);
+            effect = null;
+        }
         if (logger.isDebugEnabled()) {
-            logger.debug("StateTileEffectResponse: instanceId={}, type={}, speed={}, duration={}, pallette_count={}",
-                    instanceId, effectType, speed, duration, palletteCount);
+            logger.debug("StateTileEffectResponse: instanceId={}, type={}, speed={}, duration={}, palette_count={}",
+                    instanceId, effectType, speed, duration, paletteCount);
             logger.debug("StateTileEffectResponse parameters=[{}, {}, {}, {}, {}, {}, {}, {}]", parameters[0],
                     parameters[1], parameters[2], parameters[3], parameters[4], parameters[5], parameters[6],
                     parameters[7]);
-            for (int i = 0; i < pallette.length; i++) {
-                logger.debug("StateTileEffectResponse pallette[{}] = {}", i, pallette[i]);
+            for (int i = 0; i < palette.length; i++) {
+                logger.debug("StateTileEffectResponse palette[{}] = {}", i, palette[i]);
             }
         }
     }
@@ -112,7 +117,7 @@ public class StateTileEffectResponse extends Packet {
         ByteBuffer buffer = ByteBuffer.allocate(packetLength());
         buffer.put(FIELD_RESERVED_0.bytes(reserved0));
         buffer.put(FIELD_INSTANCE_ID.bytes(0L));
-        buffer.put(FIELD_TYPE.bytes(effect.getType()));
+        buffer.put(FIELD_TYPE.bytes(effect.getType().intValue()));
         buffer.put(FIELD_SPEED.bytes(effect.getSpeed()));
         buffer.put(FIELD_DURATION.bytes(effect.getDuration()));
         buffer.put(FIELD_RESERVED_18_TO_25.bytes(reserved18to21));
@@ -120,13 +125,13 @@ public class StateTileEffectResponse extends Packet {
         for (int i = 0; i < 8; i++) {
             buffer.put(FIELD_PARAMETER_26_TO_57.bytes(0L));
         }
-        HSBK[] pallette = effect.getPallette();
-        buffer.put(FIELD_PALLETTE_COUNT.bytes(pallette.length));
-        for (int i = 0; i < pallette.length; i++) {
-            buffer.put(FIELD_PALETTE_59_TO_186.bytes(pallette[i]));
+        HSBK[] palette = effect.getPalette();
+        buffer.put(FIELD_PALETTE_COUNT.bytes(palette.length));
+        for (int i = 0; i < palette.length; i++) {
+            buffer.put(FIELD_PALETTE_59_TO_186.bytes(palette[i]));
         }
         HSBK hsbkZero = new HSBK(0, 0, 0, 0);
-        for (int i = 0; i < 16 - pallette.length; i++) {
+        for (int i = 0; i < 16 - palette.length; i++) {
             buffer.put(FIELD_PALETTE_59_TO_186.bytes(hsbkZero));
         }
         return buffer;

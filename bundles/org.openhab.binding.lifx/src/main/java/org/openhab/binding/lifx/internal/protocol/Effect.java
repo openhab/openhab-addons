@@ -14,6 +14,7 @@ package org.openhab.binding.lifx.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.LifxBindingConstants;
 import org.openhab.binding.lifx.internal.fields.HSBK;
 
 /**
@@ -23,18 +24,63 @@ import org.openhab.binding.lifx.internal.fields.HSBK;
  */
 @NonNullByDefault
 public class Effect {
-    /*
-     * OFF(0),
-     * RESERVED(1),
-     * MORPH(2),
-     * FLAME(3);
-     */
-    final Integer type;
+    public enum EffectType {
+        OFF(0),
+        MORPH(2),
+        FLAME(3);
+
+        Integer type;
+
+        EffectType(Integer type) {
+            this.type = type;
+        }
+
+        public static EffectType fromValue(Integer value) {
+            switch (value) {
+                case 0:
+                    return OFF;
+                case 2:
+                    return MORPH;
+                case 3:
+                    return FLAME;
+                default:
+                    throw new IllegalArgumentException("Unknown effect type");
+            }
+        }
+
+        public static EffectType fromValue(String value) {
+            if (LifxBindingConstants.CHANNEL_TYPE_EFFECT_OPTION_OFF.equals(value)) {
+                return OFF;
+            } else if (LifxBindingConstants.CHANNEL_TYPE_EFFECT_OPTION_MORPH.equals(value)) {
+                return MORPH;
+            } else if (LifxBindingConstants.CHANNEL_TYPE_EFFECT_OPTION_FLAME.equals(value)) {
+                return FLAME;
+            }
+            throw new IllegalArgumentException("Unknown effect type");
+        }
+
+        public Integer intValue() {
+            return type;
+        }
+
+        public String stringValue() {
+            switch (type) {
+                case 2:
+                    return LifxBindingConstants.CHANNEL_TYPE_EFFECT_OPTION_MORPH;
+                case 3:
+                    return LifxBindingConstants.CHANNEL_TYPE_EFFECT_OPTION_FLAME;
+                default:
+                    return LifxBindingConstants.CHANNEL_TYPE_EFFECT_OPTION_OFF;
+            }
+        }
+    }
+
+    final EffectType type;
     final Long speed;
     final Long duration;
-    final HSBK[] pallette;
+    final HSBK[] palette;
 
-    public Integer getType() {
+    public EffectType getType() {
         return type;
     }
 
@@ -46,27 +92,32 @@ public class Effect {
         return duration;
     }
 
-    HSBK[] getPallette() {
-        return pallette;
+    HSBK[] getPalette() {
+        return palette;
     }
 
-    public Effect(Integer type, Long speed, Long duration, HSBK[] pallette) {
+    public Effect(EffectType type, Long speed, Long duration, HSBK[] palette) {
         this.type = type;
-        this.pallette = pallette;
+        this.palette = palette;
         this.duration = duration;
         this.speed = speed;
     }
 
-    public Effect() {
-        this(0, 3000L, 0L, new HSBK[0]);
+    public Effect(Integer type, Long speed, Long duration, HSBK[] palette) {
+        this(EffectType.fromValue(type), speed, duration, palette);
     }
 
-    public static @Nullable Effect createDefault(Integer type, @Nullable Long morphSpeed, @Nullable Long flameSpeed) {
+    public Effect() {
+        this(EffectType.OFF, 3000L, 0L, new HSBK[0]);
+    }
+
+    public static Effect createDefault(String type, @Nullable Long morphSpeed, @Nullable Long flameSpeed) {
         Long speed;
-        switch (type) {
-            case 0:
-                return new Effect(0, 0L, 0L, new HSBK[0]);
-            case 2:
+        EffectType effectType = EffectType.fromValue(type);
+        switch (effectType) {
+            case OFF:
+                return new Effect(effectType, 0L, 0L, new HSBK[0]);
+            case MORPH:
                 if (morphSpeed == null) {
                     speed = 3000L;
                 } else {
@@ -76,16 +127,16 @@ public class Effect {
                         new HSBK(10922, 65535, 65535, 3500), new HSBK(22209, 65535, 65535, 3500),
                         new HSBK(43507, 65535, 65535, 3500), new HSBK(49333, 65535, 65535, 3500),
                         new HSBK(53520, 65535, 65535, 3500) };
-                return new Effect(type, speed, 0L, p);
-            case 3:
+                return new Effect(effectType, speed, 0L, p);
+            case FLAME:
                 if (flameSpeed == null) {
                     speed = 4000L;
                 } else {
                     speed = flameSpeed;
                 }
-                return new Effect(type, speed, 0L, new HSBK[0]);
+                return new Effect(effectType, speed, 0L, new HSBK[0]);
             default:
-                return null;
+                throw new IllegalArgumentException("Unknown effect type");
         }
     }
 
@@ -102,17 +153,17 @@ public class Effect {
         }
         Effect n = (Effect) o;
         return n.getType().equals(this.getType()) && n.duration.equals(this.duration) && n.speed.equals(this.speed)
-                && n.pallette == this.pallette;
+                && n.palette == this.palette;
     }
 
     @Override
     public int hashCode() {
         Long hash = 1L;
         int prime = 31;
-        hash = prime * hash + getType();
+        hash = prime * hash + type.hashCode();
         hash = prime * hash + duration;
         hash = prime * hash + speed;
-        hash = prime * hash + pallette.hashCode();
+        hash = prime * hash + palette.hashCode();
         return hash.intValue();
     }
 }

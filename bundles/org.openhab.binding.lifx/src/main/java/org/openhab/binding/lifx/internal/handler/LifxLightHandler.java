@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -204,7 +205,7 @@ public class LifxLightHandler extends BaseThingHandler {
 
         @Override
         public void setTileEffect(Effect effect) {
-            updateStateIfChanged(CHANNEL_EFFECT, new DecimalType(effect.getType()));
+            updateStateIfChanged(CHANNEL_EFFECT, new StringType(effect.getType().stringValue()));
             super.setTileEffect(effect);
         }
 
@@ -408,7 +409,7 @@ public class LifxLightHandler extends BaseThingHandler {
         Object propertyValue = getThing().getProperties().get(LifxBindingConstants.PROPERTY_PRODUCT_ID);
         try {
             // Without first conversion to double, on a very first thing creation from discovery inbox,
-            // the product type is incorrectly parsed, as framework passed it as a floting point number
+            // the product type is incorrectly parsed, as framework passed it as a floating point number
             // (e.g. 50.0 instead of 50)
             Double d = Double.parseDouble((String) propertyValue);
             long productID = d.longValue();
@@ -534,8 +535,8 @@ public class LifxLightHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_EFFECT:
-                    if (command instanceof DecimalType && product.hasFeature(TILE_EFFECT)) {
-                        handleTileEffectCommand((DecimalType) command);
+                    if (command instanceof StringType && product.hasFeature(TILE_EFFECT)) {
+                        handleTileEffectCommand((StringType) command);
                     } else {
                         supportedCommand = false;
                     }
@@ -677,14 +678,16 @@ public class LifxLightHandler extends BaseThingHandler {
         }
     }
 
-    private void handleTileEffectCommand(DecimalType mode) {
-        logger.debug("handleTileEffectCommand mode={}", mode);
+    private void handleTileEffectCommand(StringType type) {
+        logger.debug("handleTileEffectCommand mode={}", type);
         Double morphSpeedInMSecs = effectMorphSpeed * 1000.0;
         Double flameSpeedInMSecs = effectFlameSpeed * 1000.0;
-        Effect effect = Effect.createDefault(mode.intValue(), morphSpeedInMSecs.longValue(),
-                flameSpeedInMSecs.longValue());
-        if (effect != null) {
+        try {
+            Effect effect = Effect.createDefault(type.toString(), morphSpeedInMSecs.longValue(),
+                    flameSpeedInMSecs.longValue());
             getLightStateForCommand().setTileEffect(effect);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Wrong effect type received as command: {}", type);
         }
     }
 

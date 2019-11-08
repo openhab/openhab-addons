@@ -58,14 +58,14 @@
 	</channel-type>
 
 	<channel-type id="effect">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Effect</label>
 		<description>Sets the effect</description>
 		<state>
 			<options>
-				<option value="0">Off</option>
-				<option value="2">Morph</option>
-				<option value="3">Flame</option>
+				<option value="off">Off</option>
+				<option value="morph">Morph</option>
+				<option value="flame">Flame</option>
 			</options>
 		</state>
 		<config-description-ref uri="channel-type:lifx:effect" />

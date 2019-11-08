@@ -20,13 +20,13 @@ The following table lists the thing types of the supported LIFX devices:
 | LIFX Downlight               | colorlight   |
 | LIFX GU10                    | colorlight   |
 | LIFX Mini Color              | colorlight   |
-| LIFX Tile                    | tilelight    |
 |                              |              |
 | LIFX+ A19                    | colorirlight |
 | LIFX+ BR30                   | colorirlight |
 |                              |              |
 | LIFX Beam                    | colormzlight |
 | LIFX Z                       | colormzlight |
+| LIFX Tile                    | tilelight    |
 |                              |              |
 | White 800 (Low Voltage)      | whitelight   |
 | White 800 (High Voltage)     | whitelight   |
@@ -42,8 +42,8 @@ The following matrix lists the capabilities (channels) for each type:
 | colorlight   | X      |            | X     |            | X                 |                        |          |              |
 | colorirlight | X      |            | X     |            | X                 |                        | X        |              |
 | colormzlight | X      |            | X     | X          | X                 | X                      |          |              |
-| whitelight   | X      | X          |       |            | X                 |                        |          |              |
 | tilelight    | X      | X          | X     |            | X                 |                        |          | X            |
+| whitelight   | X      | X          |       |            | X                 |                        |          |              |
 
 ## Discovery
 
@@ -87,9 +87,7 @@ All devices support some of the following channels:
 | signalstrength  | Number    | This channel represents signal strength with values 0, 1, 2, 3 or 4; 0 being worst strength and 4 being best strength.                                           | colorlight, colorirlight, colormzlight, whitelight, tile |
 | temperature     | Dimmer    | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                                             | colorlight, colorirlight, colormzlight, whitelight, tile |
 | temperaturezone | Dimmer    | This channel supports adjusting the zone color temperature from cold (0%) to warm (100%).                                                                        | colormzlight                                             |
-| tileeffecttype  | Number    | This channel represents a type of tile effect (off, morph, flame)                                                                                                | tile                                                     |
-| tilemorphspeed  | Number    | This channel supports adjusting the speed of tile morph effect.                                                                                                  | tile                                                     |
-| tileflamespeed  | Number    | This channel supports adjusting the speed of tile flame effect.                                                                                                  | tile                                                     |
+| effect          | String    | This channel represents a type of light effect (e.g. for tile light: off, morph, flame)                                                                                                | tile                                                     |
 
 The *color* and *brightness* channels have a "Power on brightness" configuration option that is used to determine the brightness when a light is switched on.
 When it is left empty, the brightness of a light remains unchanged when a light is switched on or off.
@@ -105,7 +103,9 @@ MultiZone lights (*colormzlight*) have serveral channels (e.g. *colorzone0*, *te
 Changing the *color* and *temperature* channels will update the states of all zones.
 The *color* and *temperature* channels of MultiZone lights always return the same state as *colorzone0*, *temperaturezone0*.
 
-LIFX Tile (*tile*) supports special tile effects: morph and flame. These effects are predefined to their appearance using LIFX application. Each effect has a separate speed configurable.
+LIFX Tile (*tilelight*) supports special tile effects: morph and flame. 
+These effects are predefined to their appearance using LIFX application. 
+Each effect has a separate speed configurable.
 
 ## Full Example
 

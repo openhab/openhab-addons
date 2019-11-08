@@ -54,7 +54,7 @@ public class SetTileEffectRequest extends Packet {
     private static final Field<Long> FIELD_DURATION = new UInt64Field().little();
     private static final Field<Long> FIELD_RESERVED_19_TO_26 = new UInt32Field().little();
     private static final Field<Long> FIELD_PARAMETER_27_TO_58 = new UInt32Field().little();
-    private static final Field<Integer> FIELD_PALLETTE_COUNT = new UInt8Field();
+    private static final Field<Integer> FIELD_PALETTE_COUNT = new UInt8Field();
     private static final Field<HSBK> FIELD_PALETTE_60_TO_187 = new HSBKField();
 
     private final Logger logger = LoggerFactory.getLogger(SetTileEffectRequest.class);
@@ -100,12 +100,17 @@ public class SetTileEffectRequest extends Packet {
         for (int i = 0; i < parameters.length; i++) {
             parameters[i] = FIELD_PARAMETER_27_TO_58.value(bytes);
         }
-        Integer palletteCount = FIELD_PALLETTE_COUNT.value(bytes);
-        HSBK[] pallette = new HSBK[palletteCount];
-        for (int i = 0; i < pallette.length; i++) {
-            pallette[i] = FIELD_PALETTE_60_TO_187.value(bytes);
+        Integer paletteCount = FIELD_PALETTE_COUNT.value(bytes);
+        HSBK[] palette = new HSBK[paletteCount];
+        for (int i = 0; i < palette.length; i++) {
+            palette[i] = FIELD_PALETTE_60_TO_187.value(bytes);
         }
-        effect = new Effect(effectType, speed, duration, pallette);
+        try {
+            effect = new Effect(effectType, speed, duration, palette);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Wrong effect type received: {}", effectType);
+            effect = null;
+        }
     }
 
     @Override
@@ -114,7 +119,7 @@ public class SetTileEffectRequest extends Packet {
         buffer.put(FIELD_RESERVED_0.bytes(reserved0));
         buffer.put(FIELD_RESERVED_1.bytes(reserved1));
         buffer.put(FIELD_INSTANCE_ID.bytes(0L));
-        buffer.put(FIELD_TYPE.bytes(effect.getType()));
+        buffer.put(FIELD_TYPE.bytes(effect.getType().intValue()));
         buffer.put(FIELD_SPEED.bytes(effect.getSpeed()));
         buffer.put(FIELD_DURATION.bytes(effect.getDuration()));
         buffer.put(FIELD_RESERVED_19_TO_26.bytes(reserved19to22));
@@ -122,20 +127,20 @@ public class SetTileEffectRequest extends Packet {
         for (int i = 0; i < 8; i++) {
             buffer.put(FIELD_PARAMETER_27_TO_58.bytes(0L));
         }
-        buffer.put(FIELD_PALLETTE_COUNT.bytes(effect.getPallette().length));
-        HSBK[] pallette = effect.getPallette();
-        for (int i = 0; i < pallette.length; i++) {
-            buffer.put(FIELD_PALETTE_60_TO_187.bytes(pallette[i]));
+        buffer.put(FIELD_PALETTE_COUNT.bytes(effect.getPalette().length));
+        HSBK[] palette = effect.getPalette();
+        for (int i = 0; i < palette.length; i++) {
+            buffer.put(FIELD_PALETTE_60_TO_187.bytes(palette[i]));
         }
         HSBK hsbkZero = new HSBK(0, 0, 0, 0);
-        for (int i = 0; i < 16 - pallette.length; i++) {
+        for (int i = 0; i < 16 - palette.length; i++) {
             buffer.put(FIELD_PALETTE_60_TO_187.bytes(hsbkZero));
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("SetTileEffectRequest: type={}, speed={}, duration={}, pallette_count={}", effect.getType(),
-                    effect.getSpeed(), effect.getDuration(), pallette.length);
-            for (int i = 0; i < pallette.length; i++) {
-                logger.debug("SetTileEffectRequest pallette[{}] = {}", i, pallette[i]);
+            logger.debug("SetTileEffectRequest: type={}, speed={}, duration={}, palette_count={}", effect.getType(),
+                    effect.getSpeed(), effect.getDuration(), palette.length);
+            for (int i = 0; i < palette.length; i++) {
+                logger.debug("SetTileEffectRequest palette[{}] = {}", i, palette[i]);
             }
         }
         return buffer;

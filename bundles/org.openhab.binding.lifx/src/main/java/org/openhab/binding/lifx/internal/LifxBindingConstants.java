@@ -70,6 +70,11 @@ public class LifxBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_TEMPERATURE_ZONE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_TEMPERATURE_ZONE);
 
+    // List of options for effect channel
+    public static final String CHANNEL_TYPE_EFFECT_OPTION_OFF = "off";
+    public static final String CHANNEL_TYPE_EFFECT_OPTION_MORPH = "morph";
+    public static final String CHANNEL_TYPE_EFFECT_OPTION_FLAME = "flame";
+
     // Config property for the LIFX device id
     public static final String CONFIG_PROPERTY_DEVICE_ID = "deviceId";
     public static final String CONFIG_PROPERTY_FADETIME = "fadetime";
