@@ -14,6 +14,8 @@ package org.openhab.binding.nibeuplink.internal;
 
 import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -40,13 +42,14 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nibeuplink")
+@NonNullByDefault
 public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NibeUplinkHandlerFactory.class);
 
     /**
      * the shared http client
      */
-    private HttpClient httpClient;
+    private @Nullable HttpClient httpClient;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -54,7 +57,7 @@ public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_VVM320)) {

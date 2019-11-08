@@ -16,11 +16,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * base class for all channellists
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractChannels implements ChannelList {
 
     /**
@@ -34,6 +38,7 @@ public abstract class AbstractChannels implements ChannelList {
      * @return set of unique channels
      */
     @Override
+
     public Set<NibeChannel> getChannels() {
         return Collections.unmodifiableSet(channels);
     }
@@ -45,7 +50,7 @@ public abstract class AbstractChannels implements ChannelList {
      * @return channel which belongs to the code. might be null if there is no channel found.
      */
     @Override
-    public NibeChannel fromCode(String channelCode) {
+    public @Nullable NibeChannel fromCode(String channelCode) {
         for (NibeChannel channel : channels) {
             if (channel.getId().equals(channelCode)) {
                 return channel;

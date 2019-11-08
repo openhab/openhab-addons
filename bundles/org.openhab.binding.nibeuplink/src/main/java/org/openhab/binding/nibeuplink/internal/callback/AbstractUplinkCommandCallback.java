@@ -129,18 +129,17 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     }
 
     @Override
-    public void performAction(HttpClient asyncclient) {
-        Request request = asyncclient.newRequest(getURL()).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS);
-        prepareRequest(request).send(this);
+    public void performAction(@Nullable HttpClient asyncclient) {
+        if (asyncclient != null) {
+            Request request = asyncclient.newRequest(getURL()).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS);
+            prepareRequest(request).send(this);
+        }
     }
 
     /**
      * returns Http Status Code
      */
     public CommunicationStatus getCommunicationStatus() {
-        if (communicationStatus.getHttpCode() == null) {
-            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
-        }
         return communicationStatus;
     }
 
