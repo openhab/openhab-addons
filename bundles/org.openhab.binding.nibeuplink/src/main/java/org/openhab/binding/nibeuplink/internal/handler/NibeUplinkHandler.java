@@ -15,13 +15,13 @@ package org.openhab.binding.nibeuplink.internal.handler;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.nibeuplink.internal.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
-import org.openhab.binding.nibeuplink.internal.model.NibeChannel;
 
 /**
  * public interface of the {@link UplinkBaseHandler}
@@ -47,7 +47,7 @@ public interface NibeUplinkHandler extends ThingHandler, ChannelProvider {
      */
     UplinkWebInterface getWebInterface();
 
-    void updateChannelStatus(Map<NibeChannel, State> values);
+    void updateChannelStatus(Map<Channel, State> values);
 
     NibeUplinkConfiguration getConfiguration();
 }

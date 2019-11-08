@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<thing-type id="f730" extensible="custom-type-unscaled,custom-type-div10,custom-type-div100">
+	<thing-type id="f730" extensible="type-number-unscaled,type-number-scale10,type-number-scale100">
 		<label>Nibe F730</label>
 		<description>Nibe F730 heat pump connected through Nibe UpLink</description>
 		<channel-groups>
