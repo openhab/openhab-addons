@@ -16,7 +16,6 @@ import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -43,7 +42,7 @@ public class LGWebOSUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant
     private final Logger logger = LoggerFactory.getLogger(LGWebOSUpnpDiscoveryParticipant.class);
 
     @Override
-    public Set<@NonNull ThingTypeUID> getSupportedThingTypeUIDs() {
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return SUPPORTED_THING_TYPES_UIDS;
     }
 
