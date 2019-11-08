@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -44,7 +43,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
     private final ResponseListener<CommandConfirmation> objResponseListener = createResponseListener();
 
     @Override
-    public void onDeviceReady(@NonNull String channelId, @NonNull LGWebOSHandler handler) {
+    public void onDeviceReady(String channelId, LGWebOSHandler handler) {
         super.onDeviceReady(channelId, handler);
         handler.getSocket().getChannelList(new ResponseListener<List<ChannelInfo>>() {
             @Override
@@ -65,7 +64,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
     }
 
     @Override
-    public void onDeviceRemoved(@NonNull String channelId, @NonNull LGWebOSHandler handler) {
+    public void onDeviceRemoved(String channelId, LGWebOSHandler handler) {
         super.onDeviceRemoved(channelId, handler);
         channelListCache.remove(handler.getThing().getUID());
     }
