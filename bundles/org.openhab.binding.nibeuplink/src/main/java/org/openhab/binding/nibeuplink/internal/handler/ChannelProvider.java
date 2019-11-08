@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.nibeuplink.internal.handler;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nibeuplink.internal.model.NibeChannel;
+import org.eclipse.smarthome.core.thing.Channel;
 
 /**
  * this interface provides all methods which deal with channels
@@ -26,11 +27,11 @@ import org.openhab.binding.nibeuplink.internal.model.NibeChannel;
 @NonNullByDefault
 public interface ChannelProvider {
 
-    Set<NibeChannel> getChannels();
+    List<Channel> getChannels();
 
-    Set<NibeChannel> getDeadChannels();
+    Set<Channel> getDeadChannels();
 
     @Nullable
-    NibeChannel getSpecificChannel(String channelCode);
+    Channel getSpecificChannel(String channelCode);
 
 }

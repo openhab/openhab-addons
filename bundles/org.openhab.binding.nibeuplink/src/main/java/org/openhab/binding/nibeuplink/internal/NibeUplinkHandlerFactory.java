@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.nibeuplink.internal;
 
-import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.*;
+import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,12 +24,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.nibeuplink.internal.handler.GenericHandler;
-import org.openhab.binding.nibeuplink.internal.model.F1145Channels;
-import org.openhab.binding.nibeuplink.internal.model.F1155Channels;
-import org.openhab.binding.nibeuplink.internal.model.F730Channels;
-import org.openhab.binding.nibeuplink.internal.model.F750Channels;
-import org.openhab.binding.nibeuplink.internal.model.VVM310Channels;
-import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -60,18 +54,8 @@ public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_VVM320)) {
-            return new GenericHandler(thing, httpClient, VVM320Channels.getInstance());
-        } else if (thingTypeUID.equals(THING_TYPE_VVM310)) {
-            return new GenericHandler(thing, httpClient, VVM310Channels.getInstance());
-        } else if (thingTypeUID.equals(THING_TYPE_F750)) {
-            return new GenericHandler(thing, httpClient, F750Channels.getInstance());
-        } else if (thingTypeUID.equals(THING_TYPE_F730)) {
-            return new GenericHandler(thing, httpClient, F730Channels.getInstance());
-        } else if (thingTypeUID.equals(THING_TYPE_F1145)) {
-            return new GenericHandler(thing, httpClient, F1145Channels.getInstance());
-        } else if (thingTypeUID.equals(THING_TYPE_F1155)) {
-            return new GenericHandler(thing, httpClient, F1155Channels.getInstance());
+        if (supportsThingType(thingTypeUID)) {
+            return new GenericHandler(thing, httpClient);
         } else {
             logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }

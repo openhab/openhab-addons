@@ -25,14 +25,13 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
 import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.model.DataResponse;
 import org.openhab.binding.nibeuplink.internal.model.DataResponseTransformer;
 import org.openhab.binding.nibeuplink.internal.model.GenericDataResponse;
-import org.openhab.binding.nibeuplink.internal.model.NibeChannel;
-import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
 
 /**
  * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
@@ -58,11 +57,9 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
         fields.add(DATA_API_FIELD_LAST_DATE, DATA_API_FIELD_LAST_DATE_DEFAULT_VALUE);
         fields.add(DATA_API_FIELD_ID, config.getNibeId());
 
-        for (NibeChannel channel : handler.getChannels()) {
+        for (Channel channel : handler.getChannels()) {
             if (!handler.getDeadChannels().contains(channel)) {
-                if (!channel.getId().equals("0")) {
-                    fields.add(DATA_API_FIELD_DATA, channel.getId());
-                }
+                fields.add(DATA_API_FIELD_DATA, channel.getUID().getIdWithoutGroup());
             }
         }
 
