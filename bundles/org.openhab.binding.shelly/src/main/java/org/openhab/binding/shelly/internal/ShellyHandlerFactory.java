@@ -16,7 +16,6 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -35,8 +34,6 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceListener;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyRelayHandler;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.Version;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -60,7 +57,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Set<ShellyDeviceListener> deviceListeners = new CopyOnWriteArraySet<>();
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-    private static boolean initialized = false;
     private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     @Nullable
     private ShellyCoapServer coapServer;
@@ -76,42 +72,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     protected void activate(ComponentContext componentContext, Map<String, Object> configProperties) {
         try {
             super.activate(componentContext);
-
-            try {
-                if (!initialized) {
-                    Bundle bundle = this.getBundleContext().getBundle();
-                    Validate.notNull(bundle, "bundleContext must not be null!");
-                    Dictionary<String, String> d = bundle.getHeaders();
-                    Version v = bundle.getVersion();
-                    Validate.notNull(d, "bundleg.getHeaders() must not be null!");
-                    Validate.notNull(v, "bundleg.getVersion() must not be null!");
-                    @Nullable
-                    String name = d.get("Bundle-Name");
-                    Validate.notNull(name, "bundle name must not be empty!");
-                    String state = "";
-                    switch (bundle.getState()) {
-                        case Bundle.ACTIVE:
-                            state = "ACTIVE";
-                            break;
-                        case Bundle.INSTALLED:
-                            state = "INSTALLED";
-                            break;
-                        case Bundle.RESOLVED:
-                            state = "RESOLVED";
-                            break;
-                        default:
-                            state = new Integer(bundle.getState()).toString();
-                    }
-                    logger.info("{} Version {}.{}.{} (state={}, {}.jar, build {} UTC, location={})", name, v.getMajor(),
-                            v.getMinor(), v.getMicro(), state, bundle.getSymbolicName(),
-                            convertTimestamp(bundle.getLastModified() / 1000), bundle.getLocation());
-                }
-                // } catch (RuntimeException e) {
-            } catch (RuntimeException e) {
-
-            } finally {
-                initialized = true;
-            }
 
             logger.debug("Activate Shelly HandlerFactory");
             Validate.notNull(configProperties);

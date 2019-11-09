@@ -217,7 +217,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         thingName = (!thingName.isEmpty() ? thingName : tmpPrf.hostname).toLowerCase();
         Validate.isTrue(!thingName.isEmpty(), "initializeThing(): thingName must not be empty!");
 
-        logger.info("Initializing device {} ({}), type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {} ({})",
+        logger.debug("Initializing device {} ({}), type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {} ({})",
                 thingName, tmpPrf.hostname, tmpPrf.deviceType, tmpPrf.hwRev, tmpPrf.hwBatchId, tmpPrf.fwVersion,
                 tmpPrf.fwDate, tmpPrf.fwId);
         logger.debug("Shelly settings info for {} : {}", thingName, tmpPrf.settingsJson);
@@ -235,7 +235,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         updateProperties(tmpPrf, status);
         if (tmpPrf.fwVersion.compareTo(SHELLY_API_MIN_FWVERSION) < 0) {
             logger.warn(
-                    "WARNING: Firmware for device {} is too old, installed: {}/{} ({}), required minimal {}. The binding was tested with Version 1.50+ only. Older versions might work, but doesn't support all features or lead into technical issues. You should consider to upgrade the device to v1.5.0 or newer!",
+                    "WARNING: Firmware for device {} might be too old (or beta release), installed: {}/{} ({}), required minimal {}. The binding was tested with Version 1.50+ only. Older versions might work, but doesn't support all features or lead into technical issues. You should consider to upgrade the device to v1.5.0 or newer!",
                     thingName, tmpPrf.fwVersion, tmpPrf.fwDate, tmpPrf.fwId, SHELLY_API_MIN_FWVERSION);
         }
         if (status.update.has_update) {

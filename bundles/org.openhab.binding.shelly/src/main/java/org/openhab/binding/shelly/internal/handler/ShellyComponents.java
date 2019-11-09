@@ -44,7 +44,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
  */
 @NonNullByDefault
 public class ShellyComponents {
-    public static final Unit<Temperature> TEMPERATURE_UNIT_C = SIUnits.CELSIUS;
+    public static final Unit<Temperature> UOM_UNIT_C = SIUnits.CELSIUS;
 
     /**
      * Update Meter channel

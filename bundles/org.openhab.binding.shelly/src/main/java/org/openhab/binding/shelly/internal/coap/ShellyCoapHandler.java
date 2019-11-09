@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.coap;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.SHELLY_MAX_ROLLER_POS;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
 import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.*;
 
 import java.io.IOException;
@@ -435,7 +435,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 break;
                             case "position":
                                 // work around: Roller reports 101% instead max 100
-                                double pos = Math.max(0, Math.min(s.value, SHELLY_MAX_ROLLER_POS));
+                                double pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(s.value, SHELLY_MAX_ROLLER_POS));
                                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL,
                                         new PercentType(new BigDecimal(SHELLY_MAX_ROLLER_POS - pos)));
                                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,

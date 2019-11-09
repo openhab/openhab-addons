@@ -176,6 +176,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     // take position 1:1 from position channel
                     position = isControl ? SHELLY_MAX_ROLLER_POS - position : position;
                     validateRange("roller position", position, SHELLY_MIN_ROLLER_POS, SHELLY_MAX_ROLLER_POS);
+
                     logger.debug("{}: Changing roller position to {}", thingName, position);
                     api.setRollerPos(rIndex, position);
                 }
@@ -282,7 +283,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     // updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL, new
                     // StringType(getString(control.state)));
                     if (getString(control.state).equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
-                        Integer pos = Math.min(getInteger(control.current_pos), SHELLY_MAX_ROLLER_POS); // saw 101
+                        Integer pos = Math.max(SHELLY_MIN_ROLLER_POS,
+                                Math.min(control.current_pos, SHELLY_MAX_ROLLER_POS));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
                                 new PercentType(SHELLY_MAX_ROLLER_POS - pos));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS, new PercentType(pos));

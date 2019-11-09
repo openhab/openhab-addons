@@ -135,7 +135,7 @@
 	</channel-group-type>
 
 	<channel-type id="sensorTemp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature from the sensor</description>
 		<category>Temperature</category>
