@@ -4,19 +4,9 @@
 
     <feature name="openhab-binding-icalpresence" description="iCalPresence Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <!-- <bundle dependency="true">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2</bundle> -->
         <bundle dependency="true">mvn:net.sf.biweekly/biweekly/0.6.3</bundle>
         <bundle dependency="true">mvn:com.github.mangstadt/vinnie/2.0.2</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.10.0.pr3</bundle>
-        <!-- <bundle dependency="true">mvn:org.mnode.ical4j/ical4j/3.0.4</bundle> -->
-        <!--<bundle dependency="true">mvn:org.mnode.ical4j/ical4j-extensions/1.0.3</bundle>!-->
-        <!-- <configfile finalname="/ical4j.properties">mvn:org.mnode.ical4j/ical4j/3.0.4/ical4j.properties</configfile> -->
-        <!-- <bundle dependency="true">mvn:org.codehaus.groovy/groovy-all/2.5.8</bundle> -->
-        <!-- <bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.9</bundle>
-        <bundle dependency="true">mvn:javax.cache/cache-api/1.1.1</bundle> -->
-        <!-- <bundle dependency="true">mvn:org.apache.commons/commons-collections4/4.4</bundle>
-        <bundle dependency="true">mvn:commons-codec/commons-codec/1.13</bundle>
-        <bundle dependency="true">mvn:com.sun.mail/javax.mail/1.6.2</bundle> -->
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.icalpresence/${project.version}</bundle>
     </feature>
 </features>
