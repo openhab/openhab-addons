@@ -67,7 +67,7 @@ public class ICalPresenceHandlerFactory extends BaseThingHandlerFactory {
                     }
                     return new ICalPresenceHandler(thing, localHttpClient);
                 } else {
-                    throw new Exception("HttpClient could not be created.");
+                    throw new IllegalStateException("HttpClient could not be created.");
                 }
             } catch (Exception e) {
                 logger.error("Failed to create handler for thing with uid {}.", thing.getUID().toString());
@@ -81,7 +81,7 @@ public class ICalPresenceHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Retrieves an instance of HttpClient for use with this bundle. Only one
      * instance will be retrieved and used for all instances.
-     * 
+     *
      * @throws BundleException If ServiceReference of the HttpClientFactory is
      *             missing.
      */

@@ -20,7 +20,7 @@ import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import biweekly.ICalendar;
@@ -41,12 +41,12 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  *
  * @author Michael Wodniok - Initial contribution
  */
+@NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
-    private final @NonNull TemporalAmount lookAround;
-    private final @NonNull ICalendar bakingCalendar;
+    private final TemporalAmount lookAround;
+    private final ICalendar bakingCalendar;
 
-    BiweeklyPresentableCalendar(@NonNull InputStream streamed, @NonNull TemporalAmount lookAround)
-            throws IOException, CalendarException {
+    BiweeklyPresentableCalendar(InputStream streamed, TemporalAmount lookAround) throws IOException, CalendarException {
         ICalReader reader = new ICalReader(streamed);
         try {
             ICalendar currentCalendar = reader.readNext();
@@ -132,7 +132,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         return null;
     }
 
-    private @NonNull DateIterator getRecurredEventDateIterator(@NonNull VEvent vEvent) {
+    private DateIterator getRecurredEventDateIterator(VEvent vEvent) {
         TimezoneInfo tzinfo = this.bakingCalendar.getTimezoneInfo();
 
         DateStart firstStart = vEvent.getDateStart();
@@ -146,7 +146,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         return vEvent.getDateIterator(tz);
     }
 
-    private static @Nullable Duration getEventLength(@NonNull VEvent vEvent) {
+    private static @Nullable Duration getEventLength(VEvent vEvent) {
         DurationProperty duration = vEvent.getDuration();
         if (duration != null) {
             biweekly.util.Duration eventDuration = duration.getValue();
@@ -171,7 +171,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             this.end = end;
         }
 
-        @NonNull
         Event toEvent() {
             String title;
             Summary eventSummary = vEvent.getSummary();

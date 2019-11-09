@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.time.Duration;
 import java.time.Instant;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Michael Wodniok - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractPresentableCalendar {
 
     /**
@@ -36,8 +37,7 @@ public abstract class AbstractPresentableCalendar {
      * @throws IOException When something while reading stream fails.
      * @throws CalendarException When something while parsing fails.
      */
-    public static @NonNull AbstractPresentableCalendar create(@NonNull InputStream calendarStream)
-            throws IOException, CalendarException {
+    public static AbstractPresentableCalendar create(InputStream calendarStream) throws IOException, CalendarException {
         return new BiweeklyPresentableCalendar(calendarStream, Duration.ofDays(2));
     }
 
@@ -47,7 +47,7 @@ public abstract class AbstractPresentableCalendar {
      * @param instant The Instant, that should be checked.
      * @return Whether an event is present.
      */
-    public abstract boolean isEventPresent(@NonNull Instant instant);
+    public abstract boolean isEventPresent(Instant instant);
 
     /**
      * Searches the event currently (at given Instant) present.
@@ -56,7 +56,7 @@ public abstract class AbstractPresentableCalendar {
      * @return The current {@link Event} containing the data of the event or
      *         null if no event is present.
      */
-    public abstract @Nullable Event getCurrentEvent(@NonNull Instant instant);
+    public abstract @Nullable Event getCurrentEvent(Instant instant);
 
     /**
      * The next event after given instant.
@@ -66,5 +66,5 @@ public abstract class AbstractPresentableCalendar {
      * @return The next event after the given Instant or null if there is any
      *         further in the calendar.
      */
-    public abstract @Nullable Event getNextEvent(@NonNull Instant instant);
+    public abstract @Nullable Event getNextEvent(Instant instant);
 }

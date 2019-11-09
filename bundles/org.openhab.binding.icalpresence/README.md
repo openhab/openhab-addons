@@ -9,6 +9,7 @@ The only thing type is the calendar. It is based on a single iCal-File. There ca
 ## Thing Configuration
 
 Each calendar consists of some settings:
+
 * `url`: The URL of the ical which used used as database
 * `refreshTime`: The interval the calendar gets refreshed and pulled from the source, if possible. Read as minutes.
 * `readAheadTime`: The time the binding searches an event inside the calendar. This should be larger than the longest event you'd expect in your iCal, else the presence switch may fail. Increasing this value may consume CPU if having really many events inside the calendar. Value read as minutes.

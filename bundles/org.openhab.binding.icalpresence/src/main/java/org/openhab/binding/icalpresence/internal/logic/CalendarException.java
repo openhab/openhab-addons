@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.icalpresence.internal.logic;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception Class to encapsulate Exception data for binding.
  *
  * @author Michael Wodniok - Initial contribution
  */
+@NonNullByDefault
 public class CalendarException extends Exception {
 
     private static final long serialVersionUID = -2071400154241449096L;

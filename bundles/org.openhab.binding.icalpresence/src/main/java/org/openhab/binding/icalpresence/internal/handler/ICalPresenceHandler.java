@@ -89,16 +89,21 @@ public class ICalPresenceHandler extends BaseThingHandler implements CalendarUpd
                 }
                 break;
             default:
-                this.logger.warn("Framework sent command to unknown channel with id '%s'", channelUID.getId());
+                this.logger.warn("Framework sent command to unknown channel with id '{}'", channelUID.getId());
         }
     }
 
+    @SuppressWarnings("unused")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
         this.configuration = getConfigAs(ICalPresenceConfiguration.class);
         ICalPresenceConfiguration currentConfiguration = this.configuration;
+        if (currentConfiguration == null) {
+            logger.warn("Something in API is behaving wrong. Stopping initialization.");
+            return;
+        }
 
         if ((currentConfiguration.username == null && currentConfiguration.password != null)
                 || (currentConfiguration.username != null && currentConfiguration.password == null)) {

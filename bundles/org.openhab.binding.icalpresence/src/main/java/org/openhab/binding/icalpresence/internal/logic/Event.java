@@ -14,17 +14,19 @@ package org.openhab.binding.icalpresence.internal.logic;
 
 import java.time.Instant;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Transport class for a single event.
  *
  * @author Michael Wodniok - Initial contribution
  */
+@NonNullByDefault
 public class Event {
-    public @NonNull String title;
-    public @NonNull Instant start;
-    public @NonNull Instant end;
+    public String title;
+    public Instant start;
+    public Instant end;
 
     public Event(String title, Instant start, Instant end) {
         this.title = title;
@@ -38,7 +40,7 @@ public class Event {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         if (other == null || other.getClass() != this.getClass()) {
             return false;
         }

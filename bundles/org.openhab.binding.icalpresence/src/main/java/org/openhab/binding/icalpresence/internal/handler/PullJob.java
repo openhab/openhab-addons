@@ -63,7 +63,7 @@ class PullJob implements Runnable {
 
     /**
      * Constructor of PullJob for creating a single pull of a calendar.
-     * 
+     *
      * @param httpClient A HttpClient for getting the source
      * @param sourceURI The source as URI
      * @param username Optional username for basic auth. Must be set together with a password.
