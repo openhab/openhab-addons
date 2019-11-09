@@ -1,56 +1,54 @@
-# caldavpresence Binding
+# iCalPresence Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding is thought for reading out a calendar from somewhere in the web and using it as trigger or presence switch.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
-## Discovery
-
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+The only thing type is the calendar. It is based on a single iCal-File. There can be multiple loaded with different properties. See Thing Configuration for details.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+Each calendar consists of some settings:
+* `url`: The URL of the ical which used used as database
+* `refreshTime`: The interval the calendar gets refreshed and pulled from the source, if possible. Read as minutes.
+* `readAheadTime`: The time the binding searches an event inside the calendar. This should be larger than the longest event you'd expect in your iCal, else the presence switch may fail. Increasing this value may consume CPU if having really many events inside the calendar. Value read as minutes.
+* `username`: The optional username for pulling the calendar. If set, the binding pulls the calendar using basic auth.
+* `password`: The optional password for pulling the calendar. If set, the binding pulls the calendar using basic auth.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The channels describe the current and the next event. They are all readonly.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| channel                    | type      | description                         |
+|----------------------------|-----------|-------------------------------------|
+| calendar-current_presence  | Switch    | current presence of a event         |
+| calendar-current_title     | String    | title of a currently present event  |
+| calendar-current_start     | DateTime  | start of a currently present event  |
+| calendar-current_end       | DateTime  | end of a currently present event    |
+| calendar-next_title        | String    | title of the next event             |
+| calendar-next_start        | DateTime  | start of the next event             |
+| calendar-next_end          | DateTime  | end of the next event               |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+Provide at least all required information into the thing definition, either via ui or in the thing-file
 
-## Any custom content here!
+    Thing icalpresence:calendar:deadbeef "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime="60", readAheadTime="20160" ]
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+Link the channels as usual to items
+
+    String   current_event_name  "current event [%s]"                       <calendar> { channel="icalpresence:calendar:deadbeef:current_title" }
+    DateTime current_event_until "current until [%1$tT, %1$tY-%1$tm-%1$td]" <calendar> { channel="icalpresence:calendar:deadbeef:current_end" }
+    String   next_event_name     "next event [%s]"                          <calendar> { channel="icalpresence:calendar:deadbeef:next_title" }
+    DateTime next_event_at       "next at [%1$tT, %1$tY-%1$tm-%1$td]"       <calendar> { channel="icalpresence:calendar:deadbeef:next_start" }
+
+Sitemap just showing the current event and the begin of the next:
+
+    sitemap local label="My Sitemap w calendar" {
+        Frame label="events" {
+            Text item=current_event_name label="current event [%s]"
+            Text item=current_event_until label="current until [%s]"
+            Text item=next_event_name label="next event [%s]"
+            Text item=next_event_at label="next at [%s]"
+        }
+    }
