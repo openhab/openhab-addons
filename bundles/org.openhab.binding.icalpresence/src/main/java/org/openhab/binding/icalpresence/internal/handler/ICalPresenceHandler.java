@@ -209,7 +209,7 @@ public class ICalPresenceHandler extends BaseThingHandler implements CalendarUpd
                 this.updateState(currentEventEndChannel.getUID(), UnDefType.NULL);
             }
 
-            Event nextEvent = calendar.getCurrentEvent(now);
+            Event nextEvent = calendar.getNextEvent(now);
             if (nextEvent != null) {
                 this.updateState(nextEventTitleChannel.getUID(), new StringType(nextEvent.title));
                 this.updateState(nextEventStartChannel.getUID(),

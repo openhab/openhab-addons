@@ -18,13 +18,35 @@
   <dependencies>
     <!-- own dependencies -->
     <dependency>
+       <groupId>net.sf.biweekly</groupId>
+       <artifactId>biweekly</artifactId>
+       <version>0.6.3</version>
+       <scope>compile</scope>
+       <type>bundle</type>
+    </dependency>
+    <!-- dependencies of biweekly -->
+    <dependency>
+       <groupId>com.github.mangstadt</groupId>
+       <artifactId>vinnie</artifactId>
+       <version>2.0.2</version>
+       <scope>compile</scope>
+       <type>bundle</type>
+    </dependency>
+    <dependency>
+       <groupId>com.fasterxml.jackson.core</groupId>
+       <artifactId>jackson-core</artifactId>
+       <version>2.10.0.pr3</version>
+       <scope>compile</scope>
+       <type>bundle</type>
+    </dependency>
+    <!-- <dependency>
        <groupId>org.mnode.ical4j</groupId>
        <artifactId>ical4j</artifactId>
        <version>3.0.4</version>
        <scope>compile</scope>
-    </dependency>
+    </dependency> -->
     <!-- requirements by ical4j -->
-    <dependency>
+    <!-- <dependency>
 	   <groupId>org.apache.commons</groupId>
 	   <artifactId>commons-lang3</artifactId>
 	   <version>3.9</version>
@@ -47,21 +69,14 @@
        <artifactId>commons-codec</artifactId>
        <version>1.13</version>
        <scope>compile</scope>
-    </dependency>
-    <!-- <dependency>
-       <groupId>org.codehaus.groovy</groupId>
-       <artifactId>groovy-all</artifactId>
-       <version>2.5.8</version>
-       <type>pom</type>
-       <scope>compile</scope>
-    </dependency>  -->   
+    </dependency> -->
 	<!-- CDDL! -->
-	<dependency>
+	<!-- <dependency>
 	   <groupId>com.sun.mail</groupId>
 	   <artifactId>javax.mail</artifactId>
 	   <version>1.6.2</version>
 	   <scope>compile</scope>
-	</dependency>
+	</dependency> -->
   </dependencies>
 
 </project>

@@ -17,32 +17,17 @@ Third Party Dependencies are used inside the code of this project, but not
 redistributed. Instead, Openhab retrieves the dependencies directly from
 public sources.
 
-=== org.mnode.ical4j:ical4j
-* Author: Ben Fortuna
-* Source: https://github.com/ical4j/ical4j
-* License: BSD 3-Clause
+=== net.sf.biweekly:biweekly
+Author: Michael Angstadt, Apache Software Foundation, Google Inc.
+URL: https://github.com/mangstadt/biweekly
+License: BSD 2-Clause License, Apache License Version 2.0
 
-=== org.apache.commons:commons-lang3
-* Author: Apache Software Foundation
-* Source: https://commons.apache.org/proper/commons-lang/
-* License: Apache License 2.0
+=== com.github.mangstadt:vinnie
+Author: Michael Angstadt, Apache Software Foundation
+URL: https://github.com/mangstadt/vinnie
+License: BSD 2-Clause License, Apache License Version 2.0
 
-=== javax.cache:cache-api
-* Author: Terracotta, Inc., Oracle America Incorporated
-* Source: https://github.com/jsr107/jsr107spec
-* License: Apache License 2.0
-
-=== org.apache.commons:commons-collections4
-* Author: Apache Software Foundation
-* Source: https://commons.apache.org/proper/commons-collections/
-* License: Apache License 2.0
-
-=== commons-codec:commons-codec
-* Author: Apache Software Foundation
-* Source: http://commons.apache.org/proper/commons-codec/
-* License: Apache License 2.0
-
-=== com.sun.mail:javax.mail
-* Author: Oracle and/or its affiliates
-* Source: https://javaee.github.io/javamail/
-* License: Common Development And Distribution License 1.1, GNU General Public License 2 + Classpath Exception
+=== com.fasterxml.jackson.core:jackson-core
+Author: FasterXML LLC
+URL: https://github.com/FasterXML/jackson-core
+License: Apache License Version 2.0

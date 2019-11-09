@@ -16,12 +16,13 @@ import org.junit.Test;
  * @author damihe
  *
  */
-public class PresentableCalendarTest {
-    private PresentableCalendar calendar;
+public class BiweeklyPresentableCalendarTest {
+    private AbstractPresentableCalendar calendar;
 
     @Before
     public void setUp() throws IOException, CalendarException {
-        calendar = new PresentableCalendar(new FileInputStream("src/test/resources/test.ics"), Duration.ofDays(2));
+        calendar = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test.ics"),
+                Duration.ofDays(2));
     }
 
     /**
