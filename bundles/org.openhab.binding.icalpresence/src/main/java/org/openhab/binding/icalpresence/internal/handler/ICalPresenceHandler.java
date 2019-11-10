@@ -112,15 +112,15 @@ public class ICalPresenceHandler extends BaseThingHandler implements CalendarUpd
             return;
         }
 
+        PullJob regularPull;
         try {
-            PullJob regularPull = new PullJob(this.httpClient, new URI(currentConfiguration.url),
-                    currentConfiguration.username, currentConfiguration.password, this.calendarFile, this);
-            pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, currentConfiguration.refreshTime,
-                    currentConfiguration.refreshTime, TimeUnit.MINUTES);
+            regularPull = new PullJob(this.httpClient, new URI(currentConfiguration.url), currentConfiguration.username,
+                    currentConfiguration.password, this.calendarFile, this);
         } catch (URISyntaxException e) {
             logger.warn(
                     "The URI for downloading the calendar contains syntax errors. This will result in no downloads/updates.",
                     e);
+            return;
         }
 
         if (this.calendarFile.isFile()) {
@@ -131,8 +131,12 @@ public class ICalPresenceHandler extends BaseThingHandler implements CalendarUpd
             } else {
                 this.updateStatus(ThingStatus.OFFLINE);
             }
+            pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, currentConfiguration.refreshTime,
+                    currentConfiguration.refreshTime, TimeUnit.MINUTES);
         } else {
             this.updateStatus(ThingStatus.OFFLINE);
+            pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, 0, currentConfiguration.refreshTime,
+                    TimeUnit.MINUTES);
         }
     }
 
