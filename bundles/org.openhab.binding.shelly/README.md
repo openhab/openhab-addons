@@ -6,12 +6,15 @@ This openHAB 2 Binding implements control for the Shelly series of devices. This
 Author: Markus Michels (markus7017)
 Check  https://community.openhab.org/t/shelly-binding/56862/213 for more information, questions and contributing ideas. Any comments are welcome!
 
+Also check section **Additional Information** at the end of the document. This includes some general comments, information how to debug and request new features.
+
 ---
 
 ### 2.5-SNAPSHOT
 
 * fix: Roller returns position -1
-* Lots of re-factoring
+* change: temperature unit channel removed, temperature is now always Celsius
+* Lots of re-factoring, additional information in the README, prepare for 2.5 distro
 
 ### 2.4.2 release notes (stable)
 
@@ -19,7 +22,7 @@ Check  https://community.openhab.org/t/shelly-binding/56862/213 for more informa
 + Support for Shelly Dimmer
 + Support for Shelly EM
 + Sense: read IR code list for Sense from device rather than hard coded list
-+ CoIoT/COAP support added, enabled by default for battery devices
++ CoIoT/COAP support, enabled by default for battery devices
 + Create special device (shelly-protected) when device is password protected
 + new channel last_update for sensors = last time one of the state values have been updated
 + Add IP address to discovered Device Name
@@ -411,5 +414,37 @@ then
 end
 
 
+# Additional Notes
 
+## General
+
+You should use firmware version 1.5.0 or never. It might be that the binding is working with older versions, but this was never tested.
+
+If you gave multiple network interfaces you should check openHAB's default setting.
+Open PaperUI and go to Configuration->System->Network Settings and verify the selected interface. If the Shelly devices are not on the same network you could try to add them manually. However, devices in different networks have not been tested yet (please post a comment in the community thread if you are successful).
+
+## Reporting a problem/bug
+If you encounter a problem you could put the device into DEBUG or TRACE mode
+- open OH console (execute "openhab-cli console")
+- set the debug level ("log:set DEBUG org.openhab.binding.shelly")
+- issue command or wait until problem occurs
+- post an extract of openhab.log to the community thread (or send the author a PM)
+  (make sure the log extract has enough information, some more lines are fine)
+
+## Feature Request
+
+Any comment or feature request is welcome. Post the idea to the community thread, all of us will benefit.
+
+## Supporting new devices
+You could help to integrate and support new devices. In general the following information is a good start
+- open a browser and issue the following urls
+- http://&lt;device ip&gt;/settings
+- http://&lt;device ip&gt;/status
+
+once basic discovery is implemented the Coap Discription could be discovered
+- enable CoIoT events within the thing configuration
+- open the thing properties ([Show Properties])
+- and copy&amp;paste the coapDescr property
+
+post this information in the community thread or send a PM to the author. Depending on the device type and complexity of the integration you should be prepared to run test cycles with snapshort binds of the binding incl. back and forth communication with the author. 
 
