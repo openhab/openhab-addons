@@ -21,6 +21,14 @@
   </modules>
 
   <dependencies>
+    <!-- BOM, so features are build after bundles in parallel builds -->
+    <dependency>
+      <groupId>org.openhab.addons.bom</groupId>
+      <artifactId>org.openhab.addons.bom.openhab-addons</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+
     <!-- Distribution -->
     <dependency>
       <groupId>org.apache.karaf.features</groupId>
