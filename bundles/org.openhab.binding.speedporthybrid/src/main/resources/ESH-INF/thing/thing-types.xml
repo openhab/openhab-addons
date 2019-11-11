@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="speedporthybrid"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="speedporthybrid">
+		<label>Speedport Hybrid</label>
+		<description>A Speedport Hybrid router</description>
+
+		<channels>
+			<channel id="lte" typeId="lte" />
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Host address</label>
+				<description>The host address of the Speedport Hybrid router.</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>The device password of the Speedport Hybrid router.</description>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer" required="true">
+				<label>Refresh Interval</label>
+				<description>The interval in seconds when data is refreshed from the router. Use '0' to disable automatic refresh.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="lte">
+		<item-type>Switch</item-type>
+		<label>LTE</label>
+		<description>Toggle LTE support.</description>
+	</channel-type>
+
+</thing:thing-descriptions>
