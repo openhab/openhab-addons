@@ -7,6 +7,8 @@ The integration happens through the Tesla Owners Remote API.
 
 Currently, the Tesla Model S is supported by this binding.
 
+Update: Model 3 appears to be supported by this binding as well.
+
 ![Tesla](doc/tesla.jpg)
 
 ## Binding Configuration
