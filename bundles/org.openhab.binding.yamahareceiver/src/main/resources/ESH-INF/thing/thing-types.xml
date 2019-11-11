@@ -96,14 +96,14 @@
 				<default>2.0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="volumeDbMin" type="decimal" required="false">
-				<label>Minimum Volume in DB</label>
+			<parameter name="volumeDbMin" type="decimal" required="false" unit="dB">
+				<label>Minimum Volume</label>
 				<description>Lowest volume in dB.</description>
 				<default>-80</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="volumeDbMax" type="decimal" required="false">
-				<label>Maximum Volume in DB</label>
+			<parameter name="volumeDbMax" type="decimal" required="false" unit="dB">
+				<label>Maximum Volume</label>
 				<description>Highest volume in dB.</description>
 				<default>12</default>
 				<advanced>true</advanced>
@@ -205,7 +205,7 @@
 
 	<channel-type id="volumeDB" advanced="true">
 		<item-type>Number</item-type>
-		<label>Volume in DB</label>
+		<label>Volume in dB</label>
 		<description>Set the volume level (dB)</description>
 		<category>SoundVolume</category>
 		<state min="-80" max="12" step="0.5" pattern="%.1f dB" />

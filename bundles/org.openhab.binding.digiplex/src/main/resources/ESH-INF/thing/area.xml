@@ -22,8 +22,8 @@
 			<channel typeId="control" id="control" />
 		</channels>
 		<config-description>
-			<parameter name="refreshPeriod" type="integer">
-				<label>Refresh Time of Area Status (in Seconds)</label>
+			<parameter name="refreshPeriod" type="integer" unit="s">
+				<label>Refresh Time of Area Status</label>
 				<description>Controls how often area status will be refreshed from the PRT3 module</description>
 				<default>60</default>
 			</parameter>

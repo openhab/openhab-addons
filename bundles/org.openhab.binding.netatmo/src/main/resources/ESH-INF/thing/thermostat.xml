@@ -10,7 +10,7 @@
 			<bridge-type-ref id="netatmoapi" />
 		</supported-bridge-type-refs>
 
-		<label>Thermostat Relay/plug</label>
+		<label>Thermostat Relay/Plug</label>
 		<description>This represents the thermostat relay</description>
 
 		<channels>

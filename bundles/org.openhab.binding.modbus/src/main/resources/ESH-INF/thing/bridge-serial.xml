@@ -93,8 +93,8 @@
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="receiveTimeoutMillis" type="integer" min="0">
-				<label>Read Operation Timeout (ms)</label>
+			<parameter name="receiveTimeoutMillis" type="integer" min="0" unit="ms">
+				<label>Read Operation Timeout</label>
 				<description>Timeout for read operations. In milliseconds.</description>
 				<default>1500</default>
 				<advanced>true</advanced>
@@ -123,8 +123,8 @@
 			</parameter>
 
 			<!-- connection handling -->
-			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0">
-				<label>Time Between Transactions (ms)</label>
+			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0" unit="ms">
+				<label>Time Between Transactions</label>
 				<description>How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.</description>
 				<default>35</default>
 			</parameter>
@@ -134,8 +134,8 @@
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="connectTimeoutMillis" type="integer" min="0">
-				<label>Timeout for Establishing the Connection (ms)</label>
+			<parameter name="connectTimeoutMillis" type="integer" min="0" unit="ms">
+				<label>Timeout for Establishing the Connection</label>
 				<description>The maximum time that is waited when establishing the connection. Value of zero means that system/OS
 					default is respected. In milliseconds.</description>
 				<default>10000</default>

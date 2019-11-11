@@ -12,25 +12,24 @@
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
-				<label>IP Address of the Optolink Adapter</label>
-				<description>The IP address of the Optolink adapter 
-				</description>
+				<label>IP Address</label>
+				<description>The IP address of the Optolink adapter</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1024"
 				max="49151">
 				<context>network-address</context>
-				<label>Optolink Adapter Port</label>
+				<label>Adapter Port</label>
 				<description>Port of the LAN gateway</description>
 				<default>31113</default>
 			</parameter>
 			<parameter name="adapterID" type="text" required="true">
-				<label>AdapterID</label>
+				<label>Adapter ID</label>
 				<description>The ID of the adapter.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" min="60"
 				max="600">
 				<context>refresh</context>
-				<label>RefreshInterval</label>
+				<label>Refresh Interval</label>
 				<description>Refreshtime in seconds.</description>
 				<default>300</default>
 			</parameter>

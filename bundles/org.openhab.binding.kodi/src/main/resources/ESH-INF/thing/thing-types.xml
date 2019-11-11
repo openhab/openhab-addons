@@ -138,7 +138,7 @@
 	</channel-type>
 	<channel-type id="pvr-open-tv" advanced="true">
 		<item-type>String</item-type>
-		<label>Play PVR Tv</label>
+		<label>Play PVR TV</label>
 		<description>Play the given PVR TV channel by sending a command with the channel's name</description>
 		<state pattern="%s" />
 		<config-description-ref uri="channel-type:kodi:pvr-channel" />

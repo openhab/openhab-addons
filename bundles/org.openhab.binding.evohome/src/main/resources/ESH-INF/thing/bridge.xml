@@ -2,7 +2,7 @@
 <thing:thing-descriptions bindingId="evohome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- evohome Gateway Bridge -->
 	<bridge-type id="account">
-		<label>Evohome Account</label>
+		<label>evohome Account</label>
 		<description>The evohome account is used to connect to your Total Connect Comfort (TCC) using your TCC username and password.</description>
 		<config-description>
 			<parameter-group name="auth">

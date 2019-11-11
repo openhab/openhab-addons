@@ -14,11 +14,11 @@
 			<description>General thermostat settings</description>
 		</parameter-group>
 		<parameter-group name="thermostatTargetHeatingCooling">
-			<label>Thermostat TargetHeatingCooling Mapping</label>
+			<label>Thermostat Target Heating/Cooling Mapping</label>
 			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
 		</parameter-group>
 		<parameter-group name="thermostatCurrentHeatingCooling">
-			<label>Thermostat CurrentHeatingCooling Mapping</label>
+			<label>Thermostat Current Heating/Cooling Mapping</label>
 			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
 		</parameter-group>
 

@@ -89,7 +89,7 @@
 
 			<parameter name="timeout" type="integer">
 				<label>Timeout</label>
-				<description>States how long to wait for a response (in MS), before if a device is stated as offline</description>
+				<description>States how long to wait for a response (in ms), before if a device is stated as offline</description>
 				<default>5000</default>
 			</parameter>
 
