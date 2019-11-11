@@ -28,9 +28,9 @@
                 <label>refresh time</label>
                 <description>interval to scan for changes (minutes)</description>
             </parameter>
-            <parameter name="readAheadTime" type="integer" required="true">
-                <label>read-ahead time</label>
-                <description>timespan to read events ahead (minutes)</description>
+            <parameter name="readAroundTime" type="integer" required="true">
+                <label>read-around time</label>
+                <description>timespan to read around events (minutes)</description>
             </parameter>
             <parameter name="username" type="text" required="false">
                 <label>username</label>

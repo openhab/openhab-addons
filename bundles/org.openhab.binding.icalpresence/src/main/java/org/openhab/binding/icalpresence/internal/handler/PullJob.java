@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -156,7 +157,7 @@ class PullJob implements Runnable {
         }
 
         try {
-            AbstractPresentableCalendar.create(new FileInputStream(tmpTargetFile));
+            AbstractPresentableCalendar.create(new FileInputStream(tmpTargetFile), Duration.ZERO);
         } catch (IOException | CalendarException e) {
             logger.warn("Not able to read downloaded iCal.", e);
             return;

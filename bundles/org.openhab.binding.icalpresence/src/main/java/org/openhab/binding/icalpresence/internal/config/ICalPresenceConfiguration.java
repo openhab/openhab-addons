@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.icalpresence.internal.config;
 
+import java.math.BigDecimal;
+
 /**
  * The {@link ICalPresenceConfiguration} class contains fields mapping thing configuration parameters.
  *
@@ -20,8 +22,8 @@ package org.openhab.binding.icalpresence.internal.config;
 public class ICalPresenceConfiguration {
 
     public String url;
-    public Integer refreshTime;
-    public Integer readAheadTime;
+    public BigDecimal refreshTime;
+    public BigDecimal readAroundTime;
     public String username;
     public String password;
 }

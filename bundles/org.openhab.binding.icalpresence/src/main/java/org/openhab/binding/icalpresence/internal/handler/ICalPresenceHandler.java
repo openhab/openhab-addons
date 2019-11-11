@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.concurrent.ScheduledFuture;
@@ -131,12 +132,12 @@ public class ICalPresenceHandler extends BaseThingHandler implements CalendarUpd
             } else {
                 this.updateStatus(ThingStatus.OFFLINE);
             }
-            pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, currentConfiguration.refreshTime,
-                    currentConfiguration.refreshTime, TimeUnit.MINUTES);
+            pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, currentConfiguration.refreshTime.longValue(),
+                    currentConfiguration.refreshTime.longValue(), TimeUnit.MINUTES);
         } else {
             this.updateStatus(ThingStatus.OFFLINE);
-            pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, 0, currentConfiguration.refreshTime,
-                    TimeUnit.MINUTES);
+            pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, 0,
+                    currentConfiguration.refreshTime.longValue(), TimeUnit.MINUTES);
         }
     }
 
@@ -163,9 +164,14 @@ public class ICalPresenceHandler extends BaseThingHandler implements CalendarUpd
             this.logger.warn("Local file for loading calendar is missing.");
             return false;
         }
+        ICalPresenceConfiguration config = this.configuration;
+        if (config == null) {
+            this.logger.warn("Can't reload calendar when configuration is missing.");
+            return false;
+        }
         try {
-            AbstractPresentableCalendar calendar = AbstractPresentableCalendar
-                    .create(new FileInputStream(this.calendarFile));
+            AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(
+                    new FileInputStream(this.calendarFile), Duration.ofMinutes(config.readAroundTime.longValue()));
             this.runtimeCalendar = calendar;
         } catch (IOException | CalendarException e) {
             this.logger.warn("Loading calendar failed.", e);
@@ -268,7 +274,7 @@ public class ICalPresenceHandler extends BaseThingHandler implements CalendarUpd
                 if (nextEvent == null) {
                     this.updateJobFuture = this.scheduler.schedule(() -> {
                         ICalPresenceHandler.this.rescheduleCalendarStateUpdate();
-                    }, currentConfig.readAheadTime, TimeUnit.MINUTES);
+                    }, currentConfig.readAroundTime.longValue(), TimeUnit.MINUTES);
                 } else {
                     this.updateJobFuture = this.scheduler.schedule(() -> {
                         ICalPresenceHandler.this.updateStates();

@@ -12,7 +12,7 @@ Each calendar consists of some settings:
 
 * `url`: The URL of the ical which used used as database
 * `refreshTime`: The interval the calendar gets refreshed and pulled from the source, if possible. Read as minutes.
-* `readAheadTime`: The time the binding searches an event inside the calendar. This should be larger than the longest event you'd expect in your iCal, else the presence switch may fail. Increasing this value may consume CPU if having really many events inside the calendar. Value read as minutes.
+* `readAroundTime`: The time the binding searches an event inside the calendar. This should be larger than the longest event you'd expect in your iCal, else the presence switch may fail. Increasing this value may consume CPU if having really many events inside the calendar. Value read as minutes.
 * `username`: The optional username for pulling the calendar. If set, the binding pulls the calendar using basic auth.
 * `password`: The optional password for pulling the calendar. If set, the binding pulls the calendar using basic auth.
 
@@ -34,7 +34,7 @@ The channels describe the current and the next event. They are all readonly.
 
 Provide at least all required information into the thing definition, either via ui or in the thing-file
 
-    Thing icalpresence:calendar:deadbeef "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime="60", readAheadTime="20160" ]
+    Thing icalpresence:calendar:deadbeef "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime=60, readAroundTime=20160 ]
 
 Link the channels as usual to items
 

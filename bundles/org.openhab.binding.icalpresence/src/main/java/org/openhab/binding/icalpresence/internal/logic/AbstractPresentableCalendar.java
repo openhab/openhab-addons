@@ -30,15 +30,20 @@ import org.eclipse.jdt.annotation.Nullable;
 public abstract class AbstractPresentableCalendar {
 
     /**
-     * Creates an implementing Instance of AbstractPresentableCalendar.
+     * Creates an implementing Instance of AbstractPresentableCalendar. Please
+     * use {@link #setLookAround(Duration)} before to ensure the presentable
+     * calendar is useful.
      *
      * @param calendarStream A Stream containing the iCal-data.
+     * @param lookAround The time window to search for events around a certain
+     *            point in time.
      * @return The instance.
      * @throws IOException When something while reading stream fails.
      * @throws CalendarException When something while parsing fails.
      */
-    public static AbstractPresentableCalendar create(InputStream calendarStream) throws IOException, CalendarException {
-        return new BiweeklyPresentableCalendar(calendarStream, Duration.ofDays(2));
+    public static AbstractPresentableCalendar create(InputStream calendarStream, Duration lookAround)
+            throws IOException, CalendarException {
+        return new BiweeklyPresentableCalendar(calendarStream, lookAround);
     }
 
     /**
