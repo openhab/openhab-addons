@@ -58,7 +58,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 ## Example things configuration
 
 ```java
-   Bridge paradoxalarm:ip150:ip150 [refresh=5, panelType=“EVO192”, ip150Password=“asdfasdf”, pcPassword=“1234”, ipAddress=XXX.XXX.XXX.XXX”, port=10000 ] {
+   Bridge paradoxalarm:ip150:ip150 [refresh=5, panelType="EVO192", ip150Password="asdfasdf", pcPassword="1234", ipAddress=XXX.XXX.XXX.XXX", port=10000 ] {
 
         Thing panel panel
 
@@ -78,29 +78,29 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 
 ```java
 //Groups
-    Group Paradox “Paradox security group”
-    Group Partitions “Paradox partitions” (Paradox)
-    Group Floor1MUC “Magnetic sensors - Floor 1” (Paradox)
-    Group PIRSensors “Motion sensors” (Paradox)
+    Group Paradox "Paradox security group"
+    Group Partitions "Paradox partitions" (Paradox)
+    Group Floor1MUC "Magnetic sensors - Floor 1" (Paradox)
+    Group PIRSensors "Motion sensors" (Paradox)
 
 //COMMUNICATOR BRIDGE
-    String paradoxSendCommand “Send command to IP150” {channel=“paradoxalarm:ip150:ip150:communicationCommand”}
+    String paradoxSendCommand "Send command to IP150" {channel="paradoxalarm:ip150:ip150:communicationCommand"}
 
 //PANEL
-    String panelState “Paradox panel state: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:state” }
-    String panelType “Paradox panel type: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:panelType” }
-    String serialNumber “Paradox Serial number: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:serialNumber” }
-    String hardwareVersion “Paradox HW version: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:hardwareVersion” }
-    String applicationVersion “Paradox Application version: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:applicationVersion” }
-    String bootloaderVersion “Paradox Bootloader version: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:bootloaderVersion” }
+    String panelState "Paradox panel state: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:state" }
+    String panelType "Paradox panel type: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:panelType" }
+    String serialNumber "Paradox Serial number: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:serialNumber" }
+    String hardwareVersion "Paradox HW version: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:hardwareVersion" }
+    String applicationVersion "Paradox Application version: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:applicationVersion" }
+    String bootloaderVersion "Paradox Bootloader version: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:bootloaderVersion" }
 
 //PARTITIONS
-    String partition1State “Magnetic sensors - Floor 1: [%s]” (Partitions) { channel = “paradoxalarm:partition:ip150:partition1:state” }
-    String partition1AdditionalStates “Floor1 MUC additional states: [%s]” (Partitions) { channel = “paradoxalarm:partition:ip150:partition1:additionalStates” }
+    String partition1State "Magnetic sensors - Floor 1: [%s]" (Partitions) { channel = "paradoxalarm:partition:ip150:partition1:state" }
+    String partition1AdditionalStates "Floor1 MUC additional states: [%s]" (Partitions) { channel = "paradoxalarm:partition:ip150:partition1:additionalStates" }
 
 //ZONES
-    Contact CorridorFl1_PIR_state “Corridor Fl1 motion: [%s]” (PIRSensors) { channel = “paradoxalarm:zone:ip150:MotionSensor1:opened” }
-    Contact CorridorFl1_MUC_state “Corridor Fl1 window: [%s]” (Floor1MUC) { channel = “paradoxalarm:zone:ip150:MagneticSensorWindow1:opened” }
+    Contact CorridorFl1_PIR_state "Corridor Fl1 motion: [%s]" (PIRSensors) { channel = "paradoxalarm:zone:ip150:MotionSensor1:opened" }
+    Contact CorridorFl1_MUC_state "Corridor Fl1 window: [%s]" (Floor1MUC) { channel = "paradoxalarm:zone:ip150:MagneticSensorWindow1:opened" }
 ```
 
 ## Example sitemap configuration
