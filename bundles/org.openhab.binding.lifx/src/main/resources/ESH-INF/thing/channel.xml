@@ -60,7 +60,7 @@
 	<channel-type id="effect">
 		<item-type>String</item-type>
 		<label>Effect</label>
-		<description>Sets the effect</description>
+		<description>Sets the effect of the light</description>
 		<state>
 			<options>
 				<option value="off">Off</option>
