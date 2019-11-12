@@ -257,7 +257,6 @@
 			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
-
 	<channel-group-type id="meter">
 		<label>Power Meter</label>
 		<description>Power consumption for the relay</description>
