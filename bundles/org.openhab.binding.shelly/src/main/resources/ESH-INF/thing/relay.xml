@@ -257,7 +257,7 @@
 			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
- 
+
 	<channel-group-type id="meter">
 		<label>Power Meter</label>
 		<description>Power consumption for the relay</description>
@@ -304,7 +304,6 @@
 			<channel id="powerLed" typeId="ledPowerDisable" />
 		</channels>
 	</channel-group-type>
- 
 
 	<channel-type id="output">
 		<item-type>Switch</item-type>
@@ -343,7 +342,6 @@
 		<description>Triggers channel for events, type code be btn_on, btn_off, out_on, out_off</description>
 		<event/>
 	</channel-type>
-
 	<channel-type id="rollerShutter">
 		<item-type>Rollershutter</item-type>
 		<label>Roller Control (0=open, 100=closed))</label>
@@ -378,7 +376,6 @@
 			</options>
 		</state>
 	</channel-type>
-
 	<channel-type id="deviceOverTemp">
 		<item-type>Switch</item-type>
 		<label>Over temperature</label>
