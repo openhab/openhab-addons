@@ -121,7 +121,7 @@
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
- 
+
 	<thing-type id="shelly4pro">
 		<label>Shelly4 Pro Relay (SHSW-44)</label>
 		<description>Shelly4Pro device with 4 relays</description>

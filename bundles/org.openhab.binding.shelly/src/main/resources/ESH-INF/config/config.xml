@@ -56,7 +56,7 @@
 			</parameter>
 		</config-description>
 
-  		<config-description uri="thing-type:shelly:battery">
+ 		<config-description uri="thing-type:shelly:battery">
 			<parameter name="userId" type="text" required="false">
 				<label>UserID</label>
 				<description>UserID for http API access.</description>

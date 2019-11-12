@@ -116,7 +116,7 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="shortBatteryStatus">
-        <label>Battery Status</label>
+	<label>Battery Status</label>
         <description>Status of the device's battery</description>
 		<channels>
 			<channel id="batteryLevel" typeId="batLevel" />

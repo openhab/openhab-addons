@@ -430,8 +430,7 @@ If you encounter a problem you could put the device into DEBUG or TRACE mode
 - open OH console (execute "openhab-cli console")
 - set the debug level ("log:set DEBUG org.openhab.binding.shelly")
 - issue command or wait until problem occurs
-- post an extract of openhab.log to the community thread (or send the author a PM)
-  (make sure the log extract has enough information, some more lines are fine)
+- post an extract of openhab.log to the community thread (or send the author a PM - make sure the log extract has enough information, some more lines are fine)
 
 ## Feature Request
 

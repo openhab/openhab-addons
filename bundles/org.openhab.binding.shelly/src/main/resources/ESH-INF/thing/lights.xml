@@ -80,7 +80,7 @@
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
- 
+
 	<channel-group-type id="bulbControl">
 	   <label>Bulb Control</label>
 	   <description>Control your light</description>
