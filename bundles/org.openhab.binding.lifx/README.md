@@ -17,6 +17,7 @@ The following table lists the thing types of the supported LIFX devices:
 | Color 1000 BR30              | colorlight   |
 | LIFX A19                     | colorlight   |
 | LIFX BR30                    | colorlight   |
+| LIFX Candle                  | colorlight   |
 | LIFX Downlight               | colorlight   |
 | LIFX GU10                    | colorlight   |
 | LIFX Mini Color              | colorlight   |
