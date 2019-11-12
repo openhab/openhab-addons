@@ -74,7 +74,7 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
                     // skipInputStreamBuffer();
                 } catch (IOException e) {
                     logger.error("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
-                    listener.OnSerialPortInputStreamIOException(this, e);
+                    listener.onSerialPortInputStreamIOException(this, e);
                     break;
                 }
             }
