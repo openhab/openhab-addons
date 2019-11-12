@@ -207,7 +207,7 @@
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
- 
+
 	<channel-group-type id="relayChannel">
 		<label>Relay channel</label>
 		<description>A Shelly relay channel</description>
@@ -305,7 +305,7 @@
 		</channels>
 	</channel-group-type>
  
- 
+
 	<channel-type id="output">
 		<item-type>Switch</item-type>
 		<label>Output</label>
@@ -499,4 +499,4 @@
 		<description>Disable LED indication for output status</description>
 	</channel-type>
 
- </thing:thing-descriptions>
+</thing:thing-descriptions>
