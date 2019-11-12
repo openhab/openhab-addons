@@ -42,9 +42,7 @@ import org.openhab.binding.telegram.bot.TelegramActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.pengrad.telegrambot.ExceptionHandler;
 import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.TelegramException;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
@@ -178,7 +176,7 @@ public class TelegramHandler extends BaseThingHandler {
                             lastMessageDate = update.callbackQuery().message().date();
                             lastMessageFirstName = update.callbackQuery().from().firstName();
                             lastMessageLastName = update.callbackQuery().from().lastName();
-                            lastMessageUsername = update.callbackQuery().message().from().username();
+                            lastMessageUsername = update.callbackQuery().from().username();
                             chatId = update.callbackQuery().message().chat().id();
                             replyIdToCallbackId.put(new ReplyKey(chatId, replyId), update.callbackQuery().id());
                             logger.debug("Received callbackId {} for chatId {} and replyId {}",
