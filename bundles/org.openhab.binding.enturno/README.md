@@ -64,34 +64,34 @@ demo.items
 
 ```java
 // Stop place
-String      StopId                          "StopId"                        {channel="enturno:linestop:1:stopPlace#id"}               
-String      StopPlaceName                   "Stop Place [%s]"               {channel="enturno:linestop:1:stopPlace#name"}
-String      LineCode                        "Line [%s]"                     {channel="enturno:linestop:1:Direction01#lineCode"} 
-String      TransportMode                   "TransportMode [%s]"            {channel="enturno:linestop:1:stopPlace#transportMode"} 
+String      StopId                          "StopId"                        {channel="enturno:linestop:7e693fff:stopPlace#id"}
+String      StopPlaceName                   "Stop Place [%s]"               {channel="enturno:linestop:7e693fff:stopPlace#name"}
+String      LineCode                        "Line [%s]"                     {channel="enturno:linestop:7e693fff:Direction01#lineCode"}
+String      TransportMode                   "TransportMode [%s]"            {channel="enturno:linestop:7e693fff:stopPlace#transportMode"}
 
 // Direction01
-String      Direction01_FrontDisplay        "Direction01 front display [%s]"    {channel="enturno:linestop:1:Direction01#frontDisplayText"} 
-DateTime    RealTime_Departure01_Time1      "Departure01 time"                  {channel="enturno:linestop:1:Direction01#departure01"}     
-DateTime    RealTime_Departure02_Time2      "Departure02 time"                  {channel="enturno:linestop:1:Direction01#departure02"}     
-DateTime    RealTime_Departure03_Time3      "Departure03 time"                  {channel="enturno:linestop:1:Direction01#departure03"}     
-DateTime    RealTime_Departure04_Time4      "Departure04 time"                  {channel="enturno:linestop:1:Direction01#departure04"}     
-DateTime    RealTime_Departure05_Time5      "Departure05 time"                  {channel="enturno:linestop:1:Direction01#departure05"}     
-String      RealTime_Departure01_IsReal1    "Departure01 is real-time"          {channel="enturno:linestop:1:Direction01#estimatedFlag01"} 
-String      RealTime_Departure02_IsReal2    "Departure02 is real-time"          {channel="enturno:linestop:1:Direction01#estimatedFlag02"} 
-String      RealTime_Departure03_IsReal3    "Departure03 is real-time"          {channel="enturno:linestop:1:Direction01#estimatedFlag03"} 
-String      RealTime_Departure04_IsReal4    "Departure04 is real-time"          {channel="enturno:linestop:1:Direction01#estimatedFlag04"} 
-String      RealTime_Departure05_IsReal5    "Departure05 is real-time"          {channel="enturno:linestop:1:Direction01#estimatedFlag05"} 
+String      Direction01_FrontDisplay        "Direction01 front display [%s]"    {channel="enturno:linestop:7e693fff:Direction01#frontDisplayText"}
+DateTime    RealTime_Direction01_Time1      "Departure01 time"                  {channel="enturno:linestop:7e693fff:Direction01#departure01"}
+DateTime    RealTime_Direction01_Time2      "Departure02 time"                  {channel="enturno:linestop:7e693fff:Direction01#departure02"}
+DateTime    RealTime_Direction01_Time3      "Departure03 time"                  {channel="enturno:linestop:7e693fff:Direction01#departure03"}
+DateTime    RealTime_Direction01_Time4      "Departure04 time"                  {channel="enturno:linestop:7e693fff:Direction01#departure04"}
+DateTime    RealTime_Direction01_Time5      "Departure05 time"                  {channel="enturno:linestop:7e693fff:Direction01#departure05"}
+String      RealTime_Direction01_IsReal1    "Departure01 is real-time"          {channel="enturno:linestop:7e693fff:Direction01#estimatedFlag01"}
+String      RealTime_Direction01_IsReal2    "Departure02 is real-time"          {channel="enturno:linestop:7e693fff:Direction01#estimatedFlag02"}
+String      RealTime_Direction01_IsReal3    "Departure03 is real-time"          {channel="enturno:linestop:7e693fff:Direction01#estimatedFlag03"}
+String      RealTime_Direction01_IsReal4    "Departure04 is real-time"          {channel="enturno:linestop:7e693fff:Direction01#estimatedFlag04"}
+String      RealTime_Direction01_IsReal5    "Departure05 is real-time"          {channel="enturno:linestop:7e693fff:Direction01#estimatedFlag05"}
 
 //Direction02
-String      Direction02_FrontDisplay        "Direction02 front display [%s]"    {channel="enturno:linestop:1:Direction02#frontDisplayText"}
-DateTime    RealTime_Departure01_Time1      "Departure01 time"                  {channel="enturno:linestop:1:Direction02#departure01"}    
-DateTime    RealTime_Departure02_Time2      "Departure02 time"                  {channel="enturno:linestop:1:Direction02#departure02"}    
-DateTime    RealTime_Departure03_Time3      "Departure03 time"                  {channel="enturno:linestop:1:Direction02#departure03"}    
-DateTime    RealTime_Departure04_Time4      "Departure04 time"                  {channel="enturno:linestop:1:Direction02#departure04"}    
-DateTime    RealTime_Departure05_Time5      "Departure05 time"                  {channel="enturno:linestop:1:Direction02#departure05"}    
-String      RealTime_Departure01_IsReal1    "Departure01 is real-time"          {channel="enturno:linestop:1:Direction02#estimatedFlag01"}
-String      RealTime_Departure02_IsReal2    "Departure02 is real-time"          {channel="enturno:linestop:1:Direction02#estimatedFlag02"}
-String      RealTime_Departure03_IsReal3    "Departure03 is real-time"          {channel="enturno:linestop:1:Direction02#estimatedFlag03"}
-String      RealTime_Departure04_IsReal4    "Departure04 is real-time"          {channel="enturno:linestop:1:Direction02#estimatedFlag04"}
-String      RealTime_Departure05_IsReal5    "Departure05 is real-time"          {channel="enturno:linestop:1:Direction02#estimatedFlag05"}
+String      Direction02_FrontDisplay        "Direction02 front display [%s]"    {channel="enturno:linestop:7e693fff:Direction02#frontDisplayText"}
+DateTime    RealTime_Direction02_Time1      "Departure01 time"                  {channel="enturno:linestop:7e693fff:Direction02#departure01"}
+DateTime    RealTime_Direction02_Time2      "Departure02 time"                  {channel="enturno:linestop:7e693fff:Direction02#departure02"}
+DateTime    RealTime_Direction02_Time3      "Departure03 time"                  {channel="enturno:linestop:7e693fff:Direction02#departure03"}
+DateTime    RealTime_Direction02_Time4      "Departure04 time"                  {channel="enturno:linestop:7e693fff:Direction02#departure04"}
+DateTime    RealTime_Direction02_Time5      "Departure05 time"                  {channel="enturno:linestop:7e693fff:Direction02#departure05"}
+String      RealTime_Direction02_IsReal1    "Departure01 is real-time"          {channel="enturno:linestop:7e693fff:Direction02#estimatedFlag01"}
+String      RealTime_Direction02_IsReal2    "Departure02 is real-time"          {channel="enturno:linestop:7e693fff:Direction02#estimatedFlag02"}
+String      RealTime_Direction02_IsReal3    "Departure03 is real-time"          {channel="enturno:linestop:7e693fff:Direction02#estimatedFlag03"}
+String      RealTime_Direction02_IsReal4    "Departure04 is real-time"          {channel="enturno:linestop:7e693fff:Direction02#estimatedFlag04"}
+String      RealTime_Direction02_IsReal5    "Departure05 is real-time"          {channel="enturno:linestop:7e693fff:Direction02#estimatedFlag05"}
 ```
