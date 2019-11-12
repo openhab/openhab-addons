@@ -364,7 +364,7 @@
 			</options>
 		</state>
 	</channel-type>
-	 <channel-type id="rollerDirection">
+	<channel-type id="rollerDirection">
 		<item-type>String</item-type>
 		<label>Last Roller Direction</label>
 		<description>Last direction: open or close</description>
