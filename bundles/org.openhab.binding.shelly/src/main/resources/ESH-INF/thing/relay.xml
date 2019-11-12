@@ -155,7 +155,7 @@
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
- 
+
 	<thing-type id="shellyplug">
 		<label>Shelly Plug</label>
 		<description>Shelly Plug device with relay and power meter</description>

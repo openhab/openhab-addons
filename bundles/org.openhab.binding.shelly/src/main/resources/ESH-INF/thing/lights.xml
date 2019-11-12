@@ -82,8 +82,8 @@
 	</thing-type>
 
 	<channel-group-type id="bulbControl">
-	   <label>Bulb Control</label>
-	   <description>Control your light</description>
+		<label>Bulb Control</label>
+		<description>Control your light</description>
 		<channels>
 			<channel id="power" typeId="lightPower" />
 			<channel id="mode" typeId="colorMode" />
@@ -93,8 +93,8 @@
 		</channels>
 	</channel-group-type>
   	<channel-group-type id="lightControl">
-	   <label>Light Control</label>
-	   <description>Control your light channels</description>
+		<label>Light Control</label>
+		<description>Control your light channels</description>
 		<channels>
 			<channel id="power" typeId="lightPower" />
 			<channel id="autoOn" typeId="timerAutoOn" />
@@ -103,8 +103,8 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="colorSettingsBulb">
-	   <label>Colors</label>
-	   <description>Light colors</description>
+		<label>Colors</label>
+		<description>Light colors</description>
 		<channels>
 			<channel id="hsb" typeId="colorPicker" />
 			<channel id="full" typeId="colorFull" />
@@ -117,8 +117,8 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="colorSettingsRGBW2">
-	   <label>Colors</label>
-	   <description>Light colors</description>
+		<label>Colors</label>
+		<description>Light colors</description>
 		<channels>
 			<channel id="hsb" typeId="colorPicker" />
 			<channel id="full" typeId="colorFull" />
@@ -131,16 +131,16 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="whiteSettings">
-	   <label>White settings</label>
-	   <description>Adjust colors when device is in white mode</description>
+		<label>White settings</label>
+		<description>Adjust colors when device is in white mode</description>
 		<channels>
 			<channel id="brightness" typeId="whiteBrightness" />
 			<channel id="temperature" typeId="whiteTemp" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="rgbw2Channel">
-	   <label>Control</label>
-	   <description>Switch channel and adjust settings</description>
+		<label>Control</label>
+		<description>Switch channel and adjust settings</description>
 		<channels>
 			<channel id="power" typeId="lightPower" />
 			<channel id="autoOn" typeId="timerAutoOn" />
