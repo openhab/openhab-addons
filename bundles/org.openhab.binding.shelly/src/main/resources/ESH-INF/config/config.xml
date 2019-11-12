@@ -23,7 +23,6 @@
 				<description>IP-Address of the Shelly device.</description>
 				<context>network-address</context>
 			</parameter>
-
 			<parameter name="eventsButton" type="boolean" required="false">
 				<label>Enable Button Events</label>
 				<description>True if the binding should register to get the Buttons Events.</description>
@@ -57,7 +56,7 @@
 			</parameter>
 		</config-description>
 
-   <config-description uri="thing-type:shelly:battery">
+  		<config-description uri="thing-type:shelly:battery">
 			<parameter name="userId" type="text" required="false">
 				<label>UserID</label>
 				<description>UserID for http API access.</description>

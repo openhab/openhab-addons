@@ -386,7 +386,6 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-
 	<channel-type id="dimmerOutput">
 		<item-type>Switch</item-type>
 		<label>Light</label>
@@ -433,7 +432,6 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
- 
 	<channel-type id="meterWatts">
 		<item-type>Number</item-type>
 		<label>Watt</label>
@@ -490,8 +488,6 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-
-
 	<channel-type id="ledStatusDisable">
 		<item-type>Switch</item-type>
 		<label>Disable Status LED</label>

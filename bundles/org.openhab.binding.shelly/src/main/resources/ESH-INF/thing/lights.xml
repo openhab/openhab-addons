@@ -26,12 +26,11 @@
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
- 
+
 	<thing-type id="shellyrgbw2-color">
 		<label>Shelly RGBW2 Color Mode (SHRGBW2)</label>
 		<description>Shelly RGBW2 Controller - Color Mode</description>
 		<category>Lightbulb</category>
-
 		<channel-groups>
 			<channel-group id="control" typeId="lightControl">
 				<label>Light Control</label>
@@ -46,7 +45,7 @@
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
-	
+
 	<thing-type id="shellyrgbw2-white">
 		<label>Shelly RGBW2 White Mode (SHRGBW2)</label>
 		<description>Shelly RGBW2 Controller - White Mode</description>
@@ -65,7 +64,6 @@
 			<channel-group id="channel4" typeId="rgbw2Channel">
 				<label>Channel 4</label>
 			</channel-group>
-			
 			<channel-group id="meter1" typeId="basicMeter">
 				<label>Power Meter Channel 1</label>
 			</channel-group>
@@ -94,7 +92,7 @@
 			<channel id="timerActive" typeId="timerActive" />
 		</channels>
 	</channel-group-type>
-   <channel-group-type id="lightControl">
+  	<channel-group-type id="lightControl">
 	   <label>Light Control</label>
 	   <description>Control your light channels</description>
 		<channels>
@@ -148,11 +146,9 @@
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />
-
 			<channel id="brightness" typeId="whiteBrightness" />
 		</channels>
 	</channel-group-type>
-
 
 	<channel-type id="lightPower">
 		<item-type>Switch</item-type>
@@ -164,7 +160,6 @@
 		<label>Mode (ON=color, OFF=white)</label>
 		<description>ON: Device is in color mode, OFF: Device is in White Mode</description>
 	</channel-type>
-
 	<channel-type id="colorPicker">
 		<item-type>Color</item-type>
 		<label>Color settings</label>
@@ -255,5 +250,5 @@
 			</options>
 		</state>
 	</channel-type>
- 
+
 </thing:thing-descriptions>
