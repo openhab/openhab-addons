@@ -5,7 +5,7 @@ This binding gets Norwegian public transport real-time (estimated) data from the
 ## Supported Things
 
 As for now, binding supports only one thing `linestop`.
-It can change in the future as entur.no exposes API for access of different type public transport data, for example: journey planing, stop information etc.
+It can change in the future as [entur.org](https://developer.entur.org/pages-intro-overview) exposes API for access of different type public transport data, for example: journey planing, stop information etc.
 
 ### Entur Timetable
 
