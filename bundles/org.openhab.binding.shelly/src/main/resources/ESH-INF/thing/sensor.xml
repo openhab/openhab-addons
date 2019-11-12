@@ -161,7 +161,7 @@
 		<state readOnly="true" pattern="%.1flux" >
 		</state>
 	</channel-type>
-	 <channel-type id="sensorMotion">
+	<channel-type id="sensorMotion">
 		<item-type>Switch</item-type>
 		<label>Motion detected</label>
 		<description>ON: Motion detected, OFF: No Motion</description>

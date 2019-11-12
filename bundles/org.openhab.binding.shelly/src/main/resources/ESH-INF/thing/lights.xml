@@ -92,7 +92,7 @@
 			<channel id="timerActive" typeId="timerActive" />
 		</channels>
 	</channel-group-type>
-  	<channel-group-type id="lightControl">
+	<channel-group-type id="lightControl">
 		<label>Light Control</label>
 		<description>Control your light channels</description>
 		<channels>

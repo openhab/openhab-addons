@@ -189,7 +189,7 @@
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
- 
+
 	 <thing-type id="shellydimmer">
 		<label>Shelly Dimmer (SHDM-1)</label>
 		<description>Shelly Dimmer</description>
