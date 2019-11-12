@@ -127,7 +127,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     }
 
     @Override
-    public void OnSerialPortInputStreamIOException(@NonNull TeleinfoReceiveThread receiveThread,
+    public void onSerialPortInputStreamIOException(@NonNull TeleinfoReceiveThread receiveThread,
             @NonNull IOException e) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
     }
