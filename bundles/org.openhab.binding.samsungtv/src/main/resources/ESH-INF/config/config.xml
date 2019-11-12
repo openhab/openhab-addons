@@ -10,7 +10,7 @@
 			<description>Network address of the Samsung TV.</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="port" type="integer" min="1" max="65335">
+		<parameter name="port" type="integer" min="1" max="65535">
 			<label>TCP Port</label>
 			<description>TCP port of the Samsung TV.</description>
 			<default>55000</default>

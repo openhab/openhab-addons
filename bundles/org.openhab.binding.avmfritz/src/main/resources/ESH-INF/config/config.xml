@@ -23,7 +23,7 @@
 			<description>The local IP address or hostname of the FRITZ!Box.</description>
 			<default>fritz.box</default>
 		</parameter>
-		<parameter name="port" type="integer" required="false" min="0" max="65335" groupName="network">
+		<parameter name="port" type="integer" required="false" min="0" max="65535" groupName="network">
 			<label>Port</label>
 			<description>Port of the FRITZ!Box.</description>
 		</parameter>
@@ -89,7 +89,7 @@
 			<description>The localIP address or hostname of the FRITZ!Powerline.</description>
 			<default>fritz.powerline</default>
 		</parameter>
-		<parameter name="port" type="integer" required="false" min="0" max="65335" groupName="network">
+		<parameter name="port" type="integer" required="false" min="0" max="65535" groupName="network">
 			<label>Port</label>
 			<description>Port of the FRITZ!Powerline.</description>
 		</parameter>

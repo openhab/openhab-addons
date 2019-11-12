@@ -22,7 +22,7 @@
 			<default>localhost</default>
 		</parameter>
 
-		<parameter name="zwayServerPort" groupName="zwayServer" type="integer" required="false" min="0" max="65335">
+		<parameter name="zwayServerPort" groupName="zwayServer" type="integer" required="false" min="0" max="65535">
 			<label>Port</label>
 			<description>The port of the Z-Way server</description>
 			<default>8083</default>
