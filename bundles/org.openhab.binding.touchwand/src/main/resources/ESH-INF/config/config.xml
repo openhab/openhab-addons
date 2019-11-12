@@ -4,15 +4,16 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
-	
-		<config-description uri="bridge-type:touchwand:bridge">
-								
+
+	<config-description uri="bridge-type:touchwand:bridge">
+
 		<parameter name="username" type="text">
 			<context>login-details</context>
 			<label>Username</label>
 			<description>Username for TouchWand Wanderfull Hub </description>
 			<required>true</required>
-		</parameter><parameter name="password" type="text">
+		</parameter>
+		<parameter name="password" type="text">
 			<context>login-details</context>
 			<label>Password</label>
 			<description>Password for TouchWand Wanderfull Hub </description>
@@ -49,6 +50,6 @@
 			<label>secondary</label>
 			<advanced>true</advanced>
 		</parameter>
-		
-		</config-description>		
+
+	</config-description>
 </config-description:config-descriptions>

@@ -6,7 +6,7 @@
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" ></bridge-type-ref>
+			<bridge-type-ref id="bridge"></bridge-type-ref>
 		</supported-bridge-type-refs>
 		<label>TouchWand Switch Unit</label>
 		<channels>

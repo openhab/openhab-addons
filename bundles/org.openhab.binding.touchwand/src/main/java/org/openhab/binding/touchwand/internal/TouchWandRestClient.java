@@ -17,7 +17,6 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*
 
 import java.net.CookieManager;
 import java.net.MalformedURLException;
-//import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
