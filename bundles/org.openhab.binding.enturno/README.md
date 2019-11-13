@@ -5,7 +5,7 @@ This binding gets Norwegian public transport real-time (estimated) data from the
 ## Supported Things
 
 As for now, binding supports only one thing `linestop`.
-It can change in the future as [entur.org](https://developer.entur.org/pages-intro-overview) exposes API for access of different type public transport data, for example: journey planing, stop information etc.
+It can change in the future as [entur.org](https://developer.entur.org) exposes API for access of different type public transport data, for example: journey planing, stop information etc.
 
 ### Entur Timetable
 
@@ -55,7 +55,7 @@ Since thing needs to be explicitly configured for stop id and line, no auto disc
 demo.things
 
 ```java
-Thing enturno:linestop:1 "Småstrandgaten line nr 2" [stopPlaceId="NSR:StopPlace:30848", lineCode="2"]
+Thing enturno:linestop:7e693fff "Småstrandgaten line nr 2" [stopPlaceId="NSR:StopPlace:30848", lineCode="2"]
 ```
 
 ### Items
