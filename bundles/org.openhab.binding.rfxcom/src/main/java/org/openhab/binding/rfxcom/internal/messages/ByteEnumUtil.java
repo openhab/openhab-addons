@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class ByteEnumUtil {
     private ByteEnumUtil() {
         // deliberately empty
@@ -51,7 +53,7 @@ public class ByteEnumUtil {
         }
     }
 
-    public static <T extends ByteEnumWrapperWithSupportedSubTypes> T fromByte(Class<T> typeClass, int input,
+    public static <T extends ByteEnumWrapperWithSupportedSubTypes<?>> T fromByte(Class<T> typeClass, int input,
             Object subType) throws RFXComUnsupportedValueException {
         for (T enumValue : typeClass.getEnumConstants()) {
             if (enumValue.toByte() == input && enumValue.supportedBySubTypes().contains(subType)) {

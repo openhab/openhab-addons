@@ -106,14 +106,17 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
         byte msg1 = data[5];
         byte msg2 = data[6];
 
-        if (subType == SubType.TEMPERATURE) {
-            encodeTemperatureMessage(msg1, msg2);
-        } else if (subType == SubType.A_D) {
-            encodeVoltageMessage(msg1, msg2);
-        } else if (subType == SubType.VOLTAGE) {
-            encodeVoltageMessage(msg1, msg2);
-        } else if (subType == SubType.MESSAGE) {
-            encodeStatusMessage(msg2);
+        switch (subType) {
+            case TEMPERATURE:
+                encodeTemperatureMessage(msg1, msg2);
+                break;
+            case A_D:
+            case VOLTAGE:
+                encodeVoltageMessage(msg1, msg2);
+                break;
+            case MESSAGE:
+                encodeStatusMessage(msg2);
+                break;
         }
 
         signalLevel = (byte) ((data[7] & 0xF0) >> 4);
@@ -203,7 +206,7 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
     public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
-                return temperature == null ? null : new DecimalType(temperature);
+                return subType == SubType.TEMPERATURE ? getTemperature() : null;
 
             case CHANNEL_VOLTAGE:
                 return subType == SubType.A_D ? handleVoltage() : null;
@@ -222,6 +225,14 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
         }
     }
 
+    private State getTemperature() {
+        if (temperature != null) {
+            return new DecimalType(temperature);
+        } else {
+            return UnDefType.UNDEF;
+        }
+    }
+
     private State handleVoltage() {
         if (miliVoltageTimesTen != null) {
             return new DecimalType(getVoltage());
@@ -232,15 +243,19 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
 
     private State handleHumidity(DeviceState deviceState) {
         DecimalType temperatureState = (DecimalType) deviceState.getLastState(CHANNEL_TEMPERATURE);
-        DecimalType referenceVoltageState = (DecimalType) deviceState.getLastState(CHANNEL_REFERENCE_VOLTAGE);
+        Type referenceVoltageState = deviceState.getLastState(CHANNEL_REFERENCE_VOLTAGE);
+        BigDecimal adVoltage = getVoltage();
 
-        if (temperatureState == null || referenceVoltageState == null || miliVoltageTimesTen == null) {
+        if (temperatureState == null || referenceVoltageState == null || adVoltage == null) {
             return null;
         }
 
+        if (!(referenceVoltageState instanceof DecimalType)) {
+            return UnDefType.UNDEF;
+        }
+
         BigDecimal temperature = temperatureState.toBigDecimal();
-        BigDecimal adVoltage = getVoltage();
-        BigDecimal supplyVoltage = referenceVoltageState.toBigDecimal();
+        BigDecimal supplyVoltage = ((DecimalType) referenceVoltageState).toBigDecimal();
 
         // RH = (((A/D voltage / supply voltage) - 0.16) / 0.0062) / (1.0546 - 0.00216 * temperature)
         BigDecimal belowTheDivider = adVoltage.divide(supplyVoltage, 4, ROUND_HALF_DOWN)
@@ -253,12 +268,12 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
 
     private State handlePressure(DeviceState deviceState) {
         DecimalType referenceVoltageState = (DecimalType) deviceState.getLastState(CHANNEL_REFERENCE_VOLTAGE);
+        BigDecimal adVoltage = getVoltage();
 
-        if (referenceVoltageState == null || miliVoltageTimesTen == null) {
+        if (referenceVoltageState == null || adVoltage == null) {
             return null;
         }
 
-        BigDecimal adVoltage = getVoltage();
         BigDecimal supplyVoltage = referenceVoltageState.toBigDecimal();
 
         // hPa = ((A/D voltage / supply voltage) + 0.095) / 0.0009
