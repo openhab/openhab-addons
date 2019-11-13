@@ -74,7 +74,7 @@ if [[ ! -z "$CHANGED_DIR" ]] && [[ -e "bundles/$CHANGED_DIR" ]]; then
 else
     echo "Build all"
     echo "MAVEN_OPTS='-Xms1g -Xmx2g -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'" > ~/.mavenrc
-    mvnp clean install -B -DskipChecks=true
+    mvnp clean install -B -fae -DskipChecks=true
     if [[ $? -eq 0 ]]; then
       print_reactor_summary .build.log
     else
