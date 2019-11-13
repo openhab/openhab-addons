@@ -26,7 +26,7 @@
 				<label>Password</label>
 				<description>The password of the PJLink device.</description>
 			</parameter>
-			<parameter name="tcpPort" type="integer" min="0" max="65535">
+			<parameter name="tcpPort" type="integer" min="1" max="65535">
 				<default>4352</default>
 				<label>TCP Port</label>
 				<description>The TCP port of the PJLink device to control.</description>
