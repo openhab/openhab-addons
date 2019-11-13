@@ -56,7 +56,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RECEIVER);
 
-    private final MagentaTVNetwork network = new MagentaTVNetwork();;
+    private final MagentaTVNetwork network = new MagentaTVNetwork();
     private @Nullable MagentaTVPoweroffListener upnpListener;
     private boolean servletInitialized = false;
 
@@ -105,7 +105,6 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 return new MagentaTVHandler(this, thing, network);
             } catch (RuntimeException e) {
                 logger.warn("Unable to create ThingHandler: {}", e.getMessage());
-
             }
         }
 
@@ -162,7 +161,6 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     @SuppressWarnings("null")
     private void addNewDevice(String udn, @Nullable String deviceId, String ipAddress, @Nullable String macAddress,
             @Nullable Map<String, Object> discoveryProperties, @Nullable MagentaTVHandler handler) {
-
         String mac = "";
         if (macAddress == null) { // build MAC from UDN
             mac = StringUtils.substringAfterLast(udn, "-");
@@ -340,7 +338,6 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
         } catch (RuntimeException | MagentaTVException e) {
             logger.debug("Unable to process SSDP message for IP {} - {}", ipAddress, e.getMessage());
         }
-
     }
 
     @SuppressWarnings("null")

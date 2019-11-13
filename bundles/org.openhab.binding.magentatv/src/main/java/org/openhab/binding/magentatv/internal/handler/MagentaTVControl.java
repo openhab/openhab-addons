@@ -135,7 +135,6 @@ public class MagentaTVControl {
                             " &quot;</productVersionNumber>");
                 } else {
                     version = StringUtils.substringBetween(result, "<productVersionNumber>", "</productVersionNumber>");
-
                 }
                 thingConfig.setFirmwareVersion(version);
             }
@@ -344,7 +343,6 @@ public class MagentaTVControl {
      * @throws MagentaTVException
      */
     public boolean sendKey(String keyName) throws MagentaTVException {
-
         String keyCode = getKeyCode(keyName);
         logger.debug("{}: Send Key {} (keyCode={}, tid={})", thingConfig.getFriendlyName(), keyName, keyCode,
                 thingConfig.getTerminalID());

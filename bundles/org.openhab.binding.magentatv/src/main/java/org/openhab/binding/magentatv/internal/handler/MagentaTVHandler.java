@@ -102,7 +102,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-
         // The framework requires you to return from this method quickly. For that the initialization itself is executed
         // asynchronously
         logger.debug("Initialize Thing...");
@@ -173,7 +172,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command == RefreshType.REFRESH) {
             // currently no channels to be refreshed
             return;

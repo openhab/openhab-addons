@@ -36,7 +36,6 @@ public class MagentaTVConfiguration {
      * @param config set of properties (thing config)
      */
     public void initializeConfig(Map<String, Object> newConfig) {
-
         updateConfig(newConfig);
         setDefault(PROPERTY_PORT, MR400_DEF_REMOTE_PORT);
     } // initialzeConfig()
@@ -116,7 +115,6 @@ public class MagentaTVConfiguration {
 
     public void setMacAddress(String macAddress) {
         setValue(PROPERTY_MAC_ADDRESS, macAddress);
-
     }
 
     public String getWakeOnLAN() {
