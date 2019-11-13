@@ -34,16 +34,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RachioZone extends RachioCloudZone {
-    private final Logger        logger       = LoggerFactory.getLogger(RachioZone.class);
+    private final Logger logger = LoggerFactory.getLogger(RachioZone.class);
     @Nullable
-    protected ThingUID          dev_uid;
+    protected ThingUID dev_uid;
     @Nullable
-    protected ThingUID          zone_uid;
+    protected ThingUID zone_uid;
     @Nullable
     protected RachioZoneHandler thingHandler;
-    protected String            uniqueId     = "";
+    protected String uniqueId = "";
 
-    protected int               startRunTime = 0;
+    protected int startRunTime = 0;
 
     /**
      * Use reflection to shallow copy simple type fields with matching names from one object to another
@@ -70,8 +70,8 @@ public class RachioZone extends RachioCloudZone {
             this.uniqueId = uniqueId;
             logger.trace("RachioZone: Zone '{}' (number={}, id={}, enable={}) initialized.", zone.name, zone.zoneNumber,
                     zone.id, zone.enabled);
-        } catch (Exception e) {
-            logger.error("RachioZone: Unable to initialized: {}", e.getMessage());
+        } catch (RuntimeException e) {
+            logger.warn("RachioZone: Unable to initialized: {}", e.getMessage());
         }
     }
 
@@ -94,7 +94,7 @@ public class RachioZone extends RachioCloudZone {
             return false;
         }
         return true;
-    } // compare()
+    }
 
     @SuppressWarnings("null")
     public void update(@Nullable RachioZone updatedZone) {

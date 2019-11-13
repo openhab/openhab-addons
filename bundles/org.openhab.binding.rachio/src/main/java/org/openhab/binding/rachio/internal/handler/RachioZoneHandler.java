@@ -50,16 +50,16 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class RachioZoneHandler extends BaseThingHandler implements RachioStatusListener {
-    private final Logger        logger      = LoggerFactory.getLogger(RachioZoneHandler.class);
-    private Map<String, State>  channelData = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(RachioZoneHandler.class);
+    private Map<String, State> channelData = new HashMap<>();
     @Nullable
     private RachioBridgeHandler cloudHandler;
     @Nullable
-    Bridge                      bridge;
+    Bridge bridge;
     @Nullable
-    private RachioDevice        dev;
+    private RachioDevice dev;
     @Nullable
-    private RachioZone          zone;
+    private RachioZone zone;
 
     public RachioZoneHandler(Thing thing) {
         super(thing);
@@ -98,8 +98,8 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
                     return;
                 }
             }
-        } catch (Exception e) {
-            logger.error("RachioZone: Initialisation failed: {}", e.getMessage());
+        } catch (RuntimeException e) {
+            logger.debug("RachioZone: Initialisation failed: {}", e.getMessage());
         }
 
         updateStatus(ThingStatus.OFFLINE);
@@ -127,34 +127,33 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
             } else if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_ENABLED)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        logger.info("RachioZone: Enabling zone '{} [{}]'", zone.name, zone.zoneNumber);
+                        logger.info("Enabling zone '{} [{}]'", zone.name, zone.zoneNumber);
                     }
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_RUN)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
                         int runtime = zone.getStartRunTime();
-                        logger.info("RachioZone: Starting zone '{} [{}]' for {} secs", zone.name, zone.zoneNumber,
-                                runtime);
+                        logger.info("Starting zone '{} [{}]' for {} secs", zone.name, zone.zoneNumber, runtime);
                         if (runtime == 0) {
                             runtime = cloudHandler.getDefaultRuntime();
-                            logger.debug("RachioZone: No specific runtime selected, using default ({} secs);", runtime);
+                            logger.debug("No specific runtime selected, using default ({} secs);", runtime);
                         }
                         cloudHandler.startZone(zone.id, runtime);
                     } else {
-                        logger.info("RachioZone: Stop watering for the device");
+                        logger.info("Stop watering for the device");
                         cloudHandler.stopWatering(dev.id);
                     }
                 } else {
-                    logger.debug("RachioZone: command value for {} is no OnOffType: {}", channel, command);
+                    logger.debug("Command value for {} is no OnOffType: {}", channel, command);
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_RUN_TIME)) {
                 if (command instanceof DecimalType) {
                     int runtime = ((DecimalType) command).intValue();
-                    logger.info("RachioZone: Zone will start for {} sec", runtime);
+                    logger.info("Zone {} will start for {} sec", zone.name, runtime);
                     zone.setStartRunTime(runtime);
                 } else {
-                    logger.debug("RachioZone: command value is no DecimalType: {}", command);
+                    logger.debug("Command value is no DecimalType: {}", command);
                 }
             }
         } catch (RachioApiException e) {
@@ -166,7 +165,7 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
             }
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.error("RachioZoneHandler: {}", errorMessage);
+                logger.debug("RachioZoneHandler: {}", errorMessage);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             }
         }
@@ -222,7 +221,7 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
                 postChannelData();
             }
         } catch (RuntimeException e) {
-            logger.error("RachioZone: Unable to process event: {}", e.getMessage());
+            logger.debug("RachioZone: Unable to process event: {}", e.getMessage());
         }
 
         return update;
@@ -283,7 +282,7 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
 
-        logger.trace("RachioZoneHandler: Bridge Status changed to {}", bridgeStatusInfo.getStatus());
+        logger.trace("Rachio Zone: Bridge Status changed to {}", bridgeStatusInfo.getStatus());
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateProperties();
             updateStatus(dev.getStatus());

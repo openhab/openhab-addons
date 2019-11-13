@@ -39,24 +39,24 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RachioDevice extends RachioCloudDevice {
-    private final Logger                logger       = LoggerFactory.getLogger(RachioDevice.class);
+    private final Logger logger = LoggerFactory.getLogger(RachioDevice.class);
 
     // extensions to cloud attributes
-    public String                       runList      = "";
-    public Integer                      runTime      = 0;
-    public String                       lastEvent    = "";
-    public boolean                      paused       = false;
-    public int                          rainDelay    = 0;
+    public String runList = "";
+    public Integer runTime = 0;
+    public String lastEvent = "";
+    public boolean paused = false;
+    public int rainDelay = 0;
 
     @Nullable
-    public ThingUID                     bridge_uid;
+    public ThingUID bridge_uid;
     @Nullable
-    public ThingUID                     dev_uid;
-    private HashMap<String, RachioZone> zoneList     = new HashMap<String, RachioZone>();
+    public ThingUID dev_uid;
+    private HashMap<String, RachioZone> zoneList = new HashMap<String, RachioZone>();
     @Nullable
-    private RachioDeviceHandler         thingHandler = null;
-    public RachioCloudNetworkSettings   network      = new RachioCloudNetworkSettings();
-    public String                       scheduleName = "";
+    private RachioDeviceHandler thingHandler = null;
+    public RachioCloudNetworkSettings network = new RachioCloudNetworkSettings();
+    public String scheduleName = "";
 
     @SuppressWarnings("unused")
     public RachioDevice(RachioCloudDevice device) {
@@ -78,10 +78,8 @@ public class RachioDevice extends RachioCloudDevice {
                     }
                 }
             }
-        } catch (
-
-        Exception e) {
-            logger.error("RachioDevice: Unable to initialize '{}': {}", device.name, e.getMessage());
+        } catch (RuntimeException e) {
+            logger.warn("RachioDevice: Unable to initialize '{}': {}", device.name, e.getMessage());
         }
     }
 

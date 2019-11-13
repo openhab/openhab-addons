@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.json.RachioCloudEvent;
 import org.openhab.binding.rachio.internal.discovery.RachioDiscoveryService;
 import org.openhab.binding.rachio.internal.handler.RachioBridgeHandler;
@@ -56,14 +57,14 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         @Nullable
         RachioBridgeHandler cloudHandler;
         @Nullable
-        ThingUID            uid;
+        ThingUID uid;
     }
 
-    private final Logger                                logger              = LoggerFactory.getLogger(RachioHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(RachioHandlerFactory.class);
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
-    private final HashMap<String, RachioBridge>         bridgeList;
-    private final RachioConfiguration                   bindingConfig       = new RachioConfiguration();
-    private final RachioNetwork                         rachioNetwork       = new RachioNetwork();
+    private final HashMap<String, RachioBridge> bridgeList;
+    private final RachioConfiguration bindingConfig = new RachioConfiguration();
+    private final RachioNetwork rachioNetwork = new RachioNetwork();
 
     /**
      * OSGi activation callback.
@@ -76,7 +77,12 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
         logger.debug("RachioBridge: Activate, configurarion (services/rachio.cfg):");
         bindingConfig.updateConfig(configProperties);
-        rachioNetwork.initializeAwsList(); // Load list of AWS IP address ranges
+        try {
+            // Load list of AWS IP address ranges
+            rachioNetwork.initializeAwsList();
+        } catch (RachioApiException | RuntimeException e) {
+            logger.warn("Unable to activate Rachio Service: {}", e.getMessage());
+        }
     }
 
     public RachioHandlerFactory() {
@@ -101,8 +107,8 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
             } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
                 return new RachioDeviceHandler(thing);
             }
-        } catch (Exception e) {
-            logger.error("RachioHandlerFactory:Exception while creating Rachio RThing handler: {}", e);
+        } catch (RuntimeException e) {
+            logger.debug("RachioHandlerFactory:Exception while creating Rachio RThing handler: {}", e);
         }
 
         logger.debug("RachioHandlerFactory:: Unable to create thing handler!");
@@ -111,7 +117,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(final ThingHandler thingHandler) {
-        logger.debug("RachioHandlerFactory:: Removing Rachio Cloud handler");
+        logger.debug("Removing Rachio Cloud handler");
         if (thingHandler instanceof RachioBridgeHandler) {
             RachioBridgeHandler bridgeHandler = (RachioBridgeHandler) thingHandler;
             unregisterDiscoveryService(bridgeHandler);
@@ -135,32 +141,34 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
     @SuppressWarnings("null")
     public boolean webHookEvent(String ipAddress, RachioCloudEvent event) {
         try {
-            logger.trace("RachioEvent: Event for device '{}' received", event.deviceId);
+            logger.debug("Rachio Cloud Event for device '{}' received", event.deviceId);
             if (!RachioNetwork.isIpInSubnet(ipAddress, getIpFilter()) && !rachioNetwork.isIpInAwsList(ipAddress)) {
-                logger.error("RachioBridge: Request from unknown IP address range, might be abuse! Request rejected");
+                logger.warn("RachioBridge: Request from unknown IP address range, might be abuse! Request rejected");
                 return false;
             }
 
-            // event.setEventParms();// process event parameters
+            // process event parameters
             for (HashMap.Entry<String, RachioBridge> be : bridgeList.entrySet()) {
                 RachioBridge bridge = be.getValue();
                 Validate.notNull(bridge);
                 Validate.notNull(bridge.cloudHandler);
-                logger.trace("RachioEvent: Check for externalId: '{}' / '{}'", event.externalId,
+                logger.trace("Check for externalId: '{}' / '{}'", event.externalId,
                         bridge.cloudHandler.getExternalId());
                 if (bridge.cloudHandler.getExternalId().equals(event.externalId)) {
                     return bridge.cloudHandler.webHookEvent(event);
                 }
             }
-            logger.info("RachioEvent: Unauthorized webhook event (wrong externalId: '{}')", event.externalId);
+
+            // invalid externalId, could be an indicator for unauthorized access
+            logger.warn("Unauthorized webhook event (wrong externalId: '{}')", event.externalId);
             return false;
-        } catch (Exception e) {
-            logger.error("RachioEvent: Unable to process event: {}", e.getMessage());
+        } catch (RuntimeException e) {
+            logger.debug("Unable to process event: {}", e.getMessage());
         }
-        logger.debug("RachioEvent: Unable to route event to bridge, externalId='{}', deviceId='{}'", event.externalId,
+        logger.debug("Unable to route event to bridge, externalId='{}', deviceId='{}'", event.externalId,
                 event.deviceId);
         return false;
-    } // webHookEvent()
+    }
 
     /**
      * Get ipFilter as a list from all bridge things configurations
@@ -180,7 +188,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
             }
         }
         return ipList;
-    } // getIpFilter()
+    }
 
     @Nullable
     @SuppressWarnings("null")
@@ -195,8 +203,8 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
             Validate.notNull(bridge.cloudHandler);
             registerDiscoveryService(bridge.cloudHandler);
             return bridge.cloudHandler;
-        } catch (Exception e) {
-            logger.error("RachioFactory: Unable to create bridge thing: {}: ", e.getMessage());
+        } catch (RuntimeException e) {
+            logger.warn("RachioFactory: Unable to create bridge thing: {}: ", e.getMessage());
         }
         return null;
     }

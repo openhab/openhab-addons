@@ -31,16 +31,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RachioConfiguration {
-    private final Logger       logger            = LoggerFactory.getLogger(RachioConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(RachioConfiguration.class);
 
-    public static final String ERR_APIKEY        = "ERROR: No/invalid APIKEY in configuration, check services/rachio.cfg";
+    public static final String ERR_APIKEY = "ERROR: No/invalid APIKEY in binding configuration!";
 
-    public String              apikey            = "";
-    public int                 pollingInterval   = DEFAULT_POLLING_INTERVAL;
-    public int                 defaultRuntime    = DEFAULT_ZONE_RUNTIME;
-    public String              callbackUrl       = "";
-    public Boolean             clearAllCallbacks = false;
-    public String              ipFilter          = "192.168.0.0/16;10.0.0.0/8;172.16.0.0/12";
+    public String apikey = "";
+    public int pollingInterval = DEFAULT_POLLING_INTERVAL;
+    public int defaultRuntime = DEFAULT_ZONE_RUNTIME;
+    public String callbackUrl = "";
+    public Boolean clearAllCallbacks = false;
+    public String ipFilter = "192.168.0.0/16;10.0.0.0/8;172.16.0.0/12";
 
     public void updateConfig(@Nullable Map<String, @Nullable Object> config) {
         Validate.notNull(config);

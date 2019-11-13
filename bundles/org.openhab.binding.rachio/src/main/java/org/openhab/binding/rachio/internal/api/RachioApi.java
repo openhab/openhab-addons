@@ -43,24 +43,24 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class RachioApi {
-    private final Logger        logger             = LoggerFactory.getLogger(RachioApi.class);
+    private final Logger logger = LoggerFactory.getLogger(RachioApi.class);
     private static final String MD5_HASH_ALGORITHM = "MD5";
-    private static final String UTF8_CHAR_SET      = "UTF-8";
+    private static final String UTF8_CHAR_SET = "UTF-8";
 
     public static class RachioApiResult {
-        private final Logger logger        = LoggerFactory.getLogger(RachioApiResult.class);
+        private final Logger logger = LoggerFactory.getLogger(RachioApiResult.class);
 
-        public String        requestMethod = "";
-        public String        url           = "";
+        public String requestMethod = "";
+        public String url = "";
         @Nullable
-        public String        apikey        = "";
-        public Integer       responseCode  = 0;
-        public String        resultString  = "";
+        public String apikey = "";
+        public Integer responseCode = 0;
+        public String resultString = "";
 
-        public Integer       apiCalls      = 0;
-        public Integer       rateLimit     = 0;
-        public Integer       rateRemaining = 0;
-        public String        rateReset     = "";
+        public Integer apiCalls = 0;
+        public Integer rateLimit = 0;
+        public Integer rateRemaining = 0;
+        public String rateReset = "";
 
         public void setRateLimit(int rateLimit, int rateRemaining, String rateReset) {
             this.rateLimit = rateLimit;
@@ -85,13 +85,13 @@ public class RachioApi {
             }
 
             if (isRateLimitCritical()) {
-                logger.error(
+                logger.warn(
                         "RachioApi: Remaing number of API calls is getting critical: limit={}, remaining={}, reset at {}",
                         rateLimit, rateRemaining, rateReset);
                 return;
             }
             if (isRateLimitWarning()) {
-                logger.info(
+                logger.warn(
                         "RachioApi: Remaing number of remaining API calls is low: limit={}, remaining={}, reset at {}",
                         rateLimit, rateRemaining, rateReset);
                 return;
@@ -114,39 +114,39 @@ public class RachioApi {
         }
     }
 
-    protected String                      apikey         = "";
-    protected String                      personId       = "";
-    protected String                      userName       = "";
-    protected String                      fullName       = "";
-    protected String                      email          = "";
+    protected String apikey = "";
+    protected String personId = "";
+    protected String userName = "";
+    protected String fullName = "";
+    protected String email = "";
 
-    protected RachioApiResult             lastApiResult  = new RachioApiResult();
-    protected static final Integer        externalIdSalt = (int) (Math.random() * 50 + 1);
+    protected RachioApiResult lastApiResult = new RachioApiResult();
+    protected static final Integer externalIdSalt = (int) (Math.random() * 50 + 1);
 
-    private HashMap<String, RachioDevice> deviceList     = new HashMap<String, RachioDevice>();
+    private HashMap<String, RachioDevice> deviceList = new HashMap<String, RachioDevice>();
     @Nullable
-    private RachioHttp                    httpApi        = null;
+    private RachioHttp httpApi = null;
 
     class RachioCloudPersonId {
         String id = ""; // "id":"xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx"
     }
 
     class RachioCloudStatus {
-        long                                createDate = -1; // "createDate":1494626927000,
-        String                              id         = ""; // "id":"xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
-        String                              username   = ""; // "username":"markus7017",
-        String                              fullName   = ""; // "fullName":"Markus Michels",
-        String                              email      = ""; // "email":"markus.michels@me.com",
-        public ArrayList<RachioCloudDevice> devices    = new ArrayList<>(); // "devices":[]
-        boolean                             deleted    = false; // "deleted":false
+        long createDate = -1; // "createDate":1494626927000,
+        String id = ""; // "id":"xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx",
+        String username = ""; // "username":"markus7017",
+        String fullName = ""; // "fullName":"Markus Michels",
+        String email = ""; // "email":"markus.michels@me.com",
+        public ArrayList<RachioCloudDevice> devices = new ArrayList<>(); // "devices":[]
+        boolean deleted = false; // "deleted":false
     }
 
     public class RachioApiWebHookEntry {
-        public long   createDate     = -1;
-        public long   lastUpdateDate = -1;
-        public String id             = "";
-        public String url            = "";
-        public String externalId     = "";
+        public long createDate = -1;
+        public long lastUpdateDate = -1;
+        public String id = "";
+        public String url = "";
+        public String externalId = "";
     }
 
     public class RachioApiWebHookList {
@@ -156,17 +156,17 @@ public class RachioApi {
 
     public class RachioCloudDelta {
         // V3: ZONE_DELTA / SCHEDULE_DELTA
-        String routingId  = ""; // "routingId" : "d3beb3ab-b85a-49fe-a45d-37c4d95ea9a8",
-        String icon       = ""; // "icon" : "NO_ICON",
-        String action     = ""; // "action" : "UPDATED",
-        String zoneId     = ""; // "zoneId" : "e49c8b55-a553-4733-b1cf-0e402b97db49",
+        String routingId = ""; // "routingId" : "d3beb3ab-b85a-49fe-a45d-37c4d95ea9a8",
+        String icon = ""; // "icon" : "NO_ICON",
+        String action = ""; // "action" : "UPDATED",
+        String zoneId = ""; // "zoneId" : "e49c8b55-a553-4733-b1cf-0e402b97db49",
         String externalId = ""; // "externalId" : "cc765dfb-d095-4ceb-8062-b9d88dcce911",
-        String subType    = ""; // "subType" : "ZONE_DELTA",
-        String id         = ""; // "id" : "e9d4fa9f-1619-37c4-b457-3845620643d2",
-        String type       = ""; // "type" : "DELTA",
-        String category   = "";  // "category" : "DEVICE",
-        String deviceId   = ""; // "deviceId" : "d3beb3ab-b85a-49fe-a45d-37c4d95ea9a8",
-        String timestamp  = ""; // "timestamp" : "2018-04-09T23:17:14.365Z"
+        String subType = ""; // "subType" : "ZONE_DELTA",
+        String id = ""; // "id" : "e9d4fa9f-1619-37c4-b457-3845620643d2",
+        String type = ""; // "type" : "DELTA",
+        String category = "";  // "category" : "DEVICE",
+        String deviceId = ""; // "deviceId" : "d3beb3ab-b85a-49fe-a45d-37c4d95ea9a8",
+        String timestamp = ""; // "timestamp" : "2018-04-09T23:17:14.365Z"
     }
 
     @SuppressWarnings("null")
@@ -195,17 +195,15 @@ public class RachioApi {
         return getMD5Hash(hash);
     }
 
-    public boolean initialize(String apikey, ThingUID bridgeUID) throws RachioApiException {
+    public void initialize(String apikey, ThingUID bridgeUID) throws RachioApiException {
         this.apikey = apikey;
         httpApi = new RachioHttp(this.apikey);
         if (initializePersonId() && initializeDevices(bridgeUID) && initializeZones()) {
             logger.trace("Rachio API initialized");
-            return true;
         }
 
         httpApi = null;
-        logger.error("RachioApi.initialize(): API initialization failed!");
-        return false;
+        throw new RachioApiException("API initialization failed!");
     }
 
     public HashMap<String, RachioDevice> getDevices() {
@@ -361,7 +359,7 @@ public class RachioApi {
                     httpApi.httpDelete(APIURL_BASE + APIURL_DEV_DELETE_WEBHOOK + "/" + whe.id, null);
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.debug("RachioApi: Deleting WebHook(s); failed: {}, JSON='{}'", e.getMessage(), json);
         }
 
@@ -500,13 +498,14 @@ public class RachioApi {
                         t.setAccessible(true);
                         t.set(toObj, a != null ? a.clone() : null);
                     } else {
-                        // logger.debug("RachioApiInternal: Unable to update field '{}', '{}'", t.getName(), t.getType());
+                        // logger.debug("RachioApiInternal: Unable to update field '{}', '{}'", t.getName(),
+                        // t.getType());
                     }
                 }
             } catch (NoSuchFieldException ex) {
                 // skip it
             } catch (IllegalAccessException ex) {
-                // logger.error("Unable to copy field: {}", f.getName());
+                // Unable to copy field
             }
         }
     }

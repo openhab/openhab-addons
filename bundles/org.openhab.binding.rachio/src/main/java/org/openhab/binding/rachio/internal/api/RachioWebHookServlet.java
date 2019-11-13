@@ -50,12 +50,12 @@ import com.google.gson.Gson;
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 @NonNullByDefault
 public class RachioWebHookServlet extends HttpServlet {
-    private static final long    serialVersionUID = -4654253998990066051L;
-    private final Logger         logger           = LoggerFactory.getLogger(RachioWebHookServlet.class);
-    private final Gson           gson             = new Gson();
+    private static final long serialVersionUID = -4654253998990066051L;
+    private final Logger logger = LoggerFactory.getLogger(RachioWebHookServlet.class);
+    private final Gson gson = new Gson();
 
     @Nullable
-    private HttpService          httpService;
+    private HttpService httpService;
     @Nullable
     private RachioHandlerFactory rachioHandlerFactory;
 
@@ -70,9 +70,9 @@ public class RachioWebHookServlet extends HttpServlet {
         try {
             Validate.notNull(httpService);
             httpService.registerServlet(SERVLET_WEBHOOK_PATH, this, null, httpService.createDefaultHttpContext());
-            logger.info("Started Rachio Webhook servlet at {}", SERVLET_WEBHOOK_PATH);
+            logger.debug("Started Rachio Webhook servlet at {}", SERVLET_WEBHOOK_PATH);
         } catch (ServletException | NamespaceException e) {
-            logger.error("Could not start Rachio Webhook servlet: {}", e.getMessage(), e);
+            logger.warn("Could not start Rachio Webhook servlet: {}", e.getMessage(), e);
         }
     }
 
@@ -84,7 +84,7 @@ public class RachioWebHookServlet extends HttpServlet {
     protected void deactivate() {
         Validate.notNull(httpService);
         httpService.unregister(SERVLET_WEBHOOK_PATH);
-        logger.info("RachioWebHook: Servlet stopped");
+        logger.debug("RachioWebHook: Servlet stopped");
     }
 
     @SuppressWarnings("null")
@@ -104,7 +104,7 @@ public class RachioWebHookServlet extends HttpServlet {
             logger.trace("RachioWebHook: Reqeust from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
                     request.getRemoteHost(), request.getServerPort(), request.getProtocol());
             if (!path.equalsIgnoreCase(SERVLET_WEBHOOK_PATH)) {
-                logger.error("RachioWebHook: Invalid request received - path = {}", path);
+                logger.debug("RachioWebHook: Invalid request received - path = {}", path);
                 return;
             }
 
@@ -136,17 +136,14 @@ public class RachioWebHookServlet extends HttpServlet {
                 }
                 logger.debug("RachioWebHook: Unable to process inbound request, data='{}'", data);
             }
-        } catch (Exception e) {
-            if (data != null) {
-                logger.error("RachioWebHook: Exception processing callback: {}, data='{}'", e.getMessage(), data);
-            } else {
-                logger.error("RachioWebHook: Exception processing callback: {}", e.getMessage());
-            }
+        } catch (RuntimeException e) {
+            logger.debug("RachioWebHook: Exception processing callback: {}, data='{}'", e.getMessage(),
+                    data != null ? data : "n/a");
         } finally {
             setHeaders(resp);
             resp.getWriter().write("");
         }
-    } // service()
+    }
 
     @SuppressWarnings("resource")
     private String inputStreamToString(HttpServletRequest request) throws IOException {

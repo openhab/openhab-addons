@@ -20,6 +20,7 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioHttp;
 // import com.offbynull.portmapper;
 import org.slf4j.Logger;
@@ -38,21 +39,19 @@ public class RachioNetwork {
 
     public class AwsIpAddressRange {
         public String ip_prefix = "";
-        public String region    = "";
-        public String service   = "";
+        public String region = "";
+        public String service = "";
     }
 
     public class AwsIpList {
-        public String                       syncToken  = "";
-        public String                       createDate = "";
-        public ArrayList<AwsIpAddressRange> prefixes   = new ArrayList<>();
+        public String syncToken = "";
+        public String createDate = "";
+        public ArrayList<AwsIpAddressRange> prefixes = new ArrayList<>();
     }
 
-    private String                       mappedPort  = "";
-    private long                         lastRefresh = 0;
     private ArrayList<AwsIpAddressRange> awsIpRanges = new ArrayList<>();
 
-    public boolean initializeAwsList() {
+    public boolean initializeAwsList() throws RachioApiException {
         try {
             // Get currently assigned IP address ranges from AWS cloud.
             // The Rachio cloud service is hosted on AWS. The list will function as a filter to make sure that the
@@ -80,8 +79,8 @@ public class RachioNetwork {
                     "RachioNetwork: AWS address list initialized, {} entries (will be used to verify inboud Rachio events)",
                     awsIpRanges.size());
             return true;
-        } catch (Exception e) {
-            logger.error("RachioNetwork: Unable to initialize: {}", e.getMessage());
+        } catch (RuntimeException e) {
+            logger.warn("RachioNetwork: Unable to initialize: {}", e.getMessage());
         }
         return false;
     }
@@ -113,7 +112,7 @@ public class RachioNetwork {
             }
         }
         return false;
-    } // evaluateIp
+    }
 
     @SuppressWarnings("null")
     public boolean isIpInAwsList(String clientIp) {
@@ -128,38 +127,6 @@ public class RachioNetwork {
                 return true;
             }
         }
-        return false;
-    }
-
-    public boolean initializePortMapping(int externalPort, int internalPort, int timeoutSec) {
-        try {
-            /*
-             * // Start gateways
-             * Gateway network = NetworkGateway.create();
-             * Gateway process = ProcessGateway.create();
-             * Bus networkBus = network.getBus();
-             * Bus processBus = process.getBus();
-             *
-             * // Discover port forwarding devices and take the first one found
-             * List<PortMapper> mappers = PortMapperFactory.discover(networkBus, processBus);
-             * PortMapper mapper = mappers.get(0);
-             *
-             * // Map internal port 12345 to some external port (55555 preferred)
-             * //
-             * // IMPORTANT NOTE: Many devices prevent you from mapping ports that are <= 1024
-             * // (both internal and external ports). Be mindful of this when choosing which
-             * // ports you want to map.
-             * MappedPort mappedPort = mapper.mapPort(PortType.TCP, internalPort, externalPort, timeoutSec);
-             */
-            lastRefresh = System.currentTimeMillis();
-            logger.debug("RachioNetwork: Port mapping added ({}->{}, timeout {}); {}", externalPort, internalPort,
-                    timeoutSec, mappedPort.toString());
-            return true;
-        } catch (Exception e) {
-            logger.error("RachioNetwork: Unable to create port mapping ({}->{}, timeout {}): {}", externalPort,
-                    internalPort, timeoutSec, e.getMessage());
-        }
-
         return false;
     }
 }

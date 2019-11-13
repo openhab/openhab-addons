@@ -48,14 +48,14 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RachioDeviceHandler extends BaseThingHandler implements RachioStatusListener {
-    private final Logger       logger      = LoggerFactory.getLogger(RachioDeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RachioDeviceHandler.class);
 
     @Nullable
-    Bridge                     bridge;
+    Bridge bridge;
     @Nullable
-    RachioBridgeHandler        cloudHandler;
+    RachioBridgeHandler cloudHandler;
     @Nullable
-    RachioDevice               dev;
+    RachioDevice dev;
     private Map<String, State> channelData = new HashMap<>();
 
     public RachioDeviceHandler(Thing thing) {
@@ -65,7 +65,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-        logger.debug("RachioDevice: Initializing Rachio device '{}'.", getThing().getUID().getAsString());
+        logger.debug("Initializing Rachio device '{}'.", getThing().getUID().getAsString());
 
         String errorMessage = "";
         try {
@@ -80,13 +80,12 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
                         cloudHandler.registerStatusListener(this);
                         cloudHandler.registerWebHook(dev.id);
                         if (bridge.getStatus() != ThingStatus.ONLINE) {
-                            logger.debug("Rachio: Bridge is offline!");
+                            logger.debug("Rachio Bridge is offline!");
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                         } else {
                             updateProperties();
                             updateStatus(dev.getStatus());
-                            logger.debug("RachioDevice: Rachio device '{}' initialized.",
-                                    getThing().getUID().getAsString());
+                            logger.debug("Rachio device '{}' initialized.", getThing().getUID().getAsString());
                             return;
                         }
                     }
@@ -101,7 +100,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
             }
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.error("RachioBridge: {}", errorMessage);
+                logger.debug("RachioBridge: {}", errorMessage);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         }
@@ -111,10 +110,10 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channel = channelUID.getId();
-        logger.debug("RachioDevice.handleCommand {} for {}", command.toString(), channel);
+        logger.debug("handleCommand {} for {}", command.toString(), channel);
 
         if ((cloudHandler == null) || (dev == null)) {
-            logger.debug("RachioDevice: Cloud handler or device not initialized!");
+            logger.debug("Cloud handler or device not initialized!");
             return;
         }
 
@@ -126,48 +125,48 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
             } else if (channel.equals(RachioBindingConstants.CHANNEL_DEVICE_ACTIVE)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.OFF) {
-                        logger.info("RachioDevice: Pause device '{}' (disable watering, schedules etc.)", dev.name);
+                        logger.debug("Pause device '{}' (disable watering, schedules etc.)", dev.name);
                         cloudHandler.disableDevice(dev.id);
                     } else {
-                        logger.info("RachioDevice: Resume device '{}' (enable watering, schedules etc.)", dev.name);
+                        logger.debug("Resume device '{}' (enable watering, schedules etc.)", dev.name);
                         cloudHandler.enableDevice(dev.id);
                     }
                 } else {
-                    logger.debug("RachioDevice: command value is no OnOffType: {}", command);
+                    logger.debug("Command value is no OnOffType: {}", command);
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_DEVICE_RUN_TIME)) {
                 if (command instanceof DecimalType) {
                     int runtime = ((DecimalType) command).intValue();
-                    logger.info("RachioDevice: Default Runtime for zones set to {} sec", runtime);
+                    logger.debug("Default Runtime for zones set to {} sec", runtime);
                     dev.setRunTime(runtime);
                 } else {
-                    logger.debug("RachioDevice: command value is no DecimalType: {}", command);
+                    logger.debug("Command value is no DecimalType: {}", command);
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_DEVICE_RUN_ZONES)) {
                 if (command instanceof StringType) {
-                    logger.info("RachioDevice: Run multiple zones: '{}' ('' = ALL)", command.toString());
+                    logger.debug("Run multiple zones: '{}' ('' = ALL)", command.toString());
                     dev.setRunZones(command.toString());
                 } else {
-                    logger.debug("RachioDevice: command value is no StringType: {}", command);
+                    logger.debug("Command value is no StringType: {}", command);
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_DEVICE_RUN)) {
                 if (command == OnOffType.ON) {
-                    logger.info("RachioDevice: START watering zones '{}' ('' = ALL)", dev.getRunZones());
+                    logger.debug("START watering zones '{}' ('' = ALL)", dev.getRunZones());
                     cloudHandler.runMultipleZones(dev.getAllRunZonesJson(cloudHandler.getDefaultRuntime()));
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_DEVICE_STOP)) {
                 if (command == OnOffType.ON) {
-                    logger.info("RachioDevice: STOP watering for device '{}'", dev.name);
+                    logger.info("STOP watering for device '{}'", dev.name);
                     cloudHandler.stopWatering(dev.id);
                     updateState(RachioBindingConstants.CHANNEL_DEVICE_STOP, OnOffType.OFF);
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_DEVICE_RAIN_DELAY)) {
                 if (command instanceof DecimalType) {
-                    logger.info("RachioDevice: Start rain delay cycle for {} sec", command.toString());
+                    logger.info("Start rain delay cycle for {} sec", command.toString());
                     dev.setRainDelayTime(((DecimalType) command).intValue());
                     cloudHandler.startRainDelay(dev.id, ((DecimalType) command).intValue());
                 } else {
-                    logger.debug("RachioDevice: command value is no DecimalType: {}", command);
+                    logger.debug("Command value is no DecimalType: {}", command);
                 }
             }
         } catch (RachioApiException e) {
@@ -176,7 +175,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
             errorMessage = e.getMessage();
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.error("RachioDevice.handleCommand: {}", errorMessage);
+                logger.debug("Rachio: {}", errorMessage);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             }
         }
@@ -185,7 +184,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
     @SuppressWarnings("null")
     private void postChannelData() {
         if (dev != null) {
-            logger.debug("RachioDevice: Updating  status");
+            logger.debug("Updating  status");
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_NAME, new StringType(dev.getThingName()));
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_ONLINE, dev.getOnline());
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_ACTIVE, dev.getEnabled());
@@ -225,7 +224,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
     @Override
     public boolean onThingStateChangedl(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         if ((updatedDev != null) && (dev != null) && dev.id.equals(updatedDev.id)) {
-            logger.debug("RachioDevice: Update for device '{}' received.", dev.id);
+            logger.debug("Update for device '{}' received.", dev.id);
             dev.update(updatedDev);
             postChannelData();
             updateStatus(dev.getStatus());
@@ -239,7 +238,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
 
-        logger.debug("RachioDeviceHandler: Bridge Status changed to {}", bridgeStatusInfo.getStatus());
+        logger.debug("Rachio Bridge Status changed to {}", bridgeStatusInfo.getStatus());
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateProperties();
             postChannelData();
@@ -277,7 +276,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
                 // sub types:
                 // COLD_REBOOT, ONLINE, OFFLINE, OFFLINE_NOTIFICATION, SLEEP_MODE_ON, SLEEP_MODE_OFF, BROWNOUT_VALVE
                 // RAIN_SENSOR_DETECTION_ON, RAIN_SENSOR_DETECTION_OFF, RAIN_DELAY_ON, RAIN_DELAY_OFF
-                logger.info("Rachio device {} ('{}') changed to status '{}'.", dev.name, dev.id, event.subType);
+                logger.debug("Rachio device {} ('{}') changed to status '{}'.", dev.name, dev.id, event.subType);
                 if (event.subType.equals("COLD_REBOOT")) {
                     logger.info("Rachio device {} (id '{}') was restarted, ip={}/{}, gw={}, dns={}/{}, wifi rssi={}.",
                             dev.name, dev.id, dev.network.ip, dev.network.nm, dev.network.gw, dev.network.dns1,
@@ -312,8 +311,8 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
                     update = false; // details missing
                 }
             } else if (event.type.equals("SCHEDULE_STATUS")) {
-                logger.info("RachioDevice '{}' for device '{}', schedule='{}': {} (start={}, end={}, duration={}min)",
-                        event.subType, dev.name, event.scheduleName, event.summary, event.startTime, event.endTime,
+                logger.info("'{}' for device '{}', schedule='{}': {} (start={}, end={}, duration={}min)", event.subType,
+                        dev.name, event.scheduleName, event.summary, event.startTime, event.endTime,
                         event.durationInMinutes);
                 // no action -> just post event message to OH
             } else {
@@ -324,11 +323,11 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
                 postChannelData();
                 return true;
             }
-            logger.debug("RachioDevice: Unhandled event '{}.{}' for device '{}' ({}): {}", event.type, event.subType,
-                    dev.name, dev.id, event.summary);
+            logger.debug("Unhandled event '{}.{}' for device '{}' ({}): {}", event.type, event.subType, dev.name,
+                    dev.id, event.summary);
             return false;
         } catch (RuntimeException e) {
-            logger.error("RachioDevice: Unable to process '{}.{}' - {}: {}", event.type, event.subType, event.summary,
+            logger.debug("Unable to process '{}.{}' - {}: {}", event.type, event.subType, event.summary,
                     e.getMessage());
             return false;
         }

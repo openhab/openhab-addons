@@ -54,21 +54,21 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
-    private final Logger                     logger                = LoggerFactory.getLogger(RachioBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RachioBridgeHandler.class);
     @Nullable
-    private RachioConfiguration              bindingConfig;
+    private RachioConfiguration bindingConfig;
     @Nullable
-    private RachioConfiguration              thingConfig           = new RachioConfiguration();
+    private RachioConfiguration thingConfig = new RachioConfiguration();
 
     private final List<RachioStatusListener> rachioStatusListeners = new CopyOnWriteArrayList<>();
     @Nullable
-    private final RachioApi                  rachioApi;
-    private String                           personId              = "";
+    private final RachioApi rachioApi;
+    private String personId = "";
 
     @Nullable
-    private ScheduledFuture<?>               pollingJob;
-    private boolean                          jobPending            = false;
-    private int                              skipCalls             = 0;
+    private ScheduledFuture<?> pollingJob;
+    private boolean jobPending = false;
+    private int skipCalls = 0;
 
     /**
      * Thing Handler for the Bridge thing. Handles the cloud connection and links devices+zones to a bridge.
@@ -145,7 +145,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
             errorMessage = e.getMessage();
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.error("RachioBridge: {}", errorMessage);
+                logger.debug("RachioBridge: {}", errorMessage);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             }
         }
@@ -192,7 +192,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
                         "RachioBridge: API access blocked on update ({0} / {1}), reset at {2}",
                         checkApi.getLastApiResult().rateRemaining, checkApi.getLastApiResult().rateLimit,
                         checkApi.getLastApiResult().rateReset);
-                logger.error("{}", errorCritical);
+                logger.debug("{}", errorCritical);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorCritical); // shutdown
                                                                                                          // bridge+devices+zones
                 return;
@@ -257,7 +257,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
             errorMessage = e.getMessage();
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.error("RachioBridge: {}", errorMessage);
+                logger.debug("RachioBridge: {}", errorMessage);
             }
             jobPending = false;
         }
@@ -282,9 +282,9 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
                     "RachioBridgeHandler: Unable to connect to Rachio Cloud: apikey not set, check services/rachio.cfg!");
         }
 
-        if (api.initialize(thingConfig.apikey, this.getThing().getUID())) {
-            personId = api.getPersonId(); // cache personId, might throw exception
-        }
+        // initialiaze API access, may throw an exception
+        api.initialize(thingConfig.apikey, this.getThing().getUID());
+        personId = api.getPersonId();
     }
 
     /**
@@ -438,8 +438,8 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
         try {
             Validate.notNull(rachioApi);
             return rachioApi.getDevices();
-        } catch (Exception e) {
-            logger.error("RachioBridgeHandler: Unable to retrieve device list: {}", e.getMessage());
+        } catch (RuntimeException e) {
+            logger.debug("RachioBridgeHandler: Unable to retrieve device list: {}", e.getMessage());
         }
         return null;
     }
@@ -510,7 +510,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
             logger.debug("RachioEvent {}.{} for unknown device '{}': {}", event.category, event.type, event.deviceId,
                     event.summary);
         } catch (RuntimeException e) {
-            logger.error("RachioEvent: Unable to process event {}.{} for device '{}': {}", event.category, event.type,
+            logger.debug("RachioEvent: Unable to process event {}.{} for device '{}': {}", event.category, event.type,
                     event.deviceId, e.getMessage());
         }
         return false;

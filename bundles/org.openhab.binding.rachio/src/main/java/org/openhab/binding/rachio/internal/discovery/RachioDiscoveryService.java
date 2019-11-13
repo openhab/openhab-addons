@@ -47,12 +47,12 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "binding.rachio")
 @NonNullByDefault
 public class RachioDiscoveryService extends AbstractDiscoveryService {
-    private final Logger        logger        = LoggerFactory.getLogger(RachioDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(RachioDiscoveryService.class);
     private RachioConfiguration bindingConfig = new RachioConfiguration();
-    private boolean             scanning      = false;
+    private boolean scanning = false;
 
     @Nullable
-    private RachioApi           rachioApi;
+    private RachioApi rachioApi;
 
     @Nullable
     private RachioBridgeHandler cloudHandler;
@@ -148,10 +148,10 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(devThingUID)
                             .withProperties(properties).withBridge(bridgeUID).withLabel(dev.getThingName()).build();
                     thingDiscovered(discoveryResult);
-                } // if (cloudHandler.getThingByUID(dev_thingUID) == null)
+                }
 
                 HashMap<String, RachioZone> zoneList = dev.getZones();
-                logger.info("RachioDiscovery: Found {} zones for this device.", zoneList.size());
+                logger.debug("RachioDiscovery: Found {} zones for this device.", zoneList.size());
                 for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
                     RachioZone zone = ze.getValue();
                     logger.debug("RachioDiscovery: Checking zone with ID '{}'", zone.id);
@@ -181,10 +181,9 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
 
             stopScan();
         } catch (RachioApiException e) {
-            logger.error("RachioDiscovery: Unexpected error while discovering Rachio devices/zones: {}", e.toString());
+            logger.warn("Unexpected error while discovering Rachio devices/zones: {}", e.toString());
         } catch (RuntimeException e) {
-            logger.error("RachioDiscovery: Unexpected error while discovering Rachio devices/zones: {}",
-                    e.getMessage());
+            logger.warn("Unexpected error while discovering Rachio devices/zones: {}", e.getMessage());
         }
     }
 
@@ -192,7 +191,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
     protected synchronized void stopScan() {
         super.stopScan();
         scanning = false;
-        logger.debug("RachioDiscervery: discovery done.");
+        logger.debug("RachioDiscervery done.");
     }
 
     private Map<String, String> fillProperties(String id) {
