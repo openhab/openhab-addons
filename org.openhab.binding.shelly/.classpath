@@ -28,7 +28,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/californium-core-2.0.0-RC1.jar"/>
-	<classpathentry kind="lib" path="lib/element-connector-2.0.0-RC1.jar"/>
+	<classpathentry kind="lib" path="lib/californium-core-2.0.0-M18.jar"/>
+	<classpathentry kind="lib" path="lib/element-connector-2.0.0-M18.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
