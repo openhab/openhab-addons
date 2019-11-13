@@ -28,6 +28,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/netatmo-java-retrofit-1.1.3.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
