@@ -13,7 +13,17 @@
 
   <name>openHAB Add-ons :: Bundles :: Orvibo Binding</name>
 
+  <properties>
+    <dep.noembedding>commons-collections4</dep.noembedding>
+  </properties>
+
   <dependencies>
+    <dependency>
+      <groupId>com.github.tavalin.orvibo-sdk</groupId>
+      <artifactId>s20-sdk</artifactId>
+      <version>0.0.6-nmu1</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
