@@ -22,8 +22,8 @@
 			<channel typeId="control" id="control" />
 		</channels>
 		<config-description>
-			<parameter name="refreshPeriod" type="integer">
-				<label>Refresh time of area status (in seconds)</label>
+			<parameter name="refreshPeriod" type="integer" unit="s">
+				<label>Refresh Time of Area Status</label>
 				<description>Controls how often area status will be refreshed from the PRT3 module</description>
 				<default>60</default>
 			</parameter>
@@ -48,7 +48,7 @@
 
 	<channel-type id="area_armed">
 		<item-type>Contact</item-type>
-		<label>Area armed</label>
+		<label>Area Armed</label>
 		<description>Indicates if area is armed</description>
 		<state readOnly="true">
 			<options>
@@ -60,7 +60,7 @@
 
 	<channel-type id="zone_in_memory">
 		<item-type>Contact</item-type>
-		<label>Zone in memory</label>
+		<label>Zone in Memory</label>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">Ok</option>
@@ -94,7 +94,7 @@
 
 	<channel-type id="in_programming">
 		<item-type>Contact</item-type>
-		<label>Area in programming mode</label>
+		<label>Area in Programming Mode</label>
 		<description>Indicates if area is in the programming mode</description>
 		<state readOnly="true">
 			<options>
@@ -106,7 +106,7 @@
 
 	<channel-type id="alarm">
 		<item-type>Contact</item-type>
-		<label>Area in alarm</label>
+		<label>Area in Alarm</label>
 		<description>Indicates if area is in alarm</description>
 		<state readOnly="true">
 			<options>

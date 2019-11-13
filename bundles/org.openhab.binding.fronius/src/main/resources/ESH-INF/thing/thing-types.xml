@@ -43,7 +43,7 @@
 	</channel-type>
 	<channel-type id="pac">
 		<item-type>Number</item-type>
-		<label>AC power</label>
+		<label>AC Power</label>
 		<description>AC power</description>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
@@ -62,33 +62,33 @@
 
 	<channel-type id="fac">
 		<item-type>Number</item-type>
-		<label>AC frequency</label>
+		<label>AC Frequency</label>
 		<description>AC frequency</description>
 		<state pattern="%.2f Hz" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="iac">
 		<item-type>Number</item-type>
-		<label>AC current</label>
+		<label>AC Current</label>
 		<description>AC current</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="idc">
 		<item-type>Number</item-type>
-		<label>DC current</label>
+		<label>DC Current</label>
 		<description>DC current</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="uac">
 		<item-type>Number</item-type>
-		<label>AC voltage</label>
+		<label>AC Voltage</label>
 		<description>AC voltage</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="udc">
 		<item-type>Number</item-type>
-		<label>DC voltage</label>
+		<label>DC Voltage</label>
 		<description>DC voltage</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>

@@ -152,7 +152,7 @@
 
 	<channel-type id="allowwakeup" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Allow Wake Up</label>
+		<label>Allow Wake up</label>
 		<description>Allow the vehicle to be waken up</description>
 	</channel-type>
 	<channel-type id="autoconditioning">
@@ -318,7 +318,7 @@
 	</channel-type>
 	<channel-type id="chargetomax" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Charge To Max Range</label>
+		<label>Charge to Max Range</label>
 		<description>Indicates if the charging to the maximum range is enabled</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -421,7 +421,7 @@
 	</channel-type>
 	<channel-type id="forcerefresh">
 		<item-type>Switch</item-type>
-		<label>Force refresh</label>
+		<label>Force Refresh</label>
 		<description>Forcefully refreshes all data from the car (when ON is received), possibly waking up the car in the process.</description>
 	</channel-type>
 	<channel-type id="frontdefroster" advanced="true">
@@ -555,7 +555,7 @@
 	</channel-type>
 	<channel-type id="notenoughpower" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Not Enought Power </label>
+		<label>Not Enought Power</label>
 		<description>Indicates if not enough power (ON) is available to heat the vehicle</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -753,7 +753,7 @@
 	</channel-type>
 	<channel-type id="timetofullcharge" advanced="true">
 		<item-type>Number</item-type>
-		<label>Time To Full Charge</label>
+		<label>Time to Full Charge</label>
 		<description>Number of hours to fully charge the battery</description>
 		<state pattern="%.1f h" readOnly="true"></state>
 	</channel-type>
@@ -788,7 +788,7 @@
 	</channel-type>
 	<channel-type id="wakeup" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Wake Up</label>
+		<label>Wake up</label>
 		<description>Wake up the vehicle from a (deep) sleep</description>
 	</channel-type>
 	<channel-type id="wiperbladeheater" advanced="true">

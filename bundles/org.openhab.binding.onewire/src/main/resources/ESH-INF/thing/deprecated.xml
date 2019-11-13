@@ -7,7 +7,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="owserver" />
 		</supported-bridge-type-refs>
-		<label>Counter sensor</label>
+		<label>Counter Sensor</label>
 		<description>A 1-wire Dual Counter (DS2423)</description>
 		<config-description-ref uri="thing-type:onewire:fastthingconfig" />
 	</thing-type>
@@ -23,7 +23,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="owserver" />
 		</supported-bridge-type-refs>
-		<label>Temperature sensor</label>
+		<label>Temperature Sensor</label>
 		<description>A 1-wire temperature sensor (DS18x20)</description>
 		<config-description-ref uri="thing-type:onewire:basethingconfig" />
 	</thing-type>

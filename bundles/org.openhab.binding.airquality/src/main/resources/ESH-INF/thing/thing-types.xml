@@ -46,7 +46,7 @@
 				<description>Fill only in case you want to receive data from the specific station</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="30" required="false">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in minutes.</description>
 				<default>60</default>
 			</parameter>
@@ -143,7 +143,7 @@
 
 	<channel-type id="observationTime" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Observation time</label>
+		<label>Observation Time</label>
 		<description>Observation date and time</description>
 		<category>Observation time</category>
 		<state readOnly="true"/>

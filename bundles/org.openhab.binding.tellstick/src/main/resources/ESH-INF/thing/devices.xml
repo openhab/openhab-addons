@@ -54,7 +54,7 @@
 			<bridge-type-ref id="telldus-core" />
 		</supported-bridge-type-refs>
 
-		<label>On/Off device</label>
+		<label>On/Off Device</label>
 		<description>This Thing defines a Switch Device</description>
 
 		<channels>
@@ -108,7 +108,7 @@
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
-		<label>Last device update</label>
+		<label>Last Device Update</label>
 		<description>Last device update</description>
 	</channel-type>
 </thing:thing-descriptions>

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="mill">
-		<label>Windcentrale windmill</label>
+		<label>Windcentrale Windmill</label>
 
 		<channels>
 			<channel id="windSpeed" typeId="windSpeed" />
@@ -42,12 +42,12 @@
 				<default>131</default>
 			</parameter>
 			<parameter name="wd" type="integer" required="false">
-				<label>Wind shares</label>
+				<label>Wind Shares</label>
 				<description>Number of wind shares ("Winddelen")</description>
 				<default>1</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1" max="9999" required="false">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Refresh interval for refreshing the data in seconds</description>
 				<default>30</default>
 				<advanced>true</advanced>
@@ -57,43 +57,43 @@
 
 	<channel-type id="windSpeed">
 		<item-type>Number</item-type>
-		<label>Wind speed</label>
+		<label>Wind Speed</label>
 		<category>Wind</category>
 		<state pattern="%d Bft" readOnly="true" />
 	</channel-type>
 	<channel-type id="windDirection">
 		<item-type>String</item-type>
-		<label>Wind direction</label>
+		<label>Wind Direction</label>
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
 	<channel-type id="powerRel">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Relative power</label>
+		<label>Relative Power</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="runPercentage">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Run percentage</label>
+		<label>Run Percentage</label>
 		<description>Run percentage this year</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="runTime">
 		<item-type>Number:Time</item-type>
-		<label>Run time</label>
+		<label>Run Time</label>
 		<description>Run time this year</description>
 		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="powerAbsWd">
 		<item-type>Number:Power</item-type>
-		<label>Wind shares power</label>
+		<label>Wind Shares Power</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="powerAbsTot">
 		<item-type>Number:Power</item-type>
-		<label>Total power</label>
+		<label>Total Power</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
@@ -105,13 +105,13 @@
 	</channel-type>
 	<channel-type id="kwhForecast">
 		<item-type>Number:Energy</item-type>
-		<label>Energy forecast</label>
+		<label>Energy Forecast</label>
 		<category>Energy</category>
 		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
-		<label>Last updated</label>
+		<label>Last Updated</label>
 		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

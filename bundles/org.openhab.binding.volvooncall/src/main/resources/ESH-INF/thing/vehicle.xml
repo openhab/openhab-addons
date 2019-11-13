@@ -92,16 +92,16 @@
 				<label>Tailgate</label>
 			</channel>
 			<channel id="rearRight" typeId="door">
-				<label>Rear right</label>
+				<label>Rear Right</label>
 			</channel>
 			<channel id="rearLeft" typeId="door">
-				<label>Rear left</label>
+				<label>Rear Left</label>
 			</channel>
 			<channel id="frontRight" typeId="door">
-				<label>Front right</label>
+				<label>Front Right</label>
 			</channel>
 			<channel id="frontLeft" typeId="door">
-				<label>Front left</label>
+				<label>Front Left</label>
 			</channel>
 			<channel id="hood" typeId="door">
 				<label>Hood</label>
@@ -142,7 +142,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="tank">
-		<label>Tank info</label>
+		<label>Tank Info</label>
 		<channels>
 			<channel id="fuelAmount" typeId="fuelQuantity">
 				<label>Fuel Amount</label>

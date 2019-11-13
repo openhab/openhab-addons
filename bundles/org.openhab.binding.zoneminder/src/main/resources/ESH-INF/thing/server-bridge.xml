@@ -25,7 +25,7 @@
 
 	<channel-type id="server_cpu_load">
 		<item-type>Number</item-type>
-		<label>CPU load</label>
+		<label>CPU Load</label>
 		<description>ZoneMinder Server CPU Load</description>
 		<state readOnly="true"/>
 	</channel-type>

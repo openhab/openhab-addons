@@ -12,11 +12,11 @@
 		</parameter-group>
 		<parameter-group name="network">
 			<context>network</context>
-			<label>Port configuration</label>
+			<label>Port Configuration</label>
 		</parameter-group>
 		<parameter-group name="refreshConfig">
 			<context>refreshConfig</context>
-			<label>Refresh settings</label>
+			<label>Refresh Settings</label>
 		</parameter-group>
 		<parameter-group name="advancedSettings">
 			<context>advancedSettings</context>
@@ -37,7 +37,7 @@
 			</options>
 		</parameter>
 		<parameter name="urlpath" type="text" required="false" groupName="basic">
-			<label>Additional path on ZoneMinder Server to access API</label>
+			<label>Additional Path On ZoneMinder Server to Access API</label>
 			<description>Additional path on ZoneMinder Server to access API. In a standard installation this is' /zm'</description>
 			<default>/zm</default>
 		</parameter>
@@ -63,7 +63,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="refresh_interval" type="integer" required="false" min="1" max="65335" groupName="refreshConfig">
-			<label>API Polling interval</label>
+			<label>API Polling Interval</label>
 			<description>Seconds between each call to ZoneMinder Server API to refresh values in openHAB</description>
 			<default>10</default>
 			<advanced>true</advanced>
@@ -75,7 +75,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="autodiscover_things" type="boolean" required="false" groupName="advanced">
-			<label>Background discovery</label>
+			<label>Background Discovery</label>
 			<description>If enabled new monitors on the ZoneMinder Server will automatically be added to the Inbox in openHAB</description>
 			<default>true</default>
 			<advanced>true</advanced>
