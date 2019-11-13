@@ -291,7 +291,7 @@ public class MagentaTVControl {
 
         String result = getXmlValue(response, "pairingResult");
         if (!result.equals("0")) {
-            logger.info("{}: Pairing failed or pairing no longer valid, result={}", thingConfig.getFriendlyName(),
+            logger.debug("{}: Pairing failed or pairing no longer valid, result={}", thingConfig.getFriendlyName(),
                     result);
             resetPairing();
             // let the caller decide how to proceed
@@ -349,7 +349,7 @@ public class MagentaTVControl {
         logger.debug("{}: Send Key {} (keyCode={}, tid={})", thingConfig.getFriendlyName(), keyName, keyCode,
                 thingConfig.getTerminalID());
         if (keyCode.length() <= "0x".length()) {
-            logger.info("{}: Key {} is unkown!", thingConfig.getFriendlyName(), keyCode);
+            logger.debug("{}: Key {} is unkown!", thingConfig.getFriendlyName(), keyCode);
             return false;
         }
 

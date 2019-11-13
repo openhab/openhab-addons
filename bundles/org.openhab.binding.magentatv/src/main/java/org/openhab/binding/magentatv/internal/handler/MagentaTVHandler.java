@@ -213,18 +213,18 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     break;
                 case CHANNEL_KEY:
                     if (command.toString().equalsIgnoreCase("PAIR")) { // special key to re-pair receiver
-                        logger.info("PAIRing key received, reconnect device {}", deviceName());
+                        logger.debug("PAIRing key received, reconnect device {}", deviceName());
                     } else {
                         control.sendKey(command.toString());
                     }
                     break;
                 default:
-                    logger.info("Command for unknown channel {}", channelUID.getAsString());
+                    logger.debug("Command for unknown channel {}", channelUID.getAsString());
             }
         } catch (MagentaTVException | RuntimeException e) {
             String errorMessage = MessageFormat.format("Channel operation failed: Command={0}, value={1}",
                     command.toString(), channelUID.getId().toString());
-            logger.info("{}", errorMessage);
+            logger.debug("{}", errorMessage);
             setOnlineState(ThingStatus.OFFLINE, errorMessage);
         }
     }
@@ -525,7 +525,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 connectReceiver(); // throws MagentaTVException on error
             }
         } catch (MagentaTVException | RuntimeException e) {
-            logger.info("{}: Re-Connect failed:: {}", deviceName(), e.getMessage());
+            logger.debug("{}: Re-new event subscription failed:: {}", deviceName(), e.getMessage());
         }
     }
 

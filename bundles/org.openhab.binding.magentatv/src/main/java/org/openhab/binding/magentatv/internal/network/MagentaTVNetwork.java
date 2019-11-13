@@ -52,7 +52,7 @@ public class MagentaTVNetwork {
      * @return
      */
     @SuppressWarnings({ "null", "unused" })
-    public boolean initLocalNet(NetworkAddressService networkAddressService) throws MagentaTVException {
+    public void initLocalNet(NetworkAddressService networkAddressService) throws MagentaTVException {
         try {
             Map<String, String> env = System.getenv();
             String portEnv = env.get(OPENHAB_HTTP_PORT);
@@ -146,31 +146,25 @@ public class MagentaTVNetwork {
                 }
             }
 
-            if (localIP.isEmpty() || localIP.equals("0.0.0.0") || localIP.equals("127.0.0.1")) {
-                {
-                    logger.warn("Unable to detect local ip address!");
-                    return false;
+            if (!localIP.isEmpty() && !localIP.equals("0.0.0.0") && !localIP.equals("127.0.0.1")) {
+                // get MAC address
+                InetAddress ip = InetAddress.getByName(localIP);
+                localInterface = NetworkInterface.getByInetAddress(ip);
+                if (localInterface != null) {
+                    byte[] mac = localInterface.getHardwareAddress();
+
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < mac.length; i++) {
+                        sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));
+                    }
+                    localMAC = sb.toString();
+                    logger.debug("Local IP address={}, Local MAC address = {}", localIP, localMAC);
+                    return;
                 }
             }
-
-            // get MAC address
-            InetAddress ip = InetAddress.getByName(localIP);
-            localInterface = NetworkInterface.getByInetAddress(ip);
-            if (localInterface != null) {
-                byte[] mac = localInterface.getHardwareAddress();
-
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < mac.length; i++) {
-                    sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));
-                }
-                localMAC = sb.toString();
-                logger.debug("Local IP address={}, Local MAC address = {}", localIP, localMAC);
-                return true;
-            }
-        } catch (IOException | RuntimeException e) {
-            throw new MagentaTVException("Unable to get local IP / MAC address");
+        } catch (IOException e) {
         }
-        return false;
+        throw new MagentaTVException("Unable to get local IP / MAC address");
     }
 
     /**

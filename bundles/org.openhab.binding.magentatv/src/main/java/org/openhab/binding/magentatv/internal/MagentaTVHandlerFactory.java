@@ -104,7 +104,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
             try {
                 return new MagentaTVHandler(this, thing, network);
             } catch (RuntimeException e) {
-                logger.info("Unable to create ThingHandler: {}", e.getMessage());
+                logger.warn("Unable to create ThingHandler: {}", e.getMessage());
 
             }
         }
@@ -355,8 +355,8 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
             if (!upnpListener.isStarted()) {
                 upnpListener.start();
             }
-        } catch (MagentaTVException e) {
-            logger.warn("Unable to initialize network access");
+        } catch (MagentaTVException | RuntimeException e) {
+            logger.warn("Unable to initialize network access: {}", e.getMessage());
         }
     }
 
