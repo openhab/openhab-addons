@@ -90,14 +90,17 @@ final class NutResponseReader {
         final int stripBeginLength = type.length() + 1;
         final String endString = String.format(END_LIST, type);
         String line = null;
+        boolean endFound = false;
 
-        while (!endString.equals(line)) {
+        while (!endFound) {
             line = reader.get();
-            if (line != null) {
-                logger.trace("Line read:{}", line);
-                addRow(variables, line, stripBeginLength);
-            } else {
+            if (line == null) {
                 throw new NutException("Unexpected end of data while reading " + type);
+            }
+            logger.trace("Line read:{}", line);
+            endFound = endString.equals(line);
+            if (!endFound) {
+                addRow(variables, line, stripBeginLength);
             }
         }
         if (logger.isTraceEnabled()) {
