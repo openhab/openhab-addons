@@ -195,7 +195,7 @@
 				<description>The password to use when connecting to a Autelis Controller.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds</description>
 				<default>5</default>
 			</parameter>

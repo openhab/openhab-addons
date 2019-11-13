@@ -40,7 +40,7 @@
 				<default>1234</default>
 			</parameter>
 			<parameter name="refresh" type="integer">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
 			</parameter>

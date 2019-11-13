@@ -388,7 +388,7 @@
 
 	<channel-type id="chem-avail" advanced="true">
 		<item-type>Number</item-type>
-		<label>Equipment is Available</label>
+		<label>Equipment Is Available</label>
 		<description>Indicates what equipment is available</description>
 		<state readOnly="true">
 		</state>

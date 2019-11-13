@@ -28,7 +28,7 @@
 
 	<channel-type id="locked" advanced="true">
 		<item-type>Contact</item-type>
-		<label>Device locked (external)</label>
+		<label>Device Locked (external)</label>
 		<description>Device is locked for switching over external sources.</description>
 		<category>Contact</category>
 		<state pattern="%s" readOnly="true" />
@@ -118,7 +118,7 @@
 
 	<channel-type id="radiator_mode">
 		<item-type>String</item-type>
-		<label>Radiator mode</label>
+		<label>Radiator Mode</label>
 		<description>States the mode of the radiator (ON/OFF/COMFORT/ECO/BOOST/WINDOW_OPEN).</description>
 		<state pattern="%s">
 			<options>

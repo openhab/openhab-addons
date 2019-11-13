@@ -6,7 +6,7 @@
 >
 	<config-description uri="binding:zway:zwayServer">
 		<parameter-group name="zwayServer">
-			<label>Z-Way server</label>
+			<label>Z-Way Server</label>
 			<description>The configuration of the Z-Way server. Except for the username and password all the information detected during the discovery.</description>
 		</parameter-group>
 
@@ -17,7 +17,7 @@
 
 		<parameter name="zwayServerIpAddress" groupName="zwayServer" type="text">
 			<context>network-address</context>
-			<label>IP address</label>
+			<label>IP Address</label>
 			<description>The IP address or hostname of the Z-Way server. If Z-Way and openHAB are running on the same machine, the default value can be used.</description>
 			<default>localhost</default>
 		</parameter>

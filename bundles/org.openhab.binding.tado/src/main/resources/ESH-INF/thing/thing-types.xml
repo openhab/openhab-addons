@@ -10,7 +10,7 @@
 
 		<config-description>
 			<parameter name="username" type="text" required="true">
-				<label>User name</label>
+				<label>User Name</label>
 				<description>User name of tado login used for API access</description>
 			</parameter>
 
@@ -61,19 +61,19 @@
 				<description>Id of the zone</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Refresh interval of home data</description>
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="fallbackTimerDuration" type="integer">
-				<label>Fallback timer duration</label>
+				<label>Fallback Timer Duration</label>
 				<description>Timer duration used if no other duration can be determined</description>
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="hvacChangeDebounce" type="integer">
-				<label>HVAC Change debounce delay</label>
+				<label>HVAC Change Debounce Delay</label>
 				<description>Duration in seconds to combine multiple HVAC changes into one.</description>
 				<default>5</default>
 				<advanced>true</advanced>
@@ -99,7 +99,7 @@
 				<description>Id of the mobile device</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Refresh interval of location state</description>
 				<default>60</default>
 				<advanced>true</advanced>
@@ -156,7 +156,7 @@
 
 	<channel-type id="fanspeed">
 		<item-type>String</item-type>
-		<label>Fan speed</label>
+		<label>Fan Speed</label>
 		<description>AC fan speed (only if supported by AC)</description>
 		<state readOnly="false">
 			<options>
@@ -197,14 +197,14 @@
 
 	<channel-type id="overlayExpiry">
 		<item-type>DateTime</item-type>
-		<label>Overlay end time</label>
+		<label>Overlay End Time</label>
 		<description>Time until when the overlay is active. Null if no overlay is set or overlay type is manual.</description>
 		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="atHome">
 		<item-type>Switch</item-type>
-		<label>At home</label>
+		<label>At Home</label>
 		<description>ON if at home, OFF if away</description>
 	</channel-type>
 

@@ -187,8 +187,8 @@ public class DwdUnwetterHandler extends BaseThingHandler {
             channels.add(createChannel(CHANNEL_SEVERITY, "String", "Severity", i));
             channels.add(createChannel(CHANNEL_DESCRIPTION, "String", "Description", i));
             channels.add(createChannel(CHANNEL_EFFECTIVE, "DateTime", "Issued", i));
-            channels.add(createChannel(CHANNEL_ONSET, "DateTime", "Valid from", i));
-            channels.add(createChannel(CHANNEL_EXPIRES, "DateTime", "Valid to", i));
+            channels.add(createChannel(CHANNEL_ONSET, "DateTime", "Valid From", i));
+            channels.add(createChannel(CHANNEL_EXPIRES, "DateTime", "Valid To", i));
             channels.add(createChannel(CHANNEL_EVENT, "String", "Type", i));
             channels.add(createChannel(CHANNEL_HEADLINE, "String", "Headline", i));
             channels.add(createChannel(CHANNEL_ALTITUDE, "Number:Length", "Height (from)", i));
