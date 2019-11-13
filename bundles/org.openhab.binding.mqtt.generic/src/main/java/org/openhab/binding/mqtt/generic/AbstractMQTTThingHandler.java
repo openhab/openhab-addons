@@ -106,15 +106,22 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         final @Nullable ChannelState data = getChannelState(channelUID);
 
         if (data == null) {
-            logger.warn("Channel {} not supported", channelUID.getId());
-            if (command instanceof RefreshType) {
-                updateState(channelUID.getId(), UnDefType.UNDEF);
+            logger.warn("Channel {} not supported!", channelUID);
+            return;
+        }
+
+        if (command instanceof RefreshType) {
+            State state = data.getCache().getChannelState();
+            if (state instanceof UnDefType) {
+                logger.debug("Channel {} received REFRESH but no value cached, ignoring", channelUID);
+            } else {
+                updateState(channelUID, state);
             }
             return;
         }
 
-        if (command instanceof RefreshType || data.isReadOnly()) {
-            updateState(channelUID.getId(), data.getCache().getChannelState());
+        if (data.isReadOnly()) {
+            logger.warn("Channel {} is a read-only channel, ignoring command {}", channelUID, command);
             return;
         }
 
