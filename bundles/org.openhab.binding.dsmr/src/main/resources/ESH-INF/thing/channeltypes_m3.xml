@@ -11,7 +11,7 @@
 	</channel-type>
 	<channel-type id="m3ValvePositionType">
 		<item-type>Number</item-type>
-		<label>Valve position</label>
+		<label>Valve Position</label>
 		<description>The valve switch position.</description>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>

@@ -64,7 +64,7 @@
 
 	<channel-type id="attenuation-factor">
 		<item-type>Number</item-type>
-		<label>Mitigation factor</label>
+		<label>Mitigation Factor</label>
 		<description>Cloud layer mitigation factor</description>
 		<state readOnly="true" pattern="%.1f">
 		</state>

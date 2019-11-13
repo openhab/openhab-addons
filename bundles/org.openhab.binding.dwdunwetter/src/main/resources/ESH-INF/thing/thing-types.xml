@@ -16,12 +16,12 @@ With the % sign at the end it is possible to query multiple cells at once. For e
 			</parameter>
 			<parameter name="refresh" type="integer" unit="min" min="15">
 				<default>30</default>
-				<label>Refresh in minutes</label>
+				<label>Refresh in Minutes</label>
 				<description>Time between to API requests in minutes. Minimum 15 minutes.</description>
 			</parameter>
 			<parameter name="warningCount" type="integer" min="1" max="15">
 				<default>1</default>
-				<label>Number of provided warnings</label>
+				<label>Number of Provided Warnings</label>
 				<description><![CDATA[Number of warnings to provide. 
 For each warning there will multiple channels.
 The warnings are sorted by severity first and begin second so the first warning is always the one with the highest severity.]]></description>
@@ -81,13 +81,13 @@ This happens after all other channels are populated]]></description>
 	</channel-type>
 	<channel-type id="onset">
 		<item-type>DateTime</item-type>
-		<label>Valid from</label>
+		<label>Valid From</label>
 		<description>Start Date and Time for which the warning is valid</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="expires">
 		<item-type>DateTime</item-type>
-		<label>Valid to</label>
+		<label>Valid To</label>
 		<description>End Date and Time for which the warning is valid</description>
 		<state readOnly="true" />
 	</channel-type>
