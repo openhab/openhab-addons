@@ -96,17 +96,19 @@
 				<default>2.0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="volumeDbMin" type="decimal" required="false" unit="dB">
+			<parameter name="volumeDbMin" type="decimal" required="false">
 				<label>Minimum Volume</label>
 				<description>Lowest volume in dB.</description>
 				<default>-80</default>
 				<advanced>true</advanced>
+				<unitLabel>dB</unitLabel>
 			</parameter>
-			<parameter name="volumeDbMax" type="decimal" required="false" unit="dB">
+			<parameter name="volumeDbMax" type="decimal" required="false">
 				<label>Maximum Volume</label>
 				<description>Highest volume in dB.</description>
 				<default>12</default>
 				<advanced>true</advanced>
+				<unitLabel>dB</unitLabel>
 			</parameter>
 		</config-description>
 
