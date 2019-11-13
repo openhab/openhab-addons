@@ -43,8 +43,8 @@
 	</config-description>
 
 	<config-description uri="enocean:virtualRockerChannel:config">
-		<parameter name="duration" type="integer">
-			<label>Time Between Press and Release Message (in ms)</label>
+		<parameter name="duration" type="integer" unit="ms">
+			<label>Time Between Press and Release Message</label>
 			<default>250</default>
 		</parameter>
 		<parameter name="switchMode" type="text">
