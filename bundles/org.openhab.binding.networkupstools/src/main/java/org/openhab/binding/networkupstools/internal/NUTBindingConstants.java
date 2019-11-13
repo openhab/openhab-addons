@@ -54,7 +54,7 @@ public class NUTBindingConstants {
         SimpleUnitFormat.getInstance().label(VOLT_AMPERE, "VA");
     }
 
-    private static final String PARAMETER_PREFIX_UPS = " ups.";
+    private static final String PARAMETER_PREFIX_UPS = "ups.";
 
     /**
      * Enum with nut names which value will be set a parameter on the thing.
