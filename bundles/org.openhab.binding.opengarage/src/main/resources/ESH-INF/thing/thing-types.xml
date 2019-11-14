@@ -19,7 +19,7 @@
 				<label>Hostname/IP Address</label>
 				<description>The host name or IP address of the OpenGarage Web API interface.</description>
 			</parameter>
-			<parameter name="port" type="integer" min="1" max="65335">
+			<parameter name="port" type="integer" min="1" max="65535">
 				<label>Port</label>
 				<description>Port of the OpenGarage Web API interface.</description>
 				<default>80</default>

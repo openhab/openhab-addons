@@ -13,7 +13,7 @@
 				<description>Host name or IP address of ETHM-1 module.</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="port" type="integer" min="1" max="65335">
+			<parameter name="port" type="integer" min="1" max="65535">
 				<label>Port Number</label>
 				<description>TCP port for the integration protocol.</description>
 				<default>7094</default>
