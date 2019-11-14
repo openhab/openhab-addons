@@ -183,6 +183,7 @@ This binding currently supports following channel types:
 | totalamphour    | Number        | Used "energy" in ampere-hours.                                                     |
 | uv              | Number        | Current UV level.                                                                  |
 | venetianBlind   | Dimmer        | Open/close and adjust angle of venetian blind                                      |
+| voltage         | Number        | Voltage                                                                            |
 | winddirection   | Number        | Wind direction in degrees.                                                         |
 | windspeed       | Number        | Wind speed in meters per second.                                                   |
 
@@ -235,6 +236,7 @@ This binding currently supports the following things / message types:
 *   [lighting5 - RFXCOM Lighting5 Actuator](#lighting5---rfxcom-lighting5-actuator)
 *   [lighting6 - RFXCOM Lighting6 Actuator](#lighting6---rfxcom-lighting6-actuator)
 *   [rain - RFXCOM Rain Sensor](#rain---rfxcom-rain-sensor)
+*   [rfxsensor - RFXCOM rfxsensor](#rfxsensor)
 *   [rfy - RFXCOM Rfy Actuator](#rfy---rfxcom-rfy-actuator)
 *   [security1 - RFXCOM Security1 Sensor](#security1---rfxcom-security1-sensor)
 *   [temperaturehumiditybarometric - RFXCOM Temperature-Humidity-Barometric Sensor](#temperaturehumiditybarometric---rfxcom-temperature-humidity-barometric-sensor)
@@ -887,6 +889,25 @@ A Rain device
         *   RAIN5 - WS2300
         *   RAIN6 - La Crosse TX5
 
+### rfxsensor - RFXCOM RFXSensor 
+
+A RFXSensor sensor
+
+#### Channels
+
+| Name             | Channel Type                        | Item Type  | Remarks |
+|------------------|-------------------------------------|------------|---------|
+| pressure         | [pressure](#channels)               | Number     |         |
+| humidity         | [humidity](#channels)               | Number     |         |
+| referenceVoltage | [voltage](#channels)                | Number     |         |
+| voltage          | [voltage](#channels)                | Number     |         |
+| temperature      | [temperature](#channels)            | Number     |         |
+| signalLevel      | [system.signal-strength](#channels) | Number     |         |
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Unit Id. Example 100
 
 ### rfy - RFXCOM Rfy Actuator
 

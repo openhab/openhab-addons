@@ -10,15 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.rfxcom.internal.exceptions;
+package org.openhab.binding.rfxcom.internal.handler;
+
+import org.eclipse.smarthome.core.types.Type;
 
 /**
- * Exception to indicate that a request was received for an unsupported channel
+ * Add support for a device state to be stored and retrieved later one
  *
  * @author Martin van Wingerden - Initial contribution
  */
-public class RFXComUnsupportedChannelException extends RFXComException {
-    public RFXComUnsupportedChannelException(String message) {
-        super(message);
-    }
+public interface DeviceState {
+    Type getLastState(String channelId);
 }

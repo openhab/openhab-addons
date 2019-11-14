@@ -22,10 +22,10 @@ import org.slf4j.LoggerFactory;
 /**
  * RFXCOM stream reader to parse RFXCOM output into messages.
  *
- * @author Martin van Wingerden - Slight refactoring for read loop for TCP connector
- * @author Mike Jagdis - Interruptible read loop
+ * @author Pauli Anttila - Initial contribution
  * @author James Hewitt-Thomas - New class
- * @author Pauli Anttila - Original read loop
+ * @author Mike Jagdis - Interruptible read loop
+ * @author Martin van Wingerden - Slight refactoring for read loop for TCP connector
  */
 public class RFXComStreamReader extends Thread {
     private final Logger logger = LoggerFactory.getLogger(RFXComStreamReader.class);
