@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Massimo Valla - Initial contribution
  */
 
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+@Component(service = UpnpDiscoveryParticipant.class)
 public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(BusGatewayUpnpDiscovery.class);

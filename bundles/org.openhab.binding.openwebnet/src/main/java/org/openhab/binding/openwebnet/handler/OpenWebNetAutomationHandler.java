@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openwebnet.message.Automation;
 import org.openwebnet.message.BaseOpenMessage;
+import org.openwebnet.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,8 +109,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
             if (shutterRunConfig == null) {
                 shutterRunConfig = AUTO_CALIBRATION;
                 logger.debug("==OWN:AutomationHandler== shutterRun null, default to AUTO");
-            } else if (shutterRunConfig instanceof java.lang.String) {
-                if (AUTO_CALIBRATION.equals(((String) shutterRunConfig).toUpperCase())) {
+            } else if (shutterRunConfig instanceof String) {
+                if (AUTO_CALIBRATION.equalsIgnoreCase(((String) shutterRunConfig))) {
                     logger.debug("==OWN:AutomationHandler== shutterRun set to AUTO in configuration");
                     shutterRun = SHUTTER_RUN_UNDEFINED;
                 } else { // try to parse int>=1000
@@ -262,7 +263,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
 
     @Override
     protected String ownIdPrefix() {
-        return org.openwebnet.message.Who.AUTOMATION.value().toString();
+        return Who.AUTOMATION.value().toString();
     }
 
     @Override
@@ -302,8 +303,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                 logger.debug("==OWN:AutomationHandler== & {} & ...CALIBRATING: reached DOWN ===> shutterRun={}",
                         deviceWhere, shutterRun);
                 updateStateInt(STATE_STOPPED);
-                logger.debug(
-                        "==OWN:AutomationHandler== & {} & ---CALIBRATION COMPLETED, now going to {}%",deviceWhere,
+                logger.debug("==OWN:AutomationHandler== & {} & ---CALIBRATION COMPLETED, now going to {}%", deviceWhere,
                         positionRequested);
                 handleShutterCommand(new PercentType(positionRequested));
                 Configuration configuration = editConfiguration();
@@ -353,8 +353,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         }
         internalState = newState;
         logger.debug(
-                "==OWN:AutomationHandler== # {} # [[[ internalState={} positionEst={} - calibrating={} shutterRun={} ]]]", deviceWhere,
-                internalState, positionEst, calibrating, shutterRun);
+                "==OWN:AutomationHandler== # {} # [[[ internalState={} positionEst={} - calibrating={} shutterRun={} ]]]",
+                deviceWhere, internalState, positionEst, calibrating, shutterRun);
     }
 
     /**

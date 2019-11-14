@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Massimo Valla - Initial contribution
  */
 
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.openwebnet")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.openwebnet")
 public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService implements OpenListener {
 
     private final Logger logger = LoggerFactory.getLogger(ZigBeeGatewayDiscoveryService.class);
