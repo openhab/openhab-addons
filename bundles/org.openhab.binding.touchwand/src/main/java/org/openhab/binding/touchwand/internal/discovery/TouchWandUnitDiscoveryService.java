@@ -45,7 +45,7 @@ import com.google.gson.JsonSyntaxException;
 public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     private static final int SEARCH_TIME = 10;
-    private static final int SCAN_INTERVAL = 120;
+    private static final int SCAN_INTERVAL = 60;
     private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY = 5;
 
     private ScheduledFuture<?> scanningJob;
@@ -159,6 +159,11 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
         public void run() {
             startScan();
         }
+    }
+
+    @Override
+    public int getScanTimeout() {
+        return SEARCH_TIME;
     }
 
     private void addDeviceDiscoveryResult(TouchWandUnitData unit, ThingTypeUID typeUID) {
