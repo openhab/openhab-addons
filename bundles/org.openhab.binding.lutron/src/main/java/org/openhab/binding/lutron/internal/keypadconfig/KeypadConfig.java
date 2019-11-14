@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.KeypadComponent;
 import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for keypad configuration definition classes
@@ -29,7 +31,9 @@ import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
  */
 @NonNullByDefault
 public abstract class KeypadConfig {
-    protected final HashMap<String, List<KeypadComponent>> modelData = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(KeypadConfig.class);
+
+    protected final HashMap<String, @Nullable List<KeypadComponent>> modelData = new HashMap<>();
 
     public abstract boolean isCCI(int id);
 
@@ -44,7 +48,7 @@ public abstract class KeypadConfig {
      * @return List of components. Will be empty if no components match.
      */
     public List<KeypadComponent> getComponents(String model) {
-        return modelData.get(model);
+        return getComponents(model, null);
     }
 
     /**
@@ -56,12 +60,20 @@ public abstract class KeypadConfig {
      */
     public List<KeypadComponent> getComponents(String model, @Nullable ComponentType type) {
         List<KeypadComponent> filteredList = new LinkedList<>();
-        for (KeypadComponent i : modelData.get(model)) {
-            if (type == null || i.type() == type) {
-                filteredList.add(i);
+        List<KeypadComponent> cList = modelData.get(model);
+        if (cList == null) {
+            logger.debug("Keypad components lookup using invalid keypad model: {}", model);
+            return filteredList;
+        } else if (type == null) {
+            return cList;
+        } else {
+            for (KeypadComponent i : cList) {
+                if (i.type() == type) {
+                    filteredList.add(i);
+                }
             }
+            return filteredList;
         }
-        return filteredList;
     }
 
     /**
@@ -83,9 +95,14 @@ public abstract class KeypadConfig {
      */
     public List<Integer> getComponentIds(String model, @Nullable ComponentType type) {
         List<Integer> idList = new LinkedList<>();
-        for (KeypadComponent i : modelData.get(model)) {
-            if (type == null || i.type() == type) {
-                idList.add(i.id());
+        List<KeypadComponent> cList = modelData.get(model);
+        if (cList == null) {
+            logger.debug("Keypad component IDs lookup using invalid keypad model: {}", model);
+        } else {
+            for (KeypadComponent i : cList) {
+                if (type == null || i.type() == type) {
+                    idList.add(i.id());
+                }
             }
         }
         return idList;
