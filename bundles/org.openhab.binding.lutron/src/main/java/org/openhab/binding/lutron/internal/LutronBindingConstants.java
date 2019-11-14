@@ -48,6 +48,7 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_QSIO = new ThingTypeUID(BINDING_ID, "qsio");
     public static final ThingTypeUID THING_TYPE_GRAFIKEYEKEYPAD = new ThingTypeUID(BINDING_ID, "grafikeyekeypad");
     public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
+    public static final ThingTypeUID THING_TYPE_PALLADIOMKEYPAD = new ThingTypeUID(BINDING_ID, "palladiomkeypad");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";

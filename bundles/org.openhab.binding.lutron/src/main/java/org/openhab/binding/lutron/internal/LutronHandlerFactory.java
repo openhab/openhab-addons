@@ -48,6 +48,7 @@ import org.openhab.binding.lutron.internal.handler.IntlKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.KeypadHandler;
 import org.openhab.binding.lutron.internal.handler.MaintainedCcoHandler;
 import org.openhab.binding.lutron.internal.handler.OccupancySensorHandler;
+import org.openhab.binding.lutron.internal.handler.PalladiomKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.PicoKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.PulsedCcoHandler;
 import org.openhab.binding.lutron.internal.handler.QSIOHandler;
@@ -82,12 +83,11 @@ import org.slf4j.LoggerFactory;
 public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by LutronDeviceDiscoveryService to discover these types
-    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR,
-                    THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_INTLKEYPAD, THING_TYPE_PICO,
-                    THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX, THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED,
-                    THING_TYPE_SHADE, THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE, THING_TYPE_QSIO,
-                    THING_TYPE_GRAFIKEYEKEYPAD, THING_TYPE_BLIND).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = Collections.unmodifiableSet(Stream.of(
+            THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD,
+            THING_TYPE_INTLKEYPAD, THING_TYPE_PICO, THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX, THING_TYPE_CCO_PULSED,
+            THING_TYPE_CCO_MAINTAINED, THING_TYPE_SHADE, THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE, THING_TYPE_QSIO,
+            THING_TYPE_GRAFIKEYEKEYPAD, THING_TYPE_BLIND, THING_TYPE_PALLADIOMKEYPAD).collect(Collectors.toSet()));
 
     // Used by the HwDiscoveryService
     public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
@@ -158,6 +158,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new PicoKeypadHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GRAFIKEYEKEYPAD)) {
             return new GrafikEyeKeypadHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_PALLADIOMKEYPAD)) {
+            return new PalladiomKeypadHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_VIRTUALKEYPAD)) {
             return new VirtualKeypadHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_VCRX)) {
