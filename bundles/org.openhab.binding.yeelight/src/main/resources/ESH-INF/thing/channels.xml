@@ -31,7 +31,7 @@
 	<!-- Color Temperature Channel -->
 	<channel-type id="colorTemperature">
 		<item-type>Dimmer</item-type>
-		<label>ColorTemperature</label>
+		<label>Color Temperature</label>
 		<description>The CT channel allows to control the CT of a light.</description>
 		<category>DimmableCT</category>
 		<tags>

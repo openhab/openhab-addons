@@ -28,7 +28,7 @@
 
 	<channel-type id="colorzone" advanced="true">
 		<item-type>Color</item-type>
-		<label>Color zone</label>
+		<label>Color Zone</label>
 		<description>Selects the zone color of the light</description>
 		<category>ColorLight</category>
 		<tags>
@@ -52,7 +52,7 @@
 
 	<channel-type id="temperaturezone" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>Temperature zone</label>
+		<label>Temperature Zone</label>
 		<description>Sets the zone temperature of the light</description>
 		<category>ColorLight</category>
 	</channel-type>

@@ -42,7 +42,7 @@
 	</channel-type>
 	<channel-type id="station_open">
 		<item-type>Contact</item-type>
-		<label>Opening state</label>
+		<label>Opening State</label>
 		<description>The reported opening-state of that Station.</description>
 		<state pattern="%s" readOnly="true"></state>
 	</channel-type>

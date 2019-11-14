@@ -200,7 +200,7 @@
 				<label>Host or IP</label>
 				<description>The host name or IP address of the Autelis Controller.</description>
 			</parameter>
-			<parameter name="port" type="integer" min="1" max="65335" required="false">
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<context>network-address</context>
 				<label>Port</label>
 				<description>The port the Autelis Controller is listening on.</description>
@@ -388,7 +388,7 @@
 
 	<channel-type id="chem-avail" advanced="true">
 		<item-type>Number</item-type>
-		<label>Equipment is Available</label>
+		<label>Equipment Is Available</label>
 		<description>Indicates what equipment is available</description>
 		<state readOnly="true">
 		</state>

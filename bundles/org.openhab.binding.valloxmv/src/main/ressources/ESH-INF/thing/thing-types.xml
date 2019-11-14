@@ -40,7 +40,7 @@
 				<description>IP address or host name of online interface of ventilation unit</description>
 			</parameter>
 			<parameter name="updateinterval" type="integer" required="false">
-				<label>Update interval</label>
+				<label>Update Interval</label>
 				<description>Data update interval in seconds (default: 60s)</description>
 				<required>false</required>
 				<default>60</default>
@@ -70,28 +70,28 @@
 
 	<channel-type id="fanspeed">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fan speed</label>
+		<label>Fan Speed</label>
 		<description>Fan speed in % (0-100)</description>
 		<state readOnly="true" min="0" max="1" pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="fanspeedextract" advanced="true">
 		<item-type>Number</item-type>
-		<label>Fan speed extracting</label>
+		<label>Fan Speed Extracting</label>
 		<description>Fan speed of extracting fan (1/min)</description>
 		<state pattern="%d 1/min" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="fanspeedsupply" advanced="true">
 		<item-type>Number</item-type>
-		<label>Fan speed supplying</label>
+		<label>Fan Speed Supplying</label>
 		<description>Fan speed of supplying fan (1/min)</description>
 		<state pattern="%d 1/min" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="tempinside">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature inside</label>
+		<label>Temperature Inside</label>
 		<description>Current temperature inside the building.</description>
 		<category>Temperature</category>
 		<state pattern="%.2f %unit%" readOnly="true" />
@@ -99,7 +99,7 @@
 
 	<channel-type id="tempoutside">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature outside</label>
+		<label>Temperature Outside</label>
 		<description>Current temperature outside the building.</description>
 		<category>Temperature</category>
 		<state pattern="%.2f %unit%" readOnly="true" />
@@ -107,7 +107,7 @@
 
 	<channel-type id="tempexhaust">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature exhaust</label>
+		<label>Temperature Exhaust</label>
 		<description>Current temperature of the air flow exhausting the building.</description>
 		<category>Temperature</category>
 		<state pattern="%.2f %unit%" readOnly="true" />
@@ -115,7 +115,7 @@
 
 	<channel-type id="tempincomingbeforeheating" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature incoming before heating</label>
+		<label>Temperature Incoming Before Heating</label>
 		<description>
 			Current temperature of the air flow incoming to the building before heating (if optional heating module
 			included in ventilation unit).
@@ -126,7 +126,7 @@
 
 	<channel-type id="tempincoming">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature incoming</label>
+		<label>Temperature Incoming</label>
 		<description>Current temperature of the air flow incoming to the building.</description>
 		<category>Temperature</category>
 		<state pattern="%.2f %unit%" readOnly="true" />
@@ -141,7 +141,7 @@
 
 	<channel-type id="cellstate">
 		<item-type>Number</item-type>
-		<label>Cell state</label>
+		<label>Cell State</label>
 		<description>Current cell state</description>
 		<state readOnly="true">
 			<options>
@@ -155,21 +155,21 @@
 
 	<channel-type id="uptimeyears">
 		<item-type>Number</item-type>
-		<label>Total uptime years</label>
+		<label>Total Uptime Years</label>
 		<description>Total uptime in years (+ uptime in hours = total uptime)</description>
 		<state pattern="%d Y" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="uptimehours">
 		<item-type>Number</item-type>
-		<label>Total uptime hours</label>
+		<label>Total Uptime Hours</label>
 		<description>Total uptime in hours (+ uptime in years = total uptime)</description>
 		<state pattern="%d h" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="uptimehourscurrent">
 		<item-type>Number</item-type>
-		<label>Current uptime hours</label>
+		<label>Current Uptime Hours</label>
 		<description>Current uptime in hours</description>
 		<state pattern="%d h" readOnly="true" />
 	</channel-type>
@@ -190,42 +190,42 @@
 
 	<channel-type id="extrfanbalancebase" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Extract fan base speed</label>
+		<label>Extract Fan Base Speed</label>
 		<description>Extract fan base speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="suppfanbalancebase" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Supply fan base speed</label>
+		<label>Supply Fan Base Speed</label>
 		<description>Supply fan base speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="homespeedsetting" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Home fan speed</label>
+		<label>Home Fan Speed</label>
 		<description>Home fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="awayspeedsetting" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Away fan speed</label>
+		<label>Away Fan Speed</label>
 		<description>Away fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="boostspeedsetting" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Boost fan speed</label>
+		<label>Boost Fan Speed</label>
 		<description>Boost fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
 	<channel-type id="homeairtemptarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Home target temperature</label>
+		<label>Home Target Temperature</label>
 		<description>Target temperature in home state</description>
 		<category>Temperature</category>
 		<state pattern="%.2f %unit%" readOnly="false" />
@@ -233,7 +233,7 @@
 
 	<channel-type id="awayairtemptarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Away target temperature</label>
+		<label>Away Target Temperature</label>
 		<description>Target temperature in away state</description>
 		<category>Temperature</category>
 		<state pattern="%.2f %unit%" readOnly="false" />
@@ -241,7 +241,7 @@
 
 	<channel-type id="boostairtemptarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Boost target temperature</label>
+		<label>Boost Target Temperature</label>
 		<description>Target temperature in boost state</description>
 		<category>Temperature</category>
 		<state pattern="%.2f %unit%" readOnly="false" />

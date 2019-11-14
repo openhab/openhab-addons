@@ -23,7 +23,7 @@
 				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be determined by bridge</description>
 			</parameter>
 			<parameter name="sendingEEPId" type="text">
-				<label>EEP for sending commands</label>
+				<label>EEP for Sending Commands</label>
 				<options>
 					<option value="A5_38_08_01">Gateway command - switching (A5_38_08 sub command 0x01)</option>
 					<option value="A5_38_08_02">Gateway command - dimming (A5_38_08 sub command 0x02)</option>
@@ -32,11 +32,11 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="broadcastMessages" type="boolean">
-				<label>Send broadcast messages</label>
+				<label>Send Broadcast Messages</label>
 				<default>true</default>
 			</parameter>
 			<parameter name="receivingEEPId" type="text">
-				<label>EEP for receiving states</label>
+				<label>EEP for Receiving States</label>
 				<options>
 					<option value="F6_00_00">PTM200 (F6 message widely used by Eltako devices)</option>
 					<option value="A5_38_08_02">Message with dimming value (A5_38_08 sub command 0x02)</option>
@@ -46,7 +46,7 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="suppressRepeating" type="boolean">
-				<label>Suppress repeating of messages</label>
+				<label>Suppress Repeating of Messages</label>
 				<default>false</default>
 			</parameter>
 		</config-description>

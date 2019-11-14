@@ -16,7 +16,7 @@
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
-				<label>Host address</label>
+				<label>Host Address</label>
 				<context>network-address</context>
 				<description>The host address of the Hyperion server JSON API.</description>
 			</parameter>
@@ -31,7 +31,7 @@
 				<default>50</default>
 			</parameter>
 			<parameter name="poll_frequency" type="integer" required="false" min="1">
-				<label>Polling frequency</label>
+				<label>Polling Frequency</label>
 				<description>How often (in seconds) to poll the Hyperion server for value changes.</description>
 				<default>15</default>
 			</parameter>
@@ -60,7 +60,7 @@
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
-				<label>Host address</label>
+				<label>Host Address</label>
 				<context>network-address</context>
 				<description>The host address of the Hyperion server JSON API.</description>
 			</parameter>
@@ -75,7 +75,7 @@
 				<default>50</default>
 			</parameter>
 			<parameter name="poll_frequency" type="integer" required="false" min="1">
-				<label>Polling frequency</label>
+				<label>Polling Frequency</label>
 				<description>How often (in seconds) to poll the Hyperion server for value changes.</description>
 				<required>true</required>
 				<default>3</default>
@@ -109,7 +109,7 @@
 
 	<channel-type id="clear" advanced="true">
 		<item-type>String</item-type>
-		<label>Clear priority</label>
+		<label>Clear Priority</label>
 		<description>Clears the given Hyperion priority</description>
 	</channel-type>
 
@@ -121,7 +121,7 @@
 
 	<channel-type id="blackborder" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Black border</label>
+		<label>Black Border</label>
 		<description>Shows the current state of the black border component and allows the black border component to be enabled or disabled</description>
 	</channel-type>
 
@@ -133,7 +133,7 @@
 
 	<channel-type id="kodichecker" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Kodi checker</label>
+		<label>Kodi Checker</label>
 		<description>Shows the current state of the Kodi checker component and allows the Kodi checker component to be enabled or disabled</description>
 	</channel-type>
 
@@ -145,13 +145,13 @@
 
 	<channel-type id="udplistener" advanced="true">
 		<item-type>Switch</item-type>
-		<label>UDP listener</label>
+		<label>UDP Listener</label>
 		<description>Shows the current state of the UDP listener component and allows the UDP listener component to be enabled or disabled</description>
 	</channel-type>
 
 	<channel-type id="boblightserver" advanced="true">
 		<item-type>Switch</item-type>
-		<label>UDP listener</label>
+		<label>UDP Listener</label>
 		<description>Shows the current state of the Boblight server component and allows the Boblight server component to be enabled or disabled</description>
 	</channel-type>
 
@@ -164,13 +164,13 @@
 
 	<channel-type id="v4l" advanced="true">
 		<item-type>Switch</item-type>
-		<label>V4L device</label>
+		<label>V4L Device</label>
 		<description>Shows the current state of the v4l component and allows the v4l component to be enabled or disabled</description>
 	</channel-type>
 
 	<channel-type id="leddevice" advanced="true">
 		<item-type>Switch</item-type>
-		<label>LED device</label>
+		<label>LED Device</label>
 		<description>Shows the current state of the LED component and allows the LED component to be enabled or disabled</description>
 	</channel-type>
 

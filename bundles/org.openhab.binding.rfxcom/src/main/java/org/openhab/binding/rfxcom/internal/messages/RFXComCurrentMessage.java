@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for current message.
@@ -124,7 +125,7 @@ public class RFXComCurrentMessage extends RFXComBatteryDeviceMessage<RFXComCurre
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_CHANNEL1_AMPS:
                 return new DecimalType(channel1Amps);
@@ -136,7 +137,7 @@ public class RFXComCurrentMessage extends RFXComBatteryDeviceMessage<RFXComCurre
                 return new DecimalType(channel3Amps);
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 

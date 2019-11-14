@@ -34,7 +34,7 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="sendingEEPId" type="text">
-				<label>EEP for sending commands</label>
+				<label>EEP for Sending Commands</label>
 				<options>
 					<option value="A5_20_04">Heating radiator valve actuating drive with feed and room temperature measurement, local set point control and display</option>
 				</options>
@@ -43,11 +43,11 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="broadcastMessages" type="boolean">
-				<label>Send broadcast messages</label>
+				<label>Send Broadcast Messages</label>
 				<default>false</default>
 			</parameter>
 			<parameter name="suppressRepeating" type="boolean">
-				<label>Suppress repeating of messages</label>
+				<label>Suppress Repeating of Messages</label>
 				<default>false</default>
 			</parameter>
 		</config-description>

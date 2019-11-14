@@ -8,7 +8,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>In wall Smart Switch (ISS2)</label>
+		<label>In Wall Smart Switch (ISS2)</label>
 		<description>An in wall switch with push buttons that can be switched on and off.</description>
 
 		<channels>

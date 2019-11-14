@@ -14,7 +14,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -174,7 +174,6 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         str += ", Command = " + command;
 
         if (subType == SubType.RESPONSE) {
-
             str += ", Transceiver type = " + transceiverType;
             str += ", Hardware version = " + hardwareVersion1 + "." + hardwareVersion2;
             str += ", Firmware type = " + (firmwareType != null ? firmwareType : "unknown");
@@ -218,7 +217,6 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = fromByte(SubType.class, super.subType);
@@ -280,7 +278,6 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             }
 
             text = "";
-
         } else if (subType == SubType.START_RECEIVER) {
             command = fromByte(Commands.class, data[4]);
 
@@ -293,11 +290,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
                 byteArray[i - dataOffset] += data[i];
             }
 
-            try {
-                text = new String(byteArray, "ASCII");
-            } catch (UnsupportedEncodingException e) {
-                // ignore
-            }
+            text = new String(byteArray, StandardCharsets.US_ASCII);
         } else {
             // We don't handle the other subTypes but to avoid null pointer
             // exceptions we set command to something. It doesn't really
@@ -307,7 +300,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public byte[] decodeMessage() throws RFXComException {
+    public byte[] decodeMessage() {
         throw new UnsupportedOperationException();
     }
 

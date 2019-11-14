@@ -25,7 +25,7 @@
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 		<label>evohome Heating Zone</label>
-		<description>This represents the Evohome Heating Zone.</description>
+		<description>This represents the evohome Heating Zone.</description>
 		<channels>
 			<channel id="Temperature" typeId="temperature" />
 			<channel id="SetPointStatus" typeId="setpointstatus" />
