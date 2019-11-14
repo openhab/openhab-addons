@@ -74,7 +74,7 @@ public class SmartHomeHandlerTest {
     public void setUp() throws IOException {
         initMocks(this);
         configuration.put(CONFIG_IP, "localhost");
-        configuration.put(CONFIG_REFRESH, 0);
+        configuration.put(CONFIG_REFRESH, 1);
         when(thing.getConfiguration()).thenReturn(configuration);
         when(smartHomeDevice.getUpdateCommand()).thenReturn(Commands.getSysinfo());
         when(connection.sendCommand(Commands.getSysinfo()))
