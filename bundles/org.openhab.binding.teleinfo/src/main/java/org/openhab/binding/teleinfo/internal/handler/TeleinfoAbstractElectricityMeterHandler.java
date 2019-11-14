@@ -15,6 +15,7 @@ package org.openhab.binding.teleinfo.internal.handler;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -123,5 +124,28 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
         } else {
             updateState(CHANNEL_EJP_FRAME_PEJP, new DecimalType(frameEjpOption.getPejp()));
         }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+
+        if (ThingStatus.ONLINE.equals(status) == false) {
+            for (Channel channel : getThing().getChannels()) {
+                if (CHANNEL_LAST_UPDATE.equals(channel.getUID().getId()) == false) {
+                    updateState(channel.getUID(), UnDefType.UNDEF);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
+        this.updateStatus(status, statusDetail, null);
+    }
+
+    @Override
+    protected void updateStatus(@NonNull ThingStatus status) {
+        this.updateStatus(status, ThingStatusDetail.NONE, null);
     }
 }
