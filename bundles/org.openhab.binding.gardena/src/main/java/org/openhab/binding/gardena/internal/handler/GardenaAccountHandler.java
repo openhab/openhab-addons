@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.gardena.internal.handler;
 
-import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -34,7 +32,6 @@ import org.openhab.binding.gardena.internal.discovery.GardenaDeviceDiscoveryServ
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.Device;
 import org.openhab.binding.gardena.internal.util.UidUtils;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +46,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
 
     private GardenaDeviceDiscoveryService discoveryService;
-    private ServiceRegistration<?> discoveryServiceRegistration;
 
     private GardenaSmart gardenaSmart = new GardenaSmartImpl();
     private GardenaConfig gardenaConfig;
@@ -68,6 +64,10 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         initializeGardena();
     }
 
+    public void setDiscoveryService(GardenaDeviceDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
+
     /**
      * Initializes the GardenaSmart account.
      */
@@ -77,7 +77,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             try {
                 String id = getThing().getUID().getId();
                 gardenaSmart.init(id, gardenaConfig, instance, scheduler);
-                registerDeviceDiscoveryService();
                 discoveryService.startScan(null);
                 discoveryService.waitForScanFinishing();
                 updateStatus(ThingStatus.ONLINE);
@@ -111,38 +110,9 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private void disposeGardena() {
         logger.debug("Disposing Gardena account '{}'", getThing().getUID().getId());
 
-        if (discoveryService != null) {
-            discoveryService.stopScan();
-            unregisterDeviceDiscoveryService();
-        }
+        discoveryService.stopScan();
 
         gardenaSmart.dispose();
-    }
-
-    /**
-     * Registers the Gardena DeviceDiscoveryService.
-     */
-    private void registerDeviceDiscoveryService() {
-        discoveryService = new GardenaDeviceDiscoveryService(this);
-        discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<>());
-        discoveryService.activate();
-    }
-
-    /**
-     * Unregisters the Gardena DeviceDisoveryService.
-     */
-    private void unregisterDeviceDiscoveryService() {
-        if (discoveryServiceRegistration != null) {
-            if (bundleContext != null) {
-                GardenaDeviceDiscoveryService service = (GardenaDeviceDiscoveryService) bundleContext
-                        .getService(discoveryServiceRegistration.getReference());
-                service.deactivate();
-            }
-            discoveryServiceRegistration.unregister();
-            discoveryServiceRegistration = null;
-            discoveryService = null;
-        }
     }
 
     /**

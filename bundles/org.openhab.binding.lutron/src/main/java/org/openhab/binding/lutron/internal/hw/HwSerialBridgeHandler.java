@@ -22,7 +22,6 @@ import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -30,7 +29,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,12 +57,11 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
     private Boolean updateTime;
     private ScheduledFuture<?> updateTimeJob;
 
+    private HwDiscoveryService discoveryService;
+
     private SerialPort serialPort;
     private OutputStreamWriter serialOutput;
     private BufferedReader serialInput;
-
-    private HwDiscoveryService discoveryService;
-    private ServiceRegistration<DiscoveryService> discoveryRegistration;
 
     public HwSerialBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -82,9 +79,6 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
             baudRate = configuration.getBaudRate().intValue();
         }
 
-        this.discoveryService = new HwDiscoveryService(this);
-        this.discoveryRegistration = bundleContext.registerService(DiscoveryService.class, discoveryService, null);
-
         if (serialPortName == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port not specified");
             return;
@@ -95,6 +89,10 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
         logger.debug("   Baud:        {},", baudRate);
 
         scheduler.execute(() -> openConnection());
+    }
+
+    public void setDiscoveryService(HwDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
     }
 
     private void openConnection() {
@@ -259,10 +257,6 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
             updateTimeJob.cancel(false);
         }
 
-        if (this.discoveryRegistration != null) {
-            this.discoveryRegistration.unregister();
-            this.discoveryRegistration = null;
-        }
         logger.debug("Finished disposing bridge.");
     }
 

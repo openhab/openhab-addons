@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import javax.security.auth.login.FailedLoginException;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -48,7 +46,6 @@ import org.openhab.binding.zoneminder.internal.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.ZoneMinderProperties;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderBridgeServerConfig;
 import org.openhab.binding.zoneminder.internal.discovery.ZoneMinderDiscoveryService;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +80,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ZoneMinderDiscoveryService discoveryService;
-    private ServiceRegistration<?> discoveryRegistration;
 
     private ScheduledFuture<?> taskWatchDog;
     private int refreshFrequency;
@@ -264,6 +260,10 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         }
     }
 
+    public void setDiscoveryService(ZoneMinderDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
+
     /**
      * Method to find the lowest possible refresh rate (based on configuration)
      *
@@ -307,11 +307,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
             if (discoveryService != null) {
                 discoveryService.deactivate();
                 discoveryService = null;
-            }
-
-            if (discoveryRegistration != null) {
-                discoveryRegistration.unregister();
-                discoveryRegistration = null;
             }
 
             logger.info("{}: Stopping WatchDog task", getLogIdentifier());
@@ -916,23 +911,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     @Override
     public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, IZoneMinderConnectionInfo connection) {
         logger.info("{}: Brigde went ONLINE", getLogIdentifier());
-
-        try {
-            // Start the discovery service
-            if (discoveryService == null) {
-                discoveryService = new ZoneMinderDiscoveryService(this, 30);
-            }
-            discoveryService.activate();
-
-            if (discoveryRegistration == null) {
-                // And register it as an OSGi service
-                discoveryRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-                        discoveryService, new Hashtable<>());
-            }
-        } catch (Exception e) {
-            logger.error("BRIDGE [{}]: Exception occurred when starting discovery service Exception='{}'", getThingId(),
-                    e.getMessage());
-        }
 
         if (taskRefreshData == null) {
             // Perform first refresh manually (we want to force update of DiskUsage)

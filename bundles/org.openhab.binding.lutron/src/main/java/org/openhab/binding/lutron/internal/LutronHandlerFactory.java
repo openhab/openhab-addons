@@ -16,7 +16,6 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,6 +24,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -60,6 +60,7 @@ import org.openhab.binding.lutron.internal.handler.VcrxHandler;
 import org.openhab.binding.lutron.internal.handler.VirtualKeypadHandler;
 import org.openhab.binding.lutron.internal.hw.HwConstants;
 import org.openhab.binding.lutron.internal.hw.HwDimmerHandler;
+import org.openhab.binding.lutron.internal.hw.HwDiscoveryService;
 import org.openhab.binding.lutron.internal.hw.HwSerialBridgeHandler;
 import org.openhab.binding.lutron.internal.radiora.RadioRAConstants;
 import org.openhab.binding.lutron.internal.radiora.handler.PhantomButtonHandler;
@@ -131,8 +132,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_IPBRIDGE)) {
             IPBridgeHandler bridgeHandler = new IPBridgeHandler((Bridge) thing);
-            LutronDeviceDiscoveryService discoveryService = registerDiscoveryService(bridgeHandler);
-            bridgeHandler.setDiscoveryService(discoveryService);
+            registerDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
             return new DimmerHandler(thing);
@@ -185,7 +185,9 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(RadioRAConstants.THING_TYPE_PHANTOM)) {
             return new PhantomButtonHandler(thing);
         } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWSERIALBRIDGE)) {
-            return new HwSerialBridgeHandler((Bridge) thing);
+            HwSerialBridgeHandler bridgeHandler = new HwSerialBridgeHandler((Bridge) thing);
+            registerDiscoveryService(bridgeHandler);
+            return bridgeHandler;
         } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWDIMMER)) {
             return new HwDimmerHandler(thing);
         }
@@ -195,7 +197,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof IPBridgeHandler) {
+        if (thingHandler instanceof IPBridgeHandler || thingHandler instanceof HwSerialBridgeHandler) {
             ServiceRegistration<?> serviceReg = discoveryServiceRegMap.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 logger.debug("Unregistering discovery service.");
@@ -207,13 +209,23 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Register a discovery service for an IP bridge handler.
      *
-     * @param bridgeHandler bridge handler for which to register the discovery service
+     * @param thingHandler bridge handler for which to register the discovery service
      */
-    private synchronized LutronDeviceDiscoveryService registerDiscoveryService(IPBridgeHandler bridgeHandler) {
+    private synchronized void registerDiscoveryService(ThingHandler thingHandler) {
         logger.debug("Registering discovery service.");
-        LutronDeviceDiscoveryService discoveryService = new LutronDeviceDiscoveryService(bridgeHandler, httpClient);
-        discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-        return discoveryService;
+        AbstractDiscoveryService discoveryService = null;
+        if (thingHandler instanceof IPBridgeHandler) {
+            IPBridgeHandler iPBridgeHandler = (IPBridgeHandler) thingHandler;
+            discoveryService = new LutronDeviceDiscoveryService(iPBridgeHandler, httpClient);
+            iPBridgeHandler.setDiscoveryService((LutronDeviceDiscoveryService) discoveryService);
+        } else if (thingHandler instanceof HwSerialBridgeHandler) {
+            HwSerialBridgeHandler hwSerialBridgeHandler = (HwSerialBridgeHandler) thingHandler;
+            discoveryService = new HwDiscoveryService(hwSerialBridgeHandler);
+            hwSerialBridgeHandler.setDiscoveryService((HwDiscoveryService) discoveryService);
+        }
+        if (discoveryService != null) {
+            discoveryServiceRegMap.put(thingHandler.getThing().getUID(),
+                    bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
+        }
     }
 }

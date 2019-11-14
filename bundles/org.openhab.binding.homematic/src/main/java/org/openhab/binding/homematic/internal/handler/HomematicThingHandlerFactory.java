@@ -14,18 +14,27 @@ package org.openhab.binding.homematic.internal.handler;
 
 import static org.openhab.binding.homematic.internal.HomematicBindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.openhab.binding.homematic.internal.discovery.HomematicDeviceDiscoveryService;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HomematicThingHandlerFactory} is responsible for creating thing and bridge handlers.
@@ -34,6 +43,10 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.homematic")
 public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(HomematicThingHandlerFactory.class);
+
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
     private HomematicTypeGenerator typeGenerator;
     private NetworkAddressService networkAddressService;
     private HttpClient httpClient;
@@ -73,11 +86,37 @@ public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())) {
-            return new HomematicBridgeHandler((Bridge) thing, typeGenerator,
+            HomematicBridgeHandler bridge = new HomematicBridgeHandler((Bridge) thing, typeGenerator,
                     networkAddressService.getPrimaryIpv4HostAddress(), httpClient);
+            registerDeviceDiscoveryService(bridge);
+            return bridge;
         } else {
             return new HomematicThingHandler(thing);
         }
     }
 
+    @Override
+    protected synchronized void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof HomematicBridgeHandler) {
+            ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+            if (serviceReg != null) {
+                HomematicDeviceDiscoveryService discoveryService = (HomematicDeviceDiscoveryService) bundleContext
+                        .getService(serviceReg.getReference());
+                serviceReg.unregister();
+                if (discoveryService != null) {
+                    discoveryService.deactivate();
+                }
+            }
+        }
+    }
+
+    private synchronized void registerDeviceDiscoveryService(HomematicBridgeHandler thingHandler) {
+        logger.trace("Registering HomematicDeviceDiscoveryService for bridge '{}'",
+                thingHandler.getThing().getUID().getId());
+        HomematicDeviceDiscoveryService discoveryService = new HomematicDeviceDiscoveryService(thingHandler);
+        discoveryService.activate();
+        thingHandler.setDiscoveryService(discoveryService);
+        discoveryServiceRegs.put(thingHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
+    }
 }
