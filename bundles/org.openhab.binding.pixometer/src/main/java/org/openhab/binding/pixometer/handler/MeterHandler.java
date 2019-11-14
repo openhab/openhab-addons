@@ -86,7 +86,7 @@ public class MeterHandler extends BaseThingHandler {
 
         try {
             PixometerMeterConfiguration config = getConfigAs(PixometerMeterConfiguration.class);
-            setRessourceID(config.resource_id);
+            setRessourceID(config.resourceId);
 
             Bridge b = this.getBridge();
             if (b == null) {

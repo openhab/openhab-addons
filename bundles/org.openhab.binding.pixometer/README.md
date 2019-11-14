@@ -29,9 +29,9 @@ The binding has no configuration options itself, all configuration is done at 'B
 
 | Parameter    | Description                                                        | Required | Default Value    | Comment                                                       |
 |--------------|--------------------------------------------------------------------|----------|------------------|---------------------------------------------------------------|
-| Username     |                                                                    | Yes      | -                |                                                               |
+| User     |                                                                    | Yes      | -                |                                                               |
 | Password     |                                                                    | Yes      | -                |                                                               |
-| Refresh Time | Sets the refresh time. Minimum is 60 Minutes.                      | Yes      | 240              |                                                               |
+| Refresh | Sets the refresh time. Minimum is 60 Minutes.                      | Yes      | 240              |                                                               |
 | Scope        | The scope (read or write) you want to grant openHAB for api usage. | Yes      | Read only access | Currently not used. Just prepared for a possible later usage. |
 | Auth Token   | The currently used auth token.                                     | -        | -                |                                                               |
 

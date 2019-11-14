@@ -102,7 +102,7 @@ public class ApiserviceHandler extends BaseBridgeHandler {
      */
     private void obtainAuthTokenAndExpiryDate(String user, String password, String scope) {
         try {
-            String url = new StringBuilder(API_BASE_URL).append("v1/access-token/").toString();
+            String url = API_BASE_URL + "v1/access-token/";
             Properties urlHeader = (Properties) new Properties().put("CONTENT-TYPE", "application/json");
 
             JsonObject httpBody = new JsonObject();

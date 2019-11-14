@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="pixometer"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="energymeter">
 		<supported-bridge-type-refs>
@@ -26,17 +26,17 @@
 		<item-type>Number:Energy</item-type>
 		<label>Last Reading</label>
 		<description>The last value that has been read for this meter.</description>
-		<state pattern="%.1f  %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="last_reading_date">
 		<item-type>DateTime</item-type>
-		<label>Time Of Last Reading</label>
+		<label>Time of Last Reading</label>
 		<description>The last time that the current meter has been read.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="last_refresh_date">
 		<item-type>DateTime</item-type>
-		<label>Time Of Last Refresh</label>
+		<label>Time of Last Refresh</label>
 		<description>The last time that the thing has been refreshed.</description>
 		<state readOnly="true" />
 	</channel-type>
