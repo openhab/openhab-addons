@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
@@ -19,8 +20,9 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComGasMessageTest {
 
     @Test(expected = RFXComMessageNotImplementedException.class)

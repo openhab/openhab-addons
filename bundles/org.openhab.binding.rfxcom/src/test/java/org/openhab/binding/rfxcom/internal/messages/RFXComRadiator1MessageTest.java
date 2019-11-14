@@ -14,14 +14,16 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.RADIATOR1;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComRadiator1MessageTest {
     @Test(expected = RFXComMessageNotImplementedException.class)
     public void checkNotImplemented() throws Exception {

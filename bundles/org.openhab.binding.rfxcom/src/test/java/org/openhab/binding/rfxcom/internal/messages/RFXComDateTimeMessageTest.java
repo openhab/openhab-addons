@@ -15,6 +15,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
@@ -23,8 +24,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComDateTimeMessageTest {
     @Test
     public void testSomeMessages() throws RFXComException {
@@ -38,7 +40,7 @@ public class RFXComDateTimeMessageTest {
         assertEquals("Signal Level", 2, RFXComTestHelper.getActualIntValue(msg, CHANNEL_SIGNAL_LEVEL));
 
         assertEquals("Converted value", DateTimeType.valueOf("2003-04-29T13:21:10"),
-                msg.convertToState(CHANNEL_DATE_TIME));
+                msg.convertToState(CHANNEL_DATE_TIME, new MockDeviceState()));
 
         byte[] decoded = msg.decodeMessage();
 

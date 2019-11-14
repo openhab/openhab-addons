@@ -148,6 +148,13 @@
 		<description>Open/close and adjust angle of venetian blind</description>
 	</channel-type>
 
+	<channel-type id="voltage">
+		<item-type>Number</item-type>
+		<label>Voltage</label>
+		<description>Measured voltage</description>
+		<state pattern="%d V" readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="instantpower">
 		<item-type>Number</item-type>
 		<label>Instant Power</label>
