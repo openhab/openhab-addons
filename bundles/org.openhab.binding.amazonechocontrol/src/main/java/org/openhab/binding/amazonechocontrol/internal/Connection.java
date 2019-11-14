@@ -429,7 +429,7 @@ public class Connection {
                 }
             }
         } catch (URISyntaxException | IOException | ConnectionException e) {
-            logger.debug("Getting account customer Id failed {}", e);
+            logger.debug("Getting account customer Id failed", e);
         }
         return loginTime;
     }
@@ -450,7 +450,7 @@ public class Connection {
                     return authentication;
                 }
             } catch (JsonSyntaxException | IllegalStateException e) {
-                logger.info("No valid json received {}", e);
+                logger.info("No valid json received", e);
                 return null;
             }
         }
@@ -624,7 +624,7 @@ public class Connection {
                         try {
                             makeRequest(verb, url, postData, json, autoredirect, customHeaders, badRequestRepeats - 1);
                         } catch (IOException | URISyntaxException e) {
-                            logger.debug("Repeat fails {}", e);
+                            logger.debug("Repeat fails", e);
                         }
                     }, 500, TimeUnit.MILLISECONDS);
                     return connection;
@@ -887,7 +887,7 @@ public class Connection {
         try {
             return gson.fromJson(json, type);
         } catch (JsonParseException | IllegalStateException e) {
-            logger.warn("Parsing json failed {}", e);
+            logger.warn("Parsing json failed", e);
             logger.warn("Illegal json: {}", json);
             throw e;
         }
@@ -905,7 +905,7 @@ public class Connection {
                 return result;
             }
         } catch (IOException | URISyntaxException e) {
-            logger.info("getting wakewords failed {}", e);
+            logger.info("getting wakewords failed", e);
         }
         return new WakeWord[0];
     }
@@ -950,7 +950,7 @@ public class Connection {
                 return activiesArray;
             }
         } catch (IOException | URISyntaxException e) {
-            logger.info("getting activities failed {}", e);
+            logger.info("getting activities failed", e);
         }
         return new Activity[0];
     }
@@ -1008,7 +1008,7 @@ public class Connection {
                 return deviceNotificationStates;
             }
         } catch (IOException | URISyntaxException e) {
-            logger.info("Error getting device notification states {}", e);
+            logger.info("Error getting device notification states", e);
         }
         return new DeviceNotificationState[0];
     }
@@ -1023,7 +1023,7 @@ public class Connection {
                 return ascendingAlarmModelList;
             }
         } catch (IOException | URISyntaxException e) {
-            logger.info("Error getting device notification states {}", e);
+            logger.info("Error getting device notification states", e);
         }
         return new AscendingAlarmModel[0];
     }

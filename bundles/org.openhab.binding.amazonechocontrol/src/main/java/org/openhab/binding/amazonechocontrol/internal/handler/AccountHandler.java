@@ -157,7 +157,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 refreshData();
             }
         } catch (IOException | URISyntaxException e) {
-            logger.info("handleCommand fails: {}", e);
+            logger.info("handleCommand fails", e);
         }
     }
 
@@ -344,7 +344,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
 
         } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
-            logger.error("check login fails with unexpected error {}", e);
+            logger.error("check login fails with unexpected error", e);
         }
     }
 
@@ -385,7 +385,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     this.webSocketConnection = new WebSocketConnection(connection.getAmazonSite(),
                             connection.getSessionCookies(), this);
                 } catch (IOException e) {
-                    logger.warn("Web socket connection starting failed: {}", e);
+                    logger.warn("Web socket connection starting failed", e);
                 }
             }
             return false;
@@ -409,9 +409,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 }
                 logger.debug("checkData {} finished", getThing().getUID().getAsString());
             } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-                logger.debug("checkData fails {}", e);
+                logger.debug("checkData fails", e);
             } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
-                logger.error("checkData fails with unexpected error {}", e);
+                logger.error("checkData fails with unexpected error", e);
             }
         }
     }
@@ -429,7 +429,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         try {
             notifications = currentConnection.notifications();
         } catch (IOException | URISyntaxException e) {
-            logger.debug("refreshNotifications failed {}", e);
+            logger.debug("refreshNotifications failed", e);
             return;
         }
         ZonedDateTime timeStampNow = ZonedDateTime.now();
@@ -480,7 +480,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                         try {
                             musicProviders = currentConnection.getMusicProviders();
                         } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-                            logger.debug("Update music provider failed {}", e);
+                            logger.debug("Update music provider failed", e);
                         }
                     }
                 }
@@ -496,13 +496,13 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                         try {
                             notificationSounds = currentConnection.getNotificationSounds(device);
                         } catch (IOException | HttpException | JsonSyntaxException | ConnectionException e) {
-                            logger.debug("Update notification sounds failed {}", e);
+                            logger.debug("Update notification sounds failed", e);
                         }
                         // update playlists
                         try {
                             playlists = currentConnection.getPlaylists(device);
                         } catch (IOException | HttpException | JsonSyntaxException | ConnectionException e) {
-                            logger.debug("Update playlist failed {}", e);
+                            logger.debug("Update playlist failed", e);
                         }
                     }
 
@@ -543,9 +543,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
                 logger.debug("refresh data {} finished", getThing().getUID().getAsString());
             } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-                logger.debug("refresh data fails {}", e);
+                logger.debug("refresh data fails", e);
             } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
-                logger.error("refresh data fails with unexpected error {}", e);
+                logger.error("refresh data fails with unexpected error", e);
             }
         }
     }
@@ -637,7 +637,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             try {
                 currentConnection.setEnabledFlashBriefings(feeds);
             } catch (IOException | URISyntaxException e) {
-                logger.warn("Set flashbriefing profile failed {}", e);
+                logger.warn("Set flashbriefing profile failed", e);
             }
         }
         updateFlashBriefingHandlers();
@@ -699,7 +699,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
             this.currentFlashBriefingJson = gson.toJson(forSerializer);
         } catch (HttpException | JsonSyntaxException | IOException | URISyntaxException | ConnectionException e) {
-            logger.warn("get flash briefing profiles fails {}", e);
+            logger.warn("get flash briefing profiles fails", e);
         }
 
     }
@@ -710,7 +710,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             handleWebsocketCommand(pushCommand);
         } catch (Exception e) {
             // should never happen, but if the exception is going out of this function, the binding stop working.
-            logger.warn("handling of websockets fails: {}", e);
+            logger.warn("handling of websockets fails", e);
         }
     }
 

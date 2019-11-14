@@ -81,7 +81,7 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
 
             logger.trace("addBridge(): '{}' was added to Smarthome inbox.", thingUID);
         } catch (Exception e) {
-            logger.error("addBridge(): Error: {}", e);
+            logger.error("addBridge(): Error", e);
         }
     }
 
@@ -117,7 +117,7 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
 
             logger.trace("addBridge(): '{}' was added to Smarthome inbox.", thingUID);
         } catch (Exception e) {
-            logger.error("addBridge(): Error: {}", e);
+            logger.error("addBridge(): Error", e);
         }
     }
 }

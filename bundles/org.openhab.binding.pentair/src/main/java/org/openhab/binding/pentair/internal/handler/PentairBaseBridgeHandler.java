@@ -446,7 +446,7 @@ public abstract class PentairBaseBridgeHandler extends BaseBridgeHandler {
             writer.write(buf, 0, 5 + p.getLength() + 8);
             writer.flush();
         } catch (IOException e) {
-            logger.trace("I/O error while writing stream: {}", e);
+            logger.trace("I/O error while writing stream", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
