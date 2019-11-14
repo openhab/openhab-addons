@@ -4,12 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-    <channel-type id="baseType">
-        <item-type>Number:Energy</item-type>
-        <label>BASE</label>
-        <description>BASE</description>
-        <category>Energy</category>
-        <state pattern="%d Wh" readOnly="true" />
-    </channel-type>
-    
+	<channel-type id="baseType">
+		<item-type>Number:Energy</item-type>
+		<label>BASE</label>
+		<description>BASE</description>
+		<category>Energy</category>
+		<state pattern="%d Wh" readOnly="true" />
+	</channel-type>
+
 </thing:thing-descriptions>

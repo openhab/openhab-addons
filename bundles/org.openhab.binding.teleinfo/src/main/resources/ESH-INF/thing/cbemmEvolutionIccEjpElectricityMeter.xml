@@ -17,7 +17,7 @@
 			<channel id="currentPower" typeId="currentPowerType" />
 			<channel id="pejp" typeId="pejpType" />
 			<channel id="ejphpm" typeId="ejphpmType" />
-			<channel id="ejphn" typeId="ejphnType"/>
+			<channel id="ejphn" typeId="ejphnType" />
 			<channel id="lastUpdate" typeId="lastUpdateType" />
 		</channels>
 
@@ -25,16 +25,16 @@
 			<property name="adco">adco</property>
 		</properties>
 
-<!-- 		<config-description> -->
-<!-- 			<parameter name="hchcKWhPricing" type="integer" required="true" min="0"> -->
-<!-- 				<label>Pricing of 1 kWh during HCHC period</label> -->
-<!-- 				<unitLabel>euro</unitLabel> -->
-<!-- 			</parameter> -->
-<!--             <parameter name="hchpKWhPricing" type="integer" required="true" min="0"> -->
-<!--                 <label>Pricing of 1 kWh during HCHP period</label> -->
-<!--                 <unitLabel>euro</unitLabel> -->
-<!--             </parameter> -->
-<!-- 		</config-description> -->
+		<!-- <config-description> -->
+		<!-- <parameter name="hchcKWhPricing" type="integer" required="true" min="0"> -->
+		<!-- <label>Pricing of 1 kWh during HCHC period</label> -->
+		<!-- <unitLabel>euro</unitLabel> -->
+		<!-- </parameter> -->
+		<!-- <parameter name="hchpKWhPricing" type="integer" required="true" min="0"> -->
+		<!-- <label>Pricing of 1 kWh during HCHP period</label> -->
+		<!-- <unitLabel>euro</unitLabel> -->
+		<!-- </parameter> -->
+		<!-- </config-description> -->
 	</thing-type>
 
 </thing:thing-descriptions>

@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.teleinfo.internal.reader.io;
 
 import java.io.FileInputStream;
@@ -20,6 +32,11 @@ import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.util.TestUtils;
 
+/**
+ * The {@link TeleinfoInputStreamTest} test class for {@link TeleinfoInputStream}.
+ *
+ * @author Nicolas SIBERIL - Initial contribution
+ */
 public class TeleinfoInputStreamTest {
 
     @Test

@@ -46,7 +46,9 @@ import org.openhab.binding.lifx.internal.protocol.SetColorZonesRequest;
 import org.openhab.binding.lifx.internal.protocol.SetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.protocol.SetLightPowerRequest;
 import org.openhab.binding.lifx.internal.protocol.SetPowerRequest;
+import org.openhab.binding.lifx.internal.protocol.SetTileEffectRequest;
 import org.openhab.binding.lifx.internal.protocol.SignalStrength;
+import org.openhab.binding.lifx.internal.protocol.Effect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -325,6 +327,14 @@ public class LifxLightStateChanger implements LifxLightStateListener {
     public void handleSignalStrengthChange(@Nullable SignalStrength oldSignalStrength,
             SignalStrength newSignalStrength) {
         // Nothing to handle
+    }
+
+    @Override
+    public void handleTileEffectChange(@Nullable Effect oldEffect, Effect newEffect) {
+        if (oldEffect == null || !oldEffect.equals(newEffect)) {
+            SetTileEffectRequest packet = new SetTileEffectRequest(newEffect);
+            replacePacketsInMap(packet);
+        }
     }
 
     public void handleResponsePacket(Packet packet) {

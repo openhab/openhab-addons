@@ -169,7 +169,11 @@
 /bundles/org.openhab.binding.systeminfo/ @svilenvul
 /bundles/org.openhab.binding.tado/ @dfrommi
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
+<<<<<<< HEAD
 /bundles/org.openhab.binding.teleinfo/ @Nokyyz
+=======
+/bundles/org.openhab.binding.telegram/ @ZzetT
+>>>>>>> d2f521be1fce5c7c3dd82beb997c23fdf054d30f
 /bundles/org.openhab.binding.tellstick/ @jarlebh
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.toon/ @jongj

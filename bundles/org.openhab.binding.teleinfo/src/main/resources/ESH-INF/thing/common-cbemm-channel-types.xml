@@ -4,51 +4,51 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-    <channel-type id="imaxType">
-        <item-type>Number:ElectricCurrent</item-type>
-        <label>IMAX</label>
-        <description>IMAX</description>
-        <category>Energy</category>
-        <state pattern="%d A" readOnly="true" />
-    </channel-type>
+	<channel-type id="imaxType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>IMAX</label>
+		<description>IMAX</description>
+		<category>Energy</category>
+		<state pattern="%d A" readOnly="true" />
+	</channel-type>
 
-    <channel-type id="iinstType">
-        <item-type>Number:ElectricCurrent</item-type>
-        <label>IINST</label>
-        <description>IINST</description>
-        <category>Energy</category>
-        <state pattern="%d A" readOnly="true" />
-    </channel-type>
-    
-    <channel-type id="currentPowerType">
-        <item-type>Number:Power</item-type>
-        <label>currentpower</label>
-        <description>Instantaneous power</description>
-        <category>Energy</category>
-        <state pattern="%d W" readOnly="true" />
-        <config-description>
-            <parameter name="powerFactor" type="integer">
-                <label>Power factor</label>
-                <limitToOptions>true</limitToOptions>
-                <required>true</required>
-                <unitLabel>Volt</unitLabel>
-                <verify>true</verify>
-                <options>
-                    <option value="220">220</option> 
-                    <option value="230">230</option> 
-                    <option value="240">240</option>   
-                </options>
-                <default>230</default>
-            </parameter>
-        </config-description>
-    </channel-type>
-    
-    <channel-type id="adpsType">
-        <item-type>Number:ElectricCurrent</item-type>
-        <label>ADPS</label>
-        <description>ADPS</description>
-        <category>Energy</category>
-        <state pattern="%d A" readOnly="true" />
-    </channel-type>
-    
+	<channel-type id="iinstType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>IINST</label>
+		<description>IINST</description>
+		<category>Energy</category>
+		<state pattern="%d A" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="currentPowerType">
+		<item-type>Number:Power</item-type>
+		<label>currentpower</label>
+		<description>Instantaneous power</description>
+		<category>Energy</category>
+		<state pattern="%d W" readOnly="true" />
+		<config-description>
+			<parameter name="powerFactor" type="integer">
+				<label>Power factor</label>
+				<limitToOptions>true</limitToOptions>
+				<required>true</required>
+				<unitLabel>Volt</unitLabel>
+				<verify>true</verify>
+				<options>
+					<option value="220">220</option>
+					<option value="230">230</option>
+					<option value="240">240</option>
+				</options>
+				<default>230</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="adpsType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>ADPS</label>
+		<description>ADPS</description>
+		<category>Energy</category>
+		<state pattern="%d A" readOnly="true" />
+	</channel-type>
+
 </thing:thing-descriptions>

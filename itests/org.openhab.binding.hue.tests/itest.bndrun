@@ -42,9 +42,6 @@ Fragment-Host: org.openhab.binding.hue
 	org.eclipse.jetty.websocket.common;version='[9.4.11,9.4.12)',\
 	org.eclipse.jetty.xml;version='[9.4.11,9.4.12)',\
 	org.jupnp;version='[2.5.2,2.5.3)',\
-	org.objectweb.asm;version='[7.0.0,7.0.1)',\
-	org.objectweb.asm.commons;version='[7.0.0,7.0.1)',\
-	org.objectweb.asm.tree;version='[7.0.0,7.0.1)',\
 	org.openhab.binding.hue;version='[2.5.0,2.5.1)',\
 	org.openhab.binding.hue.tests;version='[2.5.0,2.5.1)',\
 	org.openhab.core;version='[2.5.0,2.5.1)',\
@@ -70,4 +67,7 @@ Fragment-Host: org.openhab.binding.hue
 	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
 	tec.uom.se;version='[1.0.10,1.0.11)',\
 	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
-	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)'
+	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)',\
+	org.objectweb.asm;version='[7.1.0,7.1.1)',\
+	org.objectweb.asm.commons;version='[7.1.0,7.1.1)',\
+	org.objectweb.asm.tree;version='[7.1.0,7.1.1)'

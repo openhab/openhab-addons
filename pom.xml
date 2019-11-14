@@ -44,7 +44,7 @@
   </scm>
 
   <issueManagement>
-    <system>Github</system>
+    <system>GitHub</system>
     <url>https://github.com/openhab/openhab2-addons/issues</url>
   </issueManagement>
 
@@ -67,8 +67,8 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
-    <bnd.version>4.2.0</bnd.version>
-    <karaf.version>4.2.6</karaf.version>
+    <bnd.version>4.3.0</bnd.version>
+    <karaf.version>4.2.7</karaf.version>
     <sat.version>0.8.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
@@ -420,8 +420,7 @@ Import-Package: \\
           </executions>
         </plugin>
 
-        <!-- This plugin's configuration is used to store Eclipse m2e settings
-          only. -->
+        <!-- This plugin's configuration is used to store Eclipse m2e settings only. -->
         <!-- It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>

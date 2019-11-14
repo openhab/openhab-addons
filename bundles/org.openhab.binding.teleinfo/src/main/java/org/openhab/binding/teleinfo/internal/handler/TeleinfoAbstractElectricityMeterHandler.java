@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -122,6 +123,19 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
             updateState(CHANNEL_EJP_FRAME_PEJP, UnDefType.NULL);
         } else {
             updateState(CHANNEL_EJP_FRAME_PEJP, new DecimalType(frameEjpOption.getPejp()));
+        }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+
+        if (ThingStatus.ONLINE.equals(status) == false) {
+            for (Channel channel : getThing().getChannels()) {
+                if (CHANNEL_LAST_UPDATE.equals(channel.getUID().getId()) == false) {
+                    updateState(channel.getUID(), UnDefType.UNDEF);
+                }
+            }
         }
     }
 }

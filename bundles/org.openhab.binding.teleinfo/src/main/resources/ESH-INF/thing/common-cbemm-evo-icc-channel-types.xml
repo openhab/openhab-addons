@@ -4,12 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-    <channel-type id="pappType">
-        <item-type>Number</item-type>
-        <label>PAPP</label>
-        <description>PAPP</description>
-        <category>Energy</category>
-        <state pattern="%d VA" readOnly="true" />
-    </channel-type>
-    
+	<channel-type id="pappType">
+		<item-type>Number</item-type>
+		<label>PAPP</label>
+		<description>PAPP</description>
+		<category>Energy</category>
+		<state pattern="%d VA" readOnly="true" />
+	</channel-type>
+
 </thing:thing-descriptions>

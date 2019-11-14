@@ -36,7 +36,7 @@ Additionally the following parameters can be set:
 Reconnect parameters are:
 
 * __reconnectTime__: Reconnect time in ms. If a connection is lost, the binding will wait this time before it tries to reconnect. Defaults to 60000 (60s).
-* __keepAlive__: Keep alive / heartbeat timer in ms. It can take up to this time to determine if a server connection is lost. A lower value may keep the broker unnecessarily busy for no or little additional value. Defaults to 60000 (60s).
+* __keepAlive__: Keep alive / heartbeat timer in s. It can take up to this time to determine if a server connection is lost. A lower value may keep the broker unnecessarily busy for no or little additional value. Defaults to 60s.
 
 An MQTT last will and testament can be configured:
 

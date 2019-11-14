@@ -14,7 +14,8 @@
   <name>openHAB Add-ons :: Bundles :: Tellstick Binding</name>
 
   <properties>
-    <bnd.importpackage>com.barchart.udt*;resolution:=optional,com.google.protobuf;resolution:=optional,com.jcraft.jzlib;resolution:=optional,com.luckycatlabs.sunrisesunset*;resolution:=optional,io.netty.handler.codec.dns;resolution:=optional,javax.activation;resolution:=optional,org.apache.commons.cli;resolution:=optional,org.apache.tomcat*;resolution:=optional,org.bouncycastle*;resolution:=optional,org.eclipse.jetty*;resolution:=optional,org.eclipse.swt*;resolution:=optional,org.jboss.marshalling*;resolution:=optional,sun.net.dns*;resolution:=optional,sun.security*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>!com.luckycatlabs.*,!com.jcraft.jzlib.*,!org.apache.commons.cli.*,!org.eclipse.swt.*</bnd.importpackage>
+    <dep.noembedding>netty-transport-native-unix-common,netty-common,netty-transport,netty-transport-native-epoll,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-handler</dep.noembedding>
   </properties>
 
   <dependencies>
@@ -22,7 +23,91 @@
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>4.2.1</version>
+      <version>4.5.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.tellstick</groupId>
+      <artifactId>javatellstick</artifactId>
+      <version>1.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.asynchttpclient</groupId>
+      <artifactId>async-http-client</artifactId>
+      <version>2.0.19</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.asynchttpclient</groupId>
+      <artifactId>async-http-client-netty-utils</artifactId>
+      <version>2.0.19</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.typesafe.netty</groupId>
+      <artifactId>netty-reactive-streams</artifactId>
+      <version>1.0.8</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-transport-native-unix-common</artifactId>
+      <version>4.1.34.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec</artifactId>
+      <version>4.1.34.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec-http</artifactId>
+      <version>4.1.34.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-common</artifactId>
+      <version>4.1.34.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-handler</artifactId>
+      <version>4.1.34.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-resolver</artifactId>
+      <version>4.1.34.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-transport</artifactId>
+      <version>4.1.34.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-transport-native-epoll</artifactId>
+      <version>4.1.34.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-buffer</artifactId>
+      <version>4.1.34.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.reactivestreams</groupId>
+      <artifactId>reactive-streams</artifactId>
+      <version>1.0.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

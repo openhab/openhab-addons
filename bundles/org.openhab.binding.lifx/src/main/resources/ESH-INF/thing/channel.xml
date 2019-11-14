@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="lifx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="lifx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -54,6 +55,20 @@
 		<label>Temperature zone</label>
 		<description>Sets the zone temperature of the light</description>
 		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="effect">
+		<item-type>String</item-type>
+		<label>Effect</label>
+		<description>Sets the effect of the light</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="morph">Morph</option>
+				<option value="flame">Flame</option>
+			</options>
+		</state>
+		<config-description-ref uri="channel-type:lifx:effect" />
 	</channel-type>
 
 </thing:thing-descriptions>

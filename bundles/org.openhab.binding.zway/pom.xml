@@ -13,11 +13,21 @@
 
   <name>openHAB Add-ons :: Bundles :: ZWay Binding</name>
 
+  <properties>
+    <dep.noembedding>commons-lang3</dep.noembedding>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.4</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.pathec</groupId>
+      <artifactId>zway-lib</artifactId>
+      <version>0.2.9.OH</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
