@@ -22,12 +22,12 @@
 			<description>The IP or host name of the Kodi</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="port" type="integer" required="true" min="1" max="65335" groupName="network">
+		<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="network">
 			<label>Web Socket Service Port</label>
 			<description>Port for the web socket service</description>
 			<default>9090</default>
 		</parameter>
-		<parameter name="httpPort" type="integer" required="true" min="1" max="65335" groupName="network">
+		<parameter name="httpPort" type="integer" required="true" min="1" max="65535" groupName="network">
 			<label>HTTP Service Port</label>
 			<description>Port for the HTTP service.</description>
 			<default>8080</default>
