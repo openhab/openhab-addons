@@ -27,8 +27,7 @@ public interface RFXComMessage {
     /**
      * Procedure for encode raw data.
      *
-     * @param data
-     *                 Raw data.
+     * @param data Raw data.
      */
     void encodeMessage(byte[] data) throws RFXComException;
 
@@ -41,7 +40,6 @@ public interface RFXComMessage {
 
     /**
      * Procedure for converting openHAB state to RFXCOM object.
-     *
      */
     void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException;
 

@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN_LUCCI_DC_II;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.LUCCI_AIR_DC_II;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -20,25 +26,24 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
-import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN_LUCCI_DC_II;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.LUCCI_AIR_DC_II;
-
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComFanLucciAirDc2MessageTest {
 
     @Test
     public void testCommandOn() throws RFXComException {
-        testCommand(CHANNEL_COMMAND, OnOffType.ON, OnOffType.ON, UnDefType.UNDEF, new DecimalType(3), StringType.valueOf("SPEED_3"));
+        testCommand(CHANNEL_COMMAND, OnOffType.ON, OnOffType.ON, UnDefType.UNDEF, new DecimalType(3),
+                StringType.valueOf("SPEED_3"));
     }
 
     @Test
     public void testCommandOff() throws RFXComException {
-        testCommand(CHANNEL_COMMAND, OnOffType.OFF, OnOffType.OFF, UnDefType.UNDEF, new DecimalType(0), StringType.valueOf("POWER_OFF"));
+        testCommand(CHANNEL_COMMAND, OnOffType.OFF, OnOffType.OFF, UnDefType.UNDEF, new DecimalType(0),
+                StringType.valueOf("POWER_OFF"));
     }
 
     @Test
@@ -73,15 +78,24 @@ public class RFXComFanLucciAirDc2MessageTest {
 
     @Test
     public void testCommandString() throws RFXComException {
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("POWER_OFF"), OnOffType.OFF, UnDefType.UNDEF, new DecimalType(0), StringType.valueOf("POWER_OFF"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("LIGHT"), null, OnOffType.ON, null, StringType.valueOf("LIGHT"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("REVERSE"), null, UnDefType.UNDEF, null, StringType.valueOf("REVERSE"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_1"), OnOffType.ON, UnDefType.UNDEF, new DecimalType(1), StringType.valueOf("SPEED_1"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_2"), OnOffType.ON, UnDefType.UNDEF, new DecimalType(2), StringType.valueOf("SPEED_2"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_3"), OnOffType.ON, UnDefType.UNDEF, new DecimalType(3), StringType.valueOf("SPEED_3"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_4"), OnOffType.ON, UnDefType.UNDEF, new DecimalType(4), StringType.valueOf("SPEED_4"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_5"), OnOffType.ON, UnDefType.UNDEF, new DecimalType(5), StringType.valueOf("SPEED_5"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_6"), OnOffType.ON, UnDefType.UNDEF, new DecimalType(6), StringType.valueOf("SPEED_6"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("POWER_OFF"), OnOffType.OFF, UnDefType.UNDEF,
+                new DecimalType(0), StringType.valueOf("POWER_OFF"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("LIGHT"), null, OnOffType.ON, null,
+                StringType.valueOf("LIGHT"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("REVERSE"), null, UnDefType.UNDEF, null,
+                StringType.valueOf("REVERSE"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_1"), OnOffType.ON, UnDefType.UNDEF,
+                new DecimalType(1), StringType.valueOf("SPEED_1"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_2"), OnOffType.ON, UnDefType.UNDEF,
+                new DecimalType(2), StringType.valueOf("SPEED_2"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_3"), OnOffType.ON, UnDefType.UNDEF,
+                new DecimalType(3), StringType.valueOf("SPEED_3"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_4"), OnOffType.ON, UnDefType.UNDEF,
+                new DecimalType(4), StringType.valueOf("SPEED_4"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_5"), OnOffType.ON, UnDefType.UNDEF,
+                new DecimalType(5), StringType.valueOf("SPEED_5"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("SPEED_6"), OnOffType.ON, UnDefType.UNDEF,
+                new DecimalType(6), StringType.valueOf("SPEED_6"));
     }
 
     private void testFanSpeed(int value, OnOffType expectedCommand) throws RFXComException {
@@ -91,10 +105,14 @@ public class RFXComFanLucciAirDc2MessageTest {
         } else {
             expectedCommandString = StringType.valueOf("SPEED_" + value);
         }
-        testCommand(CHANNEL_FAN_SPEED, new DecimalType(value), expectedCommand, UnDefType.UNDEF, new DecimalType(value), expectedCommandString);
+        testCommand(CHANNEL_FAN_SPEED, new DecimalType(value), expectedCommand, UnDefType.UNDEF, new DecimalType(value),
+                expectedCommandString);
     }
 
-    private void testCommand(String channel, State inputValue, OnOffType expectedCommand, State expectedLightCommand, State expectedFanSpeed, State expectedCommandString) throws RFXComException {
-        RFXComFanMessageTest.testCommand(LUCCI_AIR_DC_II, channel, inputValue, expectedCommand, expectedLightCommand, expectedFanSpeed, expectedCommandString, FAN_LUCCI_DC_II);
+    private void testCommand(String channel, State inputValue, @Nullable OnOffType expectedCommand,
+            State expectedLightCommand, @Nullable State expectedFanSpeed, State expectedCommandString)
+            throws RFXComException {
+        RFXComFanMessageTest.testCommand(LUCCI_AIR_DC_II, channel, inputValue, expectedCommand, expectedLightCommand,
+                expectedFanSpeed, expectedCommandString, FAN_LUCCI_DC_II);
     }
 }

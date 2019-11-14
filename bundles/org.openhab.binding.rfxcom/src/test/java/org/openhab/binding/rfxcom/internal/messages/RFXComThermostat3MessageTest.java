@@ -17,6 +17,8 @@ import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.THERMOSTAT3;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -33,7 +35,10 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelEx
  *
  * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComThermostat3MessageTest {
+    private final MockDeviceState deviceState = new MockDeviceState();
+
     @Test
     public void checkForSupportTest() throws RFXComException {
         RFXComMessageFactory.createMessage(THERMOSTAT3);
@@ -60,7 +65,8 @@ public class RFXComThermostat3MessageTest {
 
     private void testMessage(String hexMessage, RFXComThermostat3Message.SubType subtype, int sequenceNumber,
             String sensorId, RFXComThermostat3Message.Commands command, byte signalLevel, State commandChannel,
-            State secondCommandChannel, State controlChannel, State commandStringChannel) throws RFXComException {
+            @Nullable State secondCommandChannel, State controlChannel, State commandStringChannel)
+            throws RFXComException {
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComThermostat3Message msg = (RFXComThermostat3Message) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", subtype, msg.subType);
@@ -69,10 +75,10 @@ public class RFXComThermostat3MessageTest {
         assertEquals(CHANNEL_COMMAND, command, msg.command);
         assertEquals("Signal Level", signalLevel, msg.signalLevel);
 
-        assertEquals(commandChannel, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(secondCommandChannel, msg.convertToState(CHANNEL_COMMAND_SECOND));
-        assertEquals(controlChannel, msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(commandStringChannel, msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(commandChannel, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(secondCommandChannel, msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
+        assertEquals(controlChannel, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(commandStringChannel, msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
 
         byte[] decoded = msg.decodeMessage();
 
@@ -86,10 +92,10 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND, OnOffType.ON);
 
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("ON"), msg.convertToState(CHANNEL_COMMAND_STRING));
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("ON"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -98,10 +104,10 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND, OnOffType.OFF);
 
-        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_CONTROL));
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
-        assertEquals(StringType.valueOf("OFF"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
+        assertEquals(StringType.valueOf("OFF"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
     }
 
     @Test
@@ -110,10 +116,10 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_SECOND, OnOffType.ON);
 
-        assertNull(msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND_SECOND));
-        assertNull(msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("SECOND_ON"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertNull(msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
+        assertNull(msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("SECOND_ON"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
     }
 
     @Test
@@ -122,10 +128,10 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_SECOND, OnOffType.OFF);
 
-        assertNull(msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND_SECOND));
-        assertNull(msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("SECOND_OFF"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertNull(msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
+        assertNull(msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("SECOND_OFF"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
     }
 
     @Test
@@ -134,11 +140,11 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_CONTROL, UpDownType.UP);
 
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(UpDownType.UP, msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("UP"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(UpDownType.UP, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("UP"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
 
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -147,11 +153,11 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_CONTROL, UpDownType.DOWN);
 
-        assertEquals(UnDefType.UNDEF, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(UpDownType.DOWN, msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("DOWN"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(UnDefType.UNDEF, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(UpDownType.DOWN, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("DOWN"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
 
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -160,11 +166,11 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_CONTROL, StopMoveType.STOP);
 
-        assertEquals(UnDefType.UNDEF, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(StringType.valueOf("STOP"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(UnDefType.UNDEF, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(StringType.valueOf("STOP"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
 
-        assertNull(msg.convertToState(CHANNEL_CONTROL));
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertNull(msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -173,10 +179,10 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("OFF"));
 
-        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("OFF"), msg.convertToState(CHANNEL_COMMAND_STRING));
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("OFF"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -185,10 +191,10 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("On"));
 
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("ON"), msg.convertToState(CHANNEL_COMMAND_STRING));
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("ON"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -197,11 +203,11 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("UP"));
 
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(UpDownType.UP, msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("UP"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(UpDownType.UP, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("UP"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
 
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -210,10 +216,10 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("down"));
 
-        assertEquals(UnDefType.UNDEF, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(UpDownType.DOWN, msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("DOWN"), msg.convertToState(CHANNEL_COMMAND_STRING));
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertEquals(UnDefType.UNDEF, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(UpDownType.DOWN, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("DOWN"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -222,10 +228,10 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("RUN_UP"));
 
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(UpDownType.UP, msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("RUN_UP"), msg.convertToState(CHANNEL_COMMAND_STRING));
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(UpDownType.UP, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("RUN_UP"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -234,10 +240,10 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("RUN_DOWN"));
 
-        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(UpDownType.DOWN, msg.convertToState(CHANNEL_CONTROL));
-        assertEquals(StringType.valueOf("RUN_DOWN"), msg.convertToState(CHANNEL_COMMAND_STRING));
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(UpDownType.DOWN, msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertEquals(StringType.valueOf("RUN_DOWN"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -246,11 +252,11 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("STOP"));
 
-        assertEquals(UnDefType.UNDEF, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(StringType.valueOf("STOP"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(UnDefType.UNDEF, msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertEquals(StringType.valueOf("STOP"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
 
-        assertNull(msg.convertToState(CHANNEL_CONTROL));
-        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
+        assertNull(msg.convertToState(CHANNEL_CONTROL, deviceState));
+        assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
     }
 
     @Test
@@ -259,11 +265,11 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("SECOND_ON"));
 
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND_SECOND));
-        assertEquals(StringType.valueOf("SECOND_ON"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
+        assertEquals(StringType.valueOf("SECOND_ON"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
 
-        assertNull(msg.convertToState(CHANNEL_COMMAND));
-        assertNull(msg.convertToState(CHANNEL_CONTROL));
+        assertNull(msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertNull(msg.convertToState(CHANNEL_CONTROL, deviceState));
     }
 
     @Test
@@ -272,10 +278,10 @@ public class RFXComThermostat3MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("SECOND_OFF"));
 
-        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND_SECOND));
-        assertEquals(StringType.valueOf("SECOND_OFF"), msg.convertToState(CHANNEL_COMMAND_STRING));
+        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
+        assertEquals(StringType.valueOf("SECOND_OFF"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
 
-        assertNull(msg.convertToState(CHANNEL_COMMAND));
-        assertNull(msg.convertToState(CHANNEL_CONTROL));
+        assertNull(msg.convertToState(CHANNEL_COMMAND, deviceState));
+        assertNull(msg.convertToState(CHANNEL_CONTROL, deviceState));
     }
 }
