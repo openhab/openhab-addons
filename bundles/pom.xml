@@ -204,11 +204,8 @@
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tankerkoenig</module>
-<<<<<<< HEAD
-    <module>org.openhab.binding.teleinfo</module>
-=======
     <module>org.openhab.binding.telegram</module>    
->>>>>>> d2f521be1fce5c7c3dd82beb997c23fdf054d30f
+    <module>org.openhab.binding.teleinfo</module>
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>
