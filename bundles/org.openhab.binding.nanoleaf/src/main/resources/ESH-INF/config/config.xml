@@ -10,7 +10,7 @@
 				<label>@text/thing-type.config.nanoleaf.controller.address.label</label>
 				<description>@text/thing-type.config.nanoleaf.controller.address.description</description>
 			</parameter>
-			<parameter name="port" type="integer" required="true" min="1" max="65335">
+			<parameter name="port" type="integer" required="true" min="1" max="65535">
 				<label>@text/thing-type.config.nanoleaf.controller.port.label</label>
 				<description>@text/thing-type.config.nanoleaf.controller.port.description</description> 
 				<default>16021</default>

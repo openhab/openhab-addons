@@ -38,7 +38,7 @@
 				<context>network-address</context>
 				<description>Host address or IP of the Loxone Miniserver</description>
 			</parameter>
-			<parameter name="port" type="integer" min="0" groupName="miniserver">
+			<parameter name="port" type="integer" min="1" max="65535" groupName="miniserver">
 				<label>Port</label>
 				<description>Web interface port of the Loxone Miniserver</description>
 				<default>80</default>

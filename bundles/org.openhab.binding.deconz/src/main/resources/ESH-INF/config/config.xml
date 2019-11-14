@@ -10,12 +10,12 @@
 			<context>network-address</context>
 			<description>IP address or host name of deCONZ interface.</description>
 		</parameter>
-		<parameter name="httpPort" type="integer" required="false" min="0" max="65335">
+		<parameter name="httpPort" type="integer" required="false" min="1" max="65535">
 			<label>HTTP Port</label>
 			<description>Port of the deCONZ HTTP interface.</description>
 			<default>80</default>
 		</parameter>
-		<parameter name="port" type="integer" required="false" min="0" max="65335">
+		<parameter name="port" type="integer" required="false" min="1" max="65535">
 			<label>Websocket Port</label>
 			<description>Port of the deCONZ Websocket.</description>
 			<advanced>true</advanced>
