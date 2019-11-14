@@ -84,6 +84,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
      */
     protected SomfyTahomaConfig thingConfig = new SomfyTahomaConfig();
 
+    /**
+     * Id of registered events
+     */
+    private String eventsId = "";
+
     // Gson & parser
     private final Gson gson = new Gson();
 
@@ -137,7 +142,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         }
 
         try {
-            url = TAHOMA_URL + "login";
+            url = TAHOMA_API_URL + "login";
             String urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword=" + urlEncode(thingConfig.getPassword());
 
             ContentResponse response = sendRequestBuilder(url, HttpMethod.POST)
@@ -151,27 +156,81 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(), SomfyTahomaLoginResponse.class);
             if (data.isSuccess()) {
                 logger.debug("SomfyTahoma version: {}", data.getVersion());
-                updateStatus(ThingStatus.ONLINE);
-                updateThings();
+                String id = registerEvents();
+                if (id != null && !id.equals(UNAUTHORIZED)) {
+                    eventsId = id;
+                    logger.debug("Events id: {}", eventsId);
+                    updateStatus(ThingStatus.ONLINE);
+                    updateThings();
+                } else {
+                    logger.debug("Events id error: {}", id);
+                }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error logging in: " + data.getError());
                 if (data.getError().startsWith(TOO_MANY_REQUESTS)) {
-                    logger.debug("Too many requests error, suspending activity for {} seconds", SUSPEND_TIME);
-                    tooManyRequests = true;
-                    scheduler.schedule(this::enableLogin, SUSPEND_TIME, TimeUnit.SECONDS);
+                    setTooManyRequests();
                 }
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Received invalid data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            if (e instanceof ExecutionException) {
+                if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Authentication challenge");
+                    setTooManyRequests();
+                    return;
+                }
+            }
             logger.debug("Cannot get login cookie!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot get login cookie");
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         } catch (Exception e) {
             logger.debug("Cannot start http client", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot start http client");
         }
 
+    }
+
+    private void setTooManyRequests() {
+        logger.debug("Too many requests error, suspending activity for {} seconds", SUSPEND_TIME);
+        tooManyRequests = true;
+        scheduler.schedule(this::enableLogin, SUSPEND_TIME, TimeUnit.SECONDS);
+    }
+
+    private @Nullable String registerEvents() {
+        String url;
+
+        try {
+            url = TAHOMA_EVENTS_URL + "register";
+
+            String line = sendDataToTahomaWithCookie(url,"");
+            SomfyTahomaRegisterEventsResponse response = gson.fromJson(line, SomfyTahomaRegisterEventsResponse.class);
+            return response.getId();
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received invalid data", e);
+            return null;
+        } catch (SomfyTahomaException e) {
+            login();
+            return UNAUTHORIZED;
+        } catch (ExecutionException e) {
+            if (isAuthenticationChallenge(e)) {
+                login();
+                return UNAUTHORIZED;
+            } else {
+                logger.info("Cannot register events!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
+            logger.info("Cannot register events!", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        return null;
     }
 
     private String urlEncode(String text) throws UnsupportedEncodingException {
@@ -187,7 +246,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         String line = "";
 
         try {
-            url = TAHOMA_URL + "getEvents";
+            url = TAHOMA_API_URL + "events/" + eventsId + "/fetch";
 
             line = sendDataToTahomaWithCookie(url, "");
             SomfyTahomaEvent[] array = gson.fromJson(line, SomfyTahomaEvent[].class);
@@ -207,6 +266,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Cannot get Tahoma events!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
         return new ArrayList<>();
     }
@@ -268,8 +330,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         }
 
         try {
-            SomfyTahomaActionGroupResponse data = gson.fromJson(groups, SomfyTahomaActionGroupResponse.class);
-            return data.getActionGroups();
+            SomfyTahomaActionGroup[] list = gson.fromJson(groups, SomfyTahomaActionGroup[].class);
+            return Arrays.asList(list);
         } catch (JsonSyntaxException e) {
             logger.debug("Received data: {} is not JSON", groups, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
@@ -281,10 +343,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         String url;
 
         try {
-            url = TAHOMA_URL + "getActionGroups";
-            String urlParameters = "";
-
-            return sendDataToTahomaWithCookie(url, urlParameters);
+            url = TAHOMA_API_URL + "actionGroups";
+            return sendGetToTahomaWithCookie(url);
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return UNAUTHORIZED;
@@ -299,21 +359,21 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Cannot send getActionGroups command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
         return null;
     }
 
-    public @Nullable SomfyTahomaSetup listDevices() {
+    public @Nullable SomfyTahomaSetup getSetup() {
         String url;
         String line = "";
 
         try {
-            url = TAHOMA_URL + "getSetup";
-            String urlParameters = "";
-
-            line = sendDataToTahomaWithCookie(url, urlParameters);
-            SomfyTahomaSetupResponse data = gson.fromJson(line, SomfyTahomaSetupResponse.class);
-            return data.getSetup();
+            url = TAHOMA_API_URL + "setup";
+            line = sendGetToTahomaWithCookie(url);
+            return gson.fromJson(line, SomfyTahomaSetup.class);
         } catch (JsonSyntaxException e) {
             logger.debug("Received data: {} is not JSON", line, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
@@ -329,6 +389,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Cannot send getSetup command!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
         return null;
     }
@@ -442,7 +505,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private synchronized void updateAllStates() {
         logger.debug("Updating all states");
-        SomfyTahomaSetup setup = listDevices();
+        SomfyTahomaSetup setup = getSetup();
         if (setup != null) {
             for (SomfyTahomaDevice device : setup.getDevices()) {
                 String url = device.getDeviceURL();
@@ -502,9 +565,13 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void logout() {
         try {
-            sendGetToTahomaWithCookie(TAHOMA_URL + "logout");
+            eventsId = "";
+            sendGetToTahomaWithCookie(TAHOMA_API_URL + "logout");
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Cannot send logout command!", e);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -582,7 +649,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         String line = "";
 
         try {
-            url = TAHOMA_URL + "apply";
+            url = TAHOMA_API_URL + "exec/apply";
 
             String value = params.equals("[]") ? command : params.replace("\"", "");
             String urlParameters = "{\"label\":\"" + getThingLabelByURL(io) + " - " + value + " - OH2\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\""
@@ -597,14 +664,14 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 registerExecution(io, data.getExecId());
             } else {
                 logger.warn("Apply command response: {}", line);
-                throw new SomfyTahomaException(line);
+                return false;
             }
             return true;
         } catch (JsonSyntaxException e) {
             logger.debug("Received data: {} is not JSON", line, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (SomfyTahomaException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
+            login();
             return false;
         } catch (ExecutionException e) {
             if (isAuthenticationChallenge(e)) {
@@ -617,6 +684,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Cannot send apply command {} with params {}!", command, params, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
         return null;
     }
@@ -669,40 +739,12 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Cannot cancel execution!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
         return null;
     }
-
-    /*
-    public @Nullable String getTahomaVersion(String gatewayId) {
-        String line = "";
-        try {
-            String url = SETUP_URL + gatewayId + "/version";
-            line = sendGetToTahomaWithCookie(url);
-            SomfyTahomaVersionResponse data = gson.fromJson(line, SomfyTahomaVersionResponse.class);
-            logger.debug("Tahoma version: {}", data.getResult());
-
-            return data.getResult();
-        } catch (JsonSyntaxException e) {
-            logger.debug("Received data: {} is not JSON", line, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
-        } catch (SomfyTahomaException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
-            return UNAUTHORIZED;
-        } catch (ExecutionException e) {
-            if (isAuthenticationChallenge(e)) {
-                login();
-                return UNAUTHORIZED;
-            } else {
-                logger.debug("Cannot get Tahoma gateway version!", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-        } catch (InterruptedException | TimeoutException e) {
-            logger.debug("Cannot get Tahoma gateway version!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-        }
-        return null;
-    }*/
 
     public void executeActionGroup(String id) {
         if (ThingStatus.OFFLINE == thing.getStatus() && !reLogin()) {
@@ -752,6 +794,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Cannot exec execution group!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
         return null;
     }
@@ -771,6 +816,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Cannot refresh device states!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
@@ -797,6 +845,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Cannot get Tahoma gateway status!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
         return new SomfyTahomaStatus();
     }

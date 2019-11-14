@@ -39,7 +39,9 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus();
+        if (getBridge().getStatus() == ThingStatus.ONLINE) {
+            updateStatus();
+        }
     }
 
     @Override

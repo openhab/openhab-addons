@@ -116,16 +116,16 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         logger.debug("Starting scanning for things...");
 
         if (bridge.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            SomfyTahomaSetup devices = bridge.listDevices();
+            SomfyTahomaSetup setup = bridge.getSetup();
 
-            if (devices == null) {
+            if (setup == null) {
                 return;
             }
 
-            for (SomfyTahomaDevice device : devices.getDevices()) {
+            for (SomfyTahomaDevice device : setup.getDevices()) {
                 discoverDevice(device);
             }
-            for (SomfyTahomaGateway gw : devices.getGateways()) {
+            for (SomfyTahomaGateway gw : setup.getGateways()) {
                 gatewayDiscovered(gw);
             }
 
