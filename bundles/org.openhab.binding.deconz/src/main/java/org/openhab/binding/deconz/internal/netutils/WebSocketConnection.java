@@ -76,7 +76,7 @@ public class WebSocketConnection {
             connected = false;
             client.stop();
         } catch (Exception e) {
-            logger.debug("Error while closing connection: {}", e);
+            logger.debug("Error while closing connection", e);
         }
         client.destroy();
     }

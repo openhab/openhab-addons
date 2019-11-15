@@ -58,7 +58,7 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
             discoverPartitions(panel.getPartitions());
             discoverZones(panel.getZones());
         } else {
-            logger.debug("Communicator null or not online. Trace={}", new ParadoxRuntimeException());
+            logger.debug("Communicator null or not online. Trace:", new ParadoxRuntimeException());
         }
     }
 
