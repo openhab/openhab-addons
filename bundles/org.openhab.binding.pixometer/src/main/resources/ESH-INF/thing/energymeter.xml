@@ -23,21 +23,9 @@
 		</config-description>
 	</thing-type>
 	<channel-type id="last_reading_value">
-		<item-type>Number:Energy</item-type>
-		<label>Last Reading</label>
-		<description>The last value that has been read for this meter.</description>
-		<state pattern="%.1f %unit%" readOnly="true" />
-	</channel-type>
-	<channel-type id="last_reading_date">
-		<item-type>DateTime</item-type>
-		<label>Time of Last Reading</label>
-		<description>The last time that the current meter has been read.</description>
-		<state readOnly="true" />
-	</channel-type>
-	<channel-type id="last_refresh_date">
-		<item-type>DateTime</item-type>
-		<label>Time of Last Refresh</label>
-		<description>The last time that the thing has been refreshed.</description>
-		<state readOnly="true" />
-	</channel-type>
+        <item-type>Number:Energy</item-type>
+        <label>Last Reading</label>
+        <description>The last value that has been read for this meter.</description>
+        <state pattern="%.1f %unit%" readOnly="true" />
+    </channel-type>
 </thing:thing-descriptions>

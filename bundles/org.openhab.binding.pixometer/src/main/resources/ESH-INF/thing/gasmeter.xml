@@ -28,16 +28,4 @@
 		<description>The last value that has been read for this meter.</description>
 		<state pattern="%.3f %unit%" readOnly="true" />
 	</channel-type>
-	<channel-type id="last_reading_date">
-		<item-type>DateTime</item-type>
-		<label>Time of Last Reading</label>
-		<description>The last time that the current meter has been read.</description>
-		<state readOnly="true" />
-	</channel-type>
-	<channel-type id="last_refresh_date">
-		<item-type>DateTime</item-type>
-		<label>Time Of Last Refresh</label>
-		<description>The last time that the thing has been refreshed.</description>
-		<state readOnly="true" />
-	</channel-type>
 </thing:thing-descriptions>

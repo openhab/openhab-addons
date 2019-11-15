@@ -29,18 +29,18 @@ The binding has no configuration options itself, all configuration is done at 'B
 
 | Parameter    | Description                                                        | Required | Default Value    | Comment                                                       |
 |--------------|--------------------------------------------------------------------|----------|------------------|---------------------------------------------------------------|
-| User     |                                                                    | Yes      | -                |                                                               |
-| Password     |                                                                    | Yes      | -                |                                                               |
-| Refresh | Sets the refresh time. Minimum is 60 Minutes.                      | Yes      | 240              |                                                               |
-| Scope        | The scope (read or write) you want to grant openHAB for api usage. | Yes      | Read only access | Currently not used. Just prepared for a possible later usage. |
-| Auth Token   | The currently used auth token.                                     | -        | -                |                                                               |
+| user     |                                                                    | Yes      | -                |                                                               |
+| password     |                                                                    | Yes      | -                |                                                               |
+| refresh | Sets the refresh time. Minimum is 60 Minutes.                      | Yes      | 240              |                                                               |
+| scope        | The scope (read or write) you want to grant openHAB for api usage. | Yes      | Read only access | Currently not used. Just prepared for a possible later usage. |
+| access_token   | The currently used auth token.                                     | -        | -                |                                                               |
 
 ### Meter Things
 
 | Parameter        | Description                                                                                                                                                                                         | Required |
 |------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | Bridge Selection | Reference to your configured bridge. (In most cases only one bridge is needed.)                                                                                                                     | Yes      |
-| Ressource ID     | The ID which represents the current meter. You can find it in the pixometer browser app while editing a specific meter. It should look like this: "https://pixometer.io/portal/#/meters/XXXXX/edit" | Yes      |
+| resource_id     | The ID which represents the current meter. You can find it in the pixometer browser app while editing a specific meter. It should look like this: "https://pixometer.io/portal/#/meters/XXXXX/edit" | Yes      |
 
 ## Channels
 

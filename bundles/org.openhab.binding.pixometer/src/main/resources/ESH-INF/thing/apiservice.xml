@@ -20,7 +20,7 @@
 				<description>Your Pixometer Password.</description>
 				<default></default>
 			</parameter>
-			<parameter name="refresh" type="integer" required="true" min="2">
+			<parameter name="refresh" type="integer" required="true" min="60">
 				<label>Refresh Time</label>
 				<description>Sets the refresh time. Minimum is 60 Minutes.</description>
 				<default>240</default>

@@ -15,7 +15,6 @@ package org.openhab.binding.pixometer.handler;
 import static org.openhab.binding.pixometer.internal.PixometerBindingConstants.*;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
 import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -95,8 +94,8 @@ public class MeterHandler extends BaseThingHandler {
                 return;
             }
 
-            String token = new StringBuilder("Bearer ")
-                    .append(b.getConfiguration().get(CONFIG_BRIDGE_AUTH_TOKEN).toString()).toString();
+            String token = new StringBuilder("Bearer ").append(((ApiserviceHandler) b.getHandler()).getAuthToken())
+                    .toString();
 
             obtainMeterId(token);
 
@@ -200,8 +199,8 @@ public class MeterHandler extends BaseThingHandler {
             }
 
             updateState(CHANNEL_LAST_READING_DATE, new DateTimeType(latestReading.getReadingDate().toString()));
-            updateState(CHANNEL_LAST_REFRESH_DATE, new DateTimeType(ZonedDateTime.now().toInstant().toString()));
-        } catch (Exception e) {
+            updateState(CHANNEL_LAST_REFRESH_DATE, new DateTimeType());
+        } catch (IOException | RuntimeException e) {
             logger.debug("Exception while updating Meter {}: ", getThing().getUID(), e);
         }
     }

@@ -13,6 +13,7 @@
 package org.openhab.binding.pixometer.internal.serializer;
 
 import java.lang.reflect.Type;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 import org.openhab.binding.pixometer.internal.config.ReadingInstance;
@@ -55,8 +56,8 @@ public class CustomReadingInstanceDeserializer implements JsonDeserializer<Readi
 
         // No readings provided yet
         if (resultCount < 1) {
-            result.setReadingDate(ZonedDateTime.parse("1970-01-01T00:00:00"));
-            result.setValue(Double.parseDouble("0"));
+            result.setReadingDate(ZonedDateTime.from(Instant.EPOCH));
+            result.setValue(0);
         }
 
         // Fist result is the last reading instance

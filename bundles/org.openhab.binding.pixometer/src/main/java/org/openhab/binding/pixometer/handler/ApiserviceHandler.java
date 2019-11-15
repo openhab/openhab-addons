@@ -45,7 +45,7 @@ import com.google.gson.JsonParser;
 public class ApiserviceHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final int TOKEN_MIN_DIFF = 172800000;
+    private static final int TOKEN_MIN_DIFF_MS = (int) TimeUnit.DAYS.toMillis(2);
 
     private String authToken;
     private int refreshInterval;
@@ -76,13 +76,13 @@ public class ApiserviceHandler extends BaseBridgeHandler {
             logger.debug("Checking if new access token is needed...");
             try {
                 long difference = getTokenExpiryDate() - System.nanoTime();
-                if (difference <= TOKEN_MIN_DIFF) {
+                if (difference <= TOKEN_MIN_DIFF_MS) {
                     obtainAuthTokenAndExpiryDate(user, password, scope);
                 }
             } catch (RuntimeException r) {
                 logger.debug("Could not check token expiry date for Thing {}: ", getThing().getUID(), r);
             }
-        }, 1, 1440, TimeUnit.MINUTES);
+        }, 1, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES);
 
         logger.debug("Refresh job scheduled to run every {} days. for '{}'", 1, getThing().getUID());
     }
