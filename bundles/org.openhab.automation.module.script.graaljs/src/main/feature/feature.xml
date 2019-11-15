@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.automation.module.script.graaljs-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-graaljs" description="GraalJS Scripting Engine" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+
+        <bundle dependency="true">mvn:org.openhab.core.bundles/org.openhab.core.automation/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.openhab.core.bundles/org.openhab.core.automation.module.script/${project.version}</bundle>
+
+        <bundle start-level="70">mvn:org.openhab.addons.bundles/org.openhab.automation.module.script.graaljs/${project.version}</bundle>
+
+    </feature>
+</features>

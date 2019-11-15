@@ -16,6 +16,9 @@
   <name>openHAB Add-ons :: Bundles</name>
 
   <modules>
+    <!-- automation -->
+    <module>org.openhab.automation.module.script.graaljs</module>
+
     <!-- io -->
     <!-- temporarily disabled due to malfunction -->
     <!--module>org.openhab.io.azureiothub</module-->

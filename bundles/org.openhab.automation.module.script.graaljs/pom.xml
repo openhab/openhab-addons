@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.openhab.addons.bundles</groupId>
+        <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+        <version>2.5.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>org.openhab.automation.module.script.graaljs</artifactId>
+
+    <name>openHAB Add-ons :: Bundles :: GraalJS Scripting Engine</name>
+
+    <properties>
+        <bnd.importpackage>
+            !sun.misc.*,
+            !sun.reflect.*,
+            !com.sun.management.*,
+            !jdk.internal.reflect.*,
+            !jdk.vm.ci.services
+        </bnd.importpackage>
+        <graal.version>19.2.0.1</graal.version>
+        <asm.version>6.2.1</asm.version>
+    </properties>
+
+    <!-- Surefire 2.2.x appears to choke when graal-sdk is included as a dependency, so use a newer version here -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M3</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.openhab.core.bundles</groupId>
+            <artifactId>org.openhab.core.automation</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.core.bundles</groupId>
+            <artifactId>org.openhab.core.automation.module.script</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.graalvm.truffle</groupId>
+            <artifactId>truffle-api</artifactId>
+            <version>${graal.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js-scriptengine</artifactId>
+            <version>${graal.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js-launcher</artifactId>
+            <version>${graal.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.sdk</groupId>
+            <artifactId>graal-sdk</artifactId>
+            <version>${graal.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.regex</groupId>
+            <artifactId>regex</artifactId>
+            <version>${graal.version}</version>
+        </dependency>
+        <dependency> <!-- this must come AFTER the regex lib -->
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+            <version>${graal.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>62.1</version>
+        </dependency>
+
+        <!-- include as version required is older than OH provides -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-util</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+
+    </dependencies>
+
+    <!-- Skip tests for JDK11 as it includes Graal and breaks. Not ideal, but dual support isn't trivial. -->
+    <profiles>
+        <profile>
+            <id>java11</id>
+            <activation>
+                <jdk>11</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
