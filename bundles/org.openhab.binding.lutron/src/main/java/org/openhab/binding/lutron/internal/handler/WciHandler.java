@@ -13,6 +13,7 @@
 package org.openhab.binding.lutron.internal.handler;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -82,6 +83,13 @@ public class WciHandler extends BaseKeypadHandler {
         }
     }
 
+    private static final List<KeypadComponent> BUTTON_LIST = Arrays.asList(Component.BUTTON1, Component.BUTTON2,
+            Component.BUTTON3, Component.BUTTON4, Component.BUTTON5, Component.BUTTON6, Component.BUTTON7,
+            Component.BUTTON8);
+
+    private static final List<KeypadComponent> LED_LIST = Arrays.asList(Component.LED1, Component.LED2, Component.LED3,
+            Component.LED4, Component.LED5, Component.LED6, Component.LED7, Component.LED8);
+
     private final Logger logger = LoggerFactory.getLogger(WciHandler.class);
 
     @Override
@@ -103,10 +111,8 @@ public class WciHandler extends BaseKeypadHandler {
     protected void configureComponents(@Nullable String model) {
         logger.trace("Configuring components for WCI");
 
-        buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3, Component.BUTTON4,
-                Component.BUTTON5, Component.BUTTON6, Component.BUTTON7, Component.BUTTON8));
-        ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4, Component.LED5,
-                Component.LED6, Component.LED7, Component.LED8));
+        buttonList.addAll(BUTTON_LIST);
+        ledList.addAll(LED_LIST);
     }
 
     public WciHandler(Thing thing) {
