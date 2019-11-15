@@ -13,7 +13,6 @@
 package org.openhab.binding.bluetooth.bluez.internal.discovery;
 
 import java.util.Collections;
-import java.util.Vector;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -66,7 +65,7 @@ public class BlueZDiscoveryService extends AbstractDiscoveryService {
                 logger.warn(
                         "Cannot access BlueZ stack due to permission problems. Make sure that your OS user is part of the 'bluetooth' group of BlueZ.");
             } else {
-                logger.warn("Failed to scan for Bluetooth devices: {} ", e);
+                logger.warn("Failed to scan for Bluetooth devices", e);
             }
         }
     }

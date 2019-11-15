@@ -341,7 +341,8 @@ public class EventListener {
             logger.debug("subscribed event: {} to subscriptionID: {}", eventName, subscriptionID);
         } else {
             logger.error(
-                    "Couldn't subscribe event {} ... maybe timeout because system is too busy ... event will be tried to subscribe later again ... ");
+                    "Couldn't subscribe event {} ... maybe timeout because system is too busy ... event will be tried to subscribe later again ... ",
+                    eventName);
         }
         return subscribed;
     }

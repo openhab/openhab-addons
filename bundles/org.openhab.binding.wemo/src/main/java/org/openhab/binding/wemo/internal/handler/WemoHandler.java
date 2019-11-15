@@ -101,7 +101,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 updateWemoState();
                 onSubscription();
             } catch (Exception e) {
-                logger.debug("Exception during poll : {}", e);
+                logger.debug("Exception during poll", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -156,7 +156,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             try {
                 updateWemoState();
             } catch (Exception e) {
-                logger.debug("Exception during poll : {}", e);
+                logger.debug("Exception during poll", e);
             }
         } else if (channelUID.getId().equals(CHANNEL_STATE)) {
             if (command instanceof OnOffType) {

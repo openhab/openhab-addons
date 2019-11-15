@@ -686,10 +686,8 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             } else {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
-        } catch (IOException |
-
-                URISyntaxException e) {
-            logger.info("handleCommand fails: {}", e);
+        } catch (IOException | URISyntaxException e) {
+            logger.info("handleCommand fails", e);
         }
     }
 
@@ -719,7 +717,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                     connection.SetEqualizer(device, newEqualizerSetting);
                     return true;
                 } catch (HttpException | IOException | ConnectionException e) {
-                    logger.debug("Update equalizer failed {}", e);
+                    logger.debug("Update equalizer failed", e);
                     this.lastKnownEqualizer = null;
                 }
 
@@ -760,7 +758,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                 try {
                     currentConnection.stopNotification(currentNotification);
                 } catch (IOException | URISyntaxException e) {
-                    logger.warn("Stop notification failed: {}", e);
+                    logger.warn("Stop notification failed", e);
                 }
             }
         }
@@ -780,7 +778,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                 }
             }
         } catch (IOException | URISyntaxException e) {
-            logger.warn("update notification state fails: {}", e);
+            logger.warn("update notification state fails", e);
         }
         if (stopCurrentNotifcation) {
             if (currentNotification != null) {
@@ -891,10 +889,10 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                 if (e.getCode() == 400) {
                     // Ignore
                 } else {
-                    logger.info("getPlayer fails: {}", e);
+                    logger.info("getPlayer fails", e);
                 }
             } catch (IOException | URISyntaxException e) {
-                logger.info("getPlayer fails: {}", e);
+                logger.info("getPlayer fails", e);
             }
             // check playing
             isPlaying = (playerInfo != null && StringUtils.equals(playerInfo.state, "PLAYING"));
@@ -947,10 +945,10 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                     updateState(CHANNEL_RADIO_STATION_ID, new StringType(""));
 
                 } else {
-                    logger.info("getMediaState fails: {}", e);
+                    logger.info("getMediaState fails", e);
                 }
             } catch (IOException | URISyntaxException e) {
-                logger.info("getMediaState fails: {}", e);
+                logger.info("getMediaState fails", e);
             }
 
             // handle music provider id
@@ -1175,7 +1173,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             treble = equalizer.treble;
             this.lastKnownEqualizer = equalizer;
         } catch (IOException | URISyntaxException | HttpException | ConnectionException e) {
-            logger.debug("Get equalizer failes {}", e);
+            logger.debug("Get equalizer failes", e);
             return;
         }
         if (bass != null) {
