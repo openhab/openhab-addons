@@ -190,7 +190,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
     @Override
     protected void doInitialization() {
         Thing thing = getThing();
-        logger.debug("Initialize LOGO! {} date/time handler.");
+        logger.debug("Initialize LOGO! date/time handler.");
 
         config.set(getConfigAs(PLCDateTimeConfiguration.class));
 

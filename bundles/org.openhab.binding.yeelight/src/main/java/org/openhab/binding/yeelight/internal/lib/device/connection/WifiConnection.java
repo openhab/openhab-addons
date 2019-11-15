@@ -55,7 +55,7 @@ public class WifiConnection implements ConnectionBase {
                 logger.debug("{}: Write Success!", TAG);
             } catch (Exception e) {
                 logger.debug("{}: write exception, set device to disconnected!", TAG);
-                logger.debug("Exception: {}", e);
+                logger.debug("Exception", e);
                 mDevice.setConnectionState(ConnectState.DISCONNECTED);
                 return false;
             }
@@ -73,7 +73,7 @@ public class WifiConnection implements ConnectionBase {
                 logger.debug("{}: Write Success!", TAG);
             } catch (Exception e) {
                 logger.debug("{}: write exception, set device to disconnected!", TAG);
-                logger.debug("Exception: {}", e);
+                logger.debug("Exception", e);
                 mDevice.setConnectionState(ConnectState.DISCONNECTED);
                 return false;
             }
@@ -108,14 +108,14 @@ public class WifiConnection implements ConnectionBase {
                             mDevice.onNotify(value);
                         }
                     } catch (Exception e) {
-                        logger.debug("Exception: {}", e);
+                        logger.debug("Exception", e);
                         mCmdRun = false;
                     }
                 }
                 mSocket.close();
             } catch (Exception e) {
                 logger.debug("{}: connect device! ERROR! {}", TAG, e.getMessage());
-                logger.debug("Exception: {}", e);
+                logger.debug("Exception", e);
             } finally {
                 mDevice.setConnectionState(ConnectState.DISCONNECTED);
                 mSocket = null;
