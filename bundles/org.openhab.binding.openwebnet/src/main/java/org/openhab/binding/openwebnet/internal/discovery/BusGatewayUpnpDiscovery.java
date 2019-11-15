@@ -91,25 +91,25 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
         private boolean isBTicino = false;
 
         private DeviceInfo(RemoteDevice device) {
-            logger.debug("+=== UPnP =========================================");
+            String deviceLog = "Discovererd device:\n+=== UPnP =========================================";
             RemoteDeviceIdentity identity = device.getIdentity();
             if (identity != null) {
                 this.udn = identity.getUdn();
-                logger.debug("| ID.UDN       : {}", udn);
+                deviceLog += "\n| ID.UDN       : " + udn;
                 if (identity.getDescriptorURL() != null) {
-                    logger.debug("| ID.DESC URL  : {}", identity.getDescriptorURL());
+                    deviceLog += "\n| ID.DESC URL  : " + identity.getDescriptorURL();
                     this.host = identity.getDescriptorURL().getHost();
                 }
-                logger.debug("| ID.MAX AGE : {}", identity.getMaxAgeSeconds());
-                // logger.debug("| ID.LOC_ADDR : {}", identity.getDiscoveredOnLocalAddress());
+                deviceLog += "\n| ID.MAX AGE : " + identity.getMaxAgeSeconds();
             }
-            logger.debug("| --------------");
+            deviceLog += "\n| --------------";
             DeviceDetails details = device.getDetails();
             if (details != null) {
                 ManufacturerDetails manufacturerDetails = details.getManufacturerDetails();
                 if (manufacturerDetails != null) {
                     this.manufacturer = manufacturerDetails.getManufacturer();
-                    logger.debug("| MANUFACTURER : {} ({})", manufacturer, manufacturerDetails.getManufacturerURI());
+                    deviceLog += "\n| MANUFACTURER : " + manufacturer + " (" + manufacturerDetails.getManufacturerURI()
+                            + ")";
                     if (manufacturer != null && manufacturer.toUpperCase().contains("BTICINO")) {
                         this.isBTicino = true;
                     }
@@ -120,20 +120,21 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                     this.modelName = modelDetails.getModelName();
                     this.modelDescription = modelDetails.getModelDescription();
                     this.modelNumber = modelDetails.getModelNumber();
-                    logger.debug("| MODEL        : {} | {} | {} ({})", modelName, modelDescription, modelNumber,
-                            modelDetails.getModelURI());
+                    deviceLog += "\n| MODEL        : " + modelName + " | " + modelDescription + " | " + modelNumber
+                            + " (" + modelDetails.getModelURI() + ")";
                 }
                 if (isBTicino) {
                     this.friendlyName = details.getFriendlyName();
-                    logger.debug("| FRIENDLY NAME: {}", friendlyName);
+                    deviceLog += "\n| FRIENDLY NAME: " + friendlyName;
                     this.serialNumber = details.getSerialNumber();
-                    logger.debug("| SERIAL #     : {}", serialNumber);
-                    logger.debug("| BASE URL     : {}", details.getBaseURL());
-                    logger.debug("| UPC          : {}", details.getUpc());
-                    // logger.debug("| PRES. URI : {}", details.getPresentationURI());
+                    deviceLog += "\n| SERIAL #     : " + serialNumber;
+                    deviceLog += "\n| BASE URL     : " + details.getBaseURL();
+                    deviceLog += "\n| UPC          : " + details.getUpc();
+                    // deviceLog += "\n| PRES. URI : " + details.getPresentationURI();
                 }
             }
-            logger.debug("+==================================================");
+            deviceLog += "\n+==================================================";
+            logger.debug(deviceLog);
         }
 
     } /* DeviceInfo */

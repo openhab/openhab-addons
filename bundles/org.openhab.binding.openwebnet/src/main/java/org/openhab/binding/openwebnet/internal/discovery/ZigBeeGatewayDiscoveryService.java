@@ -55,9 +55,8 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService impl
 
     public ZigBeeGatewayDiscoveryService() {
         super(OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT, false);
-        logger.debug("#############################################################################################");
-        logger.debug("==OWN:BridgeDiscovery== constructor()");
-        logger.debug("#############################################################################################");
+        logger.debug(
+                "\n#############################################################################################\nOWN:BridgeDiscovery== constructor()");
     }
 
     public ZigBeeGatewayDiscoveryService(int timeout) throws IllegalArgumentException {
