@@ -29,6 +29,7 @@ import javax.imageio.ImageIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.util.UrlEncoded;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -58,7 +59,8 @@ public class LGHomBotHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LGHomBotHandler.class);
 
-    private LGHomBotConfiguration config = getConfigAs(LGHomBotConfiguration.class);
+    // This is setup in initialize().
+    private LGHomBotConfiguration config = new LGHomBotConfiguration();
 
     private @Nullable ScheduledFuture<?> refreshTimer;
 
@@ -118,12 +120,12 @@ public class LGHomBotHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_START:
-                    if (command instanceof OnOffType && ((OnOffType) command) == OnOffType.ON) {
+                    if (command == OnOffType.ON) {
                         sendHomBotCommand("CLEAN_START");
                     }
                     break;
                 case CHANNEL_HOME:
-                    if (command instanceof OnOffType && ((OnOffType) command) == OnOffType.ON) {
+                    if (command == OnOffType.ON) {
                         sendHomBotCommand("HOMING");
                     }
                     break;
@@ -152,14 +154,21 @@ public class LGHomBotHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_MODE:
                     if (command instanceof StringType) {
-                        if (((StringType) command).toString().equals("SB")) {
-                            sendHomBotCommand("CLEAN_MODE", "CLEAN_SB");
-                        } else if (((StringType) command).toString().equals("ZZ")) {
-                            sendHomBotCommand("CLEAN_MODE", "CLEAN_ZZ");
-                        } else if (((StringType) command).toString().equals("SPOT")) {
-                            sendHomBotCommand("CLEAN_MODE", "CLEAN_SPOT");
-                        } else if (((StringType) command).toString().equals("MACRO_SECTOR")) {
-                            sendHomBotCommand("CLEAN_MODE", "CLEAN_MACRO_SECTOR");
+                        switch (((StringType) command).toString()) {
+                            case "SB":
+                                sendHomBotCommand("CLEAN_MODE", "CLEAN_SB");
+                                break;
+                            case "ZZ":
+                                sendHomBotCommand("CLEAN_MODE", "CLEAN_ZZ");
+                                break;
+                            case "SPOT":
+                                sendHomBotCommand("CLEAN_MODE", "CLEAN_SPOT");
+                                break;
+                            case "MACRO_SECTOR":
+                                sendHomBotCommand("CLEAN_MODE", "CLEAN_MACRO_SECTOR");
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
@@ -224,17 +233,17 @@ public class LGHomBotHandler extends BaseThingHandler {
     }
 
     private void sendHomBotCommand(String command) {
-        String fullCmd = "/json.cgi?%7B%22COMMAND%22:%22" + command + "%22%7D";
+        String fullCmd = UrlEncoded.encodeString("/json.cgi?{\"COMMAND\":\"" + command + "\"}");
         sendCommand(fullCmd);
     }
 
     private void sendHomBotCommand(String command, String argument) {
-        String fullCmd = "/json.cgi?%7B%22COMMAND%22:%7B%22" + command + "%22:%22" + argument + "%22%7D%7D";
+        String fullCmd = UrlEncoded.encodeString("/json.cgi?{\"COMMAND\":{\"" + command + "\":\"" + argument + "\"}}");
         sendCommand(fullCmd);
     }
 
     private void sendHomBotJoystick(String command) {
-        String fullCmd = "/json.cgi?%7B%22JOY%22:%22" + command + "%22%7D";
+        String fullCmd = UrlEncoded.encodeString("/json.cgi?{\"JOY\":\"" + command + "\"}");
         sendCommand(fullCmd);
     }
 

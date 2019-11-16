@@ -49,26 +49,20 @@ import org.slf4j.LoggerFactory;
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DiscoveryService.class,
-        LGHomBotDiscovery.class }, immediate = true, configurationPid = "discovery.lghombot")
+@Component(service = { DiscoveryService.class, LGHomBotDiscovery.class }, configurationPid = "discovery.lghombot")
 public class LGHomBotDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(LGHomBotDiscovery.class);
 
     /**
-     * Port number HomBot uses
-     */
-    private static final int HOMBOT_PORT = 6260;
-
-    /**
      * HTTP read timeout (in milliseconds) - allows us to shutdown the listening every TIMEOUT
      */
-    private static final int TIMEOUT = 500;
+    private static final int TIMEOUT_MS = 500;
 
     /**
      * Timeout in seconds of the complete scan
      */
-    private static final int FULL_SCAN_TIMEOUT = 30;
+    private static final int FULL_SCAN_TIMEOUT_SECONDS = 30;
 
     /**
      * Total number of concurrent threads during scanning.
@@ -94,7 +88,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * Constructs the discovery class using the thing IDs that we can discover.
      */
     public LGHomBotDiscovery() {
-        super(LGHomBotBindingConstants.SUPPORTED_THING_TYPES_UIDS, FULL_SCAN_TIMEOUT, false);
+        super(LGHomBotBindingConstants.SUPPORTED_THING_TYPES_UIDS, FULL_SCAN_TIMEOUT_SECONDS, false);
     }
 
     private void setupBaseIp(CidrAddress adr) {
@@ -163,10 +157,10 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
             localExecutorService.execute(() -> {
                 if (scanning && baseAdr != null) {
                     String ipAdd = getNextIPAddress(baseAdr);
-                    String url = "http://" + ipAdd + ":" + HOMBOT_PORT + "/status.txt";
+                    String url = "http://" + ipAdd + ":" + LGHomBotBindingConstants.DEFAULT_HOMBOT_PORT + "/status.txt";
 
                     try {
-                        String message = HttpUtil.executeUrl("GET", url, TIMEOUT);
+                        String message = HttpUtil.executeUrl("GET", url, TIMEOUT_MS);
                         if (message != null && !message.isEmpty()) {
                             messageReceive(message, ipAdd);
                         }
@@ -185,9 +179,11 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * @return An IP4 address or null if none is found.
      */
     private @Nullable CidrAddress getLocalIP4Address() {
-        List<CidrAddress> l = NetUtil.getAllInterfaceAddresses().stream()
+        List<CidrAddress> adrList = NetUtil.getAllInterfaceAddresses().stream()
                 .filter(a -> a.getAddress() instanceof Inet4Address).map(a -> a).collect(Collectors.toList());
-        for (CidrAddress adr : l) {
+
+        for (CidrAddress adr : adrList) {
+            // Don't return a "fake" DHCP lease.
             if (!adr.toString().startsWith("169.254.")) {
                 return adr;
             }
@@ -272,7 +268,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * {@inheritDoc}
      *
      * Stops the discovery scan. We set {@link #scanning} to false (allowing the listening threads to end naturally
-     * within {@link #TIMEOUT) * {@link #SCAN_THREADS} time then shutdown the {@link #executorService}
+     * within {@link #TIMEOUT_MS) * {@link #SCAN_THREADS} time then shutdown the {@link #executorService}
      */
     @Override
     protected synchronized void stopScan() {
@@ -281,7 +277,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
         if (localExecutorService != null) {
             scanning = false;
             try {
-                localExecutorService.awaitTermination(TIMEOUT * SCAN_THREADS, TimeUnit.MILLISECONDS);
+                localExecutorService.awaitTermination(TIMEOUT_MS * SCAN_THREADS, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 logger.debug("Stop scan interrupted.", e);
             }

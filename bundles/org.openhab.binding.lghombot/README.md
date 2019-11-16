@@ -4,6 +4,9 @@ The binding integrates hacked LG HomBot VR6260 based vacuum robots.
 Details on how to modify your HomBot can be [found here](https://www.roboter-forum.com/index.php?thread/10009-lg-hombot-3-0-wlan-kamera-steuerung-per-weboberfläche/).
 The binding uses the HTTP service on port 6260 right now.
 
+Please take care when modding your HomBot! This binding is a complement to a modded HomBot not an excuse to do the modding.
+Remember, You are responsible if You brick Your HomBot.
+
 ## Supported Things
 
 Hacked LG HomBot series 62XX are supported.
@@ -90,9 +93,3 @@ sitemap demo label="Main Menu"
     }
 }
 ```
-
-
-## Caution!
-
-Please take care when modding your HomBot! This binding is a complement to a modded HomBot not an excuse to do the modding.
-I take no responsibility if You brick Your HomBot.

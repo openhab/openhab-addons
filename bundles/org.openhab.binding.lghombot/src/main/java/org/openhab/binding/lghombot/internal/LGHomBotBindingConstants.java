@@ -25,11 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-public class LGHomBotBindingConstants {
-
-    private LGHomBotBindingConstants() {
-        throw new IllegalStateException("Utility class");
-    }
+public final class LGHomBotBindingConstants {
 
     private static final String BINDING_ID = "lghombot";
 
@@ -77,4 +73,14 @@ public class LGHomBotBindingConstants {
     static final String HBSTATE_DIAGNOSIS = "DIAGNOSIS";
     static final String HBSTATE_RESERVATION = "RESERVATION";
     static final String HBSTATE_ERROR = "ERROR";
+
+    /**
+     * Default port number HomBot uses.
+     */
+    public static final int DEFAULT_HOMBOT_PORT = 6260;
+
+    private LGHomBotBindingConstants() {
+        // No need to instance this class.
+    }
+
 }

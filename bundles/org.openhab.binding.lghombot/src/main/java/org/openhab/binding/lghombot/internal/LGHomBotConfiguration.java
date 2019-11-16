@@ -36,7 +36,7 @@ public class LGHomBotConfiguration {
     /**
      * Port used by the HomBot
      */
-    private Integer port = Integer.valueOf(6260);
+    private Integer port = Integer.valueOf(LGHomBotBindingConstants.DEFAULT_HOMBOT_PORT);
 
     /**
      * Polling time (in seconds) to refresh state from the HomBot itself.
