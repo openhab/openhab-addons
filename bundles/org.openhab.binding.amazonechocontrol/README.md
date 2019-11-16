@@ -363,13 +363,17 @@ end
 ```
 
 Expert:
-You can use a json formatted string to control the title and the sound:
+You can use a json formatted string to control title, sound and volume:
 
 ```php
-{ "sound": true, "speak":"<Speak>" "title": "<Title>", "body": "<Body Text>"}
+{ "sound": true, "speak":"<Speak>" "title": "<Title>", "body": "<Body Text>", "volume": 20}
 ```
 
-The combination of sound=true and speak in SSML syntax is not allowed
+The combination of `sound=true` and `speak` in SSML syntax is not allowed.
+Not all properties need to be specified.
+The value for `volume` can be between 0 and 100 to set the volume.
+A volume value smaller then 0 means that the current alexa volume should be used.
+No specification uses the volume from the `textToSpeechVolume` channel.
 
 Note: If you turn off the sound and Alexa is playing music, it will anyway turn down the volume for a moment. This behavior can not be changed.
 
