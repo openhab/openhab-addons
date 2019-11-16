@@ -420,9 +420,6 @@ public class ModbusDataHandlerTest extends JavaTest {
         hookLinkRegistry(dataThingHandler);
         dataThing.setHandler(dataThingHandler);
         dataThingHandler.setCallback(thingCallback);
-        if (context != null) {
-            dataThingHandler.setBundleContext(context);
-        }
         dataThingHandler.initialize();
         return dataThingHandler;
     }

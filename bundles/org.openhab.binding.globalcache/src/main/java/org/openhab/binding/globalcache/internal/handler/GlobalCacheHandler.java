@@ -61,6 +61,8 @@ import org.openhab.binding.globalcache.internal.command.CommandSendserial;
 import org.openhab.binding.globalcache.internal.command.CommandSetstate;
 import org.openhab.binding.globalcache.internal.command.RequestMessage;
 import org.openhab.binding.globalcache.internal.command.ResponseMessage;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +74,8 @@ import org.slf4j.LoggerFactory;
  */
 public class GlobalCacheHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(GlobalCacheHandler.class);
+
+    private final BundleContext bundleContext;
 
     private static final String GLOBALCACHE_THREAD_POOL = "globalCacheHandler";
 
@@ -97,6 +101,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         commandProcessor = new CommandProcessor();
         scheduledFuture = null;
         this.ipv4Address = ipv4Address;
+        this.bundleContext = FrameworkUtil.getBundle(GlobalCacheHandler.class).getBundleContext();
     }
 
     @Override
