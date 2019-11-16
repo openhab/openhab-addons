@@ -1100,8 +1100,8 @@ public class Connection {
         executeSequenceCommand(null, "Alexa.Notifications.SendMobilePush", parameters);
     }
 
-    public void sendAnnouncement(Device device, String text, String bodyText, @Nullable String title, int ttsVolume,
-            int standardVolume) throws IOException, URISyntaxException {
+    public void sendAnnouncement(Device device, String speak, String bodyText, @Nullable String title,
+            @Nullable Integer ttsVolume, int standardVolume) throws IOException, URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("expireAfter", "PT5S");
         JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
@@ -1112,10 +1112,10 @@ public class Connection {
             content.display.title = title;
         }
         content.display.body = bodyText;
-        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
+        if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
             content.speak.type = "ssml";
         }
-        content.speak.value = text;
+        content.speak.value = speak;
 
         contentArray[0] = content;
 
@@ -1140,7 +1140,7 @@ public class Connection {
         executeSequenceCommandWithVolume(device, "AlexaAnnouncement", parameters, ttsVolume, standardVolume);
     }
 
-    public void textToSpeech(Device device, String text, int ttsVolume, int standardVolume)
+    public void textToSpeech(Device device, String text, @Nullable Integer ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("textToSpeak", text);
@@ -1148,28 +1148,23 @@ public class Connection {
     }
 
     private void executeSequenceCommandWithVolume(@Nullable Device device, String command,
-            @Nullable Map<String, Object> parameters, int ttsVolume, int standardVolume)
+            @Nullable Map<String, Object> parameters, @Nullable Integer ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
-        if (ttsVolume != 0) {
-
+        if (ttsVolume != null) {
             JsonArray nodesToExecute = new JsonArray();
-
             Map<String, Object> volumeParameters = new HashMap<>();
             // add tts volume
             volumeParameters.clear();
             volumeParameters.put("value", ttsVolume);
             nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", volumeParameters));
-
             // add command
             nodesToExecute.add(createExecutionNode(device, command, parameters));
-
             // add volume
             volumeParameters.clear();
             volumeParameters.put("value", standardVolume);
             nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", volumeParameters));
 
             executeSequenceNodes(nodesToExecute);
-
         } else {
             executeSequenceCommand(device, command, parameters);
         }
