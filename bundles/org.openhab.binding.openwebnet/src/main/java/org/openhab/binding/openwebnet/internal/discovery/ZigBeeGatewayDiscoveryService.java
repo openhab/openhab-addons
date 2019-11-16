@@ -16,13 +16,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
 //import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
 import org.openwebnet.OpenError;
 import org.openwebnet.OpenGatewayZigBee;
@@ -41,9 +45,9 @@ import org.slf4j.LoggerFactory;
  * @author Massimo Valla - Initial contribution
  */
 
-@Component(service = DiscoveryService.class, configurationPid = "discovery.openwebnet")
-public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService implements OpenListener {
-
+@Component(service = DiscoveryService.class, configurationPid = "discovery.openwebent")
+public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
+        implements OpenListener, ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(ZigBeeGatewayDiscoveryService.class);
 
     private final static int DISCOVERY_TIMEOUT = 30; // seconds
@@ -51,12 +55,14 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService impl
     // TODO support multiple gateways at the same time
     private OpenGatewayZigBee zbgateway;
     private int gatewayZigBeeId = 0;
+    private OpenWebNetBridgeHandler bridgeHandler;
+
     private ThingUID gatewayUID = null;
 
     public ZigBeeGatewayDiscoveryService() {
         super(OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT, false);
         logger.debug(
-                "\n#############################################################################################\nOWN:BridgeDiscovery== constructor()");
+                "\n#############################################################################################\n==OWN:ZigBeeGatewayDiscoveryService== constructor()");
     }
 
     public ZigBeeGatewayDiscoveryService(int timeout) throws IllegalArgumentException {
@@ -175,6 +181,24 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService impl
             logger.trace("==OWN:BridgeDiscovery== onReceiveFrame() ZigBeeID != 0 : ignoring (msg={})", msg);
         }
 
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof OpenWebNetBridgeHandler) {
+            bridgeHandler = (OpenWebNetBridgeHandler) handler;
+            // gatewayUID = bridgeHandler.getUID();
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
 }

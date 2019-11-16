@@ -32,9 +32,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
+import org.openhab.binding.openwebnet.internal.discovery.ZigBeeGatewayDiscoveryService;
 import org.openwebnet.OpenDeviceType;
 import org.openwebnet.OpenError;
 import org.openwebnet.OpenGateway;
@@ -568,4 +570,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        logger.debug("############ getServices()");
+        return Collections.singleton(ZigBeeGatewayDiscoveryService.class);
+    }
 }
