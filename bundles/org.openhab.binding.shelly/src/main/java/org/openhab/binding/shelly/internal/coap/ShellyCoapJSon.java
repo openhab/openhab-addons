@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import org.apache.commons.lang.Validate;
 
 import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -33,60 +34,77 @@ public class ShellyCoapJSon {
     public static final String COIOT_TAG_ACT = "act";
     public static final String COIOT_TAG_GENERIC = "G";
 
-    public static class CoIoT_Descr_blk {
-        String I; // ID
-        String D; // Description
+    public static class CoIotDescrBlk {
+        @SerializedName("I")
+        String id; // ID
+        @SerializedName("D")
+        String desc; // Description
 
         // Sometimes sen entries are part of the blk array - not conforming the Spec!
-        public String T; // Type
-        public String R; // Range
-        public String L; // Links
+        @SerializedName("T")
+        public String type; // Type
+        @SerializedName("T")
+        public String range; // Range
+        @SerializedName("L")
+        public String links; // Links
     }
 
-    public static class CoIoT_Descr_sen {
-        public String I; // ID
-        public String D; // Description
-        public String T; // Type
-        public String R; // Range
-        public String L; // Links
+    public static class CoIotDescrSen {
+        @SerializedName("I")
+        String id; // ID
+        @SerializedName("D")
+        String desc; // Description
+        @SerializedName("T")
+        public String type; // Type
+        @SerializedName("T")
+        public String range; // Range
+        @SerializedName("L")
+        public String links; // Links
     }
 
-    public static class CoIoT_Descr_P {
-        public String I; // ID
-        public String D; // Description
-        public String R; // Range
+    public static class CoIotDescrP {
+        @SerializedName("I")
+        String id; // ID
+        @SerializedName("D")
+        String desc; // Description
+        @SerializedName("R")
+        public String range; // Range
     }
 
-    public static class CoIoT_Descr_act {
-        public String I; // ID
-        public String D; // Description
-        public String L; // Links
-        public ArrayList<CoIoT_Descr_P> P; // ?
+    public static class CoIotDescrAct {
+        @SerializedName("I")
+        String id; // ID
+        @SerializedName("D")
+        String desc; // Description
+        @SerializedName("L")
+        public String links; // Links
+        @SerializedName("P")
+        public ArrayList<CoIotDescrP> pTag; // ?
     }
 
-    public static class CoIoT_DevDescription {
-        public ArrayList<CoIoT_Descr_blk> blk;
-        public ArrayList<CoIoT_Descr_sen> sen;
-        public ArrayList<CoIoT_Descr_act> act;
+    public static class CoIotDevDescription {
+        public ArrayList<CoIotDescrBlk> blk;
+        public ArrayList<CoIotDescrSen> sen;
+        public ArrayList<CoIotDescrAct> act;
     }
 
-    public static class CoIoT_Sensor {
+    public static class CoIotSensor {
         public String index; // id
         public double value; // value
     }
 
-    public static class CoIoT_GenericSensorList {
-        public ArrayList<CoIoT_Sensor> G;
+    public static class CoIotGenericSensorList {
+        public ArrayList<CoIotSensor> G;
 
-        public CoIoT_GenericSensorList() {
-            G = new ArrayList<CoIoT_Sensor>();
+        public CoIotGenericSensorList() {
+            G = new ArrayList<CoIotSensor>();
         }
     }
 
-    protected static class CoIoT_SensorTypeAdapter extends TypeAdapter<CoIoT_GenericSensorList> {
+    protected static class CoIotSensorTypeAdapter extends TypeAdapter<CoIotGenericSensorList> {
         @Override
-        public CoIoT_GenericSensorList read(final JsonReader in) throws IOException {
-            CoIoT_GenericSensorList list = new CoIoT_GenericSensorList();
+        public CoIotGenericSensorList read(final JsonReader in) throws IOException {
+            CoIotGenericSensorList list = new CoIotGenericSensorList();
 
             in.beginObject();
             String G = in.nextName();
@@ -95,7 +113,7 @@ public class ShellyCoapJSon {
                 in.beginArray();
                 while (in.hasNext()) {
                     in.beginArray();
-                    final CoIoT_Sensor sensor = new CoIoT_Sensor();
+                    final CoIotSensor sensor = new CoIotSensor();
                     in.nextInt(); // alway 0
                     sensor.index = new Integer(in.nextInt()).toString();
                     sensor.value = in.nextDouble();
@@ -110,8 +128,8 @@ public class ShellyCoapJSon {
         }
 
         @Override
-        public void write(final JsonWriter out, final CoIoT_GenericSensorList o) throws IOException {
-            CoIoT_GenericSensorList sensors = o;
+        public void write(final JsonWriter out, final CoIotGenericSensorList o) throws IOException {
+            CoIotGenericSensorList sensors = o;
             out.beginObject();
             if (sensors != null) {
                 out.name(COIOT_TAG_GENERIC).beginArray();

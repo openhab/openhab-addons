@@ -44,14 +44,14 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_Descr_P;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_Descr_act;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_Descr_blk;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_Descr_sen;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_DevDescription;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_GenericSensorList;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_Sensor;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIoT_SensorTypeAdapter;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrAct;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrBlk;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrP;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrSen;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDevDescription;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotGenericSensorList;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotSensor;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotSensorTypeAdapter;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.slf4j.Logger;
@@ -82,8 +82,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
     private int lastSerial = -1;
     private String lastPayload = "";
-    private Map<String, CoIoT_Descr_blk> blockMap = new HashMap<String, CoIoT_Descr_blk>();
-    private Map<String, CoIoT_Descr_sen> sensorMap = new HashMap<String, CoIoT_Descr_sen>();
+    private Map<String, CoIotDescrBlk> blockMap = new HashMap<String, CoIotDescrBlk>();
+    private Map<String, CoIotDescrSen> sensorMap = new HashMap<String, CoIotDescrSen>();
 
     public ShellyCoapHandler(ShellyThingConfiguration config, ShellyBaseHandler thingHandler,
             @Nullable ShellyCoapServer coapServer) {
@@ -94,7 +94,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         this.thingName = thingHandler.thingName;
 
         gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(CoIoT_GenericSensorList.class, new CoIoT_SensorTypeAdapter());
+        gsonBuilder.registerTypeAdapter(CoIotGenericSensorList.class, new CoIotSensorTypeAdapter());
         gsonBuilder.setPrettyPrinting();
         gson = gsonBuilder.create();
     }
@@ -246,27 +246,27 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
         // Decode Json
         @Nullable
-        CoIoT_DevDescription descr = gson.fromJson(payload, CoIoT_DevDescription.class);
+        CoIotDevDescription descr = gson.fromJson(payload, CoIotDevDescription.class);
         Validate.notNull(descr);
 
         int i;
         for (i = 0; i < descr.blk.size(); i++) {
-            CoIoT_Descr_blk blk = descr.blk.get(i);
-            logger.debug("{}:    id={}: {}", thingName, blk.I, blk.D);
-            if (!blockMap.containsKey(blk.I)) {
-                blockMap.put(blk.I, blk);
+            CoIotDescrBlk blk = descr.blk.get(i);
+            logger.debug("{}:    id={}: {}", thingName, blk.id, blk.desc);
+            if (!blockMap.containsKey(blk.id)) {
+                blockMap.put(blk.id, blk);
             } else {
-                blockMap.replace(blk.I, blk);
+                blockMap.replace(blk.id, blk);
             }
-            if ((blk.T != null) && !blk.T.isEmpty()) {
+            if ((blk.type != null) && !blk.type.isEmpty()) {
                 // in fact it is a sen entry - that's vioaling the Spec
-                logger.trace("{}:    fix: auto-create sensor definition for id {}/{}!", thingName, blk.I, blk.D);
-                CoIoT_Descr_sen sen = new CoIoT_Descr_sen();
-                sen.I = blk.I;
-                sen.D = blk.D;
-                sen.T = blk.T;
-                sen.R = blk.R;
-                sen.L = blk.L;
+                logger.trace("{}:    fix: auto-create sensor definition for id {}/{}!", thingName, blk.id, blk.desc);
+                CoIotDescrSen sen = new CoIotDescrSen();
+                sen.id = blk.id;
+                sen.desc = blk.desc;
+                sen.type = blk.type;
+                sen.range = blk.range;
+                sen.links = blk.links;
                 addSensor(sen);
             }
         }
@@ -279,11 +279,11 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         if (descr.act != null) {
             logger.trace("{}:  Device has {} actors", thingName, descr.act.size());
             for (i = 0; i < descr.act.size(); i++) {
-                CoIoT_Descr_act act = descr.act.get(i);
-                logger.trace("{}:    id={}: {}, Links={}", thingName, act.I, act.D, act.L);
-                for (int p = 0; p < act.P.size(); p++) {
-                    CoIoT_Descr_P pinfo = act.P.get(p);
-                    logger.trace("{}:      P[{}]: {}, Range={}", thingName, pinfo.I, pinfo.D, pinfo.R);
+                CoIotDescrAct act = descr.act.get(i);
+                logger.trace("{}:    id={}: {}, Links={}", thingName, act.id, act.desc, act.links);
+                for (int p = 0; p < act.pTag.size(); p++) {
+                    CoIotDescrP pinfo = act.pTag.get(p);
+                    logger.trace("{}:      P[{}]: {}, Range={}", thingName, pinfo.id, pinfo.desc, pinfo.range);
                 }
             }
         }
@@ -292,13 +292,14 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         thingHandler.updateProperties(PROPERTY_COAP_DESCR, payload);
     }
 
-    private void addSensor(CoIoT_Descr_sen sen) {
-        logger.debug("{}:    id {}: {}, Type={}, Range={}, Links={}", thingName, sen.I, sen.D, sen.T, sen.R, sen.L);
-        CoIoT_Descr_sen fixed = fixDescription(sen);
-        if (!sensorMap.containsKey(fixed.I)) {
-            sensorMap.put(sen.I, sen);
+    private void addSensor(CoIotDescrSen sen) {
+        logger.debug("{}:    id {}: {}, Type={}, Range={}, Links={}", thingName, sen.id, sen.desc, sen.type, sen.range,
+                sen.links);
+        CoIotDescrSen fixed = fixDescription(sen);
+        if (!sensorMap.containsKey(fixed.id)) {
+            sensorMap.put(sen.id, sen);
         } else {
-            sensorMap.replace(sen.I, sen);
+            sensorMap.replace(sen.id, sen);
         }
     }
 
@@ -336,7 +337,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         }
 
         // Parse Json,
-        CoIoT_GenericSensorList list = gson.fromJson(payload, CoIoT_GenericSensorList.class);
+        CoIotGenericSensorList list = gson.fromJson(payload, CoIotGenericSensorList.class);
         Validate.notNull(list, "sensor list must not be empty!");
         Map<String, State> updates = new HashMap<String, State>();
 
@@ -354,25 +355,25 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
         logger.debug("{}: {} status updates received", thingName, list.G.size());
         for (int i = 0; i < list.G.size(); i++) {
-            CoIoT_Sensor s = list.G.get(i);
-            CoIoT_Descr_sen sen = sensorMap.get(s.index);
+            CoIotSensor s = list.G.get(i);
+            CoIotDescrSen sen = sensorMap.get(s.index);
             if (sen != null) {
                 // find matching sensor definition from device description, use the Link ID as
                 // index
-                Validate.notNull(sen.L != null, "Coap: sen.L must not be null!");
+                Validate.notNull(sen.links != null, "Coap: sen.L must not be null!");
                 sen = fixDescription(sen);
-                CoIoT_Descr_blk element = blockMap.get(sen.L);
+                CoIotDescrBlk element = blockMap.get(sen.links);
                 logger.debug("{}:  Sensor value[{}]: Index={}, Value={} ({}, Type={}, Range={}, Link={}: {})",
-                        thingName, i, s.index, s.value, sen.D, sen.T, sen.R, sen.L,
-                        element != null ? element.D : "n/a");
+                        thingName, i, s.index, s.value, sen.desc, sen.type, sen.range, sen.links,
+                        element != null ? element.desc : "n/a");
 
                 // Process status information and convert into channel updates
-                String type = (element != null ? element.D : "").toLowerCase();
-                Integer rIndex = Integer.parseInt(sen.L) + 1;
+                String type = (element != null ? element.desc : "").toLowerCase();
+                Integer rIndex = Integer.parseInt(sen.links) + 1;
                 String rGroup = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                         : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
 
-                switch (sen.T.toLowerCase()) /* CoIoT_STypes.valueOf(sen.T) */ {
+                switch (sen.type.toLowerCase()) /* CoIoT_STypes.valueOf(sen.T) */ {
                     case "t" /* Temperature */:
                         Validate.isTrue(type.contains("sensors"), "Temp update for non-sensor");
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
@@ -418,7 +419,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         break;
 
                     case "s" /* CatchAll */:
-                        switch (sen.D.toLowerCase()) {
+                        switch (sen.desc.toLowerCase()) {
                             case "relay0": // Shelly1
                             case "state":
                             case "switch":
@@ -442,7 +443,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                             s.value == 0 ? OnOffType.OFF : OnOffType.ON);
                                 } else {
                                     // only Dimmer has 2 inputs
-                                    Integer idx = getInputId(sen.I);
+                                    Integer idx = getInputId(sen.id);
                                     if (idx != null) {
                                         updateChannel(updates, rGroup, CHANNEL_INPUT + idx.toString(),
                                                 s.value == 1 ? OnOffType.ON : OnOffType.OFF);
@@ -470,7 +471,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         break;
 
                     default:
-                        logger.debug("{}: Sensor data for type {} not processed, value={}", thingName, sen.T, s.value);
+                        logger.debug("{}: Sensor data for type {} not processed, value={}", thingName, sen.type,
+                                s.value);
                         break;
                 }
             } else {
@@ -529,7 +531,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      * @param sen
      * @return updated sen
      */
-    private CoIoT_Descr_sen fixDescription(CoIoT_Descr_sen sen) {
+    private CoIotDescrSen fixDescription(CoIotDescrSen sen) {
         Validate.notNull(sen, "sen must not be null!");
 
         // Shelly1: reports null descr+type "Switch" -> map to S
@@ -538,48 +540,48 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // Shelly1PM: reports temp senmsors without desc -> add description
         // Shelly Dimmer: sensors are reported without descriptions -> map to S
         // SHelly Sense: multiple issues: Description should not be lower case, invalid type for Motion and Battery
-        if (sen.T == "S") {
-            switch (sen.D.toLowerCase()) {
+        if (sen.type == "S") {
+            switch (sen.desc.toLowerCase()) {
                 case "motion": // fix acc to spec it's T=M
-                    sen.T = "M";
-                    sen.D = "Motion";
+                    sen.type = "M";
+                    sen.desc = "Motion";
                     break;
                 case "battery": // fix: type is B not H
-                    sen.T = "B";
-                    sen.D = "Battery";
+                    sen.type = "B";
+                    sen.desc = "Battery";
                     break;
             }
         }
 
-        if (sen.D == null) {
-            switch (sen.T.toLowerCase()) {
+        if (sen.desc == null) {
+            switch (sen.type.toLowerCase()) {
                 case "w":
-                    sen.D = "Power";
+                    sen.desc = "Power";
                     break;
                 case "switch":
                 case "relay0":
-                    sen.T = "S";
-                    sen.D = "Switch";
+                    sen.type = "S";
+                    sen.desc = "Switch";
                     break;
                 case "overtemp":
-                    sen.T = "O";
-                    sen.D = "Overtemp";
+                    sen.type = "O";
+                    sen.desc = "Overtemp";
                     break;
                 case "input":
-                    sen.T = "S";
-                    sen.D = "Input";
+                    sen.type = "S";
+                    sen.desc = "Input";
                     break;
                 case "output":
-                    sen.T = "S";
-                    sen.D = "Output";
+                    sen.type = "S";
+                    sen.desc = "Output";
                     break;
                 case "brightness":
-                    sen.T = "S";
-                    sen.D = "Brightness";
+                    sen.type = "S";
+                    sen.desc = "Brightness";
                     break;
                 case "tc":
                 case "tf":
-                    sen.D = "Temperature";
+                    sen.desc = "Temperature";
                     break;
 
                 case "red":
@@ -592,15 +594,15 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     // it seems that Shelly tends to break their own spec: T is the description and D is no longer
                     // included
                     // -> map D to sen.T and set CatchAll for T
-                    sen.D = sen.T;
-                    sen.T = "S";
+                    sen.desc = sen.type;
+                    sen.type = "S";
                     break;
 
                 // Default: set no description
                 // (there are no T values defined in the CoIoT spec)
                 case "tostate":
                 default:
-                    sen.D = "";
+                    sen.desc = "";
             }
         }
         return sen;
@@ -679,14 +681,14 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     @Nullable
     private Integer getInputId(String sensorId) {
         Integer idx = 1;
-        for (Map.Entry<String, CoIoT_Descr_sen> se : sensorMap.entrySet()) {
+        for (Map.Entry<String, CoIotDescrSen> se : sensorMap.entrySet()) {
             @Nullable
-            CoIoT_Descr_sen sen = se.getValue();
-            if (sen.I.equalsIgnoreCase(sensorId)) {
+            CoIotDescrSen sen = se.getValue();
+            if (sen.id.equalsIgnoreCase(sensorId)) {
                 logger.trace("{}:    map to input{} channel", thingName, idx);
                 return idx;
             }
-            if (sen.I.equalsIgnoreCase("Input")) {
+            if (sen.id.equalsIgnoreCase("Input")) {
                 idx++; // iterate from input1..2..n
             }
         }
