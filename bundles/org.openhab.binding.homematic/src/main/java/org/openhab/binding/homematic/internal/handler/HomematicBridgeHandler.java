@@ -16,6 +16,8 @@ import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.homematic.internal.HomematicBindingConstants.CHANNEL_TYPE_DUTY_CYCLE_RATIO;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +33,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
@@ -225,6 +228,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
         logger.debug("{}", homematicConfig);
         return homematicConfig;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(HomematicDeviceDiscoveryService.class);
     }
 
     @Override

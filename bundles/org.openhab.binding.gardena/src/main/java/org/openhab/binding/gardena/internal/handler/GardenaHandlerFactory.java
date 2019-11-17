@@ -14,19 +14,12 @@ package org.openhab.binding.gardena.internal.handler;
 
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.gardena.internal.discovery.GardenaDeviceDiscoveryService;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -37,8 +30,6 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.gardena")
 public class GardenaHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return BINDING_ID.equals(thingTypeUID.getBindingId());
@@ -47,34 +38,9 @@ public class GardenaHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {
-            GardenaAccountHandler handler = new GardenaAccountHandler((Bridge) thing);
-            registerDeviceDiscoveryService(handler);
-            return handler;
+            return new GardenaAccountHandler((Bridge) thing);
         } else {
             return new GardenaThingHandler(thing);
         }
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof GardenaAccountHandler) {
-            ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                GardenaDeviceDiscoveryService discoveryService = (GardenaDeviceDiscoveryService) bundleContext
-                        .getService(serviceReg.getReference());
-                serviceReg.unregister();
-                if (discoveryService != null) {
-                    discoveryService.deactivate();
-                }
-            }
-        }
-    }
-
-    private synchronized void registerDeviceDiscoveryService(GardenaAccountHandler thingHandler) {
-        GardenaDeviceDiscoveryService discoveryService = new GardenaDeviceDiscoveryService(thingHandler);
-        discoveryService.activate();
-        thingHandler.setDiscoveryService(discoveryService);
-        discoveryServiceRegs.put(thingHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
     }
 }

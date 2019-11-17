@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.gardena.internal.handler;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -22,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.gardena.internal.GardenaSmart;
@@ -120,6 +123,11 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      */
     public GardenaSmart getGardenaSmart() {
         return gardenaSmart;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(GardenaDeviceDiscoveryService.class);
     }
 
     @Override
