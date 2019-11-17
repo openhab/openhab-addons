@@ -55,6 +55,11 @@
 		<parameter name="qos" type="integer" min="0" max="2" required="false">
 			<label>QoS</label>
 			<description>MQTT QoS of this channel (0, 1, 2). Default is QoS of the broker connection.</description>
+			<options>
+				<option value="0">At most once (best effort delivery "fire and forget")</option>
+				<option value="1">At least once (guaranteed that a message will be delivered at least once)</option>
+				<option value="2">Exactly once (guarantees that each message is received only once by the counterpart)</option>
+			</options>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="retained" type="boolean">
@@ -69,7 +74,6 @@
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
-
 		<parameter name="on" type="text">
 			<label>Up Value</label>
 			<description>A string (like "OPEN") that is recognised as UP state. You can use this parameter for a second keyword, next to UP.</description>
