@@ -71,14 +71,14 @@ public class ShellyEventServlet extends HttpServlet {
     }
 
     @Deactivate
-    protected void deactivate() {
+    public void deactivate() {
         httpService.unregister(SHELLY_CALLBACK_URI);
         logger.debug("CallbackServlet stopped");
     }
 
     @SuppressWarnings("null")
     @Override
-    protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse resp)
+    public void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
         String data = inputStreamToString(request);
         String path = request.getRequestURI().toLowerCase();
@@ -122,7 +122,7 @@ public class ShellyEventServlet extends HttpServlet {
 
         } catch (RuntimeException e) {
             logger.warn(
-                    "ERROR: Exception processing callback: {} ({}), path={}, data='{}'; deviceName={}, index={}, type={}, parameters={}\n|{",
+                    "ERROR: Exception processing callback: {} ({}), path={}, data='{}'; deviceName={}, index={}, type={}, parameters={}\n|{}",
                     e.getMessage(), e.getClass(), path, data, deviceName, index, type,
                     request.getParameterMap().toString(), e.getStackTrace());
         } finally {
