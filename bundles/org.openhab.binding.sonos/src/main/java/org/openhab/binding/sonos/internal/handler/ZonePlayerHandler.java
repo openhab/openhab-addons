@@ -1034,7 +1034,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                         try {
                             response = HttpUtil.executeUrl("GET", url, SOCKET_TIMEOUT);
                         } catch (IOException e) {
-                            logger.debug("Request to device failed: {}", e);
+                            logger.debug("Request to device failed", e);
                         }
 
                         if (response != null) {

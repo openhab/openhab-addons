@@ -7,7 +7,7 @@ MQTT is a server/client architecture.
 
 A server, also called broker is not provided within this binding.
 You can use any of the freely available MQTT Brokers like [Mosquitto](https://mosquitto.org/)
-or [Moquette](https://moquette-io.github.io/moquette/) or install the [included Moquette broker](https://www.openhab.org/addons/integrations/mqttembeddedbroker/) as addon.
+or [Moquette](https://moquette-io.github.io/moquette/) or install the [included Moquette broker](https://www.openhab.org/addons/integrations/mqttembeddedbroker/) as add-on.
 
 This particular binding allows to configure connections to brokers via openHAB Things.
 This binding does NOT allow you to link Channels to MQTT topics or perform auto-discovery of available
@@ -36,7 +36,7 @@ Additionally the following parameters can be set:
 Reconnect parameters are:
 
 * __reconnectTime__: Reconnect time in ms. If a connection is lost, the binding will wait this time before it tries to reconnect. Defaults to 60000 (60s).
-* __keepAlive__: Keep alive / heartbeat timer in ms. It can take up to this time to determine if a server connection is lost. A lower value may keep the broker unnecessarily busy for no or little additional value. Defaults to 60000 (60s).
+* __keepAlive__: Keep alive / heartbeat timer in s. It can take up to this time to determine if a server connection is lost. A lower value may keep the broker unnecessarily busy for no or little additional value. Defaults to 60s.
 
 An MQTT last will and testament can be configured:
 

@@ -35,6 +35,7 @@
 /bundles/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @J-N-K
+/bundles/org.openhab.binding.doorbird/ @mhilbush
 /bundles/org.openhab.binding.dscalarm/ @RSStephens
 /bundles/org.openhab.binding.dsmr/ @Hilbrand
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
@@ -168,6 +169,7 @@
 /bundles/org.openhab.binding.systeminfo/ @svilenvul
 /bundles/org.openhab.binding.tado/ @dfrommi
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
+/bundles/org.openhab.binding.telegram/ @ZzetT
 /bundles/org.openhab.binding.tellstick/ @jarlebh
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.toon/ @jongj

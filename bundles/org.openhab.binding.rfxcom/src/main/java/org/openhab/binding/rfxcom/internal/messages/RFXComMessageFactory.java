@@ -47,10 +47,10 @@ public class RFXComMessageFactory {
                     // put(PacketType.FAN_SF01, RFXComFanMessage.class);
                     // put(PacketType.FAN_ITHO, RFXComFanMessage.class);
                     // put(PacketType.FAN_SEAV, RFXComFanMessage.class);
-                    // put(PacketType.FAN_LUCCI_DC, RFXComFanMessage.class);
+                    put(PacketType.FAN_LUCCI_DC, RFXComFanMessage.class);
                     // put(PacketType.FAN_FT1211R, RFXComFanMessage.class);
                     put(PacketType.FAN_FALMEC, RFXComFanMessage.class);
-                    // put(PacketType.FAN_LUCCI_DCII, RFXComFanMessage.class);
+                    put(PacketType.FAN_LUCCI_DC_II, RFXComFanMessage.class);
                     put(PacketType.CURTAIN1, RFXComCurtain1Message.class);
                     put(PacketType.BLINDS1, RFXComBlinds1Message.class);
                     put(PacketType.RFY, RFXComRfyMessage.class);
@@ -81,7 +81,7 @@ public class RFXComMessageFactory {
                     // put(PacketType.WEIGHT, RFXComWeightMessage.class);
                     // put(PacketType.GAS, RFXComGasMessage.class);
                     // put(PacketType.WATER, RFXComWaterMessage.class);
-                    // put(PacketType.RFXSENSOR, RFXComRFXSensorMessage.class);
+                    put(PacketType.RFXSENSOR, RFXComRFXSensorMessage.class);
                     // put(PacketType.RFXMETER, RFXComRFXMeterMessage.class);
                     // put(PacketType.FS20, RFXComFS20Message.class);
                     // put(PacketType.IO_LINES, RFXComIOLinesMessage.class);
@@ -117,7 +117,6 @@ public class RFXComMessageFactory {
             0x00, 0x00, 0x00, 0x00, 0x00 };
 
     public static RFXComMessage createMessage(PacketType packetType) throws RFXComException {
-
         try {
             Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);
             if (cl == null) {
@@ -130,7 +129,7 @@ public class RFXComMessageFactory {
     }
 
     public static RFXComMessage createMessage(byte[] packet) throws RFXComException {
-        PacketType packetType = ByteEnumUtil.fromByte(PacketType.class, (int) packet[1]);
+        PacketType packetType = ByteEnumUtil.fromByte(PacketType.class, packet[1]);
 
         try {
             Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);
@@ -151,7 +150,6 @@ public class RFXComMessageFactory {
     }
 
     public static PacketType convertPacketType(String packetType) throws IllegalArgumentException {
-
         for (PacketType p : PacketType.values()) {
             if (p.toString().replace("_", "").equals(packetType.replace("_", ""))) {
                 return p;

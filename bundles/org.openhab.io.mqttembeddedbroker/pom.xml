@@ -14,7 +14,7 @@
   <name>openHAB Add-ons :: Bundles :: IO :: MQTT Broker Moquette</name>
 
   <properties>
-    <netty.version>4.1.34.Final</netty.version>
+    <netty.version>4.1.42.Final</netty.version>
     <bnd.importpackage>com.bugsnag.*;resolution:="optional",com.codahale.metrics.*;resolution:="optional",com.librato.metrics.reporter.*;resolution:="optional",com.zaxxer.hikari.*;resolution:="optional",io.netty.channel.epoll.*;resolution:="optional",io.netty.handler.codec.http.*;resolution:="optional"</bnd.importpackage>
     <dep.noembedding>commons-codec,h2-mvstore,netty-common,netty-buffer,netty-transport,netty-codec,netty-codec-mqtt,netty-resolver,netty-handler</dep.noembedding>
   </properties>
@@ -23,7 +23,7 @@
     <dependency>
       <groupId>com.github.j-n-k</groupId>
       <artifactId>moquette-broker</artifactId>
-      <version>0.13.0.OH2</version>
+      <version>0.13.0.OH3</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>

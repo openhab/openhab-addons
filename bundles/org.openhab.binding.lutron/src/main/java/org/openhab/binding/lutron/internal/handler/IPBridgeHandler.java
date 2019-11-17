@@ -320,8 +320,12 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             if (thing.getHandler() instanceof LutronHandler) {
                 LutronHandler handler = (LutronHandler) thing.getHandler();
 
-                if (handler != null && handler.getIntegrationId() == integrationId) {
-                    return handler;
+                try {
+                    if (handler != null && handler.getIntegrationId() == integrationId) {
+                        return handler;
+                    }
+                } catch (IllegalStateException e) {
+                    logger.trace("Handler for id {} not initialized", integrationId);
                 }
             }
         }

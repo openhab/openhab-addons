@@ -17,6 +17,7 @@ import static org.junit.Assert.assertThat;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -36,6 +37,9 @@ import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 @RunWith(Parameterized.class)
 public class BitUtilitiesExtractStringFromRegistersTest {
 
@@ -69,18 +73,18 @@ public class BitUtilitiesExtractStringFromRegistersTest {
     @Parameters
     public static Collection<Object[]> data() {
         return Collections.unmodifiableList(Stream.of(
-                new Object[] { new StringType(""), shortArrayToRegisterArray(0), 0, 0, Charset.forName("UTF-8") },
+                new Object[] { new StringType(""), shortArrayToRegisterArray(0), 0, 0, StandardCharsets.UTF_8 },
                 new Object[] { new StringType("hello"), shortArrayToRegisterArray(0x6865, 0x6c6c, 0x6f00), 0, 5,
-                        Charset.forName("UTF-8") },
+                        StandardCharsets.UTF_8 },
                 new Object[] { new StringType("hello "), shortArrayToRegisterArray(0, 0, 0x6865, 0x6c6c, 0x6f20, 0, 0),
-                        2, 6, Charset.forName("UTF-8") },
+                        2, 6, StandardCharsets.UTF_8 },
                 new Object[] { new StringType("hello"),
                         shortArrayToRegisterArray(0x6865, 0x6c6c, 0x6f00, 0x0000, 0x0000), 0, 10,
-                        Charset.forName("UTF-8") },
+                        StandardCharsets.UTF_8 },
                 new Object[] { new StringType("árvíztűrő tükörfúrógép"),
                         shortArrayToRegisterArray(0xc3a1, 0x7276, 0xc3ad, 0x7a74, 0xc5b1, 0x72c5, 0x9120, 0x74c3,
                                 0xbc6b, 0xc3b6, 0x7266, 0xc3ba, 0x72c3, 0xb367, 0xc3a9, 0x7000),
-                        0, 32, Charset.forName("UTF-8") },
+                        0, 32, StandardCharsets.UTF_8 },
                 new Object[] { new StringType("árvíztűrő tükörfúrógép"),
                         shortArrayToRegisterArray(0xe172, 0x76ed, 0x7a74, 0xfb72, 0xf520, 0x74fc, 0x6bf6, 0x7266,
                                 0xfa72, 0xf367, 0xe970),
@@ -88,11 +92,11 @@ public class BitUtilitiesExtractStringFromRegistersTest {
 
                 // Invalid values
                 new Object[] { IllegalArgumentException.class, shortArrayToRegisterArray(0, 0), 2, 4,
-                        Charset.forName("UTF-8") },
+                        StandardCharsets.UTF_8 },
                 new Object[] { IllegalArgumentException.class, shortArrayToRegisterArray(0, 0), 0, -1,
-                        Charset.forName("UTF-8") },
+                        StandardCharsets.UTF_8 },
                 new Object[] { IllegalArgumentException.class, shortArrayToRegisterArray(0, 0), 0, 5,
-                        Charset.forName("UTF-8") })
+                        StandardCharsets.UTF_8 })
                 .collect(Collectors.toList()));
     }
 

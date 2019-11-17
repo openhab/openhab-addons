@@ -1,6 +1,6 @@
 # Network UPS Tools Binding
 
-The primary goal of the [Network UPS Tools](http://www.networkupstools.org/) (NUT) project is to provide support for power devices, such as uninterruptible power supplies (UPS), Power Distribution Units and Solar Controllers.
+The primary goal of the [Network UPS Tools](https://networkupstools.org/) (NUT) project is to provide support for power devices, such as uninterruptible power supplies (UPS), Power Distribution Units and Solar Controllers.
 
 Network UPS Tools (NUT) provides many control and monitoring features, with a uniform control and management interface.
 More than 100 different manufacturers, and several thousands of models are compatible.
@@ -122,6 +122,4 @@ String test_result "Test Result" {channel="networkupstools:ups:ups2:testResult"}
 Number:Frequency ups_out_freq "Output Frequency" {channel="networkupstools:ups:ups2:upsOutFreq"}
 Number:ElectricPotential ups_low_voltage  "Low Voltage [%.1f V]" {channel="networkupstools:ups:ups2:upsLowVoltage"}
 Number:ElectricCurrent ups_low_current "Input Current [%d A]" {channel="networkupstools:ups:ups2:upsLowCurrent"}
-
-
 ```

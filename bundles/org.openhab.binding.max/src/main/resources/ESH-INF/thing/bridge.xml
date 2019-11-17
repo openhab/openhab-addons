@@ -40,12 +40,12 @@
 
 			<parameter name="ipAddress" type="text" required="true" groupName="network">
 				<context>network-address</context>
-				<label>MAX! Cube LAN gateway IP</label>
+				<label>MAX! Cube LAN Gateway IP</label>
 				<description>The IP address of the MAX! Cube LAN gateway</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false" min="1" max="65335" groupName="network">
+			<parameter name="port" type="integer" required="false" min="1" max="65535" groupName="network">
 				<context>network-address</context>
-				<label>MAX! Cube LAN gateway port</label>
+				<label>MAX! Cube LAN Gateway Port</label>
 				<description>Port of the LAN gateway</description>
 				<default>62910</default>
 				<advanced>true</advanced>
@@ -71,7 +71,7 @@
 				<default>true</default>
 			</parameter>
 			<parameter name="maxRequestsPerConnection" type="integer" required="false" groupName="network">
-				<label>Max Requests per Connection</label>
+				<label>Max Requests Per Connection</label>
 				<description>In exclusive mode, how many requests are allowed until
 					connection is closed and reopened.</description>
 				<default>1000</default>

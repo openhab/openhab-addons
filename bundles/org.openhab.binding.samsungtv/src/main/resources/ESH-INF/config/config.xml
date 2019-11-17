@@ -6,11 +6,11 @@
 
 	<config-description uri="thing-type:samsungtv:tv">
 		<parameter name="hostName" type="text" required="true">
-			<label>Host name</label>
+			<label>Host Name</label>
 			<description>Network address of the Samsung TV.</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="port" type="integer" min="1" max="65335">
+		<parameter name="port" type="integer" min="1" max="65535">
 			<label>TCP Port</label>
 			<description>TCP port of the Samsung TV.</description>
 			<default>55000</default>
@@ -26,7 +26,7 @@
 			<default>1000</default>
 		</parameter>
 		<parameter name="protocol" type="text" required="true">
-			<label>Remote control protocol</label>
+			<label>Remote Control Protocol</label>
 			<description>The type of remote control protocol. This depends on the age of the TV.</description>
 			<options>
 				<option value="None">None</option>

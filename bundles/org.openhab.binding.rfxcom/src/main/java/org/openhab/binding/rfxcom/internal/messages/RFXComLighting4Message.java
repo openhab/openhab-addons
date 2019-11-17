@@ -26,6 +26,7 @@ import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * (ReceiveCommand ON/OFF Command )
  *
  * @author Alessandro Ballini (ITA) - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated to OH2
  * @author Martin van Wingerden - Extended support for more complex PT2262 devices
  */
 public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighting4Message.SubType> {
@@ -175,7 +176,6 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[10];
 
         data[0] = 0x09;
@@ -204,8 +204,7 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_COMMAND:
             case CHANNEL_MOTION:
@@ -218,7 +217,7 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
                 return new DecimalType(commandId);
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
@@ -228,7 +227,7 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         sensorId = Integer.parseInt(deviceId);
     }
 

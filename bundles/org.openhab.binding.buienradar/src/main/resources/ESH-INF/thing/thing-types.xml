@@ -4,9 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="rain_forecast">
-		<label>Rain forecast</label>
+		<label>Rain Forecast</label>
 		<description>Does a simple rain forecast at the specified longitude/latitude of
 		two hours, in 5 minute increments using the buienradar.nl webservice. </description>
 
@@ -47,7 +46,7 @@
 			</parameter>
 
 			<parameter name="refreshIntervalMinutes" type="integer" required="true" min="5" unit="min">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Refresh interval in minutes</description>
 				<default>5</default>
 			</parameter>
@@ -76,7 +75,7 @@
 
 	<channel-type id="forecast_0">
 		<item-type>Number:Speed</item-type>
-		<label>Current rainfall</label>
+		<label>Current Rainfall</label>
 		<description>Current rainfall</description>
 		<state readOnly="true" pattern="%.10f %unit%" />
 	</channel-type>

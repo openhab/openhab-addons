@@ -82,8 +82,7 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
 
         if (!bridgeHandler.getConfiguration().disableDiscovery) {
             logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
-            DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridge);
+            DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID).withBridge(bridge);
             message.addDevicePropertiesTo(discoveryResultBuilder);
 
             thingDiscovered(discoveryResultBuilder.build());

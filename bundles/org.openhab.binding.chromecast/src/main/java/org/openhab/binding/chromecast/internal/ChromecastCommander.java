@@ -255,8 +255,8 @@ public class ChromecastCommander {
                 chromeCast.stopApp();
                 logger.debug("Media player app stopped");
             }
-        } catch (final Exception e) {
-            logger.debug("Failed stopping media player app: {}", e);
+        } catch (final IOException e) {
+            logger.debug("Failed stopping media player app", e);
         }
     }
 }

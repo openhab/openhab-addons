@@ -19,17 +19,17 @@ package org.openhab.binding.nanoleaf.internal.model;
  */
 public class Sat implements IntegerState {
 
-    private Integer value;
+    private int value;
     private Integer max;
     private Integer min;
 
     @Override
-    public Integer getValue() {
+    public int getValue() {
         return value;
     }
 
     @Override
-    public void setValue(Integer value) {
+    public void setValue(int value) {
         this.value = value;
     }
 

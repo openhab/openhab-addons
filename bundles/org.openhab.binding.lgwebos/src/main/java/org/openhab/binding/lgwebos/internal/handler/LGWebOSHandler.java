@@ -21,7 +21,8 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -45,6 +46,8 @@ import org.openhab.binding.lgwebos.internal.ToastControlToast;
 import org.openhab.binding.lgwebos.internal.VolumeControlMute;
 import org.openhab.binding.lgwebos.internal.VolumeControlVolume;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket.WebOSTVSocketListener;
+import org.openhab.binding.lgwebos.internal.handler.core.AppInfo;
+import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +57,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sebastian Prehn - initial contribution
  */
+@NonNullByDefault
 public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.ConfigProvider, WebOSTVSocketListener {
 
     /*
@@ -73,13 +77,14 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     private final Map<String, ChannelHandler> channelHandlers;
 
     private LauncherApplication appLauncher = new LauncherApplication();
-    private LGWebOSTVSocket socket;
+    private @Nullable LGWebOSTVSocket socket;
     private final WebSocketClient webSocketClient;
 
-    private ScheduledFuture<?> reconnectJob;
-    private LGWebOSConfiguration config;
+    private @Nullable ScheduledFuture<?> reconnectJob;
+    private @Nullable ScheduledFuture<?> keepAliveJob;
+    private @Nullable LGWebOSConfiguration config;
 
-    public LGWebOSHandler(@NonNull Thing thing, WebSocketClient webSocketClient) {
+    public LGWebOSHandler(Thing thing, WebSocketClient webSocketClient) {
         super(thing);
         this.webSocketClient = webSocketClient;
 
@@ -113,6 +118,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void dispose() {
+        stopKeepAliveJob();
         stopReconnectJob();
         if (this.socket != null) {
             this.socket.setListener(null);
@@ -137,7 +143,38 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         reconnectJob = null;
     }
 
-    public LGWebOSTVSocket getSocket() {
+    /**
+     * Keep alive ensures that the web socket connection is used and does not time out.
+     */
+    private void startKeepAliveJob() {
+        if (keepAliveJob == null || keepAliveJob.isCancelled()) {
+            // half of idle time out setting
+            long keepAliveInterval = this.webSocketClient.getMaxIdleTimeout() / 2;
+
+            // it is irrelevant which service is queried. Only need to send some packets over the wire
+            keepAliveJob = scheduler.scheduleWithFixedDelay(() -> socket.getRunningApp(new ResponseListener<AppInfo>() {
+
+                @Override
+                public void onSuccess(AppInfo responseObject) {
+                    // ignore - actual response is not relevant here
+                }
+
+                @Override
+                public void onError(String message) {
+                    // ignore
+                }
+            }), keepAliveInterval, keepAliveInterval, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void stopKeepAliveJob() {
+        if (keepAliveJob != null && !keepAliveJob.isCancelled()) {
+            keepAliveJob.cancel(true);
+        }
+        keepAliveJob = null;
+    }
+
+    public @Nullable LGWebOSTVSocket getSocket() {
         return socket;
     }
 
@@ -160,12 +197,12 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     }
 
     @Override
-    public String getKey() {
+    public @Nullable String getKey() {
         return config.key;
     }
 
     @Override
-    public void storeKey(String key) {
+    public void storeKey(@Nullable String key) {
         // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
         config.key = key;
 
@@ -177,13 +214,13 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
 
     @Override
     public void storeProperties(Map<String, String> properties) {
-        Map<@NonNull String, @NonNull String> map = editProperties();
+        Map<String, String> map = editProperties();
         map.putAll(properties);
         updateProperties(map);
     }
 
     @Override
-    public void onStateChanged(LGWebOSTVSocket.State old, LGWebOSTVSocket.State state) {
+    public void onStateChanged(LGWebOSTVSocket.State state) {
         switch (state) {
             case DISCONNECTED:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
@@ -192,12 +229,13 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
                     v.removeAnySubscription(this);
                 });
 
+                stopKeepAliveJob();
                 startReconnectJob();
                 break;
-            case CONNECTING:
-                break;
+
             case REGISTERING:
                 stopReconnectJob();
+                startKeepAliveJob();
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                         "Registering - You may need to confirm pairing on TV.");
                 break;
@@ -208,8 +246,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
                     v.onDeviceReady(k, this);
                 });
                 break;
-            case DISCONNECTING:
-                break;
+
         }
 
     }
@@ -218,9 +255,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     public void onError(String error) {
         logger.debug("Connection failed - error: {}", error);
         switch (socket.getState()) {
-            case CONNECTING:
             case DISCONNECTED:
-            case DISCONNECTING:
                 break;
             case REGISTERING:
             case REGISTERED:

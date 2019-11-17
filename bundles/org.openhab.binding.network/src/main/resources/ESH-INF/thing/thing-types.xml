@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd"><!--Network Binding -->
 	<thing-type id="pingdevice">
-		<label>Pingable network device</label>
+		<label>Pingable Network Device</label>
 		<description>The presence detection is performed by using ICMP and, if available, ARP pings.
 		You can change the arping tool path in the binding configuration.
 		DHCP sniffing is performed for faster network reentry discovery.</description>
@@ -41,9 +41,9 @@
 				<default>1</default>
 			</parameter>
 
-			<parameter name="timeout" type="integer">
-				<label>Timeout in ms</label>
-				<description>States how long to wait for a response (in MS), before if a device is stated as offline</description>
+			<parameter name="timeout" type="integer" unit="ms">
+				<label>Timeout</label>
+				<description>States how long to wait for a response (in ms), before if a device is stated as offline</description>
 				<default>5000</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -51,7 +51,7 @@
 	</thing-type>
 
 	<thing-type id="servicedevice">
-		<label>Network device with running service</label>
+		<label>Network Device with Running Service</label>
 		<description>A device which reachable state is detected by connecting to a TCP port.
 		DHCP sniffing is performed for faster network reentry discovery.</description>
 
@@ -89,7 +89,7 @@
 
 			<parameter name="timeout" type="integer">
 				<label>Timeout</label>
-				<description>States how long to wait for a response (in MS), before if a device is stated as offline</description>
+				<description>States how long to wait for a response (in ms), before if a device is stated as offline</description>
 				<default>5000</default>
 			</parameter>
 
@@ -120,7 +120,7 @@
 
 		<config-description>
 			<parameter name="refreshInterval" type="integer" min="2">
-				<label>Refresh time interval</label>
+				<label>Refresh Time Interval</label>
 				<description>Refresh time interval in minutes.</description>
 				<default>20</default>
 			</parameter>
@@ -131,12 +131,12 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="uploadSize" type="integer" min="5000">
-				<label>Upload size</label>
+				<label>Upload Size</label>
 				<description>Size of the file to be uploaded (bytes).</description>
 				<default>1000000</default>
 			</parameter>
 			<parameter name="url" type="text" required="true">
-				<label>Test server URL</label>
+				<label>Test Server URL</label>
 				<description>Url of the speed test server</description>
 			</parameter>
 			<parameter name="fileName" type="text" required="true">
@@ -195,7 +195,7 @@
 	</channel-type>
 	<channel-type id="lastseen">
 		<item-type>DateTime</item-type>
-		<label>Last seen</label>
+		<label>Last Seen</label>
 		<description>States the last seen date/time</description>
 		<state readOnly="true"></state>
 	</channel-type>

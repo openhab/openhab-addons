@@ -12,16 +12,16 @@
 		<label>Paradox Panel</label>
 		<description>Paradox panel various information</description>
 
- 		<channels>
+		<channels>
 			<channel id="state" typeId="panelState" />
 		</channels>
-        <properties>
-	        <property name="serialNumber"/>
-	        <property name="panelType"/>
-	        <property name="hardwareVersion"/>
-	        <property name="applicationVersion"/>
-	        <property name="bootloaderVersion"/>
-        </properties>
+		<properties>
+			<property name="serialNumber" />
+			<property name="panelType" />
+			<property name="hardwareVersion" />
+			<property name="applicationVersion" />
+			<property name="bootloaderVersion" />
+		</properties>
 	</thing-type>
 
 	<channel-type id="panelState">

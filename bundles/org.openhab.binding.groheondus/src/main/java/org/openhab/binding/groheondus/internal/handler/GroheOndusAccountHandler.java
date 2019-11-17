@@ -93,7 +93,7 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
                 try {
                     setRefreshToken(ondusService.refreshAuthorization());
                 } catch (Exception e) {
-                    logger.warn("Could not refresh authorization for GROHE ONDUS account, error {}", e);
+                    logger.warn("Could not refresh authorization for GROHE ONDUS account", e);
                 }
             }, between.getSeconds(), TimeUnit.SECONDS);
         }

@@ -57,14 +57,14 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="userName" type="text">
-				<label>UserName to login with</label>
+				<label>UserName to Login With</label>
 				<description>User Name to login with if Telnet Login is on</description>
 				<required>false</required>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="password" type="text">
 				<context>password</context>
-				<label>Password to login with</label>
+				<label>Password to Login With</label>
 				<description>Password to login with if Telnet Login is on</description>
 				<required>false</required>
 				<advanced>true</advanced>
@@ -82,7 +82,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="retryPolling" type="integer">
-				<label>Polling Interval to try to reconnect</label>
+				<label>Polling Interval to Try to Reconnect</label>
 				<description>Interval (in seconds) to try to (re)connect to the matrix</description>
 				<default>10</default>
 				<advanced>true</advanced>
@@ -163,14 +163,14 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="userName" type="text">
-				<label>UserName to login with</label>
+				<label>UserName to Login With</label>
 				<description>User Name to login with if Telnet Login is on</description>
 				<required>false</required>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="password" type="text">
 				<context>password</context>
-				<label>Password to login with</label>
+				<label>Password to Login With</label>
 				<description>Password to login with if Telnet Login is on</description>
 				<required>false</required>
 				<advanced>true</advanced>
@@ -188,7 +188,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="retryPolling" type="integer">
-				<label>Polling Interval to try to reconnect</label>
+				<label>Polling Interval to Try to Reconnect</label>
 				<description>Interval (in seconds) to try to (re)connect to the matrix</description>
 				<default>10</default>
 				<advanced>true</advanced>
@@ -292,7 +292,7 @@
 			</parameter>
 			<parameter name="password" type="text">
 				<context>password</context>
-				<label>Password to login with</label>
+				<label>Password to Login With</label>
 				<description>Password to use (if Telnet Login is ON)</description>
 				<default></default>
 				<advanced>true</advanced>
@@ -310,7 +310,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="retryPolling" type="integer">
-				<label>Polling Interval to try to reconnect</label>
+				<label>Polling Interval to Try to Reconnect</label>
 				<description>Interval (in seconds) to try to (re)connect</description>
 				<default>10</default>
 				<advanced>true</advanced>
@@ -479,14 +479,14 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="userName" type="text">
-				<label>UserName to login with</label>
+				<label>UserName to Login With</label>
 				<description>User Name to login with if Telnet Login is on</description>
 				<required>false</required>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="password" type="text">
 				<context>password</context>
-				<label>Password to login with</label>
+				<label>Password to Login With</label>
 				<description>Password to login with if Telnet Login is on</description>
 				<required>false</required>
 				<advanced>true</advanced>
@@ -504,7 +504,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="retryPolling" type="integer">
-				<label>Polling Interval to try to reconnect</label>
+				<label>Polling Interval to Try to Reconnect</label>
 				<description>Interval (in seconds) to try to (re)connect to the matrix</description>
 				<default>10</default>
 				<advanced>true</advanced>

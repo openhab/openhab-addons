@@ -43,7 +43,7 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command To React</label>
+				<label>Command to React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
@@ -93,7 +93,7 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command To React</label>
+				<label>Command to React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
@@ -123,7 +123,7 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command To React</label>
+				<label>Command to React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
@@ -157,7 +157,7 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command To React</label>
+				<label>Command to React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
@@ -187,7 +187,7 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command To React</label>
+				<label>Command to React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
@@ -217,7 +217,7 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command To React</label>
+				<label>Command to React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">

@@ -26,7 +26,7 @@
 
 	<channel-type id="alarmrunning" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Alarm is running</label>
+		<label>Alarm Is Running</label>
 		<description>Set to ON if the alarm was triggered</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -74,14 +74,14 @@
 
 	<channel-type id="currenttrackuri" advanced="true">
 		<item-type>String</item-type>
-		<label>Current track URI</label>
+		<label>Current Track URI</label>
 		<description>URI of the current track</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="currenttransporturi" advanced="true">
 		<item-type>String</item-type>
-		<label>Current AV transport URI</label>
+		<label>Current AV Transport URI</label>
 		<description>URI of the current AV transport</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -218,7 +218,7 @@
 
 	<channel-type id="speechenhancement" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Speech Enhancement </label>
+		<label>Speech Enhancement</label>
 		<description>Enable or disable the speech enhancement feature</description>
 	</channel-type>
 
@@ -272,7 +272,7 @@
 	<!-- Extended channels (for SONOS PLAY5, CONNECT & CONNECT:AMP only) -->
 	<channel-type id="linein" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Line-in connected</label>
+		<label>Line-in Connected</label>
 		<description>Indicator set to ON when the line-in of the Zone Player is connected</description>
 		<state readOnly="true" />
 	</channel-type>

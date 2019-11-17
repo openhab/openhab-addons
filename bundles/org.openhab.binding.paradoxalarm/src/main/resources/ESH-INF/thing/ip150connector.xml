@@ -43,6 +43,11 @@
 				<description>Port to connect to IP150</description>
 				<default>10000</default>
 			</parameter>
+			<parameter name="reconnectWaitTime" type="integer" required="true" unit="s">
+				<label>Reconnect Wait Time</label>
+				<description>The time to wait before a reconnect occurs after socket timeout. Value is in seconds</description>
+				<default>30</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

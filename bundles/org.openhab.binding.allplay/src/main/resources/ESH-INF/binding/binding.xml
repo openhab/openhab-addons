@@ -7,14 +7,14 @@
 	<author>Dominic Lerbs</author>
 
 	<config-description>
-		<parameter name="rewindSkipTimeInSec" type="integer">
-			<label>Rewind skip time (s)</label>
+		<parameter name="rewindSkipTimeInSec" type="integer" unit="s">
+			<label>Rewind Skip Time</label>
 			<description>Seconds to jump backwards if the rewind command is executed</description>
 			<default>10</default>
 			<unitLabel>s</unitLabel>
 		</parameter>
-		<parameter name="fastForwardSkipTimeInSec" type="integer">
-			<label>Fast forward skip time (s)</label>
+		<parameter name="fastForwardSkipTimeInSec" type="integer" unit="s">
+			<label>Fast Forward Skip Time</label>
 			<description>Seconds to jump forward if the fastforward command is executed</description>
 			<default>10</default>
 			<unitLabel>s</unitLabel>

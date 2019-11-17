@@ -28,13 +28,13 @@
 
 	<channel-type id="ledlink" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Link bulb</label>
+		<label>Link Bulb</label>
 		<description>Sync bulb to this zone within 3 seconds of light bulb socket power on</description>
 	</channel-type>
 
 	<channel-type id="ledunlink" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Unlink bulb</label>
+		<label>Unlink Bulb</label>
 		<description>Clear bulb from this zone within 3 seconds of light bulb socket power on</description>
 	</channel-type>
 
@@ -71,7 +71,7 @@
 
 	<channel-type id="ledtemperature">
 		<item-type>Dimmer</item-type>
-		<label>Color temperature</label>
+		<label>Color Temperature</label>
 		<description>White leds and RGBWW allow to change between a cold and a warm color temperature. White support 16, RGBWW
 			support 64 steps
 		</description>
@@ -81,13 +81,13 @@
 
 	<channel-type id="animation_speed_relative">
 		<item-type>Dimmer</item-type>
-		<label>Animation speed</label>
+		<label>Animation Speed</label>
 		<description>The speed of some animations can be increased or decreased</description>
 	</channel-type>
 
 	<channel-type id="animation_mode_relative">
 		<item-type>Dimmer</item-type>
-		<label>Animation mode</label>
+		<label>Animation Mode</label>
 		<description>Switch to the next/previous animation mode of your RGBW or white LED. Bind this to a Next/Previous
 			channel type.
 		</description>
@@ -95,7 +95,7 @@
 
 	<channel-type id="animation_mode">
 		<item-type>Number</item-type>
-		<label>Animation mode</label>
+		<label>Animation Mode</label>
 		<description>Animation mode of your LED. RGBWW leds support 9 animation modes.</description>
 		<category>Light</category>
 		<state>

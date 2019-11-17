@@ -67,14 +67,13 @@ public class GenericCommunicator extends AbstractCommunicator implements IParado
     protected void handleReceivedPacket(IResponse response) {
         retryCounter = 0;
         IRequest request = response.getRequest();
-        logger.debug("Handling response for request={}", request);
+        logger.trace("Handling response for request={}", request);
 
         RequestType type = request.getType();
         // Send back the response to proper receive methods
         switch (type) {
             case LOGON_SEQUENCE:
-                CommunicationState logonSequenceSender = ((LogonRequest) request)
-                    .getLogonSequenceSender();
+                CommunicationState logonSequenceSender = ((LogonRequest) request).getLogonSequenceSender();
                 logonSequenceSender.receiveResponse(this, response);
                 break;
             case RAM:
@@ -90,8 +89,8 @@ public class GenericCommunicator extends AbstractCommunicator implements IParado
                     receiveEpromResponse(response);
                 } catch (ParadoxException e) {
                     EpromRequest epromRequest = (EpromRequest) request;
-                    logger.debug("Unable to retrieve EPROM message for entity Type={}, Id={}", epromRequest.getEntityType(),
-                        epromRequest.getEntityId());
+                    logger.debug("Unable to retrieve EPROM message for entity Type={}, Id={}",
+                        epromRequest.getEntityType(), epromRequest.getEntityId());
                 }
                 break;
         }
@@ -143,6 +142,8 @@ public class GenericCommunicator extends AbstractCommunicator implements IParado
 
     @Override
     public void updateListeners() {
-        listeners.forEach(IDataUpdateListener::update);
+        if (listeners != null && !listeners.isEmpty()) {
+            listeners.forEach(IDataUpdateListener::update);
+        }
     }
 }

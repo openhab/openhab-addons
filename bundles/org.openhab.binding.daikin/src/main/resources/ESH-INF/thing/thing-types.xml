@@ -98,7 +98,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="acunit-fan" advanced="true">
+	<channel-type id="acunit-fan">
 		<item-type>String</item-type>
 		<label>Fan</label>
 		<description>Current fan speed setting of the AC unit</description>
@@ -115,7 +115,7 @@
 		</state>
 	</channel-type>
 	
-	<channel-type id="acunit-fandir" advanced="true">
+	<channel-type id="acunit-fandir">
 		<item-type>String</item-type>
 		<label>Fan Swing</label>
 		<description>Current fan swing setting of the AC unit</description>

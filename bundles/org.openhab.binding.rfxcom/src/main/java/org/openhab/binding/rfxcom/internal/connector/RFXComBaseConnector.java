@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * RFXCOM connector for serial port communication.
  *
- * @author James Hewitt-Thomas
+ * @author James Hewitt-Thomas - Initial contribution
  */
 public abstract class RFXComBaseConnector implements RFXComConnectorInterface {
     private final Logger logger = LoggerFactory.getLogger(RFXComBaseConnector.class);

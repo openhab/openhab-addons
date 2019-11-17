@@ -44,7 +44,7 @@
 				<required>false</required>
 			</parameter>
 			<parameter name="resolution" type="text">
-				<label>Sensor resolution</label>
+				<label>Sensor Resolution</label>
 				<options>
 					<option value="9">9 bit</option>
 					<option value="10">10 bit</option>
@@ -141,7 +141,7 @@
 				<limitToOptions>true</limitToOptions>
 			</parameter>
 			<parameter name="logic" type="text">
-				<label>Channel logic</label>
+				<label>Channel Logic</label>
 				<options>
 					<option value="normal">normal</option>
 					<option value="inverted">inverted</option>

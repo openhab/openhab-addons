@@ -36,7 +36,6 @@ public class OpenSprinklerBindingConstants {
     public static final ThingTypeUID OPENSPRINKLER_HTTP_BRIDGE = new ThingTypeUID(BINDING_ID, HTTP_BRIDGE);
     public static final ThingTypeUID OPENSPRINKLER_STATION = new ThingTypeUID(BINDING_ID, STATION_THING);
     public static final ThingTypeUID OPENSPRINKLER_DEVICE = new ThingTypeUID(BINDING_ID, DEVICE_THING);
-    public static final ThingTypeUID OPENSPRINKLER_PI_BRIDGE = new ThingTypeUID(BINDING_ID, PI_BRIDGE);
 
     public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 30;
     public static final int DEFAULT_REFRESH_RATE = 60;

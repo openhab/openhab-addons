@@ -9,7 +9,7 @@
 			<bridge-type-ref id="toonapi" />
 		</supported-bridge-type-refs>
 
-		<label>Toon display unit</label>
+		<label>Toon Display Unit</label>
 		<description>This represents the Toon display unit.</description>
 
 		<channels>
@@ -18,10 +18,10 @@
 			<channel id="SetpointMode" typeId="setpointMode" />
 			<channel id="GasMeterReading" typeId="gasMeterReading" />
 			<channel id="PowerMeterReading" typeId="currentMeterReading">
-				<label>Energy, high rate</label>
+				<label>Energy, High Rate</label>
 			</channel>
 			<channel id="PowerMeterReadingLow" typeId="currentMeterReading">
-				<label>Energy, low rate</label>
+				<label>Energy, Low Rate</label>
 			</channel>
 			<channel id="PowerConsumption" typeId="powerConsumption" />
 
@@ -38,7 +38,7 @@
 			<bridge-type-ref id="toonapi" />
 		</supported-bridge-type-refs>
 
-		<label>Toon plug</label>
+		<label>Toon Plug</label>
 		<description>A Wall plug controlled via Toon.</description>
 
 		<channels>

@@ -117,7 +117,7 @@ public abstract class EnOceanTransceiver {
                         sendNext();
                     }
                 } catch (EnOceanException e) {
-                    logger.error("exception while sending data {}", e);
+                    logger.error("exception while sending data", e);
                 }
             }
         }

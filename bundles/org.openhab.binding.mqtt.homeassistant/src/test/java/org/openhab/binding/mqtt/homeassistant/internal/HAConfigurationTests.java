@@ -29,6 +29,9 @@ import org.openhab.binding.mqtt.homeassistant.internal.BaseChannelConfiguration.
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * @author Jochen Klein - Initial contribution
+ */
 public class HAConfigurationTests {
 
     private Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory())

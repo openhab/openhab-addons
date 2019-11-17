@@ -7,6 +7,9 @@
 	<bridge-type id="account">
 		<label>Amazon Account</label>
 		<description>Amazon Account where the amazon echo devices are registered.</description>
+		<channels>
+			<channel id="sendMessage" typeId="sendMessage" />
+		</channels>
 	</bridge-type>
 	<thing-type id="echo">
 		<supported-bridge-type-refs>
@@ -40,7 +43,7 @@
 			<channel id="amazonMusicPlayListId"
 				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
-			<channel id="announcement" typeId="announcement" />			
+			<channel id="announcement" typeId="announcement" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
@@ -261,7 +264,7 @@
 	</channel-type>
 	<channel-type id="startRoutine" advanced="true">
 		<item-type>String</item-type>
-		<label>Start A Routine</label>
+		<label>Start a Routine</label>
 		<description>The command which must be spoken to active the routing without the preceding "Alexa," (Write Only)
 		</description>
 	</channel-type>
@@ -384,6 +387,11 @@
 		<label>Music Voice Command</label>
 		<description>Voice command as text. E.g. 'Yesterday from the Beatles' (Write only)</description>
 	</channel-type>
+	<channel-type id="sendMessage" advanced="false">
+		<item-type>String</item-type>
+		<label>Send Message</label>
+		<description>Sends a message to the Echo devices (Write only).</description>
+	</channel-type>
 	<channel-type id="announcement" advanced="true">
 		<item-type>String</item-type>
 		<label>Announcement</label>
@@ -440,7 +448,7 @@
 	</channel-type>
 	<channel-type id="notificationVolume" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>Notification volume</label>
+		<label>Notification Volume</label>
 		<description>Notification Volume</description>
 		<state readOnly="false" />
 	</channel-type>

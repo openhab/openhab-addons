@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for RFY (Somfy RTS) message.
@@ -133,14 +134,13 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl<RFXComRfyMessage.S
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_COMMAND:
                 return (command == Commands.DOWN ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
@@ -162,7 +162,6 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl<RFXComRfyMessage.S
 
     @Override
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_SHUTTER:
                 if (type instanceof OpenClosedType) {
@@ -180,9 +179,8 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl<RFXComRfyMessage.S
                 break;
 
             case CHANNEL_PROGRAM:
-                if (type instanceof OnOffType && type == OnOffType.ON) {
+                if (type == OnOffType.ON) {
                     this.command = Commands.PROGRAM;
-
                 } else {
                     throw new RFXComUnsupportedChannelException("Can't convert " + type + " to Command");
                 }
@@ -192,7 +190,6 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl<RFXComRfyMessage.S
                 if (type instanceof OnOffType) {
                     this.command = (type == OnOffType.ON ? Commands.ENABLE_SUN_WIND_DETECTOR
                             : Commands.DISABLE_SUN_DETECTOR);
-
                 } else {
                     throw new RFXComUnsupportedChannelException("Can't convert " + type + " to Command");
                 }

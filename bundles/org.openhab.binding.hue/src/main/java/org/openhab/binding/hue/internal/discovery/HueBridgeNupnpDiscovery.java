@@ -56,7 +56,7 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
 
     protected static final String BRIDGE_INDICATOR = "fffe";
 
-    private static final String DISCOVERY_URL = "https://www.meethue.com/api/nupnp";
+    private static final String DISCOVERY_URL = "https://discovery.meethue.com/";
 
     protected static final String LABEL_PATTERN = "Philips hue (IP)";
 

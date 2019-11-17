@@ -19,31 +19,31 @@ The `reader` Thing has the following configuration parameters:
 | ------------------------------| ------- | -------- | -------------------------------- |-----------------------------------------------------------------------------------------|
 | `filePath`                    | String  |   yes    | `${OPENHAB_LOGDIR}/openhab.log`  | Path to log file. ${OPENHAB_LOGDIR} is automatically replaced by the correct directory. |
 | `refreshRate`                 | integer |   no     | `1000`                           | Time in milliseconds between individual log reads.                                      |
-| `errorPatterns`               | String  |   no     | `ERROR+`                         | Search patterns separated by \| character for error events.                            |
+| `errorPatterns`               | String  |   no     | `ERROR+`                         | Search patterns separated by \| character for error events.                             |
 | `errorBlacklistingPatterns`   | String  |   no     |                                  | Search patterns for blacklisting unwanted error events separated by \| character.       |
-| `warningPatterns`             | String  |   no     | `WARN+`                          | Search patterns separated by \| character for warning events.                              |
+| `warningPatterns`             | String  |   no     | `WARN+`                          | Search patterns separated by \| character for warning events.                           |
 | `warningBlacklistingPatterns` | String  |   no     |                                  | Search patterns for blacklisting unwanted warning events separated by \| character.     |
-| `customPatterns`              | String  |   no     |                                  | Search patterns separated by \| character for custom events.                             |
+| `customPatterns`              | String  |   no     |                                  | Search patterns separated by \| character for custom events.                            |
 | `customBlacklistingPatterns`  | String  |   no     |                                  | Search patterns for blacklisting unwanted custom events separated by \| character.      |
 
-Search patterns follows Java regular expression syntax. See https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html.
+Search patterns follows Java regular expression syntax. See https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html.
 
 ## Channels
 
 List of channels
 
-| Channel Type ID    | Item Type    | Description                                                    |
-| ------------------ | ------------ | -------------------------------------------------------------- |
-| `lastErrorEvent`   | `String`     | Displays content of last [ERROR] event                        |
-| `lastWarningEvent` | `String`     | Displays content of last [WARN] event                         |
-| `lastCustomEvent`  | `String`     | Displays content of last [CUSTOM] event                       |
-| `errorEvents`      | `Number`     | Displays number of [ERROR] lines matched to search pattern     |
-| `warningEvents`    | `Number`     | Displays number of [WARN] lines matched to search pattern      |
-| `customEvents`     | `Number`     | Displays number of [CUSTOM] lines matched to search pattern    |
-| `logRotated`       | `DateTime`   | Last time when log rotated recognized                          |
-| `newErrorEvent`    | -            | Trigger channel for last [ERROR] line                          |
-| `newWarningEvent`  | -            | Trigger channel for last [WARN] line                           |
-| `newCustomEvent`   | -            | Trigger channel for last [CUSTOM] line                         |
+| Channel Type ID    | Item Type    | Description                                                 |
+| ------------------ | ------------ | ----------------------------------------------------------- |
+| `lastErrorEvent`   | `String`     | Displays content of last [ERROR] event                      |
+| `lastWarningEvent` | `String`     | Displays content of last [WARN] event                       |
+| `lastCustomEvent`  | `String`     | Displays content of last [CUSTOM] event                     |
+| `errorEvents`      | `Number`     | Displays number of [ERROR] lines matched to search pattern  |
+| `warningEvents`    | `Number`     | Displays number of [WARN] lines matched to search pattern   |
+| `customEvents`     | `Number`     | Displays number of [CUSTOM] lines matched to search pattern |
+| `logRotated`       | `DateTime`   | Last time when log rotated recognized                       |
+| `newErrorEvent`    | -            | Trigger channel for last [ERROR] line                       |
+| `newWarningEvent`  | -            | Trigger channel for last [WARN] line                        |
+| `newCustomEvent`   | -            | Trigger channel for last [CUSTOM] line                      |
 
 ## Examples
 

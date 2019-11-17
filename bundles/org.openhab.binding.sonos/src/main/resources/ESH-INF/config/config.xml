@@ -18,7 +18,7 @@
 			<description>Specifies the volume in percent applied to a notification sound</description>
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
-			<label>Refresh interval</label>
+			<label>Refresh Interval</label>
 			<description>Specifies the refresh interval in seconds</description>
 			<default>60</default>
 		</parameter>

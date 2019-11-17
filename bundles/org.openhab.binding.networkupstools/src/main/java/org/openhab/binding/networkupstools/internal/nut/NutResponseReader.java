@@ -36,10 +36,23 @@ final class NutResponseReader {
 
     private final Logger logger = LoggerFactory.getLogger(NutResponseReader.class);
 
+    /**
+     * Parses a NUT returned VAR.
+     *
+     * @param ups The ups the variable is for
+     * @param nut The name of the variable
+     * @param reader The reader containing the data
+     * @return variable value for given nut variable name
+     * @throws NutException Exception thrown in case of read errors
+     */
     public String parseVariable(final String ups, final String nut, final NutSupplier<String> reader)
             throws NutException {
         final String line = reader.get();
 
+        if (line == null) {
+            throw new NutException(
+                    String.format("Variable '%s' for ups '%s' could not be read because nothing received", nut, ups));
+        }
         logger.trace("Line read:{}", line);
         final Matcher matcher = GET_VAR_RESPONSE_PATTERN.matcher(line);
 
@@ -67,7 +80,8 @@ final class NutResponseReader {
      * @param type nut data type to expect in the data
      * @param reader The reader containing the data
      * @param variables The map to store the read nut variables
-     * @throws NutException Exception thrown in case of read errors.
+     * @return Map of variable name and variable value pairs
+     * @throws NutException Exception thrown in case of read errors
      */
     public Map<String, String> parseList(final String type, final NutSupplier<String> reader) throws NutException {
         final Map<String, String> variables = new HashMap<>();
@@ -76,14 +90,17 @@ final class NutResponseReader {
         final int stripBeginLength = type.length() + 1;
         final String endString = String.format(END_LIST, type);
         String line = null;
+        boolean endFound = false;
 
-        while (!endString.equals(line)) {
+        while (!endFound) {
             line = reader.get();
-            if (line != null) {
-                logger.trace("Line read:{}", line);
-                addRow(variables, line, stripBeginLength);
-            } else {
+            if (line == null) {
                 throw new NutException("Unexpected end of data while reading " + type);
+            }
+            logger.trace("Line read:{}", line);
+            endFound = endString.equals(line);
+            if (!endFound) {
+                addRow(variables, line, stripBeginLength);
             }
         }
         if (logger.isTraceEnabled()) {

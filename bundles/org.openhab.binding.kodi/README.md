@@ -26,7 +26,7 @@ To make use of the auto-discovery feature, you additionally need to enable "Allo
 This binding provides only one thing type: The Kodi media center.
 Create one Kodi thing per Kodi instance available in your home automation system.
 
-All Kodi devices are registered as an audio sink in the ESH/openHAB2 framework.
+All Kodi devices are registered as an audio sink in openHAB.
 
 ## Discovery
 
@@ -133,13 +133,13 @@ You have to adjust this configuration to use the `pvr-open-tv` and `pvr-open-rad
 You can optionally configure an user-defined PVR channel group.
 The PVR channels from Kodi will be populated during runtime into the state options of the `pvr-open-tv` and `pvr-open-radio` channels.
 
-**shownotification** The `shownotification` channel type has three configuration parameters through which it can be customised:
+**shownotification** The `shownotification` channel type has three configuration parameters through which it can be customized:
 
-| Parameter       | Type            | Default  | Description                                                |
-|-----------------|-----------------|----------|------------------------------------------------------------|
-| title           | Text            | openHAB  | Title of the notification                                  |
-| displayTime     | Integer         | 5000     | Time in ms the notification is shown                       |
-| icon            | Text            |          | Icon to use (e.g. "alarm"), which must be available as png |
+| Parameter   | Type    | Default | Description                                                            |
+|-------------|---------|---------|------------------------------------------------------------------------|
+| title       | Text    | openHAB | Title of the  notification                                             |
+| displayTime | Integer | 5000    | Time the notification is shown (in ms)                                 |
+| icon        | Text    |         | Icon to use (e.g. "alarm"). One of the openHAB icons (as listed [here](https://www.openhab.org/docs/configuration/iconsets/classic/)). |
 
 ## Audio Support
 
@@ -158,6 +158,14 @@ Thing kodi:kodi:myKodi "Kodi" @ "Living Room" [ipAddress="192.168.1.100", port=9
     Channels:
         Type pvr-open-tv : pvr-open-tv [
             group="All channels"
+        ]
+        Type shownotification : error-notification [
+            title="openHAB - Error",
+            icon="error"
+        ]
+        Type shownotification : weather-notification [
+            title="openHAB - Weather",
+            icon="sun_clouds"
         ]
 }
 ```
@@ -181,6 +189,8 @@ String myKodi_pvropentv             "Play PVR TV channel"       { channel="kodi:
 String myKodi_pvropenradio          "Play PVR Radio channel"    { channel="kodi:kodi:myKodi:pvr-open-radio" }
 String myKodi_pvrchannel            "PVR channel [%s]"          { channel="kodi:kodi:myKodi:pvr-channel" }
 String myKodi_notification          "Notification"              { channel="kodi:kodi:myKodi:shownotification" }
+String myKodi_error-notification    "Error Notification"        { channel="kodi:kodi:myKodi:error-notification" }
+String myKodi_weather-notification  "Weather Notification"      { channel="kodi:kodi:myKodi:weather-notification" }
 String myKodi_input                 "Input"                     { channel="kodi:kodi:myKodi:input" }
 String myKodi_inputtext             "Inputtext"                 { channel="kodi:kodi:myKodi:inputtext" }
 String myKodi_systemcommand         "Systemcommand"             { channel="kodi:kodi:myKodi:systemcommand" }

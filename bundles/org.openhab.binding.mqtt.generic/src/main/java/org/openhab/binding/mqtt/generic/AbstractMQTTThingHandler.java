@@ -79,7 +79,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
      * @param channelUID The channelUID
      * @return A channel state. May be null.
      */
-    abstract public @Nullable ChannelState getChannelState(ChannelUID channelUID);
+    public abstract @Nullable ChannelState getChannelState(ChannelUID channelUID);
 
     /**
      * Start the topic discovery and subscribe to all channel state topics on all {@link ChannelState}s.
@@ -88,7 +88,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
      * @param connection A started broker connection
      * @return A future that completes normal on success and exceptionally on any errors.
      */
-    abstract protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
+    protected abstract CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
 
     /**
      * Called when the MQTT connection disappeared.
@@ -106,15 +106,22 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         final @Nullable ChannelState data = getChannelState(channelUID);
 
         if (data == null) {
-            logger.warn("Channel {} not supported", channelUID.getId());
-            if (command instanceof RefreshType) {
-                updateState(channelUID.getId(), UnDefType.UNDEF);
+            logger.warn("Channel {} not supported!", channelUID);
+            return;
+        }
+
+        if (command instanceof RefreshType) {
+            State state = data.getCache().getChannelState();
+            if (state instanceof UnDefType) {
+                logger.debug("Channel {} received REFRESH but no value cached, ignoring", channelUID);
+            } else {
+                updateState(channelUID, state);
             }
             return;
         }
 
-        if (command instanceof RefreshType || data.isReadOnly()) {
-            updateState(channelUID.getId(), data.getCache().getChannelState());
+        if (data.isReadOnly()) {
+            logger.warn("Channel {} is a read-only channel, ignoring command {}", channelUID, command);
             return;
         }
 

@@ -10,7 +10,7 @@
 	</channel-type>
 	<channel-type id="device-local-dc-power">
 		<item-type>Number:Energy</item-type>
-		<label>DC power</label>
+		<label>DC Power</label>
 		<description>Current DC power of the inverter</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
@@ -135,7 +135,7 @@
 	</channel-type>
 	<channel-type id="device-local-ac-current-power">
 		<item-type>Number:Energy</item-type>
-		<label>AC power</label>
+		<label>AC Power</label>
 		<description>Current AC power of the inverter</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
