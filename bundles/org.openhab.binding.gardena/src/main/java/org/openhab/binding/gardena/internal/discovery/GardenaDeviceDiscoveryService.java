@@ -20,12 +20,17 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.handler.GardenaAccountHandler;
@@ -40,23 +45,37 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
+public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(GardenaDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
 
-    private GardenaAccountHandler accountHandler;
+    private @NonNullByDefault({}) GardenaAccountHandler accountHandler;
     private Future<?> scanFuture;
 
-    public GardenaDeviceDiscoveryService(GardenaAccountHandler accountHandler) {
+    public GardenaDeviceDiscoveryService() {
         super(Collections.unmodifiableSet(Stream.of(new ThingTypeUID(BINDING_ID, "-")).collect(Collectors.toSet())),
                 DISCOVER_TIMEOUT_SECONDS, false);
-        this.accountHandler = accountHandler;
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof GardenaAccountHandler) {
+            this.accountHandler = (GardenaAccountHandler) handler;
+            this.accountHandler.setDiscoveryService(this);
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return accountHandler;
     }
 
     /**
      * Called on component activation.
      */
+    @Override
     public void activate() {
         super.activate(null);
     }

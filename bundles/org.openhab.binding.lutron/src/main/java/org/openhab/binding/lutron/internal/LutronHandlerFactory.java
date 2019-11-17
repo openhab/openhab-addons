@@ -16,7 +16,6 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -133,8 +132,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_IPBRIDGE)) {
             IPBridgeHandler bridgeHandler = new IPBridgeHandler((Bridge) thing);
-            LutronDeviceDiscoveryService discoveryService = registerDiscoveryService(bridgeHandler);
-            bridgeHandler.setDiscoveryService(discoveryService);
+            registerDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
             return new DimmerHandler(thing);
@@ -211,13 +209,13 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Register a discovery service for an IP bridge handler.
      *
-     * @param bridgeHandler bridge handler for which to register the discovery service
+     * @param thingHandler bridge handler for which to register the discovery service
      */
-    private synchronized LutronDeviceDiscoveryService registerDiscoveryService(IPBridgeHandler bridgeHandler) {
+    private synchronized void registerDiscoveryService(IPBridgeHandler bridgeHandler) {
         logger.debug("Registering discovery service.");
         LutronDeviceDiscoveryService discoveryService = new LutronDeviceDiscoveryService(bridgeHandler, httpClient);
+        bridgeHandler.setDiscoveryService(discoveryService);
         discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-        return discoveryService;
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
     }
 }
