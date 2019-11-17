@@ -34,8 +34,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -54,25 +52,28 @@ public class ShellyEventServlet extends HttpServlet {
     private static final long serialVersionUID = 549582869577534569L;
     private final Logger logger = LoggerFactory.getLogger(ShellyEventServlet.class);
 
-    private @Nullable HttpService httpService;
-    private @Nullable ShellyHandlerFactory handlerFactory;
+    private final HttpService httpService;
+    private final ShellyHandlerFactory handlerFactory;
 
     @SuppressWarnings("null")
     @Activate
-    protected void activate(Map<String, Object> config) {
+    public ShellyEventServlet(@Reference HttpService httpService, @Reference ShellyHandlerFactory handlerFactory,
+            Map<String, Object> config) {
+        this.httpService = httpService;
+        this.handlerFactory = handlerFactory;
         try {
             httpService.registerServlet(SHELLY_CALLBACK_URI, this, null, httpService.createDefaultHttpContext());
-            logger.debug("Shelly: CallbackServlet started at '{}'", SHELLY_CALLBACK_URI);
-            // } catch (ServletException | NamespaceException e) {
+            logger.debug("CallbackServlet started at '{}'", SHELLY_CALLBACK_URI);
         } catch (RuntimeException | NamespaceException | ServletException e) {
-            logger.warn("Could not start CallbackServlet: {} ({})", e.getMessage(), e.getClass());
+            logger.warn("Could not start CallbackServlet: {} ({})\n{}", e.getMessage(), e.getClass(),
+                    e.getStackTrace());
         }
     }
 
     @Deactivate
     protected void deactivate() {
         httpService.unregister(SHELLY_CALLBACK_URI);
-        logger.debug("Shelly: CallbackServlet stopped");
+        logger.debug("CallbackServlet stopped");
     }
 
     @SuppressWarnings("null")
@@ -121,9 +122,9 @@ public class ShellyEventServlet extends HttpServlet {
 
         } catch (RuntimeException e) {
             logger.warn(
-                    "ERROR: Exception processing callback: {} ({}), path={}, data='{}'; deviceName={}, index={}, type={}, parameters={}",
+                    "ERROR: Exception processing callback: {} ({}), path={}, data='{}'; deviceName={}, index={}, type={}, parameters={}\n|{",
                     e.getMessage(), e.getClass(), path, data, deviceName, index, type,
-                    request.getParameterMap().toString());
+                    request.getParameterMap().toString(), e.getStackTrace());
         } finally {
             resp.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             resp.getWriter().write("");
@@ -135,28 +136,6 @@ public class ShellyEventServlet extends HttpServlet {
         @SuppressWarnings("null")
         Scanner scanner = new Scanner(request.getInputStream()).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";
-    }
-
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    public void setShellyHandlerFactory(ShellyHandlerFactory handlerFactory) {
-        this.handlerFactory = handlerFactory;
-        logger.debug("Shelly Binding: HandlerFactory bound");
-    }
-
-    public void unsetShellyHandlerFactory(ShellyHandlerFactory handlerFactory) {
-        this.handlerFactory = null;
-        logger.debug("Shelly Binding: HandlerFactory unbound");
-    }
-
-    @Reference
-    public void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-        logger.debug("Shelly Binding: httpService bound");
-    }
-
-    public void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
-        logger.debug("Shelly Binding: httpService unbound");
     }
 
 }
