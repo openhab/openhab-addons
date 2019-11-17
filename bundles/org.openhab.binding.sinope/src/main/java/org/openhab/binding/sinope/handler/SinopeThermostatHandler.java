@@ -267,6 +267,7 @@ public class SinopeThermostatHandler extends BaseThingHandler {
         if (handler != null) {
             handler.registerThermostatHandler(this);
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private @Nullable SinopeGatewayHandler getSinopeGatewayHandler() {
