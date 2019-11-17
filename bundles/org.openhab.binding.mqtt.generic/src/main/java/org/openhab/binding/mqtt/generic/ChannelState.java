@@ -370,7 +370,9 @@ public class ChannelState implements MqttMessageSubscriber {
             }
         }
 
-        return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), config.qos, config.retained);
+        int qos = (config.qos != null) ? config.qos : connection.getQos();
+
+        return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), qos, config.retained);
     }
 
     /**
