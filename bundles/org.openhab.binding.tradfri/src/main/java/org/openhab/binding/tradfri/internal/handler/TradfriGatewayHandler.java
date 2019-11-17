@@ -246,7 +246,7 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
         } catch (ConnectorException |IOException e) {
             logger.warn("Error connecting to gateway ",e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error connecting to gateway '%s'"));
+                    String.format("Error connecting to gateway."));
         }
         return false;
     }
