@@ -207,12 +207,11 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
      *
      * @param thingHandler bridge handler for which to register the discovery service
      */
-    private synchronized void registerDiscoveryService(ThingHandler thingHandler) {
+    private synchronized void registerDiscoveryService(IPBridgeHandler bridgeHandler) {
         logger.debug("Registering discovery service.");
-        IPBridgeHandler iPBridgeHandler = (IPBridgeHandler) thingHandler;
-        LutronDeviceDiscoveryService discoveryService = new LutronDeviceDiscoveryService(iPBridgeHandler, httpClient);
-        iPBridgeHandler.setDiscoveryService(discoveryService);
-        discoveryServiceRegMap.put(thingHandler.getThing().getUID(),
+        LutronDeviceDiscoveryService discoveryService = new LutronDeviceDiscoveryService(bridgeHandler, httpClient);
+        bridgeHandler.setDiscoveryService(discoveryService);
+        discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
     }
 }
