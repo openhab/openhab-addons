@@ -202,10 +202,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     i++;
                 }
 
-                if (uri.equalsIgnoreCase(COLOIT_URI_DEVDESC) || (uri.isEmpty() && payload.contains(CoIoT_Tag_blk))) {
+                if (uri.equalsIgnoreCase(COLOIT_URI_DEVDESC) || (uri.isEmpty() && payload.contains(COIOT_TAG_BLK))) {
                     handleDeviceDescription(devId, payload);
                 } else if (uri.equalsIgnoreCase(COLOIT_URI_DEVSTATUS)
-                        || (uri.isEmpty() && payload.contains(CoIoT_Tag_Generic))) {
+                        || (uri.isEmpty() && payload.contains(COIOT_TAG_GENERIC))) {
                     handleStatusUpdate(devId, payload, serial);
                 }
             } else {
@@ -221,7 +221,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
             }
         } catch (RuntimeException | IOException e) {
-            logger.warn("{}: Unable to process CoIoT Message: {} ({}); payload={}", thingName, e.getMessage(),
+            logger.debug("{}: Unable to process CoIoT Message: {} ({}); payload={}", thingName, e.getMessage(),
                     e.getClass(), payload);
             resetSerial();
         }
@@ -644,17 +644,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         Request request = new Request(Code.GET, con);
         request.setURI(completeUrl(ipAddress, uri));
         request.setToken(EMPTY_BYTE);
-
-        /*
-         * OptionSet optionSet = new OptionSet(); optionSet.addOption(new
-         * Option(OptionNumberRegistry.OBSERVE, 1)); optionSet.addOption(new
-         * Option(COIOT_OPTION_GLOBAL_DEVID, "SHSW-1#25A73E#1")); //
-         * "SHSW-21#559F55#1")); optionSet.addOption(new
-         * Option(COIOT_OPTION_STATUS_VALIDITY, 0x007)); optionSet.addOption(new
-         * Option(COIOT_OPTION_STATUS_SERIAL, serialCount++));
-         * optionSet.setIfNoneMatch(false); request.setOptions(optionSet);
-         */
-
         request.addMessageObserver(new MessageObserverAdapter() {
             @Override
             public void onResponse(@Nullable Response response) {

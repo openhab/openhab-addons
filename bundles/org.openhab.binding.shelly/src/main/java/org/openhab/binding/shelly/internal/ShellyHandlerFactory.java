@@ -48,8 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { ThingHandlerFactory.class,
-        ShellyHandlerFactory.class }, immediate = true, configurationPid = "binding.shelly")
+@Component(service = { ThingHandlerFactory.class, ShellyHandlerFactory.class }, configurationPid = "binding.shelly")
 public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ShellyHandlerFactory.class);
 

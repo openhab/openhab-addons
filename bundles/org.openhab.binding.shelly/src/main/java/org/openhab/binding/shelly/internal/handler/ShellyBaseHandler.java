@@ -69,10 +69,13 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private int skipUpdate = 0;
     public int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
-    private int refreshCount = UPDATE_SETTINGS_INTERVAL / UPDATE_STATUS_INTERVAL; // force settings refresh every x
-                                                                                  // seconds
-    private final int cacheCount = UPDATE_SETTINGS_INTERVAL / UPDATE_STATUS_INTERVAL; // delay before enabling channel
-                                                                                      // cache
+    private int refreshCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS; // force settings
+                                                                                                  // refresh every x
+    // seconds
+    private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS; // delay before
+                                                                                                      // enabling
+                                                                                                      // channel
+    // cache
     private boolean refreshSettings = false;
     private boolean channelCache = false;
     protected boolean lockUpdates = false;
@@ -156,12 +159,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             logger.debug("{}: Using binding default userId", thingName);
         }
         if (config.updateInterval == 0) {
-            config.updateInterval = UPDATE_STATUS_INTERVAL * UPDATE_SKIP_COUNT;
+            config.updateInterval = UPDATE_STATUS_INTERVAL_SECONDS * UPDATE_SKIP_COUNT;
         }
         if (config.updateInterval < UPDATE_MIN_DELAY) {
             config.updateInterval = UPDATE_MIN_DELAY;
         }
-        skipCount = config.updateInterval / UPDATE_STATUS_INTERVAL;
+        skipCount = config.updateInterval / UPDATE_STATUS_INTERVAL_SECONDS;
     }
 
     @Override
@@ -229,7 +232,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             logger.info("Sense stored key list loaded, {} entries.", tmpPrf.irCodes.size());
         }
 
-        refreshCount = !tmpPrf.hasBattery ? refreshCount = UPDATE_SETTINGS_INTERVAL / UPDATE_STATUS_INTERVAL
+        refreshCount = !tmpPrf.hasBattery
+                ? refreshCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS
                 : skipCount;
 
         // register event urls
@@ -379,7 +383,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
             if (bindingConfig.channelCache && (skipUpdate >= cacheCount) && !channelCache) {
                 logger.debug("{}: Enabling channel cache ({} updates / {}s)", thingName, skipUpdate,
-                        cacheCount * UPDATE_STATUS_INTERVAL);
+                        cacheCount * UPDATE_STATUS_INTERVAL_SECONDS);
                 channelCache = true;
             }
         }
@@ -450,11 +454,11 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     @SuppressWarnings("null")
     protected void startUpdateJob() {
         if ((statusJob == null) || statusJob.isCancelled()) {
-            statusJob = scheduler.scheduleWithFixedDelay(this::updateStatus, 2, UPDATE_STATUS_INTERVAL,
+            statusJob = scheduler.scheduleWithFixedDelay(this::updateStatus, 2, UPDATE_STATUS_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
             Validate.notNull(statusJob, "statusJob must not be null");
             logger.debug("{}: Update status job started, interval={}*{}={}sec.", thingName, skipCount,
-                    UPDATE_STATUS_INTERVAL, skipCount * UPDATE_STATUS_INTERVAL);
+                    UPDATE_STATUS_INTERVAL_SECONDS, skipCount * UPDATE_STATUS_INTERVAL_SECONDS);
         }
     }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -41,14 +42,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ShellyEventServlet} implements a servlet. which is called by the Shelly device to signnal events (button,
+ * {@link ShellyEventServlet} implements a servlet. which is called by the Shelly device to single events (button,
  * relay output, sensor data). The binding automatically sets those vent urls on startup (when not disabled in the thing
  * config).
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
+@Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class ShellyEventServlet extends HttpServlet {
     private static final long serialVersionUID = 549582869577534569L;
     private final Logger logger = LoggerFactory.getLogger(ShellyEventServlet.class);
@@ -61,17 +62,17 @@ public class ShellyEventServlet extends HttpServlet {
     protected void activate(Map<String, Object> config) {
         try {
             httpService.registerServlet(SHELLY_CALLBACK_URI, this, null, httpService.createDefaultHttpContext());
-            logger.info("Shelly: CallbackServlet started at '{}'", SHELLY_CALLBACK_URI);
+            logger.debug("Shelly: CallbackServlet started at '{}'", SHELLY_CALLBACK_URI);
             // } catch (ServletException | NamespaceException e) {
         } catch (RuntimeException | NamespaceException | ServletException e) {
-            logger.error("Shelly: Could not start CallbackServlet: {} ({})", e.getMessage(), e.getClass());
+            logger.warn("Could not start CallbackServlet: {} ({})", e.getMessage(), e.getClass());
         }
     }
 
     @Deactivate
     protected void deactivate() {
         httpService.unregister(SHELLY_CALLBACK_URI);
-        logger.info("Shelly: CallbackServlet stopped");
+        logger.debug("Shelly: CallbackServlet stopped");
     }
 
     @SuppressWarnings("null")
@@ -93,7 +94,7 @@ public class ShellyEventServlet extends HttpServlet {
             logger.debug("CallbackServlet: {} Request from {}:{}{}?{}", request.getProtocol(), ipAddress,
                     request.getRemotePort(), path, parameters.toString());
             if (!path.toLowerCase().startsWith(SHELLY_CALLBACK_URI) || !path.contains("/event/shelly")) {
-                logger.info("ERROR: CallbackServletreceived unknown request- path = {}, data={}", path, data);
+                logger.debug("ERROR: CallbackServletreceived unknown request- path = {}, data={}", path, data);
                 return;
             }
 
@@ -119,12 +120,12 @@ public class ShellyEventServlet extends HttpServlet {
             handlerFactory.onEvent(deviceName, index, type, parms);
 
         } catch (RuntimeException e) {
-            logger.info(
+            logger.warn(
                     "ERROR: Exception processing callback: {} ({}), path={}, data='{}'; deviceName={}, index={}, type={}, parameters={}",
                     e.getMessage(), e.getClass(), path, data, deviceName, index, type,
                     request.getParameterMap().toString());
         } finally {
-            resp.setCharacterEncoding(CHARSET_UTF8);
+            resp.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             resp.getWriter().write("");
         }
     }

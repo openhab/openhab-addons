@@ -66,10 +66,10 @@ public class ShellyBindingConstants {
                             THING_TYPE_SHELLYEYE, THING_TYPE_SHELLYSMOKE, THING_TYPE_SHELLYFLOOD)
                     .collect(Collectors.toSet()));
 
-    public static final int UPDATE_STATUS_INTERVAL = 3; // check for updates every x sec
+    public static final int UPDATE_STATUS_INTERVAL_SECONDS = 3; // check for updates every x sec
     public static final int UPDATE_SKIP_COUNT = 20; // update every x triggers or when a key was pressed
     public static final int UPDATE_MIN_DELAY = 15; // update every x triggers or when a key was pressed
-    public static final int UPDATE_SETTINGS_INTERVAL = 60; // check for updates every x sec
+    public static final int UPDATE_SETTINGS_INTERVAL_SECONDS = 60; // check for updates every x sec
 
     // Thing Configuration Properties
     public static final String CONFIG_DEVICEIP = "deviceIp";
@@ -248,5 +248,4 @@ public class ShellyBindingConstants {
     public static final String HTTP_AUTH_TYPE_BASIC = "Basic";
     public static final String HTTP_401_UNAUTHORIZED = "401 Unauthorized";
     public static final String CONTENT_TYPE_XML = "text/xml; charset=UTF-8";
-    public static final String CHARSET_UTF8 = "utf-8";
 }

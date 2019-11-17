@@ -28,17 +28,10 @@ import com.google.gson.stream.JsonWriter;
  */
 public class ShellyCoapJSon {
 
-    public static final String CoIoT_Tag_blk = "blk";
-    public static final String CoIoT_Tag_sen = "sen";
-    public static final String CoIoT_Tag_act = "act";
-
-    public static final String CoIoT_Tag_ID = "I";
-    public static final String CoIoT_Tag_DESC = "D";
-    public static final String CoIoT_Tag_TYPE = "T";
-    public static final String CoIoT_Tag_RANGE = "R";
-    public static final String CoIoT_Tag_LINKS = "L";
-
-    public static final String CoIoT_Tag_Generic = "G";
+    public static final String COIOT_TAG_BLK = "blk";
+    public static final String COIOT_TAG_SEN = "sen";
+    public static final String COIOT_TAG_ACT = "act";
+    public static final String COIOT_TAG_GENERIC = "G";
 
     public static class CoIoT_Descr_blk {
         String I; // ID
@@ -98,7 +91,7 @@ public class ShellyCoapJSon {
             in.beginObject();
             String G = in.nextName();
             Validate.notNull(G, "Invalid JSon format for CoIot_SensorList");
-            if (G.equals(CoIoT_Tag_Generic)) {
+            if (G.equals(COIOT_TAG_GENERIC)) {
                 in.beginArray();
                 while (in.hasNext()) {
                     in.beginArray();
@@ -121,7 +114,7 @@ public class ShellyCoapJSon {
             CoIoT_GenericSensorList sensors = o;
             out.beginObject();
             if (sensors != null) {
-                out.name(CoIoT_Tag_Generic).beginArray();
+                out.name(COIOT_TAG_GENERIC).beginArray();
                 for (int i = 0; i < sensors.G.size(); i++) {
                     out.beginArray();
                     out.value(0);

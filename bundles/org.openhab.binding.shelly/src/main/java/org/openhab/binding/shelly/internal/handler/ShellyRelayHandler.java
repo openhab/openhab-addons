@@ -188,7 +188,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     }
                 }
                 // request updates the next 30sec to update roller position after it stopped
-                requestUpdates(45 / UPDATE_STATUS_INTERVAL, false);
+                requestUpdates(45 / UPDATE_STATUS_INTERVAL_SECONDS, false);
                 break;
 
             case CHANNEL_TIMER_AUTOON:
