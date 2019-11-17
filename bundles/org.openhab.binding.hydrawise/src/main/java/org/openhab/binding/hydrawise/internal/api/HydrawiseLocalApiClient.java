@@ -13,7 +13,9 @@
 package org.openhab.binding.hydrawise.internal.api;
 
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -190,7 +192,7 @@ public class HydrawiseLocalApiClient {
         try {
             response = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     .send();
-        } catch (Exception e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new HydrawiseConnectionException(e);
         }
         if (response.getStatus() == 401) {

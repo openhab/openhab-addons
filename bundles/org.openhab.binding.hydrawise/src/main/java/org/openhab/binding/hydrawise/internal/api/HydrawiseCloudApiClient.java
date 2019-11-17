@@ -273,7 +273,7 @@ public class HydrawiseCloudApiClient {
         String json = doGet(url);
         SetZoneResponse response = gson.fromJson(json, SetZoneResponse.class);
         throwExceptionIfResponseError(response);
-        if (response.messageType.equals("error")) {
+        if ("error".equals(response.messageType)) {
             throw new HydrawiseCommandException(response.message);
         }
         return response.message;

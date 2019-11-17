@@ -17,40 +17,40 @@ package org.openhab.binding.hydrawise.internal.api;
  * @author Dan Cunningham - Initial contribution
  *
  */
-public class HydrawiseZoneCommandBuilder {
+class HydrawiseZoneCommandBuilder {
 
-    private StringBuilder builder;
+    private final StringBuilder builder;
 
-    protected HydrawiseZoneCommandBuilder(String baseURL) {
+    public HydrawiseZoneCommandBuilder(String baseURL) {
         builder = new StringBuilder(baseURL);
     }
 
-    protected HydrawiseZoneCommandBuilder(String baseURL, String apiKey) {
-        builder = new StringBuilder(baseURL);
+    public HydrawiseZoneCommandBuilder(String baseURL, String apiKey) {
+        this(baseURL);
         builder.append("&api_key=" + apiKey);
     }
 
-    protected HydrawiseZoneCommandBuilder action(String action) {
+    public HydrawiseZoneCommandBuilder action(String action) {
         builder.append("&action=" + action);
         return this;
     }
 
-    protected HydrawiseZoneCommandBuilder relayId(int relayId) {
+    public HydrawiseZoneCommandBuilder relayId(int relayId) {
         builder.append("&relay_id=" + relayId);
         return this;
     }
 
-    protected HydrawiseZoneCommandBuilder relayNumber(int number) {
+    public HydrawiseZoneCommandBuilder relayNumber(int number) {
         builder.append("&relay=" + number);
         return this;
     }
 
-    protected HydrawiseZoneCommandBuilder duration(int seconds) {
+    public HydrawiseZoneCommandBuilder duration(int seconds) {
         builder.append("&custom=" + seconds);
         return this;
     }
 
-    protected HydrawiseZoneCommandBuilder controllerId(int controllerId) {
+    public HydrawiseZoneCommandBuilder controllerId(int controllerId) {
         builder.append("&controller_id=" + controllerId);
         return this;
     }

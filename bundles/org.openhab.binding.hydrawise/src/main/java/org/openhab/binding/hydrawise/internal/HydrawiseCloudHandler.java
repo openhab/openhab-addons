@@ -54,9 +54,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HydrawiseCloudHandler extends HydrawiseHandler {
-    private final Logger logger = LoggerFactory.getLogger(HydrawiseCloudHandler.class);
-    private HydrawiseCloudApiClient client;
-    int controllerId;
     /**
      * 74.2 F
      */
@@ -65,6 +62,9 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
      * 9 mph
      */
     private static final Pattern WIND_SPEED_PATTERN = Pattern.compile("^(\\d{1,3})\\s([a-z]{3})");
+    private final Logger logger = LoggerFactory.getLogger(HydrawiseCloudHandler.class);
+    private HydrawiseCloudApiClient client;
+    private int controllerId;
 
     public HydrawiseCloudHandler(Thing thing, HttpClient httpClient) {
         super(thing);
