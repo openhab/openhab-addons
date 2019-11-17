@@ -16,10 +16,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.lutron.internal.LutronHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,18 +37,39 @@ import org.slf4j.LoggerFactory;
  * with the dimmer status and it will be discovered.
  *
  * @author Andrew Shilliday - Initial contribution
- *
  */
-public class HwDiscoveryService extends AbstractDiscoveryService {
+public class HwDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
     private Logger logger = LoggerFactory.getLogger(HwDiscoveryService.class);
 
     private final AtomicBoolean isScanning = new AtomicBoolean(false);
 
-    private final HwSerialBridgeHandler handler;
+    private @NonNullByDefault({}) HwSerialBridgeHandler handler;
 
-    public HwDiscoveryService(HwSerialBridgeHandler handler) {
+    public HwDiscoveryService() {
         super(LutronHandlerFactory.HW_DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
-        this.handler = handler;
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof HwSerialBridgeHandler) {
+            this.handler = (HwSerialBridgeHandler) handler;
+            this.handler.setDiscoveryService(this);
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
+    }
+
+    @Override
+    public void activate() {
+        super.activate(null);
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
     @Override
