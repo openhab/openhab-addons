@@ -13,6 +13,8 @@
 package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -62,6 +65,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);
     protected final Map<String, Set<HaID>> componentsPerThingID = new TreeMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new TreeMap<>();
+    protected final Map<String, DiscoveryResult> results = new TreeMap<>();
+
     private @Nullable ScheduledFuture<?> future;
     private final Gson gson;
 
@@ -138,7 +143,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         if (future != null) {
             future.cancel(false);
         }
-        this.future = scheduler.schedule(componentsPerThingID::clear, 2, TimeUnit.SECONDS);
+        this.future = scheduler.schedule(this::publishResults, 2, TimeUnit.SECONDS);
 
         BaseChannelConfiguration config = BaseChannelConfiguration
                 .fromString(new String(payload, StandardCharsets.UTF_8), gson);
@@ -152,9 +157,6 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
         final ThingTypeUID typeID = new ThingTypeUID(MqttBindingConstants.BINDING_ID,
                 MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId() + "_" + thingID);
-
-        ThingType type = typeProvider.derive(typeID, MqttBindingConstants.HOMEASSISTANT_MQTT_THING).build();
-        typeProvider.setThingTypeIfAbsent(typeID, type);
 
         final ThingUID thingUID = new ThingUID(typeID, connectionBridge, thingID);
 
@@ -173,12 +175,31 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, topics);
         properties = handlerConfig.appendToProperties(properties);
         properties = config.appendToProperties(properties);
-        // First remove an already discovered thing with the same ID
-        thingRemoved(thingUID);
-        // Because we need the new properties map with the updated "components" list
-        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withRepresentationProperty("objectid").withBridge(connectionBridge)
-                .withLabel(config.getThingName() + " (" + componentNames + ")").build());
+
+        synchronized (results) {
+            // Because we need the new properties map with the updated "components" list
+            results.put(thingUID.getAsString(),
+                    DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                            .withRepresentationProperty("objectid").withBridge(connectionBridge)
+                            .withLabel(config.getThingName() + " (" + componentNames + ")").build());
+        }
+    }
+
+    protected void publishResults() {
+        Collection<DiscoveryResult> localResults;
+
+        synchronized (results) {
+            localResults = new ArrayList<>(results.values());
+            results.clear();
+            componentsPerThingID.clear();
+        }
+        for (DiscoveryResult result : localResults) {
+            final ThingTypeUID typeID = result.getThingTypeUID();
+            ThingType type = typeProvider.derive(typeID, MqttBindingConstants.HOMEASSISTANT_MQTT_THING).build();
+            typeProvider.setThingTypeIfAbsent(typeID, type);
+
+            thingDiscovered(result);
+        }
     }
 
     @Override

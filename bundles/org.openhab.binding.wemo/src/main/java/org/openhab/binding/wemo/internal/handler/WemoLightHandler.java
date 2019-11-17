@@ -96,7 +96,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                 getDeviceState();
                 onSubscription();
             } catch (Exception e) {
-                logger.debug("Exception during poll : {}", e);
+                logger.debug("Exception during poll", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -185,7 +185,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
             try {
                 getDeviceState();
             } catch (Exception e) {
-                logger.debug("Exception during poll : {}", e);
+                logger.debug("Exception during poll", e);
             }
         } else {
             Configuration configuration = getConfig();

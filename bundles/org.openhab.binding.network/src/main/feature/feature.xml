@@ -6,8 +6,6 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-core-model-script</feature>
         <bundle dependency="true">mvn:commons-net/commons-net/3.6</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/fr.bmartel.jspeedtest/1.32.1</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/fr.bmartel.http-endec/1.04</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.network/${project.version}</bundle>
     </feature>
 </features>

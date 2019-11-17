@@ -42,12 +42,16 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.amazonechocontrol.internal.AccountServlet;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.IWebSocketCommandHandler;
 import org.openhab.binding.amazonechocontrol.internal.WebSocketConnection;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandler;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerSendMessage;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.IAmazonThingHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.SourceDeviceId;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
@@ -85,7 +89,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial Contribution
  */
 @NonNullByDefault
-public class AccountHandler extends BaseBridgeHandler implements IWebSocketCommandHandler {
+public class AccountHandler extends BaseBridgeHandler implements IWebSocketCommandHandler, IAmazonThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private Storage<String> stateStorage;
@@ -108,15 +112,17 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private final HttpService httpService;
     private @Nullable AccountServlet accountServlet;
     private final Gson gson;
-    int checkDataCounter;
+    private int checkDataCounter;
     private @Nullable Set<String> requestedDeviceUpdates;
     private @Nullable SmartHomeDeviceStateGroupUpdateCalculator smartHomeDeviceStateGroupUpdateCalculator;
+    private List<ChannelHandler> channelHandlers = new ArrayList<>();
 
     public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage, Gson gson) {
         super(bridge);
         this.gson = gson;
         this.httpService = httpService;
         this.stateStorage = stateStorage;
+        channelHandlers.add(new ChannelHandlerSendMessage(this, this.gson));
     }
 
     @Override
@@ -156,10 +162,30 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     @Override
+    public void updateChannelState(String channelId, State state) {
+        updateState(channelId, state);
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
-        if (command instanceof RefreshType) {
-            refreshData();
+        try {
+            logger.trace("Command '{}' received for channel '{}'", command, channelUID);
+            Connection connection = this.connection;
+            if (connection == null) {
+                return;
+            }
+
+            String channelId = channelUID.getId();
+            for (ChannelHandler channelHandler : channelHandlers) {
+                if (channelHandler.tryHandleCommand(new Device(), connection, channelId, command)) {
+                    return;
+                }
+            }
+            if (command instanceof RefreshType) {
+                refreshData();
+            }
+        } catch (IOException | URISyntaxException e) {
+            logger.info("handleCommand fails", e);
         }
     }
 
@@ -381,7 +407,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
 
         } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
-            logger.error("check login fails with unexpected error {}", e);
+            logger.error("check login fails with unexpected error", e);
         }
     }
 
@@ -423,7 +449,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     this.webSocketConnection = new WebSocketConnection(connection.getAmazonSite(),
                             connection.getSessionCookies(), this);
                 } catch (IOException e) {
-                    logger.warn("Web socket connection starting failed: {}", e);
+                    logger.warn("Web socket connection starting failed", e);
                 }
             }
             return false;
@@ -447,9 +473,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 }
                 logger.debug("checkData {} finished", getThing().getUID().getAsString());
             } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-                logger.debug("checkData fails {}", e);
+                logger.debug("checkData fails", e);
             } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
-                logger.error("checkData fails with unexpected error {}", e);
+                logger.error("checkData fails with unexpected error", e);
             }
         }
     }
@@ -467,7 +493,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         try {
             notifications = currentConnection.notifications();
         } catch (IOException | URISyntaxException e) {
-            logger.debug("refreshNotifications failed {}", e);
+            logger.debug("refreshNotifications failed", e);
             return;
         }
         ZonedDateTime timeStampNow = ZonedDateTime.now();
@@ -519,7 +545,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                         try {
                             musicProviders = currentConnection.getMusicProviders();
                         } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-                            logger.debug("Update music provider failed {}", e);
+                            logger.debug("Update music provider failed", e);
                         }
                     }
                 }
@@ -535,13 +561,13 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                         try {
                             notificationSounds = currentConnection.getNotificationSounds(device);
                         } catch (IOException | HttpException | JsonSyntaxException | ConnectionException e) {
-                            logger.debug("Update notification sounds failed {}", e);
+                            logger.debug("Update notification sounds failed", e);
                         }
                         // update playlists
                         try {
                             playlists = currentConnection.getPlaylists(device);
                         } catch (IOException | HttpException | JsonSyntaxException | ConnectionException e) {
-                            logger.debug("Update playlist failed {}", e);
+                            logger.debug("Update playlist failed", e);
                         }
                     }
 
@@ -582,9 +608,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
                 logger.debug("refresh data {} finished", getThing().getUID().getAsString());
             } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-                logger.debug("refresh data fails {}", e);
+                logger.debug("refresh data fails", e);
             } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
-                logger.error("refresh data fails with unexpected error {}", e);
+                logger.error("refresh data fails with unexpected error", e);
             }
         }
     }
@@ -673,7 +699,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             try {
                 currentConnection.setEnabledFlashBriefings(feeds);
             } catch (IOException | URISyntaxException e) {
-                logger.warn("Set flashbriefing profile failed {}", e);
+                logger.warn("Set flashbriefing profile failed", e);
             }
         }
         updateFlashBriefingHandlers();
@@ -735,7 +761,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
             this.currentFlashBriefingJson = gson.toJson(forSerializer);
         } catch (HttpException | JsonSyntaxException | IOException | URISyntaxException | ConnectionException e) {
-            logger.warn("get flash briefing profiles fails {}", e);
+            logger.warn("get flash briefing profiles fails", e);
         }
 
     }
@@ -746,7 +772,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             handleWebsocketCommand(pushCommand);
         } catch (Exception e) {
             // should never happen, but if the exception is going out of this function, the binding stop working.
-            logger.warn("handling of websockets fails: {}", e);
+            logger.warn("handling of websockets fails", e);
         }
     }
 

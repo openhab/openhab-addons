@@ -8,7 +8,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>In wall Smart Controller (ISC2)</label>
+		<label>In Wall Smart Controller (ISC2)</label>
 		<description>A smart controller with two push buttons.</description>
 
 		<channels>

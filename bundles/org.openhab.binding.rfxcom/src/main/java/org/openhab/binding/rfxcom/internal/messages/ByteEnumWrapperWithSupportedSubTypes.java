@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * An interface for all enums wrapping / mapping bytes
  *
- * @author Martin van Wingerden - Simplify some code in the RFXCOM binding
+ * @author Martin van Wingerden - Initial contribution
  */
 interface ByteEnumWrapperWithSupportedSubTypes<T extends ByteEnumWrapper> extends ByteEnumWrapper {
     List<T> supportedBySubTypes();

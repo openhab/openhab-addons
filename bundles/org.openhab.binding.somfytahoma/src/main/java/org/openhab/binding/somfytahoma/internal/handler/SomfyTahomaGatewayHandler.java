@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.STATUS;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -20,9 +23,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.STATUS;
 
 /**
  * The {@link SomfyTahomaGatewayHandler} is responsible for handling commands,

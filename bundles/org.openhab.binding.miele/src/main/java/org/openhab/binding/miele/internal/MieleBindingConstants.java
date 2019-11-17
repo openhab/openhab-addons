@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Martin Lepsy - added constants for support of WiFi devices & protocol
  */
 @NonNullByDefault
 public class MieleBindingConstants {
@@ -27,6 +28,9 @@ public class MieleBindingConstants {
     public static final String BINDING_ID = "miele";
     public static final String APPLIANCE_ID = "uid";
     public static final String DEVICE_CLASS = "dc";
+    public static final String HDM_LAN = "hdm:LAN:";
+    public static final String HDM_ZIGBEE = "hdm:ZigBee:";
+    public static final String PROTOCOL_PROPERTY_NAME = "protocol";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_XGW3000 = new ThingTypeUID(BINDING_ID, "xgw3000");

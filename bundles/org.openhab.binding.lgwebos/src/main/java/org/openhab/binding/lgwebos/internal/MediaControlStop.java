@@ -13,33 +13,20 @@
 package org.openhab.binding.lgwebos.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
-
-import com.connectsdk.device.ConnectableDevice;
-import com.connectsdk.service.capability.MediaControl;
+import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
 
 /**
  * Handles Media Control Command Stop.
  *
- * @author Sebastian Prehn - initial contribution
+ * @author Sebastian Prehn - Initial contribution
  */
 @NonNullByDefault
-public class MediaControlStop extends BaseChannelHandler<Void, Object> {
-
-    private MediaControl getControl(ConnectableDevice device) {
-        return device.getCapability(MediaControl.class);
-    }
+public class MediaControlStop extends BaseChannelHandler<CommandConfirmation> {
 
     @Override
-    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
-            Command command) {
-        if (device == null) {
-            return;
-        }
-        if (hasCapability(device, MediaControl.Stop)) {
-            getControl(device).stop(getDefaultResponseListener());
-        }
+    public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
+        handler.getSocket().stop(getDefaultResponseListener());
     }
 }

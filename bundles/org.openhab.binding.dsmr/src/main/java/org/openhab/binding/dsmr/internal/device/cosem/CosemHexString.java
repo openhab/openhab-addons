@@ -50,7 +50,11 @@ class CosemHexString extends CosemValueDescriptor<StringType> {
                 final String hexValue = cosemHexValue.substring(i, i + 2);
 
                 if (!NO_VALUE.equals(hexValue)) {
-                    sb.append((char) Integer.parseInt(hexValue, 16));
+                    try {
+                        sb.append((char) Integer.parseInt(hexValue, 16));
+                    } catch (NumberFormatException e) {
+                        throw new ParseException("Failed to parse hex value from '" + cosemValue + "' as char", i);
+                    }
                 }
             }
             return new StringType(sb.toString());

@@ -6,21 +6,21 @@
 
 	<config-description uri="thing-type:mqtt:string_channel">
 		<parameter-group name="transformations">
-			<label>Transform values</label>
+			<label>Transform Values</label>
 			<description>These configuration parameters allow you to alter a value before it is published to MQTT or before a received value is assigned to an item.</description>
 			<advanced>true</advanced>
 		</parameter-group>
 
 		<parameter name="stateTopic" type="text">
-			<label>MQTT state topic</label>
+			<label>MQTT State Topic</label>
 			<description>An MQTT topic that this thing will subscribe to, to receive the state. This can be left empty, the channel will be state-less command-only channel.</description>
 		</parameter>
 		<parameter name="commandTopic" type="text">
-			<label>MQTT command topic</label>
+			<label>MQTT Command Topic</label>
 			<description>An MQTT topic that this thing will send a command to. If not set, this will be a read-only switch.</description>
 		</parameter>
 		<parameter name="transformationPattern" type="text" groupName="transformations">
-			<label>Incoming value transformations</label>
+			<label>Incoming Value Transformations</label>
 			<description><![CDATA[
 			Applies transformations to an incoming MQTT topic value.
 			A transformation example for a received JSON would be "JSONPATH:$.device.status.temperature" for
@@ -31,7 +31,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="transformationPatternOut" type="text" groupName="transformations">
-			<label>Outgoing value transformation</label>
+			<label>Outgoing Value Transformation</label>
 			<description><![CDATA[
 			Applies a transformation before publishing a MQTT topic value.
 			
@@ -41,7 +41,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="formatBeforePublish" type="text" groupName="transformations">
-			<label>Outgoing value format</label>
+			<label>Outgoing Value Format</label>
 			<description><![CDATA[
 			Format a value before it is published to the MQTT broker.
 			The default is to just pass the channel/item state.
@@ -59,14 +59,14 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="postCommand" type="boolean">
-			<label>Is command</label>
+			<label>Is Command</label>
 			<description>If the received MQTT value should not only update the state of linked items, but command them, enable this option.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 
 		<parameter name="allowedStates" type="text">
-			<label>Allowed states</label>
+			<label>Allowed States</label>
 			<description>If your MQTT topic is limited to a set of one or more specific commands or specific states, define those states here. Separate multiple states with commas. An example for a light bulb state set: ON,DIMMED,OFF</description>
 			<advanced>true</advanced>
 		</parameter>

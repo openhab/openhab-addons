@@ -19,6 +19,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class AtomicStampedKeyValueTest {
 

@@ -24,12 +24,12 @@
 
 		<config-description>
 			<parameter name="filePath" type="text" required="true">
-				<label>Log file path</label>
+				<label>Log File Path</label>
 				<description>Path to log file. Empty will default to ${OPENHAB_LOGDIR}/openhab.log</description>
 				<default>${OPENHAB_LOGDIR}/openhab.log</default>
 			</parameter>
 			<parameter name="refreshRate" type="integer" required="false">
-				<label>Refresh rate</label>
+				<label>Refresh Rate</label>
 				<description>Refresh rate in milliseconds for reading logs</description>
 				<default>1000</default>
 			</parameter>

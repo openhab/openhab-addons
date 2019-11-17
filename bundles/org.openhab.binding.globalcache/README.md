@@ -1,7 +1,7 @@
 # GlobalCache Binding
 
-The [GlobalCache](http://www.globalcache.com) binding is used to enable communication
-between openHAB and GlobalCache [GC-100](http://www.globalcache.com/products/gc-100/) and [iTach](http://www.globalcache.com/products/itach/) family of devices.
+The [GlobalCache](https://www.globalcache.com) binding is used to enable communication
+between openHAB and GlobalCache [GC-100](https://www.globalcache.com/products/gc-100/) and [iTach](https://www.globalcache.com/products/itach/) family of devices.
 Global Cache devices enable the control and automation of infrared, serial, and contact closure devices through an IP network (wired or wireless).
 
 ## Overview
@@ -62,7 +62,7 @@ However, in the event that the device's IP address is changed, the device IP add
 
 ### Manual Thing Creation
 
-Devices can be manually created in the *PaperUI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.
+Devices can be manually created in the *Paper UI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.
 See example below.
 
 ### Binding Dependencies
@@ -119,7 +119,7 @@ Here's an example of the hex code format:
 0000 006E 0000 0024 0154 00AA 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 003F 0015 0015 0015 0015 0015 0015 0015 0015 0015 003F 0015 003F 0015 003F 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 0015 003F 0015 003F 0015 003F 0015 003F 0015 003F 0015 003F 0015 003F 0015 003F 0015 0015 0015 0015 0015 069B 0154 0055 0015 0EA9
 ```
 
-The [Global Cache iConvert utility](http://www.globalcache.com/files/docs/gc_iconvert_relnotes.txt) can be used to convert between the two formats, if desired.
+The [Global Cache iConvert utility](https://www.globalcache.com/files/docs/gc_iconvert_relnotes.txt) can be used to convert between the two formats, if desired.
 The iConvert utility is available on the Windows platform only.
 Global Cache also maintains an online [IR Control Tower database](https://irdb.globalcache.com/) of IR codes.
 There are numerous other sources of IR codes, such as iRule and RemoteCentral.

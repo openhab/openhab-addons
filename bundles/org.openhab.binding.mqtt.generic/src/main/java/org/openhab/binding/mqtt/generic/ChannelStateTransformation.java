@@ -58,7 +58,7 @@ public class ChannelStateTransformation {
     /**
      * Creates a new channel state transformer.
      *
-     * @param type A transformation service name.
+     * @param serviceName A transformation service name.
      * @param pattern A transformation. An Example:
      *            $.device.status.temperature for a json {device: {status: {
      *            temperature: 23.2 }}} (for type <code>JSONPATH</code>).
@@ -76,7 +76,7 @@ public class ChannelStateTransformation {
      * @param value The incoming value
      * @return The transformed value
      */
-    protected String processValue(String value) {
+    protected @Nullable String processValue(String value) {
         TransformationService transformationService = this.transformationService.get();
         if (transformationService == null) {
             transformationService = provider.getTransformationService(serviceName);
@@ -86,12 +86,12 @@ public class ChannelStateTransformation {
             }
             this.transformationService = new WeakReference<>(transformationService);
         }
-        String temp = null;
+        String returnValue = null;
         try {
-            temp = transformationService.transform(pattern, value);
+            returnValue = transformationService.transform(pattern, value);
         } catch (TransformationException e) {
             logger.warn("Executing the {}-transformation failed: {}", serviceName, e.getMessage());
         }
-        return (temp != null) ? temp : value;
+        return returnValue;
     }
 }

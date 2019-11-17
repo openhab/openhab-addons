@@ -57,8 +57,11 @@ class SpotifyHandleCommands {
         this.spotifyApi = spotifyApi;
     }
 
-    public void setLists(List<Device> devices, List<Playlist> playlists) {
+    public void setDevices(final List<Device> devices) {
         this.devices = devices;
+    }
+
+    public void setPlaylists(final List<Playlist> playlists) {
         this.playlists = playlists;
     }
 
@@ -110,12 +113,8 @@ class SpotifyHandleCommands {
                 }
             case CHANNEL_DEVICEVOLUME:
                 if (command instanceof DecimalType) {
-                    final PercentType volume = new PercentType(((DecimalType) command).intValue());
-
-                    spotifyApi.setVolume(deviceId, volume.intValue());
-                    commandRun = true;
-                } else if (command instanceof PercentType) {
-                    final PercentType volume = (PercentType) command;
+                    final PercentType volume = command instanceof PercentType ? (PercentType) command
+                            : new PercentType(((DecimalType) command).intValue());
 
                     spotifyApi.setVolume(deviceId, volume.intValue());
                     commandRun = true;

@@ -1,32 +1,33 @@
 # Feican Binding
 
-This binding adds support for the Feican Wi-Fi version of the smart light led Bulb, the WiFi RGBW Bulb.
+This binding adds support for the Feican Wi-Fi version of the smart light LED Bulb, the WiFi RGBW Bulb.
 
 With this binding the light bulb can be switched on or off, set the color or set color based on color temperature.
 Set the brightness. And it contains a set of preset programs, where for some the program speed can be set.
 
 ## Supported Things
 
-This binding supports the Feican smart smart light led Bulb, WiFi RGBW Bulb. This bulb supports color, color temperature,
-brightness. It also has a number of preset programs, with static color, jumping color(s), gradient color(s) and flashing
-color(s). With the program_speed the speed of some of the programs can be set.
+This binding supports the Feican smart smart light LED Bulb, WiFi RGBW Bulb.
+This bulb supports color, color temperature, brightness.
+It also has a number of preset programs, with static color, jumping color(s), gradient color(s) and flashing color(s).
+With the program_speed the speed of some of the programs can be set.
 
-It might be the Feican ledstrips also work as it seems they can be controlled with the same app. But this has not been tested.
+Although it has not been tested, the Feican LED strips may also be supported as it seems they can be controlled using the same app.
 
 ### Limitations
 
-It's not possible to get the state of the bulb from the bulb itself. Therefore the state visible to the user only reflects
-what was set in openHAB and may not correspond with the actual state.
+It is not possible to get the state of the bulb from the bulb itself.
+Therefore the state visible to the user only reflects what was set in openHAB and may not correspond with the actual state.
 
 ## Prerequisites
 
-Before using the Feican bulb with openHab the devices must be connected to the Wi-Fi network. This can be done using the
-Feican Android or iPhone DreamColor app.
+Before using the Feican bulb with openHAB the devices must be connected to the Wi-Fi network.
+This can be done using the Feican Android or iPhone DreamColor app.
 
 ## Discovery
 
-Devices can be auto discovered within the local network. It's possible to connect to devices in a different network,
-but these must be added manually.
+Devices can be auto discovered within the local network.
+It is possible to connect to devices in a different network, but these must be added manually.
 
 ## Thing Configuration
 

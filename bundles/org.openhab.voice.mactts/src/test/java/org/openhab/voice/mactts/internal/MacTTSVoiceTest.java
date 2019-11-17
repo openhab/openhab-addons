@@ -16,13 +16,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.apache.commons.io.IOUtils;
 
 /**
  * Test MacTTSVoice
@@ -30,7 +29,7 @@ import org.apache.commons.io.IOUtils;
  * @author Kelly Davis - Initial contribution and API
  */
 public class MacTTSVoiceTest {
-    
+
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
@@ -74,7 +73,7 @@ public class MacTTSVoiceTest {
         } catch (IOException e) {
             Assert.fail("getUIDTest() failed with IOException: " + e.getMessage());
         } finally {
-        	IOUtils.closeQuietly(bufferedReader);
+            IOUtils.closeQuietly(bufferedReader);
         }
     }
 

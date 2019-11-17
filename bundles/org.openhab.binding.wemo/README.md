@@ -1,6 +1,6 @@
 # Belkin Wemo Binding
 
-This binding integrates the [Belkin WeMo Family](http://www.belkin.com/us/Products/c/home-automation/).
+This binding integrates the [Belkin WeMo Family](https://www.belkin.com/us/Products/c/home-automation/).
 The integration happens either through the WeMo-Link bridge, which acts as an IP gateway to the ZigBee devices or through WiFi connection to standalone devices.
 
 ## Supported Things

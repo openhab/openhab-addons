@@ -8,7 +8,7 @@ An Apple account is required.
 Two factor authentication is supported.
 
 Please note: Application specific passwords are not supported.
-You'll need to provide the account password to the Binding.
+You will need to provide the account password to the Binding.
 
 ## Discovery
 
@@ -97,7 +97,7 @@ sitemap icloud label="iCloud" {
         Text item=iPhone_LocationLastUpdate
         Switch item=iPhone_FindMyPhone mappings=[ ON="Find!" ]
         Switch item=iPhone_Refresh mappings=[ REFRESH='Refresh now' ]
-        // Mapview for BasicUI and Applications (Android/iOS)
+        // Mapview for Basic UI and Applications (Android/iOS)
         Mapview item=iPhone_Location height=10
     }
 }

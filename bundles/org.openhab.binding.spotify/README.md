@@ -1,4 +1,4 @@
-# Binding for Spotify and Spotify Connect Devices
+# Spotify Binding
 
 This binding implements a bridge to the Spotify Player Web API and makes it possible to discover Spotify Connect Devices available on your Spotify Premium account.
 
@@ -179,18 +179,18 @@ Bridge spotify:player:user1 "Me" [clientId="<your client id>", clientSecret="<yo
 spotify.items:
 
 ```
-Player spotifyTrackPlayer   label="Player"               {channel="spotify:player:user1:trackPlayer"}
-String spotifyDevices       label="Active device [%s]"   {channel="spotify:player:user1:devices"}
-Switch spotifyDeviceShuffle label="Shuffle mode"         {channel="spotify:player:user1:deviceShuffle"}
-String spotifyTrackRepeat   label="Repeat mode: [%s]"    {channel="spotify:player:user1:trackRepeat"}
-String spotifyTrackProgress label="Track progress: [%s]" {channel="spotify:player:user1:trackProgress"}
-String spotifyTrackDuration label="Track duration: [%s]" {channel="spotify:player:user1:tackDuration"}
-String spotifyTrackName     label="Track Name: [%s]"     {channel="spotify:player:user1:trackName"}
-String spotifyAlbumName     label="Album Name: [%s]"     {channel="spotify:player:user1:albumName"}
-String spotifyArtistName    label="Artist Name: [%s]"    {channel="spotify:player:user1:artistName"}
-Image  spotifyAlbumImage    label="Album Art"            {channel="spotify:player:user1:albumImage"}
-String spotifyPlaylists     label="Playlists [%s]"       {channel="spotify:player:user1:playlists"}
-String spotifyPlayName      label="Playlist [%s]"        {channel="spotify:player:user1:playlistName"}
+Player spotifyTrackPlayer   "Player"               {channel="spotify:player:user1:trackPlayer"}
+String spotifyDevices       "Active device [%s]"   {channel="spotify:player:user1:devices"}
+Switch spotifyDeviceShuffle "Shuffle mode"         {channel="spotify:player:user1:deviceShuffle"}
+String spotifyTrackRepeat   "Repeat mode: [%s]"    {channel="spotify:player:user1:trackRepeat"}
+String spotifyTrackProgress "Track progress: [%s]" {channel="spotify:player:user1:trackProgress"}
+String spotifyTrackDuration "Track duration: [%s]" {channel="spotify:player:user1:trackDuration"}
+String spotifyTrackName     "Track Name: [%s]"     {channel="spotify:player:user1:trackName"}
+String spotifyAlbumName     "Album Name: [%s]"     {channel="spotify:player:user1:albumName"}
+String spotifyArtistName    "Artist Name: [%s]"    {channel="spotify:player:user1:artistName"}
+Image  spotifyAlbumImage    "Album Art"            {channel="spotify:player:user1:albumImage"}
+String spotifyPlaylists     "Playlists [%s]"       {channel="spotify:player:user1:playlists"}
+String spotifyPlayName      "Playlist [%s]"        {channel="spotify:player:user1:playlistName"}
 
 String device1DeviceName    {channel="spotify:device:user1:device1:deviceName"}
 Player device1Player        {channel="spotify:device:user1:device1:devicePlayer"}
@@ -218,8 +218,8 @@ sitemap spotify label="Spotify Sitemap" {
     Text      item=spotifyTrackName     label="Track Name: [%s]"
     Image     item=spotifyAlbumImage    label="Album Art"
     Text      item=spotifyAlbumName     label="Currently Played Album Name: [%s]"
-    Text      item=spotifyTrtistName    label="Currently Played Artist Name: [%s]"
-    Selection item=spotifyTrackPlay     label="Playlist" icon="music"
+    Text      item=spotifyArtistName    label="Currently Played Artist Name: [%s]"
+    Selection item=spotifyPlaylists     label="Playlist" icon="music"
   }
 
   Frame label="My Spotify Device 1" {

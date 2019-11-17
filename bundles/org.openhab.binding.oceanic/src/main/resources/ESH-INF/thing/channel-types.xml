@@ -49,7 +49,7 @@
 	</channel-type>
 	<channel-type id="hardness" advanced="true">
 		<item-type>Number</item-type>
-		<label>Water hardness</label>
+		<label>Water Hardness</label>
 		<description>Water hardness expressed using the chosen hardness unit</description>
 		<state readOnly="true"></state>
 	</channel-type>

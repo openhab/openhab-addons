@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.util.ArrayList;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SomfyTahomaSetup} holds information about devices bound

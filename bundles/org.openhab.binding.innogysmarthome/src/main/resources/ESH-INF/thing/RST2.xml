@@ -8,7 +8,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Radiator mounted Smart Thermostat (RST2)</label>
+		<label>Radiator Mounted Smart Thermostat (RST2)</label>
 		<description>A thermostat, that supports setting the temperature and measuring the current temperature and humidity (2 battery version since 2018)</description>
 
 		<channels>

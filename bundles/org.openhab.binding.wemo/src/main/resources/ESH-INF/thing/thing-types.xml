@@ -212,7 +212,7 @@
 
 	<channel-type id="timespan" advanced="true">
 		<item-type>Number</item-type>
-		<label>Usage timespan (s)</label>
+		<label>Usage Timespan (s)</label>
 		<description>Time used to measure average usage</description>
 		<state pattern="%.1f s" />
 	</channel-type>

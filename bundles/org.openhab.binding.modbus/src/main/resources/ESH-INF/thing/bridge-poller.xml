@@ -8,11 +8,11 @@
 			<bridge-type-ref id="serial" />
 		</supported-bridge-type-refs>
 
-		<label>Regular poll</label>
+		<label>Regular Poll</label>
 		<description>Regular poll of data from Modbus slaves</description>
 		<config-description>
-			<parameter name="refresh" type="integer" min="0">
-				<label>Poll interval (ms)</label>
+			<parameter name="refresh" type="integer" min="0" unit="ms">
+				<label>Poll Interval</label>
 				<description>Poll interval in milliseconds. Use zero to disable automatic polling.</description>
 				<default>500</default>
 			</parameter>
@@ -38,12 +38,12 @@
 				</options>
 			</parameter>
 			<parameter name="maxTries" type="integer" min="1">
-				<label>Maximum tries when reading</label>
+				<label>Maximum Tries When Reading</label>
 				<default>3</default>
 				<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
 			</parameter>
-			<parameter name="cacheMillis" type="integer" min="0">
-				<label>Cache duration (ms)</label>
+			<parameter name="cacheMillis" type="integer" min="0" unit="ms">
+				<label>Cache Duration</label>
 				<default>50</default>
 				<description><![CDATA[Duration for data cache to be valid, in milliseconds. This cache is used only to serve REFRESH commands. 
 					<br />

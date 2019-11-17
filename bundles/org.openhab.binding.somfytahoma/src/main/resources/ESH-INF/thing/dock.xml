@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="somfytahoma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Somfy Dock</label>
+		<channels>
+			<channel id="battery_status" typeId="battery_status"></channel>
+			<channel id="battery_level" typeId="system.battery-level"></channel>
+			<channel id="siren_status" typeId="siren_status"></channel>
+			<channel id="short_beep" typeId="short_beep"></channel>
+			<channel id="long_beep" typeId="long_beep"></channel>
+		</channels>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

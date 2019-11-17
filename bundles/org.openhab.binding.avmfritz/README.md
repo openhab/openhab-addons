@@ -1,6 +1,6 @@
 # AVM FRITZ! Binding
 
-The binding integrates the AHA ( [AVM Home Automation](http://avm.de/ratgeber/smart-home/) ) system.  
+The binding integrates the AHA ( [AVM Home Automation](https://avm.de/ratgeber/smart-home/) ) system.  
 
 ## Supported Things
 
@@ -23,7 +23,7 @@ It only supports temperature readings.
 
 ### FRITZ!Powerline 546E
 
-This [powerline adapter](http://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in stand-alone mode.
+This [powerline adapter](https://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in stand-alone mode.
 It supports switching the outlet and reading the current power, current voltage and accumulated energy consumption.
 This device does not contain a temperature sensor.
 **NOTE:** The `voltage` channel will be added to the thing during runtime - if the interface supports it (FRITZ!OS 7 or higher).
@@ -79,7 +79,7 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 - `ipAddress` (mandatory), default "fritz.box"
 - `protocol` (optional, "http" or "https"), default "http"
-- `port` (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
+- `port` (optional, 1 to 65535), no default (derived from protocol: 80 or 443)
 - `password` (optional), no default (depends on FRITZ!Box security configuration)
 - `user` (optional), no default (depends on FRITZ!Box security configuration)
 - `pollingInterval` (optional, 5 to 60), default 15 (in seconds)
@@ -91,7 +91,7 @@ If correct credentials are set in the bridge configuration, connected AHA device
 - `ain` (optional, advanced), no default (AIN number of the device)
 - `ipAddress` (mandatory), default "fritz.powerline"
 - `protocol` (optional, "http" or "https"), default "http"
-- `port` (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
+- `port` (optional, 1 to 65535), no default (derived from protocol: 80 or 443)
 - `password` (optional), no default (depends on FRITZ!Powerline security configuration)
 - `pollingInterval` (optional, 5 to 60), default 15 (in seconds)
 - `asyncTimeout` (optional, 1000 to 60000), default 10000 (in milliseconds)

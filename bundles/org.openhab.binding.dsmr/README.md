@@ -8,7 +8,7 @@ This binding reads the P1-port of the Dutch Smart Meters that comply to NTA8130,
 This binding reads the P1-port of the Luxembourg’s electricity meter "Smarty" that comply to V1.0.
 Although DSMR v4.2 is not an official specification, the binding has support for this version.
 
-If you are not living in the Netherlands/Luxembourg but do want to read a meter please have look at the [SmartMeter Binding](https://www.openhab.org/addons/bindings/smartmeter).
+If you are not living in the Netherlands/Luxembourg but do want to read a meter please have look at the [SmartMeter Binding](/addons/bindings/smartmeter/).
 Because the Dutch Meter standard is based on the IEC-62056-21 standard it might be desirable to build support for other country metering systems based on that standard in this binding.
 
 ## Serial Port Configuration
@@ -24,7 +24,7 @@ You always have to have a 'Dutch Smart Meter'-bridge. The bridge contains the se
 Specific meters are bound via the bridge to the smart meter. A smart meter consists typically out of minimal 2 meters.
 A generic meter and the electricity meter. Each meter is bound to the DSMR protocol the physical meter supports.
 For each meter it is possible to set a refresh rate at which the status is updated.
-The physical meter might update with a high frequency per second, while it's desired to have only values per minute.
+The physical meter might update with a high frequency per second, while it is desired to have only values per minute.
 
 ### smartyBridge (Luxembourg)
 
@@ -288,7 +288,7 @@ Channel identifier: `dsmr:<ThingTypeID>:<bridge id>:<id>:<channel type id>`
 - id. The configured id for the ThingType you want to address
 - channel type id. The channel type id
 
-The following configuration must to be added to a item configuration file. E.g. `things/dsmr.items`
+The following configuration must to be added to an item configuration file. E.g. `things/dsmr.items`
 
 ```
 ItemType <name> "<description>" (<Group>) {channel="<Channel identifier>"}

@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for thermostat3message.
@@ -129,7 +130,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
 
         subType = fromByte(SubType.class, super.subType);
         unitId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
-        command = fromByte(Commands.class, (int) data[7], subType);
+        command = fromByte(Commands.class, data[7], subType);
         signalLevel = (byte) ((data[8] & 0xF0) >> 4);
     }
 
@@ -151,7 +152,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_COMMAND:
                 switch (command) {
@@ -201,7 +202,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
                 return command == null ? UnDefType.UNDEF : StringType.valueOf(command.toString());
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
@@ -256,7 +257,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         this.unitId = Integer.parseInt(deviceId);
     }
 }

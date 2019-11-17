@@ -42,6 +42,8 @@ import org.eclipse.smarthome.core.transform.TransformationHelper;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +57,8 @@ import org.slf4j.LoggerFactory;
 public class ExecHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
+
+    private final BundleContext bundleContext;
 
     // List of Configurations constants
     public static final String INTERVAL = "interval";
@@ -73,6 +77,7 @@ public class ExecHandler extends BaseThingHandler {
 
     public ExecHandler(Thing thing) {
         super(thing);
+        this.bundleContext = FrameworkUtil.getBundle(ExecHandler.class).getBundleContext();
     }
 
     @Override

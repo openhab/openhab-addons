@@ -27,7 +27,7 @@ public class Write {
     private List<Palette> palette = null;
     private String colorType;
     private String animData;
-    private Boolean loop;
+    private boolean loop;
 
     public String getCommand() {
         return command;
@@ -69,11 +69,11 @@ public class Write {
         this.animData = animData;
     }
 
-    public Boolean getLoop() {
+    public boolean getLoop() {
         return loop;
     }
 
-    public void setLoop(Boolean loop) {
+    public void setLoop(boolean loop) {
         this.loop = loop;
     }
 

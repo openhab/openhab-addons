@@ -30,14 +30,14 @@ Most settings are through thing configuration parameters.
 The DSC Alarm binding incorporates several discovery modes in order to find DSC Alarm systems.  
 First, there is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.
 Second, there is The IT-100 bridge discovery mode which will search serial ports for any IT-100 adapters and add them to the discovery inbox.
-The bridge discovery modes are started manually through PaperUI.  
+The bridge discovery modes are started manually through Paper UI.  
 Third, after a bridge is discovered and available to openHAB, the binding will attempt to discover DSC Alarm things and add them to the discovery inbox.
 The TCP Server bridge does not implement bridge discovery but will utilize thing discovery once it is online.
 
 Note:
 The Envisalink Bridge discovery does a TCP scan across your local network to find the interface.
 This may create issues on the network so it is suggested that caution be used when trying this discovery.
-The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the PaperUI.
+The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the Paper UI.
 And then allow the binding to discover the DSC Alarm things.
 
 ## Thing Configuration

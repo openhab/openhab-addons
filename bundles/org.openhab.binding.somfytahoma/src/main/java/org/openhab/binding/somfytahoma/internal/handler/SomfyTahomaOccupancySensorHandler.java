@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.Thing;
-
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.CONTACT;
 
 import java.util.HashMap;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.Thing;
 
 /**
  * The {@link SomfyTahomaOccupancySensorHandler} is responsible for handling commands,
@@ -30,9 +30,7 @@ public class SomfyTahomaOccupancySensorHandler extends SomfyTahomaContactSensorH
 
     public SomfyTahomaOccupancySensorHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put(CONTACT, "core:OccupancyState");
-        }};
+        stateNames.put(CONTACT, "core:OccupancyState");
     }
 
 }

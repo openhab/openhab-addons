@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -74,6 +75,8 @@ public class AllPlayHandler extends BaseThingHandler
         implements SpeakerChangedListener, SpeakerAnnouncedListener, SpeakerConnectionListener {
 
     private final Logger logger = LoggerFactory.getLogger(AllPlayHandler.class);
+
+    private final ThingRegistry localThingRegistry;
     private final AllPlay allPlay;
     private final AllPlayBindingProperties bindingProperties;
     private Speaker speaker;
@@ -83,8 +86,10 @@ public class AllPlayHandler extends BaseThingHandler
     private ScheduledFuture<?> reconnectionJob;
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(ALLPLAY_THREADPOOL_NAME);
 
-    public AllPlayHandler(Thing thing, AllPlay allPlay, AllPlayBindingProperties properties) {
+    public AllPlayHandler(ThingRegistry thingRegistry, Thing thing, AllPlay allPlay,
+            AllPlayBindingProperties properties) {
         super(thing);
+        this.localThingRegistry = thingRegistry;
         this.allPlay = allPlay;
         this.bindingProperties = properties;
     }
@@ -599,11 +604,9 @@ public class AllPlayHandler extends BaseThingHandler
     }
 
     private String getHandlerIdByLabel(String thingLabel) throws IllegalStateException {
-        if (thingRegistry != null) {
-            for (Thing thing : thingRegistry.getAll()) {
-                if (thingLabel.equals(thing.getLabel())) {
-                    return thing.getUID().getId();
-                }
+        for (Thing thing : localThingRegistry.getAll()) {
+            if (thingLabel.equals(thing.getLabel())) {
+                return thing.getUID().getId();
             }
         }
         throw new IllegalStateException("Could not find thing with label " + thingLabel);

@@ -435,7 +435,7 @@ public class Connection {
                 }
             }
         } catch (URISyntaxException | IOException | ConnectionException e) {
-            logger.debug("Getting account customer Id failed {}", e);
+            logger.debug("Getting account customer Id failed", e);
         }
         return loginTime;
     }
@@ -456,7 +456,7 @@ public class Connection {
                     return authentication;
                 }
             } catch (JsonSyntaxException | IllegalStateException e) {
-                logger.info("No valid json received {}", e);
+                logger.info("No valid json received", e);
                 return null;
             }
         }
@@ -630,7 +630,7 @@ public class Connection {
                         try {
                             makeRequest(verb, url, postData, json, autoredirect, customHeaders, badRequestRepeats - 1);
                         } catch (IOException | URISyntaxException e) {
-                            logger.debug("Repeat fails {}", e);
+                            logger.debug("Repeat fails", e);
                         }
                     }, 500, TimeUnit.MILLISECONDS);
                     return connection;
@@ -893,7 +893,7 @@ public class Connection {
         try {
             return gson.fromJson(json, type);
         } catch (JsonParseException | IllegalStateException e) {
-            logger.warn("Parsing json failed {}", e);
+            logger.warn("Parsing json failed", e);
             logger.warn("Illegal json: {}", json);
             throw e;
         }
@@ -911,7 +911,7 @@ public class Connection {
                 return result;
             }
         } catch (IOException | URISyntaxException e) {
-            logger.info("getting wakewords failed {}", e);
+            logger.info("getting wakewords failed", e);
         }
         return new WakeWord[0];
     }
@@ -970,147 +970,6 @@ public class Connection {
         return json;
     }
 
-    // public int getLightGroupBrightness(Thing device) throws IOException, URISyntaxException {
-    // Map<String, String> props = device.getProperties();
-    // List<Float> states = new ArrayList<>();
-    // if (props.containsKey(DEVICE_PROPERTY_APPLIANCE_ID + "0")) {
-    // int counter = 0;
-    // for (String key : props.keySet()) {
-    // if (key.contains(DEVICE_PROPERTY_APPLIANCE_ID + counter)) {
-    // JsonArray capabilities = this.getBulbCapabilities(props.get(key));
-    //
-    // Float state = null;
-    // for (JsonElement capability : capabilities) {
-    // JsonObject capabilityObject = capability.getAsJsonObject();
-    // if (capabilityObject.get("namespace").getAsString().equals("Alexa.BrightnessController")) {
-    // state = capabilityObject.get("value").getAsFloat();
-    // states.add(state);
-    // }
-    // }
-    // ++counter;
-    // }
-    // }
-    //
-    // if (states.size() > 0) {
-    // return Collections.max(states).intValue();
-    // }
-    // }
-    //
-    // return -1;
-    // }
-
-    // public String getBulbColor(Thing device) throws IOException, URISyntaxException {
-    // Map<String, String> props = device.getProperties();
-    // String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
-    //
-    // String color = null;
-    // JsonArray capabilities = this.getBulbCapabilities(applianceId);
-    //
-    // for (JsonElement capability : capabilities) {
-    // JsonObject capabilityObject = capability.getAsJsonObject();
-    // if (capabilityObject.get("namespace").getAsString().equals("Alexa.ColorPropertiesController")) {
-    // try {
-    // color = capabilityObject.getAsJsonObject().get("value").getAsJsonObject().get("name").getAsString();
-    // } catch (Exception e) {
-    // logger.debug("getting bulb color failed {}", e);
-    // }
-    // }
-    // }
-    // if (color != null) {
-    // return color;
-    // } else {
-    // throw new IOException();
-    // }
-    // }
-
-    // public int getBulbBrightness(Thing device) throws IOException, URISyntaxException {
-    // Map<String, String> props = device.getProperties();
-    // String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
-    // JsonArray capabilities = this.getBulbCapabilities(applianceId);
-    //
-    // int brightness = -1;
-    // for (JsonElement capability : capabilities) {
-    // JsonObject capabilityObject = capability.getAsJsonObject();
-    // if (INTERFACE_BRIGHTNESS.equals(capabilityObject.get("namespace").getAsString())) {
-    // brightness = capabilityObject.get("value").getAsInt();
-    // }
-    // }
-    // if (brightness == -1) {
-    // return 100;
-    // }
-    // return brightness;
-    // }
-
-    // public String getLightGroupState(Thing device) throws IOException, URISyntaxException {
-    // Map<String, String> props = device.getProperties();
-    // List<String> states = new ArrayList<>();
-    // if (props.containsKey(DEVICE_PROPERTY_APPLIANCE_ID + "0")) {
-    // int counter = 0;
-    // for (String key : props.keySet()) {
-    // if (key.contains(DEVICE_PROPERTY_APPLIANCE_ID + counter)) {
-    // JsonArray capabilities = this.getBulbCapabilities(props.get(key));
-    // String state = null;
-    // for (JsonElement capability : capabilities) {
-    // JsonObject capabilityObject = capability.getAsJsonObject();
-    // if (INTERFACE_POWER.equals(capabilityObject.get("namespace").getAsString())) {
-    // state = capabilityObject.get("value").getAsString();
-    // states.add(state);
-    // }
-    // }
-    // ++counter;
-    // }
-    // }
-    // if (states.contains("ON")) {
-    // return "ON";
-    // } else {
-    // return "OFF";
-    // }
-    // }
-    // throw new IOException();
-    // }
-    //
-    // public String getBulbState(Thing device) throws IOException, URISyntaxException {
-    // Map<String, String> props = device.getProperties();
-    // String applianceId = props.get(DEVICE_PROPERTY_APPLIANCE_ID);
-    //
-    // String state = null;
-    // JsonArray capabilities = this.getBulbCapabilities(applianceId);
-    //
-    // for (JsonElement capability : capabilities) {
-    // JsonObject capabilityObject = capability.getAsJsonObject();
-    // if (capabilityObject.get("namespace").getAsString().equals(INTERFACE_POWER)) {
-    // try {
-    // state = capabilityObject.get("value").getAsString();
-    // } catch (Exception e) {
-    // logger.error("getting bulb state failed {}", e);
-    // }
-    // }
-    // }
-    // if (state == null) {
-    // throw new IOException();
-    // }
-    // return state;
-    // }
-
-    // public JsonArray getBulbCapabilities(String applianceId) throws IOException, URISyntaxException {
-    // String json = this.getSmartHomeDeviceStateJson(applianceId);
-    // JsonElement jobject = new JsonParser().parse(json);
-    // JsonArray capabilities = null;
-    //
-    // try {
-    // capabilities = jobject.getAsJsonObject().get("deviceStates").getAsJsonArray().get(0).getAsJsonObject()
-    // .get("capabilityStates").getAsJsonArray();
-    // } catch (Exception e) {
-    // logger.debug("getting capabilities failed {}", e);
-    // }
-    //
-    // if (capabilities != null) {
-    // return capabilities;
-    // }
-    //
-    // throw new IOException();
-    // }
-
     public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<String> applianceIds)
             throws IOException, URISyntaxException {
 
@@ -1166,7 +1025,7 @@ public class Connection {
                 return activiesArray;
             }
         } catch (IOException | URISyntaxException e) {
-            logger.info("getting activities failed {}", e);
+            logger.info("getting activities failed", e);
         }
         return new Activity[0];
     }
@@ -1282,7 +1141,7 @@ public class Connection {
                 return deviceNotificationStates;
             }
         } catch (IOException | URISyntaxException e) {
-            logger.info("Error getting device notification states {}", e);
+            logger.info("Error getting device notification states", e);
         }
         return new DeviceNotificationState[0];
     }
@@ -1297,7 +1156,7 @@ public class Connection {
                 return ascendingAlarmModelList;
             }
         } catch (IOException | URISyntaxException e) {
-            logger.info("Error getting device notification states {}", e);
+            logger.info("Error getting device notification states", e);
         }
         return new AscendingAlarmModel[0];
     }
@@ -1374,8 +1233,8 @@ public class Connection {
         executeSequenceCommand(null, "Alexa.Notifications.SendMobilePush", parameters);
     }
 
-    public void sendAnnouncement(Device device, String text, String bodyText, @Nullable String title, int ttsVolume,
-            int standardVolume) throws IOException, URISyntaxException {
+    public void sendAnnouncement(Device device, String speak, String bodyText, @Nullable String title,
+            @Nullable Integer ttsVolume, int standardVolume) throws IOException, URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("expireAfter", "PT5S");
         JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
@@ -1386,10 +1245,10 @@ public class Connection {
             content.display.title = title;
         }
         content.display.body = bodyText;
-        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
+        if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
             content.speak.type = "ssml";
         }
-        content.speak.value = text;
+        content.speak.value = speak;
 
         contentArray[0] = content;
 
@@ -1414,7 +1273,7 @@ public class Connection {
         executeSequenceCommandWithVolume(device, "AlexaAnnouncement", parameters, ttsVolume, standardVolume);
     }
 
-    public void textToSpeech(Device device, String text, int ttsVolume, int standardVolume)
+    public void textToSpeech(Device device, String text, @Nullable Integer ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("textToSpeak", text);
@@ -1422,28 +1281,23 @@ public class Connection {
     }
 
     private void executeSequenceCommandWithVolume(@Nullable Device device, String command,
-            @Nullable Map<String, Object> parameters, int ttsVolume, int standardVolume)
+            @Nullable Map<String, Object> parameters, @Nullable Integer ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
-        if (ttsVolume != 0) {
-
+        if (ttsVolume != null) {
             JsonArray nodesToExecute = new JsonArray();
-
             Map<String, Object> volumeParameters = new HashMap<>();
             // add tts volume
             volumeParameters.clear();
             volumeParameters.put("value", ttsVolume);
             nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", volumeParameters));
-
             // add command
             nodesToExecute.add(createExecutionNode(device, command, parameters));
-
             // add volume
             volumeParameters.clear();
             volumeParameters.put("value", standardVolume);
             nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", volumeParameters));
 
             executeSequenceNodes(nodesToExecute);
-
         } else {
             executeSequenceCommand(device, command, parameters);
         }

@@ -80,6 +80,8 @@ import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.json.WriteRequestJsonUtilities;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +100,8 @@ import org.slf4j.LoggerFactory;
 public class ModbusDataThingHandler extends BaseThingHandler implements ModbusReadCallback, ModbusWriteCallback {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
+
+    private final BundleContext bundleContext;
 
     private static final Duration MIN_STATUS_INFO_UPDATE_INTERVAL = Duration.ofSeconds(1);
     private static final Map<String, List<Class<? extends State>>> CHANNEL_ID_TO_ACCEPTED_TYPES = new HashMap<>();
@@ -153,6 +157,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
     public ModbusDataThingHandler(Thing thing) {
         super(thing);
+        this.bundleContext = FrameworkUtil.getBundle(ModbusDataThingHandler.class).getBundleContext();
     }
 
     @Override

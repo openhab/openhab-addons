@@ -101,7 +101,7 @@ public class WebSocketConnection {
             try {
                 webSocketClient.start();
             } catch (Exception e) {
-                logger.warn("Web socket start failed: {}", e);
+                logger.warn("Web socket start failed", e);
                 throw new IOException("Web socket start failed");
             }
 
@@ -117,7 +117,7 @@ public class WebSocketConnection {
             webSocketClient.connect(listener, uri, request);
 
         } catch (URISyntaxException e) {
-            logger.debug("Initialize web socket failed: {}", e);
+            logger.debug("Initialize web socket failed", e);
         }
     }
 
@@ -152,7 +152,7 @@ public class WebSocketConnection {
             try {
                 session.close();
             } catch (Exception e) {
-                logger.debug("Closing sessing failed {}", e);
+                logger.debug("Closing sessing failed", e);
             }
         }
         try {
@@ -160,7 +160,7 @@ public class WebSocketConnection {
         } catch (InterruptedException e) {
             // Just ignore
         } catch (Exception e) {
-            logger.debug("Stopping websocket failed {}", e);
+            logger.debug("Stopping websocket failed", e);
         }
         webSocketClient.destroy();
     }
@@ -347,7 +347,7 @@ public class WebSocketConnection {
                                     message.content.pushCommand = gson.fromJson(message.content.payload,
                                             JsonPushCommand.class);
                                 } catch (JsonSyntaxException e) {
-                                    logger.info("Parsing json failed {}", e);
+                                    logger.info("Parsing json failed", e);
                                     logger.info("Illegal json: {}", payload);
                                 }
                             }
@@ -408,7 +408,7 @@ public class WebSocketConnection {
                         return;
                     }
                 } catch (Exception e) {
-                    logger.debug("Handling of push notification failed {}", e);
+                    logger.debug("Handling of push notification failed", e);
                 }
             }
 
@@ -427,7 +427,7 @@ public class WebSocketConnection {
 
         @Override
         public void onWebSocketError(@Nullable Throwable error) {
-            logger.info("Web Socket error {}", error);
+            logger.info("Web Socket error", error);
             WebSocketConnection.this.close();
 
         }

@@ -6,7 +6,7 @@
 
 	<!-- Unimplemented so far : Abnormal state, Remote lock, Auto configure, command 36,37,38,39,42 (timers), reset, 52 scheduling input select -->
 	<thing-type id="lgtv-M6503C">
-		<label>M6503C model</label>
+		<label>M6503C Model</label>
 		<description><![CDATA[This thing supports the M6503C LG TV]]></description>
 
 		<channels>
@@ -68,7 +68,7 @@
 
 	<channel-type id="aspect-ratio-M6503C">
 		<item-type>String</item-type>
-		<label>Aspect ratio</label>
+		<label>Aspect Ratio</label>
 		<description>Adjust the screen format</description>
 		<state>
 			<options>
