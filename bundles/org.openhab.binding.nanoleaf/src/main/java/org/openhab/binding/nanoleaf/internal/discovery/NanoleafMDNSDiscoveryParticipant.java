@@ -76,7 +76,7 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
                 port);
         if (!OpenAPIUtils.checkRequiredFirmware(service.getPropertyString("md"), firmwareVersion)) {
             logger.warn("Nanoleaf controller firmware is too old. Must be {} or higher",
-            MODEL_ID_LIGHTPANLES.equals(modelId) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
+            MODEL_ID_LIGHTPANELS.equals(modelId) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
         }
         final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
                 .withProperties(properties).withLabel(service.getName()).withRepresentationProperty(CONFIG_ADDRESS)

@@ -90,7 +90,7 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService imp
                     properties.put(CONFIG_PANEL_ID, panel.getPanelId());
 
                     DiscoveryResult newPanel = DiscoveryResultBuilder.create(newPanelThingUID).withBridge(bridge)
-                            .withProperties(properties).withLabel("Light Panel")
+                            .withProperties(properties).withLabel("Light Panel "+panel.getPanelId())
                             .withRepresentationProperty(CONFIG_PANEL_ID).build();
 
                     logger.debug("Adding panel with id {} to inbox", panel.getPanelId());

@@ -18,16 +18,16 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -68,6 +68,9 @@ public class NanoleafPanelHandler extends BaseThingHandler {
 
     // holds current color data per panel
     private Map<String, HSBType> panelInfo = new HashMap<>();
+
+    private @NonNullByDefault({}) ScheduledFuture<?> singleTapJob;
+    private @NonNullByDefault({}) ScheduledFuture<?> doubleTapJob;
 
     public NanoleafPanelHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -133,7 +136,21 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing handler for Nanoleaf panel {}", getThing().getUID());
+        stopAllJobs();
         super.dispose();
+    }
+
+    private void stopAllJobs() {
+        if (singleTapJob != null && !singleTapJob.isCancelled()) {
+            logger.debug("Stop single touch job");
+            singleTapJob.cancel(true);
+            this.singleTapJob = null;
+        }
+        if (doubleTapJob != null && !doubleTapJob.isCancelled()) {
+            logger.debug("Stop double touch job");
+            doubleTapJob.cancel(true);
+            this.doubleTapJob = null;
+        }
     }
 
     private void initializePanel(ThingStatusInfo panelStatus) {
@@ -216,8 +233,57 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         updateState(CHANNEL_PANEL_COLOR, getPanelColor());
     }
 
-    private HSBType getPanelColor() {
+    /**
+     * Apply the gesture to the panel
+     *
+     * @param gesture Only 0=single tap and 1=double tap are supported
+     */
+    public void updatePanelGesture(int gesture) {
+        switch (gesture){
+            case 0:
+                updateState(CHANNEL_PANEL_SINGLE_TAP, OnOffType.ON);
+                singleTapJob = scheduler.schedule(this::resetSingleTap, 1, TimeUnit.SECONDS);
+                logger.debug("Asserting single tap of panel {} to ON",getPanelID());
+                break;
+            case 1:
+                updateState(CHANNEL_PANEL_DOUBLE_TAP, OnOffType.ON);
+                doubleTapJob = scheduler.schedule(this::resetDoubleTap, 1, TimeUnit.SECONDS);
+                logger.debug("Asserting double tap of panel {} to ON",getPanelID());
+                break;
+        }
+    }
+
+    private void resetSingleTap() {
+        updateState(CHANNEL_PANEL_SINGLE_TAP, OnOffType.OFF);
+        logger.debug("Resetting single tap of panel {} to OFF",getPanelID());
+    }
+
+    private void resetDoubleTap() {
+        updateState(CHANNEL_PANEL_DOUBLE_TAP, OnOffType.OFF);
+        logger.debug("Resetting double tap of panel {} to OFF",getPanelID());
+    }
+
+    private synchronized void stopTouchJob() {
+        if (singleTapJob != null && !singleTapJob.isCancelled()) {
+            logger.debug("Stop single tap job");
+            singleTapJob.cancel(true);
+            this.singleTapJob = null;
+        }
+        if (doubleTapJob != null && !doubleTapJob.isCancelled()) {
+            logger.debug("Stop double tap job");
+            doubleTapJob.cancel(true);
+            this.doubleTapJob = null;
+        }
+    }
+
+
+    public String getPanelID() {
         String panelID = getThing().getConfiguration().get(NanoleafBindingConstants.CONFIG_PANEL_ID).toString();
+        return panelID;
+    }
+
+    private HSBType getPanelColor() {
+        String panelID = getPanelID();
         if (panelInfo.get(panelID) == null) {
             // get panel color data from controller
             try {

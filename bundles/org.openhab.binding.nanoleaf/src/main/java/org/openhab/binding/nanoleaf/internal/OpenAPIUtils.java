@@ -46,6 +46,11 @@ public class OpenAPIUtils {
 
     public static Request requestBuilder(HttpClient httpClient, NanoleafControllerConfig controllerConfig,
             String apiOperation, HttpMethod method) throws NanoleafException, NanoleafUnauthorizedException {
+        URI requestURI = getUri(controllerConfig, apiOperation, null);
+        return httpClient.newRequest(requestURI).method(method);
+    }
+
+    public static URI getUri(NanoleafControllerConfig controllerConfig, String apiOperation, String query) throws NanoleafException {
         String path;
 
         // get network settings from configuration
@@ -54,7 +59,8 @@ public class OpenAPIUtils {
 
         if (apiOperation.equals(API_ADD_USER)) {
             path = String.format("%s%s", API_V1_BASE_URL, apiOperation);
-        } else {
+        }
+        else {
             String authToken = controllerConfig.authToken;
             if (authToken != null) {
                 path = String.format("%s/%s%s", API_V1_BASE_URL, authToken, apiOperation);
@@ -64,17 +70,18 @@ public class OpenAPIUtils {
         }
         URI requestURI;
         try {
-            requestURI = new URI(HttpScheme.HTTP.asString(), null, address, port, path, null, null);
+            requestURI = new URI(HttpScheme.HTTP.asString(), null, address, port, path, query, null);
         } catch (URISyntaxException use) {
             logger.warn("URI could not be parsed with path {}", path);
             throw new NanoleafException("Wrong URI format for API request");
         }
-        return httpClient.newRequest(requestURI).method(method);
+        return requestURI;
     }
 
     public static ContentResponse sendOpenAPIRequest(Request request)
             throws NanoleafException, NanoleafUnauthorizedException {
         try {
+            logger.trace("Sending Request {} {}",request.getQuery(), request.getURI());
             ContentResponse openAPIResponse = request.send();
             if (logger.isTraceEnabled()) {
                 logger.trace("API response from Nanoleaf controller: {}", openAPIResponse.getContentAsString());
@@ -108,7 +115,7 @@ public class OpenAPIUtils {
         int[] currentVer = getFirmwareVersionNumbers(currentFirmwareVersion);
 
         int[] requiredVer = getFirmwareVersionNumbers(
-                modelId.equals(MODEL_ID_LIGHTPANLES) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
+                modelId.equals(MODEL_ID_LIGHTPANELS) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
 
         for (int i = 0; i < currentVer.length; i++) {
             if (currentVer[i] != requiredVer[i]) {

@@ -13,6 +13,7 @@
 package org.openhab.binding.nanoleaf.internal.model;
 
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Represents layout of the light panels
@@ -49,4 +50,54 @@ public class Layout {
         this.positionData = positionData;
     }
 
+    /**
+     * Returns an text representation for a canvas layout.
+     *
+     * Note only canvas supported currently due to its easy geometry
+     * @return a String containing the layout
+     */
+    public String getLayoutView() {
+
+        if (positionData.isEmpty()) return "";
+
+        String view ="";
+
+        int minx=Integer.MAX_VALUE, maxx = Integer.MIN_VALUE, miny=Integer.MAX_VALUE, maxy=Integer.MIN_VALUE;
+
+
+        for (int index = 0; index<numPanels; index++) {
+            PositionDatum panel = positionData.get(index);
+            if (panel.getPosX()<minx) minx=panel.getPosX();
+            if (panel.getPosX()>maxx) maxx=panel.getPosX();
+            if (panel.getPosY()<miny) miny=panel.getPosY();
+            if (panel.getPosY()>maxy) maxy=panel.getPosY();
+        }
+
+        int shiftWidth=getSideLength()/2;
+
+        int lineY = miny;
+        TreeMap<Integer, PositionDatum> map;
+
+        while (lineY<=maxy) {
+            map = new TreeMap<>();
+            for (int index = 0; index < numPanels; index++) {
+                PositionDatum panel = positionData.get(index);
+                if (panel.getPosY() == lineY)
+                    map.put(panel.getPosX(), panel);
+            }
+            lineY += shiftWidth;
+
+            for (int x=minx; x <=maxx; x+=shiftWidth) {
+                PositionDatum panel = map.get(x);
+                if (panel!=null)
+                    view += String.format("%5s ", panel.getPanelId());
+                else
+                    view+= "      ";
+
+            }
+            view+="\n";
+        }
+
+        return view;
+    }
 }

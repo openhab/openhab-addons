@@ -53,11 +53,14 @@ public class NanoleafBindingConstants {
 
     // List of light panel channels
     public static final String CHANNEL_PANEL_COLOR = "panelColor";
+    public static final String CHANNEL_PANEL_SINGLE_TAP = "singleTap";
+    public static final String CHANNEL_PANEL_DOUBLE_TAP = "doubleTap";
 
     // Nanoleaf OpenAPI URLs
     public static final String API_V1_BASE_URL = "/api/v1";
     public static final String API_GET_CONTROLLER_INFO = "/";
     public static final String API_ADD_USER = "/new";
+    public static final String API_EVENTS = "/events";
     public static final String API_DELETE_USER = "";
     public static final String API_SET_VALUE = "/state";
     public static final String API_EFFECT = "/effects";
@@ -66,7 +69,7 @@ public class NanoleafBindingConstants {
     // Nanoleaf model IDs and minimum required firmware versions
     public static final String API_MIN_FW_VER_LIGHTPANELS = "1.5.0";
     public static final String API_MIN_FW_VER_CANVAS = "1.1.0";
-    public static final String MODEL_ID_LIGHTPANLES = "NL22";
+    public static final String MODEL_ID_LIGHTPANELS = "NL22";
     public static final String MODEL_ID_CANVAS = "NL29";
 
     // mDNS discovery service type
