@@ -233,17 +233,17 @@ public class LGHomBotHandler extends BaseThingHandler {
     }
 
     private void sendHomBotCommand(String command) {
-        String fullCmd = UrlEncoded.encodeString("/json.cgi?{\"COMMAND\":\"" + command + "\"}");
+        String fullCmd = "/json.cgi?" + UrlEncoded.encodeString("{\"COMMAND\":\"" + command + "\"}");
         sendCommand(fullCmd);
     }
 
     private void sendHomBotCommand(String command, String argument) {
-        String fullCmd = UrlEncoded.encodeString("/json.cgi?{\"COMMAND\":{\"" + command + "\":\"" + argument + "\"}}");
+        String fullCmd = "/json.cgi?" + UrlEncoded.encodeString("{\"COMMAND\":{\"" + command + "\":\"" + argument + "\"}}");
         sendCommand(fullCmd);
     }
 
     private void sendHomBotJoystick(String command) {
-        String fullCmd = UrlEncoded.encodeString("/json.cgi?{\"JOY\":\"" + command + "\"}");
+        String fullCmd = "/json.cgi?" + UrlEncoded.encodeString("{\"JOY\":\"" + command + "\"}");
         sendCommand(fullCmd);
     }
 
