@@ -97,7 +97,7 @@ public class ShellyDeviceProfile {
                 ? profile.settings.device.hostname.toLowerCase()
                 : "shelly-" + profile.mac.toUpperCase().substring(6, 11);
         profile.mode = getString(profile.settings.mode) != null ? getString(profile.settings.mode).toLowerCase() : "";
-        profile.hwRev = profile.settings.hwinfo != null ? getString(profile.settings.hwinfo.hw_revision) : "";
+        profile.hwRev = profile.settings.hwinfo != null ? getString(profile.settings.hwinfo.hwRevision) : "";
         profile.hwBatchId = profile.settings.hwinfo != null ? getString(profile.settings.hwinfo.batch_id.toString())
                 : "";
         profile.fwDate = getString(StringUtils.substringBefore(profile.settings.fw, "/"));
@@ -144,7 +144,7 @@ public class ShellyDeviceProfile {
         }
         profile.hasMeter = (profile.numMeters > 0);
         profile.isEMeter = profile.settings.emeters != null;
-        profile.maxPower = profile.settings.max_power != null ? profile.settings.max_power : 0;
+        profile.maxPower = profile.settings.maxPower != null ? profile.settings.maxPower : 0;
 
         profile.supportsButtonUrls = profile.settingsJson.contains(SHELLY_API_EVENTURL_BTN_ON)
                 || profile.settingsJson.contains(SHELLY_API_EVENTURL_BTN1_ON)

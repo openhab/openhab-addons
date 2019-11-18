@@ -248,17 +248,17 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             ShellyStatusRelay rstatus = api.getRelayStatus(i);
             if (rstatus != null) {
                 for (ShellyShortStatusRelay relay : rstatus.relays) {
-                    if ((relay.is_valid == null) || relay.is_valid) {
+                    if ((relay.isValid == null) || relay.isValid) {
                         Integer r = i + 1;
                         String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                                 : CHANNEL_GROUP_RELAY_CONTROL + r.toString();
 
                         updated |= updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
-                        updated |= updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(relay.has_timer));
+                        updated |= updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(relay.hasTimer));
                         ShellySettingsRelay rsettings = profile.settings.relays.get(i);
                         if (rsettings != null) {
-                            updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON, getDecimal(rsettings.auto_on));
-                            updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF, getDecimal(rsettings.auto_off));
+                            updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON, getDecimal(rsettings.autoOn));
+                            updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF, getDecimal(rsettings.autoOff));
                         }
                         updated |= updateChannel(groupName, CHANNEL_OVERPOWER, getOnOff(relay.overpower));
                         if (status.overtemperature != null) {
@@ -273,7 +273,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             logger.trace("{}: Updating {} rollers", thingName, profile.numRollers);
             int i = 0;
             for (ShellySettingsRoller roller : status.rollers) {
-                if (roller.is_valid) {
+                if (roller.isValid) {
                     ShellyControlRoller control = api.getRollerStatus(i);
                     Integer relayIndex = i + 1;
                     String groupName = profile.numRollers == 1 ? CHANNEL_GROUP_ROL_CONTROL
@@ -282,14 +282,14 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     // StringType(getString(control.state)));
                     if (getString(control.state).equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
                         Integer pos = Math.max(SHELLY_MIN_ROLLER_POS,
-                                Math.min(control.current_pos, SHELLY_MAX_ROLLER_POS));
+                                Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
                                 new PercentType(SHELLY_MAX_ROLLER_POS - pos));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS, new PercentType(pos));
                         scheduledUpdates = 1; // one more poll and then stop
                     }
-                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_DIR, getStringType(control.last_direction));
-                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STOPR, getStringType(control.stop_reason));
+                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_DIR, getStringType(control.lastDirection));
+                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STOPR, getStringType(control.stopReason));
                     if (status.overtemperature != null) {
                         updated |= updateChannel(groupName, CHANNEL_OVERTEMP, getOnOff(status.overtemperature));
                     }
@@ -341,8 +341,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
                 ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
                 if (dsettings != null) {
-                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON, getDecimal(dsettings.auto_on));
-                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF, getDecimal(dsettings.auto_off));
+                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON, getDecimal(dsettings.autoOn));
+                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF, getDecimal(dsettings.autoOff));
                 }
 
                 updated |= updateInputs(groupName, status);
@@ -378,14 +378,14 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     public boolean updateLed(ShellySettingsStatus status) {
         boolean updated = false;
         if (profile.hasLed) {
-            Validate.notNull(profile.settings.led_status_disable, "LED update: led_status_disable must not be null!");
-            Validate.notNull(profile.settings.led_power_disable, "LED update: led_power_disable must not be null!");
+            Validate.notNull(profile.settings.ledStatusDisable, "LED update: led_status_disable must not be null!");
+            Validate.notNull(profile.settings.ledPowerDisable, "LED update: led_power_disable must not be null!");
             logger.debug("{}: LED disabled status: powerLed: {}, : statusLed{}", thingName,
-                    getBool(profile.settings.led_power_disable), getBool(profile.settings.led_status_disable));
+                    getBool(profile.settings.ledPowerDisable), getBool(profile.settings.ledStatusDisable));
             updated |= updateChannel(CHANNEL_GROUP_LED_CONTROL, CHANNEL_LED_STATUS_DISABLE,
-                    getOnOff(profile.settings.led_status_disable));
+                    getOnOff(profile.settings.ledStatusDisable));
             updated |= updateChannel(CHANNEL_GROUP_LED_CONTROL, CHANNEL_LED_POWER_DISABLE,
-                    getOnOff(profile.settings.led_power_disable));
+                    getOnOff(profile.settings.ledPowerDisable));
         }
         return updated;
     }

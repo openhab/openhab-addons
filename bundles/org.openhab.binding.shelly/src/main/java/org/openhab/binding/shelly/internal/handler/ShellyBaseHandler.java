@@ -170,7 +170,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
-        logger.info("Thing config for device {} updated.", thingName);
+        logger.debug("Thing config for device {} updated.", thingName);
         initializeThingConfig();
         startUpdateJob();
         refreshSettings = true; // force re-initialization
@@ -224,12 +224,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     "WARNING: Firmware for device {} might be too old (or beta release), installed: {}/{} ({}), required minimal {}. The binding was tested with Version 1.50+ only. Older versions might work, but doesn't support all features or lead into technical issues. You should consider to upgrade the device to v1.5.0 or newer!",
                     thingName, tmpPrf.fwVersion, tmpPrf.fwDate, tmpPrf.fwId, SHELLY_API_MIN_FWVERSION);
         }
-        if (status.update.has_update) {
+        if (status.update.hasUpdate) {
             logger.info("{} - INFO: New firmware available: current version: {}, new version: {}", thingName,
-                    status.update.old_version, status.update.new_version);
+                    status.update.oldVersion, status.update.newVersion);
         }
         if (tmpPrf.isSense) {
-            logger.info("Sense stored key list loaded, {} entries.", tmpPrf.irCodes.size());
+            logger.debug("Sense stored key list loaded, {} entries.", tmpPrf.irCodes.size());
         }
 
         refreshCount = !tmpPrf.hasBattery
@@ -300,7 +300,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Access denied, set userid/password for the thing or  binding config");
             } else {
-                logger.warn("{} ERROR: Unable to process command for channel {}: {} ({})", thingName,
+                logger.debug("{} ERROR: Unable to process command for channel {}: {} ({})", thingName,
                         channelUID.toString(), e.getMessage(), e.getClass());
             }
         } finally {
@@ -363,7 +363,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             // sleep mode
             // once the next update is successful the device goes back online
             if (e.getMessage().contains("Timeout")) {
-                logger.info("Device {} is not reachable, update canceled ({} skips, {} scheduledUpdates)!", thingName,
+                logger.debug("Device {} is not reachable, update canceled ({} skips, {} scheduledUpdates)!", thingName,
                         skipCount, scheduledUpdates);
             } else if (e.getMessage().contains("Not calibrated!")) {
                 logger.info("{}: Roller is not calibrated! Use the Shelly App or Web UI to run calibration.",
@@ -514,7 +514,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 return true;
             }
         } catch (RuntimeException e) {
-            logger.warn("Unable to update channel {}.{} with {} (type {}): {} ({})", thingName, channelId, value,
+            logger.debug("Unable to update channel {}.{} with {} (type {}): {} ({})", thingName, channelId, value,
                     value.getClass(), e.getMessage(), e.getClass());
         }
         return false;
@@ -535,16 +535,16 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
         // add status properties
         Validate.notNull(status, "updateProperties(): status must not be null!");
-        if (status.wifi_sta != null) {
-            properties.put(PROPERTY_WIFI_NETW, getString(status.wifi_sta.ssid));
-            properties.put(PROPERTY_WIFI_RSSI, getInteger(status.wifi_sta.rssi).toString());
-            properties.put(PROPERTY_WIFI_IP, getString(status.wifi_sta.ip));
+        if (status.wifiSta != null) {
+            properties.put(PROPERTY_WIFI_NETW, getString(status.wifiSta.ssid));
+            properties.put(PROPERTY_WIFI_RSSI, getInteger(status.wifiSta.rssi).toString());
+            properties.put(PROPERTY_WIFI_IP, getString(status.wifiSta.ip));
         }
         if (status.update != null) {
             properties.put(PROPERTY_UPDATE_STATUS, getString(status.update.status));
-            properties.put(PROPERTY_UPDATE_AVAILABLE, getBool(status.update.has_update) ? "yes" : "no");
-            properties.put(PROPERTY_UPDATE_CURR_VERS, getString(status.update.old_version));
-            properties.put(PROPERTY_UPDATE_NEW_VERS, getString(status.update.new_version));
+            properties.put(PROPERTY_UPDATE_AVAILABLE, getBool(status.update.hasUpdate) ? "yes" : "no");
+            properties.put(PROPERTY_UPDATE_CURR_VERS, getString(status.update.oldVersion));
+            properties.put(PROPERTY_UPDATE_NEW_VERS, getString(status.update.newVersion));
         }
 
         Map<String, String> thingProperties = new HashMap<String, String>();

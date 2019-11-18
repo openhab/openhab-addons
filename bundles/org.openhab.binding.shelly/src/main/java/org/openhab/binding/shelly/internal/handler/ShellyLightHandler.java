@@ -314,8 +314,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             // Channel control/timer
             // ShellyStatusLightChannel light = status.lights.get(i);
             updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, getOnOff(light.ison));
-            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(light.auto_on));
-            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(light.auto_off));
+            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(light.autoOn));
+            updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(light.autoOff));
             updated |= updateChannel(controlGroup, CHANNEL_OVERPOWER, getOnOff(light.overpower));
 
             if (profile.inColor || profile.isBulb) {

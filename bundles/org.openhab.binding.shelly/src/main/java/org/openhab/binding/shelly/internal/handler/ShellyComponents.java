@@ -69,8 +69,8 @@ public class ShellyComponents {
                 if (!profile.isEMeter) {
                     for (ShellySettingsMeter meter : status.meters) {
                         Integer meterIndex = m + 1;
-                        if (getBool(meter.is_valid) || profile.isLight) { // RGBW2-white doesn't report das flag
-                                                                          // correctly in white mode
+                        if (getBool(meter.isValid) || profile.isLight) { // RGBW2-white doesn't report das flag
+                                                                         // correctly in white mode
                             String groupName = "";
                             if (profile.numMeters > 1) {
                                 groupName = CHANNEL_GROUP_METER + meterIndex.toString();
@@ -100,17 +100,17 @@ public class ShellyComponents {
                 } else {
                     for (ShellySettingsEMeter emeter : status.emeters) {
                         Integer meterIndex = m + 1;
-                        if (emeter.is_valid) {
+                        if (emeter.isValid) {
                             String groupName = profile.numMeters > 1 ? CHANNEL_GROUP_METER + meterIndex.toString()
                                     : CHANNEL_GROUP_METER;
-                            if (emeter.is_valid) {
+                            if (emeter.isValid) {
                                 // convert Watt/Hour tok w/h
                                 updated |= th.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
                                         getDecimal(emeter.power));
                                 updated |= th.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
                                         new DecimalType(getDouble(emeter.total) / 1000));
                                 updated |= th.updateChannel(groupName, CHANNEL_EMETER_TOTALRET,
-                                        new DecimalType(getDouble(emeter.total_returned) / 1000));
+                                        new DecimalType(getDouble(emeter.totalReturned) / 1000));
                                 updated |= th.updateChannel(groupName, CHANNEL_EMETER_REACTWATTS,
                                         getDecimal(emeter.reactive));
                                 updated |= th.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
@@ -131,7 +131,7 @@ public class ShellyComponents {
                 Long timestamp = 0l;
                 String groupName = CHANNEL_GROUP_METER;
                 for (ShellySettingsMeter meter : status.meters) {
-                    if (meter.is_valid) {
+                    if (meter.isValid) {
                         currentWatts += getDouble(meter.power);
                         totalWatts += getDouble(meter.total);
                         if (meter.counters != null) {
@@ -178,7 +178,7 @@ public class ShellyComponents {
             th.logger.debug("{}: Updating sensor", th.thingName);
             ShellyStatusSensor sdata = th.api.getSensorStatus();
             if (sdata != null) {
-                if (getBool(sdata.tmp.is_valid)) {
+                if (getBool(sdata.tmp.isValid)) {
                     DecimalType temp = getString(sdata.tmp.units).toUpperCase().equals(SHELLY_TEMP_CELSIUS)
                             ? getDecimal(sdata.tmp.tC)
                             : getDecimal(sdata.tmp.tF);
@@ -190,7 +190,7 @@ public class ShellyComponents {
                             toQuantityType(temp.floatValue(), SIUnits.CELSIUS));
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM, getDecimal(sdata.hum.value));
                 }
-                if ((sdata.lux != null) && getBool(sdata.lux.is_valid)) {
+                if ((sdata.lux != null) && getBool(sdata.lux.isValid)) {
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX, getDecimal(sdata.lux.value));
                 }
                 if (sdata.flood != null) {
@@ -210,13 +210,6 @@ public class ShellyComponents {
                 if (profile.isSense) {
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION, getOnOff(sdata.motion));
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHARGER, getOnOff(sdata.charger));
-                }
-                if (sdata.act_reasons != null) {
-                    String message = "";
-                    for (int i = 0; i < sdata.act_reasons.length; i++) {
-                        message = "[" + i + "]: " + sdata.act_reasons[i];
-                    }
-                    th.logger.debug("Last activate reasons: {}", message);
                 }
             }
         }

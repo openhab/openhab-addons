@@ -108,7 +108,7 @@ public class ShellyCoapJSon {
 
             in.beginObject();
             String G = in.nextName();
-            Validate.notNull(G, "Invalid JSon format for CoIot_SensorList");
+            Validate.notNull(G, "Invalid JSon format for CoIotSensorList");
             if (G.equals(COIOT_TAG_GENERIC)) {
                 in.beginArray();
                 while (in.hasNext()) {

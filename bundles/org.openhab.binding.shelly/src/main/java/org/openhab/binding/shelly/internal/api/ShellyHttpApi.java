@@ -292,17 +292,17 @@ public class ShellyHttpApi {
 
         // take pragmatic approach to make the returned JSon into named arrays, otherwise we need to implement a
         // dedicated GSonParser
-        String key_list = StringUtils.substringAfter(result, "[");
-        key_list = StringUtils.substringBeforeLast(key_list, "]");
-        key_list = key_list.replaceAll(java.util.regex.Pattern.quote("\",\""), "\", \"name\": \"");
-        key_list = key_list.replaceAll(java.util.regex.Pattern.quote("["), "{ \"id\":");
-        key_list = key_list.replaceAll(java.util.regex.Pattern.quote("]"), "} ");
-        String json = "{\"key_codes\" : [" + key_list + "] }";
+        String keyList = StringUtils.substringAfter(result, "[");
+        keyList = StringUtils.substringBeforeLast(keyList, "]");
+        keyList = keyList.replaceAll(java.util.regex.Pattern.quote("\",\""), "\", \"name\": \"");
+        keyList = keyList.replaceAll(java.util.regex.Pattern.quote("["), "{ \"id\":");
+        keyList = keyList.replaceAll(java.util.regex.Pattern.quote("]"), "} ");
+        String json = "{\"key_codes\" : [" + keyList + "] }";
 
         ShellySendKeyList codes = gson.fromJson(json, ShellySendKeyList.class);
         Validate.notNull(codes);
         Map<String, String> list = new HashMap<String, String>();
-        for (ShellySenseKeyCode key : codes.key_codes) {
+        for (ShellySenseKeyCode key : codes.keyCodes) {
             list.put(key.id, key.name);
         }
         return list;
