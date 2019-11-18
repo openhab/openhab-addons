@@ -155,7 +155,6 @@ Thing weathercompany:weather:patagonia "Torres del Paine Weather" @ "Patagonia" 
 ### Items Example
 
 ```
-
 // PWS Current Observations
 Number:Temperature WC_PWS_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather:local:pwsObservations#currentTemperature" }
 Number:Temperature WC_PWS_TemperatureDewPoint "Dew Point Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather:local:pwsObservations#currentTemperatureDewPoint" }
@@ -601,7 +600,8 @@ String WC_Day5_Night_UVDescription "UV Description [%s]" <sun> { channel="weathe
 Number WC_Day5_Night_UVIndex "UV Index [%.0f %unit%]" <sun> { channel="weathercompany:weather:local:forecastDay5Night#uvIndex" }
 Number WC_Day5_Night_IconCode "Icon Code [%.0f %unit%]" { channel="weathercompany:weather:local:forecastDay5Night#iconCode" }
 Number WC_Day5_Night_IconCodeExtend "Icon Code Extend [%.0f %unit%]" { channel="weathercompany:weather:local:forecastDay5Night#iconCodeExtend" }
-Image WC_Day5_Night_IconImage "Icon Image [%s]" { channel="weathercompany:weather:local:forecastDay5Night#iconImage" }```
+Image WC_Day5_Night_IconImage "Icon Image [%s]" { channel="weathercompany:weather:local:forecastDay5Night#iconImage" }
+```
 
 ### Sitemap Example
 
