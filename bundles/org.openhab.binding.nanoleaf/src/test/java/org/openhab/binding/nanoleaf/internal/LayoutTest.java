@@ -23,12 +23,13 @@ public class LayoutTest {
         Layout layout = gson.fromJson(layout1Json, Layout.class);
         String layoutView = layout.getLayoutView();
         assertThat(layoutView,is(equalTo(
-                "                                          41451                               \n" +
+                "            31413                    9162       13276                         \n"+
                          "                                                                              \n" +
-                         "                        58086                               39755             \n" +
-                         "                                           8134                               \n" +
                          "55836       56093       48111       38724       17870        5164       64279 \n" +
+                         "                                           8134                               \n" +
+                         "                        58086                               39755             \n" +
                          "                                                                              \n" +
-                         "            31413                    9162       13276                         \n")));
+                         "                                          41451                               \n"
+        )));
     }
 }

@@ -75,17 +75,17 @@ public class Layout {
 
         int shiftWidth=getSideLength()/2;
 
-        int lineY = miny;
+        int lineY = maxy;
         TreeMap<Integer, PositionDatum> map;
 
-        while (lineY<=maxy) {
+        while (lineY>=miny) {
             map = new TreeMap<>();
             for (int index = 0; index < numPanels; index++) {
                 PositionDatum panel = positionData.get(index);
                 if (panel.getPosY() == lineY)
                     map.put(panel.getPosX(), panel);
             }
-            lineY += shiftWidth;
+            lineY -= shiftWidth;
 
             for (int x=minx; x <=maxx; x+=shiftWidth) {
                 PositionDatum panel = map.get(x);
