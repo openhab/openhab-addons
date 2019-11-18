@@ -96,6 +96,7 @@ These actions will send a message to all chat ids configured for this bot.
 | sendTelegramQuery(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png). |
 | sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should *always* call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
 | sendTelegramPhoto(String photoURL, String caption) | Sends a picture. The URL can be specified using the http, https, and file protocols or a base64 encoded image. |
+| sendTelegramPhoto(String photoURL, String caption, String username, String password) | Sends a picture which is downloaded from a username/password protected http/https address. |
 
 ### Actions to send messages to a particular chat
 
@@ -162,6 +163,18 @@ then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
     telegramAction.sendTelegramPhoto("http://www.openhab.org/assets/images/openhab-logo-top.png",
         null)
+end
+```
+
+telegram.rules
+
+```java
+rule "Send telegram with image from password protected http source"
+when
+    Item Light_GF_Living_Table changed
+then
+    val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    telegramAction.sendTelegramPhoto("http://192.168.1.5/doorcam/picture.jpg", "Door Camera", "user", "mypassword")
 end
 ```
 

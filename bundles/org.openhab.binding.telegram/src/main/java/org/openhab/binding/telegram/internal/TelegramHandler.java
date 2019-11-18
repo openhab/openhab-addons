@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -104,11 +105,13 @@ public class TelegramHandler extends BaseThingHandler {
 
     
     private @Nullable TelegramBot bot;
-    private @Nullable OkHttpClient client;
+    private @Nullable OkHttpClient botLibClient;
+    private @Nullable HttpClient downloadDataClient;
     private @Nullable ParseMode parseMode;
 
-    public TelegramHandler(Thing thing) {
+    public TelegramHandler(Thing thing, @Nullable HttpClient httpClient) {
         super(thing);
+        downloadDataClient = httpClient;
     }
 
     @Override
@@ -137,10 +140,10 @@ public class TelegramHandler extends BaseThingHandler {
             }
         }
 
-        client = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS).readTimeout(75, TimeUnit.SECONDS)
+        botLibClient = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS).readTimeout(75, TimeUnit.SECONDS)
                 .build();
         updateStatus(ThingStatus.ONLINE);
-        TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(client).build();
+        TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(botLibClient).build();
         localBot.setUpdatesListener(updates -> {
                 for (Update update : updates) {
                     String lastMessageText = null;
@@ -223,7 +226,7 @@ public class TelegramHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Trying to dispose Telegram client");
-        OkHttpClient localClient = client;
+        OkHttpClient localClient = botLibClient;
         TelegramBot localBot = bot;
         if (localClient != null && localBot != null) {
             localBot.removeGetUpdatesListener();
@@ -270,6 +273,12 @@ public class TelegramHandler extends BaseThingHandler {
     public <T extends BaseRequest, R extends BaseResponse> R execute(BaseRequest<T, R> request) {
         TelegramBot localBot = bot;
         return localBot != null ? localBot.execute(request) : null;
+    }
+
+    @Nullable
+    public HttpClient getClient()
+    {
+        return downloadDataClient;
     }
 
 }
