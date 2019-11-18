@@ -101,7 +101,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_OUTPUT = "output";
     public static final String CHANNEL_INPUT = "input"; // prefix for input1, input2...
     public static final String CHANNEL_INPUT1 = "input1";
-    public static final String CHANNEL__INPUT2 = "input2";
+    public static final String CHANNEL_INPUT2 = "input2";
     public static final String CHANNEL_OVERPOWER = "overpower";
     public static final String CHANNEL_OVERTEMP = "overtemp";
     public static final String CHANNEL_BRIGHTNESS = "brightness"; // Dimmer / Blub
@@ -185,7 +185,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EVENT_TRIGGER = "event";
 
     // Coap
-    public static int CoIoT_PORT = 5683;
+    public static int COIOT_PORT = 5683;
     public static String COAP_MULTICAST_ADDRESS = "224.0.1.187";
 
     public static final String COLOIT_URI_BASE = "/cit/";

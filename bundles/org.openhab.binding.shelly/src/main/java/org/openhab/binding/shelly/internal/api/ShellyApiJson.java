@@ -38,9 +38,12 @@ public class ShellyApiJson {
         public String hostname;
         public String fw;
         public Boolean auth;
-        public Integer num_outputs;
-        public Integer num_meters;
-        public Integer num_rollers;
+        @SerializedName("num_outputs")
+        public Integer numOutputs;
+        @SerializedName("num_meters")
+        public Integer numMeters;
+        @SerializedName("num_rollers")
+        public Integer numRollers;
     }
 
     public static class ShellySettingsWiFiAp {
@@ -54,7 +57,8 @@ public class ShellyApiJson {
         public String ssid;
         public Integer rssi;
 
-        public String ipv4_method;
+        @SerializedName("ipv4_method")
+        public String ipv4Method;
         public final String SHELLY_IPM_STATIC = "static";
         public final String SHELLY_IPM_DHCP = "dhcp";
 
@@ -120,7 +124,7 @@ public class ShellyApiJson {
         @SerializedName("hw_revision")
         public String hwRevision;
         @SerializedName("batch_id")
-        public Integer batch_id;
+        public Integer batchId;
     }
 
     public static class ShellySettingsScheduleRules {
@@ -143,7 +147,7 @@ public class ShellyApiJson {
         @SerializedName("btn_on_url")
         public String btnOnUrl; // URL to access when SW input is activated
         @SerializedName("btnOffUrl")
-        public String btn_off_url; // URL to access when SW input is deactivated
+        public String btnOffUrl; // URL to access when SW input is deactivated
         @SerializedName("out_on_url")
         public String outOnUrl; // URL to access when output is activated
         @SerializedName("out_off_url")

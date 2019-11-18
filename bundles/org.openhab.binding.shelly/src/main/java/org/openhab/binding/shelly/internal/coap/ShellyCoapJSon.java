@@ -43,7 +43,7 @@ public class ShellyCoapJSon {
         // Sometimes sen entries are part of the blk array - not conforming the Spec!
         @SerializedName("T")
         public String type; // Type
-        @SerializedName("T")
+        @SerializedName("R")
         public String range; // Range
         @SerializedName("L")
         public String links; // Links
@@ -56,7 +56,7 @@ public class ShellyCoapJSon {
         String desc; // Description
         @SerializedName("T")
         public String type; // Type
-        @SerializedName("T")
+        @SerializedName("R")
         public String range; // Range
         @SerializedName("L")
         public String links; // Links
@@ -94,10 +94,11 @@ public class ShellyCoapJSon {
     }
 
     public static class CoIotGenericSensorList {
-        public ArrayList<CoIotSensor> G;
+        @SerializedName("G")
+        public ArrayList<CoIotSensor> generic;
 
         public CoIotGenericSensorList() {
-            G = new ArrayList<CoIotSensor>();
+            generic = new ArrayList<CoIotSensor>();
         }
     }
 
@@ -107,9 +108,9 @@ public class ShellyCoapJSon {
             CoIotGenericSensorList list = new CoIotGenericSensorList();
 
             in.beginObject();
-            String G = in.nextName();
-            Validate.notNull(G, "Invalid JSon format for CoIotSensorList");
-            if (G.equals(COIOT_TAG_GENERIC)) {
+            String generic = in.nextName();
+            Validate.notNull(generic, "Invalid JSon format for CoIotSensorList");
+            if (generic.equals(COIOT_TAG_GENERIC)) {
                 in.beginArray();
                 while (in.hasNext()) {
                     in.beginArray();
@@ -118,7 +119,7 @@ public class ShellyCoapJSon {
                     sensor.index = new Integer(in.nextInt()).toString();
                     sensor.value = in.nextDouble();
                     in.endArray();
-                    list.G.add(sensor);
+                    list.generic.add(sensor);
                 }
                 in.endArray();
             }
@@ -133,11 +134,11 @@ public class ShellyCoapJSon {
             out.beginObject();
             if (sensors != null) {
                 out.name(COIOT_TAG_GENERIC).beginArray();
-                for (int i = 0; i < sensors.G.size(); i++) {
+                for (int i = 0; i < sensors.generic.size(); i++) {
                     out.beginArray();
                     out.value(0);
-                    out.value(sensors.G.get(i).index);
-                    out.value(sensors.G.get(i).value);
+                    out.value(sensors.generic.get(i).index);
+                    out.value(sensors.generic.get(i).value);
                     out.endArray();
                 }
                 out.endArray();

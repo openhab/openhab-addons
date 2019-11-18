@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.coap;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CoIoT_PORT;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.COIOT_PORT;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -95,14 +95,14 @@ public class ShellyCoapServer {
             logger.debug("Initializing CoIoT listener (local IP={}", localIp);
             NetworkConfig nc = NetworkConfig.getStandard();
             InetAddress localAddr = InetAddress.getByName(localIp);
-            InetSocketAddress localPort = new InetSocketAddress(CoIoT_PORT);
+            InetSocketAddress localPort = new InetSocketAddress(COIOT_PORT);
 
             // Join the Multicast group on the selected network interface
             statusConnector = new UdpMulticastConnector(localAddr, localPort, CoAP.MULTICAST_IPV4); // bind UDP listener
             statusEndpoint = new CoapEndpoint.Builder().setNetworkConfig(nc).setConnector(statusConnector).build();
             // statusEndpoint.addInterceptor(this);
 
-            server = new CoapServer(NetworkConfig.getStandard(), CoIoT_PORT);
+            server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);
             Validate.notNull(server);
             server.addEndpoint(statusEndpoint);
             CoapResource cit = new ShellyStatusListener("cit", this);

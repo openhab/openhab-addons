@@ -98,7 +98,7 @@ public class ShellyDeviceProfile {
                 : "shelly-" + profile.mac.toUpperCase().substring(6, 11);
         profile.mode = getString(profile.settings.mode) != null ? getString(profile.settings.mode).toLowerCase() : "";
         profile.hwRev = profile.settings.hwinfo != null ? getString(profile.settings.hwinfo.hwRevision) : "";
-        profile.hwBatchId = profile.settings.hwinfo != null ? getString(profile.settings.hwinfo.batch_id.toString())
+        profile.hwBatchId = profile.settings.hwinfo != null ? getString(profile.settings.hwinfo.batchId.toString())
                 : "";
         profile.fwDate = getString(StringUtils.substringBefore(profile.settings.fw, "/"));
         profile.fwVersion = getString(StringUtils.substringBetween(profile.settings.fw, "/", "@"));
@@ -127,17 +127,17 @@ public class ShellyDeviceProfile {
                 || thingType.equalsIgnoreCase(ShellyBindingConstants.THING_TYPE_SHELLYFLOOD.getId())
                 || thingType.equalsIgnoreCase(ShellyBindingConstants.THING_TYPE_SHELLYSENSE.getId());
 
-        profile.numRelays = !profile.isLight ? getInteger(profile.settings.device.num_outputs) : 0;
+        profile.numRelays = !profile.isLight ? getInteger(profile.settings.device.numOutputs) : 0;
         if ((profile.numRelays > 0) && (profile.settings.relays == null)) {
             profile.numRelays = 0;
         }
         profile.hasRelays = (profile.numRelays > 0) || profile.isDimmer;
-        profile.numRollers = getInteger(profile.settings.device.num_rollers);
+        profile.numRollers = getInteger(profile.settings.device.numRollers);
 
-        profile.numMeters = getInteger(profile.settings.device.num_meters);
+        profile.numMeters = getInteger(profile.settings.device.numMeters);
         if ((profile.numMeters == 0) && profile.isLight) {
             // RGBW2 doesn't report, but has one
-            profile.numMeters = profile.inColor ? 1 : getInteger(profile.settings.device.num_outputs);
+            profile.numMeters = profile.inColor ? 1 : getInteger(profile.settings.device.numOutputs);
         }
         if ((profile.numMeters == 0) && (profile.numRelays == 1)) {
             profile.numMeters = 1; // Shelly 1 reports no meters, but has one

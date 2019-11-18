@@ -41,12 +41,6 @@
 				<advanced>true</advanced>
 				<default>false</default>
 			</parameter>
-			<parameter name="channelCache" type="boolean" required="false">
-				<label>Enable Channel Cache</label>
-				<description>If disabled the binding does not update update for channel values. This is for testing only, because it could cause side effects.</description>
-				<advanced>true</advanced>
-				<default>true</default>
-			</parameter>
 			<parameter name="updateInterval" type="integer" required="true">
 				<label>Update Interval</label>
 				<description>Interval in seconds to query an update from the device.</description>
@@ -77,7 +71,6 @@
 				<default>20</default>
 				<unitLabel>%</unitLabel>
 			</parameter>
-
 			<parameter name="eventsSensorReport" type="boolean" required="false">
 				<label>Enable Sensor Events</label>
 				<description>True: Register event URL for sensor updates. When settings this to false the sensor will not notify the binding about changes!</description>
@@ -87,13 +80,6 @@
 			<parameter name="eventsCoIoT" type="boolean" required="false">
 				<label>Enable CoIoT events</label>
 				<description>If enabled the Coap protocol will be used to receive status updates.</description>
-				<advanced>true</advanced>
-				<default>true</default>
-			</parameter>
-
-			<parameter name="channelCache" type="boolean" required="false">
-				<label>Enable Channel Cache</label>
-				<description>If disabled the binding does not update update for channel values. This is for testing only, because it could cause side effects.</description>
 				<advanced>true</advanced>
 				<default>true</default>
 			</parameter>

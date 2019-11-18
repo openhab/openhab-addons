@@ -341,7 +341,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         Validate.notNull(list, "sensor list must not be empty!");
         Map<String, State> updates = new HashMap<String, State>();
 
-        if (list.G == null) {
+        if (list.generic == null) {
             logger.debug("{}: Sensor list is empty! Payload: {}", devId, payload);
             return;
         }
@@ -353,9 +353,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             return;
         }
 
-        logger.debug("{}: {} status updates received", thingName, list.G.size());
-        for (int i = 0; i < list.G.size(); i++) {
-            CoIotSensor s = list.G.get(i);
+        logger.debug("{}: {} status updates received", thingName, list.generic.size());
+        for (int i = 0; i < list.generic.size(); i++) {
+            CoIotSensor s = list.generic.get(i);
             CoIotDescrSen sen = sensorMap.get(s.index);
             if (sen != null) {
                 // find matching sensor definition from device description, use the Link ID as
@@ -722,7 +722,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     }
 
     private static String completeUrl(String ipAddress, String uri) {
-        return "coap://" + ipAddress + ":" + CoIoT_PORT + uri;
+        return "coap://" + ipAddress + ":" + COIOT_PORT + uri;
 
     }
 
