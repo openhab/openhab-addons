@@ -63,6 +63,7 @@ public class MeterHandler extends BaseThingHandler {
     private final GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(ReadingInstance.class,
             new CustomReadingInstanceDeserializer());
     private final Gson gson = gsonBuilder.create();
+    private final JsonParser jsonParser = new JsonParser();
 
     private String resourceID;
     private String meterID;
@@ -109,10 +110,9 @@ public class MeterHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
                 }
             }, 2, pollingPeriod, TimeUnit.MINUTES);
-            logger.debug("Refresh job scheduled to run every {} hours. for '{}'", pollingPeriod, getThing().getUID());
+            logger.debug("Refresh job scheduled to run every {} minutes for '{}'", pollingPeriod, getThing().getUID());
         } catch (RuntimeException r) {
-            logger.debug("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ", r);
-            logger.debug("Could not initialize Thing {}: ", getThing().getUID(), r);
+            logger.debug("Could not initialize Thing {}: {}", getThing().getUID(), r.getMessage(), r);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
         }
     }
@@ -147,7 +147,7 @@ public class MeterHandler extends BaseThingHandler {
             urlHeader.put("Authorization", token);
 
             String urlResponse = HttpUtil.executeUrl("GET", url, urlHeader, null, null, 2000);
-            JsonObject responseJson = (JsonObject) new JsonParser().parse(urlResponse);
+            JsonObject responseJson = (JsonObject) jsonParser.parse(urlResponse);
 
             if (responseJson.has("meter_id")) {
                 setMeterID(responseJson.get("meter_id").toString());
@@ -201,7 +201,7 @@ public class MeterHandler extends BaseThingHandler {
             updateState(CHANNEL_LAST_READING_DATE, new DateTimeType(latestReading.getReadingDate().toString()));
             updateState(CHANNEL_LAST_REFRESH_DATE, new DateTimeType());
         } catch (IOException | RuntimeException e) {
-            logger.debug("Exception while updating Meter {}: ", getThing().getUID(), e);
+            logger.debug("Exception while updating Meter {}: {}", getThing().getUID(), e.getMessage(), e);
         }
     }
 

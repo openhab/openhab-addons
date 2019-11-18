@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Pixometer Binding</name>
-	<description>This binding integrates the pixometer api for measuring your meters.</description>
+	<description>This binding integrates meter data through pixometer.</description>
 	<author>Jerome Luckenbach</author>
 
 </binding:binding>

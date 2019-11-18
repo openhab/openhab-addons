@@ -9,7 +9,7 @@
 			<bridge-type-ref id="apiservice" />
 		</supported-bridge-type-refs>
 		<label>Watermeter</label>
-		<description>Provides data for one specific meter.</description>
+		<description>A specific water meter.</description>
 		<channels>
 			<channel id="last_reading_value" typeId="last_reading_value" />
 			<channel id="last_reading_date" typeId="last_reading_date" />

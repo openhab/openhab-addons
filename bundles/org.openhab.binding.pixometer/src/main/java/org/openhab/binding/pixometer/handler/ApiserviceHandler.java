@@ -46,6 +46,7 @@ public class ApiserviceHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final int TOKEN_MIN_DIFF_MS = (int) TimeUnit.DAYS.toMillis(2);
+    private final JsonParser jsonParser = new JsonParser();
 
     private String authToken;
     private int refreshInterval;
@@ -63,7 +64,6 @@ public class ApiserviceHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initialize Pixometer Apiservice");
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting to get access-token from api...");
 
         PixometerConfiguration config = getConfigAs(PixometerConfiguration.class);
         setRefreshInterval(config.refresh);
@@ -80,11 +80,12 @@ public class ApiserviceHandler extends BaseBridgeHandler {
                     obtainAuthTokenAndExpiryDate(user, password, scope);
                 }
             } catch (RuntimeException r) {
-                logger.debug("Could not check token expiry date for Thing {}: ", getThing().getUID(), r);
+                logger.debug("Could not check token expiry date for Thing {}: {}", getThing().getUID(), r.getMessage(),
+                        r);
             }
         }, 1, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES);
 
-        logger.debug("Refresh job scheduled to run every {} days. for '{}'", 1, getThing().getUID());
+        logger.debug("Refresh job scheduled to run every days. for '{}'", getThing().getUID());
     }
 
     @Override
@@ -112,7 +113,7 @@ public class ApiserviceHandler extends BaseBridgeHandler {
 
             InputStream content = new ByteArrayInputStream(httpBody.toString().getBytes(StandardCharsets.UTF_8));
             String urlResponse = HttpUtil.executeUrl("POST", url, urlHeader, content, "application/json", 2000);
-            JsonObject responseJson = (JsonObject) new JsonParser().parse(urlResponse);
+            JsonObject responseJson = (JsonObject) jsonParser.parse(urlResponse);
 
             if (responseJson.has(CONFIG_BRIDGE_AUTH_TOKEN)) {
                 // Store the expire date for automatic token refresh

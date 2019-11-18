@@ -1,27 +1,15 @@
 # Pixometer Binding
 
-_This binding connects to the pixometer api, which can manage your meter readings through a native smartphone app._
+This binding connects to the pixometer API, which can manage your meter readings through a native smartphone app.
 
 ## Supported Things
 
 This binding supports:
 
 - Apiservice (bridge)
-
 - Energymeter (thing)
-
 - Gasmeter (thing)
-
 - Watermeter (thing)
-
-## Discovery
-
-Currently the binding provides no discovery.
-The desired Apiservice and Meters must be configured manually or via a things file.
-
-## Binding Configuration
-
-The binding has no configuration options itself, all configuration is done at 'Bridge' and 'Things' level.
 
 ## Thing Configuration
 
@@ -39,12 +27,11 @@ The binding has no configuration options itself, all configuration is done at 'B
 
 | Parameter        | Description                                                                                                                                                                                         | Required |
 |------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| Bridge Selection | Reference to your configured bridge. (In most cases only one bridge is needed.)                                                                                                                     | Yes      |
 | resource_id     | The ID which represents the current meter. You can find it in the pixometer browser app while editing a specific meter. It should look like this: "https://pixometer.io/portal/#/meters/XXXXX/edit" | Yes      |
 
 ## Channels
 
-This binding introduces the channels *last_reading_value* and *last_reading_date* for the Meters.
+All meter things have the following channels:
 
 | Channel ID         | Channel Description                                    | Supported item type | Advanced |
 |--------------------|--------------------------------------------------------|---------------------|----------|
@@ -53,8 +40,6 @@ This binding introduces the channels *last_reading_value* and *last_reading_date
 | last_refresh_date  | The last time that the current thing has been updated. | DateTime            | false    |
 
 ## Full Example
-
-> Note: All usedata values and ressourceIDs are only examples!
 
 pixometer.things:
 

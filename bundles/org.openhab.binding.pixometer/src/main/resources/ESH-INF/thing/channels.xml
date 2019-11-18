@@ -5,13 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="last_reading_date">
 		<item-type>DateTime</item-type>
-		<label>Time of Last Reading</label>
+		<label>Last Reading</label>
 		<description>The last time that the current meter has been read.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="last_refresh_date">
 		<item-type>DateTime</item-type>
-		<label>Time of Last Refresh</label>
+		<label>Last Refresh</label>
 		<description>The last time that the thing has been refreshed.</description>
 		<state readOnly="true" />
 	</channel-type>
