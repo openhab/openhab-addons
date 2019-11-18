@@ -108,15 +108,13 @@ public class LGHomBotHandler extends BaseThingHandler {
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_CLEAN:
-                    if (command instanceof OnOffType) {
-                        if (((OnOffType) command) == OnOffType.ON) {
-                            if (currentState.equals(HBSTATE_HOMING)) {
-                                sendHomBotCommand("PAUSE");
-                            }
-                            sendHomBotCommand("CLEAN_START");
-                        } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendHomBotCommand("HOMING");
+                    if (command == OnOffType.ON) {
+                        if (currentState.equals(HBSTATE_HOMING)) {
+                            sendHomBotCommand("PAUSE");
                         }
+                        sendHomBotCommand("CLEAN_START");
+                    } else if (command == OnOffType.OFF) {
+                        sendHomBotCommand("HOMING");
                     }
                     break;
                 case CHANNEL_START:
@@ -135,26 +133,22 @@ public class LGHomBotHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_TURBO:
-                    if (command instanceof OnOffType) {
-                        if (((OnOffType) command) == OnOffType.ON) {
-                            sendHomBotCommand("TURBO", "true");
-                        } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendHomBotCommand("TURBO", "false");
-                        }
+                    if (command == OnOffType.ON) {
+                        sendHomBotCommand("TURBO", "true");
+                    } else if (command == OnOffType.OFF) {
+                        sendHomBotCommand("TURBO", "false");
                     }
                     break;
                 case CHANNEL_REPEAT:
-                    if (command instanceof OnOffType) {
-                        if (((OnOffType) command) == OnOffType.ON) {
-                            sendHomBotCommand("REPEAT", "true");
-                        } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendHomBotCommand("REPEAT", "false");
-                        }
+                    if (command == OnOffType.ON) {
+                        sendHomBotCommand("REPEAT", "true");
+                    } else if (command == OnOffType.OFF) {
+                        sendHomBotCommand("REPEAT", "false");
                     }
                     break;
                 case CHANNEL_MODE:
                     if (command instanceof StringType) {
-                        switch (((StringType) command).toString()) {
+                        switch (command.toString()) {
                             case "SB":
                                 sendHomBotCommand("CLEAN_MODE", "CLEAN_SB");
                                 break;
@@ -174,24 +168,36 @@ public class LGHomBotHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_MOVE:
                     if (command instanceof StringType) {
-                        if (((StringType) command).toString().equals("FORWARD")) {
-                            sendHomBotJoystick("FORWARD");
-                        } else if (((StringType) command).toString().equals("FORWARD_LEFT")) {
-                            sendHomBotJoystick("FORWARD_LEFT");
-                        } else if (((StringType) command).toString().equals("FORWARD_RIGHT")) {
-                            sendHomBotJoystick("FORWARD_RIGHT");
-                        } else if (((StringType) command).toString().equals("LEFT")) {
-                            sendHomBotJoystick("LEFT");
-                        } else if (((StringType) command).toString().equals("RIGHT")) {
-                            sendHomBotJoystick("RIGHT");
-                        } else if (((StringType) command).toString().equals("BACKWARD")) {
-                            sendHomBotJoystick("BACKWARD");
-                        } else if (((StringType) command).toString().equals("BACKWARD_LEFT")) {
-                            sendHomBotJoystick("BACKWARD_LEFT");
-                        } else if (((StringType) command).toString().equals("BACKWARD_RIGHT")) {
-                            sendHomBotJoystick("BACKWARD_RIGHT");
-                        } else if (((StringType) command).toString().equals("RELEASE")) {
-                            sendHomBotJoystick("RELEASE");
+                        switch (command.toString()) {
+                            case "FORWARD":
+                                sendHomBotJoystick("FORWARD");
+                                break;
+                            case "FORWARD_LEFT":
+                                sendHomBotJoystick("FORWARD_LEFT");
+                                break;
+                            case "FORWARD_RIGHT":
+                                sendHomBotJoystick("FORWARD_RIGHT");
+                                break;
+                            case "LEFT":
+                                sendHomBotJoystick("LEFT");
+                                break;
+                            case "RIGHT":
+                                sendHomBotJoystick("RIGHT");
+                                break;
+                            case "BACKWARD":
+                                sendHomBotJoystick("BACKWARD");
+                                break;
+                            case "BACKWARD_LEFT":
+                                sendHomBotJoystick("BACKWARD_LEFT");
+                                break;
+                            case "BACKWARD_RIGHT":
+                                sendHomBotJoystick("BACKWARD_RIGHT");
+                                break;
+                            case "RELEASE":
+                                sendHomBotJoystick("RELEASE");
+                                break;
+                            default:
+                                break;
                         }
                     }
                     break;
