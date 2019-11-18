@@ -59,7 +59,6 @@ public class DarkSkyConnection {
     private static final String PNG_CONTENT_TYPE = "image/png";
 
     private static final String PARAM_EXCLUDE = "exclude";
-    private static final String PARAM_EXTEND = "extend";
     private static final String PARAM_UNITS = "units";
     private static final String PARAM_LANG = "lang";
 
@@ -81,7 +80,7 @@ public class DarkSkyConnection {
         this.httpClient = httpClient;
 
         DarkSkyAPIConfiguration config = handler.getDarkSkyAPIConfig();
-        cache = new ExpiringCacheMap<>(TimeUnit.MINUTES.toMillis(config.getRefreshInterval()));
+        cache = new ExpiringCacheMap<>(TimeUnit.MINUTES.toMillis(config.refreshInterval));
     }
 
     /**
@@ -101,7 +100,7 @@ public class DarkSkyConnection {
 
         DarkSkyAPIConfiguration config = handler.getDarkSkyAPIConfig();
 
-        String url = String.format(Locale.ROOT, WEATHER_URL, StringUtils.trimToEmpty(config.getApikey()),
+        String url = String.format(Locale.ROOT, WEATHER_URL, StringUtils.trimToEmpty(config.apikey),
                 location.getLatitude().doubleValue(), location.getLongitude().doubleValue());
 
         return gson.fromJson(getResponseFromCache(buildURL(url, getRequestParams(config))),
@@ -147,7 +146,7 @@ public class DarkSkyConnection {
 
         params.put(PARAM_UNITS, "si");
 
-        String language = StringUtils.trimToEmpty(config.getLanguage());
+        String language = StringUtils.trimToEmpty(config.language);
         if (!language.isEmpty()) {
             params.put(PARAM_LANG, language.toLowerCase());
         }

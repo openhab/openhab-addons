@@ -21,12 +21,13 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for temperature and humidity message.
  *
  * @author Marc SAUVEUR - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated for OH2
  */
 public class RFXComRainMessage extends RFXComBatteryDeviceMessage<RFXComRainMessage.SubType> {
 
@@ -132,8 +133,7 @@ public class RFXComRainMessage extends RFXComBatteryDeviceMessage<RFXComRainMess
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_RAIN_RATE:
                 return new DecimalType(rainRate);
@@ -142,7 +142,7 @@ public class RFXComRainMessage extends RFXComBatteryDeviceMessage<RFXComRainMess
                 return new DecimalType(rainTotal);
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
@@ -152,12 +152,12 @@ public class RFXComRainMessage extends RFXComBatteryDeviceMessage<RFXComRainMess
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
 

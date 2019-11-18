@@ -9,7 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Somfy On/Off Switch</label>
 		<channels>
-			<channel id="switch" typeId="switch"></channel>
+			<channel id="switch" typeId="system.power"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

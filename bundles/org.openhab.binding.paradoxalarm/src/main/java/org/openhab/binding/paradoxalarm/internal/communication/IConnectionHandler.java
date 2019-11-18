@@ -27,4 +27,9 @@ public interface IConnectionHandler {
 
     void submitRequest(IRequest request);
 
+    /**
+     * @param stoListener This method sets a listener which is called in case of socket timeout occurrence.
+     */
+    void setStoListener(ISocketTimeOutListener stoListener);
+
 }

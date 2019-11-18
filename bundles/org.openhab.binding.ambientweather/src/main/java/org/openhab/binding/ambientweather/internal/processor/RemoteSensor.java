@@ -83,6 +83,12 @@ public class RemoteSensor {
                 if (("temp" + sensorNumber + "f").equals(name)) {
                     handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_TEMPERATURE, reader.nextDouble(),
                             ImperialUnits.FAHRENHEIT);
+                } else if (("dewPoint" + sensorNumber).equals(name)) {
+                    handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_DEW_POINT, reader.nextDouble(),
+                            ImperialUnits.FAHRENHEIT);
+                } else if (("feelsLike" + sensorNumber).equals(name)) {
+                    handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_FEELING_TEMPERATURE,
+                            reader.nextDouble(), ImperialUnits.FAHRENHEIT);
                 } else if (("humidity" + sensorNumber).equals(name)) {
                     handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_HUMIDITY, reader.nextDouble(),
                             SmartHomeUnits.PERCENT);

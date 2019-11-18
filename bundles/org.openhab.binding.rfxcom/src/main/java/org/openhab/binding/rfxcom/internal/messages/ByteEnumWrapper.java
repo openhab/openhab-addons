@@ -15,7 +15,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 /**
  * An interface for all enums wrapping / mapping bytes
  *
- * @author Martin van Wingerden - Simplify some code in the RFXCOM binding
+ * @author Martin van Wingerden - Initial contribution
  */
 interface ByteEnumWrapper {
     byte toByte();

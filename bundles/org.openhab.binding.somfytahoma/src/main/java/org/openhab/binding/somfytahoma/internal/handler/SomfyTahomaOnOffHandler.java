@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.SWITCH;
+
+import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -21,10 +25,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.SWITCH;
-
-import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaOnOffHandler} is responsible for handling commands,
@@ -39,9 +39,7 @@ public class SomfyTahomaOnOffHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaOnOffHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put(SWITCH, "core:OnOffState");
-        }};
+        stateNames.put(SWITCH, "core:OnOffState");
     }
 
     @Override

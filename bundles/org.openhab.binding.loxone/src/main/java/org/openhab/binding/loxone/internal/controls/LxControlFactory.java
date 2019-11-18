@@ -33,11 +33,13 @@ class LxControlFactory {
         add(new LxControlDimmer.Factory());
         add(new LxControlInfoOnlyAnalog.Factory());
         add(new LxControlInfoOnlyDigital.Factory());
+        add(new LxControlIRoomControllerV2.Factory());
         add(new LxControlJalousie.Factory());
         add(new LxControlLeftRightAnalog.Factory());
         add(new LxControlLeftRightDigital.Factory());
         add(new LxControlLightController.Factory());
         add(new LxControlLightControllerV2.Factory());
+        add(new LxControlMeter.Factory());
         add(new LxControlPushbutton.Factory());
         add(new LxControlRadio.Factory());
         add(new LxControlSlider.Factory());

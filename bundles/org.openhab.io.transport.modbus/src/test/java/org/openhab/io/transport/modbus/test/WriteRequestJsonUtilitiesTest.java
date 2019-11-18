@@ -21,6 +21,9 @@ import org.junit.Test;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
 import org.openhab.io.transport.modbus.json.WriteRequestJsonUtilities;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 public class WriteRequestJsonUtilitiesTest {
 
     @Test

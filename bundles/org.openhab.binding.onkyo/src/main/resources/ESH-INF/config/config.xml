@@ -11,7 +11,7 @@
 			<description>The IP or host name of the Onkyo Receiver</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="port" type="integer" min="1" max="65335">
+		<parameter name="port" type="integer" min="1" max="65535">
 			<label>Port</label>
 			<description>Port of the Onkyo to control</description>
 			<default>60128</default>

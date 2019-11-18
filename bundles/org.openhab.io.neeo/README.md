@@ -97,13 +97,13 @@ You can then add OH1/OH2 items to that virtual thing and those items will be map
 There are two types of items supported:
 
 1.  Any valid openHAB item (OH1 or OH2).
-2.  Trigger channels - any trigger channel defined in an openHAB thing or any trigger channel that you add to an existing thing (regardless if it's an openHAB thing or a virtual thing).
+2.  Trigger channels - any trigger channel defined in an openHAB thing or any trigger channel that you add to an existing thing (regardless if it is an openHAB thing or a virtual thing).
 
 Trigger channels are useful to add to an existing thing if you want to add a button on NEEO that when pushed, can perform some rule that you have defined on a trigger.
 
 Please review [NEEO SDK](https://github.com/NEEOInc/neeo-sdk) documentation before attempting to map.
 This document describes some (but not all) of the requirements for NEEO things and capabilities.
-The NEEO SDK document is written from the perspective of writing native plugins for NEEO but much of it's concepts apply here.
+The NEEO SDK document is written from the perspective of writing native plugins for NEEO but much of its concepts apply here.
 
 Mappings consist of two parts:
 
@@ -118,7 +118,7 @@ This screen show partially shows the setup of my Russound (whole house music sys
 
 The NEEO text label type will allow you to specify showing the label and text or just the text.
 To show both a label and the text on the NEEO remote, uncheck the check mark next the the associated label field and enter in the label you wish to assign to the text.
-By turning off the label and specifying the format of the text field, you'll be able to create your own custom label then.
+By turning off the label and specifying the format of the text field, you will be able to create your own custom label then.
 
 ##### NEEO List
 
@@ -153,7 +153,7 @@ The following action can then be performed:
 6.  Press the puzzle piece icon to add new trigger channel to the device.
 7.  Press the SAVE icon to save the mapping for the openHAB thing.
 8.  Press the REFRESH icon to refresh the mapping to the last saved state (discarding any pending changes).
-9.  [openHAB things] Press the RESTORE icon to restore the mapping to it's original content (discarding any pending changes).
+9.  [openHAB things] Press the RESTORE icon to restore the mapping to its original content (discarding any pending changes).
 10. [Virtual things] Press the DELETE icon to delete the thing.
 11. [things with trigger channel(s)] Press the RULES icon to download an example .rules file for the triggers.
 12. [NON ACCESSORIE/LIGHT]  Specify device timings (see below).
@@ -235,13 +235,13 @@ Please note that you can also specify a hard button in the "NEEO Label" - in whi
 You must specify all the hard buttons for a capability (as specified in the NEEO SDK documentation) for the button to work.
 Example: if you only defined VOLUME DOWN but not VOLUME UP - the button will not work on the remote.
 Likewise, which hard buttons are active or not additionally depends on the NEEO device type.
-3.  Switch - this will create a virtual switch with the text from the "NEEO Label" and will send a ON or OFF command to the associated item.
+3.  Switch - this will create a virtual switch with the text from the "NEEO Label" and will send an ON or OFF command to the associated item.
 Additionally, a switch can be bound to hard button pairs (the VOLUME keys, the POWER ON/OFF, the CHANNELS, etc).
 The command that is sent is dependent on the KEYS chosen (POWER ON/OFF will send ON/OFF to the underlying item, all others will send an INCREASE/DECREASE).
 Similar to the "Button" type - please review the NEEO SDK documentation.
 4.  Slider - this will create a virtual slider that will send the associated value to the item.
 The value sent will always be between 0 and 100.
-5.  ImageURL - this will create an image on the remote from the toString() of the item value (assuming it's a URL to an image).
+5.  ImageURL - this will create an image on the remote from the toString() of the item value (assuming it is a URL to an image).
 6.  Sensor - this will create a sensor (non-visual) that can be used in recipes on the brain.
 7.  Power - this will create a powerstate sensor on the brain that can be used to stop/start the device.
 NOTE: you MUST also assign a POWER OFF/POWER ON for this to work.
@@ -283,8 +283,8 @@ If you are trying to bind a LIFX or HUE bulb, here are the following channels yo
 5.  Set the HUE/SATURATION/TEMPERATURE to a NEEO type of "Slider" (you can set the BRIGHTNESS as well - but NEEO will automatically assign that for you).
 
 Please note that NEEO will automatically combine all your "LIGHT" types into a single light on the remote (not ideal).
-You'll get a single screen with all lights listed with a power toggle and slider for brightness.
-You'll need to add the HUE/SATURATION/TEMPERATURE as shortcuts.
+You will get a single screen with all lights listed with a power toggle and slider for brightness.
+You will need to add the HUE/SATURATION/TEMPERATURE as shortcuts.
 
 ##### Power State Capability type
 
@@ -295,7 +295,7 @@ Sending ON to the power state item will start the device (similar to POWER ON bu
 ##### Virtual Device Items
 
 When you press the "+" icon (on the device) to add new items to the virtual device.
-You'll be presented with a screen that will allow you to:
+You will be presented with a screen that will allow you to:
 
 1.  Add a new item by pressing the "Add Item" button.
 2.  Delete all your items by pressing the "Delete All" button.
@@ -337,7 +337,7 @@ When the volumes keys are pressed, a "INCREASE" or "DECREASE" will be sent to th
 
 All data used by the integration is stored under the "userdata/neeo" directory  (please note that this directory is shared with the NEEO binding).
 You may backup and restore these files as needed.
-If you restore the directory, you'll likely need to restart openHAB for the new file contents to be applied.
+If you restore the directory, you will likely need to restart openHAB for the new file contents to be applied.
 
 There are two files being stored by the integration:
 

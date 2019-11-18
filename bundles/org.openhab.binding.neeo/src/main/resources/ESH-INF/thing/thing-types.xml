@@ -122,25 +122,25 @@
 	</channel-group-type>
 	<channel-type id="room-recipe-name" advanced="true">
 		<item-type>String</item-type>
-		<label>Label dynamically generated</label>
+		<label>Label Dynamically Generated</label>
 		<description>The recipe name</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="room-recipe-type" advanced="true">
 		<item-type>String</item-type>
-		<label>Label dynamically generated</label>
+		<label>Label Dynamically Generated</label>
 		<description>The type of recipe</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="room-recipe-enabled" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Label dynamically generated</label>
+		<label>Label Dynamically Generated</label>
 		<description>Whether the recipe is enabled or not.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="room-recipe-status">
 		<item-type>Switch</item-type>
-		<label>Label dynamically generated</label>
+		<label>Label Dynamically Generated</label>
 		<description>Send ON to execute the recipe</description>
 	</channel-type>
 	<channel-group-type id="room-scenario">
@@ -154,19 +154,19 @@
 	</channel-group-type>
 	<channel-type id="room-scenario-name" advanced="true">
 		<item-type>String</item-type>
-		<label>Label dynamically generated</label>
+		<label>Label Dynamically Generated</label>
 		<description>The scenario name</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="room-scenario-configured" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Label dynamically generated</label>
+		<label>Label Dynamically Generated</label>
 		<description>Whether the scenario is configured or not</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="room-scenario-status">
 		<item-type>Switch</item-type>
-		<label>Label dynamically generated</label>
+		<label>Label Dynamically Generated</label>
 		<description>Whether the scenario is running or not (send ON to turn on the scenario, OFF to turn off the scenario)</description>
 	</channel-type>
 	<channel-group-type id="device-macros">
@@ -178,7 +178,7 @@
 	</channel-group-type>
 	<channel-type id="device-macros-status">
 		<item-type>Switch</item-type>
-		<label>Label dynamically generated</label>
+		<label>Label Dynamically Generated</label>
 		<description>Send ON to trigger the macro</description>
 	</channel-type>
 </thing:thing-descriptions>

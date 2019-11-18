@@ -364,6 +364,24 @@ public class HueBridge {
     }
 
     /**
+     * Changes the state of a clip sensor.
+     *
+     * @param sensor sensor
+     * @param update changes to the state
+     * @throws UnauthorizedException thrown if the user no longer exists
+     * @throws EntityNotAvailableException thrown if the specified sensor no longer exists
+     * @throws DeviceOffException thrown if the specified sensor is turned off
+     * @throws IOException if the bridge cannot be reached
+     */
+    public CompletableFuture<Result> setSensorState(FullSensor sensor, StateUpdate update) {
+        requireAuthentication();
+
+        String body = update.toJson();
+        return http.putAsync(getRelativeURL("sensors/" + enc(sensor.getId()) + "/state"), body, update.getMessageDelay(),
+                scheduler);
+    }    
+    
+    /**
      * Changes the config of a sensor.
      *
      * @param sensor sensor

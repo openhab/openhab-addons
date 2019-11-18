@@ -29,34 +29,34 @@
 
 	<channel-type id="last_seen">
 		<item-type>DateTime</item-type>
-		<label>Last seen</label>
+		<label>Last Seen</label>
 		<description>Time when this person was last seen</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="person_athome">
 		<item-type>Switch</item-type>
-		<label>At home</label>
+		<label>At Home</label>
 		<description>Indicates if this person is known to be at home or not</description>
 	</channel-type>
 
 	<channel-type id="person_eventmsg">
 		<item-type>String</item-type>
-		<label>Last Event message</label>
+		<label>Last Event Message</label>
 		<description>Last Event message from this person</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="person_eventtime">
 		<item-type>DateTime</item-type>
-		<label>Last Event time</label>
+		<label>Last Event Time</label>
 		<description>Last Event message time for this person</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="person_avatar_url" advanced="true">
 		<item-type>String</item-type>
-		<label>Avatar URL </label>
+		<label>Avatar URL</label>
 		<description>URL for the avatar of this person</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -77,7 +77,7 @@
 
 	<channel-type id="person_event_url" advanced="true">
 		<item-type>String</item-type>
-		<label>Last event URL</label>
+		<label>Last Event URL</label>
 		<description>URL for the picture of the last event for this person</description>
 		<state readOnly="true"></state>
 	</channel-type>

@@ -1,6 +1,6 @@
 # Atlona Binding
 
-This binding integrates Atlona AT-UHD-PRO3 HdBaseT matrix switches [Atlona AT-UHD-PRO3 HdBaseT matrix switches](http://www.atlona.com) into your openHAB installation.
+This binding integrates Atlona AT-UHD-PRO3 HdBaseT matrix switches [Atlona AT-UHD-PRO3 HdBaseT matrix switches](https://www.atlona.com) into your openHAB installation.
 
 ## Supported Things
 
@@ -163,24 +163,24 @@ The # of presets allowed depends on the firmware you are using (5 presets up to 
 
 The matrixcmd channel will take the following commands:
 
-| Command     | Description                                                                                                                           |
-|-------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| resetmatrix | Resets the matrix back to it's default values (USE WITH CARE!).  Note: some firmware upgrades require a resetmatrix after installing. |
-| resetports  | Resets the ports back to their default values (outputX=inputX)                                                                        |
-| allportsX   | Sets all the output ports to the input port X                                                                                         |
+| Command     | Description                                                                                                                         |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| resetmatrix | Resets the matrix back to its default values (USE WITH CARE!). Note: some firmware upgrades require a resetmatrix after installing. |
+| resetports  | Resets the ports back to their default values (outputX=inputX)                                                                      |
+| allportsX   | Sets all the output ports to the input port X                                                                                       |
 
 Note: if X doesn't exist - nothing will occur.
 The # of presets allowed depends on the firmware you are using (5 presets up to rev 13, 10 for rev 14 and above).
 
 ## Changes/Warnings
 
-As of firmware 1.6.03 (rev 13), there are three issues on Atlona firmware (I've notified them on these issues):
+As of firmware 1.6.03 (rev 13), there are three issues on Atlona firmware (I have notified them on these issues):
 
 -   clearX command does not work.  The TCP/IP command "ClearX" as specified in Atlona's protocol will ALWAYS return a "Command Failed".  Please avoid this channel until atlona releases a new firmware.
 
--   There is no way to query what the current status is of: panellock, and irenable.  This addon simply assumes that panellock is off and irenable is on at startup.
+-   There is no way to query what the current status is of: panellock, and irenable.  This add-on simply assumes that panellock is off and irenable is on at startup.
 
--   If you make a change in the switches UI that requires a reboot (mainly changing any of the settings on the "Network" tab in the switch configuration UI), this addon's connection will be inconsistently closed at different times.
+-   If you make a change in the switches UI that requires a reboot (mainly changing any of the settings on the "Network" tab in the switch configuration UI), this add-on's connection will be inconsistently closed at different times.
 The thing will go OFFLINE and then back ONLINE when the reconnect attempt is made - and then it starts all over again.  Please make sure you reboot as soon as possible when the switch UI notifies you.
 
 -   a bug in the firmware will sometimes cause memory presets to disappear after a reboot

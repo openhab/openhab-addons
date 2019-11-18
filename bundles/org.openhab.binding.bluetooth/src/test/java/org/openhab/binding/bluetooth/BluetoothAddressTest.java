@@ -13,8 +13,12 @@
 package org.openhab.binding.bluetooth;
 
 import org.junit.Test;
-import org.openhab.binding.bluetooth.BluetoothAddress;
 
+/**
+ * Tests {@link BluetoothAddress}.
+ *
+ * @author Kai Kreuzer - Initial contribution
+ */
 public class BluetoothAddressTest {
 
     @Test(expected = IllegalArgumentException.class)

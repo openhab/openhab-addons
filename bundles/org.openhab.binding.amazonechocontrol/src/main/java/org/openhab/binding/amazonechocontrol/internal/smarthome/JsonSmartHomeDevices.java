@@ -27,6 +27,8 @@ public class JsonSmartHomeDevices {
 
     public static class SmartHomeDevice implements SmartHomeBaseDevice {
 
+        public @Nullable Integer UpdateIntervalInSeconds;
+
         @Override
         public @Nullable String findId() {
             return applianceId;

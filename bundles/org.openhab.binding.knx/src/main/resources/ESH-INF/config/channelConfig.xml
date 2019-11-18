@@ -48,7 +48,7 @@
 	<!-- Color -->
 	<config-description uri="channel-type:knx:color">
 		<parameter name="hsb" type="text">
-			<label>Color value</label>
+			<label>Color Value</label>
 			<description>The group address(es) in Group Address Notation for the color value</description>
 			<required>false</required>
 		</parameter>
@@ -70,7 +70,7 @@
 	</config-description>
 	<config-description uri="channel-type:knx:color-control">
 		<parameter name="hsb" type="text">
-			<label>Color value</label>
+			<label>Color Value</label>
 			<description>The group address(es) in Group Address Notation for the color value</description>
 			<required>false</required>
 		</parameter>

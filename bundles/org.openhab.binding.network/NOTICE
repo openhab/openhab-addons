@@ -11,3 +11,15 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+jspeedtest
+* License: MIT License
+* Project: https://github.com/bertrandmartel/speed-test-lib
+* Source:  https://github.com/bertrandmartel/speed-test-lib
+
+http-endec
+* License: MIT License
+* Project: https://github.com/bertrandmartel/http-endec
+* Source:  https://github.com/bertrandmartel/http-endec

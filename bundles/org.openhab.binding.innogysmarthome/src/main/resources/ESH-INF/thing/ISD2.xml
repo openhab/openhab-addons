@@ -8,7 +8,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>In wall Smart Dimmer (ISD2)</label>
+		<label>In Wall Smart Dimmer (ISD2)</label>
 		<description>An in wall dimmer with push buttons.</description>
 
 		<channels>

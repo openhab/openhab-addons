@@ -8,7 +8,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Wall mounted Room Thermostat (WRT)</label>
+		<label>Wall Mounted Room Thermostat (WRT)</label>
 		<description>A wall thermostat, that supports setting the temperature and measuring the current temperature and humidity.</description>
 
 		<channels>

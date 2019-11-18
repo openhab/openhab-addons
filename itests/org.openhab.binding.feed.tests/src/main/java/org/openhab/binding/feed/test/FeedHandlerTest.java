@@ -69,7 +69,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
     // Servlet URL configuration
     private static final String MOCK_SERVLET_PROTOCOL = "http";
     private static final String MOCK_SERVLET_HOSTNAME = "localhost";
-    private static final int MOCK_SERVLET_PORT = 9090;
+    private static final int MOCK_SERVLET_PORT = Integer.getInteger("org.osgi.service.http.port", 8080);
     private static final String MOCK_SERVLET_PATH = "/test/feed";
 
     // Files used for the test as input. They are located in /src/test/resources directory
@@ -233,7 +233,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
         // This will ensure that the configuration is read before the channelLinked() method in FeedHandler is called !
         waitForAssert(() -> {
             assertThat(feedThing.getStatus(), anyOf(is(ONLINE), is(OFFLINE)));
-        }, 30000, DFL_SLEEP_TIME);
+        }, 60000, DFL_SLEEP_TIME);
         initializeItem(channelUID);
     }
 
@@ -401,7 +401,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
         waitForAssert(() -> {
             assertThat(feedThing.getStatus(), is(equalTo(OFFLINE)));
             assertThat(feedThing.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.COMMUNICATION_ERROR)));
-        });
+        }, 30000, DFL_SLEEP_TIME);
     }
 
     @Test

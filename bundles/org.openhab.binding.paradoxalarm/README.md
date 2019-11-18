@@ -2,7 +2,7 @@
 
 This binding is intended to provide basic support for Paradox Alarm system.
 
-With the power of OpenHAB this binding can be used for complex decision rules combining motion/magnetic sensor or whole partitions states with different scenarios.
+With the power of openHAB this binding can be used for complex decision rules combining motion/magnetic sensor or whole partitions states with different scenarios.
 
 
 Examples: 
@@ -27,14 +27,15 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 
 ### IP150 parameters
 
-| Parameter     | Description                            |
-|---------------|----------------------------------------|
-| refresh       | Value is in seconds. Defines the refresh interval when the binding polls from paradox system.|
-| ip150Password | The password to your IP150 (not your panel PIN).|
-| pcPassword    | The code 3012 setting. Default value is 0000.|
-| ipAddress     | IP address of your IP150.|
-| port          | The port used for data communication. Default value is 10000.|
-| panelType     | Not mandatory. Will be used if discovery does not identify the panel. Otherwise provide EVO48, EVO96, EVO192, etc...|
+| Parameter         | Description                            |
+|-------------------|----------------------------------------|
+| refresh           | Value is in seconds. Defines the refresh interval when the binding polls from paradox system.|
+| ip150Password     | The password to your IP150 (not your panel PIN).|
+| pcPassword        | The code 3012 setting. Default value is 0000.|
+| ipAddress         | IP address of your IP150.|
+| port              | The port used for data communication. Default value is 10000.|
+| panelType         | Not mandatory. Will be used if discovery does not identify the panel. Otherwise provide EVO48, EVO96, EVO192, etc...|
+| reconnectWaitTime | Value is in seconds. The time to wait before a reconnect occurs after socket timeout.|
 
 ### IP150 channels
 
@@ -57,7 +58,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 ## Example things configuration
 
 ```java
-   Bridge paradoxalarm:ip150:ip150 [refresh=5, panelType=“EVO192”, ip150Password=“asdfasdf”, pcPassword=“1234”, ipAddress=XXX.XXX.XXX.XXX”, port=10000 ] {
+   Bridge paradoxalarm:ip150:ip150 [refresh=5, panelType="EVO192", ip150Password="asdfasdf", pcPassword="1234", ipAddress=XXX.XXX.XXX.XXX", port=10000 ] {
 
         Thing panel panel
 
@@ -77,29 +78,29 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 
 ```java
 //Groups
-    Group Paradox “Paradox security group”
-    Group Partitions “Paradox partitions” (Paradox)
-    Group Floor1MUC “Magnetic sensors - Floor 1” (Paradox)
-    Group PIRSensors “Motion sensors” (Paradox)
+    Group Paradox "Paradox security group"
+    Group Partitions "Paradox partitions" (Paradox)
+    Group Floor1MUC "Magnetic sensors - Floor 1" (Paradox)
+    Group PIRSensors "Motion sensors" (Paradox)
 
 //COMMUNICATOR BRIDGE
-    String paradoxSendCommand “Send command to IP150” {channel=“paradoxalarm:ip150:ip150:communicationCommand”}
+    String paradoxSendCommand "Send command to IP150" {channel="paradoxalarm:ip150:ip150:communicationCommand"}
 
 //PANEL
-    String panelState “Paradox panel state: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:state” }
-    String panelType “Paradox panel type: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:panelType” }
-    String serialNumber “Paradox Serial number: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:serialNumber” }
-    String hardwareVersion “Paradox HW version: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:hardwareVersion” }
-    String applicationVersion “Paradox Application version: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:applicationVersion” }
-    String bootloaderVersion “Paradox Bootloader version: [%s]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:bootloaderVersion” }
+    String panelState "Paradox panel state: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:state" }
+    String panelType "Paradox panel type: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:panelType" }
+    String serialNumber "Paradox Serial number: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:serialNumber" }
+    String hardwareVersion "Paradox HW version: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:hardwareVersion" }
+    String applicationVersion "Paradox Application version: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:applicationVersion" }
+    String bootloaderVersion "Paradox Bootloader version: [%s]" (Paradox) { channel = "paradoxalarm:panel:ip150:panel:bootloaderVersion" }
 
 //PARTITIONS
-    String partition1State “Magnetic sensors - Floor 1: [%s]” (Partitions) { channel = “paradoxalarm:partition:ip150:partition1:state” }
-    String partition1AdditionalStates “Floor1 MUC additional states: [%s]” (Partitions) { channel = “paradoxalarm:partition:ip150:partition1:additionalStates” }
+    String partition1State "Magnetic sensors - Floor 1: [%s]" (Partitions) { channel = "paradoxalarm:partition:ip150:partition1:state" }
+    String partition1AdditionalStates "Floor1 MUC additional states: [%s]" (Partitions) { channel = "paradoxalarm:partition:ip150:partition1:additionalStates" }
 
 //ZONES
-    Contact CorridorFl1_PIR_state “Corridor Fl1 motion: [%s]” (PIRSensors) { channel = “paradoxalarm:zone:ip150:MotionSensor1:opened” }
-    Contact CorridorFl1_MUC_state “Corridor Fl1 window: [%s]” (Floor1MUC) { channel = “paradoxalarm:zone:ip150:MagneticSensorWindow1:opened” }
+    Contact CorridorFl1_PIR_state "Corridor Fl1 motion: [%s]" (PIRSensors) { channel = "paradoxalarm:zone:ip150:MotionSensor1:opened" }
+    Contact CorridorFl1_MUC_state "Corridor Fl1 window: [%s]" (Floor1MUC) { channel = "paradoxalarm:zone:ip150:MagneticSensorWindow1:opened" }
 ```
 
 ## Example sitemap configuration

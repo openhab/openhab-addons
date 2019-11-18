@@ -7,6 +7,9 @@
 	<bridge-type id="account">
 		<label>Amazon Account</label>
 		<description>Amazon Account where the amazon echo devices are registered.</description>
+		<channels>
+			<channel id="sendMessage" typeId="sendMessage" />
+		</channels>
 		<config-description>
 			<parameter name="discoverSmartHome" type="integer">
 				<default>0</default>
@@ -17,12 +20,20 @@
 					<option value="2">Direct and over Alexa skill</option>
 				</options>
 			</parameter>
-			<parameter name="pollingIntervalSmartHome" type="decimal"
-				min="10">
-				<default>10</default>
+			<parameter name="pollingIntervalSmartHomeAlexa"
+				type="decimal" min="10">
+				<default>30</default>
 				<description>
-					Defines the time in minutes for openHAB to pull the
-					state of the connected devices. The minimum is 10 minutes.
+					Defines the time in seconds for openHAB to pull the
+					state of the Alexa connected devices. The minimum is 10 seconds.
+				</description>
+			</parameter>
+			<parameter name="pollingIntervalSmartSkills" type="decimal"
+				min="60">
+				<default>120</default>
+				<description>
+					Defines the time in seconds for openHAB to pull the
+					state of the over a skill connected devices. The minimum is 60 seconds.
 				</description>
 			</parameter>
 			<parameter name="discoverOpenHabSmartHomeDevices"
@@ -65,7 +76,7 @@
 			<channel id="amazonMusicPlayListId"
 				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
-			<channel id="announcement" typeId="announcement" />			
+			<channel id="announcement" typeId="announcement" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
@@ -314,7 +325,7 @@
 	</channel-type>
 	<channel-type id="startRoutine" advanced="true">
 		<item-type>String</item-type>
-		<label>Start A Routine</label>
+		<label>Start a Routine</label>
 		<description>The command which must be spoken to active the routing without the preceding "Alexa," (Write Only)
 		</description>
 	</channel-type>
@@ -437,6 +448,11 @@
 		<label>Music Voice Command</label>
 		<description>Voice command as text. E.g. 'Yesterday from the Beatles' (Write only)</description>
 	</channel-type>
+	<channel-type id="sendMessage" advanced="false">
+		<item-type>String</item-type>
+		<label>Send Message</label>
+		<description>Sends a message to the Echo devices (Write only).</description>
+	</channel-type>
 	<channel-type id="announcement" advanced="true">
 		<item-type>String</item-type>
 		<label>Announcement</label>
@@ -493,7 +509,7 @@
 	</channel-type>
 	<channel-type id="notificationVolume" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>Notification volume</label>
+		<label>Notification Volume</label>
 		<description>Notification Volume</description>
 		<state readOnly="false" />
 	</channel-type>
@@ -572,11 +588,13 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="colorTemperatureInKelvin" advanced="false">
+	<channel-type id="colorTemperatureInKelvin"
+		advanced="false">
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
 		<description>The color temperature of the light</description>
-		<state min="1000" max="10000" step="100" pattern="%.1f K" readOnly="true" />
+		<state min="1000" max="10000" step="100" pattern="%.1f K"
+			readOnly="true" />
 	</channel-type>
 	<channel-type id="brightness" advanced="false">
 		<item-type>Dimmer</item-type>
@@ -634,13 +652,15 @@
 		<description>Water alarm</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="glassBreakDetectionState" advanced="false">
+	<channel-type id="glassBreakDetectionState"
+		advanced="false">
 		<item-type>Contact</item-type>
 		<label>Glass Break</label>
 		<description>Glass break alarm</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="smokeAlarmDetectionState" advanced="false">
+	<channel-type id="smokeAlarmDetectionState"
+		advanced="false">
 		<item-type>Contact</item-type>
 		<label>Smoke Alarm</label>
 		<description>Smoke alarm</description>
@@ -650,7 +670,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>	
-	
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
 </thing:thing-descriptions>

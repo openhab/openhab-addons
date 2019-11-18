@@ -6,8 +6,6 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
         <feature dependency="true">openhab.tp-jackson</feature>
-        <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/2.6.0</bundle>
-        <bundle dependency="true">mvn:su.litvak.chromecast/api-v2/0.11.1</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.chromecast/${project.version}</bundle>
     </feature>
 </features>
