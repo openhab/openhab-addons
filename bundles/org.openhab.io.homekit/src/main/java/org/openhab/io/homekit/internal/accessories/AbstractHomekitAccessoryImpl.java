@@ -21,7 +21,7 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitAccessory;
+import io.github.hapjava.HomekitAccessory;
 
 /**
  * Abstract class for HomekitAccessory implementations, this provides the

@@ -20,9 +20,9 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.beowulfe.hap.accessories.BasicWindowCovering;
-import com.beowulfe.hap.accessories.properties.WindowCoveringPositionState;
+import io.github.hapjava.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.accessories.BasicWindowCovering;
+import io.github.hapjava.accessories.properties.WindowCoveringPositionState;
 
 /**
  *

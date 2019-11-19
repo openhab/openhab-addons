@@ -31,7 +31,7 @@ import org.openhab.io.homekit.internal.accessories.IncompleteAccessoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitRoot;
+import io.github.hapjava.HomekitRoot;
 
 /**
  * Listens for changes to the item registry. When changes are detected, check
