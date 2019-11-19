@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.pixometer.internal.PixometerMeterConfiguration;
 import org.openhab.binding.pixometer.internal.config.ReadingInstance;
@@ -76,7 +77,21 @@ public class MeterHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // No handling needed, since we have only values to read.
+        if (command instanceof RefreshType) {
+            Bridge b = this.getBridge();
+            if (b == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Could not find bridge (pixometer config). Did you choose one?");
+                return;
+            }
+
+            String token = new StringBuilder("Bearer ").append(((AccountHandler) b.getHandler()).getAuthToken())
+                    .toString();
+
+            updateMeter(token);
+        } else {
+            logger.debug("The pixometer binding is read-only and can not handle command {}", command);
+        }
     }
 
     @Override
@@ -84,37 +99,31 @@ public class MeterHandler extends BaseThingHandler {
         logger.debug("Initializing Pixometer handler '{}'", getThing().getUID());
         updateStatus(ThingStatus.UNKNOWN);
 
-        try {
-            PixometerMeterConfiguration config = getConfigAs(PixometerMeterConfiguration.class);
-            setRessourceID(config.resourceId);
+        PixometerMeterConfiguration config = getConfigAs(PixometerMeterConfiguration.class);
+        setRessourceID(config.resourceId);
 
-            Bridge b = this.getBridge();
-            if (b == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                        "Could not find bridge (pixometer config). Did you choose one?");
-                return;
-            }
-
-            String token = new StringBuilder("Bearer ").append(((ApiserviceHandler) b.getHandler()).getAuthToken())
-                    .toString();
-
-            obtainMeterId(token);
-
-            // Start polling job with the interval, that has been set up in the bridge
-            int pollingPeriod = Integer.parseInt(b.getConfiguration().get(CONFIG_BRIDGE_REFRESH).toString());
-            pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                logger.debug("Try to refresh meter data");
-                try {
-                    updateMeter(token);
-                } catch (RuntimeException r) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
-                }
-            }, 2, pollingPeriod, TimeUnit.MINUTES);
-            logger.debug("Refresh job scheduled to run every {} minutes for '{}'", pollingPeriod, getThing().getUID());
-        } catch (RuntimeException r) {
-            logger.debug("Could not initialize Thing {}: {}", getThing().getUID(), r.getMessage(), r);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+        Bridge b = this.getBridge();
+        if (b == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Could not find bridge (pixometer config). Did you choose one?");
+            return;
         }
+
+        String token = new StringBuilder("Bearer ").append(((AccountHandler) b.getHandler()).getAuthToken()).toString();
+
+        obtainMeterId(token);
+
+        // Start polling job with the interval, that has been set up in the bridge
+        int pollingPeriod = Integer.parseInt(b.getConfiguration().get(CONFIG_BRIDGE_REFRESH).toString());
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            logger.debug("Try to refresh meter data");
+            try {
+                updateMeter(token);
+            } catch (RuntimeException r) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        }, 2, pollingPeriod, TimeUnit.MINUTES);
+        logger.debug("Refresh job scheduled to run every {} minutes for '{}'", pollingPeriod, getThing().getUID());
     }
 
     @Override
@@ -157,8 +166,8 @@ public class MeterHandler extends BaseThingHandler {
 
             String errorMsg = String.format("Invalid Api Response ( %s )", responseJson);
 
-            throw new RuntimeException(errorMsg);
-        } catch (RuntimeException | IOException e) {
+            throw new IOException(errorMsg);
+        } catch (IOException e) {
             String errorMsg = String.format("Could not initialize Thing ( %s ). %s", this.getThing().getUID(),
                     e.getMessage());
 

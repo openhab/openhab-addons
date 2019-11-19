@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.pixometer.handler.ApiserviceHandler;
+import org.openhab.binding.pixometer.handler.AccountHandler;
 import org.openhab.binding.pixometer.handler.MeterHandler;
 import org.osgi.service.component.annotations.Component;
 
@@ -64,7 +64,7 @@ public class PixometerHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (thingTypeUID.equals(PixometerBindingConstants.BRIDGE_THING_TYPE)) {
-            return new ApiserviceHandler((Bridge) thing);
+            return new AccountHandler((Bridge) thing);
         }
 
         return null;

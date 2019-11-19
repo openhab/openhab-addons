@@ -32,11 +32,6 @@ public class PixometerConfiguration {
     public String password;
 
     /**
-     * The configured api scope
-     */
-    public String scope;
-
-    /**
      * Received auth token for the api
      */
     public String access_token;

@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -37,12 +36,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link ApiserviceHandler} is responsible for handling the api connection and authorization (including token
+ * The {@link AccountHandler} is responsible for handling the api connection and authorization (including token
  * refresh)
  *
  * @author Jerome Luckenbach - Initial contribution
  */
-public class ApiserviceHandler extends BaseBridgeHandler {
+public class AccountHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final int TOKEN_MIN_DIFF_MS = (int) TimeUnit.DAYS.toMillis(2);
@@ -52,7 +51,7 @@ public class ApiserviceHandler extends BaseBridgeHandler {
     private int refreshInterval;
     private long tokenExpiryDate;
 
-    public ApiserviceHandler(Bridge bridge) {
+    public AccountHandler(Bridge bridge) {
         super(bridge);
     }
 
@@ -63,13 +62,13 @@ public class ApiserviceHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initialize Pixometer Apiservice");
+        logger.debug("Initialize Pixometer Accountservice");
 
         PixometerConfiguration config = getConfigAs(PixometerConfiguration.class);
         setRefreshInterval(config.refresh);
         String user = config.user;
         String password = config.password;
-        String scope = config.scope;
+        String scope = "read"; // Prepared for config value
 
         // Check expiry date every Day and obtain new access token if difference is less then or equal to 2 days
         scheduler.scheduleWithFixedDelay(() -> {
@@ -115,17 +114,12 @@ public class ApiserviceHandler extends BaseBridgeHandler {
             String urlResponse = HttpUtil.executeUrl("POST", url, urlHeader, content, "application/json", 2000);
             JsonObject responseJson = (JsonObject) jsonParser.parse(urlResponse);
 
-            if (responseJson.has(CONFIG_BRIDGE_AUTH_TOKEN)) {
+            if (responseJson.has(AUTH_TOKEN)) {
                 // Store the expire date for automatic token refresh
                 int expiresIn = Integer.parseInt(responseJson.get("expires_in").toString());
                 setTokenExpiryDate(TimeUnit.SECONDS.toNanos(expiresIn));
 
-                setAuthToken(responseJson.get(CONFIG_BRIDGE_AUTH_TOKEN).toString().replaceAll("\"", ""));
-
-                // Save new auth token to config
-                Configuration editConfig = editConfiguration();
-                editConfig.put(CONFIG_BRIDGE_AUTH_TOKEN, getAuthToken());
-                updateConfiguration(editConfig);
+                setAuthToken(responseJson.get(AUTH_TOKEN).toString().replaceAll("\"", ""));
 
                 updateStatus(ThingStatus.ONLINE);
                 return;
@@ -133,8 +127,8 @@ public class ApiserviceHandler extends BaseBridgeHandler {
 
             String errorMsg = String.format("Invalid Api Response ( %s )", responseJson);
 
-            throw new RuntimeException(errorMsg);
-        } catch (RuntimeException | IOException e) {
+            throw new IOException(errorMsg);
+        } catch (IOException e) {
             String errorMsg = String.format(
                     "Could not obtain auth token. Please check your configured account credentials. %s %s",
                     this.getThing().getUID(), e.getMessage());

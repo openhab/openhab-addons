@@ -35,7 +35,7 @@ public class PixometerBindingConstants {
     public static final String API_BASE_URL = "https://pixometer.io/api/";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "apiservice");
+    public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_ENERGYMETER = new ThingTypeUID(BINDING_ID, "energymeter");
     public static final ThingTypeUID THING_TYPE_GASMETER = new ThingTypeUID(BINDING_ID, "gasmeter");
     public static final ThingTypeUID THING_TYPE_WATERMETER = new ThingTypeUID(BINDING_ID, "watermeter");
@@ -50,11 +50,12 @@ public class PixometerBindingConstants {
     public static final String CHANNEL_LAST_REFRESH_DATE = "last_refresh_date";
 
     // List of all config ids
-    public static final String CONFIG_BRIDGE_AUTH_TOKEN = "access_token";
     public static final String CONFIG_BRIDGE_PASSWORD = "password";
     public static final String CONFIG_BRIDGE_REFRESH = "refresh";
-    public static final String CONFIG_BRIDGE_SCOPE = "scope";
     public static final String CONFIG_BRIDGE_USER = "user";
 
     public static final String CONFIG_THING_RESSOURCE_ID = "resource_id";
+
+    // References for needed API identifiers
+    public static final String AUTH_TOKEN = "access_token";
 }
