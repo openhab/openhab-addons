@@ -62,7 +62,7 @@ noolite.items:
 Number    First_Floor_Temp         "Temperature on First Floor"  { channel="noolite:devices:usb:firstFloorTemp:temperature" }
 Number    First_Floor_Hum          "Humidity on First Floor"  { channel="noolite:devices:usb:firstFloorLamp:humidity" }
 String    First_Floor_Batt         "Battery state %s"  { channel="noolite:devices:usb:firstFloorLamp:battery" }
-Number    First_Floor_Bind         "Bind number"  { channel="noolite:devices:usb:firstFloorLamp:battery" }
-String    First_Floor_SensorType   "Sensor type %s"  { channel="noolite:devices:usb:firstFloorLamp:bindchannel" }
+Number    First_Floor_Bind         "Bind number"  { channel="noolite:devices:usb:firstFloorLamp:bindchannel" }
+String    First_Floor_SensorType   "Sensor type %s"  { channel="noolite:devices:usb:firstFloorLamp:sensortype" }
 Switch    FFSwitch                 "Lamp on First Floor"  { channel="noolite:devices:usb:firstFloorTemp:switch" }
 ```
