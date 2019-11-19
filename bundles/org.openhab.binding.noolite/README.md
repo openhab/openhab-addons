@@ -2,10 +2,6 @@
 
 This binding is for [Noolite USB adapters](https://translate.google.com/translate?hl=ru&sl=ru&tl=en&u=http%3A%2F%2Fwww.noo.com.by%2Fadapter-noolite-pc.html), MTRF-64-USB adapter
 
-Type feature:install openhab-transport-serial before copy binding to addons folder
-
-Type log:set DEBUG org.openhab.binding.noolite for debug output
-
 ## Supported Things
 
 There is one supported thing type - 
@@ -19,34 +15,36 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has a few configuration parameters:
 
-| Parameter | Description                                                             |
-|-----------|-------------------------------------------------------------------------|
-| port    | channel address         |
-| type    | type of noolite device         | 
+| Parameter | Description            |
+|-----------|------------------------|
+| port      | channel address        |
+| type      | type of noolite device |
 
-| Value | Description                                                             |
-|-----------|-------------------------------------------------------------------------|
-| 0    | Noolite TX       |
-| 1    | Noolite RX         |
-| 2    | Noolite F TX         |
-| 3    | Noolite F RX         |
-| 4    | Service        |
+## Type of Noolite channels
+| Value | Description  |
+|-------|--------------|
+| 0     | Noolite TX   |
+| 1     | Noolite RX   |
+| 2     | Noolite F TX |
+| 3     | Noolite F RX |
+| 4     | Service      |
 
 
 ## Channels
 
 The Noolite information that is retrieved from channels:
 
-| Channel ID      | Item Type            | Description                                  |
-|-----------------|----------------------|----------------------------------------------|
-| switch        | Switch               | Port set as input signal for switch using                            |
-| temperature  | Number               | Temperature from DHT sensor                             |
-| humidity    | Number               | Humidity from DHT sensor           |
-| battery       | String               | Battery state                        |
-| sensortype | String             | Sensor type      |
-| bindchannel            | Number               | Bind number       |
+| Channel ID  | Item Type | Description                               |
+|-------------|-----------|-------------------------------------------|
+| switch      | Switch    | Port set as input signal for switch using |
+| temperature | Number    | Temperature from DHT sensor               |
+| humidity    | Number    | Humidity from DHT sensor                  |
+| battery     | String    | Battery state                             |
+| sensortype  | String    | Sensor type                               |
+| bindchannel | Number    | Bind number                               |
 
 ## Full Example
+
 noolite.things:
 
 ```java
