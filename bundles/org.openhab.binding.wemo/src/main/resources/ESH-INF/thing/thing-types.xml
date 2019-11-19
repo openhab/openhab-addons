@@ -167,7 +167,6 @@
         <description>This is a WeMo DimmerSwitch</description>
 
         <channels>
-            <channel id="state" typeId="state"/>
             <channel id="brightness" typeId="brightness" />
             <channel id="faderCountDownTime" typeId="faderCountDownTime"/>
             <channel id="faderEnabled" typeId="faderEnabled"/>

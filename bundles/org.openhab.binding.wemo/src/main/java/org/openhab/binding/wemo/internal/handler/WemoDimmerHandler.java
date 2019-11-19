@@ -72,7 +72,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     /**
      * The default refresh interval in Seconds.
      */
-    private int DEFAULT_REFRESH_INTERVAL = 120;
+    private int DEFAULT_REFRESH_INTERVAL = 60;
     private ScheduledFuture<?> refreshJob;
     private Runnable refreshRunnable = new Runnable() {
 
@@ -131,29 +131,44 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
             try {
                 updateWemoState();
             } catch (Exception e) {
-                logger.debug("Exception during poll : {}", e.getMessage(), e);
+                logger.debug("Exception during poll : ", e.getMessage(), e);
             }
         } else {
             String action = "SetBinaryState";
-            String argument = null;
-            String value = null;
+            String argument = "BinaryState";
+            String value = "0";
             String timeStamp = null;
             switch (channelUID.getId()) {
                 case CHANNEL_BRIGHTNESS:
-                    argument = "brightness";
-                    if (command instanceof PercentType) {
+                    if (command instanceof OnOffType) {
+                        value = command.equals(OnOffType.OFF) ? "0" : "1";
+                        setBinaryState(action, argument, value);
+                        if (command.equals(OnOffType.OFF)) {
+                            State brightnessState = new PercentType("0");
+                            updateState(CHANNEL_BRIGHTNESS, brightnessState);
+                            updateState(CHANNEL_TIMERSTART, OnOffType.OFF);
+                        } else {
+                            State brightnessState = new PercentType(currentBrightness);
+                            updateState(CHANNEL_BRIGHTNESS, brightnessState);
+                        }
+                    } else if (command instanceof PercentType) {
                         int newBrightness = ((PercentType) command).intValue();
                         value = String.valueOf(newBrightness);
                         currentBrightness = newBrightness;
-                    } else if (command instanceof OnOffType) {
-                        switch (command.toString()) {
-                            case "ON":
-                                value = "100";
-                                break;
-                            case "OFF":
-                                value = "0";
-                                break;
+                        argument = "brightness";
+                        if (value.equals("0")) {
+                            value = "1";
+                            argument = "brightness";
+                            setBinaryState(action, argument, "1");
+                            value = "0";
+                            argument = "BinaryState";
+                            setBinaryState(action, argument, "0");
+                        } else if (this.stateMap.get("BinaryState").equals("0")) {
+                            argument = "BinaryState";
+                            setBinaryState(action, argument, "1");
                         }
+                        argument = "brightness";
+                        setBinaryState(action, argument, value);
                     } else if (command instanceof IncreaseDecreaseType) {
                         int newBrightness;
                         switch (command.toString()) {
@@ -174,13 +189,20 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                                 currentBrightness = newBrightness;
                                 break;
                         }
-                    }
-                    break;
-                case CHANNEL_STATE:
-                    argument = "BinaryState";
-                    value = command.equals(OnOffType.OFF) ? "0" : "1";
-                    if (command.equals(OnOffType.OFF)) {
-                        updateState(CHANNEL_TIMERSTART, OnOffType.OFF);
+                        argument = "brightness";
+                        if (value.equals("0")) {
+                            value = "1";
+                            argument = "brightness";
+                            setBinaryState(action, argument, "1");
+                            value = "0";
+                            argument = "BinaryState";
+                            setBinaryState(action, argument, "0");
+                        } else if (this.stateMap.get("BinaryState").equals("0")) {
+                            argument = "BinaryState";
+                            setBinaryState(action, argument, "1");
+                        }
+                        argument = "brightness";
+                        setBinaryState(action, argument, value);
                     }
                     break;
                 case CHANNEL_FADERCOUNTDOWNTIME:
@@ -192,6 +214,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                         value = "<BinaryState></BinaryState>" + "<Duration></Duration>" + "<EndAction></EndAction>"
                                 + "<brightness></brightness>" + "<fader>" + commandString + ":-1:1:0:0</fader>"
                                 + "<UDN></UDN>";
+                        setBinaryState(action, argument, value);
                     }
                     break;
                 case CHANNEL_FADERENABLED:
@@ -203,6 +226,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                         value = "<BinaryState></BinaryState>" + "<Duration></Duration>" + "<EndAction></EndAction>"
                                 + "<brightness></brightness>" + "<fader>600:-1:0:0:0</fader>" + "<UDN></UDN>";
                     }
+                    setBinaryState(action, argument, value);
                     break;
                 case CHANNEL_TIMERSTART:
                     argument = "Fader";
@@ -230,6 +254,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                                     + ":0:0</fader>" + "<UDN></UDN>";
                         }
                     }
+                    setBinaryState(action, argument, value);
                     break;
                 case CHANNEL_NIGHTMODE:
                     action = "ConfigureNightMode";
@@ -242,6 +267,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                         value = "&lt;startTime&gt;0&lt;/startTime&gt; \\n&lt;nightMode&gt;0&lt;/nightMode&gt; \\n&lt;endTime&gt;23400&lt;/endTime&gt; \\n&lt;nightModeBrightness&gt;"
                                 + nightModeBrightness + "&lt;/nightModeBrightness&gt; \\n";
                     }
+                    setBinaryState(action, argument, value);
                     break;
                 case CHANNEL_NIGHTMODEBRIGHTNESS:
                     action = "ConfigureNightMode";
@@ -278,33 +304,8 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                                 + "&lt;/nightMode&gt; \\n&lt;endTime&gt;23400&lt;/endTime&gt; \\n&lt;nightModeBrightness&gt;"
                                 + newNightModeBrightness + "&lt;/nightModeBrightness&gt; \\n";
                     }
+                    setBinaryState(action, argument, value);
                     break;
-            }
-            if (argument != null && value != null) {
-                try {
-                    String soapHeader = "\"urn:Belkin:service:basicevent:1#" + action + "\"";
-                    String content = "<?xml version=\"1.0\"?>"
-                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                            + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<"
-                            + argument + ">" + value + "</" + argument + ">" + "</u:" + action + ">" + "</s:Body>"
-                            + "</s:Envelope>";
-                    if (channelUID.getId().equals(CHANNEL_TIMERSTART)) {
-                        content = "<?xml version=\"1.0\"?>"
-                                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:basicevent:1\">" + value
-                                + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
-                    }
-                    String wemoURL = getWemoURL("basicevent");
-                    if (wemoURL != null) {
-                        logger.debug("About to send content to Dimmer {}", content);
-                        wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                    }
-                } catch (Exception e) {
-                    logger.debug("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
-                            e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                }
-                updateStatus(ThingStatus.ONLINE);
             }
         }
     }
@@ -325,7 +326,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
             case "BinaryState":
                 State state = value.equals("0") ? OnOffType.OFF : OnOffType.ON;
                 logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
-                updateState(CHANNEL_STATE, state);
+                updateState(CHANNEL_BRIGHTNESS, state);
                 if (state.equals(OnOffType.OFF)) {
                     updateState(CHANNEL_TIMERSTART, OnOffType.OFF);
                 }
@@ -334,7 +335,9 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                 logger.info("brightness '{}' for device '{}' received", value, getThing().getUID());
                 int newBrightnessValue = Integer.valueOf(value);
                 State newBrightnessState = new PercentType(newBrightnessValue);
-                updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
+                if (this.stateMap.get("BinaryState").equals("1")) {
+                    updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
+                }
                 currentBrightness = newBrightnessValue;
                 break;
             case "fader":
@@ -423,7 +426,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
             if (refreshConfig != null) {
                 refreshInterval = ((BigDecimal) refreshConfig).intValue();
             }
-            refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 10, refreshInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -564,6 +567,44 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
             }
         }
         return null;
+    }
+
+    public void setBinaryState(String action, String argument, String value) {
+        try {
+            String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
+            String content = "<?xml version=\"1.0\"?>"
+                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                    + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<" + argument
+                    + ">" + value + "</" + argument + ">" + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
+            String wemoURL = getWemoURL("basicevent");
+            if (wemoURL != null) {
+                logger.trace("About to send content to Dimmer {}", content);
+                wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            }
+        } catch (Exception e) {
+            logger.debug("Failed to set binaryState '{}' for device '{}': {}", value, getThing().getUID(),
+                    e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    public void setTimerStart(String action, String argument, String value) {
+        try {
+            String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
+            String content = "<?xml version=\"1.0\"?>"
+                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                    + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + value
+                    + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
+            String wemoURL = getWemoURL("basicevent");
+            if (wemoURL != null) {
+                logger.trace("About to send content to Dimmer {}", content);
+                wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            }
+        } catch (Exception e) {
+            logger.debug("Failed to set binaryState '{}' for device '{}': {}", value, getThing().getUID(),
+                    e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     @Override
