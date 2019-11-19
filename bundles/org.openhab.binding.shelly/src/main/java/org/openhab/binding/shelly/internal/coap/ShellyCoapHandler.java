@@ -18,7 +18,6 @@ import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
 import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -37,11 +36,10 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrAct;
@@ -327,7 +325,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             // try to uses description from last initialization
             String savedDescr = thingHandler.getProperty(PROPERTY_COAP_DESCR);
             if (savedDescr.isEmpty()) {
-                logger.debug("{}: Device description not yet received, ignore device update", thingName);
+                logger.debug("{}: Device description not yet received, trigger auto-initialization", thingName);
                 return;
             }
 
@@ -350,6 +348,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         ShellyDeviceProfile profile = thingHandler.getProfile();
         if (profile == null) {
             logger.debug("{}: Thing not initialized yet, skip update (ID={})", thingName, devId);
+            thingHandler.requestUpdates(1, true);
             return;
         }
 
@@ -381,12 +380,13 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         break;
                     case "h" /* Humidity */:
                         Validate.isTrue(type.contains("sensors"), "Humidity update for non-sensor");
-                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM, new DecimalType(s.value));
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM,
+                                toQuantityType(s.value, SmartHomeUnits.PERCENT));
                         break;
                     case "b" /* BatteryLevel */:
                         Validate.isTrue(type.contains("sensors"), "BatLevel update for non-sensor");
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LEVEL,
-                                new DecimalType(s.value));
+                                toQuantityType(s.value, SmartHomeUnits.PERCENT));
                         break;
                     case "m" /* Motion */:
                         Validate.isTrue(type.contains("sensors"), "Motion update for non-sensor");
@@ -395,11 +395,13 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         break;
                     case "l" /* Luminosity */:
                         Validate.isTrue(type.contains("sensors"), "Luminosity update for non-sensor");
-                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX, new DecimalType(s.value));
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
+                                toQuantityType(s.value, SmartHomeUnits.LUX));
                         break;
                     case "w" /* Watt */:
                         String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER : CHANNEL_GROUP_METER + rIndex;
-                        updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS, new DecimalType(s.value));
+                        updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
+                                toQuantityType(s.value, SmartHomeUnits.WATT));
                         break;
                     case "o": // Overtemp
                         updateChannel(updates, rGroup, CHANNEL_OVERTEMP, s.value == 1 ? OnOffType.ON : OnOffType.OFF);
@@ -432,9 +434,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 // work around: Roller reports 101% instead max 100
                                 double pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(s.value, SHELLY_MAX_ROLLER_POS));
                                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL,
-                                        new PercentType(new BigDecimal(SHELLY_MAX_ROLLER_POS - pos)));
+                                        toQuantityType(SHELLY_MAX_ROLLER_POS - pos, SmartHomeUnits.PERCENT));
                                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
-                                        new PercentType(new BigDecimal(pos)));
+                                        toQuantityType(pos, SmartHomeUnits.PERCENT));
                                 break;
                             case "input":
                                 if (!profile.isDimmer) {
@@ -452,7 +454,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 break;
                             case "brightness": // Dimmer
                                 updateChannel(updates, rGroup, CHANNEL_BRIGHTNESS,
-                                        new PercentType(new BigDecimal(s.value)));
+                                        toQuantityType(s.value, SmartHomeUnits.PERCENT));
                                 break;
                             case "charger": // Sense
                                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHARGER,

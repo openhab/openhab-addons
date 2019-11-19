@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -257,8 +258,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                         updated |= updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(relay.hasTimer));
                         ShellySettingsRelay rsettings = profile.settings.relays.get(i);
                         if (rsettings != null) {
-                            updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON, getDecimal(rsettings.autoOn));
-                            updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF, getDecimal(rsettings.autoOff));
+                            updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
+                                    toQuantityType(getDouble(rsettings.autoOn), SmartHomeUnits.SECOND));
+                            updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
+                                    toQuantityType(getDouble(rsettings.autoOff), SmartHomeUnits.SECOND));
                         }
                         updated |= updateChannel(groupName, CHANNEL_OVERPOWER, getOnOff(relay.overpower));
                         if (status.overtemperature != null) {
@@ -284,8 +287,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                         Integer pos = Math.max(SHELLY_MIN_ROLLER_POS,
                                 Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
-                                new PercentType(SHELLY_MAX_ROLLER_POS - pos));
-                        updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS, new PercentType(pos));
+                                toQuantityType(new Double(SHELLY_MAX_ROLLER_POS - pos), SmartHomeUnits.PERCENT));
+                        updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
+                                toQuantityType(new Double(pos), SmartHomeUnits.PERCENT));
                         scheduledUpdates = 1; // one more poll and then stop
                     }
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_DIR, getStringType(control.lastDirection));
@@ -337,12 +341,16 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL
                         : CHANNEL_GROUP_DIMMER_CONTROL + r.toString();
                 updated |= updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(dimmer.ison));
-                updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, new PercentType(getInteger(dimmer.brightness)));
+                updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS,
+                        toQuantityType(new Double(getInteger(dimmer.brightness)), SmartHomeUnits.PERCENT));
 
                 ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
                 if (dsettings != null) {
-                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON, getDecimal(dsettings.autoOn));
-                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF, getDecimal(dsettings.autoOff));
+                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOON,
+                            toQuantityType(getDouble(dsettings.autoOn), SmartHomeUnits.SECOND));
+                    updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
+                            toQuantityType(getDouble(dsettings.autoOff), SmartHomeUnits.SECOND));
+
                 }
 
                 updated |= updateInputs(groupName, status);

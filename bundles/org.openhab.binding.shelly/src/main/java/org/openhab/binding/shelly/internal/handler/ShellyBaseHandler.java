@@ -475,6 +475,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         this.refreshSettings |= refreshSettings;
         if (refreshSettings) {
             logger.debug("{}: Request settings refresh", thingName);
+            scheduledUpdates = 1;
+            return true;
         }
         if (scheduledUpdates < 10) { // < 30s
             scheduledUpdates += requestCount;

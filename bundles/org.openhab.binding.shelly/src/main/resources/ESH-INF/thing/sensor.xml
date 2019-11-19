@@ -137,15 +137,14 @@
 		<label>Temperature</label>
 		<description>Temperature from the sensor</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f" >
+		<state readOnly="true" pattern="%.1f %unit%" >
 		</state>
 	</channel-type>
 	<channel-type id="sensorHumidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity in % (0..100%)</description>
-		<state readOnly="true" pattern="%.2f%%" >
-		</state>
+        <state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
 	</channel-type>
 	<channel-type id="sensorFlood">
 		<item-type>Switch</item-type>
@@ -155,10 +154,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="sensorLux">
-		<item-type>Number</item-type>
+		<item-type>Number:Illuminance</item-type>
 		<label>Lux</label>
 		<description>Brightness from the sensor (Lux)</description>
-		<state readOnly="true" pattern="%.1flux" >
+		<state readOnly="true" pattern="%.1f %unit%" >
 		</state>
 	</channel-type>
 	<channel-type id="sensorMotion">
@@ -176,11 +175,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="batLevel">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Battery level</label>
 		<description>Battery level in %</description>
-		<state readOnly="true" pattern="%.1f%%" >
-		</state>
+        <state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
 	</channel-type>
 	<channel-type id="batAlert">
 		<item-type>Switch</item-type>
@@ -190,10 +188,10 @@
 		</state>
 	</channel-type>
 	<channel-type id="batVoltage">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery voltage</label>
 		<description>Battery voltage in V</description>
-		<state readOnly="true" pattern="%.1fV" >
+		<state readOnly="true" pattern="%.1f %unit%" >
 		</state>
 	</channel-type>
 	<channel-type id="senseKey">

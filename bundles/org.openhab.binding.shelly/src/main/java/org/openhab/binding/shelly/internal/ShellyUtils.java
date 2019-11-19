@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.core.library.types.PercentType;
 
 /**
  * {@link ShellyUtils} provides general utility functions
@@ -86,16 +87,16 @@ public class ShellyUtils {
         return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
     }
 
-    public static State toQuantityType(@Nullable Float value, Unit<?> unit) {
-        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
-    }
-
     public static State toQuantityType(@Nullable Double value, Unit<?> unit) {
         return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
     }
 
     public static State toQuantityType(@Nullable BigDecimal value, Unit<?> unit) {
         return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
+    }
+
+    public static State toQuantityType(@Nullable PercentType value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : toQuantityType(value.toBigDecimal(), unit);
     }
 
     public static void validateRange(String name, Integer value, Integer min, Integer max) {
