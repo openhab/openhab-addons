@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	
+
 	<thing-type id="shelly1">
 		<label>Shelly1 (SHSW-1)</label>
 		<description>Shelly1 device with single relay</description>
@@ -18,7 +18,7 @@
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
-	
+
 	<thing-type id="shelly1pm">
 		<label>Shelly1PM (SHSW-PM)</label>
 		<description>Shelly1PM device with single relay and power meter</description>
@@ -33,7 +33,7 @@
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
-	
+
 	<thing-type id="shellyem">
 		<label>ShellyEM</label>
 		<description>ShellyEM device with single relay and power meter</description>
@@ -170,7 +170,7 @@
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
-	
+
 	<thing-type id="shellyplugs">
 		<label>Shelly Plug-S (SHPLG-S)</label>
 		<description>Shelly Plug-S with relay, meter and LED control</description>
@@ -339,7 +339,7 @@
 		<kind>trigger</kind>
 		<label>Event Trigger</label>
 		<description>Triggers channel for events, type code be btn_on, btn_off, out_on, out_off</description>
-		<event/>
+		<event />
 	</channel-type>
 	<channel-type id="rollerShutter">
 		<item-type>Rollershutter</item-type>
@@ -351,7 +351,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Roller Position (100=open, 0=closed)</label>
 		<description>Position the roller (100..0 in %, where 100%=open, 0%=closed)</description>
-        <state readOnly="false" min="0" max="100" pattern="%.2f %%" />
+		<state readOnly="false" min="0" max="100" pattern="%.2f %%" />
 	</channel-type>
 	<channel-type id="rollerStop">
 		<item-type>String</item-type>
@@ -413,7 +413,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Light brightness in %</description>
-        <state readOnly="false" min="0" max="100" pattern="%.2f %unit%" />
+		<state readOnly="false" min="0" max="100" pattern="%.2f %unit%" />
 	</channel-type>
 	<channel-type id="dimmerLoadError">
 		<item-type>Switch</item-type>
@@ -433,49 +433,49 @@
 		<item-type>Number:Power</item-type>
 		<label>Watt</label>
 		<description>Current power consumption in Watt</description>
-		<state readOnly="true" pattern="%.1f %unit%" >
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="lastPower1">
 		<item-type>Number:Energy</item-type>
 		<label>Last Power #1</label>
 		<description>Last power consumption #1 - one rounded minute</description>
-		<state readOnly="true" pattern="%.1f %unit%" >
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="lastPower2">
 		<item-type>Number:Energy</item-type>
 		<label>Last Power #2</label>
 		<description>Last power consumption #2 - one rounded minute</description>
-		<state readOnly="true" pattern="%.1f %unit%" >
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="lastPower3">
 		<item-type>Number:Energy</item-type>
 		<label>Last Power #3</label>
 		<description>Last power consumption #3 - one rounded minute</description>
-		<state readOnly="true" pattern="%.1f %unit%" >
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy</label>
 		<description>Total power consumption in kw/h</description>
-		<state readOnly="true" pattern="%.5f %unit%" >
+		<state readOnly="true" pattern="%.5f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterReturned">
 		<item-type>Number:Energy</item-type>
 		<label>Total Returned Energy (kw/h)</label>
 		<description>Total returned energy in kw/h</description>
-		<state readOnly="true" pattern="%.5f %unit%" >
+		<state readOnly="true" pattern="%.5f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterVoltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>RMS voltage, Volts	</description>
-		<state readOnly="true" pattern="%.3f %unit%" >
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="meterTimestamp">

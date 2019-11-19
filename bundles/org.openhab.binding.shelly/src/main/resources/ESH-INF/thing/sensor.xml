@@ -76,9 +76,9 @@
 		<description>Data from the HT Sensor</description>
 		<channels>
 			<channel id="temperature" typeId="sensorTemp" />
-			<channel id="humidity"	typeId="sensorHumidity" />
+			<channel id="humidity" typeId="sensorHumidity" />
 			<channel id="last_update" typeId="lastUpdate" />
-			<channel id="event"	   typeId="eventTrigger" />
+			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
 
@@ -87,9 +87,9 @@
 		<description>Data from the Flood Sensor</description>
 		<channels>
 			<channel id="temperature" typeId="sensorTemp" />
-			<channel id="flood"	   typeId="sensorFlood" />
+			<channel id="flood" typeId="sensorFlood" />
 			<channel id="last_update" typeId="lastUpdate" />
-			<channel id="event"	   typeId="eventTrigger" />
+			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
 
@@ -98,12 +98,12 @@
 		<description>Data from the Sense sensors</description>
 		<channels>
 			<channel id="temperature" typeId="sensorTemp" />
-			<channel id="humidity"	typeId="sensorHumidity" />
-			<channel id="lux"		 typeId="sensorLux" />
-			<channel id="motion"	  typeId="sensorMotion" />
-			<channel id="charger"	 typeId="sensorCharger" />
+			<channel id="humidity" typeId="sensorHumidity" />
+			<channel id="lux" typeId="sensorLux" />
+			<channel id="motion" typeId="sensorMotion" />
+			<channel id="charger" typeId="sensorCharger" />
 			<channel id="last_update" typeId="lastUpdate" />
-			<channel id="event"	   typeId="eventTrigger" />
+			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="batteryStatus">
@@ -111,16 +111,16 @@
 		<description>Status of the device's battery</description>
 		<channels>
 			<channel id="batteryLevel" typeId="batLevel" />
-			<channel id="lowBattery"   typeId="batAlert" />
-			<channel id="voltage"	  typeId="batVoltage" />
+			<channel id="lowBattery" typeId="batAlert" />
+			<channel id="voltage" typeId="batVoltage" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="shortBatteryStatus">
-	<label>Battery Status</label>
-	<description>Status of the device's battery</description>
+		<label>Battery Status</label>
+		<description>Status of the device's battery</description>
 		<channels>
 			<channel id="batteryLevel" typeId="batLevel" />
-			<channel id="lowBattery"   typeId="batAlert" />
+			<channel id="lowBattery" typeId="batAlert" />
 		</channels>
 	</channel-group-type>
 
@@ -137,14 +137,14 @@
 		<label>Temperature</label>
 		<description>Temperature from the sensor</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" >
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorHumidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity in % (0..100%)</description>
-        <state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
 	</channel-type>
 	<channel-type id="sensorFlood">
 		<item-type>Switch</item-type>
@@ -157,7 +157,7 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Lux</label>
 		<description>Brightness from the sensor (Lux)</description>
-		<state readOnly="true" pattern="%.1f %unit%" >
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="sensorMotion">
@@ -178,7 +178,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery level</label>
 		<description>Battery level in %</description>
-        <state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
 	</channel-type>
 	<channel-type id="batAlert">
 		<item-type>Switch</item-type>
@@ -191,7 +191,7 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery voltage</label>
 		<description>Battery voltage in V</description>
-		<state readOnly="true" pattern="%.1f %unit%" >
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="senseKey">
