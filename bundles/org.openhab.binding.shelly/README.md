@@ -1,51 +1,61 @@
 
 # Shelly Binding (org.openhab.binding.shelly)
 
-This openHAB 2 Binding implements control for the Shelly series of devices. This includes sending commands to the devices as well as reding the device status and sensor data.
+This openHAB 2 Binding implements control for the Shelly series of devices.
+This includes sending commands to the devices as well as reding the device status and sensor data.
 
 ## Supported Devices
 
-|Thing             |Type                                                    | Status                                                   |
-|------------------|--------------------------------------------------------|----------------------------------------------------------|
-| shelly1          | Shelly Single Relay Switch                             | fully supported                                          |
-| shelly1pm        | Shelly Single Relay Switch with integrated Power Meter | fully supported                                          |
-| shelly1em        | Shelly EM  with integrated Power Meter                 | primarily support                                        |
-| shelly2-relay    | Shelly Double Relay Switch (Shelly2 and Shelly2.5)     | fully supported                                          |
-| shelly2-roller   | Shelly2 in Roller Mode (Shelly2 and Shelly2.5)         | fully supported                                          |
-| shelly2dimmer-white   | Shelly Dimmer in White Mode                       | initial implementation, needs to be verified                                        |
-| shellyht         | Shelly Sensor (temp+humidity)                          | needs to be verified                                     |
-| shellyplug-s     | Shelly Plug                                            | fully supported                                          |
-| shellyplug       | Shelly Plug                                            | fully supported                                          |
-| shellyrgbw2      | Shelly RGB Controller                                  | fully supported                                          |
-| shellybulb       | Shelly Bulb in Color or WHite Mode                     | fully supported                                          |
-| shellysense      | Shelly Motion and IR Controller                        | fully supported                                          |
-| shelly4pro       | Shelly 4x Relay Switch                                 | fully supported                                          |
-| shellysmoke      | Shelly Sensor (temp+humidity)                          | should get discovered, but no special handling yet       |
+|Thing               |Type                                                    | Status                                                   |
+|--------------------|--------------------------------------------------------|----------------------------------------------------------|
+| shelly1            | Shelly Single Relay Switch                             | fully supported                                          |
+| shelly1pm          | Shelly Single Relay Switch with integrated Power Meter | fully supported                                          |
+| shelly1em          | Shelly EM  with integrated Power Meter                 | primarily support                                        |
+| shelly2-relay      | Shelly Double Relay Switch (Shelly2 and Shelly2.5)     | fully supported                                          |
+| shelly2-roller     | Shelly2 in Roller Mode (Shelly2 and Shelly2.5)         | fully supported                                          |
+| shelly2dimmer-white| Shelly Dimmer in White Mode                         | initial implementation, needs to be verified              |
+| shellyht           | Shelly Sensor (temp+humidity)                          | needs to be verified                                     |
+| shellyplug-s       | Shelly Plug                                            | fully supported                                          |
+| shellyplug         | Shelly Plug                                            | fully supported                                          |
+| shellyrgbw2        | Shelly RGB Controller                                  | fully supported                                          |
+| shellybulb         | Shelly Bulb in Color or WHite Mode                     | fully supported                                          |
+| shellysense        | Shelly Motion and IR Controller                        | fully supported                                          |
+| shelly4pro         | Shelly 4x Relay Switch                                 | fully supported                                          |
+| shellysmoke        | Shelly Sensor (temp+humidity)                          | should get discovered, but no special handling yet       |
 
 Feedback is welcome any time. Leave some comments in the forum.
 
 Please send a PM to markus7017 If you encounter errors and include a TRACE log.
 
 
-## Binding installation
+## Firmware
 
-### Firmware
+To utilize all features the binding requires firmware version 1.5.0 or newer.
+This should be available for all devices. Older versions work in general, but have impacts to functionality (e.g. no events for battery powered devices).
 
-To utilize all features the binding requires firmware version 1.5.0 or newer. This should be available for all devices. Older versions work in general, but have impacts to functionality (e.g. no events for battery powered devices).
-
-The binding displays a WARNING if the firmware is older. It also informs you when an update is available. Use the device's web ui or the Shelly App to perform the update.
+The binding displays a WARNING if the firmware is older.
+It also informs you when an update is available.
+Use the device's web ui or the Shelly App to perform the update.
 
 
 
 ## Discovery
 
-The binding uses mDNS to discovery the Shelly devices. They periodically announce their presence, which can be used by the binding to find them on the local network and fetch their IP address. The binding will then use the Shelly http api to discover device capabilities, read status and control the device. In addition event callbacks will be used to support battery powered devices.
+The binding uses mDNS to discovery the Shelly devices.
+They periodically announce their presence, which can be used by the binding to find them on the local network and fetch their IP address.
+The binding will then use the Shelly http api to discover device capabilities, read status and control the device.
+In addition event callbacks will be used to support battery powered devices.
 
 ### Password protected devices
 
-The Shelly Apps allow to protect device configuration by userid+password. The binding supports those configurations. If you are using password protected Shelly devices you need to configure userid and password. You could configure these settings in two ways. Otherwise a thing is created to indicate that a password protected device was discoverdd. Change the binding configuration and re-discover the device.
+The Shelly Apps allow to protect device configuration by userid+password.
+The binding supports those configurations.
+If you are using password protected Shelly devices you need to configure userid and password.
+You could configure these settings in two ways. Otherwise a thing is created to indicate that a password protected device was discovered.
+Change the binding configuration and re-discover the device.
 
-1. Global Default: Go to PaperUI:Configuration:Addons:Shelly Binding and edit the configuration. Those will be used when now settings are given on the thing level.
+1. Global Default: Go to PaperUI:Configuration:Addons:Shelly Binding and edit the configuration.
+Those will be used when now settings are given on the thing level.
 2. Edit the thing configuration. 
 
 Important: The IP address shouldn't change after the device is added as a new thing in openHAB. This could be achieved by
@@ -55,33 +65,37 @@ Important: The IP address shouldn't change after the device is added as a new th
 
 You need to re-discover the device if there is a reason why the ip address changed.
 
-New devices could be discovered an added to the openHAB system by using Paper UI's Inbox. Running a manual discovery should show up all devices on your local network. 
+New devices could be discovered an added to the openHAB system by using Paper UI's Inbox.
+Running a manual discovery should show up all devices on your local network. 
 
-There seems to be an issue between OH mDNS implementation and Shelly so that initially the binding is not able to catch the thing’s ip address (in this case the event reports 0.0.0.0 as ip address - this will be ignored) or devices don’t show up all the time. To fix this you need to run the manual discovery multiple times until you see all your devices. Make sure to wakeup battery powered devices (press the button inside the device) so they show up on the network.
+There seems to be an issue between OH mDNS implementation and Shelly so that initially the binding is not able to catch the thing’s ip address (in this case the event reports 0.0.0.0 as ip address - this will be ignored) or devices don’t show up all the time.
+To fix this you need to run the manual discovery multiple times until you see all your devices.
+Make sure to wake-up battery powered devices (press the button inside the device) so they show up on the network.
 
 ## Binding Configuration
 
-The binding has some global configuration options. Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
+The binding has some global configuration options.
+Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 
-| Parameter      |Description                                                    |Mandantory|Default                                         |
-|----------------|---------------------------------------------------------------|----------|------------------------------------------------|
-| defaultUserId  |Default userid for http authentication when not set in thing   |    no    |admin                                           |
-| defaultPassword|Default password for http authentication when not set in thing |    no    |adnub                                           |
+| Parameter      |Description                                                    |Mandatory|Default                                         |
+|----------------|---------------------------------------------------------------|---------|------------------------------------------------|
+| defaultUserId  |Default userid for http authentication when not set in thing   |    no   |admin                                           |
+| defaultPassword|Default password for http authentication when not set in thing |    no   |adnub                                           |
 
 
-### Thing Configuration
+## Thing Configuration
 
-|Parameter         |Description                                                   |Mandantory|Default                                           |
-|------------------|--------------------------------------------------------------|----------|--------------------------------------------------|
-|deviceIp          |IP address of the Shelly device, usually auto-discovered      |    yes   |none                                              |
-|userId            |The userid used for http authentication*                      |    no    |none                                              |
-|password          |Password for http authentication*                             |    no    |none                                              |
-|lowBattery        |Threshold for battery level. Set alert when level is below.   |    no    |20 (=20%), only for battery powered devices       |
-|updateInterval    |Interval for the background status check in seconds.          |    no    |1h for battery powered devices, 60s for all others|
-|eventsButton      |true: register event "trigger when a button is pushed"        |    no    |false                                             |
-|eventsSwitch      |true: register event "trigger of switching the relay output"  |    no    |true                                              |
-|eventsSensorReport|true: register event "posted updated sensor data"             |    no    |true for sensor devices                           |
-|enableCoIoT       |true: Listen for CoIoT/COAP events, OFF: Don't use COAP       |    no    |true for battery devices, false for others        |
+|Parameter         |Description                                                   |Mandatory|Default                                           |
+|------------------|--------------------------------------------------------------|---------|--------------------------------------------------|
+|deviceIp          |IP address of the Shelly device, usually auto-discovered      |    yes  |none                                              |
+|userId            |The userid used for http authentication*                      |    no   |none                                              |
+|password          |Password for http authentication*                             |    no   |none                                              |
+|lowBattery        |Threshold for battery level. Set alert when level is below.   |    no   |20 (=20%), only for battery powered devices       |
+|updateInterval    |Interval for the background status check in seconds.          |    no   |1h for battery powered devices, 60s for all others|
+|eventsButton      |true: register event "trigger when a button is pushed"        |    no   |false                                             |
+|eventsSwitch      |true: register event "trigger of switching the relay output"  |    no   |true                                              |
+|eventsSensorReport|true: register event "posted updated sensor data"             |    no   |true for sensor devices                           |
+|enableCoIoT       |true: Listen for CoIoT/COAP events, OFF: Don't use COAP       |    no   |true for battery devices, false for others        |
 
 ## Channels
 
@@ -97,7 +111,7 @@ The binding has some global configuration options. Go to PaperUI:Configuration:A
 
 ### Shelly 2 - relay mode thing-type: shelly2-relay)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                                       |
+|Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay1    |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
 |          |overpower    |Switch   |yes      |Relay #1: ON: The relay detected an overpower condition, output was turned OFF   |
@@ -122,10 +136,10 @@ The binding has some global configuration options. Go to PaperUI:Configuration:A
 
 ### Shelly 2 - roller mode thing-type: shelly2-roller)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                                          |
+|Group     |Channel      |Type     |read-only|Description                                                                         |
 |----------|-------------|---------|---------|------------------------------------------------------------------------------------|
 |roller    |control      |Rollershutter   |r/w      |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)|
-|          |rollerpos    |Dimmer  |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped        |
+|          |rollerpos    |Dimmer  |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped         |
 |          |direction    |String   |yes      |Last direction: open or close                                                       |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                |
 |          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode, OFF: normal mode (no calibration)                |
@@ -139,15 +153,19 @@ The binding has some global configuration options. Go to PaperUI:Configuration:A
 
 ### Shelly 2.5 - relay mode (thing-type:shelly25-relay) 
 
-The Shelly 2.5 includes 2 meters, one for each channel. Refer to Shelly 2 channel layout, the 2nd meter is represented by channel group "meter2" with the same channels like "meter1".
+The Shelly 2.5 includes 2 meters, one for each channel.
+Refer to Shelly 2 channel layout, the 2nd meter is represented by channel group "meter2" with the same channels like "meter1".
 
 ### Shelly 2.5 - roller mode (thing-type: shelly25-roller)
 
-The Shelly 2.5 includes 2 meters, one for each channel. However, it doesn't make sense to differ power consumption for the roller moving up vs. moving down. For this the binding aggregates the power consumption of both relays and includes the values in "meter1". See channel description for Shelly 2 in roller mode.
+The Shelly 2.5 includes 2 meters, one for each channel.
+However, it doesn't make sense to differ power consumption for the roller moving up vs. moving down.
+For this the binding aggregates the power consumption of both relays and includes the values in "meter1".
+See channel description for Shelly 2 in roller mode.
 
 ### Shelly4 Pro
 
-|Group     |Channel      |Type     |read-only|Desciption                                                                       |
+|Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay1    |             |         |         |See group relay1 for Shelly 2                                                    |
 |relay2    |             |         |         |See group relay1 for Shelly 2                                                    |
@@ -160,7 +178,7 @@ The Shelly 2.5 includes 2 meters, one for each channel. However, it doesn't make
 
 ### Shelly Dimmer (thing-type: shellydimmer)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                                       |
+|Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input1       |Switch   |yes      |State of Input 1 (S1)                                                            |
@@ -177,7 +195,7 @@ The Shelly 2.5 includes 2 meters, one for each channel. However, it doesn't make
 
 ### Shelly Plug-S (thing-type: shellyplug-s)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                                       |
+|Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
 |          |overpower    |Switch   |yes      |Relay #1: ON: The relay detected an overpower condition, output was turned OFF   |
@@ -197,7 +215,7 @@ The Shelly 2.5 includes 2 meters, one for each channel. However, it doesn't make
 
 ### Shelly HT (thing-type: shellyht)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                             |
+|Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |tempUnit     |Number   |yes      |Unit for temperature value: C for Celsius or F for Fahrenheit          |
@@ -209,7 +227,7 @@ The Shelly 2.5 includes 2 meters, one for each channel. However, it doesn't make
 
 ### Shelly Bulb (thing-type: shellybulb)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                             |
+|Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |control   |power        |Switch   |r/w      |Switch light ON/OFF                                                    |
 |          |mode         |Switch   |r/w      |Color mode: color or white                                             |
@@ -274,12 +292,14 @@ The Shelly 2.5 includes 2 meters, one for each channel. However, it doesn't make
 |meter4    |currentWatts |Number   |yes      |Channel 4: Current power consumption in Watts                          |
 
 Please note that the settings of channel group color are only valid in color mode and vice versa for white mode.
-The current firmware doesn't support the timestamp report for the meters. In thise case "n/a" is returned. Maybe an upcoming firmware release adds this attribute, then the correct value is returned;
+The current firmware doesn't support the timestamp report for the meters.
+In this case "n/a" is returned.
+Maybe an upcoming firmware release adds this attribute, then the correct value is returned;
 
 
 ### Shelly Sense
 
-|Group     |Channel      |Type     |read-only|Desciption                                                             |
+|Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |control   |key          |String   |r/w      |Send a IR key to the sense. There a 3 different types supported        |
 |          |             |         |         |Stored key: send the key code defined by the App , e.g. 123_1_up       |
@@ -297,19 +317,11 @@ The current firmware doesn't support the timestamp report for the meters. In thi
 |          |batteryAlert |Switch   |yes      |Low battery alert                                                      |
 
 
-
-### Other devices
-
-The thing definiton fo the following devices is primarily. If you have one of those devices send a PM to marks7017 and we could work on the implementation/testing.
-
-- thing-type: shellysmoke
-- thing-type: shellysense
-- thing-type: shellyplug
-
-
 ## Full Example
 
 Note: PaperUI is recommended, if you want to use text files make sure to replace the thing id from you channel definition 
+
+Replace roller:XXXXXn with the last 6 digits of the Shelly device's MAC address.
 
 * .things
 
