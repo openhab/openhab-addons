@@ -36,12 +36,12 @@ import gnu.io.SerialPortEventListener;
  */
 public class NooliteMTRF64Adapter {
 
-    private static Logger logger = LoggerFactory.getLogger(NooliteMTRF64Adapter.class);
+    private final Logger logger = LoggerFactory.getLogger(NooliteMTRF64Adapter.class);
     DataInputStream in = null;
     DataOutputStream out = null;
     Thread watcherThread = null;
-    private static OutputStream output;
-    SerialPort serial;
+    private OutputStream output;
+    private SerialPort serial;
 
     public void connect(NooliteBridgeConfiguration config) throws Exception {
         logger.debug("Opening serial connection to port {} with baud rate 9600...", config.serial);
@@ -49,7 +49,7 @@ public class NooliteMTRF64Adapter {
         CommPortIdentifier portIdentifier;
         try {
             portIdentifier = CommPortIdentifier.getPortIdentifier(config.serial);
-            serial = portIdentifier.open("openhab", 3000);
+            serial = portIdentifier.open("org.openhab.binding.noolite", 3000);
 
             serial.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 

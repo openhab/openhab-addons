@@ -11,8 +11,8 @@
 
         <config-description>
             <parameter name="serial" type="text" required="true">
-                <context>connection-address</context>
-                <label>noolite com port path</label>
+                <context>serial-port</context>
+                <label>Serial Port</label>
                 <description></description>
                 <default>COM4</default>
             </parameter>

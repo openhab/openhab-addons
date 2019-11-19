@@ -38,9 +38,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NooliteHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(NooliteHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NooliteHandler.class);
     @Nullable
-    NooliteMTRF64BridgeHandler bridgeMTRF64;
+    private @Nullable NooliteMTRF64BridgeHandler bridgeMTRF64;
 
     public NooliteHandler(Thing thing) {
         super(thing);
@@ -107,7 +107,7 @@ public class NooliteHandler extends BaseThingHandler {
 
     public void updateValues(byte[] data) {
         for (Channel channel : getThing().getChannels()) {
-            if (isLinked(channel.getUID().getId())) {
+            if (isLinked(channel.getUID())) {
                 if (channel.getUID().getId().equals(NooLiteBindingConstants.CHANNEL_TEMPERATURE)) {
                     int intTemp = ((data[8] & 0x0f) << 8) + (data[7] & 0xff);
 
@@ -117,14 +117,14 @@ public class NooliteHandler extends BaseThingHandler {
 
                     double temp = (double) intTemp / 10;
                     try {
-                        updateState(channel.getUID().getId(), DecimalType.valueOf(Double.toString(temp)));
-                    } catch (Exception ex) {
+                        updateState(channel.getUID(), new DecimalType(temp)));
+                    } catch (RuntimeException ex) {
                         logger.debug("Temperature update error");
                     }
                 } else if (channel.getUID().getId().equals(NooLiteBindingConstants.CHANNEL_HUMIDITY)) {
                     try {
                         updateState(channel.getUID().getId(), DecimalType.valueOf(Integer.toString(data[9])));
-                    } catch (Exception ex) {
+                    } catch (RuntimeException ex) {
                         logger.debug("Humidity update error");
                     }
                 } else if (channel.getUID().getId().equals(NooLiteBindingConstants.CHANNEL_BATTERY)) {
@@ -135,7 +135,7 @@ public class NooliteHandler extends BaseThingHandler {
                         } else if (state == 1) {
                             updateState(channel.getUID().getId(), StringType.valueOf("BATT LOW"));
                         }
-                    } catch (Exception ex) {
+                    } catch (RuntimeException ex) {
                         logger.debug("State update error");
                     }
                 } else if (channel.getUID().getId().equals(NooLiteBindingConstants.CHANNEL_SENSOR_TYPE)) {
@@ -146,7 +146,7 @@ public class NooliteHandler extends BaseThingHandler {
                         } else if (result == 2) {
                             updateState(channel.getUID().getId(), StringType.valueOf("PT111"));
                         }
-                    } catch (Exception ex) {
+                    } catch (RuntimeException ex) {
                         logger.debug("Type update error");
                     }
                 }

@@ -9,7 +9,7 @@
             <bridge-type-ref id="bridgeMTRF64" />
         </supported-bridge-type-refs>
 
-        <label>Noolite Channel</label>
+        <label>Noolite Thing</label>
         <description>Thing for NooLite Binding</description>
 
         <channels>
@@ -23,7 +23,7 @@
         <config-description>
             <parameter name="port" type="integer" required="true" min="0" max="99">
                 <context>Channel address</context>
-                <label>Channel Addreess</label>
+                <label>Channel Address</label>
                 <description>Select channel for noolite device</description>
                 <default>99</default>
             </parameter>

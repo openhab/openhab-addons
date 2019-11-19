@@ -50,11 +50,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NooliteMTRF64BridgeHandler extends BaseBridgeHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(NooliteMTRF64BridgeHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(NooliteMTRF64BridgeHandler.class);
     @Nullable
     static NooliteMTRF64Adapter adapter;
     @Nullable
-    private NooliteBridgeConfiguration bridgeConfig;
+    private @Nullable NooliteBridgeConfiguration bridgeConfig;
     public static Map<String, NooliteHandler> thingHandlerMap = new HashMap<String, NooliteHandler>();
     @Nullable
     static NooliteHandler nooliteHandler;
@@ -76,7 +76,7 @@ public class NooliteMTRF64BridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Noolite bridge handler {}", this.toString());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Initializing...");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Initializing...");
         bridgeConfig = getConfigAs(NooliteBridgeConfiguration.class);
 
         // logger.debug("Checking Noolite adapter connection. {}", thing.getStatus());
@@ -165,14 +165,15 @@ public class NooliteMTRF64BridgeHandler extends BaseBridgeHandler {
         } else {
             data[4] = (byte) (Integer.parseInt(nooliteHandler.getThing().getConfiguration().get("port").toString()));
         }
-        if (command.toString().equals("ON")) {
+        } else if (OnOffType.ON.equals(command)) {
+
             data[5] = 2;
             data[6] = 0;
             data[7] = 0;
             data[8] = 0;
             data[9] = 0;
             data[10] = 0;
-        } else if (command.toString().equals("OFF")) {
+        } else if (OnOffType.OFF.equals(command)) {
             data[5] = 0;
             data[6] = 0;
             data[7] = 0;
@@ -193,7 +194,7 @@ public class NooliteMTRF64BridgeHandler extends BaseBridgeHandler {
 
         data[15] = (byte) sum;
         data[16] = (byte) 0b10101100;
-        if (!command.toString().equals("REFRESH")) {
+        if (!(command instanceof RefreshType)) {
             try {
                 if (adapter != null) {
                     adapter.sendData(data);
