@@ -370,8 +370,9 @@ public class ChannelState implements MqttMessageSubscriber {
             }
         }
 
-        // Send retained messages if this is a stateful channel
-        return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), 1, config.retained);
+        int qos = (config.qos != null) ? config.qos : connection.getQos();
+
+        return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), qos, config.retained);
     }
 
     /**
