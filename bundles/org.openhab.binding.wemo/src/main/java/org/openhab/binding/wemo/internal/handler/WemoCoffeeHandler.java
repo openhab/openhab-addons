@@ -423,6 +423,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         }
     }
 
+    @SuppressWarnings("null")
     public State getDateTimeState(String attributeValue) {
         if (attributeValue != null) {
             long value = 0;
