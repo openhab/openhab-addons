@@ -30,7 +30,7 @@ import org.openhab.io.homekit.internal.battery.BatteryStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitAccessory;
+import io.github.hapjava.HomekitAccessory;
 
 /**
  * Creates a HomekitAccessory for a given HomekitTaggedItem.
