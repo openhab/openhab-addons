@@ -102,10 +102,13 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
                 logger.warn("Failed to start http client", e);
             }
 
-            // this.getRooms();
-            // this.getDevices();
+            this.getRooms();
+            this.getDevices();
             this.subscribe();
-            this.longPoll();
+
+            for (int i = 0; i < 10; i++) {
+                this.longPoll();
+            }
 
             return new BoschSHCHandler(thing);
         }
@@ -247,6 +250,13 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
                 String content = contentResponse.getContentAsString();
                 logger.warn("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+
+                LongPollResult result = gson.fromJson(content, LongPollResult.class);
+
+                for (DeviceStatusUpdate update : result.result) {
+
+                    logger.warn("Got update: {} <- {}", update.deviceId, update.state.switchState);
+                }
 
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("HTTP request failed: {}", e);
