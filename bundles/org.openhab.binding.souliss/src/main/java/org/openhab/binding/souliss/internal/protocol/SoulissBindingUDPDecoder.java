@@ -399,8 +399,7 @@ public class SoulissBindingUDPDecoder {
         }
 
         Iterator thingsIterator;
-        if (gateway != null && gateway.IPAddressOnLAN != null
-                && Byte.parseByte(gateway.IPAddressOnLAN.split("\\.")[3]) == lastByteGatewayIP) {
+        if (gateway != null && gateway.getGatewayIP() != null && gateway.getGatewayIP_lastByte() == lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
             boolean bFound = false;
             Thing typ = null;
@@ -482,8 +481,8 @@ public class SoulissBindingUDPDecoder {
                                             + " - bit6 (Manual/automatic fan mode): " + getBitState(sVal, 6)
                                             + " - bit7 (heating/cooling mode): " + getBitState(sVal, 7));
                                     try {
-                                        ((SoulissT31Handler) handler).setRawStateValues(sVal, getFloatAtSlot(mac, slot + 1),
-                                                getFloatAtSlot(mac, slot + 3));
+                                        ((SoulissT31Handler) handler).setRawStateValues(sVal,
+                                                getFloatAtSlot(mac, slot + 1), getFloatAtSlot(mac, slot + 3));
                                     } catch (Exception e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();

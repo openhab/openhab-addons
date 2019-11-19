@@ -127,7 +127,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
      * @return String timestamp
      */
     private static String getTimestamp() {
-        // Pattern : yyyy-MM-dd'T'HH:mm:ssz
+        // Pattern : yyyy-MM-dd'T'HH:mm:ss.SSSz
         String sTimestamp = "";
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
@@ -162,7 +162,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         Bridge bridge = getBridge();
         if (bridge != null) {
             if (bridge.getHandler() != null) {
-                return ((SoulissGatewayHandler) bridge.getHandler()).IPAddressOnLAN;
+                return ((SoulissGatewayHandler) bridge.getHandler()).getGatewayIP();
             }
         }
         return null;
@@ -172,6 +172,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         return thing.getLabel();
     }
 
+    @SuppressWarnings("null")
     public byte getGatewayUserIndex() {
         if (getBridge() != null) {
             return ((SoulissGatewayHandler) getBridge().getHandler()).userIndex;

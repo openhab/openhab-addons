@@ -43,13 +43,13 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
     static boolean bPopSuspend = false;
     public static ArrayList<SoulissBindingSocketAndPacketStruct> packetsList = new ArrayList<SoulissBindingSocketAndPacketStruct>();
     private long start_time = System.currentTimeMillis();
-    static String _iPAddressOnLAN;
+    static byte _iPAddressOnLAN_lastbyte;
     static int iDelay = 0; // equal to 0 if array is empty
     static int SEND_MIN_DELAY = 0;
 
     public SoulissBindingSendDispatcherJob(Bridge bridge) {
         gw = (SoulissGatewayHandler) bridge.getHandler();
-        _iPAddressOnLAN = gw.IPAddressOnLAN;
+        _iPAddressOnLAN_lastbyte = gw.getGatewayIP_lastByte();
     }
 
     /**
@@ -219,7 +219,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                     // controllo lo slot solo se il comando è diverso da ZERO
                     if (packetsList.get(i).packet.getData()[j] != 0) {
                         // recupero tipico dalla memoria
-                        typ = getHandler(_iPAddressOnLAN, node, iSlot);
+                        typ = getHandler(_iPAddressOnLAN_lastbyte, node, iSlot);
                         // Nel caso es. del T16 la ricerca il recupero del tipico dalla memoria da null per i byte R
                         // (byte 1), G (byte 2) e B (byte 3)
                         if (typ != null) {
@@ -302,19 +302,18 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
         }
     }
 
-    private static SoulissGenericHandler getHandler(String _iPAddressOnLAN, int node, int slot) {
+    private static SoulissGenericHandler getHandler(byte _iPAddressOnLAN_lastbyte, int node, int slot) {
         // recupero il riferimento al gateway
         SoulissGatewayHandler gateway = null;
-        byte _lastByteGatewayIP = Byte.parseByte(_iPAddressOnLAN.split("\\.")[3]);
         try {
-            gateway = (SoulissGatewayHandler) SoulissBindingNetworkParameters.getGateway(_lastByteGatewayIP)
+            gateway = (SoulissGatewayHandler) SoulissBindingNetworkParameters.getGateway(_iPAddressOnLAN_lastbyte)
                     .getHandler();
         } catch (Exception ex) {
         }
 
         Iterator<@NonNull Thing> thingsIterator;
-        if (gateway != null && gateway.IPAddressOnLAN != null
-                && Byte.parseByte(gateway.IPAddressOnLAN.split("\\.")[3]) == _lastByteGatewayIP) {
+        if (gateway != null && gateway.getGatewayIP() != null
+                && gateway.getGatewayIP_lastByte() == _iPAddressOnLAN_lastbyte) {
             thingsIterator = gateway.getThing().getThings().iterator();
             boolean bFound = false;
             Thing typ = null;
@@ -325,7 +324,7 @@ public class SoulissBindingSendDispatcherJob implements Runnable {
                 if (handler != null) { // execute it only if binding is Souliss and update is for my
                                        // Gateway
                     if (sUID_Array[0].equals(SoulissBindingConstants.BINDING_ID) && Byte
-                            .parseByte(handler.getGatewayIP().toString().split("\\.")[3]) == _lastByteGatewayIP) {
+                            .parseByte(handler.getGatewayIP().toString().split("\\.")[3]) == _iPAddressOnLAN_lastbyte) {
 
                         if (handler.getNode() == node && handler.getSlot() == slot) {
                             return handler;

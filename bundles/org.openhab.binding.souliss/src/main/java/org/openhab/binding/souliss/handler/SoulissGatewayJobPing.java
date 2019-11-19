@@ -33,7 +33,7 @@ public class SoulissGatewayJobPing extends Thread {
 
     public SoulissGatewayJobPing(Bridge bridge) {
         gw = (SoulissGatewayHandler) bridge.getHandler();
-        _iPAddressOnLAN = gw.IPAddressOnLAN;
+        _iPAddressOnLAN = gw.getGatewayIP();
         _userIndex = gw.userIndex;
         _nodeIndex = gw.nodeIndex;
         set_pingRefreshInterval(gw.pingRefreshInterval);

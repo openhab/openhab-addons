@@ -31,7 +31,7 @@ public class SoulissGatewayJobSubscription extends Thread {
 
     public SoulissGatewayJobSubscription(Bridge bridge) {
         gw = (SoulissGatewayHandler) bridge.getHandler();
-        _iPAddressOnLAN = gw.IPAddressOnLAN;
+        _iPAddressOnLAN = gw.getGatewayIP();
         _userIndex = gw.userIndex;
         _nodeIndex = gw.nodeIndex;
         set_subscriptionRefreshInterval(gw.subscriptionRefreshInterval);

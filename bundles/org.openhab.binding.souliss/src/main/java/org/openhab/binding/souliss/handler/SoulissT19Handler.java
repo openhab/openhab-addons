@@ -51,15 +51,17 @@ public class SoulissT19Handler extends SoulissGenericHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
 
         if (command instanceof RefreshType) {
-            switch (channelUID.getId()) {
-                case SoulissBindingConstants.ONOFF_CHANNEL:
-                    updateState(channelUID, getOHState_OnOff_FromSoulissVal(T1nRawState_byte0));
-                    break;
-                case SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL:
-                    updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
-                            PercentType.valueOf(String.valueOf((T1nRawStateBrigthness_byte1 / 255) * 100)));
-                    break;
-            }
+            /*
+             * switch (channelUID.getId()) {
+             * case SoulissBindingConstants.ONOFF_CHANNEL:
+             * updateState(channelUID, getOHState_OnOff_FromSoulissVal(T1nRawState_byte0));
+             * break;
+             * case SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL:
+             * updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
+             * PercentType.valueOf(String.valueOf((T1nRawStateBrigthness_byte1 / 255) * 100)));
+             * break;
+             * }
+             */
         } else {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ONOFF_CHANNEL:
@@ -135,10 +137,10 @@ public class SoulissT19Handler extends SoulissGenericHandler {
     public void setRawStateDimmerValue(byte _dimmerValue) {
         try {
 
-            if (_dimmerValue != T1nRawState_byte0) {
+            if (_dimmerValue != T1nRawStateBrigthness_byte1) {
                 logger.debug("T19, setting dimmer to {}", _dimmerValue);
-                updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
-                        PercentType.valueOf(String.valueOf(Math.round((T1nRawState_byte0 / 255) * 100))));
+                updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL, PercentType
+                        .valueOf(String.valueOf(Math.round((Byte.toUnsignedInt(_dimmerValue) / 255.00) * 100.00))));
 
             }
         } catch (IllegalStateException ex) {

@@ -65,7 +65,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public int souliss_gateway_port;
     public byte userIndex;
     public byte nodeIndex;
-    public String IPAddressOnLAN;
+    private String IPAddressOnLAN;
     private int nodes;
     private int maxTypicalXnode;
     private int countPING_KO = 0;
@@ -212,7 +212,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        SoulissBindingNetworkParameters.removeGateway(Byte.parseByte(IPAddressOnLAN.split("\\.")[3]));
+        Integer i = Integer.parseInt(IPAddressOnLAN.split("\\.")[3]);
+        SoulissBindingNetworkParameters.removeGateway(i.byteValue());
         UDP_Server_DefaultPort_RunnableClass = null;
         logger.debug("Gateway handler removing");
     }
@@ -220,7 +221,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     @Override
     public void thingUpdated(Thing thing) {
         logger.debug("Thing Updated: {}", thing.getThingTypeUID());
-        SoulissBindingNetworkParameters.removeGateway((Byte.parseByte((IPAddressOnLAN.split("\\.")[3]))));
+
+        Integer i = Integer.parseInt(IPAddressOnLAN.split("\\.")[3]);
+        SoulissBindingNetworkParameters.removeGateway(i.byteValue());
         // .removeGateway((byte) (Byte.parseByte((IPAddressOnLAN.split("\\.")[3]) & (byte) 0xFF));
         this.thing = thing;
     }
@@ -232,10 +235,16 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     @SuppressWarnings({ "deprecation", "null" })
     public String getGatewayIP() {
-        if (thing.getBridgeUID() != null) {
-            return ((SoulissGatewayHandler) thingRegistry.get(thing.getBridgeUID()).getHandler()).IPAddressOnLAN;
-        }
-        return null;
+        return IPAddressOnLAN;
+        // if (thing.getBridgeUID() != null) {
+        // return ((SoulissGatewayHandler) thingRegistry.get(thing.getBridgeUID()).getHandler()).IPAddressOnLAN;
+        // }
+        // return null;
+    }
+
+    public byte getGatewayIP_lastByte() {
+        Integer i = Integer.parseInt(IPAddressOnLAN.split("\\.")[3]);
+        return i.byteValue();
     }
 
     public void setNodes(int nodes) {
@@ -327,4 +336,5 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public void resetThereIsAThingDetection() {
         thereIsAThingDetection = false;
     }
+
 }
