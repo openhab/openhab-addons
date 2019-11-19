@@ -44,9 +44,9 @@ public class MagentaTVException extends Exception {
      * Beside constructing a new object it also outputs the exception to the log (INFO) and the stack trace (TRACE)
      *
      * @param cause the cause. (A null value is permitted, and indicates that the
-     *                  cause is nonexistent or unknown.)
+     *            cause is nonexistent or unknown.)
      */
-    public MagentaTVException(Throwable cause) {
+    public MagentaTVException(Exception cause) {
         super(cause);
     }
 
@@ -55,18 +55,18 @@ public class MagentaTVException extends Exception {
      * Beside constructing a new object it also outputs the exception to the log (INFO) and the stack trace (TRACE)
      *
      * @param message the detail message.
-     * @param cause   the cause. (A null value is permitted, and indicates that the
-     *                    cause is nonexistent or unknown.)
+     * @param cause the cause. (A null value is permitted, and indicates that the
+     *            cause is nonexistent or unknown.)
      */
-    public MagentaTVException(Throwable cause, String message, Object... a) {
+    public MagentaTVException(Exception cause, String message, Object... a) {
         super(MessageFormat.format(message, a), cause);
     }
 
-    static public String toString(Throwable e) {
+    public static String toString(Exception e) {
         return e.getMessage() + "\n" + stackTrace(e);
     }
 
-    static public String stackTrace(Throwable e) {
+    public static String stackTrace(Exception e) {
         StringBuilder sb = new StringBuilder();
         for (StackTraceElement s : e.getStackTrace()) {
             sb.append(s.toString()).append("\n");

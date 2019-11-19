@@ -372,7 +372,7 @@ public class MagentaTVControl {
      * @return true:ok, false: failed
      */
     public boolean selectChannel(String channel) throws MagentaTVException {
-        logger.info("Select channel {}", channel);
+        logger.debug("Select channel {}", channel);
         for (int i = 0; i < channel.length(); i++) {
             if (!sendKey("" + channel.charAt(i))) {
                 return false;

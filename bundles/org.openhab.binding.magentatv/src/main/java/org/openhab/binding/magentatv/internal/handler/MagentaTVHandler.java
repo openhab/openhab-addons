@@ -152,7 +152,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 connectReceiver(); // throws MagentaTVException on error
                 // change to ThingStatus.ONLINE will be done when the pairing result is received
                 // (see onPairingResult())
-            } catch (MagentaTVException | InterruptedException | RuntimeException e) {
+            } catch (MagentaTVException e) {
+                errorMessage = e.toString();
+            } catch (InterruptedException | RuntimeException e) {
                 errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().toString();
             } finally {
                 if (!errorMessage.isEmpty()) {
@@ -375,40 +377,40 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             logger.debug("EVENT_EIT_CHANGE event received.");
 
             MRProgramInfoEvent pinfo = gson.fromJson(jsonEvent, MRProgramInfoEvent.class);
-            if (!pinfo.channel_num.isEmpty()) {
-                logger.debug("EVENT_EIT_CHANGE for channel {}/{}", pinfo.channel_num, pinfo.channel_code);
-                updateState(CHANNEL_CHANNEL, new StringType(pinfo.channel_num));
-                updateState(CHANNEL_CHANNEL_CODE, new StringType(pinfo.channel_code));
+            if (!pinfo.channelNum.isEmpty()) {
+                logger.debug("EVENT_EIT_CHANGE for channel {}/{}", pinfo.channelNum, pinfo.channelCode);
+                updateState(CHANNEL_CHANNEL, new StringType(pinfo.channelNum));
+                updateState(CHANNEL_CHANNEL_CODE, new StringType(pinfo.channelCode));
             }
             if (pinfo.program_info != null) {
                 int i = 0;
                 for (MRProgramStatus ps : pinfo.program_info) {
-                    if ((ps.start_time == null) || ps.start_time.isEmpty()) {
+                    if ((ps.startTime == null) || ps.startTime.isEmpty()) {
                         logger.debug("EVENT_EIT_CHANGE: empty event data = {}", jsonEvent);
                         continue; // empty program_info
                     }
                     updateState(CHANNEL_RUN_STATUS, new StringType(control.getRunStatus(ps.running_status)));
 
-                    if (ps.short_event != null) {
-                        for (MRShortProgramInfo se : ps.short_event) {
-                            if ((ps.start_time == null) || ps.start_time.isEmpty()) {
+                    if (ps.shortEvent != null) {
+                        for (MRShortProgramInfo se : ps.shortEvent) {
+                            if ((ps.startTime == null) || ps.startTime.isEmpty()) {
                                 logger.debug("EVENT_EIT_CHANGE: empty program info");
                                 continue;
                             }
                             // Convert UTC to local time
                             // 2018/11/04 21:45:00 -> "2018-11-04T10:15:30.00Z"
-                            String tsLocal = ps.start_time.replace('/', '-').replace(" ", "T") + "Z";
+                            String tsLocal = ps.startTime.replace('/', '-').replace(" ", "T") + "Z";
                             Instant timestamp = Instant.parse(tsLocal);
                             ZonedDateTime localTime = timestamp.atZone(ZoneId.of("Europe/Berlin"));
                             tsLocal = StringUtils.substringBeforeLast(localTime.toString(), "[");
                             tsLocal = StringUtils.substringBefore(tsLocal.replace('-', '/').replace('T', ' '), "+");
 
                             logger.debug("Info for channel {} / {} - {} {}.{}, start time={}, duration={}",
-                                    pinfo.channel_num, pinfo.channel_code, control.getRunStatus(ps.running_status),
-                                    se.event_name, se.text_char, tsLocal, ps.duration);
+                                    pinfo.channelNum, pinfo.channelCode, control.getRunStatus(ps.running_status),
+                                    se.eventName, se.textChar, tsLocal, ps.duration);
                             if (ps.running_status != EV_EITCHG_RUNNING_NOT_RUNNING) {
-                                updateState(CHANNEL_PROG_TITLE, new StringType(se.event_name));
-                                updateState(CHANNEL_PROG_TEXT, new StringType(se.text_char));
+                                updateState(CHANNEL_PROG_TITLE, new StringType(se.eventName));
+                                updateState(CHANNEL_PROG_TEXT, new StringType(se.textChar));
                                 updateState(CHANNEL_PROG_START, new StringType(tsLocal));
                                 updateState(CHANNEL_PROG_DURATION, new StringType(ps.duration));
                                 if (i++ == 0) {
@@ -428,16 +430,15 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 event.playPostion = -1;
             }
             logger.debug("STB event playContent: playMode={}, duration={}, playPosition={}",
-                    control.getPlayStatus(event.new_play_mode), event.duration.toString(),
-                    event.playPostion.toString());
+                    control.getPlayStatus(event.newPlayMode), event.duration.toString(), event.playPostion.toString());
 
             // If we get a playConfig event there MR must be online. However it also sends a
             // plyMode stop before powering off the device, so we filter this.
-            if ((event.new_play_mode != EV_PLAYCHG_STOP) && this.isInitialized()) {
+            if ((event.newPlayMode != EV_PLAYCHG_STOP) && this.isInitialized()) {
                 flUpdatePower = true;
             }
-            if (event.new_play_mode != -1) {
-                updateState(CHANNEL_PLAY_MODE, new StringType(control.getPlayStatus(event.new_play_mode)));
+            if (event.newPlayMode != -1) {
+                updateState(CHANNEL_PLAY_MODE, new StringType(control.getPlayStatus(event.newPlayMode)));
             }
             if (event.duration > 0) {
                 updateState(CHANNEL_PROG_DURATION, new StringType(event.duration.toString()));
@@ -459,7 +460,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      */
     @Override
     public void onPowerOff() throws MagentaTVException {
-        logger.info("Power-Off received for device {}", deviceName());
+        logger.debug("Power-Off received for device {}", deviceName());
         // MR was powered off -> update pwoer status, reset items
         updateState(CHANNEL_POWER, OnOffType.OFF);
         updateState(CHANNEL_PROG_DURATION, StringType.EMPTY);
@@ -511,10 +512,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 control.subscribeEventChannel();
             }
         } catch (MagentaTVException | RuntimeException e) {
-            logger.debug("Re-new event subscription  for device {} failed!", deviceName());
+            logger.warn("{}: Re-new event subscription failed: {}", deviceName(), e.toString());
         }
-        // another try: if the above SUBSCRIBE fails, try a re-connect immediatly
 
+        // another try: if the above SUBSCRIBE fails, try a re-connect immediatly
         try {
             if ((this.getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)
                     && !thingConfig.getUserID().isEmpty()) {
@@ -523,7 +524,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 connectReceiver(); // throws MagentaTVException on error
             }
         } catch (MagentaTVException | RuntimeException e) {
-            logger.debug("{}: Re-new event subscription failed:: {}", deviceName(), e.getMessage());
+            logger.debug("{}: Re-connect to receiver failed: {}", deviceName(), e.toString());
         }
     }
 

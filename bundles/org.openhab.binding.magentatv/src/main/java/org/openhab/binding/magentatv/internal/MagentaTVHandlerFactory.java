@@ -14,7 +14,6 @@ package org.openhab.binding.magentatv.internal;
 
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
 
-import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,8 +36,6 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +53,8 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RECEIVER);
 
-    private final MagentaTVNetwork network = new MagentaTVNetwork();
     private @Nullable MagentaTVPoweroffListener upnpListener;
+    private final MagentaTVNetwork network;
     private boolean servletInitialized = false;
 
     @SuppressWarnings("null")
@@ -81,15 +78,26 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
      *            thing config)
      */
 
+    @SuppressWarnings("null")
     @Activate
-    protected void activate(ComponentContext componentContext, Map<String, Object> configProperties) {
+    public MagentaTVHandlerFactory(@Reference NetworkAddressService networkAddressService,
+            ComponentContext componentContext, Map<String, Object> configProperties) {
         super.activate(componentContext);
-        logger.debug("Activate HandlerFactory");
+
+        network = new MagentaTVNetwork();
+        try {
+            logger.debug("Initialize network access");
+            network.initLocalNet(networkAddressService);
+            upnpListener = new MagentaTVPoweroffListener(this, network.getLocalInterface());
+            Validate.notNull(upnpListener);
+            if (!upnpListener.isStarted()) {
+                upnpListener.start();
+            }
+        } catch (RuntimeException | MagentaTVException e) {
+            logger.warn("Initialization failed: {}", e.toString());
+        }
     }
 
-    /**
-     * return list of supported thins
-     */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -141,7 +149,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         } catch (MagentaTVException | RuntimeException e) {
-            logger.debug("Unable to process discovered device, UDN={} - {}", discoveredUDN, e.getMessage());
+            logger.debug("Unable to process discovered device, UDN={} - {}", discoveredUDN, e.toString());
         }
     }
 
@@ -292,7 +300,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
             logger.debug("Received pairingCode {} for unregistered device {}!", pairingCode, ipAddress);
         } catch (RuntimeException | MagentaTVException e) {
-            logger.debug("Unable to process pairing result for deviceID {}: {}", notifyDeviceId, e.getMessage());
+            logger.debug("Unable to process pairing result for deviceID {}: {}", notifyDeviceId, e.toString());
         }
         return false;
     }
@@ -315,7 +323,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
             }
             logger.debug("Received event for unregistered MR: MAC address {}, JSON={}", mrMac, jsonEvent);
         } catch (RuntimeException e) {
-            logger.debug("Unable to process MR event! json={}", jsonEvent);
+            logger.debug("Unable to process MR event! {} ({}), json={}", e.getMessage(), e.getClass(), jsonEvent);
         }
         return false;
     }
@@ -336,27 +344,8 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 dev.thingHandler.onPowerOff();
             }
         } catch (RuntimeException | MagentaTVException e) {
-            logger.debug("Unable to process SSDP message for IP {} - {}", ipAddress, e.getMessage());
+            logger.debug("Unable to process SSDP message for IP {} - {}", ipAddress, e.toString());
         }
     }
 
-    @SuppressWarnings("null")
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        logger.debug("networkAddressService bound");
-        try {
-            logger.debug("Initialize network access");
-            network.initLocalNet(networkAddressService);
-            NetworkInterface intf = network.getLocalInterface();
-            upnpListener = new MagentaTVPoweroffListener(this, intf);
-            if (!upnpListener.isStarted()) {
-                upnpListener.start();
-            }
-        } catch (MagentaTVException | RuntimeException e) {
-            logger.warn("Unable to initialize network access: {}", e.getMessage());
-        }
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-    }
 }

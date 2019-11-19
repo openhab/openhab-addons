@@ -42,7 +42,6 @@ import com.google.gson.Gson;
  * is used to query the userID from the Telekom platform.
  *
  * @author Markus Michels - Initial contribution
- * @author Mathias Gisch - Initial bash script
  *
  *         Deutsche Telekom uses a OAuth-based authentication to access the EPG portal. The
  *         communication between the MR and the remote app requires a pairing before the receiver could be
@@ -146,12 +145,12 @@ public class MagentaTVOAuth {
             logger.trace("http response={}", httpResponse);
 
             OAuthTokenResponse token = gson.fromJson(httpResponse, OAuthTokenResponse.class);
-            if ((token.access_token == null) || token.access_token.isEmpty()) {
+            if ((token.accessToken == null) || token.accessToken.isEmpty()) {
                 String errorMessage = MessageFormat.format("Authentication for account {0} failed: {1} (rc={2})",
-                        accountName, token.error_description, token.error);
+                        accountName, token.errorDescription, token.error);
                 throw new MagentaTVException(errorMessage);
             }
-            accessToken = token.access_token;
+            accessToken = token.accessToken;
 
             // authenticateDevice
             step = "authenticate with token";

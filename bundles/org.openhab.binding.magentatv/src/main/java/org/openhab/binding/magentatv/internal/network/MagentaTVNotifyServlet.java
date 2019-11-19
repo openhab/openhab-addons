@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
  * Main OSGi service and HTTP servlet for MagentaTV NOTIFY.
  *
  * @author Markus Michels - Initial contribution
- * @author Gaël L'hopital - derived from Netatmo binding's servlet
  */
 @NonNullByDefault
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
@@ -59,7 +58,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     protected void activate(Map<String, Object> config) {
         try {
             httpService.registerServlet(PAIRING_NOTIFY_URI, this, null, httpService.createDefaultHttpContext());
-            logger.info("Servlet started at {}", PAIRING_NOTIFY_URI);
+            logger.debug("Servlet started at {}", PAIRING_NOTIFY_URI);
             if ((handlerFactory != null) && !handlerFactory.getNotifyServletStatus()) {
                 handlerFactory.setNotifyServletStatus(true);
             }

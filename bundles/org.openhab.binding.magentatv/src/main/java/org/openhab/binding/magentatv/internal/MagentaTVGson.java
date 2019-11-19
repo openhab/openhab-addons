@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link MagentaTVGson} class implements The MR returns event information every time the program changes. This
  * information is mapped to various Thing channels and also used to catch the power down event for MR400 (there is no
@@ -47,28 +49,38 @@ public class MagentaTVGson {
         @NonNullByDefault
         public class MRProgramInfoEvent {
             public String type = "";
-            public Integer instance_id = 0;
-            public String channel_code = "";
-            public String channel_num = "";
+            @SerializedName("instance_id")
+            public Integer instanceId = 0;
+            @SerializedName("channel_code")
+            public String channelCode = "";
+            @SerializedName("channel_num")
+            public String channelNum = "";
             public String mediaId = "";
             public ArrayList<MRProgramStatus> program_info = new ArrayList<>();
         }
 
         @NonNullByDefault
         public class MRProgramStatus {
-            public String start_time = "";
-            public String event_id = "";
+            @SerializedName("start_time")
+            public String startTime = "";
+            @SerializedName("event_id")
+            public String eventId = "";
             public String duration = "";
-            public Boolean free_CA_mode = false;
+            @SerializedName("free_CA_mode")
+            public Boolean freeCAMmode = false;
             public Integer running_status = EV_EITCHG_RUNNING_NONE;
-            public ArrayList<MRShortProgramInfo> short_event = new ArrayList<>();
+            @SerializedName("short_event")
+            public ArrayList<MRShortProgramInfo> shortEvent = new ArrayList<>();
         }
 
         @NonNullByDefault
         public class MRShortProgramInfo {
-            public String event_name = "";
-            public String language_code = "";
-            public String text_char = "";
+            @SerializedName("event_name")
+            public String eventName = "";
+            @SerializedName("language_code")
+            public String languageCode = "";
+            @SerializedName("text_char")
+            public String textChar = "";
         }
 
         /**
@@ -80,7 +92,8 @@ public class MagentaTVGson {
          */
         @NonNullByDefault
         public class MRPayEvent {
-            public Integer new_play_mode = EV_PLAYCHG_STOP;
+            @SerializedName("new_play_mode")
+            public Integer newPlayMode = EV_PLAYCHG_STOP;
             public Integer duration = -1;
             public Integer playBackState = EV_PLAYCHG_STOP;
             public Integer mediaType = 0;
@@ -140,9 +153,11 @@ public class MagentaTVGson {
 
         @NonNullByDefault
         public class OAuthTokenResponse {
-            public String error_description = "";
+            @SerializedName("error_description")
+            public String errorDescription = "";
             public String error = "";
-            public String access_token = "";
+            @SerializedName("access_token")
+            public String accessToken = "";
         }
 
         @NonNullByDefault

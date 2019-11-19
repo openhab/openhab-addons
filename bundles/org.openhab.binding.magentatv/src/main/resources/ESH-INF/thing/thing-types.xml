@@ -137,7 +137,7 @@
 		<description>Running program</description>
 		<state readOnly="true" pattern="%s">
 		</state>
-	</channel-type>    
+	</channel-type>
 	<channel-type id="programText">
 		<item-type>String</item-type>
 		<label>Description</label>
