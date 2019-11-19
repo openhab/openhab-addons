@@ -136,7 +136,7 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
                  return;
             }
         }
-        logger.warn("Received command of wrong type for thing '{}' on channel {}", thing.getUID().getAsString(),
+        logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(),
                 channelUID.getId());
     }
 
