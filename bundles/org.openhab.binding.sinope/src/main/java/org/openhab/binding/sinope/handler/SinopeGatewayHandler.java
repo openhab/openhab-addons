@@ -76,19 +76,26 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Sinope Gateway");
 
-        SinopeConfig config = getConfigAs(SinopeConfig.class);
-        if (config.hostname == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Gateway hostname must be set");
-        } else if (config.port == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Gateway port must be set");
-        } else if (config.gatewayId == null || SinopeConfig.convert(config.gatewayId) == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Gateway Id must be set");
-        } else if (config.apiKey == null || SinopeConfig.convert(config.apiKey) == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Api Key must be set");
-        } else {
+        try {
+            SinopeConfig config = getConfigAs(SinopeConfig.class);
             refreshInterval = config.refresh;
-            schedulePoll();
-            updateStatus(ThingStatus.ONLINE);
+            if (config.hostname == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Gateway hostname must be set");
+            } else if (config.port == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Gateway port must be set");
+            } else if (config.gatewayId == null || SinopeConfig.convert(config.gatewayId) == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Gateway Id must be set");
+            } else if (config.apiKey == null || SinopeConfig.convert(config.apiKey) == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Api Key must be set");
+            } else if (connectToBridge()) {
+                schedulePoll();
+                updateStatus(ThingStatus.ONLINE);
+                return;
+            }
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "Can't connect to gateway. Please make sure that another instance is not connected.");
         }
 
     }
