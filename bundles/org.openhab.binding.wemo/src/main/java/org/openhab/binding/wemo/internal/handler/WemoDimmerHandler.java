@@ -131,7 +131,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
             try {
                 updateWemoState();
             } catch (Exception e) {
-                logger.debug("Exception during poll : ", e.getMessage(), e);
+                logger.debug("Exception during poll", e);
             }
         } else {
             String action = "SetBinaryState";
