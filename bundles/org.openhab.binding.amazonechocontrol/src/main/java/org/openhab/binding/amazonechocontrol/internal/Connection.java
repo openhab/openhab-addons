@@ -113,8 +113,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link Connection} is responsible for the connection to the amazon server and
- * handling of the commands
+ * The {@link Connection} is responsible for the connection to the amazon server
+ * and handling of the commands
  *
  * @author Michael Geramb - Initial contribution
  */
@@ -514,7 +514,8 @@ public class Connection {
             throws IOException, URISyntaxException {
         String currentUrl = url;
         int redirectCounter = 0;
-        while (true) // loop for handling redirect and bad request, using automatic redirect is not possible,
+        while (true) // loop for handling redirect and bad request, using automatic redirect is not
+                     // possible,
         // because
         // all response headers must be catched
         {
@@ -1092,7 +1093,7 @@ public class Connection {
         String requestBody = json.toString();
         try {
             String resultBody = makeRequestAndReturnString("PUT", url, requestBody, true, null);
-            logger.debug(resultBody);
+            logger.debug("{}", resultBody);
             JsonObject result = parseJson(resultBody, JsonObject.class);
             if (result != null) {
                 JsonElement errors = result.get("errors");
@@ -1101,17 +1102,17 @@ public class Connection {
                     if (errorList.size() > 0) {
                         logger.info("Smart home device command failed.");
                         logger.info("Request:");
-                        logger.info(requestBody);
+                        logger.info("{}", requestBody);
                         logger.info("Answer:");
                         for (JsonElement error : errorList) {
-                            logger.info(error.toString());
+                            logger.info("{}", error.toString());
                         }
                     }
                 }
             }
 
         } catch (URISyntaxException e) {
-            logger.info("Wrong url {}: {}", url, e);
+            logger.info("Wrong url {}", url, e);
         }
     }
 
@@ -1303,7 +1304,8 @@ public class Connection {
         }
     }
 
-    // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play, Alexa.GoodMorning.Play,
+    // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play,
+    // Alexa.GoodMorning.Play,
     // Alexa.SingASong.Play, Alexa.TellStory.Play, Alexa.Speak (textToSpeach)
     public void executeSequenceCommand(@Nullable Device device, String command,
             @Nullable Map<String, Object> parameters) throws IOException, URISyntaxException {

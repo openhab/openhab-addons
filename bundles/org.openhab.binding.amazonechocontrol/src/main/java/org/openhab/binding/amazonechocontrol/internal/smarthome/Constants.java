@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
 import java.util.HashMap;
@@ -8,6 +20,9 @@ import java.util.function.Function;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 
+/**
+ * @author Michael Geramb - Initial contribution
+ */
 public class Constants {
 
     public static Map<String, Function<String, HandlerBase>> HandlerFactory = new HashMap<String, Function<String, HandlerBase>>() {
