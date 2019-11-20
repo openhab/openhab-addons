@@ -1352,6 +1352,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     if (RotelConnector.MSG_VALUE_OFF.equalsIgnoreCase(value)) {
                         frequency = 0.0;
                     } else {
+                        // Suppress a potential ending "k" or "K"
+                        if (value.toUpperCase().endsWith("K")) {
+                            value = value.substring(0, value.length() - 1);
+                        }
                         frequency = Double.parseDouble(value);
                     }
                     updateChannelState(CHANNEL_FREQUENCY);
