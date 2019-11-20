@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.pixometer.internal.PixometerConfiguration;
+import org.openhab.binding.pixometer.internal.PixometerAccountConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,7 @@ public class AccountHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initialize Pixometer Accountservice");
 
-        PixometerConfiguration config = getConfigAs(PixometerConfiguration.class);
+        PixometerAccountConfiguration config = getConfigAs(PixometerAccountConfiguration.class);
         setRefreshInterval(config.refresh);
         String user = config.user;
         String password = config.password;

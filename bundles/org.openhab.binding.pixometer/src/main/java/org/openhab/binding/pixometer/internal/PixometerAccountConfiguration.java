@@ -19,7 +19,7 @@ package org.openhab.binding.pixometer.internal;
  * @author Jerome Luckenbach - Initial contribution
  */
 
-public class PixometerConfiguration {
+public class PixometerAccountConfiguration {
 
     /**
      * The configured user name
@@ -30,11 +30,6 @@ public class PixometerConfiguration {
      * The configured password
      */
     public String password;
-
-    /**
-     * Received auth token for the api
-     */
-    public String access_token;
 
     /**
      * Configured refresh rate
