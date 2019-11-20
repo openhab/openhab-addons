@@ -26,6 +26,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -215,6 +217,9 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Long polling
      *
+     * TODO Do we need to protect against concurrent execution of this method via locks etc?
+     *
+     * This is only called from the boot up code as well as after a previous longPoll terminates, so I guess not.
      */
     private void longPoll() {
         /*
@@ -225,42 +230,56 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         if (this.httpClient != null && this.subscriptionId != null) {
 
-            ContentResponse contentResponse;
-            try {
-                logger.warn("Sending long poll request to Bosch");
+            logger.warn("Sending long poll request to Bosch");
 
-                String[] params = { this.subscriptionId, "20" };
-                JsonRpcRequest r = new JsonRpcRequest("2.0", "RE/longPoll", params);
+            String[] params = { this.subscriptionId, "20" };
+            JsonRpcRequest r = new JsonRpcRequest("2.0", "RE/longPoll", params);
 
-                Gson gson = new Gson();
-                String str_content = gson.toJson(r);
+            Gson gson = new Gson();
+            String str_content = gson.toJson(r);
 
-                logger.warn("Sending content: {}", str_content);
+            logger.warn("Sending content: {}", str_content);
 
-                contentResponse = this.httpClient.newRequest("https://192.168.178.128:8444/remote/json-rpc")
-                        .header("Content-Type", "application/json").header("Accept", "application/json")
-                        .header("Gateway-ID", "64-DA-A0-02-14-9B").method(POST)
-                        .content(new StringContentProvider(str_content)).send();
+            class LongPollListener extends BufferingResponseListener {
 
-                // Seems like this should yield something like:
-                // content: [ [ '{"result":"e71k823d0-16","jsonrpc":"2.0"}\n' ] ]
+                private BoschSHCHandlerFactory factory;
 
-                // The key can then be used later for longPoll like this:
-                // body: [ [ '{"jsonrpc":"2.0","method":"RE/longPoll","params":["e71k823d0-16",20]}' ] ]
+                public LongPollListener(BoschSHCHandlerFactory boschSHCHandlerFactory) {
 
-                String content = contentResponse.getContentAsString();
-                logger.warn("Response complete: {} - return code: {}", content, contentResponse.getStatus());
-
-                LongPollResult result = gson.fromJson(content, LongPollResult.class);
-
-                for (DeviceStatusUpdate update : result.result) {
-
-                    logger.warn("Got update: {} <- {}", update.deviceId, update.state.switchState);
+                    super();
+                    this.factory = boschSHCHandlerFactory;
                 }
 
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("HTTP request failed: {}", e);
+                @Override
+                public void onComplete(@Nullable Result result) {
+                    if (result != null && !result.isFailed()) {
+
+                        byte[] responseContent = getContent();
+                        String content = new String(responseContent);
+
+                        logger.warn("Response complete: {} - return code: {}", content,
+                                result.getResponse().getStatus());
+
+                        LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
+
+                        for (DeviceStatusUpdate update : parsed.result) {
+
+                            logger.warn("Got update: {} <- {}", update.deviceId, update.state.switchState);
+                        }
+                    }
+
+                    factory.longPoll();
+                }
             }
+
+            this.httpClient.newRequest("https://192.168.178.128:8444/remote/json-rpc")
+                    .header("Content-Type", "application/json").header("Accept", "application/json")
+                    .header("Gateway-ID", "64-DA-A0-02-14-9B").method(POST)
+                    .content(new StringContentProvider(str_content)).send(new LongPollListener(this));
+
+        } else {
+
+            logger.warn("Unable to long poll. Subscription ID or http client undefined.");
         }
     }
 
