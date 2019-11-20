@@ -439,6 +439,9 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
             case CHANNEL_WATERLEAKAGE:
                 updateState(channelUID, Boolean.TRUE.equals(newState.water) ? OnOffType.ON : OnOffType.OFF);
                 break;
+            case CHANNEL_FIRE:
+                updateState(channelUID, Boolean.TRUE.equals(newState.fire) ? OnOffType.ON : OnOffType.OFF);
+                break;
             case CHANNEL_ALARM:
                 updateState(channelUID, Boolean.TRUE.equals(newState.alarm) ? OnOffType.ON : OnOffType.OFF);
                 break;
