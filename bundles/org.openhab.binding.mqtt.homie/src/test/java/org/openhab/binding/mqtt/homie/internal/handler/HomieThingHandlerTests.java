@@ -46,6 +46,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -212,6 +213,7 @@ public class HomieThingHandlerTests {
 
     @SuppressWarnings("null")
     @Test
+    @Ignore("https://github.com/openhab/openhab2-addons/issues/6408")
     public void handleCommandRefresh() {
         // Create mocked homie device tree with one node and one read-only property
         Node node = thingHandler.device.createNode("node", spy(new NodeAttributes()));
