@@ -37,7 +37,6 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.apache.servicemix.specs.activation-api-1.1;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.specs.jaxb-api-2.2;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.specs.stax-api-1.2;version='[2.9.0,2.9.1)',\
-	org.eclipse.californium.element-connector;version='[1.0.7,1.0.8)',\
 	org.openhab.binding.tradfri;version='[2.5.0,2.5.1)',\
 	org.openhab.binding.tradfri.tests;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.discovery.mdns;version='[2.5.0,2.5.1)',\
