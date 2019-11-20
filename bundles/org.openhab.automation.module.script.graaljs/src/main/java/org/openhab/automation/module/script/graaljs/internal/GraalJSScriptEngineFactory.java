@@ -53,7 +53,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static List<String> mimeTypes = Arrays.asList("application/javascript", "application/ecmascript", "text/javascript", "text/ecmascript");
     private static List<String> extensions = Collections.singletonList("js");
 
-    private static final String ENABLE_GRAALJS_SCRIPT_DEBUG = "graaljs.script.debug";
+    private static final String DISABLE_GRAALJS_SCRIPT_DEBUG = "graaljs.script.debug.disabled";
 
     private static final String DISABLE_GRAALJS_SCRIPT_COMMONJS = "graaljs.script.commonjs.disabled";
 
@@ -76,7 +76,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
             ClassLoader original = Thread.currentThread().getContextClassLoader();
 
             try {
-                Thread.currentThread().setContextClassLoader(new ClassLoader() {
+                Thread.currentThread().setContextClassLoader(new ClassLoader(original) {
                     @Override
                     @NonNullByDefault({})
                     public Enumeration<URL> getResources(String name) throws IOException {
@@ -174,7 +174,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         }
 
         // log stack traces in user code if requested
-        if (Boolean.getBoolean(ENABLE_GRAALJS_SCRIPT_DEBUG)) {
+        if (Boolean.getBoolean(DISABLE_GRAALJS_SCRIPT_DEBUG)) {
             return DebuggingGraalScriptEngine.create(engine);
         }
 

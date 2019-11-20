@@ -75,5 +75,6 @@ a 3rd party module for use as a dependency for a personal script or module, simp
 
 ## Debugging Scripts
 
-Whilst attaching and stepping though scripts is not supported, detailed stack traces can be enabled by setting
-a java system property of `graaljs.script.debug` to `true`.
+Whilst attaching and stepping though scripts is not supported, script stack traces will be logged in the namespace 
+`org.openhab.automation.script.javascript.#stack`. This can be disabled by setting a java system property of 
+`graaljs.script.debug.disabled` to `true`.

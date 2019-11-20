@@ -37,6 +37,7 @@ import java.util.Optional;
 class DebuggingGraalScriptEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(DebuggingGraalScriptEngine.class);
+    private static final Logger stackLogger = LoggerFactory.getLogger("org.openhab.automation.script.javascript.stack");
 
     private ScriptEngine engine;
 
@@ -98,7 +99,7 @@ class DebuggingGraalScriptEngine {
         } catch (InvocationTargetException ite) {
             Throwable cause = ite.getTargetException().getCause();
             if (cause instanceof PolyglotException) {
-                logger.error("Failed to execute script:", cause);
+                stackLogger.error("Failed to execute script:", cause);
             }
             throw ite;
         }
