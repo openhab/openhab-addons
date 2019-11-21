@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.pixometer.internal.PixometerAccountConfiguration;
+import org.openhab.binding.pixometer.internal.config.PixometerAccountConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

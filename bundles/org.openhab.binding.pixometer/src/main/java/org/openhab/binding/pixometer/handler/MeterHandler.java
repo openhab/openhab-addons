@@ -15,6 +15,7 @@ package org.openhab.binding.pixometer.handler;
 import static org.openhab.binding.pixometer.internal.PixometerBindingConstants.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,9 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Volume;
 
-import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -37,8 +40,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.pixometer.internal.PixometerMeterConfiguration;
+import org.openhab.binding.pixometer.internal.config.PixometerMeterConfiguration;
 import org.openhab.binding.pixometer.internal.config.ReadingInstance;
+import org.openhab.binding.pixometer.internal.data.MeterState;
 import org.openhab.binding.pixometer.internal.serializer.CustomReadingInstanceDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +57,7 @@ import com.google.gson.JsonParser;
  *
  * @author Jerome Luckenbach - Initial contribution
  */
+@NonNullByDefault
 public class MeterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MeterHandler.class);
@@ -66,10 +71,11 @@ public class MeterHandler extends BaseThingHandler {
     private final Gson gson = gsonBuilder.create();
     private final JsonParser jsonParser = new JsonParser();
 
-    private String resourceID;
-    private String meterID;
+    private @NonNullByDefault({}) String resourceID;
+    private @NonNullByDefault({}) String meterID;
+    private @NonNullByDefault({}) ExpiringCache<@Nullable MeterState> cache;
 
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     public MeterHandler(Thing thing) {
         super(thing);
@@ -77,20 +83,14 @@ public class MeterHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            Bridge b = this.getBridge();
-            if (b == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Could not find bridge (pixometer config). Did you choose one?");
-                return;
+        try {
+            if (command instanceof RefreshType) {
+                updateMeter(channelUID, cache.getValue());
+            } else {
+                logger.debug("The pixometer binding is read-only and can not handle command {}", command);
             }
-
-            String token = new StringBuilder("Bearer ").append(((AccountHandler) b.getHandler()).getAuthToken())
-                    .toString();
-
-            updateMeter(token);
-        } else {
-            logger.debug("The pixometer binding is read-only and can not handle command {}", command);
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -102,6 +102,8 @@ public class MeterHandler extends BaseThingHandler {
         PixometerMeterConfiguration config = getConfigAs(PixometerMeterConfiguration.class);
         setRessourceID(config.resourceId);
 
+        cache = new ExpiringCache<@Nullable MeterState>(Duration.ofMinutes(60), this::refreshCache);
+
         Bridge b = this.getBridge();
         if (b == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -109,21 +111,33 @@ public class MeterHandler extends BaseThingHandler {
             return;
         }
 
-        String token = new StringBuilder("Bearer ").append(((AccountHandler) b.getHandler()).getAuthToken()).toString();
-
-        obtainMeterId(token);
+        obtainMeterId();
 
         // Start polling job with the interval, that has been set up in the bridge
         int pollingPeriod = Integer.parseInt(b.getConfiguration().get(CONFIG_BRIDGE_REFRESH).toString());
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             logger.debug("Try to refresh meter data");
             try {
-                updateMeter(token);
+                updateMeter(cache.getValue());
             } catch (RuntimeException r) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }, 2, pollingPeriod, TimeUnit.MINUTES);
         logger.debug("Refresh job scheduled to run every {} minutes for '{}'", pollingPeriod, getThing().getUID());
+    }
+
+    /**
+     * @return returns the auth token or null for error handling if the bridge was not found.
+     */
+    private @Nullable String getTokenFromBridge() {
+        Bridge b = this.getBridge();
+        if (b == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Could not find bridge (pixometer config). Did you choose one?");
+            return null;
+        }
+
+        return new StringBuilder("Bearer ").append(((AccountHandler) b.getHandler()).getAuthToken()).toString();
     }
 
     @Override
@@ -147,8 +161,16 @@ public class MeterHandler extends BaseThingHandler {
      *
      * @param token The current active auth token
      */
-    private void obtainMeterId(String token) {
+    private void obtainMeterId() {
         try {
+
+            String token = getTokenFromBridge();
+
+            if (token == null) {
+                throw new IOException(
+                        "Auth token has not been delivered.\n API request can't get executed without authentication.");
+            }
+
             String url = getApiString(API_METER_ENDPOINT);
 
             Properties urlHeader = new Properties();
@@ -177,40 +199,66 @@ public class MeterHandler extends BaseThingHandler {
     }
 
     /**
-     * requests a pre-filtered reading list for this specific meter and updates all corresponding channels
+     * Checks if a channel is linked and redirects to the updateMeter method if link is existing
+     *
+     * @param channelUID the channel requested for refresh
+     * @param meterState a meterState instance with current values
+     */
+    private void updateMeter(ChannelUID channelUID, @Nullable MeterState meterState) throws IOException {
+        if (!isLinked(channelUID)) {
+            throw new IOException("Channel is not linked.");
+        }
+        updateMeter(meterState);
+    }
+
+    /**
+     * updates all corresponding channels
      *
      * @param token The current active access token
      */
-    private void updateMeter(String token) {
+    private void updateMeter(@Nullable MeterState meterState) {
+        try {
+
+            if (meterState == null) {
+                throw new IOException("Meter state has not been delivered to update method. Can't update channels.");
+            }
+
+            ThingTypeUID thingtype = getThing().getThingTypeUID();
+
+            if (THING_TYPE_ENERGYMETER.equals(thingtype)) {
+                QuantityType<Energy> state = new QuantityType<>(meterState.getReadingValue(),
+                        SmartHomeUnits.KILOWATT_HOUR);
+                updateState(CHANNEL_LAST_READING_VALUE, state);
+            }
+
+            if (thingtype.equals(THING_TYPE_GASMETER) || thingtype.equals(THING_TYPE_WATERMETER)) {
+                QuantityType<Volume> state = new QuantityType<>(meterState.getReadingValue(), SIUnits.CUBIC_METRE);
+                updateState(CHANNEL_LAST_READING_VALUE, state);
+            }
+
+            updateState(CHANNEL_LAST_READING_DATE, meterState.getLastReadingDate());
+            updateState(CHANNEL_LAST_REFRESH_DATE, meterState.getLastRefreshTime());
+        } catch (IOException e) {
+            logger.debug("Exception while updating Meter {}: {}", getThing().getUID(), e.getMessage(), e);
+        }
+    }
+
+    private @Nullable MeterState refreshCache() {
         try {
             String url = getApiString(API_READINGS_ENDPOINT);
 
             Properties urlHeader = new Properties();
             urlHeader.put("CONTENT-TYPE", "application/json");
-            urlHeader.put("Authorization", token);
+            urlHeader.put("Authorization", getTokenFromBridge());
 
             String urlResponse = HttpUtil.executeUrl("GET", url, urlHeader, null, null, 2000);
 
             ReadingInstance latestReading = gson.fromJson(new JsonParser().parse(urlResponse), ReadingInstance.class);
 
-            // UoM - Update Quantity State depending on the thing type.
-
-            ThingTypeUID thingtype = getThing().getThingTypeUID();
-
-            if (THING_TYPE_ENERGYMETER.equals(thingtype)) {
-                QuantityType<Energy> state = new QuantityType<>(latestReading.getValue(), SmartHomeUnits.KILOWATT_HOUR);
-                updateState(CHANNEL_LAST_READING_VALUE, state);
-            }
-
-            if (thingtype.equals(THING_TYPE_GASMETER) || thingtype.equals(THING_TYPE_WATERMETER)) {
-                QuantityType<Volume> state = new QuantityType<>(latestReading.getValue(), SIUnits.CUBIC_METRE);
-                updateState(CHANNEL_LAST_READING_VALUE, state);
-            }
-
-            updateState(CHANNEL_LAST_READING_DATE, new DateTimeType(latestReading.getReadingDate().toString()));
-            updateState(CHANNEL_LAST_REFRESH_DATE, new DateTimeType());
-        } catch (IOException | RuntimeException e) {
-            logger.debug("Exception while updating Meter {}: {}", getThing().getUID(), e.getMessage(), e);
+            return new MeterState(latestReading);
+        } catch (IOException e) {
+            logger.debug("Exception while refreshing cache for Meter {}: {}", getThing().getUID(), e.getMessage(), e);
+            return null;
         }
     }
 

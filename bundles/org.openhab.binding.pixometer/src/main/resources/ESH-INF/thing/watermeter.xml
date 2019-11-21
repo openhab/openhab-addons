@@ -16,7 +16,7 @@
 			<channel id="last_refresh_date" typeId="last_refresh_date" />
 		</channels>
 		<config-description>
-			<parameter name="resourceID" type="text" required="true">
+			<parameter name="resourceId" type="text" required="true">
 				<label>Ressource ID</label>
 				<description>The ID which represents the current meter. You can find it in the pixometer browser app while editing a specific meter. It should look like this: "https://pixometer.io/portal/#/meters/XXXXX/edit"</description>
 			</parameter>

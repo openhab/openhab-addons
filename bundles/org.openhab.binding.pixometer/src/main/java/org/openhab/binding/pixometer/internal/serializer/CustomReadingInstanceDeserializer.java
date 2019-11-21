@@ -67,10 +67,20 @@ public class CustomReadingInstanceDeserializer implements JsonDeserializer<Readi
         result.setAppliedMethod(getStringFromJson(latestReading, APPLIED_METHOD));
         result.setReadingDate(ZonedDateTime.parse(getStringFromJson(latestReading, READING_DATE)));
         result.setValue(Double.parseDouble(getStringFromJson(latestReading, VALUE)));
-        result.setValueSecondTariff(Double.parseDouble(getStringFromJson(latestReading, VALUE_SECOND_TARIFF)));
-        result.setProvidedFractionDigits(Integer.parseInt(getStringFromJson(latestReading, PROVIDED_FRACTION_DIGITS)));
-        result.setProvidedFractionDigitsSecondTariff(
-                Integer.parseInt(getStringFromJson(latestReading, PROVIDED_FRACTION_DIGITS_SECOND_TARIFF)));
+
+        // Not all meters provide useful data for second tariff and fraction digits , so zero should be used in case of
+        // a null value.
+        String secondTariffValue = getStringFromJson(latestReading, VALUE_SECOND_TARIFF);
+        result.setValueSecondTariff(
+                checkStringForNullValues(secondTariffValue) ? 0 : Double.parseDouble(secondTariffValue));
+
+        String providedFractionDigits = getStringFromJson(latestReading, PROVIDED_FRACTION_DIGITS);
+        result.setProvidedFractionDigits(
+                checkStringForNullValues(providedFractionDigits) ? 0 : Integer.parseInt(providedFractionDigits));
+
+        String secondprovidedFractionDigits = getStringFromJson(latestReading, PROVIDED_FRACTION_DIGITS_SECOND_TARIFF);
+        result.setProvidedFractionDigitsSecondTariff(checkStringForNullValues(secondprovidedFractionDigits) ? 0
+                : Integer.parseInt(secondprovidedFractionDigits));
 
         return result;
     }
@@ -84,6 +94,14 @@ public class CustomReadingInstanceDeserializer implements JsonDeserializer<Readi
      */
     private String getStringFromJson(JsonObject data, String key) {
         return data.get(key).toString().replaceAll("\"", "");
+    }
+
+    /**
+     * @param s the striong to check
+     * @return returns true if null values have been found, false otherwise
+     */
+    private boolean checkStringForNullValues(String s) {
+        return (s.isEmpty() || s.equals(null) || s.equals("null"));
     }
 
 }

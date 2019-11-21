@@ -11,29 +11,19 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.pixometer.internal;
+package org.openhab.binding.pixometer.internal.config;
 
 /**
- * Data class representing the user configurable settings of the api
+ * Data class representing the user configurable settings of a meter thing
  *
  * @author Jerome Luckenbach - Initial contribution
  */
 
-public class PixometerAccountConfiguration {
+public class PixometerMeterConfiguration {
 
     /**
-     * The configured user name
+     * The resourceId of the current meter
      */
-    public String user;
-
-    /**
-     * The configured password
-     */
-    public String password;
-
-    /**
-     * Configured refresh rate
-     */
-    public int refresh;
+    public String resourceId;
 
 }
