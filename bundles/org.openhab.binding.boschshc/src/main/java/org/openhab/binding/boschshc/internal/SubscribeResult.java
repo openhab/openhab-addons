@@ -15,7 +15,12 @@ package org.openhab.binding.boschshc.internal;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * Response of the Controller for a Long Poll API call.
+ *
+ * The result field will contain the subscription ID needed for further API calls (e.g. the long polling call)
+ *
  * @author Stefan Kästle
+ *
  */
 public class SubscribeResult {
     private @Nullable String result;

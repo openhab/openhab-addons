@@ -15,6 +15,7 @@ package org.openhab.binding.boschshc.internal;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * Represents a device status update as represented by the Smart Home Controller.
  *
  * @author Stefan Kästle
  *

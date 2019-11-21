@@ -4,29 +4,45 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<label>BoschSHC Binding Thing</label>
-		<description>Sample thing for BoschSHC Binding</description>
+    <!-- Bosch Bridge -->
+    <bridge-type id="shc">
+        <label>Bosch Smart Home Controller</label>
+        <description></description>
+
+        <config-description>
+            <parameter name="ipAddress" type="text">
+                <context>network-address</context>
+                <label>Network Address</label>
+                <description>Network address of the Bosch Smart Home Controller.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+	<!--Bosch in-wall switch-->
+	<thing-type id="in-wall-switch">
+		<label>Bosch in-wall switch</label>
+		<description>In-wall switch for light control</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel" />
+			<channel id="power-switch" typeId="power-switch" />
 		</channels>
 
 		<config-description>
-			<parameter name="config1" type="text" required="true">
-				<label>Sample Parameter</label>
-				<description>This is a sample text configuration parameter</description>
+			<parameter name="id" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID of the in-wall switch</description>
+                <required>true</required>
 			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>boschshcItem</item-type>
-		<label>BoschSHC Binding Channel</label>
-		<description>Sample channel for BoschSHC Binding</description>
+	<!-- Sample Channel Type: ["PowerMeter","PowerSwitch","PowerSwitchProgram","Routing"] -->
+	<channel-type id="power-switch">
+		<item-type>Switch</item-type>
+		<label>Bosch Power Switch</label>
+		<description>In-Wall Bosch Power Switch</description>
 	</channel-type>
 
 </thing:thing-descriptions>

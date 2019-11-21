@@ -20,7 +20,7 @@ package org.openhab.binding.boschshc.internal;
 public class BoschSHCConfiguration {
 
     /**
-     * Sample configuration parameter. Replace with your own.
+     * ID of the device as returned by the controller.
      */
-    public String config1;
+    public String id;
 }

@@ -3,8 +3,8 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>BoschSHC Binding</name>
-	<description>This is the binding for BoschSHC.</description>
+	<name>Bosch Smart Home Binding</name>
+	<description>This is the binding for Bosch Smart Home Controller.</description>
 	<author>Stefan Kästle</author>
 
 </binding:binding>

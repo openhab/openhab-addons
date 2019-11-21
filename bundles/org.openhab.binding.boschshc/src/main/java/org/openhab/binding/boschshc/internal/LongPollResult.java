@@ -15,6 +15,7 @@ package org.openhab.binding.boschshc.internal;
 import java.util.ArrayList;
 
 /**
+ * Response of the Controller for a Long Poll API call.
  *
  * @author Stefan Kästle
  *
