@@ -38,7 +38,7 @@ public class NUTChannelTypeProvider implements ChannelTypeProvider, ThingHandler
     private @Nullable ThingHandler handler;
 
     @Override
-    public @Nullable Collection<ChannelType> getChannelTypes(@Nullable final Locale locale) {
+    public Collection<ChannelType> getChannelTypes(@Nullable final Locale locale) {
         return Collections.unmodifiableCollection(map.values());
     }
 

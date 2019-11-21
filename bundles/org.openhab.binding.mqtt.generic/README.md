@@ -41,7 +41,7 @@ binding can unfortunately not provide any auto-discovery means.
 
 If you use an open source IoT device, the chances are high,
 that it has the MQTT convention Homie or HomeAssistant implemented. Those conventions specify the topic
-topology and allow auto discovery. Please have a look at the specific openHAB bindings.  
+topology and allow auto discovery. Please have a look at the specific openHAB bindings.
  
 ## Supported Things
 
@@ -59,8 +59,8 @@ You can add the following channels:
 * **string**: This channel can show the received text on the given topic and can send text to a given topic.
 * **number**: This channel can show the received number on the given topic and can send a number to a given topic. It can have a min, max and step values.
 * **dimmer**: This channel handles numeric values as percentages. It can have min, max and step values.
-* **contact**: This channel represents a open/close state of a given topic.
-* **switch**: This channel represents a on/off state of a given topic and can send an on/off value to a given topic.
+* **contact**: This channel represents an open/close state of a given topic.
+* **switch**: This channel represents an on/off state of a given topic and can send an on/off value to a given topic.
 * **colorRGB**: This channel handles color values in RGB format.
 * **colorHSB**: This channel handles color values in HSB format.
 * **location**: This channel handles a location.
@@ -79,6 +79,7 @@ You can add the following channels:
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor. 
 * __retained__: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time. 
+* __qos__: QoS of this channel. Overrides the connection  QoS (defined in broker connection).
 * __trigger__: If `true`, the state topic will not update a state, but trigger a channel instead.
 
 ### Channel Type "string"
@@ -100,8 +101,8 @@ You can connect this channel to a Number item.
 
 ### Channel Type "dimmer"
  
-* __on__: A optional string (like "ON"/"Open") that is recognized as minimum.
-* __off__: A optional string (like "OFF"/"Close") that is recognized as maximum.
+* __on__: An optional string (like "ON"/"Open") that is recognized as minimum.
+* __off__: An optional string (like "OFF"/"Close") that is recognized as maximum.
 * __min__: A required minimum value.
 * __max__: A required maximum value.
 * __step__: For decrease, increase commands the step needs to be known
@@ -114,8 +115,8 @@ You can connect this channel to a Rollershutter or Dimmer item.
 
 ### Channel Type "contact", "switch"
 
-* __on__: A optional number (like 1, 10) or a string (like "ON"/"Open") that is recognized as on/open state.
-* __off__: A optional number (like 0, -10) or a string (like "OFF"/"Close") that is recognized as off/closed state.
+* __on__: An optional number (like 1, 10) or a string (like "ON"/"Open") that is recognized as on/open state.
+* __off__: An optional number (like 0, -10) or a string (like "OFF"/"Close") that is recognized as off/closed state.
 
 The contact channel by default recognizes `"OPEN"` and `"CLOSED"`. You can connect this channel to a Contact item.
 The switch channel by default recognizes `"ON"` and `"OFF"`. You can connect this channel to a Switch item.
@@ -167,11 +168,15 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 
 ### Channel Type "rollershutter"
 
-* __on__: An optional string (like "Open") that is recognized as UP state.
-* __off__: An optional string (like "Close") that is recognized as DOWN state.
-* __stop__: An optional string (like "Stop") that is recognized as STOP state.
+* __on__: An optional string (like "Open") that is recognized as `UP` state.
+* __off__: An optional string (like "Close") that is recognized as `DOWN` state.
+* __stop__: An optional string (like "Stop") that is recognized as `STOP` state.
+
+Internally `UP` is converted to 0%, `DOWN` to 100%.
+If strings are defined for these values, they are used for sending commands to the broker, too.
 
 You can connect this channel to a Rollershutter or Dimmer item.
+
 
 ## Rule Actions
 
@@ -213,17 +218,19 @@ Here are a few examples to unwrap a value from a complex response:
 | `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX::(.*?)°`                           |
 
 Transformations can be chained by separating them with the mathematical intersection character "∩".
+Please note that the incoming value will be discarded if one transformation fails (e.g. REGEX did not match).
 
 ## Outgoing Value Transformation
 
 All mentioned channels allow an optional transformation for outgoing values.
 Please prefer formatting as described in the next section whenever possible.
+Please note that value will be discarded and not sent if one transformation fails (e.g. REGEX did not match).
 
 ## Format before Publish
 
 This feature is quite powerful in transforming an item state before it is published to the MQTT broker.
 It has the syntax: `%[flags][width]conversion`.
-Find the full documentation on the [Java](https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html) web page.
+Find the full documentation on the [Java](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) web page.
 
 The default is "%s" which means: Output the item state as string.
 
@@ -242,6 +249,4 @@ Here are a few examples:
 ## Troubleshooting
 
 * If you get the error "No MQTT client": Please update your installation.
-* If you use the Mosquitto broker: Please be aware that there is a relatively low setting 
-for retained messages. At some point messages will just not being delivered anymore: 
-Change the setting 
+* If you use the Mosquitto broker: Please be aware that there is a relatively low setting for retained messages. At some point messages will just not being delivered anymore: Change the setting. 

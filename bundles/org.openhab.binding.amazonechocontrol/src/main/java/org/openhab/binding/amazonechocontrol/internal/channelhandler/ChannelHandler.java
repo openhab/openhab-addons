@@ -48,7 +48,7 @@ public abstract class ChannelHandler {
         try {
             return gson.fromJson(json, type);
         } catch (JsonSyntaxException e) {
-            logger.debug("Json parse error {}", e);
+            logger.debug("Json parse error", e);
             return null;
         }
     }

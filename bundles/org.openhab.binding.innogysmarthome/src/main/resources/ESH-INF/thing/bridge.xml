@@ -13,7 +13,7 @@
 				<description>Parameters for connecting to innogy SmartHome Controller (SHC)</description>
 			</parameter-group>
 			<parameter-group name="advanced">
-				<label>Advanced configuration</label>
+				<label>Advanced Configuration</label>
 				<description>Advanced parameters, for special tweaking only.</description>
 				<advanced>true</advanced>
 			</parameter-group>
@@ -29,7 +29,7 @@
 				</options>
 			</parameter>
 			<parameter name="authcode" type="text" groupName="connection">
-				<label>Authorization code</label>
+				<label>Authorization Code</label>
 				<description><![CDATA[ The auth-code is a one-time code needed to retrieve the
 				necessary access-codes from innogy SmartHome Service. <b>Please go - depending on your brand - to...</b>
 				<ul> 
@@ -42,7 +42,7 @@
 			<parameter name="websocketidletimeout" type="integer" min="0" max="3600" unit="s" groupName="advanced">
 				<required>false</required>
 				<unitLabel>seconds</unitLabel>
-				<label>WebSocket idle timeout in seconds</label>
+				<label>WebSocket Idle Timeout in Seconds</label>
 				<description>The WebSocket is the connection to the innogy service that listens to status updates.
 					If no data is received over the websocket connection for the given time,
 					the websocket will reconnect. 0 will disable the idle timeout. Default is 900 seconds (15 minutes).</description>
@@ -50,14 +50,14 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshtoken" type="text" groupName="advanced" readOnly="true">
-				<label>Refresh token</label>
+				<label>Refresh Token</label>
 				<description>The refresh token is used to create a valid access token. It is automatically
 					pulled from innogy SmartHome backend with the initial auth-code.</description>
 				<advanced>true</advanced>
 				<context>password</context>
 			</parameter>
 			<parameter name="accesstoken" type="text" groupName="advanced" readOnly="true">
-				<label>Access token</label>
+				<label>Access Token</label>
 				<description>The access token is used to access the innogy SmartHome backend. Is is automatically
 					pulled from innogy SmartHome backend.</description>
 				<advanced>true</advanced>

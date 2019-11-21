@@ -21,8 +21,8 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.beowulfe.hap.accessories.TemperatureSensor;
+import io.github.hapjava.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.accessories.TemperatureSensor;
 
 /**
  * Implements a Homekit TemperatureSensor using a NumberItem

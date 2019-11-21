@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
@@ -42,6 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution for AudioSink and notifications
  */
+@NonNullByDefault
 public class FreeboxAirPlayAudioSink implements AudioSink {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxAirPlayAudioSink.class);
@@ -59,13 +62,14 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
     private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
     private AudioHTTPServer audioHTTPServer;
     private FreeboxThingHandler handler;
-    private String callbackUrl;
+    private @Nullable String callbackUrl;
 
     static {
         SUPPORTED_STREAMS.add(AudioStream.class);
     }
 
-    public FreeboxAirPlayAudioSink(FreeboxThingHandler handler, AudioHTTPServer audioHTTPServer, String callbackUrl) {
+    public FreeboxAirPlayAudioSink(FreeboxThingHandler handler, AudioHTTPServer audioHTTPServer,
+            @Nullable String callbackUrl) {
         this.handler = handler;
         this.audioHTTPServer = audioHTTPServer;
         this.callbackUrl = callbackUrl;
@@ -94,18 +98,27 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
     }
 
     @Override
-    public String getLabel(Locale locale) {
+    public @Nullable String getLabel(@Nullable Locale locale) {
         return handler.getThing().getLabel();
     }
 
     @Override
-    public void process(AudioStream audioStream)
+    public void process(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (!ThingHandlerHelper.isHandlerInitialized(handler)
                 || ((handler.getThing().getStatus() == ThingStatus.OFFLINE)
                         && ((handler.getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE)
                                 || (handler.getThing().getStatusInfo()
                                         .getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR)))) {
+            return;
+        }
+
+        if (audioStream == null) {
+            try {
+                handler.stopMedia();
+            } catch (FreeboxException e) {
+                logger.warn("Exception while stopping audio stream playback: {}", e.getMessage());
+            }
             return;
         }
 
@@ -128,11 +141,10 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
                 logger.warn("We do not have any callback url, so AirPlay device cannot play the audio stream!");
             }
         }
-        if (audioStream != null) {
-            try {
-                audioStream.close();
-            } catch (IOException e) {
-            }
+        try {
+            audioStream.close();
+        } catch (IOException e) {
+            logger.debug("Exception while closing audioStream", e);
         }
         try {
             logger.debug("AirPlay audio sink: process url {}", url);

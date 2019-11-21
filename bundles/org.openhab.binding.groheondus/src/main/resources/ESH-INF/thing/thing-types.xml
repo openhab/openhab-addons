@@ -100,7 +100,7 @@
 
 	<channel-type id="name">
 		<item-type>String</item-type>
-		<label>Appliance name</label>
+		<label>Appliance Name</label>
 		<description>The name of the appliance</description>
 	</channel-type>
 	<channel-type id="pressure">
@@ -116,7 +116,7 @@
 	</channel-type>
 	<channel-type id="valve_open">
 		<item-type>Switch</item-type>
-		<label>Valve open</label>
+		<label>Valve Open</label>
 		<description>Valve switch</description>
 	</channel-type>
 	<channel-type id="humidity">
@@ -133,7 +133,7 @@
 	</channel-type>
 	<channel-type id="waterconsumption">
 		<item-type>Number</item-type>
-		<label>Water consumption</label>
+		<label>Water Consumption</label>
 		<description>The amount of water consumed in the given time period.</description>
 		<state readOnly="true" />
 		<config-description>

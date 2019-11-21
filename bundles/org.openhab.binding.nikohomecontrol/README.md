@@ -1,6 +1,6 @@
 # Niko Home Control Binding
 
-The Niko Home Control binding integrates with a [Niko Home Control](http://www.nikohomecontrol.be/) system through a Niko Home Control IP-interface or Niko Home Control Connected Controller.
+The Niko Home Control binding integrates with a [Niko Home Control](https://www.niko.eu/) system through a Niko Home Control IP-interface or Niko Home Control Connected Controller.
 
 The binding supports both Niko Home Control I and Niko Home Control II.
 
@@ -59,12 +59,12 @@ It is possible to trigger a manual scan for things on the Niko Home Control brid
 Note that Niko Home Control II will require the touch profile and password parameters to be set on the bridge before the scan for actions can succeed.
 The bridge will remain offline as long as these parameters are not set.
 
-If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such in PaperUI.
-Locations can subsequently be changed through the thing location parameter in PaperUI.
+If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such in Paper UI.
+Locations can subsequently be changed through the thing location parameter in Paper UI.
 
 ## Thing Configuration
 
-Besides using PaperUI to manually configure things or adding automatically discovered things through PaperUI, you can add thing definitions in the things file.
+Besides using Paper UI to manually configure things or adding automatically discovered things through Paper UI, you can add thing definitions in the things file.
 
 The Thing configuration for the **bridge** uses the following syntax:
 
@@ -130,7 +130,7 @@ Discovery will identify All Off actions and map them to `pushButton` things.
 For Niko Home Control I, the `actionId` parameter is the unique IP Interface Object ID (`ipInterfaceObjectId`) as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control I programming software.
 It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery.
 For textual configuration, you can manually retrieve it from the content of the .nhcp configuration file created by the programming software.
-Open the file with an unzip tool to read it's content.
+Open the file with an unzip tool to read its content.
 
 For Niko Home Control II, the `actionId` parameter is a unique ID for the action in the controller. It can only be auto-discovered.
 If you want to define the action through textual configuration, the easiest way is to first do discovery on the bridge to get the correct `actionId` to use in the textual configuration.

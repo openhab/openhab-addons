@@ -76,7 +76,7 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
 
             @Override
             public void onSuccess(@Nullable Float value) {
-                if (value != null) {
+                if (value != null && !Float.isNaN(value)) {
                     handler.postUpdate(channelUID, new PercentType(Math.round(value * 100)));
                 }
             }

@@ -8,7 +8,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Wall mounted Smart Controller (WSC2)</label>
+		<label>Wall Mounted Smart Controller (WSC2)</label>
 		<description>A battery powered smart controller with two push buttons.</description>
 
 		<channels>

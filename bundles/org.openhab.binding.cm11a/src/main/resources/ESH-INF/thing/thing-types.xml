@@ -6,17 +6,17 @@
 
 	<!-- Bridge which is the cm11a device -->
 	<bridge-type id="cm11a">
-		<label>CM11a controller for X10 devices</label>
+		<label>CM11a Controller for X10 Devices</label>
 		<description>CM11 is a device that allows control of X10 devices for a computer. </description>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true" >
-				<label>Serial port</label>
+				<label>Serial Port</label>
 				<context>serial-port</context>
 				<description>Serial port used to communicate with the CM11a</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="1">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
 			</parameter>
@@ -38,7 +38,7 @@
 
 		<config-description>
 			<parameter name="houseUnitCode" type="text" required="true">
-				<label>X10 House and Unit code</label>
+				<label>X10 House and Unit Code</label>
 				<description>Address of dimmer in the X10 system</description>
 			</parameter>
 		</config-description>
@@ -59,7 +59,7 @@
 
 		<config-description>
 			<parameter name="houseUnitCode" type="text" required="true">
-				<label>X10 House and Unit code</label>
+				<label>X10 House and Unit Code</label>
 				<description>Address of switch in the X10 system</description>
 			</parameter>
 		</config-description>

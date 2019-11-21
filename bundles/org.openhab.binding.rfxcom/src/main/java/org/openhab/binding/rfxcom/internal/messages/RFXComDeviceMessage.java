@@ -19,30 +19,33 @@ import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * An interface for message about devices, so interface message do not (have to) implement this
  *
- * @author Martin van Wingerden - Simplify some code in the RFXCOM binding
+ * @author Martin van Wingerden - Initial contribution
  */
 public interface RFXComDeviceMessage<T> extends RFXComMessage {
     /**
      * Procedure for converting RFXCOM value to openHAB command.
      *
-     * @param channelId id of the channel
+     * @param channelId   id of the channel
+     * @param deviceState
      * @return openHAB command.
      * @throws RFXComUnsupportedChannelException if the channel is not supported
      */
-    Command convertToCommand(String channelId) throws RFXComUnsupportedChannelException;
+    Command convertToCommand(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException;
 
     /**
      * Procedure for converting RFXCOM value to openHAB state.
      *
-     * @param channelId id of the channel
+     * @param channelId   id of the channel
+     * @param deviceState
      * @return openHAB state.
      * @throws RFXComUnsupportedChannelException if the channel is not supported
      */
-    State convertToState(String channelId) throws RFXComUnsupportedChannelException;
+    State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException;
 
     /**
      * Procedure to get device id.

@@ -70,6 +70,7 @@
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
+    <module>org.openhab.binding.doorbird</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dwdunwetter</module>
@@ -203,6 +204,7 @@
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tankerkoenig</module>
+    <module>org.openhab.binding.telegram</module>    
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>

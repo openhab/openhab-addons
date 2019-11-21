@@ -14,7 +14,7 @@
   <name>openHAB Add-ons :: Integration Tests :: MQTT Homie Tests</name>
 
   <properties>
-    <netty.version>4.1.34.Final</netty.version>
+    <netty.version>4.1.42.Final</netty.version>
   </properties>
 
   <dependencies>

@@ -121,7 +121,7 @@
 	</channel-type>
 	<channel-type id="delayoff">
 		<item-type>Number</item-type>
-		<label>Delay off</label>
+		<label>Delay Off</label>
 	</channel-type>
 	<channel-type id="act_det">
 		<item-type>Switch</item-type>

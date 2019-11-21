@@ -1,6 +1,6 @@
 # Philips Hue Binding
 
-This binding integrates the [Philips Hue Lighting system](http://www.meethue.com).
+This binding integrates the [Philips Hue Lighting system](https://www.meethue.com).
 The integration happens through the Hue bridge, which acts as an IP gateway to the ZigBee devices.
 
 ![Philips Hue](doc/hue.jpg)

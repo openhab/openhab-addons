@@ -6,7 +6,7 @@
 	<config-description uri="thing-type:lgtvserial:serial">
 		<parameter name="port" type="text">
 			<context>serial-port</context>
-			<label>Serial port</label>
+			<label>Serial Port</label>
 			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
 			<required>true</required>
 			<default>/dev/ttyS0</default>

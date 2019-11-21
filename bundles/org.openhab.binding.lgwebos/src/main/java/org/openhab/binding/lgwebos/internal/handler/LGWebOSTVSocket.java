@@ -37,6 +37,8 @@ package org.openhab.binding.lgwebos.internal.handler;
 import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -92,10 +94,8 @@ public class LGWebOSTVSocket {
 
     public enum State {
         DISCONNECTED,
-        CONNECTING,
         REGISTERING,
-        REGISTERED,
-        DISCONNECTING
+        REGISTERED
     }
 
     private State state = State.DISCONNECTED;
@@ -146,7 +146,7 @@ public class LGWebOSTVSocket {
         State oldState = this.state;
         if (oldState != state) {
             this.state = state;
-            Optional.ofNullable(this.listener).ifPresent(l -> l.onStateChanged(oldState, this.state));
+            Optional.ofNullable(this.listener).ifPresent(l -> l.onStateChanged(this.state));
         }
     }
 
@@ -159,25 +159,15 @@ public class LGWebOSTVSocket {
     }
 
     public void connect() {
-        synchronized (this) {
-            if (state != State.DISCONNECTED) {
-                logger.debug("Not trying to connect. Current state is: {}", state);
-                return;
-            }
-            setState(State.CONNECTING);
-        }
-
         try {
             this.client.connect(this, this.destUri);
             logger.debug("Connecting to: {}", this.destUri);
         } catch (IOException e) {
             logger.debug("Unable to connect.", e);
-            setState(State.DISCONNECTED);
         }
     }
 
     public void disconnect() {
-        setState(State.DISCONNECTING);
         Optional.ofNullable(this.session).ifPresent(s -> s.close());
         setState(State.DISCONNECTED);
     }
@@ -194,11 +184,18 @@ public class LGWebOSTVSocket {
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        Optional.ofNullable(this.listener).ifPresent(l -> l.onError(cause.getMessage()));
-        logger.trace("Connection Error.", cause);
-        if (State.CONNECTING == this.state) { // only a failed connection attempt.
+        logger.trace("Connection Error", cause);
+        if (cause instanceof SocketTimeoutException && "Connect Timeout".equals(cause.getMessage())) {
+            // this is expected during connection attempts while TV is off
             setState(State.DISCONNECTED);
+            return;
         }
+        if (cause instanceof ConnectException && "Connection refused".equals(cause.getMessage())) {
+            // this is expected during TV startup or shutdown
+            return;
+        }
+
+        Optional.ofNullable(this.listener).ifPresent(l -> l.onError(cause.getMessage()));
     }
 
     @OnWebSocketClose
@@ -297,10 +294,8 @@ public class LGWebOSTVSocket {
                 this.sendMessage(packet);
 
                 break;
-            case CONNECTING:
             case REGISTERING:
             case DISCONNECTED:
-            case DISCONNECTING:
                 logger.warn("Skipping command {} for {} in state {}", command, command.getTarget(), state);
                 break;
         }
@@ -432,7 +427,7 @@ public class LGWebOSTVSocket {
 
     public interface WebOSTVSocketListener {
 
-        public void onStateChanged(State oldState, State newState);
+        public void onStateChanged(State state);
 
         public void onError(String errorMessage);
 
@@ -447,7 +442,10 @@ public class LGWebOSTVSocket {
 
     public ServiceSubscription<Float> subscribeVolume(ResponseListener<Float> listener) {
         ServiceSubscription<Float> request = new ServiceSubscription<>(VOLUME, null,
-                jsonObj -> (float) (jsonObj.get("volume").getAsInt() / 100.0), listener);
+                jsonObj -> "mastervolume_tv_speaker".equals(jsonObj.get("scenario").getAsString())
+                        ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
+                        : Float.NaN,
+                listener);
         sendCommand(request);
         return request;
     }
@@ -718,6 +716,14 @@ public class LGWebOSTVSocket {
 
     public ServiceSubscription<AppInfo> subscribeRunningApp(ResponseListener<AppInfo> listener) {
         ServiceSubscription<AppInfo> request = new ServiceSubscription<>(FOREGROUND_APP, null,
+                jsonObj -> GSON.fromJson(jsonObj, AppInfo.class), listener);
+        sendCommand(request);
+        return request;
+
+    }
+
+    public ServiceCommand<AppInfo> getRunningApp(ResponseListener<AppInfo> listener) {
+        ServiceCommand<AppInfo> request = new ServiceCommand<>(FOREGROUND_APP, null,
                 jsonObj -> GSON.fromJson(jsonObj, AppInfo.class), listener);
         sendCommand(request);
         return request;

@@ -53,11 +53,6 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-    }
-
-    @Override
     public void dispose() {
         super.dispose();
 

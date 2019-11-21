@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridgeV3" />
 		</supported-bridge-type-refs>
-		<label>Color bulb (old)</label>
+		<label>Color Bulb (old)</label>
 		<description>The oldest produced color bulb. Without a white channel. No saturation support.</description>
 		<category>Lightbulb</category>
 

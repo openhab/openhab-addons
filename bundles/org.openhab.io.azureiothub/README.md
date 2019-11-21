@@ -17,7 +17,7 @@ If you want to log more than this, you can switch to a paying price tier, see [p
 
 ### Connection string 
 
-From the [Azure portal](http://portal.azure.com/), you need to create an IoT Hub.
+From the [Azure portal](https://portal.azure.com/), you need to create an IoT Hub.
 Click on the '+' sign on the upper left, search for 'IoT Hub', click create and follow the wizard.
 Once the hub is available, go to settings - Shared access policies, click `iothubowner` and copy the connection string - primary key.
 When configuring your connector in openHAB, you need to provide this string as the parameter `connectionstring`.

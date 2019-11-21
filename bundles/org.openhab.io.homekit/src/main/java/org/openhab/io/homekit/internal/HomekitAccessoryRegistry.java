@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitAccessory;
-import com.beowulfe.hap.HomekitRoot;
+import io.github.hapjava.HomekitAccessory;
+import io.github.hapjava.HomekitRoot;
 
 /**
  * Stores the created HomekitAccessories. GroupedAccessories are also held here

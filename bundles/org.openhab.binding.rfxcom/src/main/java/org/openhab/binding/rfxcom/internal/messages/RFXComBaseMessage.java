@@ -38,11 +38,12 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         LIGHTING5(20),
         LIGHTING6(21),
         CHIME(22),
-        FAN(23, RFXComFanMessage.SubType.LUCCI_AIR_FAN, RFXComFanMessage.SubType.WESTINGHOUSE_7226640, RFXComFanMessage.SubType.CASAFAN),
+        FAN(23, RFXComFanMessage.SubType.LUCCI_AIR_FAN, RFXComFanMessage.SubType.WESTINGHOUSE_7226640,
+                RFXComFanMessage.SubType.CASAFAN),
         FAN_SF01(23, RFXComFanMessage.SubType.SF01),
         FAN_ITHO(23, RFXComFanMessage.SubType.CVE_RFT),
         FAN_LUCCI_DC(23, RFXComFanMessage.SubType.LUCCI_AIR_DC),
-        FAN_LUCCI_DCII(23, RFXComFanMessage.SubType.LUCCI_AIR_DCII),
+        FAN_LUCCI_DC_II(23, RFXComFanMessage.SubType.LUCCI_AIR_DC_II),
         FAN_SEAV(23, RFXComFanMessage.SubType.SEAV_TXS4),
         FAN_FT1211R(23, RFXComFanMessage.SubType.FT1211R),
         FAN_FALMEC(23, RFXComFanMessage.SubType.FALMEC),
@@ -87,7 +88,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         private final int packetType;
         private final ByteEnumWrapper[] subTypes;
 
-        PacketType(int packetType, ByteEnumWrapper ... subTypes) {
+        PacketType(int packetType, ByteEnumWrapper... subTypes) {
             this.packetType = packetType;
             this.subTypes = subTypes;
         }
@@ -107,7 +108,6 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
     public byte id2;
 
     public RFXComBaseMessage() {
-
     }
 
     public RFXComBaseMessage(PacketType packetType) {
@@ -116,7 +116,6 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         rawMessage = data;
 
         packetId = data[1];
@@ -131,22 +130,22 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
     }
 
     private PacketType fromByte(byte packetId, byte subType) throws RFXComUnsupportedValueException {
-            for (PacketType enumValue : PacketType.values()) {
-                if (enumValue.toByte() == packetId) {
-                    // if there are no subtypes?
-                    if (enumValue.subTypes.length == 0) {
+        for (PacketType enumValue : PacketType.values()) {
+            if (enumValue.toByte() == packetId) {
+                // if there are no subtypes?
+                if (enumValue.subTypes.length == 0) {
+                    return enumValue;
+                }
+                // otherwise check for the matching subType
+                for (ByteEnumWrapper e : enumValue.subTypes) {
+                    if (e.toByte() == subType) {
                         return enumValue;
-                    }
-                    // otherwise check for the matching subType
-                    for (ByteEnumWrapper e: enumValue.subTypes){
-                        if (e.toByte() == subType) {
-                            return enumValue;
-                        }
                     }
                 }
             }
+        }
 
-            throw new RFXComUnsupportedValueException(PacketType.class, packetId);
+        throw new RFXComUnsupportedValueException(PacketType.class, packetId);
     }
 
     public PacketType getPacketType() {

@@ -170,5 +170,3 @@ log:set DEFAULT org.apache.ftpserver
 
 If you meet any problems to receive images from the network cameras, you could test connection to binding with any FTP client.
 You can send image files via FTP client and thing channels should be updated accordingly.
-
- 

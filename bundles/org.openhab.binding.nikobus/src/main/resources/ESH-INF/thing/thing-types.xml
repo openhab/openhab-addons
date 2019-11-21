@@ -35,18 +35,28 @@
 		</channels>
 
 		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>The Nikobus address of the module</description>
+			</parameter>
 			<parameter name="impactedModules" type="text">
 				<label>Impacted Modules</label>
 				<description>Comma separated list of impacted modules, i.e. 4C6C-1,4C6C-2</description>
 			</parameter>
 		</config-description>
-
 	</thing-type>
 
 	<channel-type id="button">
 		<item-type>Switch</item-type>
 		<label>Button Event</label>
 		<description>Fires when the button is pressed</description>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>The Nikobus address of the module</description>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<thing-type id="switch-module">
@@ -95,6 +105,13 @@
 				<label>Output 12</label>
 			</channel>
 		</channels>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>The Nikobus address of the module</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="dimmer-module">
@@ -143,6 +160,13 @@
 				<label>Output 12</label>
 			</channel>
 		</channels>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>The Nikobus address of the module</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="rollershutter-module">
@@ -173,6 +197,13 @@
 				<label>Output 6</label>
 			</channel>
 		</channels>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>The Nikobus address of the module</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="switch-output">

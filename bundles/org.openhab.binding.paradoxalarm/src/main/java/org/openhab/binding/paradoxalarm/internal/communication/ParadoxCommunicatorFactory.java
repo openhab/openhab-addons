@@ -60,8 +60,8 @@ public class ParadoxCommunicatorFactory {
             throws UnknownHostException, IOException, ParadoxException {
         switch (panelType) {
             case EVO48:
+            case EVO96:
             case EVO192:
-            case EVOHD:
                 logger.debug("Creating new communicator for Paradox {} system", panelType);
                 return new EvoCommunicator(ipAddress, tcpPort, ip150Password, pcPassword, scheduler, panelType);
             default:

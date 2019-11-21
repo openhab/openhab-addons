@@ -22,13 +22,13 @@ Fragment-Host: org.openhab.io.mqttembeddedbroker
 	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
 	com.google.gson;version='[2.8.2,2.8.3)',\
 	com.h2database.mvstore;version='[1.4.199,1.4.200)',\
-	io.netty.buffer;version='[4.1.34,4.1.35)',\
-	io.netty.codec;version='[4.1.34,4.1.35)',\
-	io.netty.codec-mqtt;version='[4.1.34,4.1.35)',\
-	io.netty.common;version='[4.1.34,4.1.35)',\
-	io.netty.handler;version='[4.1.34,4.1.35)',\
-	io.netty.resolver;version='[4.1.34,4.1.35)',\
-	io.netty.transport;version='[4.1.34,4.1.35)',\
+	io.netty.buffer;version='[4.1.42,4.1.43)',\
+	io.netty.codec;version='[4.1.42,4.1.43)',\
+	io.netty.codec-mqtt;version='[4.1.42,4.1.43)',\
+	io.netty.common;version='[4.1.42,4.1.43)',\
+	io.netty.handler;version='[4.1.42,4.1.43)',\
+	io.netty.resolver;version='[4.1.42,4.1.43)',\
+	io.netty.transport;version='[4.1.42,4.1.43)',\
 	javax.measure.unit-api;version='[1.0.0,1.0.1)',\
 	org.apache.commons.codec;version='[1.10.0,1.10.1)',\
 	org.apache.commons.io;version='[2.2.0,2.2.1)',\
@@ -61,3 +61,4 @@ Fragment-Host: org.openhab.io.mqttembeddedbroker
 	net.bytebuddy.byte-buddy;version='[1.9.10,1.9.11)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.9.10,1.9.11)',\
 	org.mockito.mockito-core;version='[3.1.0,3.1.1)'
+-runvm: -Dio.netty.noUnsafe=true

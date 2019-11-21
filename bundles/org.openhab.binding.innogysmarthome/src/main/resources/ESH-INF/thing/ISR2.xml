@@ -8,7 +8,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>In wall Smart Roller Shutter (ISR2)</label>
+		<label>In Wall Smart Roller Shutter (ISR2)</label>
 		<description>An in wall rollershutter with two push buttons.</description>
 
 		<channels>

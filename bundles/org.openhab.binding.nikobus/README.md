@@ -2,7 +2,7 @@
 
 This binding allows openHAB to interact with the Nikobus home automation system.
 
-[![Demo Video Nikobus](https://img.youtube.com/vi/QiNb-8QxXpo/0.jpg)](http://www.youtube.com/watch?v=QiNb-8QxXpo)
+[![Demo Video Nikobus](https://img.youtube.com/vi/QiNb-8QxXpo/0.jpg)](https://www.youtube.com/watch?v=QiNb-8QxXpo)
 
 More specifically, it allows openHAB to:
 
@@ -75,7 +75,7 @@ In order to be able to read the status of a Nikobus module channel or to switch 
 #### switch-module
 
 ```
-Thing switch-module BC00
+Thing switch-module s1 [ address = "BC00" ]
 ```
 
 Defines a `switch-module` with address `BC00`.
@@ -98,7 +98,7 @@ Defines a `switch-module` with address `BC00`.
 #### dimmer-module
 
 ```
-Thing dimmer-module D969
+Thing dimmer-module d1 [ address = "D969" ]
 ```
 
 Defines a `dimmer-module` with address `D969`.
@@ -121,7 +121,7 @@ Defines a `dimmer-module` with address `D969`.
 #### rollershutter-module
 
 ```
-Thing rollershutter-module 4C6C
+Thing rollershutter-module r1 [ address = "4C6C" ]
 ```
 
 Defines a `rollershutter-module` with address `4C6C`.
@@ -144,7 +144,7 @@ This means one could also define virtual buttons in openHAB with non-existing ad
 To configure an item for a button in openHAB with address `28092A`, use the following format:
 
 ```
-Thing push-button 28092A
+Thing push-button pb1 [ address = "28092A" ]
 ```
 
 Since all the channels in the entire channel group are switched to their new state, it is important that openHAB knows the current state of all the channels in that group.
@@ -156,22 +156,74 @@ When configured, the status of the channel groups to which the button is linked,
 Every status query takes between ~300 ms, so to get the best performance, only add the affected channel groups in the configuration, which has the following format:
 
 ```
-Thing push-button <address> [ impactedModules = "<moduleAddress>-<channelGroup>, <moduleAddress>-<channelGroup>, ..." ]
+Thing push-button <id> [ address = "<address>", impactedModules = "<moduleType>:<moduleId>:<channelGroup>, <moduleType>:<moduleId>:<channelGroup>, ..." ]
 ```
 
 where:
 
-* `moduleAddress` represents the address of the switch module,
-* `channelGroup` represents the first or second channel group in the module.
+* `moduleType` represents module's type,
+* `moduleId` represents module's id,
+* `channelGroup` represents the first (1) or second (2) channel group in the module.
 
  Example configurations may look like:
 
 ```
-Thing push-button 28092A [ impactedModules = "4C6C-2" ]
+Thing switch-module s1 [ address = "FF2A" ]
+Thing push-button pb1 [ address = "28092A", impactedModules = "switch-module:s1:1" ]
 ```
 
 In addition to the status requests triggered by button presses, there is also a scheduled status update interval defined by the `refreshInterval` parameter and explained above.
 
 ## Full Example
 
-t.b.d.
+### nikobus.things
+
+```
+Bridge nikobus:pc-link:mypclink [ port = "/dev/ttyUSB0", refreshInterval = 10 ] {
+    Thing dimmer-module d1 [ address = "0700" ]
+    Thing dimmer-module d2 [ address = "6B00" ]
+
+    Thing switch-module s1 [ address = "FF2A" ]
+    Thing switch-module s2 [ address = "4C6C" ]
+    Thing switch-module s3 [ address = "A063" ]
+
+    Thing rollershutter-module r1 [ address = "D769" ]
+
+    Thing push-button 92092A "S_2_1_2A" [ address = "92092A", impactedModules = "switch-module:s1:1" ]
+    Thing push-button D2092A "S_2_1_2B" [ address = "D2092A", impactedModules = "switch-module:s1:1" ]
+    Thing push-button 12092A "S_2_1_2C" [ address = "12092A", impactedModules = "dimmer-module:d1:1" ]
+    Thing push-button 52092A "S_2_1_2D" [ address = "52092A", impactedModules = "dimmer-module:d1:1" ]
+
+    Thing push-button 1EE5F2 "S_2_3_A" [ address = "1EE5F2", impactedModules = "dimmer-module:d1:2" ]
+    Thing push-button 5EE5F2 "S_2_3_B" [ address = "5EE5F2", impactedModules = "dimmer-module:d1:2" ]
+
+    Thing push-button 0C274A "S_2_4_A" [ address = "0C274A", impactedModules = "dimmer-module:d1:2" ]
+    Thing push-button 4C274A "S_2_4_B" [ address = "4C274A", impactedModules = "dimmer-module:d1:2" ]
+
+    Thing push-button 1D1FF2 "S_2_5_A" [ address = "1D1FF2", impactedModules = "switch-module:s1:1" ]
+    Thing push-button 5D1FF2 "S_2_5_B" [ address = "5D1FF2", impactedModules = "switch-module:s1:1" ]
+}
+```
+
+### nikobus.items
+
+```
+Dimmer Light_FF_Gallery_Ceiling "Ceiling" (FF_Gallery, Lights) [ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d1:output-1" }
+Dimmer Light_FF_Bed_Ceiling "Ceiling" (FF_Bed, Lights) [ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d1:output-7" }
+Dimmer Light_FF_Child_Ceiling "Ceiling" (FF_Child, Lights) [ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d2:output-10" }
+Dimmer Light_FF_Child_Wall_Left "Wall Left" (FF_Child, Lights) [ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d1:output-11" }
+Dimmer Light_FF_Child_Wall_Right "Wall Right" (FF_Child, Lights) [ "Lighting" ]	{ channel="nikobus:dimmer-module:mypclink:d1:output-12" }
+Dimmer Light_FF_PlayRoom_Ceiling "Ceiling" (FF_PlayRoom, Lights)	[ "Lighting" ] { channel="nikobus:dimmer-module:mypclink:d1:output-6" }
+Dimmer Light_FF_PlayRoom_Wall "Wall" (FF_PlayRoom, Lights) [ "Lighting" ]	{ channel="nikobus:dimmer-module:mypclink:d1:output-4" }
+
+Switch Light_FF_Gallery_Wall "Wall" (FF_Gallery, Lights) [ "Lighting" ] { channel="nikobus:switch-module:mypclink:s1:output-4" }
+Switch Light_FF_Bath_Ceiling "Ceiling" (FF_Bath, Lights) [ "Lighting" ] { channel="nikobus:switch-module:mypclink:s3:output-2" }
+Switch Light_FF_Wardrobe_Ceiling "Ceiling"	(FF_Wardrobe, Lights)	[ "Lighting" ] { channel="nikobus:switch-module:mypclink:s1:output-1" }
+Switch Light_FF_Corridor_Ceiling "Ceiling" (FF_Corridor, Lights) [ "Lighting" ]	{ channel="nikobus:switch-module:mypclink:s2:output-3" }
+
+Rollershutter Shutter_GF_Corridor "Corridor" (GF_Corridor, gShuttersGF) { channel="nikobus:rollershutter-module:mypclink:r1:output-1" }
+Rollershutter Shutter_GF_Bed "Bedroom" (GF_Bed, gShuttersGF) { channel="nikobus:rollershutter-module:mypclink:r1:output-3" }
+Rollershutter Shutter_GF_Bath "Bathroom" (GF_Bath, gShuttersGF) { channel="nikobus:rollershutter-module:mypclink:r1:output-2" }
+Rollershutter Shutter_FF_Child "Child's room" (FF_Child, gShuttersFF) { channel="nikobus:rollershutter-module:mypclink:r1:output-4" }
+Rollershutter Shutter_FF_Gallery "Gallery" (FF_Gallery, gShuttersFF) { channel="nikobus:rollershutter-module:mypclink:r1:output-5" }
+```
