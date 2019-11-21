@@ -27,10 +27,8 @@ public interface DeviceMessageListener {
     /**
      * This method is called whenever the message is received from the bridge.
      *
-     * @param bridge
-     *                    The RFXCom bridge where message is received.
-     * @param message
-     *                    The message which received.
+     * @param bridge  The RFXCom bridge where message is received.
+     * @param message The message which received.
      */
     void onDeviceMessageReceived(ThingUID bridge, RFXComDeviceMessage message) throws RFXComException;
 }

@@ -5,7 +5,7 @@ xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https:
 	<config-description uri="thing-type:kostalplenticorepikoiq_config">
 		<parameter name="url" type="text" required="true">
 			<context>network-address</context>
-			<label>IP address / Hostname</label>
+			<label>IP Address / Hostname</label>
 			<description>Enter the IP address or the hostname of the inverter. Note that DNS resolution must work properly to identify the inverter by its name</description>
 		</parameter>
 		<parameter name="refreshInternalInSeconds" type="integer" required="true" unit="s">

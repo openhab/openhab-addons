@@ -31,4 +31,9 @@ public class LogonRequest extends Request {
     public CommunicationState getLogonSequenceSender() {
         return logonSequenceSender;
     }
+
+    @Override
+    public String toString() {
+        return "LogonRequest [getType()=" + getType() + ", getLogonSequenceSender()=" + getLogonSequenceSender() + "]";
+    }
 }

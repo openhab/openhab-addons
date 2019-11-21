@@ -21,9 +21,9 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.beowulfe.hap.accessories.Valve;
-import com.beowulfe.hap.accessories.properties.ValveType;
+import io.github.hapjava.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.accessories.Valve;
+import io.github.hapjava.accessories.properties.ValveType;
 
 /**
  *

@@ -16,7 +16,6 @@ import java.util.Set;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 /**
  * Shut up pax-web, which scans for this initializer class and loudly complains if it can't be found.

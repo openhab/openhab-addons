@@ -104,7 +104,7 @@ Permanent V1 bridge emulation (no obvious reason to enable that):
 org.openhab.hueemulation:permanentV1bridge=false
 ```
 
-The hue emulation service will announce its existence via UPNP on every
+The hue emulation service will announce its existence via UPnP on every
 of the openHAB configured primary addresses (IPv4 and IPv6).
 
 Usually you do not want to set this option, but change the primary address configuration of openHAB.

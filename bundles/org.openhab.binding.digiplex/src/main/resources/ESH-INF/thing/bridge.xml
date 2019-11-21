@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>Digiplex PRT3 module</label>
+		<label>Digiplex PRT3 Module</label>
 		<description>Digiplex PRT3 module with Serial Interface</description>
 		<channels>
 			<channel typeId="messages_sent" id="messages_sent" />
@@ -46,19 +46,19 @@
 
 	<channel-type id="messages_sent">
 		<item-type>Number</item-type>
-		<label>Messages sent</label>
+		<label>Messages Sent</label>
 		<description>Counts messages sent to the alarm system</description>
 	</channel-type>
 
 	<channel-type id="responses_received">
 		<item-type>Number</item-type>
-		<label>Responses received</label>
+		<label>Responses Received</label>
 		<description>Counts responses received from the alarm system</description>
 	</channel-type>
 
 	<channel-type id="events_received">
 		<item-type>Number</item-type>
-		<label>Events received</label>
+		<label>Events Received</label>
 		<description>Counts events received from the alarm system</description>
 	</channel-type>
 

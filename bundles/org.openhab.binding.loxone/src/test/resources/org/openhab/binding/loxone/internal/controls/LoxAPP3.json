@@ -590,6 +590,17 @@
 					"states": {
 						"active": "1076668f-0101-7062-ffffe94fed106136"
 					}
+				},
+				"1076668f-0101-7076-ffff403fb0dddb9e/AI5": {
+					"name": "Unsupported Subcontrol To Be Ignored",
+					"type": "UnsupportedSubcontrolType",
+					"uuidAction": "1076668f-0101-7076-ffff403fb0dddb9e/AI5",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"states": {
+						"wrong": "1076668f-0101-7072-ffffe94ddddd6136"
+					}
 				}
 			}
 		},
@@ -738,6 +749,94 @@
 			"states": {
 				"value": "131fb314-0370-c93c-ffff403fb0c34b9e",
 				"error": "131fb314-0370-c93b-ffff6a7be057af65"
+			}
+		},
+		"13b3ea27-00fc-6f1b-ffff403fb0c34b9e": {
+			"name": "Energy Meter",
+			"type": "Meter",
+			"uuidAction": "13b3ea27-00fc-6f1b-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"details": {
+				"actualFormat": "%.3fkW",
+				"totalFormat": "%.1fkWh"
+			},
+			"states": {
+				"actual": "13b3ea27-00fc-6f10-ffffd63e2e9a902a",
+				"total": "13b3ea27-00fc-6f0f-ffffd63e2e9a902a"
+			}
+		},
+		"14328f8a-21c9-7c0d-ffff403fb0c34b9e": {
+			"name": "Intelligent Room Controller",
+			"type": "IRoomControllerV2",
+			"uuidAction": "14328f8a-21c9-7c0d-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 2,
+			"isFavorite": false,
+			"isSecured": false,
+			"details": {
+				"timerModes": [
+					{
+						"name": "In Use",
+						"description": "Comfort",
+						"id": 1
+					},
+					{
+						"name": "Not In Use",
+						"description": "Economy",
+						"id": 0
+					},
+					{
+						"name": "Off",
+						"description": "Fabric Protection",
+						"id": 2
+					}
+				],
+				"format": "%.1f°",
+				"connectedInputs": 0
+			},
+			"states": {
+				"tempActual": "14328f8a-00c9-7be6-ffffd54e02f0b858",
+				"tempTarget": "14328f8a-00c9-7c0b-ffffd43a02f0b858",
+				"comfortTemperature": "14328f8a-00c9-7bee-ecafd48e02f0b858",
+				"comfortTolerance": "14328f8a-00c9-7bef-ffffd26802f0b858",
+				"absentMinOffset": "14328f8a-00c9-7bf0-ffffd43e22f0b858",
+				"absentMaxOffset": "14328f8a-00c9-7bf1-ffffd44e02f0b858",
+				"frostProtectTemperature": "14328f8a-00c9-7bf1-ffffd48e02f0b858",
+				"heatProtectTemperature": "14328f8a-00c9-7bf7-ffffd48e02f0b858",
+				"activeMode": "14328f8a-00c9-7be0-ffffd48e02a0b858",
+				"comfortTemperatureOffset": "14328f8a-00c9-7adb-ffffd48e02f0b858",
+				"overrideEntries": "14328f8a-00c9-7bdc-ffffda8e02f0b858",
+				"prepareState": "14328f8a-00c9-7bdd-ffffd48ea2f0b858",
+				"useOutdoor": "14328f8a-00c9-7bde-ffffd48e02a0b858",
+				"operatingMode": "14328f8a-00c9-7be1-ffffd48a02f0b858",
+				"overrideReason": "14328f8a-00c9-7be3-ffffd48a02f0b858",
+				"openWindow": "14328f8a-00c9-7be7-ffffd48e02f0a858",
+				"modeList": "14328f8a-00c9-7be2-ffffd48e02f0b8a8"
+			},
+			"subControls": {
+				"14328f8a-00c9-7bda-ffffd48e02f0b858": {
+					"name": "Heating and Cooling",
+					"type": "IRCV2Daytimer",
+					"uuidAction": "14328f8a-00c9-7bda-ffeed48e02f0b858",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"details": {
+						"analog": true,
+						"format": "%.1f°"
+					},
+					"states": {
+						"entriesAndDefaultValue": "14328f5a-00c9-7bda-ffffd48e02f0b858",
+						"mode": "14328f8a-00c9-7c0c-ffffd42e02f0b858",
+						"modeList": "14328f8a-00c9-7be2-fffff48e02f0b858",
+						"value": "14328f8a-00c9-7be0-ffffd48efef0b858"
+					}
+				}
 			}
 		}
 	},

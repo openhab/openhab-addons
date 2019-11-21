@@ -39,7 +39,7 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
     private static final String DEVICE_OFF = "bulb_get_sysinfo_response_off";
 
     public BulbDeviceTest() throws IOException {
-        super(new BulbDevice(LB130.thingTypeUID(), COLOR_TEMPERATURE_LB130_MIN, COLOR_TEMPERATURE_LB130_MAX),
+        super(new BulbDevice(LB130.thingTypeUID(), COLOR_TEMPERATURE_2_MIN, COLOR_TEMPERATURE_2_MAX),
                 "bulb_get_sysinfo_response_on");
     }
 
@@ -86,6 +86,13 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
         assertInput("bulb_transition_light_state_color_temp");
         assertTrue("Color temperature channel should be handled",
                 device.handleCommand(CHANNEL_UID_COLOR_TEMPERATURE, new PercentType(40)));
+    }
+
+    @Test
+    public void testHandleCommandColorTemperatureAbs() throws IOException {
+        assertInput("bulb_transition_light_state_color_temp");
+        assertTrue("Color temperature channel should be handled",
+                device.handleCommand(CHANNEL_UID_COLOR_TEMPERATURE_ABS, new DecimalType(5100)));
     }
 
     @Test
@@ -140,8 +147,14 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
 
     @Test
     public void testUpdateChannelColorTemperature() {
-        assertEquals("Color temperature should be set", new PercentType(3),
+        assertEquals("Color temperature should be set", new PercentType(2),
                 device.updateChannel(CHANNEL_UID_COLOR_TEMPERATURE, deviceState));
+    }
+
+    @Test
+    public void testUpdateChannelColorTemperatureAbs() {
+        assertEquals("Color temperature should be set", new DecimalType(2630),
+                device.updateChannel(CHANNEL_UID_COLOR_TEMPERATURE_ABS, deviceState));
     }
 
     @Test

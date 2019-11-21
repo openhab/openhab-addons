@@ -71,12 +71,12 @@ Zone control channels are:
 |-----------------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `zone_channels#power`                         | `Switch`     | Switches the zone ON or OFF. Your receiver has to be in network standby for this to work.                                                                                                                                                                                                                                                                                                                                               |
 | `zone_channels#mute`                          | `Switch`     | Mute or Unmute the receiver.                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `zone_channels#volume`                        | `Dimmer`     | Set's the receivers volume as percentage.                                                                                                                                                                                                                                                                                                                                                                                               |
-| `zone_channels#volumeDB`                      | `Number`     | Set's the receivers volume in dB.                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `zone_channels#input`                         | `String`     | Set's the input selection, depends on your receiver's real inputs. Examples: HDMI1, HDMI2, AV4, TUNER, NET RADIO, etc.                                                                                                                                                                                                                                                                                                                  |
-| `zone_channels#surroundProgram`               | `String`     | Set's the surround mode. Examples: `2ch Stereo`, `7ch Stereo`, `Hall in Munic`, `Straight`, `Surround Decoder`.                                                                                                                                                                                                                                                                                                                         |
+| `zone_channels#volume`                        | `Dimmer`     | Sets the receivers volume as percentage.                                                                                                                                                                                                                                                                                                                                                                                                |
+| `zone_channels#volumeDB`                      | `Number`     | Sets the receivers volume in dB.                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `zone_channels#input`                         | `String`     | Sets the input selection, depends on your receiver's real inputs. Examples: HDMI1, HDMI2, AV4, TUNER, NET RADIO, etc.                                                                                                                                                                                                                                                                                                                   |
+| `zone_channels#surroundProgram`               | `String`     | Sets the surround mode. Examples: `2ch Stereo`, `7ch Stereo`, `Hall in Munic`, `Straight`, `Surround Decoder`.                                                                                                                                                                                                                                                                                                                          |
 | `zone_channels#scene`                         | `String`     | Sets the scene. Examples: `Scene 1`, `Scene 2`, `Scene 3`, `Scene 4`. Write only (state updates are not available). May not be supported on all models (e.g. RX-V3900).                                                                                                                                                                                                                                                                 |
-| `zone_channels#dialogueLevel`                 | `Number`     | Set's the receivers dialogue level. May not be supported on all models.                                                                                                                                                                                                                                                                                                                                                                 |
+| `zone_channels#dialogueLevel`                 | `Number`     | Sets the receivers dialogue level. May not be supported on all models.                                                                                                                                                                                                                                                                                                                                                                  |
 | `playback_channels#preset`                    | `Number`     | Set a preset. Not supported by `Spotify` input. For `NET RADIO` input there is no way to get current preset (tested on RX-S601D, RX-V3900), so the preset is write only. For RX-V3900 the presets are alphanumeric `A1`,`A2`,`B1`,`B2` thus you need to use numbers grater than 100 that represent these presets as follows: 101, 102, 201, 202.                                                                                        |
 | `playback_channels#playback`                  | `String`     | Set a play mode or get the current play mode. Values supported: `Previous`, `Play`, `Pause`, `Stop`, `Next`. Applies for inputs which support playback (`Spotify`, `SERVER`, `NET RADIO`, `Bluetooth`). Note that some values may not be supported on certain input type and AVR model combination. For `Spotify` and `Bluetooth` all values work, but for `NET RADIO` input only `Play` and `Stop` are supported (tested on RX-S601D). |
 | `playback_channels#playback_station`          | `String`     | Get the current played station (radio). Applies to `TUNER` and `NET RADIO` inputs only.                                                                                                                                                                                                                                                                                                                                                 |
@@ -103,7 +103,7 @@ Navigation is not supported by Spotify input.
 
 ##### For auto linking with Paper UI
 
-Link the items to the channels of your preferred zone (here `Main_Zone`) in PaperUI after you've saved your items file.
+Link the items to the channels of your preferred zone (here `Main_Zone`) in Paper UI after you have saved your items file.
 
 Items:
 
@@ -119,7 +119,7 @@ Number      Yamaha_Dialogue_Level  "Dialogue Level [%d]"       <soundvolume>
 
 ##### For manually linking
 
-Replace the UPNP UDN (here: `96a40ba9`) with the real UDN provided by your UPNP discovery.
+Replace the UPnP UDN (here: `96a40ba9`) with the real UDN provided by your UPnP discovery.
 Also replace the zone name with your preferred zone (here `Main_Zone`).
 
 Items:
@@ -256,7 +256,7 @@ On top of that some AVR models during status updates report different value than
 To account for all variations a Yamaha thing setting got introduced: `Input mapping`. 
 This allows to map the input value reported by the AVR after status update to the desired canonical value. 
 
-Use the PaperUI to customize the setting for your particular AVR: `PaperUI > Configuration > Things > Edit > Yamaha Receiver XXX > Input mapping`.
+Use the Paper UI to customize the setting for your particular AVR: `Paper UI > Configuration > Things > Edit > Yamaha Receiver XXX > Input mapping`.
 For example, if your AVR returns `HDMI_1` for command `HDMI1` you can create such mapping list:
 
 `HDMI_1=HDMI1,HDMI 1=HDMI1,HDMI_2=HDMI2,HDMI 2=HDMI2`
@@ -293,7 +293,7 @@ If you unsure what mapping to apply, enable trace logging (see section earlier) 
 
 ``` 
 
-Note: User defined mappings have as per user defined mapping and the rest comes is the existing addon mapping logic.
+Note: User defined mappings have as per user defined mapping and the rest comes is the existing add-on mapping logic.
 
 After switching to `HDMI1` you should see this:
 

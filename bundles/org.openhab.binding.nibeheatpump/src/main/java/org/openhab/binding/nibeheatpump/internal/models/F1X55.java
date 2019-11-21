@@ -153,7 +153,7 @@ public class F1X55 {
                     put(40369, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "Extra cooling HPAC, ACS"));
                     put(40625, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "BT82 HW Comfort Return Temp"));
                     put(40626, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "BT83 HW Comfort Cylinder Temp"));
-                    put(40755, new VariableInformation(  10, NibeDataType.S32, Type.SENSOR  , "Tot. ext. HW add op.time"));
+                    put(40755, new VariableInformation(  10, NibeDataType.U32, Type.SENSOR  , "Tot. ext. HW add op.time"));
                     put(40771, new VariableInformation(  10, NibeDataType.U32, Type.SENSOR  , "Heat Meter - Pool2 Cpr EP14"));
                     put(40792, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "OPT state"));
                     put(40793, new VariableInformation(   1, NibeDataType.U16, Type.SENSOR  , "OPT version"));
@@ -362,7 +362,7 @@ public class F1X55 {
                     put(43024, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "Status Cooling"));
                     put(43064, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "Heat Medium Flow dT Set Point"));
                     put(43065, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "Heat Medium Flow dT Actual"));
-                    put(43081, new VariableInformation(  10, NibeDataType.S32, Type.SENSOR  , "Tot. op.time add."));
+                    put(43081, new VariableInformation(  10, NibeDataType.U32, Type.SENSOR  , "Tot. op.time add."));
                     put(43084, new VariableInformation( 100, NibeDataType.S16, Type.SENSOR  , "Int. el.add. Power"));
                     put(43086, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "Prio"));
                     put(43091, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "Int. el.add. State"));
@@ -390,12 +390,12 @@ public class F1X55 {
                     put(43171, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "Blocking status of the step controlled add heat acc"));
                     put(43180, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "HWC Pump Status GP11"));
                     put(43182, new VariableInformation(   1, NibeDataType.U16, Type.SENSOR  , "Compressor Frequency, Target"));
-                    put(43239, new VariableInformation(  10, NibeDataType.S32, Type.SENSOR  , "Tot. HW op.time add."));
+                    put(43239, new VariableInformation(  10, NibeDataType.U32, Type.SENSOR  , "Tot. HW op.time add."));
                     put(43375, new VariableInformation(   1, NibeDataType.S16, Type.SENSOR  , "compr. in power mean"));
                     put(43395, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "HPAC Relays"));
-                    put(43416, new VariableInformation(   1, NibeDataType.S32, Type.SENSOR  , "Compressor starts EB100-EP14"));
-                    put(43420, new VariableInformation(   1, NibeDataType.S32, Type.SENSOR  , "Tot. op.time compr. EB100-EP14"));
-                    put(43424, new VariableInformation(   1, NibeDataType.S32, Type.SENSOR  , "Tot. HW op.time compr. EB100-EP14"));
+                    put(43416, new VariableInformation(   1, NibeDataType.U32, Type.SENSOR  , "Compressor starts EB100-EP14"));
+                    put(43420, new VariableInformation(   1, NibeDataType.U32, Type.SENSOR  , "Tot. op.time compr. EB100-EP14"));
+                    put(43424, new VariableInformation(   1, NibeDataType.U32, Type.SENSOR  , "Tot. HW op.time compr. EB100-EP14"));
                     put(43427, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "Compressor State EP14"));
                     put(43431, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "Supply Pump State EP14"));
                     put(43433, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "Brine Pump State EP14"));

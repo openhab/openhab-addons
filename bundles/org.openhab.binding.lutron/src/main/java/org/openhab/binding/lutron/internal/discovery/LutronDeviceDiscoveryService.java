@@ -21,7 +21,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
@@ -44,6 +47,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.lutron.internal.LutronHandlerFactory;
 import org.openhab.binding.lutron.internal.discovery.project.Area;
+import org.openhab.binding.lutron.internal.discovery.project.Component;
+import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
 import org.openhab.binding.lutron.internal.discovery.project.Device;
 import org.openhab.binding.lutron.internal.discovery.project.DeviceGroup;
 import org.openhab.binding.lutron.internal.discovery.project.DeviceNode;
@@ -54,6 +59,13 @@ import org.openhab.binding.lutron.internal.discovery.project.OutputType;
 import org.openhab.binding.lutron.internal.discovery.project.Project;
 import org.openhab.binding.lutron.internal.discovery.project.Timeclock;
 import org.openhab.binding.lutron.internal.handler.IPBridgeHandler;
+import org.openhab.binding.lutron.internal.keypadconfig.KeypadConfig;
+import org.openhab.binding.lutron.internal.keypadconfig.KeypadConfigGrafikEye;
+import org.openhab.binding.lutron.internal.keypadconfig.KeypadConfigIntlSeetouch;
+import org.openhab.binding.lutron.internal.keypadconfig.KeypadConfigPalladiom;
+import org.openhab.binding.lutron.internal.keypadconfig.KeypadConfigPico;
+import org.openhab.binding.lutron.internal.keypadconfig.KeypadConfigSeetouch;
+import org.openhab.binding.lutron.internal.keypadconfig.KeypadConfigTabletopSeetouch;
 import org.openhab.binding.lutron.internal.xml.DbXmlInfoReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +77,7 @@ import org.slf4j.LoggerFactory;
  * @author Allan Tong - Initial contribution
  * @author Bob Adair - Added support for more output devices and keypads, VCRX, repeater virtual buttons,
  *         Timeclock, and Green Mode. Added option to read XML from file. Switched to jetty HTTP client for better
- *         exception handling.
+ *         exception handling. Added keypad model discovery.
  */
 public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
@@ -105,7 +117,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
         try {
             readDeviceDatabase();
         } catch (RuntimeException e) {
-            logger.warn("Runtime exception scanning for devices: {}", e.getMessage());
+            logger.warn("Runtime exception scanning for devices: {}", e.getMessage(), e);
 
             if (scanListener != null) {
                 scanListener.onErrorOccurred(null); // null so it won't log a stack trace
@@ -140,7 +152,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                 try (InputStream responseStream = listener.getInputStream();
                         InputStreamReader xmlStreamReader = new InputStreamReader(responseStream,
                                 StandardCharsets.UTF_8);
-                        BufferedReader xmlBufReader = new BufferedReader(xmlStreamReader);) {
+                        BufferedReader xmlBufReader = new BufferedReader(xmlStreamReader)) {
                     flushPrePrologLines(xmlBufReader);
 
                     project = dbXmlInfoReader.readFromXML(xmlBufReader);
@@ -248,6 +260,10 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void processDevice(Device device, Stack<String> context) {
+        List<Integer> buttons;
+        KeypadConfig kpConfig;
+        String kpModel;
+
         DeviceType type = device.getDeviceType();
 
         if (type != null) {
@@ -260,23 +276,36 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
                 case SEETOUCH_KEYPAD:
                 case HYBRID_SEETOUCH_KEYPAD:
-                    notifyDiscovery(THING_TYPE_KEYPAD, device.getIntegrationId(), label);
+                    kpConfig = new KeypadConfigSeetouch();
+                    discoverKeypad(device, label, THING_TYPE_KEYPAD, "seeTouch Keypad", kpConfig);
                     break;
 
                 case INTERNATIONAL_SEETOUCH_KEYPAD:
-                    notifyDiscovery(THING_TYPE_INTLKEYPAD, device.getIntegrationId(), label);
+                    kpConfig = new KeypadConfigIntlSeetouch();
+                    discoverKeypad(device, label, THING_TYPE_INTLKEYPAD, "International seeTouch Keypad", kpConfig);
                     break;
 
                 case SEETOUCH_TABLETOP_KEYPAD:
-                    notifyDiscovery(THING_TYPE_TTKEYPAD, device.getIntegrationId(), label);
+                    kpConfig = new KeypadConfigTabletopSeetouch();
+                    discoverKeypad(device, label, THING_TYPE_TTKEYPAD, "Tabletop seeTouch Keypad", kpConfig);
+                    break;
+
+                case PALLADIOM_KEYPAD:
+                    kpConfig = new KeypadConfigPalladiom();
+                    discoverKeypad(device, label, THING_TYPE_PALLADIOMKEYPAD, "Palladiom Keypad", kpConfig);
                     break;
 
                 case PICO_KEYPAD:
-                    notifyDiscovery(THING_TYPE_PICO, device.getIntegrationId(), label);
+                    kpConfig = new KeypadConfigPico();
+                    discoverKeypad(device, label, THING_TYPE_PICO, "Pico Keypad", kpConfig);
                     break;
 
                 case VISOR_CONTROL_RECEIVER:
                     notifyDiscovery(THING_TYPE_VCRX, device.getIntegrationId(), label);
+                    break;
+
+                case WCI:
+                    notifyDiscovery(THING_TYPE_WCI, device.getIntegrationId(), label);
                     break;
 
                 case MAIN_REPEATER:
@@ -288,12 +317,53 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                     break;
 
                 case GRAFIK_EYE_QS:
-                    notifyDiscovery(THING_TYPE_GRAFIKEYEKEYPAD, device.getIntegrationId(), label);
+                    buttons = getComponentIdList(device.getComponents(), ComponentType.BUTTON);
+                    // remove button IDs >= 300 which the handler does not recognize
+                    List<Integer> buttonsCopy = new ArrayList<>(buttons);
+                    for (Integer c : buttonsCopy) {
+                        if (c >= 300) {
+                            buttons.remove(Integer.valueOf(c));
+                        }
+                    }
+                    kpConfig = new KeypadConfigGrafikEye();
+                    kpModel = kpConfig.determineModelFromComponentIds(buttons);
+                    if (kpModel == null) {
+                        logger.info("Unable to determine model of GrafikEye Keypad {} with button IDs: {}",
+                                device.getIntegrationId(), buttons);
+                        notifyDiscovery(THING_TYPE_GRAFIKEYEKEYPAD, device.getIntegrationId(), label);
+                    } else {
+                        logger.debug("Found GrafikEye keypad {} model: {}", device.getIntegrationId(), kpModel);
+                        notifyDiscovery(THING_TYPE_GRAFIKEYEKEYPAD, device.getIntegrationId(), label, "model", kpModel);
+                    }
                     break;
             }
         } else {
             logger.warn("Unrecognized device type {}", device.getType());
         }
+    }
+
+    private void discoverKeypad(Device device, String label, ThingTypeUID ttUid, String description,
+            KeypadConfig kpConfig) {
+        List<Integer> buttons = getComponentIdList(device.getComponents(), ComponentType.BUTTON);
+        String kpModel = kpConfig.determineModelFromComponentIds(buttons);
+        if (kpModel == null) {
+            logger.info("Unable to determine model of {} {} with button IDs: {}", description,
+                    device.getIntegrationId(), buttons);
+            notifyDiscovery(ttUid, device.getIntegrationId(), label);
+        } else {
+            logger.debug("Found {} {} model: {}", description, device.getIntegrationId(), kpModel);
+            notifyDiscovery(ttUid, device.getIntegrationId(), label, "model", kpModel);
+        }
+    }
+
+    private List<Integer> getComponentIdList(List<Component> clist, ComponentType ctype) {
+        List<Integer> returnList = new LinkedList<>();
+        for (Component c : clist) {
+            if (c.getComponentType() == ctype) {
+                returnList.add(c.getComponentNumber());
+            }
+        }
+        return returnList;
     }
 
     private void processOutput(Output output, Stack<String> context) {
@@ -330,7 +400,18 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                     break;
 
                 case SYSTEM_SHADE:
+                case MOTOR:
                     notifyDiscovery(THING_TYPE_SHADE, output.getIntegrationId(), label);
+                    break;
+
+                case SHEER_BLIND:
+                    notifyDiscovery(THING_TYPE_BLIND, output.getIntegrationId(), label, BLIND_TYPE_PARAMETER,
+                            BLIND_TYPE_SHEER);
+                    break;
+
+                case VENETIAN_BLIND:
+                    notifyDiscovery(THING_TYPE_BLIND, output.getIntegrationId(), label, BLIND_TYPE_PARAMETER,
+                            BLIND_TYPE_VENETIAN);
                     break;
             }
         } else {
@@ -348,7 +429,8 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
         notifyDiscovery(THING_TYPE_GREENMODE, greenmode.getIntegrationId(), label);
     }
 
-    private void notifyDiscovery(ThingTypeUID thingTypeUID, Integer integrationId, String label) {
+    private void notifyDiscovery(ThingTypeUID thingTypeUID, Integer integrationId, String label, String propName,
+            Object propValue) {
         if (integrationId == null) {
             logger.info("Discovered {} with no integration ID", label);
 
@@ -362,12 +444,20 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
         properties.put(INTEGRATION_ID, integrationId);
 
+        if (propName != null && propValue != null) {
+            properties.put(propName, propValue);
+        }
+
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(label)
                 .withProperties(properties).withRepresentationProperty(INTEGRATION_ID).build();
 
         thingDiscovered(result);
 
         logger.debug("Discovered {}", uid);
+    }
+
+    private void notifyDiscovery(ThingTypeUID thingTypeUID, Integer integrationId, String label) {
+        notifyDiscovery(thingTypeUID, integrationId, label, null, null);
     }
 
     private String generateLabel(Stack<String> context, String deviceName) {

@@ -29,7 +29,7 @@ public class NikoHomeControlConstants {
         DIMMER,
         ROLLERSHUTTER,
         GENERIC
-    };
+    }
 
     // switch and dimmer constants in the Nhc layer
     public static final String NHCON = "On";

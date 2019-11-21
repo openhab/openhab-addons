@@ -115,10 +115,21 @@ public class RollershutterValue extends Value {
 
     @Override
     public String getMQTTpublishValue() {
+        final String upString = this.upString;
+        final String downString = this.downString;
         if (this.nextIsStop) {
             this.nextIsStop = false;
             return stopString;
+        } else if (state instanceof PercentType) {
+            if (state.equals(PercentType.HUNDRED) && downString != null) {
+                return downString;
+            } else if (state.equals(PercentType.ZERO) && upString != null) {
+                return upString;
+            } else {
+                return String.valueOf(((PercentType) state).intValue());
+            }
+        } else {
+            return "UNDEF";
         }
-        return (state == UnDefType.UNDEF) ? "0" : String.valueOf(((PercentType) state).intValue());
     }
 }

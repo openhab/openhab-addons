@@ -65,7 +65,7 @@ and then you will be able to use /dev/rfxtrx0 as the serial device regardless of
 
 If you have any problems with JD2XX or you don't want to disable FTDI driver on OS X or Linux, you can also configure RFXCOM transceivers/receivers manually.
 
-To do that via the PaperUI, manually add the generic RFXCOM device named `RFXCOM USB Transceiver`, with the description "This is universal RFXCOM transceiver bridge for manual configuration purposes".
+To do that via the Paper UI, manually add the generic RFXCOM device named `RFXCOM USB Transceiver`, with the description "This is universal RFXCOM transceiver bridge for manual configuration purposes".
 You will need to specify at least the serial port which has been assigned to the RFXCOM (see notes above).
 To configure the serial port within openHAB see the [general documentation about serial port configuration](/docs/administration/serial.html).
 
@@ -86,7 +86,7 @@ To start a TCP server for an RFXCOM device, you can use socat:
 socat tcp-listen:10001,fork,reuseaddr file:/dev/ttyUSB0,raw
 ```
 
-A TCP bridge, for use with socat on a remote host, can only be configured manually either through the PaperUI by adding an "RFXCOM USB Transceiver over TCP/IP" device or in a thing file like this:
+A TCP bridge, for use with socat on a remote host, can only be configured manually either through the Paper UI by adding an "RFXCOM USB Transceiver over TCP/IP" device or in a thing file like this:
 
 ```
 Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
@@ -154,11 +154,14 @@ This binding currently supports following channel types:
 |-----------------|---------------|------------------------------------------------------------------------------------|
 | chimesound      | Number        | Id of the chime sound                                                              |
 | command         | Switch        | Command channel.                                                                   |
- | commandId       | Number        | Id of the command (between 0 and 255).                                             |
+| commandId       | Number        | Id of the command (between 0 and 255).                                             |
 | commandString   | String        | Id of the command.                                                                 |
 | contact         | Contact       | Contact channel.                                                                   |
 | datetime        | DateTime      | DateTime channel.                                                                  |
 | dimminglevel    | Dimmer        | Dimming level channel.                                                             |
+| fanspeedstring  | String        | Set the speed of the device, values could be device specific                       |
+| fanspeedcontrol | Rollershutter | Set the speed of the device, values could be device specific                       |
+| fanlight        | Switch        | Enable light of Fan                                                                |
 | forecast        | String        | Weather forecast from device: NO\_INFO\_AVAILABLE/SUNNY/PARTLY\_CLOUDY/CLOUDY/RAIN |
 | tempcontrol     | Rollershutter | Global control for temperature also setting ON, OFF, UP, DOWN                      |
 | humidity        | Number        | Relative humidity level in percentages.                                            |
@@ -180,6 +183,7 @@ This binding currently supports following channel types:
 | totalamphour    | Number        | Used "energy" in ampere-hours.                                                     |
 | uv              | Number        | Current UV level.                                                                  |
 | venetianBlind   | Dimmer        | Open/close and adjust angle of venetian blind                                      |
+| voltage         | Number        | Voltage                                                                            |
 | winddirection   | Number        | Wind direction in degrees.                                                         |
 | windspeed       | Number        | Wind speed in meters per second.                                                   |
 
@@ -196,7 +200,7 @@ The binding uses the following system channels:
 
 ### Thing files
 
-Sensors/actuators are easy to configure through the PaperUI.
+Sensors/actuators are easy to configure through the Paper UI.
 However, if you used a thing file for your RFXCOM you can also configure them manually there as well, for example:
 
 ```
@@ -207,7 +211,7 @@ Bridge rfxcom:bridge:usb0 [ serialPort="/dev/<device>" ] {
 
 ### Item files
 
-Items may be created through PaperUI or add using item files in which you add a channel parameter specifying the bridge's name, the thing ID and channel that the item should be linked to, for example:
+Items may be created through Paper UI or add using item files in which you add a channel parameter specifying the bridge's name, the thing ID and channel that the item should be linked to, for example:
 
 ```
 Switch Switch {channel="rfxcom:lighting2:usb0:100001_1:command"}
@@ -224,6 +228,7 @@ This binding currently supports the following things / message types:
 *   [curtain1 - RFXCOM Curtain1 Actuator](#curtain1---rfxcom-curtain1-actuator)
 *   [datetime - RFXCOM Date/time sensor](#datetime---rfxcom-datetime-sensor)
 *   [energy - RFXCOM Energy Sensor](#energy---rfxcom-energy-sensor)
+*   [fan - RFXCOM Fan Actuator](#fan---rfxcom-fan-actuator)
 *   [humidity - RFXCOM Humidity Sensor](#humidity---rfxcom-humidity-sensor)
 *   [lighting1 - RFXCOM Lighting1 Actuator](#lighting1---rfxcom-lighting1-actuator)
 *   [lighting2 - RFXCOM Lighting2 Actuator](#lighting2---rfxcom-lighting2-actuator)
@@ -231,6 +236,7 @@ This binding currently supports the following things / message types:
 *   [lighting5 - RFXCOM Lighting5 Actuator](#lighting5---rfxcom-lighting5-actuator)
 *   [lighting6 - RFXCOM Lighting6 Actuator](#lighting6---rfxcom-lighting6-actuator)
 *   [rain - RFXCOM Rain Sensor](#rain---rfxcom-rain-sensor)
+*   [rfxsensor - RFXCOM rfxsensor](#rfxsensor)
 *   [rfy - RFXCOM Rfy Actuator](#rfy---rfxcom-rfy-actuator)
 *   [security1 - RFXCOM Security1 Sensor](#security1---rfxcom-security1-sensor)
 *   [temperaturehumiditybarometric - RFXCOM Temperature-Humidity-Barometric Sensor](#temperaturehumiditybarometric---rfxcom-temperature-humidity-barometric-sensor)
@@ -422,6 +428,110 @@ A DateTime device
     *   Specifies device sub type.
 
         *   RTGR328N - Oregon RTGR328N
+
+### fan - RFXCOM Fan Actuator
+
+A group of fan devices
+
+#### Standard Fan
+
+A Fan device
+
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type | Remarks                      |
+|--------------|-------------------------------------|-----------|------------------------------|
+| command      | [command](#channels)                | Switch    |                              |
+| fanSpeed     | [fanspeedstring](#channels)         | String    | Options: HI, MED, LOW, OFF   |
+| fanLight     | [fanlight](#channels)               | Switch    |                              |
+| signalLevel  | [system.signal-strength](#channels) | Number    |                              |
+
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360    
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   LUCCI_AIR_FAN - Lucci Air fan
+        *   CASAFAN - Casafan
+        *   WESTINGHOUSE_7226640 - Westinghouse 7226640
+
+##### Example
+
+Sitemap:
+
+```java
+Switch item=FanSwitch label="Fan"
+Switch item=FanLightSwitch label="Light" mappings=[ON="On"]
+Switch item=FanSpeedSwitch label="Speed" mappings=[LOW=Low, MED=Medium, HI=High]
+```
+
+#### Falmec fan
+
+A Falmec Fan device
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type | Remarks                      |
+|--------------|-------------------------------------|-----------|------------------------------|
+| command      | [command](#channels)                | Switch    |                              |
+| fanSpeed     | [fanspeed](#channels)               | Number    | Options: 1,2,3,4,5,6         |
+| fanLight     | [fanlight](#channels)               | Switch    |                              |
+| signalLevel  | [system.signal-strength](#channels) | Number    |                              |
+
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360    
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   FALMEC - Falmec
+
+#### Lucci Air DC fan
+
+A Lucci Air DC fan device
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type     | Remarks                                                       |
+|--------------|-------------------------------------|---------------|---------------------------------------------------------------|
+| commandString| [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, REVERSE, NATURAL_FLOW, PAIR  |
+| fanSpeed     | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN                                            |
+| fanLight     | [fanlight](#channels)               | Switch        |                                                               |
+| signalLevel  | [system.signal-strength](#channels) | Number        |                                                               |
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360    
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   LUCCI_AIR_DC - Lucci Air DC
+
+#### Lucci Air DC II fan
+
+A Lucci Air DC II fan device
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type | Remarks                              |
+|--------------|-------------------------------------|-----------|--------------------------------------|
+| command      | [command](#channels)                | Switch    |                                      |
+| commandString| [commandString](#channels)          | String    | Options: POWER_OFF, LIGHT, REVERSE   |
+| fanSpeed     | [fanspeed](#channels)               | Number    | Options: 1,2,3,4,5,6                 |
+| fanLight     | [fanlight](#channels)               | Switch    |                                      |
+| signalLevel  | [system.signal-strength](#channels) | Number    |                                      |
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360    
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   LUCCI_AIR_DC_II - Lucci Air DC II
 
 ### energy - RFXCOM Energy Sensor
 
@@ -620,10 +730,10 @@ A Lighting4 device
 The support for lighting 4 in RFXCOM is less complete because a lot of different devices use the same chips and can not easily be distinguished.
 
 So some extra configuration can be used for fine tuning the behavior of your Lighting4 devices.
-For configuration via the PaperUI three extra fields are available, being the the pulse length and a commmand id for on and off commands.
+For configuration via the Paper UI three extra fields are available, being the the pulse length and a commmand id for on and off commands.
 If your item is auto-discovered normally the on or off command should be recognized properly.
 
-For a usb attached RFXCOM on Windows the configuration could look like this (note that the `onCommandId`, `offCommandId` and `pulse` are all optional):
+For a USB attached RFXCOM on Windows the configuration could look like this (note that the `onCommandId`, `offCommandId` and `pulse` are all optional):
 
 ```
 Bridge rfxcom:bridge:238adf67 [ serialPort="COM4" ] {
@@ -779,6 +889,25 @@ A Rain device
         *   RAIN5 - WS2300
         *   RAIN6 - La Crosse TX5
 
+### rfxsensor - RFXCOM RFXSensor 
+
+A RFXSensor sensor
+
+#### Channels
+
+| Name             | Channel Type                        | Item Type  | Remarks |
+|------------------|-------------------------------------|------------|---------|
+| pressure         | [pressure](#channels)               | Number     |         |
+| humidity         | [humidity](#channels)               | Number     |         |
+| referenceVoltage | [voltage](#channels)                | Number     |         |
+| voltage          | [voltage](#channels)                | Number     |         |
+| temperature      | [temperature](#channels)            | Number     |         |
+| signalLevel      | [system.signal-strength](#channels) | Number     |         |
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Unit Id. Example 100
 
 ### rfy - RFXCOM Rfy Actuator
 

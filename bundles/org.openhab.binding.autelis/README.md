@@ -1,6 +1,7 @@
 # Autelis Pool Control Binding
 
-Autelis manufactures a network enabled pool interface for many popular pool systems.  See [the Autelis website](http://www.autelis.com) and the  [Autelis Command Protocol](http://www.autelis.com/wiki/index.php?title=Pool_Control_(PI)_HTTP_Command_Reference) for more information.
+Autelis manufactures a network enabled pool interface for many popular pool systems.
+See [the Autelis website](https://www.autelis.com) and the [Autelis Command Protocol](http://www.autelis.com/wiki/index.php?title=Pool_Control_(PI)_HTTP_Command_Reference) for more information.
 
 This binding supports:
 
@@ -11,7 +12,8 @@ This binding supports:
 
 ## Auto Discovery
 
-The binding will automatically discover Autelis controllers using UPNP.  If found it will try and connect with the factory default username and password.
+The binding will automatically discover Autelis controllers using UPnP.
+If found it will try and connect with the factory default username and password.
 
 ## Binding Configuration
 
@@ -81,6 +83,7 @@ Pentair devices support the following channels:
 | temp-pooltemp       | Number    |
 | temp-spatemp        | Number    |
 | temp-airtemp        | Number    |
+| temp-soltemp        | Number    |
 | temp-tempunits      | String    |
 | temp-htpump         | Number    |
 | pump-pump1          | String    |

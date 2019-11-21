@@ -11,3 +11,11 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+javax.mail:
+* License: Common Development and Distribution License (CDDL) v1.1 and GNU General Public License (GPL) v2 with Classpath Exception
+* Project: https://javaee.github.io/javamail/
+* Source:  https://github.com/javaee/javamail
+

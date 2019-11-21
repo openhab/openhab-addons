@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for HomeConfort message.
@@ -124,11 +125,11 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl<RFXComHome
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         if (channelId.equals(CHANNEL_COMMAND)) {
             return (command == Commands.OFF || command == Commands.GROUP_OFF ? OnOffType.OFF : OnOffType.ON);
         } else {
-            return super.convertToState(channelId);
+            return super.convertToState(channelId, deviceState);
         }
     }
 

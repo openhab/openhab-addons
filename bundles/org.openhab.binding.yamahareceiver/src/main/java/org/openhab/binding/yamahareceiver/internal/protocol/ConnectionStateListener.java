@@ -18,7 +18,5 @@ package org.openhab.binding.yamahareceiver.internal.protocol;
  * @author David Graeff - Initial contribution
  */
 public interface ConnectionStateListener {
-    void connectionFailed(String host, Throwable throwable);
-
-    void connectionEstablished(AbstractConnection connection);
+    void onConnectionCreated(AbstractConnection connection);
 }

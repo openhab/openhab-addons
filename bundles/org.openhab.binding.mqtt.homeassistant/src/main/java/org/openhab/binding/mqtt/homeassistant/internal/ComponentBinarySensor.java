@@ -41,7 +41,7 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
         protected String state_topic = "";
         protected String payload_on = "ON";
         protected String payload_off = "OFF";
-    };
+    }
 
     public ComponentBinarySensor(CFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
@@ -51,7 +51,7 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
         }
 
         buildChannel(sensorChannelID, new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off),
-                channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                channelConfiguration.name, componentConfiguration.getUpdateListener())//
                         .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
                         .unit(channelConfiguration.unit_of_measurement)//
                         .build();

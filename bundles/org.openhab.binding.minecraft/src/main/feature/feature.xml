@@ -5,8 +5,6 @@
     <feature name="openhab-binding-minecraft" description="Minecraft Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
-        <bundle dependency="true">mvn:io.reactivex/rxjava/1.1.7</bundle>
-        <bundle dependency="true">mvn:org.openhab.osgiify/com.firebase.tubesock/0.0.1</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.minecraft/${project.version}</bundle>
     </feature>
 </features>

@@ -31,7 +31,7 @@
 				<description>Host name or network address of the LaMetric Time</description>
 			</parameter>
 			<parameter name="apiKey" type="text" required="true">
-				<label>API key</label>
+				<label>API Key</label>
 				<description>API key to access LaMetric Time</description>
 				<context>password</context>
 			</parameter>

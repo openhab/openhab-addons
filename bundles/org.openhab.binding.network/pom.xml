@@ -12,20 +12,30 @@
   <artifactId>org.openhab.binding.network</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Network Binding</name>
-  
+
+  <properties>
+    <dep.noembedding>commons-net</dep.noembedding>
+  </properties>
+
   <dependencies>
     <dependency>
-        <groupId>org.openhab.osgiify</groupId>
-        <artifactId>fr.bmartel.jspeedtest</artifactId>
-        <version>1.32.1</version>
-        <scope>provided</scope>
+      <groupId>fr.bmartel</groupId>
+      <artifactId>jspeedtest</artifactId>
+      <version>1.32.1</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-        <groupId>org.openhab.osgiify</groupId>
-        <artifactId>fr.bmartel.http-endec</artifactId>
-        <version>1.04</version>
-        <scope>provided</scope>
+      <groupId>fr.bmartel</groupId>
+      <artifactId>http-endec</artifactId>
+      <version>1.04</version>
+      <scope>compile</scope>
     </dependency>
+      <dependency>
+        <groupId>commons-net</groupId>
+        <artifactId>commons-net</artifactId>
+        <version>3.6</version>
+        <scope>compile</scope>
+      </dependency>
   </dependencies>
 
 </project>

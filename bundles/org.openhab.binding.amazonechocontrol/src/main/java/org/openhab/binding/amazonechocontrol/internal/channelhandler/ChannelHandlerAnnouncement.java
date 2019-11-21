@@ -15,6 +15,7 @@ package org.openhab.binding.amazonechocontrol.internal.channelhandler;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
@@ -30,10 +31,13 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial contribution
  */
 public class ChannelHandlerAnnouncement extends ChannelHandler {
-    public static final String CHANNEL_NAME = "announcement";
+    private static final String CHANNEL_NAME = "announcement";
 
-    public ChannelHandlerAnnouncement(IAmazonThingHandler thingHandler, Gson gson) {
+    protected final IEchoThingHandler thingHandler;
+
+    public ChannelHandlerAnnouncement(IEchoThingHandler thingHandler, Gson gson) {
         super(thingHandler, gson);
+        this.thingHandler = thingHandler;
     }
 
     @Override
@@ -44,25 +48,46 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                 String commandValue = ((StringType) command).toFullString();
                 String body = commandValue;
                 String title = null;
-                String speak = " "; // blank generates a beep
+                String speak = commandValue;
+                Integer volume = null;
                 if (commandValue.startsWith("{") && commandValue.endsWith("}")) {
                     try {
                         AnnouncementRequestJson request = parseJson(commandValue, AnnouncementRequestJson.class);
                         if (request != null) {
+                            speak = request.speak;
+                            if (speak == null || speak.length() == 0) {
+                                speak = " "; // blank generates a beep
+                            }
+                            volume = request.volume;
                             title = request.title;
                             body = request.body;
                             if (body == null) {
                                 body = "";
                             }
-                            if (request.sound == false) {
-                                speak = "<speak></speak>";
+                            Boolean sound = request.sound;
+                            if (sound != null) {
+                                if (sound == false && !speak.startsWith("<speak>")) {
+                                    speak = "<speak>" + StringEscapeUtils.escapeXml(speak) + "</speak>";
+                                }
+                                if (sound == true && speak.startsWith("<speak>")) {
+                                    body = "Error: The combination of sound and speak in SSML syntax is not allowed";
+                                    title = "Error";
+                                    speak = "<speak><lang xml:lang=\"en-UK\">Error: The combination of sound and speak in <prosody rate=\"x-slow\"><say-as interpret-as=\"characters\">SSML</say-as></prosody> syntax is not allowed</lang></speak>";
+                                }
+                            }
+                            if ("<speak> </speak>".equals(speak)) {
+                                volume = -1; // Do not change volume
                             }
                         }
                     } catch (JsonSyntaxException e) {
+                        body = "Invalid Json." + e.getLocalizedMessage();
+                        title = "Error";
+                        speak = "<speak><lang xml:lang=\"en-US\">" + StringEscapeUtils.escapeXml(body)
+                                + "</lang></speak>";
                         body = e.getLocalizedMessage();
                     }
                 }
-                connection.sendAnnouncement(device, speak, body, title, 0, 0);
+                thingHandler.startAnnouncment(device, speak, body, title, volume);
             }
             RefreshChannel();
         }
@@ -73,9 +98,11 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }
 
-    class AnnouncementRequestJson {
+    static class AnnouncementRequestJson {
         public @Nullable Boolean sound;
         public @Nullable String title;
         public @Nullable String body;
+        public @Nullable String speak;
+        public @Nullable Integer volume;
     }
 }

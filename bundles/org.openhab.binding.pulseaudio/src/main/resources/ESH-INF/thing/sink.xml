@@ -7,7 +7,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
-		<label>A Pulseaudio sink</label>
+		<label>A Pulseaudio Sink</label>
 		<description>represents a pulseaudio sink</description>
 
 		<channels>

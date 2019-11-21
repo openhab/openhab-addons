@@ -14,6 +14,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -23,9 +24,10 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
- * @author James Hewitt-Thomas
+ * @author Martin van Wingerden - Initial contribution
+ * @author James Hewitt-Thomas - Added first actual tests
  */
+@NonNullByDefault
 public class RFXComUndecodedRFMessageTest {
 
     private void testMessage(String hexMsg, RFXComUndecodedRFMessage.SubType subType, int seqNbr, String rawPayload)

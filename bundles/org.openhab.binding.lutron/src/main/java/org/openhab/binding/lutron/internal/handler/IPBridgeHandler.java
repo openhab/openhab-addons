@@ -50,7 +50,8 @@ import org.slf4j.LoggerFactory;
  *         LutronHandlerFactory
  */
 public class IPBridgeHandler extends BaseBridgeHandler {
-    private static final Pattern STATUS_REGEX = Pattern.compile("~(OUTPUT|DEVICE|SYSTEM|TIMECLOCK|MODE),([^,]+),(.*)");
+    private static final Pattern RESPONSE_REGEX = Pattern
+            .compile("~(OUTPUT|DEVICE|SYSTEM|TIMECLOCK|MODE),([0-9\\.:/]+),([0-9,\\.:/]*)\\Z");
 
     private static final String DB_UPDATE_DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
 
@@ -77,6 +78,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private IPBridgeConfig config;
     private int reconnectInterval;
     private int heartbeatInterval;
+    private int sendDelay;
 
     private TelnetSession session;
     private BlockingQueue<LutronCommand> sendQueue = new LinkedBlockingQueue<>();
@@ -88,10 +90,6 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private Date lastDbUpdateDate;
     private LutronDeviceDiscoveryService discoveryService;
-
-    public LutronDeviceDiscoveryService getDiscoveryService() {
-        return discoveryService;
-    }
 
     public void setDiscoveryService(LutronDeviceDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
@@ -137,6 +135,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         if (validConfiguration(this.config)) {
             reconnectInterval = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
             heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_MINUTES;
+            sendDelay = (config.delay < 0) ? 0 : config.delay;
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
             scheduler.submit(this::connect); // start the async connect task
@@ -236,6 +235,9 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                     // reconnect() will start a new thread; terminate this one
                     break;
                 }
+                if (sendDelay > 0) {
+                    Thread.sleep(sendDelay); // introduce delay to throttle send rate
+                }
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -314,8 +316,12 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             if (thing.getHandler() instanceof LutronHandler) {
                 LutronHandler handler = (LutronHandler) thing.getHandler();
 
-                if (handler != null && handler.getIntegrationId() == integrationId) {
-                    return handler;
+                try {
+                    if (handler != null && handler.getIntegrationId() == integrationId) {
+                        return handler;
+                    }
+                } catch (IllegalStateException e) {
+                    logger.trace("Handler for id {} not initialized", integrationId);
                 }
             }
         }
@@ -325,6 +331,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private void parseUpdates() {
         String paramString;
+        String scrubbedLine;
 
         for (String line : this.session.readLines()) {
             if (line.trim().equals("")) {
@@ -339,9 +346,28 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 this.keepAliveReconnect.cancel(true);
             }
 
-            Matcher matcher = STATUS_REGEX.matcher(line);
+            Matcher matcher = RESPONSE_REGEX.matcher(line);
+            boolean responseMatched = matcher.find();
 
-            if (matcher.find()) {
+            if (!responseMatched) {
+                // In some cases with Caseta a CLI prompt may be embedded within a received response line.
+                if (line.contains("NET>")) {
+                    // Try to remove it and re-attempt the regex match.
+                    scrubbedLine = line.replaceAll("[GQ]NET> ", "");
+                    matcher = RESPONSE_REGEX.matcher(scrubbedLine);
+                    responseMatched = matcher.find();
+                    if (responseMatched) {
+                        line = scrubbedLine;
+                        logger.debug("Cleaned response line: {}", scrubbedLine);
+                    }
+                }
+            }
+
+            if (!responseMatched) {
+                logger.debug("Ignoring message {}", line);
+                continue;
+            } else {
+                // We have a good response message
                 LutronCommandType type = LutronCommandType.valueOf(matcher.group(1));
 
                 if (type == LutronCommandType.SYSTEM) {
@@ -376,8 +402,6 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 } else {
                     logger.debug("No thing configured for integration ID {}", integrationId);
                 }
-            } else {
-                logger.debug("Ignoring message {}", line);
             }
         }
     }

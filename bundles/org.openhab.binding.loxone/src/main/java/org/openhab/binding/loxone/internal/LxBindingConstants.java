@@ -36,7 +36,10 @@ public class LxBindingConstants {
     public static final String MINISERVER_CHANNEL_TYPE_DIMMER = "dimmerTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_NUMBER = "numberTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_COLORPICKER = "colorPickerTypeId";
-
+    public static final String MINISERVER_CHANNEL_TYPE_IROOM_V2_ACTIVE_MODE = "iRoomV2ActiveModeTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_IROOM_V2_OPERATING_MODE = "iRoomV2OperatingModeTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_IROOM_V2_PREPARE_STATE = "iRoomV2PrepareStateTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_IROOM_V2_COMFORT_TOLERANCE = "iRoomV2ComfortToleranceTypeId";
     // Channel Type IDs - read only
     public static final String MINISERVER_CHANNEL_TYPE_RO_TEXT = "roTextTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_SWITCH = "roSwitchTypeId";

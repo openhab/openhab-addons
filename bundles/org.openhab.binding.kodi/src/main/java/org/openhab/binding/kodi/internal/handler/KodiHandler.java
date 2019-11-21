@@ -14,6 +14,7 @@ package org.openhab.binding.kodi.internal.handler;
 
 import static org.openhab.binding.kodi.internal.KodiBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -57,6 +59,7 @@ import org.openhab.binding.kodi.internal.config.KodiConfig;
 import org.openhab.binding.kodi.internal.model.KodiAudioStream;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
+import org.openhab.binding.kodi.internal.model.KodiProfile;
 import org.openhab.binding.kodi.internal.model.KodiSubtitle;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
@@ -90,9 +93,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     private ScheduledFuture<?> statusUpdaterFuture;
 
     public KodiHandler(Thing thing, KodiDynamicStateDescriptionProvider stateDescriptionProvider,
-            WebSocketClient webSocketClient) {
+            WebSocketClient webSocketClient, String callbackUrl) {
         super(thing);
-        connection = new KodiConnection(this, webSocketClient);
+        connection = new KodiConnection(this, webSocketClient, callbackUrl);
 
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
@@ -219,12 +222,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_SHOWNOTIFICATION:
-                if (command instanceof StringType) {
-                    connection.showNotification(command.toString());
-                    updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
-                } else if (RefreshType.REFRESH == command) {
-                    updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
-                }
+                showNotification(channelUID, command);
                 break;
             case CHANNEL_INPUT:
                 if (command instanceof StringType) {
@@ -258,6 +256,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
                 }
                 break;
+            case CHANNEL_PROFILE:
+                if (command instanceof StringType) {
+                    connection.profile(command.toString());
+                }
+                break;
             case CHANNEL_ARTIST:
             case CHANNEL_ALBUM:
             case CHANNEL_TITLE:
@@ -268,6 +271,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_THUMBNAIL:
             case CHANNEL_FANART:
             case CHANNEL_AUDIO_CODEC:
+                break;
             case CHANNEL_AUDIO_INDEX:
                 if (command instanceof DecimalType) {
                     connection.setAudioStream(((DecimalType) command).intValue());
@@ -292,6 +296,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_CURRENTTIME:
+                if (command instanceof QuantityType) {
+                    connection.setTime(((QuantityType) command).intValue());
+                }
+                break;
             case CHANNEL_CURRENTTIMEPERCENTAGE:
             case CHANNEL_DURATION:
                 if (RefreshType.REFRESH == command) {
@@ -299,8 +307,34 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             default:
+                Channel channel = getThing().getChannel(channelUID);
+                if (channel != null) {
+                    ChannelTypeUID ctuid = channel.getChannelTypeUID();
+                    if (ctuid != null) {
+                        if (ctuid.getId().equals(CHANNEL_TYPE_SHOWNOTIFICATION)) {
+                            showNotification(channelUID, command);
+                            break;
+                        }
+                    }
+                }
                 logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
                 break;
+        }
+    }
+
+    private void showNotification(ChannelUID channelUID, Command command) {
+        if (command instanceof StringType) {
+            Channel channel = getThing().getChannel(channelUID);
+            if (channel != null) {
+                String title = (String) channel.getConfiguration().get(CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_TITLE);
+                BigDecimal displayTime = (BigDecimal) channel.getConfiguration()
+                        .get(CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_DISPLAYTIME);
+                String icon = (String) channel.getConfiguration().get(CHANNEL_TYPE_SHOWNOTIFICATION_PARAM_ICON);
+                connection.showNotification(title, displayTime, icon, command.toString());
+            }
+            updateState(channelUID, UnDefType.UNDEF);
+        } else if (RefreshType.REFRESH == command) {
+            updateState(channelUID, UnDefType.UNDEF);
         }
     }
 
@@ -581,6 +615,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                         updateFavoriteChannelStateDescription();
                         updatePVRChannelStateDescription(PVR_TV, CHANNEL_PVR_OPEN_TV);
                         updatePVRChannelStateDescription(PVR_RADIO, CHANNEL_PVR_OPEN_RADIO);
+                        updateProfileStateDescription(CHANNEL_PROFILE);
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "No connection established");
@@ -621,6 +656,16 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         }
     }
 
+    private void updateProfileStateDescription(final String channelId) {
+        if (isLinked(channelId)) {
+            List<StateOption> options = new ArrayList<>();
+            for (KodiProfile profile : connection.getProfiles()) {
+                options.add(new StateOption(profile.getLabel(), profile.getLabel()));
+            }
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
+        }
+    }
+
     @Override
     public void updateAudioStreamOptions(List<KodiAudioStream> audios) {
         if (isLinked(CHANNEL_AUDIO_INDEX)) {
@@ -654,6 +699,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             updateStatus(ThingStatus.ONLINE);
             scheduler.schedule(() -> connection.getSystemProperties(), 1, TimeUnit.SECONDS);
             scheduler.schedule(() -> connection.updateVolume(), 1, TimeUnit.SECONDS);
+            scheduler.schedule(() -> connection.updateCurrentProfile(), 1, TimeUnit.SECONDS);
             try {
                 String version = connection.getVersion();
                 thing.setProperty(PROPERTY_VERSION, version);
@@ -911,6 +957,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateDuration(long duration) {
         updateState(CHANNEL_DURATION, createQuantityState(duration, SmartHomeUnits.SECOND));
+    }
+
+    @Override
+    public void updateCurrentProfile(String profile) {
+        updateState(CHANNEL_PROFILE, new StringType(profile));
     }
 
     @Override

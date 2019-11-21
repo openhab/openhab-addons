@@ -42,6 +42,8 @@ import org.eclipse.smarthome.core.transform.TransformationHelper;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +57,8 @@ import org.slf4j.LoggerFactory;
 public class ExecHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
+
+    private final BundleContext bundleContext;
 
     // List of Configurations constants
     public static final String INTERVAL = "interval";
@@ -73,6 +77,7 @@ public class ExecHandler extends BaseThingHandler {
 
     public ExecHandler(Thing thing) {
         super(thing);
+        this.bundleContext = FrameworkUtil.getBundle(ExecHandler.class).getBundleContext();
     }
 
     @Override
@@ -179,7 +184,7 @@ public class ExecHandler extends BaseThingHandler {
                 StringBuilder errorBuilder = new StringBuilder();
 
                 try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-                        BufferedReader br = new BufferedReader(isr);) {
+                        BufferedReader br = new BufferedReader(isr)) {
                     String line = null;
                     while ((line = br.readLine()) != null) {
                         outputBuilder.append(line).append("\n");
@@ -192,7 +197,7 @@ public class ExecHandler extends BaseThingHandler {
                 }
 
                 try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                        BufferedReader br = new BufferedReader(isr);) {
+                        BufferedReader br = new BufferedReader(isr)) {
                     String line = null;
                     while ((line = br.readLine()) != null) {
                         errorBuilder.append(line).append("\n");

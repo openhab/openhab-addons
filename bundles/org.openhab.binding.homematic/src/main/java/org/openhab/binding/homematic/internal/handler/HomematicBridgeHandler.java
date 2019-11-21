@@ -16,14 +16,14 @@ import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.homematic.internal.HomematicBindingConstants.CHANNEL_TYPE_DUTY_CYCLE_RATIO;
 
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
@@ -47,7 +48,6 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
 import org.openhab.binding.homematic.internal.type.UidUtils;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +74,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     private final HttpClient httpClient;
 
     private HomematicDeviceDiscoveryService discoveryService;
-    private ServiceRegistration<?> discoveryServiceRegistration;
 
     private final String ipv4Address;
     private boolean isInDutyCycle = false;
@@ -96,10 +95,13 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
     }
 
+    public void setDiscoveryService(HomematicDeviceDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
+
     private void initializeInternal() {
         synchronized (initDisposeLock) {
             config = createHomematicConfig();
-            registerDeviceDiscoveryService();
 
             try {
                 String id = getThing().getUID().getId();
@@ -177,7 +179,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         logger.debug("Disposing bridge '{}'", getThing().getUID().getId());
         if (discoveryService != null) {
             discoveryService.stopScan();
-            unregisterDeviceDiscoveryService();
         }
         if (gateway != null) {
             gateway.dispose();
@@ -185,36 +186,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         if (config != null) {
             portPool.release(config.getXmlCallbackPort());
             portPool.release(config.getBinCallbackPort());
-        }
-    }
-
-    /**
-     * Registers the DeviceDiscoveryService.
-     */
-    private void registerDeviceDiscoveryService() {
-        if (bundleContext != null) {
-            logger.trace("Registering HomematicDeviceDiscoveryService for bridge '{}'", getThing().getUID().getId());
-            discoveryService = new HomematicDeviceDiscoveryService(this);
-            discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-                    discoveryService, new Hashtable<String, Object>());
-            discoveryService.activate();
-        }
-    }
-
-    /**
-     * Unregisters the DeviceDisoveryService.
-     */
-    private void unregisterDeviceDiscoveryService() {
-        if (discoveryServiceRegistration != null && bundleContext != null) {
-            HomematicDeviceDiscoveryService service = (HomematicDeviceDiscoveryService) bundleContext
-                    .getService(discoveryServiceRegistration.getReference());
-            if (service != null) {
-                service.deactivate();
-            }
-
-            discoveryServiceRegistration.unregister();
-            discoveryServiceRegistration = null;
-            discoveryService = null;
         }
     }
 
@@ -257,6 +228,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
         logger.debug("{}", homematicConfig);
         return homematicConfig;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(HomematicDeviceDiscoveryService.class);
     }
 
     @Override

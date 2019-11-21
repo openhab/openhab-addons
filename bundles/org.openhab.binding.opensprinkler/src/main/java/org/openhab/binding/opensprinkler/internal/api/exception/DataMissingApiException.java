@@ -18,7 +18,7 @@ package org.openhab.binding.opensprinkler.internal.api.exception;
  *
  * @author Chris Graham - Initial contribution
  */
-public class DataMissingApiException extends Exception {
+public class DataMissingApiException extends GeneralApiException {
     /**
      * Serial ID of this error class.
      */

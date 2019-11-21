@@ -29,7 +29,7 @@ import org.openhab.binding.enocean.internal.eep.EEPHelper;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -42,7 +42,7 @@ public class A5_11_04 extends _4BSMessage {
         NO_ERROR_PRESENT,
         LAMP_FAILURE,
         INTERNAL_FAILURE,
-        FAILURE_ON_THE_EXTERNAL_PERIPHERY;
+        FAILURE_ON_THE_EXTERNAL_PERIPHERY
     }
 
     private enum ParameterMode {

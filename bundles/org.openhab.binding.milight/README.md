@@ -33,12 +33,12 @@ Read the device manual for more information about how to connect your device to 
 
 ## Thing Configuration
 
-Besides adding bridges through Paper-UI, you can also add them manually in your Thing
+Besides adding bridges through Paper UI, you can also add them manually in your Thing
 configuration file.
 iBox and iBox2 have the version 6, older milight bridges have the version 3.
 The ID is the MAC address of the bridge in hexadecimal digits.
 
-    Bridge milight:bridgeV3:mybridge [ host="192.168.0.70", bridgeid="ACCF23A6C0B4", passwordByte1=0, passwordByte2=0 ] {
+    Bridge milight:bridgeV3:mybridge [ host="192.168.0.70", bridgeid="ACCF23A6C0B4", passwordByte1=0, passwordByte2=0, repeat=2, delayTime=75 ] {
         Thing whiteLed myWhite [ zone="0" ]
         Thing rgbwwLed myRGB [ zone="4" ]
         Thing rgbLed myOldRGB [ zone="1" ]
@@ -48,6 +48,14 @@ The Thing configuration for the bridge uses the following syntax
 
 * Bridge milight:bridgeV3:<any name> &lsqb host="<IP-Address of bridge>", bridgeid="<mac>" &rsqb
 * Bridge milight:bridgeV6:<any name> &lsqb host="<IP-Address of bridge>", bridgeid="<mac>", passwordByte1="<0-255>", passwordByte2="<0-255>" &rsqb
+    
+Optionally, the following parameters can be added
+
+* repeat=<integer> (defaults to 1, if not defined)
+  Usually the bridge receives all commands albeit UDP is used. But the actual bulbs might be slightly out of bridge radio range and it sometimes helps to send commands multiple times.
+* delayTime=<integer for ms> (defaults to 100, if not defined)
+  Time to wait before sending another command to the bridge. It is safe to have a wait time of 1/10s but usually sufficient to just wait 50ms. If the value is too high, commands queue up.
+
 
 The Thing configuration for the bulbs uses the following syntax:
 &lsqbThing&rsqb <type of bulb> <any name> &lsqb zone="<0-4>" &rsqb
@@ -122,7 +130,7 @@ Dimmer Light_LivingroomC	{channel="milight:whiteLed:ACCF23A6C0B4:1:ledtemperatur
 Dimmer RGBW_LivingroomB		{channel="milight:rgbwLed:ACCF23A6C0B4:2:ledbrightness"} # Dimmer changing brightness for RGBW bulb in zone 2
 Color Light_Party		{channel="milight:rgbwLed:ACCF23A6C0B4:1:ledcolor"}# Colorpicker for rgb bulbs
 
-# You have to link the items to the channels of your prefered group e.g. in paperui after you've saved
+# You have to link the items to the channels of your prefered group e.g. in Paper UI after you have saved
 # your items file.
 
 # The command types nightMode and whiteMode are stateless and should be configured as pushbuttons as they only support a trigger action:

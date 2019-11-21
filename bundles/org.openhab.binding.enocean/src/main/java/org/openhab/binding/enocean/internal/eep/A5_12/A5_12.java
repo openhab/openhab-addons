@@ -117,14 +117,14 @@ public abstract class A5_12 extends _4BSMessage {
             Configuration config) {
         switch (channelId) {
             case CHANNEL_INSTANTPOWER:
-            case CHANNEL_INSTANTLITRE:
+            case CHANNEL_CURRENTFLOW:
             case CHANNEL_CURRENTNUMBER:
                 return getCurrentValue();
             case CHANNEL_TOTALUSAGE:
                 State value = getCumulativeValue();
                 State currentState = getCurrentStateFunc.apply(channelId);
                 return EEPHelper.validateTotalUsage(value, currentState, config);
-            case CHANNEL_TOTALCUBICMETRE:
+            case CHANNEL_CUMULATIVEVALUE:
             case CHANNEL_COUNTER:
                 return getCumulativeValue();
         }
