@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="kostalinverterpikonewgeneration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+  
+	<thing-type id="kostalinverterpikonewgeneration">
+        <label>Kostal Inverter Piko New Generation</label>
+        <description>Scrape the Web server of Kostal Inverter Piko New Generation</description>	
+	
+	<channels>
+            <channel typeId="gridOutputPower" id="gridOutputPower" ></channel>
+            <channel typeId="yield_Day" id="yield_Day" ></channel>
+            <channel typeId="yield_Total" id="yield_Total" ></channel>
+            <channel typeId="operatingStatus" id="operatingStatus" ></channel>
+            <channel typeId="gridVoltageL1" id="gridVoltageL1" ></channel>
+            <channel typeId="gridCurrentL1" id="gridCurrentL1" ></channel>
+            <channel typeId="gridPowerL1" id="gridPowerL1" ></channel>
+            <channel typeId="gridVoltageL2" id="gridVoltageL2" ></channel>
+            <channel typeId="gridCurrentL2" id="gridCurrentL2" ></channel>
+            <channel typeId="gridPowerL2" id="gridPowerL2" ></channel>
+            <channel typeId="gridVoltageL3" id="gridVoltageL3" ></channel>
+            <channel typeId="gridCurrentL3" id="gridCurrentL3" ></channel>
+            <channel typeId="gridPowerL3" id="gridPowerL3" ></channel>
+            <channel typeId="dcPowerPV" id="dcPowerPV" ></channel>
+            <channel typeId="dc1Voltage" id="dc1Voltage" ></channel>
+            <channel typeId="dc1Current" id="dc1Current" ></channel>
+            <channel typeId="dc1Power" id="dc1Power" ></channel>
+            <channel typeId="dc2Voltage" id="dc2Voltage" ></channel>
+            <channel typeId="dc2Current" id="dc2Current" ></channel>
+            <channel typeId="dc2Power" id="dc2Power" ></channel>
+            <channel typeId="dc3Voltage" id="dc3Voltage" ></channel>
+            <channel typeId="dc3Current" id="dc3Current" ></channel>
+            <channel typeId="dc3Power" id="dc3Power" ></channel>
+            
+            <channel typeId="aktHomeConsumptionSolar" id="aktHomeConsumptionSolar" ></channel>
+            <channel typeId="aktHomeConsumptionBat" id="aktHomeConsumptionBat" ></channel>
+            <channel typeId="aktHomeConsumptionGrid" id="aktHomeConsumptionGrid" ></channel>
+            <channel typeId="phaseSelHomeConsumpL1" id="phaseSelHomeConsumpL1" ></channel>
+            <channel typeId="phaseSelHomeConsumpL2" id="phaseSelHomeConsumpL2" ></channel>
+            <channel typeId="phaseSelHomeConsumpL3" id="phaseSelHomeConsumpL3" ></channel>
+            <channel typeId="gridFreq" id="gridFreq" ></channel>
+            <channel typeId="gridCosPhi" id="gridCosPhi" ></channel>
+            <channel typeId="homeConsumption_Day" id="homeConsumption_Day" ></channel>
+            <channel typeId="ownConsumption_Day" id="ownConsumption_Day" ></channel>
+            <channel typeId="ownConsRate_Day" id="ownConsRate_Day" ></channel>
+            <channel typeId="autonomyDegree_Day" id="autonomyDegree_Day" ></channel>
+            <channel typeId="homeConsumption_Total" id="homeConsumption_Total" ></channel>
+            <channel typeId="ownConsumption_Total" id="ownConsumption_Total" ></channel>
+            <channel typeId="totalOperatingTime" id="totalOperatingTime" ></channel>
+            <channel typeId="current" id="current" ></channel>
+            <channel typeId="currentDir" id="currentDir" ></channel>
+            <channel typeId="chargeCycles" id="chargeCycles" ></channel>
+            <channel typeId="batteryTemperature" id="batteryTemperature" ></channel>
+            <channel typeId="loginterval" id="loginterval" ></channel>
+            <channel typeId="s0InPulseCnt" id="s0InPulseCnt" ></channel>
+            <channel typeId="ownConsRate_Total" id="ownConsRate_Total" ></channel>
+            <channel typeId="autonomyDegree_Total" id="autonomyDegree_Total" ></channel>
+            
+            <channel typeId="batteryVoltage" id="batteryVoltage" ></channel>
+            <channel typeId="batStateOfCharge" id="batStateOfCharge" ></channel>
+            
+            
+            <channel typeId="batteryType" id="batteryType" ></channel>
+            <channel typeId="batteryUsageConsumption" id="batteryUsageConsumption" ></channel>
+            <channel typeId="batteryUsageStrategy" id="batteryUsageStrategy" ></channel>
+            <channel typeId="smartBatteryControl" id="smartBatteryControl" ></channel>
+            <channel typeId="smartBatteryControl_Text" id="smartBatteryControl_Text" ></channel>
+            <channel typeId="batteryChargeTimeFrom" id="batteryChargeTimeFrom" ></channel>
+            <channel typeId="batteryChargeTimeTo" id="batteryChargeTimeTo" ></channel>
+            <channel typeId="maxDepthOfDischarge" id="maxDepthOfDischarge" ></channel>
+            <channel typeId="shadowManagement" id="shadowManagement" ></channel>
+            <channel typeId="externalModuleControl" id="externalModuleControl" ></channel>
+            <channel typeId="inverterName" id="inverterName" ></channel>
+            </channels>
+   </thing-type>
+   
+    <channel-type id="gridOutputPower">
+        <item-type>Number:Power</item-type>
+        <label>Grid Output Power</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="yield_Day">
+        <item-type>Number:Power</item-type>
+        <label>Yield Day</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="yield_Total">
+        <item-type>Number:Energy</item-type>
+        <label>Yield Total</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+        
+    <channel-type id="operatingStatus">
+        <item-type>String </item-type>
+        <label>Status</label>
+        <category>Energy</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="gridVoltageL1">
+        <item-type>Number:ElectricPotential</item-type>
+        <label>Grid Voltage L1</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="gridCurrentL1">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>Grid Current L1</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f  %unit%" />
+    </channel-type>
+    
+    <channel-type id="gridPowerL1">
+        <item-type>Number:Power</item-type>
+        <label>Grid Power L1</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="gridVoltageL2">
+        <item-type>Number:ElectricPotential</item-type>
+        <label>Grid Voltage L2</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="gridCurrentL2">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>Grid Current L2</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+        
+    <channel-type id="gridPowerL2">
+        <item-type>Number:Power</item-type>
+        <label>Grid Power L2</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="gridVoltageL3">
+        <item-type>Number:ElectricPotential</item-type>
+        <label>Grid Voltage L3</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="gridCurrentL3">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>Grid Current L3</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+        
+    <channel-type id="gridPowerL3">
+        <item-type>Number:Power</item-type>
+        <label>Grid Power L3</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="dcPowerPV">
+        <item-type>Number:Power</item-type>
+        <label>Dc Power PV</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="dc1Voltage">
+        <item-type>Number:ElectricPotential</item-type>
+        <label>Dc1 Voltage</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="dc1Current">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>Dc1 Current</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="dc1Power">
+        <item-type>Number:Power</item-type>
+        <label>Dc1 Power</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="dc2Voltage">
+        <item-type>Number:ElectricPotential</item-type>
+        <label>Dc2 Voltage</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="dc2Current">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>Dc2 Current</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="dc2Power">
+        <item-type>Number:Power</item-type>
+        <label>Dc2 Power</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="dc3Voltage">
+        <item-type>Number:ElectricPotential</item-type>
+        <label>Dc3 Voltage</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="dc3Current">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>Dc3 Current</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="dc3Power">
+        <item-type>Number:Power</item-type>
+        <label>Dc3 Power</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+   
+    
+    <channel-type id="aktHomeConsumptionSolar">
+        <item-type>Number:Power</item-type>
+        <label>Actual Home Consumption Solar</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="aktHomeConsumptionBat">
+        <item-type>Number:Power</item-type>
+        <label>Actual Home Consumption Battery</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="aktHomeConsumptionGrid">
+        <item-type>Number:Energy</item-type>
+        <label>Actual Home Consumption Grid</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+        
+    <channel-type id="phaseSelHomeConsumpL1">
+        <item-type>Number:Power</item-type>
+        <label>Home Consumption L1</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="phaseSelHomeConsumpL2">
+        <item-type>Number:Power</item-type>
+        <label>Home Consumption L2</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="phaseSelHomeConsumpL3">
+        <item-type>Number:Power</item-type>
+        <label>Home Consumption L3</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="gridFreq">
+        <item-type>Number:Frequency</item-type>
+        <label>Grid Freq</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="gridCosPhi">
+        <item-type>Number:Angle</item-type>
+        <label>Grid Cos Phi</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.0f %unit%" />
+    </channel-type>
+    
+    <channel-type id="homeConsumption_Day">
+        <item-type>Number:Energy</item-type>
+        <label>Home Consumption Day</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+        
+    <channel-type id="ownConsumption_Day">
+        <item-type>Number:Energy</item-type>
+        <label>Own Consumption Day</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="ownConsRate_Day">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Own Cons Rate Day</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.0f %unit%" />
+    </channel-type>
+    
+    <channel-type id="autonomyDegree_Day">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Autonomy Degree Day</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.0f %unit%" />
+    </channel-type>
+        
+    <channel-type id="homeConsumption_Total">
+        <item-type>Number:Energy</item-type>
+        <label>Home Consumption Total</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="ownConsumption_Total">
+        <item-type>Number:Energy</item-type>
+        <label>Own Consumption Total</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="totalOperatingTime">
+        <item-type>Number:Time</item-type>
+        <label>Total Operating Time</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.0f %unit%" />
+    </channel-type>
+    
+    <channel-type id="current">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>Current</label>
+        <category>Energy</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="currentDir">
+        <item-type>Number:ElectricCurrent</item-type>
+        <label>Current Dir</label>
+        <category>Energy</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="chargeCycles">
+        <item-type>String</item-type>
+        <label>Charge Cycles</label>
+        <category>Energy</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="batteryTemperature">
+        <item-type>Number:Temperature</item-type>
+        <label>Battery Temperature</label>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="loginterval">
+        <item-type>Number:Time</item-type>
+        <label>Log Interval</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.0f %unit%" />
+    </channel-type>
+    
+    <channel-type id="s0InPulseCnt">
+        <item-type>String</item-type>
+        <label>S0 Inpulse Counter</label>
+        <category>Energy</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="ownConsRate_Total">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Own Cons Rate Total</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.0f %unit%" />
+    </channel-type>
+    
+    <channel-type id="autonomyDegree_Total">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Autonomy Degree Total</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.0f %unit%" />
+    </channel-type>
+            
+    <channel-type id="batteryVoltage">
+        <item-type>Number:ElectricalPotential</item-type>
+        <label>Battery Voltage</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.0f %unit%" />
+    </channel-type>
+        
+    <channel-type id="batStateOfCharge">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Bat State Of Charge</label>
+        <category>Energy</category>
+        <state readOnly="true"  pattern="%.0f %unit%" />
+    </channel-type>
+            
+    <channel-type id="batteryType">
+        <item-type>String</item-type>
+        <label>Battery Type</label>
+        <category>String</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+     <channel-type id="batteryUsageConsumption">
+        <item-type>String</item-type>
+        <label>Battery Usage Consumption</label>
+        <category>String</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+     <channel-type id="batteryUsageStrategy">
+        <item-type>String</item-type>
+        <label>Battery Usage Strategy</label>
+        <category>String</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="smartBatteryControl">
+        <item-type>Switch</item-type>
+        <label>Smart Battery Control</label>
+        <category>Switch</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="smartBatteryControl_Text">
+        <item-type>String</item-type>
+        <label>Smart Battery Control Text</label>
+        <category>String</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+     <channel-type id="batteryChargeTimeFrom">
+        <item-type>Number:Time</item-type>
+        <label>Battery Charge Time From</label>
+        <category>Number:Time</category>
+        <state readOnly="true" pattern="%.0f %unit%" />
+    </channel-type>
+    
+     <channel-type id="batteryChargeTimeTo">
+        <item-type>Number:Time</item-type>
+        <label>Battery Charge Time To</label>
+        <category>String</category>
+        <state readOnly="true"  pattern="%.0f %unit%" />
+    </channel-type>
+    
+     <channel-type id="maxDepthOfDischarge">
+        <item-type>String</item-type>
+        <label>Max Depth Of Discharge</label>
+        <category>String</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="shadowManagement">
+        <item-type>Number</item-type>
+        <label>Shadow Management</label>
+        <category>Number</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="externalModuleControl">
+        <item-type>String</item-type>
+        <label>External Module Control</label>
+        <category>String</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="inverterName">
+        <item-type>String</item-type>
+        <label>Inverter Name</label>
+        <category>String</category>
+        <state readOnly="true" />
+    </channel-type>
+</thing:thing-descriptions>
