@@ -442,7 +442,11 @@ public class LGWebOSTVSocket {
 
     public ServiceSubscription<Float> subscribeVolume(ResponseListener<Float> listener) {
         ServiceSubscription<Float> request = new ServiceSubscription<>(VOLUME, null,
-                jsonObj -> "mastervolume_tv_speaker".equals(jsonObj.get("scenario").getAsString())
+                // "scenario" in the response determines whether "volume" is absolute or a delta value.
+                // it only makes sense to subscribe to changes in absolute volume
+                // accept: "mastervolume_tv_speaker" or "mastervolume_tv_speaker_ext"
+                // ignore external amp/receiver: "mastervolume_ext_speaker_arc" or "mastervolume_ext_speaker_urcu_oss"
+                jsonObj -> jsonObj.get("scenario").getAsString().startsWith("mastervolume_tv_speaker")
                         ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
                         : Float.NaN,
                 listener);
