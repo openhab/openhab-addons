@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal;
 
-import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHANNEL_1;
+import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHANNEL_POWER_SWITCH;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,17 +34,23 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BoschSHCHandler extends BaseThingHandler {
 
+    // TODO: Might want to have something that inherits from BaseBridgeHandler too
+
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
 
     private @Nullable BoschSHCConfiguration config;
 
     public BoschSHCHandler(Thing thing) {
         super(thing);
+        logger.warn("Creating thing: {}", thing.getLabel());
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
+
+        logger.warn("Handle command for: {}", config.id);
+
+        if (CHANNEL_POWER_SWITCH.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
             }
@@ -61,8 +67,8 @@ public class BoschSHCHandler extends BaseThingHandler {
     @Override
     public void initialize() {
 
-        logger.warn("Start initializing! - Hello world");
         config = getConfigAs(BoschSHCConfiguration.class);
+        logger.warn("Initializating thing: {}", config.id);
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly. Also, before leaving this method a thing
@@ -79,6 +85,7 @@ public class BoschSHCHandler extends BaseThingHandler {
 
         // Example for background initialization:
         scheduler.execute(() -> {
+
             boolean thingReachable = true; // <background task with long running initialization here>
             // when done do:
             if (thingReachable) {
@@ -96,4 +103,5 @@ public class BoschSHCHandler extends BaseThingHandler {
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
     }
+
 }

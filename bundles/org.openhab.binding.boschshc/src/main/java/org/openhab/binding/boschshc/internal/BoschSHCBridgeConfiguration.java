@@ -12,21 +12,15 @@
  */
 package org.openhab.binding.boschshc.internal;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * A room as represented by the controller.
+ * The {@link BoschSHCBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
- * Json example:
- * {"@type":"room","id":"hz_1","iconId":"icon_room_bedroom","name":"Bedroom"}
- *
- * @author Stefan Kästle
+ * @author Stefan Kästle - Initial contribution
  */
-public class Room {
+public class BoschSHCBridgeConfiguration {
 
-    @SerializedName("@type")
-    String type;
-
-    String id;
-    String name;
+    /**
+     * IP address of the Bosch Smart Home Controller
+     */
+    public String ipAddress;
 }
