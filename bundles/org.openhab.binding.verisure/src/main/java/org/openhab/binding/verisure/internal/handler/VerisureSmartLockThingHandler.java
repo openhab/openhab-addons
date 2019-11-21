@@ -85,7 +85,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
             VerisureSmartLocksJSON smartLock = (VerisureSmartLocksJSON) session.getVerisureThing(deviceId);
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
-                BigDecimal pinCode = session.getPinCode(installationId);
+                String pinCode = session.getPinCode(installationId);
                 if (deviceId != null && pinCode != null && installationId != null) {
                     StringBuilder sb = new StringBuilder(deviceId);
                     sb.insert(4, " ");

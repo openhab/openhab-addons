@@ -72,7 +72,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
             VerisureAlarmsJSON alarm = (VerisureAlarmsJSON) session.getVerisureThing(deviceId);
             if (alarm != null) {
                 BigDecimal installationId = alarm.getSiteId();
-                BigDecimal pinCode = session.getPinCode(installationId);
+                String pinCode = session.getPinCode(installationId);
 
                 if (deviceId != null && pinCode != null && installationId != null) {
                     StringBuilder sb = new StringBuilder(deviceId);

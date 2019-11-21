@@ -69,13 +69,13 @@ public class VerisureSession {
     private final class VerisureInstallation {
         private @Nullable String installationName;
         private @Nullable BigDecimal installationId;
-        private @Nullable BigDecimal pinCode;
+        private @Nullable String pinCode;
 
-        public @Nullable BigDecimal getPinCode() {
+        public @Nullable String getPinCode() {
             return pinCode;
         }
 
-        public void setPinCode(@Nullable BigDecimal pinCode) {
+        public void setPinCode(@Nullable String pinCode) {
             this.pinCode = pinCode;
         }
 
@@ -260,7 +260,7 @@ public class VerisureSession {
         return subString;
     }
 
-    public @Nullable BigDecimal getPinCode(@Nullable BigDecimal installationId) {
+    public @Nullable String getPinCode(@Nullable BigDecimal installationId) {
         return verisureInstallations.get(installationId).getPinCode();
     }
 
@@ -502,11 +502,11 @@ public class VerisureSession {
                             vInst.setInstallationName(owaInstList.get(i).getAlias());
                             if (pinCode != null) {
                                 if (pinCodesMatchInstallations) {
-                                    vInst.setPinCode(new BigDecimal(pinCodes.get(i)));
+                                    vInst.setPinCode(pinCodes.get(i));
                                     logger.debug("Setting pincode {} to installation ID {}", pinCodes.get(i),
                                             owaInstList.get(i).getGiid());
                                 } else {
-                                    vInst.setPinCode(new BigDecimal(pinCodes.get(0)));
+                                    vInst.setPinCode(pinCodes.get(0));
                                     logger.debug("Setting pincode {} to installation ID {}", pinCodes.get(0),
                                             owaInstList.get(i).getGiid());
                                 }
