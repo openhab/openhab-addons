@@ -106,10 +106,10 @@
 		<description>Current Homekit mode of the AC unit</description>
 		<state>
 			<options>
-				<option value="Auto">Auto</option>
-				<option value="HeatOn">Heating On</option>
-				<option value="CoolOn">Cooling On</option>
-				<option value="Off">Off</option>
+				<option value="on">Auto</option>
+				<option value="heat">Heating On</option>
+				<option value="cool">Cooling On</option>
+				<option value="off">Off</option>
 
 			</options>
 		</state>
