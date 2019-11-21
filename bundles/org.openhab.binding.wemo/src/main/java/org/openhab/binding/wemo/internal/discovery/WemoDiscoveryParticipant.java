@@ -128,6 +128,31 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                                     device.getIdentity().getUdn().getIdentifierString());
                             return new ThingUID(THING_TYPE_DIMMER, device.getIdentity().getUdn().getIdentifierString());
                         }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase().startsWith("crockpot")) {
+                            logger.debug("Discovered a WeMo enabled Crockpot thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_CROCKPOT,
+                                    device.getIdentity().getUdn().getIdentifierString());
+                        }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase()
+                                .startsWith("airpurifier")) {
+                            logger.debug("Discovered a WeMo enabled Holmes Air Purifier thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_PURIFIER,
+                                    device.getIdentity().getUdn().getIdentifierString());
+                        }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase()
+                                .startsWith("humidifier")) {
+                            logger.debug("Discovered a WeMo enabled Holmes Humidifier thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_HUMIDIFIER,
+                                    device.getIdentity().getUdn().getIdentifierString());
+                        }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase().startsWith("heater")) {
+                            logger.debug("Discovered a WeMo enabled Heater thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_HEATER, device.getIdentity().getUdn().getIdentifierString());
+                        }
                     }
                 }
             }

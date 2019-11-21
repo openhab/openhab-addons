@@ -31,8 +31,10 @@ import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.wemo.internal.discovery.WemoLinkDiscoveryService;
 import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
 import org.openhab.binding.wemo.internal.handler.WemoCoffeeHandler;
+import org.openhab.binding.wemo.internal.handler.WemoCrockpotHandler;
 import org.openhab.binding.wemo.internal.handler.WemoDimmerHandler;
 import org.openhab.binding.wemo.internal.handler.WemoHandler;
+import org.openhab.binding.wemo.internal.handler.WemoHolmesHandler;
 import org.openhab.binding.wemo.internal.handler.WemoLightHandler;
 import org.openhab.binding.wemo.internal.handler.WemoMakerHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
@@ -96,6 +98,22 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
                 logger.debug("Creating a WemoDimmerHandler for thing '{}' with UDN '{}'", thing.getUID(),
                         thing.getConfiguration().get("udn"));
                 return new WemoDimmerHandler(thing, upnpIOService, wemoHttpcaller);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_CROCKPOT)) {
+                logger.debug("Creating a WemoCockpotHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoCrockpotHandler(thing, upnpIOService, wemoHttpcaller);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_PURIFIER)) {
+                logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_HUMIDIFIER)) {
+                logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_HEATER)) {
+                logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller);
             } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MZ100)) {
                 return new WemoLightHandler(thing, upnpIOService, wemoHttpcaller);
             } else {

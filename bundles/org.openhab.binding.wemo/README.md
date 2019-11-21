@@ -5,7 +5,7 @@ The integration happens either through the WeMo-Link bridge, which acts as an IP
 
 ## Supported Things
 
-The WeMo Binding supports the Socket, Insight, Lightswitch, Motion, Dimmer, Coffemaker and Maker devices, as well as the WeMo-Link bridge with WeMo LED bulbs.
+The WeMo Binding supports the Socket, Insight, Lightswitch, Motion, Dimmer, Coffemaker and Maker devices, as well as the WeMo-Link bridge with WeMo LED bulbs. The Binding also supports the Crock-Pot Smart Slow Cooker, Mr. Coffee Smart Coffemaker as well as the Holmes Smart Air Purifier, Holmes Smart Humidifier and Holmes Smart Heater.
 
 ## Discovery
 
@@ -43,7 +43,7 @@ Devices support some of the following channels:
 |---------------------|-----------|---------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | motionDetection     | Switch    | On if motion is detected, off otherwise. (Motion Sensor only) | Motion                                                                                                                                                          |
 | lastMotionDetected  | DateTime  | Date and Time when the last motion was detected. (Motion Sensor only) | Motion                                                                                                                                                  |
-| state               | Switch    | This channel controls the actual binary State of a Device or represents Motion Detection. | All but Dimmer                                                                                                                     |
+| state               | Switch    | This channel controls the actual binary State of a Device or represents Motion Detection. | All but Dimmer, Crockpot, Airpurifier and Humidifier                                                                                                                     |
 | lastChangedAt       | DateTime  | Date and Time the device was last turned on or of. | Insight                                                                                                                                                                    |
 | lastOnFor           | Number    | Time in seconds an Insight device was last turned on for. | Insight                                                                                                                                                            |
 | onToday             | Number    | Time in seconds an Insight device has been switched on today. | Insight                                                                                                                                                        |
@@ -73,6 +73,25 @@ Devices support some of the following channels:
 | startTime           | DateTime  | Time when the nightMode starts | DimmerSwitch                                                                                                                                                                                  |
 | endTime             | DateTime  | Time when the nightMode ends | DimmerSwitch                                                                                                                                                                                    |
 | nightModeBrightness | Number    | Brightness used in nightMode | DimmerSwitch                                                                                                                                                                                    |
+| cookMode            | String    | Shows the operation mode of a WeMo Crockpot (OFF, WARM, LOW, HIGH | Crockpot                                                                                                                                                                                    |
+| warmCookTime        | Number    | Shows the timer settings for warm cooking mode | Crockpot                                                                                                                                                                                    |
+| lowCookTime         | Number    | Shows the timer settings for low cooking mode | Crockpot                                                                                                                                                                                    |
+| highCookTime        | Number    | Shows the timer settings for high cooking mode | Crockpot                                                                                                                                                                                    |
+| cookedTime          | Number    | Shows the elapsed cooking time | Crockpot                                                                                                                                                                                    |
+| purifierMode        | String    | Runmode of Air Purifier (OFF, LOW, MED, HIGH, AUTO) | Air Purifier                                                                                                                                                                                    |
+| airQuality          | String    | Air quality (POOR, MODERATE, GOOD) | Air Purifier                                                                                                                                                                                    |
+| ionizer             | Switch    | Indicates whether the ionizer is switched ON or OFF | Air Purifier                                                                                                                                                                                    |
+| filterLife          | Number    | Indicates the remaining filter lifetime in Percent | Air Purifier, Humidifier                                                                                                                                                                                    |
+| expiredFilterTime   | Number    | Indicates whether the filter lifetime has expired or not | Air Purifier, Humidifier                                                                                                                                                                                    |
+| filterPresent       | Switch    | Indicates the presence of an air filter | Air Purifier                                                                                                                                                                                    |
+| humidifierMode      | String    | Runmode of Humidifier (OFF, MIN, LOW, MED, HIGH, MAX) | Humidifier                                                                                                                                                                                    |
+| desiredHumidity     | Number    | Shows desired humidity in Percent | Humidifier                                                                                                                                                                                    |
+| currentHumidity     | Number    | Shows current humidity in Percent | Humidifier                                                                                                                                                                                    |
+| heaterMode          | String    | Runmode of Heater (OFF, FROSTPROTECT, HIGH, LOW, ECO) | Heater                                                                                                                                                                                    |
+| currentTemp         | Number    | Shows current temperature | Heater                                                                                                                                                                                    |
+| targetTemp          | Number    | Shows target temperature  | Heater                                                                                                                                                                                    |
+| autoOffTime         | DateTime  | Time when the heater switches off | Heater                                                                                                                                                                                  |
+| heatingRemaining    | Number    | Shows the remaining heating time  | Heater                                                                                                                                                                                    |
 
 
 ## Full Example
@@ -136,6 +155,35 @@ Switch CoffeCleanAdvicse    { channel="wemo:coffee:Coffee-1_0-231445B010xxxx:cle
 Switch CoffeFilterAdvicse   { channel="wemo:coffee:Coffee-1_0-231445B010xxxx:filterAdvise" }
 DateTime CoffeLastCleaned   { channel="wemo:coffee:Coffee-1_0-231445B010xxxx:lastCleaned" }
 
+// Crockpot
+String crockpotMode         { channel="wemo:crockpot:Crockpot-1_0-231445B010xxxx:cookMode" }
+Number warmCookTime         { channel="wemo:crockpot:Crockpot-1_0-231445B010xxxx:warmCookTime" }
+Number lowCookTime          { channel="wemo:crockpot:Crockpot-1_0-231445B010xxxx:lowCookTime" }
+Number highCookTime         { channel="wemo:crockpot:Crockpot-1_0-231445B010xxxx:highCookTime" }
+Number cookedTime           { channel="wemo:crockpot:Crockpot-1_0-231445B010xxxx:cookedTime" }
+
+// Air Purifier
+String airMode              { channel="wemo:purifier:AirPurifier-1_0-231445B010xxxx:airMode" }
+String airQuality           { channel="wemo:purifier:AirPurifier-1_0-231445B010xxxx:airQuality" }
+Switch ionizer              { channel="wemo:purifier:AirPurifier-1_0-231445B010xxxx:ionizer" }
+Number filterLife           { channel="wemo:purifier:AirPurifier-1_0-231445B010xxxx:filterLife" }
+Switch filterExpired        { channel="wemo:purifier:AirPurifier-1_0-231445B010xxxx:filterExpired" }
+Switch filterPresent        { channel="wemo:purifier:AirPurifier-1_0-231445B010xxxx:filterPresent" }
+
+// Humidifier
+String humidifierMode       { channel="wemo:humidifier:Humidifier-1_0-231445B010xxxx:humidifierMode" }
+Number desiredHumidity      { channel="wemo:humidifier:Humidifier-1_0-231445B010xxxx:desiredHumidity" }
+Number currentHumidity      { channel="wemo:humidifier:Humidifier-1_0-231445B010xxxx:currentHumidity" }
+Number filterLife           { channel="wemo:humidifier:Humidifier-1_0-231445B010xxxx:filterLife" }
+Switch filterExpired        { channel="wemo:humidifier:Humidifier-1_0-231445B010xxxx:filterExpired" }
+String waterLevel           { channel="wemo:humidifier:Humidifier-1_0-231445B010xxxx:waterLevel" }
+
+// Heater
+String heaterMode           { channel="wemo:heater:HeaterB-1_0-231445B010xxxx:heaterMode" }
+Number currentTemp          { channel="wemo:heater:HeaterB-1_0-231445B010xxxx:currentTemp" }
+Number targetTemp           { channel="wemo:heater:HeaterB-1_0-231445B010xxxx:targetTemp" }
+DateTime autoOffTime        { channel="wemo:heater:HeaterB-1_0-231445B010xxxx:autoOffTime" }
+String heaterRemaining      { channel="wemo:heater:HeaterB-1_0-231445B010xxxx:heaterRemaining" }
 
 ```
 
@@ -188,6 +236,36 @@ sitemap demo label="Main Menu"
        Switch item=CoffeCleanAdvicse
        Switch item=CoffeFilterAdvicse
        DateTime item=CoffeLastCleaned
+
+       // CrockPot
+       Switch item=crockpotMode label="Cooking Mode" mappings=[OFF="OFF", WARM="Warm", LOW="Low", HIGH="High"]
+       Number item=warmCookTime
+       Number item=lowCookTime
+       Number item=highCookTime
+       Number item=cookedTime
+
+       // Air Purifier
+       Switch item=airMode label="Cooking Mode" mappings=[OFF="OFF", LOW="Low", MED="Med", HIGH="High", AUTO="Auto"]
+       Text item=airQuality
+       Switch item=ionizer
+       Number item=filterLive
+       Switch item=filterExpired
+       Switch item=filterPresent
+
+       // Humidifier
+       Switch item=humidifierMode label="Cooking Mode" mappings=[OFF="OFF", MIN="Min", LOW="Low", MED="Med", HIGH="High", MAX="Max"]
+       Number item=desiredHumidity
+       Number item=currentHumidity
+       Number item=filterLive
+       Switch item=filterExpired
+
+       // Heater
+       Switch item=heaterMode label="Heater Mode" mappings=[OFF="OFF", FROSTPROTECT="FrostProtect", HIGH="High", LOW="Low", ECO="Eco"]
+       Number item=currentTemp
+       Setpoint item=targetTemp
+       Text item=autoOffTime
+       Number item=heaterRemaining
+
 
     }
 }
