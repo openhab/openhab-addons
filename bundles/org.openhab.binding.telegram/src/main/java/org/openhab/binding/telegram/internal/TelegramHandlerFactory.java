@@ -19,16 +19,19 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link TelegramHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link TelegramHandlerFactory} is responsible for creating things and
+ * thing handlers.
  *
  * @author Jens Runge - Initial contribution
  */
@@ -37,6 +40,7 @@ import org.osgi.service.component.annotations.Component;
 public class TelegramHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(TELEGRAM_THING);
+    private @Nullable HttpClient httpClient;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,8 +52,17 @@ public class TelegramHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (TELEGRAM_THING.equals(thingTypeUID)) {
-            return new TelegramHandler(thing);
+            return new TelegramHandler(thing, httpClient);
         }
         return null;
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
     }
 }
