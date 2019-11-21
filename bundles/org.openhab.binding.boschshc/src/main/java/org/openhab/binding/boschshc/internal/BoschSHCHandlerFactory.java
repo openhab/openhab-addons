@@ -14,13 +14,11 @@ package org.openhab.binding.boschshc.internal;
 
 import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -46,13 +44,6 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandlerFactory.class);
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_INWALL_SWITCH,
             THING_TYPE_SHC);
-
-    private @Nullable HttpClient httpClient;
-
-    private @Nullable ArrayList<Room> rooms;
-    private @Nullable ArrayList<Device> devices;
-
-    private @Nullable String subscriptionId;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
