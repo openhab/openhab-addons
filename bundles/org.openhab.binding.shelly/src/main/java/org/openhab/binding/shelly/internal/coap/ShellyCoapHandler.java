@@ -240,7 +240,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private void handleDeviceDescription(String devId, String payload) {
         // Device description
         // payload = StringUtils.substringBefore(payload, "}]}]}") + "}]}]}";
-        logger.debug("{}: CoIoT: Device Description for {}: {}", thingName, devId, payload);
+        logger.debug("{}: CoIoT Device Description for {}: {}", thingName, devId, payload);
 
         // Decode Json
         @Nullable
@@ -316,7 +316,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     @SuppressWarnings({ "null", "unused" })
     private void handleStatusUpdate(String devId, String payload, int serial) throws IOException {
         // payload = StringUtils.substringBefore(payload, "]]}") + "]]}";
-        logger.debug("CoIoT: {}: Sensor data {}", thingName, payload);
+        logger.debug("{}: CoIoT Sensor data {}", thingName, payload);
         if (blockMap.size() == 0) {
             // send discovery packet
             resetSerial();
@@ -374,27 +374,22 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
                 switch (sen.type.toLowerCase()) /* CoIoT_STypes.valueOf(sen.T) */ {
                     case "t" /* Temperature */:
-                        Validate.isTrue(type.contains("sensors"), "Temp update for non-sensor");
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
                                 toQuantityType(s.value, SIUnits.CELSIUS));
                         break;
                     case "h" /* Humidity */:
-                        Validate.isTrue(type.contains("sensors"), "Humidity update for non-sensor");
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM,
                                 toQuantityType(s.value, SmartHomeUnits.PERCENT));
                         break;
                     case "b" /* BatteryLevel */:
-                        Validate.isTrue(type.contains("sensors"), "BatLevel update for non-sensor");
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LEVEL,
                                 toQuantityType(s.value, SmartHomeUnits.PERCENT));
                         break;
                     case "m" /* Motion */:
-                        Validate.isTrue(type.contains("sensors"), "Motion update for non-sensor");
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
                                 s.value == 1 ? OnOffType.ON : OnOffType.OFF);
                         break;
                     case "l" /* Luminosity */:
-                        Validate.isTrue(type.contains("sensors"), "Luminosity update for non-sensor");
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
                                 toQuantityType(s.value, SmartHomeUnits.LUX));
                         break;
@@ -411,12 +406,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     case "tf": /* Temp Fahrenheit */
                         /*
                          * It seems that tC and tF are the device temperature - currently no channel
-                         * tUnit = (StringType) thingHandler.getChannelValue(CHANNEL_GROUP_SENSOR,
-                         * CHANNEL_SENSOR_TUNIT);
-                         * if ((tUnit != null) && tUnit.toFullString().equals("F")) {
-                         * updates.put(mkChannelId(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP), new
-                         * DecimalType(s.value));
-                         * }
                          */
                         break;
 
@@ -452,6 +441,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                     }
                                 }
                                 break;
+                            case "flood":
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
+                                        s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                break;
                             case "brightness": // Dimmer
                                 updateChannel(updates, rGroup, CHANNEL_BRIGHTNESS,
                                         toQuantityType(s.value, SmartHomeUnits.PERCENT));
@@ -469,6 +462,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                             case "temp": // Bulb: Color Temp
                                 // Those value are send to the device so it doesn't make sense to process them as input
                                 break;
+
+                            default:
+                                logger.debug("{}: Update for unknown sensor type {}/{} received", thingName, sen.type,
+                                        sen.desc);
                         }
                         break;
 
@@ -520,6 +517,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         if ((v != null) && v.equals(value)) {
             return false;
         }
+        logger.trace("{}: Updating channel {}.{} from CoIoT, new value={}", thingName, group, channel, value);
         updates.put(mkChannelId(group, channel), value);
         return true;
 

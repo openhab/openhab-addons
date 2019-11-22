@@ -121,7 +121,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 initializeThing();
             } catch (RuntimeException | IOException e) {
                 if (e.getMessage().contains(HTTP_401_UNAUTHORIZED)) {
-                    logger.warn("Device {} ({}) reported 'Access defined' (userid/password mismatch)",
+                    logger.warn("{}: Device {} reported 'Access defined' (userid/password mismatch)",
                             getThing().getLabel(), config.deviceIp);
                     logger.info(
                             "You could set a default userid and passowrd in the binding config and re-discover devices");
@@ -153,6 +153,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     protected void initializeThingConfig() {
         config = getConfigAs(ShellyThingConfiguration.class);
         config.localIp = bindingConfig.localIp;
+        config.httpPort = bindingConfig.httpPort;
         if (config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
@@ -170,7 +171,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
-        logger.debug("Thing config for device {} updated.", thingName);
+        logger.debug("{}: Thing config updated.", thingName);
         initializeThingConfig();
         startUpdateJob();
         refreshSettings = true; // force re-initialization
@@ -203,12 +204,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         thingName = (!thingName.isEmpty() ? thingName : tmpPrf.hostname).toLowerCase();
         Validate.isTrue(!thingName.isEmpty(), "initializeThing(): thingName must not be empty!");
 
-        logger.debug("Initializing device {} ({}), type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {} ({})",
+        logger.debug("{}: Initializing device {}, type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {} ({})",
                 thingName, tmpPrf.hostname, tmpPrf.deviceType, tmpPrf.hwRev, tmpPrf.hwBatchId, tmpPrf.fwVersion,
                 tmpPrf.fwDate, tmpPrf.fwId);
-        logger.debug("Shelly settings info for {} : {}", thingName, tmpPrf.settingsJson);
+        logger.debug("{}: Shelly settings info: {}", thingName, tmpPrf.settingsJson);
         logger.debug(
-                "Device {}: has relays: {} (numRelays={}), is roller: {} (numRoller={}), is Plug S: {}, is Dimmer: {}, has LEDs: {}, is Light: {}, has Meter: {} (numMeter={}, EMeter: {}), is Sensor: {}, is Sense: {}, has Battery: {}{}, event urls: btn:{},out:{}.roller:{},sensor:{}",
+                "{}: Device has relays: {} (numRelays={}), is roller: {} (numRoller={}), is Plug S: {}, is Dimmer: {}, has LEDs: {}, is Light: {}, has Meter: {} (numMeter={}, EMeter: {}), is Sensor: {}, is Sense: {}, has Battery: {}{}, event urls: btn:{},out:{}.roller:{},sensor:{}",
                 tmpPrf.hostname, tmpPrf.hasRelays, tmpPrf.numRelays, tmpPrf.isRoller, tmpPrf.numRollers, tmpPrf.isPlugS,
                 tmpPrf.isDimmer, tmpPrf.hasLed, tmpPrf.isLight, tmpPrf.hasMeter, tmpPrf.numMeters, tmpPrf.isEMeter,
                 tmpPrf.isSensor, tmpPrf.isSense, tmpPrf.hasBattery,
@@ -221,7 +222,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         updateProperties(tmpPrf, status);
         if (tmpPrf.fwVersion.compareTo(SHELLY_API_MIN_FWVERSION) < 0) {
             logger.warn(
-                    "WARNING: Firmware for device {} might be too old (or beta release), installed: {}/{} ({}), required minimal {}. The binding was tested with Version 1.50+ only. Older versions might work, but doesn't support all features or lead into technical issues. You should consider to upgrade the device to v1.5.0 or newer!",
+                    "{}: WARNING: Firmware might be too old (or beta release), installed: {}/{} ({}), required minimal {}. The binding was tested with Version 1.50+ only. Older versions might work, but doesn't support all features or lead into technical issues. You should consider to upgrade the device to v1.5.0 or newer!",
                     thingName, tmpPrf.fwVersion, tmpPrf.fwDate, tmpPrf.fwId, SHELLY_API_MIN_FWVERSION);
         }
         if (status.update.hasUpdate) {
@@ -229,7 +230,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     status.update.oldVersion, status.update.newVersion);
         }
         if (tmpPrf.isSense) {
-            logger.debug("Sense stored key list loaded, {} entries.", tmpPrf.irCodes.size());
+            logger.debug("{}: Sense stored key list loaded, {} entries.", thingName, tmpPrf.irCodes.size());
         }
 
         refreshCount = !tmpPrf.hasBattery
@@ -250,7 +251,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                             + " - going offline. Re-run discovery to find the thing for the requested mode.");
         } else {
             requestUpdates(3, false); // request 3 updates in a row (during the furst 2+3*3 sec)
-            logger.info("Thing {} successfully initialized.", thingName);
+            logger.info("{}: Thing successfully initialized.", thingName);
             updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
         }
 
@@ -268,7 +269,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
 
             if (profile == null) {
-                logger.info("Thing not yet initialized, command {} triggers initialization", command.toString());
+                logger.info("{}: Thing not yet initialized, command {} triggers initialization", thingName,
+                        command.toString());
                 initializeThing();
             } else {
                 profile = getProfile(false);
@@ -295,7 +297,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         } catch (RuntimeException | IOException e) {
             if (e.getMessage().contains(HTTP_401_UNAUTHORIZED)) {
                 logger.warn(
-                        "Device {} ({}) reported 'Access defined' (userid/password mismatch). Set userid/password for the thing or in the binding config",
+                        "{}: Device {} reported 'Access defined' (userid/password mismatch). Set userid/password for the thing or in the binding config",
                         thingName, config.deviceIp);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Access denied, set userid/password for the thing or  binding config");
@@ -342,7 +344,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
                 // If status update was successful the thing must be online
                 if (getThing().getStatus() != ThingStatus.ONLINE) {
-                    logger.info("Thing {} ({}) is now online", getThing().getLabel(), thingName);
+                    logger.info("{}: Thing {} is now online", thingName, getThing().getLabel());
                     updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
                 }
 

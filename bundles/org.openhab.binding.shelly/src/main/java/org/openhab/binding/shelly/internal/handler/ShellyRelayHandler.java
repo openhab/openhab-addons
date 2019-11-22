@@ -101,7 +101,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     logger.debug("{}: Set relay output to {}", thingName, command.toString());
                     api.setRelayTurn(rIndex, (OnOffType) command == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
                 } else {
-                    logger.info("{} is in roller mode, channel command {} ignored", thingName, channelUID.toString());
+                    logger.info("{}: Device is in roller mode, channel command {} ignored", thingName,
+                            channelUID.toString());
                 }
                 break;
             case CHANNEL_BRIGHTNESS: // Dimmer

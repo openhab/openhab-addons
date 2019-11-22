@@ -185,6 +185,7 @@ public class ShellyComponents {
             ShellyStatusSensor sdata = th.api.getSensorStatus();
             if (sdata != null) {
                 if (getBool(sdata.tmp.isValid)) {
+                    th.logger.trace("{}: Updating temperature", th.thingName);
                     DecimalType temp = getString(sdata.tmp.units).toUpperCase().equals(SHELLY_TEMP_CELSIUS)
                             ? getDecimal(sdata.tmp.tC)
                             : getDecimal(sdata.tmp.tF);
@@ -194,14 +195,19 @@ public class ShellyComponents {
                     }
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
                             toQuantityType(temp.doubleValue(), SIUnits.CELSIUS));
+                }
+                if (sdata.hum != null) {
+                    th.logger.trace("{}: Updating humidity", th.thingName);
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM,
                             toQuantityType(getDouble(sdata.hum.value), SmartHomeUnits.PERCENT));
                 }
                 if ((sdata.lux != null) && getBool(sdata.lux.isValid)) {
+                    th.logger.trace("{}: Updating lux", th.thingName);
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
                             toQuantityType(getDouble(sdata.lux.value), SmartHomeUnits.LUX));
                 }
                 if (sdata.flood != null) {
+                    th.logger.trace("{}: Updating flood", th.thingName);
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD, getOnOff(sdata.flood));
                 }
                 if (sdata.bat != null) {

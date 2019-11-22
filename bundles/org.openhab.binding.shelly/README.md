@@ -95,7 +95,7 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 |eventsButton      |true: register event "trigger when a button is pushed"        |    no   |false                                             |
 |eventsSwitch      |true: register event "trigger of switching the relay output"  |    no   |true                                              |
 |eventsSensorReport|true: register event "posted updated sensor data"             |    no   |true for sensor devices                           |
-|enableCoIoT       |true: Listen for CoIoT/COAP events, OFF: Don't use COAP       |    no   |true for battery devices, false for others        |
+|eventsCoIoT       |true: Listen for CoIoT/COAP events, OFF: Don't use COAP       |    no   |true for battery devices, false for others        |
 
 ## Channels
 

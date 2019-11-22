@@ -77,8 +77,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     public boolean handleDeviceCommand(ChannelUID channelUID, Command command) throws IOException {
         String groupName = channelUID.getGroupId();
         Integer lightId = getLightIdFromGroup(groupName);
-        logger.trace("Execute command {} on channel {}, lightId={}", command.toString(), channelUID.getAsString(),
-                lightId);
+        logger.trace("{}: Execute command {} on channel {}, lightId={}", thingName, command.toString(),
+                channelUID.getAsString(), lightId);
 
         Validate.notNull(profile, "DeviceProfile must not be null, thing not initialized");
         Validate.notNull(api, "handleCommand(): api must not be null!");
@@ -103,7 +103,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 update = (OnOffType) command == OnOffType.ON;
                 break;
             case CHANNEL_LIGHT_COLOR_MODE:
-                logger.debug("Select color mode {}", command.toString());
+                logger.debug("{}: Select color mode {}", thingName, command.toString());
                 Validate.isTrue(command instanceof OnOffType,
                         "Invalid value for color mode (ON or OFF): " + command.toString());
                 col.setMode((OnOffType) command == OnOffType.ON ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE);
@@ -134,10 +134,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 if (command instanceof PercentType) {
                     Float percent = ((PercentType) command).floatValue();
                     value = percent.intValue(); // 0..100% = 0..100
-                    logger.debug("Set brightness to {}%/{}", percent, value);
+                    logger.debug("{}: Set brightness to {}%/{}", thingName, percent, value);
                 } else if (command instanceof DecimalType) {
                     value = ((DecimalType) command).intValue();
-                    logger.debug("Set brightness to {} (Integer)", value);
+                    logger.debug("{}: Set brightness to {} (Integer)", thingName, value);
                 }
                 validateRange("brightness", value, 0, 100);
                 col.setBrightness(value);
@@ -145,15 +145,16 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             case CHANNEL_COLOR_TEMP:
                 Integer temp = -1;
                 if (command instanceof PercentType) {
-                    logger.debug("Set color temp to {}%", ((PercentType) command).floatValue());
+                    logger.debug("{}: Set color temp to {}%", thingName, ((PercentType) command).floatValue());
                     Float percent = ((PercentType) command).floatValue() / 100;
                     temp = new DecimalType(
                             MIN_COLOR_TEMPERATURE + ((MAX_COLOR_TEMPERATURE - MIN_COLOR_TEMPERATURE)) * percent)
                                     .intValue();
-                    logger.debug("Converted color-temp {}% to {}K (from Percent to Integer)", percent, temp);
+                    logger.debug("{}: Converted color-temp {}% to {}K (from Percent to Integer)", thingName, percent,
+                            temp);
                 } else if (command instanceof DecimalType) {
                     temp = ((DecimalType) command).intValue();
-                    logger.debug("Set color temp to {}K (Integer)", temp);
+                    logger.debug("{}: Set color temp to {}K (Integer)", thingName, temp);
                 }
                 validateRange(CHANNEL_COLOR_TEMP, temp, MIN_COLOR_TEMPERATURE, MAX_COLOR_TEMPERATURE);
                 col.setTemp(temp);
