@@ -13,6 +13,7 @@
 package org.openhab.binding.lghombot.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lghombot.internal.discovery.LGHomBotDiscovery;
 
 /**
  * The {@link LGHomBotConfiguration} class contains fields mapping thing configuration parameters.
@@ -31,70 +32,16 @@ public class LGHomBotConfiguration {
     /**
      * IP Address (or host name) of HomBot
      */
-    private String ipAddress = "";
+    public String ipAddress = "";
 
     /**
      * Port used by the HomBot
      */
-    private Integer port = Integer.valueOf(LGHomBotBindingConstants.DEFAULT_HOMBOT_PORT);
+    public int port = LGHomBotBindingConstants.DEFAULT_HOMBOT_PORT;
 
     /**
      * Polling time (in seconds) to refresh state from the HomBot itself.
      */
-    private Integer pollingPeriod = Integer.valueOf(3);
-
-    /**
-     * Gets the IP address or host name of the HomBot
-     *
-     * @return the IP address or host name of the HomBot
-     */
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    /**
-     * Sets the IP address or host name of the HomBot
-     *
-     * @param ipAddress the IP Address or host name of the HomBot
-     */
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    /**
-     * Gets the port used by the HomBot
-     *
-     * @return the port used by the HomBot
-     */
-    public Integer getPort() {
-        return port;
-    }
-
-    /**
-     * Sets the port used by the HomBot
-     *
-     * @param port the port used by the HomBot
-     */
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    /**
-     * Gets the polling period (in seconds) to refresh state
-     *
-     * @return the polling period (in seconds) to refresh state
-     */
-    public Integer getPollingPeriod() {
-        return pollingPeriod;
-    }
-
-    /**
-     * Sets the polling period (in seconds) to refresh state
-     *
-     * @param pollingPeriod the polling period (in seconds) to refresh state
-     */
-    public void setPollingPeriod(Integer pollingPeriod) {
-        this.pollingPeriod = pollingPeriod;
-    }
+    public int pollingPeriod = 3;
 
 }

@@ -188,7 +188,7 @@
 	</channel-type>
 	<channel-type id="mapType" advanced="true">
 		<item-type>Image</item-type>
-		<label>Map</label>
+		<label>Cleaning map</label>
 		<description>Map of last cleaned area.</description>
 		<state readOnly="true" />
 	</channel-type>
