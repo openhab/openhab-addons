@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pixometer.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Annotation} class is the representing java model for the json result for a annotation from the pixometer
  * api
@@ -19,13 +21,14 @@ package org.openhab.binding.pixometer.internal.config;
  * @author Jerome Luckenbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class Annotation {
 
-    private Integer id;
-    private Object rectangle;
-    private String meaning;
-    private String text;
-    private Integer image;
+    private @NonNullByDefault({}) Integer id;
+    private @NonNullByDefault({}) Object rectangle;
+    private @NonNullByDefault({}) String meaning;
+    private @NonNullByDefault({}) String text;
+    private @NonNullByDefault({}) Integer image;
 
     public Integer getId() {
         return id;

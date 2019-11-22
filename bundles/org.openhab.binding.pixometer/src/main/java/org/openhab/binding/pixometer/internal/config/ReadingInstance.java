@@ -14,6 +14,8 @@ package org.openhab.binding.pixometer.internal.config;
 
 import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ReadingInstance} class is the representing java model for the json result for a reading from the pixometer
  * api
@@ -21,11 +23,12 @@ import java.time.ZonedDateTime;
  * @author Jerome Luckenbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ReadingInstance {
 
-    private String url;
-    private String appliedMethod;
-    private ZonedDateTime readingDate;
+    private @NonNullByDefault({}) String url;
+    private @NonNullByDefault({}) String appliedMethod;
+    private @NonNullByDefault({}) ZonedDateTime readingDate;
     private double value;
     private double valueSecondTariff;
     private int providedFractionDigits;

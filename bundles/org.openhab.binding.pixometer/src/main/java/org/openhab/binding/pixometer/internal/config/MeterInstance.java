@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pixometer.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link MeterInstance} class is the representing java model for the json result for a meter from the pixometer
  * api
@@ -19,28 +21,29 @@ package org.openhab.binding.pixometer.internal.config;
  * @author Jerome Luckenbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class MeterInstance {
 
-    private String url;
-    private String owner;
-    private String changedHash;
-    private String created;
-    private String modified;
-    private String appearance;
-    private Integer fractionDigits;
-    private Boolean isDoubleTariff;
-    private String locationInBuilding;
-    private String meterId;
-    private String physicalMedium;
-    private String physicalUnit;
-    private Integer integerDigits;
-    private String registerOrder;
-    private Object city;
-    private Object zipCode;
-    private Object address;
-    private Object description;
-    private Object label;
-    private Integer resourceId;
+    private @NonNullByDefault({}) String url;
+    private @NonNullByDefault({}) String owner;
+    private @NonNullByDefault({}) String changedHash;
+    private @NonNullByDefault({}) String created;
+    private @NonNullByDefault({}) String modified;
+    private @NonNullByDefault({}) String appearance;
+    private @NonNullByDefault({}) Integer fractionDigits;
+    private @NonNullByDefault({}) Boolean isDoubleTariff;
+    private @NonNullByDefault({}) String locationInBuilding;
+    private @NonNullByDefault({}) String meterId;
+    private @NonNullByDefault({}) String physicalMedium;
+    private @NonNullByDefault({}) String physicalUnit;
+    private @NonNullByDefault({}) Integer integerDigits;
+    private @NonNullByDefault({}) String registerOrder;
+    private @NonNullByDefault({}) Object city;
+    private @NonNullByDefault({}) Object zipCode;
+    private @NonNullByDefault({}) Object address;
+    private @NonNullByDefault({}) Object description;
+    private @NonNullByDefault({}) Object label;
+    private @NonNullByDefault({}) Integer resourceId;
 
     public String getUrl() {
         return url;

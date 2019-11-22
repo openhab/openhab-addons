@@ -14,6 +14,8 @@ package org.openhab.binding.pixometer.internal.config;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ImageMeta} class is the representing java model for the json result for Image Meta Data from the pixometer
  * api
@@ -21,21 +23,22 @@ import java.util.List;
  * @author Jerome Luckenbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ImageMeta {
 
-    private Integer id;
-    private List<Annotation> annotations = null;
-    private String image;
-    private String imageDownload;
-    private String cameraModel;
-    private Boolean flash;
-    private Integer frameNumber;
-    private Double secondsSinceDetection;
-    private Double secondsSinceStart;
-    private Double lat;
-    private Double lng;
-    private String osVersion;
-    private String pixolusVersion;
+    private @NonNullByDefault({}) Integer id;
+    private @NonNullByDefault({}) List<Annotation> annotations = null;
+    private @NonNullByDefault({}) String image;
+    private @NonNullByDefault({}) String imageDownload;
+    private @NonNullByDefault({}) String cameraModel;
+    private @NonNullByDefault({}) Boolean flash;
+    private @NonNullByDefault({}) Integer frameNumber;
+    private @NonNullByDefault({}) Double secondsSinceDetection;
+    private @NonNullByDefault({}) Double secondsSinceStart;
+    private @NonNullByDefault({}) Double lat;
+    private @NonNullByDefault({}) Double lng;
+    private @NonNullByDefault({}) String osVersion;
+    private @NonNullByDefault({}) String pixolusVersion;
 
     public Integer getId() {
         return id;

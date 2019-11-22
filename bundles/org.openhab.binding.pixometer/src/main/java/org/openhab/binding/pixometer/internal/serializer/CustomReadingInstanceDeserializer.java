@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pixometer.internal.config.ReadingInstance;
 
 import com.google.gson.JsonDeserializationContext;
@@ -30,6 +31,7 @@ import com.google.gson.JsonParseException;
  * @author Jerome Luckenbach - Initial contribution
  *
  */
+@NonNullByDefault
 public class CustomReadingInstanceDeserializer implements JsonDeserializer<ReadingInstance> {
 
     private static final String COUNT = "count";
@@ -43,6 +45,7 @@ public class CustomReadingInstanceDeserializer implements JsonDeserializer<Readi
     private static final String PROVIDED_FRACTION_DIGITS_SECOND_TARIFF = "provided_fraction_digits_second_tariff";
 
     @Override
+    @NonNullByDefault({})
     public ReadingInstance deserialize(final JsonElement json, final Type typeOfT,
             final JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
@@ -101,7 +104,7 @@ public class CustomReadingInstanceDeserializer implements JsonDeserializer<Readi
      * @return returns true if null values have been found, false otherwise
      */
     private boolean checkStringForNullValues(String s) {
-        return (s.isEmpty() || s.equals(null) || s.equals("null"));
+        return (s == null || s.isEmpty() || s.equals("null"));
     }
 
 }

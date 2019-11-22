@@ -163,7 +163,6 @@ public class MeterHandler extends BaseThingHandler {
      */
     private void obtainMeterId() {
         try {
-
             String token = getTokenFromBridge();
 
             if (token == null) {
@@ -218,7 +217,6 @@ public class MeterHandler extends BaseThingHandler {
      */
     private void updateMeter(@Nullable MeterState meterState) {
         try {
-
             if (meterState == null) {
                 throw new IOException("Meter state has not been delivered to update method. Can't update channels.");
             }

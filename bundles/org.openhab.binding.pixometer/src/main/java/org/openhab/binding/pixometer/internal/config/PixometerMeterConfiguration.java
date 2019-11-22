@@ -13,17 +13,19 @@
 
 package org.openhab.binding.pixometer.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Data class representing the user configurable settings of a meter thing
  *
  * @author Jerome Luckenbach - Initial contribution
  */
-
+@NonNullByDefault
 public class PixometerMeterConfiguration {
 
     /**
      * The resourceId of the current meter
      */
-    public String resourceId;
+    public @NonNullByDefault({}) String resourceId;
 
 }

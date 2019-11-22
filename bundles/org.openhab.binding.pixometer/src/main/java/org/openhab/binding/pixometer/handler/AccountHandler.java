@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -41,13 +42,14 @@ import com.google.gson.JsonParser;
  *
  * @author Jerome Luckenbach - Initial contribution
  */
+@NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final int TOKEN_MIN_DIFF_MS = (int) TimeUnit.DAYS.toMillis(2);
     private final JsonParser jsonParser = new JsonParser();
 
-    private String authToken;
+    private @NonNullByDefault({}) String authToken;
     private int refreshInterval;
     private long tokenExpiryDate;
 

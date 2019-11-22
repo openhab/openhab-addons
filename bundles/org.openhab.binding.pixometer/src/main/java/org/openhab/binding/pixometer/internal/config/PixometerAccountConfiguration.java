@@ -13,23 +13,25 @@
 
 package org.openhab.binding.pixometer.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Data class representing the user configurable settings of the api
  *
  * @author Jerome Luckenbach - Initial contribution
  */
-
+@NonNullByDefault
 public class PixometerAccountConfiguration {
 
     /**
      * The configured user name
      */
-    public String user;
+    public @NonNullByDefault({}) String user;
 
     /**
      * The configured password
      */
-    public String password;
+    public @NonNullByDefault({}) String password;
 
     /**
      * Configured refresh rate
