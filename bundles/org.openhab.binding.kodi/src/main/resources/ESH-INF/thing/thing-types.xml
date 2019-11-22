@@ -556,7 +556,7 @@
 		<item-type>Number</item-type>
 		<label>Rating</label>
 		<description>Rating</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%.1f" />
 	</channel-type>
 	<channel-type id="mpaa" advanced="true">
 		<item-type>String</item-type>
