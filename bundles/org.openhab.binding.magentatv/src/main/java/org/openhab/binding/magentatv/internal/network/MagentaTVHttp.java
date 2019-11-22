@@ -57,7 +57,7 @@ public class MagentaTVHttp {
             logger.trace("GET {} - Response={}", url, response);
             return response;
         } catch (IOException e) {
-            throw new MagentaTVException(e, "HTTP GET {0} failed: {1}, response={2}", url, e.getMessage(), response);
+            throw new MagentaTVException(e, "HTTP GET {0} failed: {1}", url, response);
         }
     }
 
@@ -95,8 +95,7 @@ public class MagentaTVHttp {
             logger.trace("POST {} - Response = {}", url, httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            throw new MagentaTVException(e, "HTTP POST {0} failed: {1}, response={2}", url, e.getMessage(),
-                    httpResponse);
+            throw new MagentaTVException(e, "HTTP POST {0} failed, response={1}", url, httpResponse);
         }
     }
 
@@ -153,9 +152,8 @@ public class MagentaTVHttp {
         }
 
         if (!errorMessage.isEmpty()) {
-            errorMessage = MessageFormat.format("Network I/O failed for {0}:{1}: {2}", remoteIp, remotePort,
-                    errorMessage);
-            throw new MagentaTVException(errorMessage);
+            throw new MagentaTVException(
+                    MessageFormat.format("Network I/O failed for {0}:{1}: {2}", remoteIp, remotePort, errorMessage));
         }
         return response;
     }

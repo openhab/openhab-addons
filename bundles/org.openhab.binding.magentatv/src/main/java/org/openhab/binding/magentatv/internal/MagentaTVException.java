@@ -26,52 +26,34 @@ public class MagentaTVException extends Exception {
 
     private static final long serialVersionUID = 6214176461907613559L;
 
-    /**
-     * Constructor. Creates new instance of MagentaTVException
-     * Beside constructing a new object it also outputs the exception to the log (INFO)
-     *
-     * @param message the detail message.
-     */
-    // public MagentaTVException(String message, Object... a) {
-    // super(MessageFormat.format(message, a));
-
     public MagentaTVException(String message) {
         super(message);
     }
 
-    /**
-     * Constructor. Creates new instance of MagentaTVException
-     * Beside constructing a new object it also outputs the exception to the log (INFO) and the stack trace (TRACE)
-     *
-     * @param cause the cause. (A null value is permitted, and indicates that the
-     *            cause is nonexistent or unknown.)
-     */
     public MagentaTVException(Exception cause) {
         super(cause);
     }
 
-    /**
-     * Constructor. Creates new instance of MagentaTVException
-     * Beside constructing a new object it also outputs the exception to the log (INFO) and the stack trace (TRACE)
-     *
-     * @param message the detail message.
-     * @param cause the cause. (A null value is permitted, and indicates that the
-     *            cause is nonexistent or unknown.)
-     */
     public MagentaTVException(Exception cause, String message, Object... a) {
         super(MessageFormat.format(message, a), cause);
     }
 
-    public static String toString(Exception e) {
-        return e.getMessage() + "\n" + stackTrace(e);
+    @Override
+    public String toString() {
+        String str = getLocalizedMessage();
+        boolean validStr = str != null && !str.isEmpty();
+        str = validStr ? str + " (" + getClass() + ")" : getClass().toString();
+        if (!validStr || getClass().equals(RuntimeException.class)) {
+            str = str + getStackTrace();
+        }
+        return str;
     }
 
-    public static String stackTrace(Exception e) {
+    public String getStackTrace(Exception e) {
         StringBuilder sb = new StringBuilder();
         for (StackTraceElement s : e.getStackTrace()) {
             sb.append(s.toString()).append("\n");
         }
-        return "Stack Trace:\n" + sb.toString();
+        return "\nStack Trace:\n" + sb.toString();
     }
-
 }

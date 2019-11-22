@@ -150,12 +150,13 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 }
 
                 connectReceiver(); // throws MagentaTVException on error
+
                 // change to ThingStatus.ONLINE will be done when the pairing result is received
                 // (see onPairingResult())
             } catch (MagentaTVException e) {
                 errorMessage = e.toString();
             } catch (InterruptedException | RuntimeException e) {
-                errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().toString();
+                errorMessage = e.toString();
             } finally {
                 if (!errorMessage.isEmpty()) {
                     setOnlineState(ThingStatus.OFFLINE, errorMessage);
@@ -222,8 +223,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     logger.debug("Command for unknown channel {}", channelUID.getAsString());
             }
         } catch (MagentaTVException | RuntimeException e) {
-            String errorMessage = MessageFormat.format("Channel operation failed: Command={0}, value={1}",
-                    command.toString(), channelUID.getId().toString());
+            String errorMessage = MessageFormat.format("Channel operation failed (command={0}, value={1}): {2}",
+                    command.toString(), channelUID.getId().toString(), e.toString());
             logger.debug("{}", errorMessage);
             setOnlineState(ThingStatus.OFFLINE, errorMessage);
         }

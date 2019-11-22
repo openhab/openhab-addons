@@ -58,12 +58,12 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     protected void activate(Map<String, Object> config) {
         try {
             httpService.registerServlet(PAIRING_NOTIFY_URI, this, null, httpService.createDefaultHttpContext());
-            logger.debug("Servlet started at {}", PAIRING_NOTIFY_URI);
+            logger.info("Servlet started at {}", PAIRING_NOTIFY_URI);
             if ((handlerFactory != null) && !handlerFactory.getNotifyServletStatus()) {
                 handlerFactory.setNotifyServletStatus(true);
             }
         } catch (ServletException | NamespaceException e) {
-            logger.debug("Could not start MagentaTVNotifyServlet: {}", e.getMessage());
+            logger.warn("Could not start MagentaTVNotifyServlet: {}", e.getMessage());
         }
     }
 
