@@ -61,7 +61,6 @@ import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.nio.ch.Net;
 
 /**
  * Advertises a Hue compatible bridge via UPNP and provides the announced /description.xml http endpoint.
