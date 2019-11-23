@@ -78,7 +78,10 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         bindingConfig.updateFromProperties(configProperties);
         if (bindingConfig.httpPort == 0) {
             bindingConfig.httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
-            Validate.isTrue(bindingConfig.httpPort != 0, "Unable to get OH http port");
+            if (bindingConfig.httpPort == -1) {
+                bindingConfig.httpPort = 8080;
+            }
+            Validate.isTrue(bindingConfig.httpPort > 0, "Unable to get OH http port");
             logger.debug("Using OH http port {}", bindingConfig.httpPort);
         }
         if (bindingConfig.localIp.isEmpty()) {
