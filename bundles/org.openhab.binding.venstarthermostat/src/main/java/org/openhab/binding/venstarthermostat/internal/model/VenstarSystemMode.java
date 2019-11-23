@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.venstarthermostat.model;
+package org.openhab.binding.venstarthermostat.internal.model;
 
 /**
  * The {@link VenstarSystemMode} represents the value of the system mode returned 
@@ -47,8 +47,10 @@ public enum VenstarSystemMode {
     }
 
     public static VenstarSystemMode fromInt(int mode) {
-        for(VenstarSystemMode sm: values()) {
-            if(sm.mode == mode) return sm;
+        for (VenstarSystemMode sm: values()) {
+            if (sm.mode == mode) {
+                return sm;
+            }
         }
 
         throw(new IllegalArgumentException("Invalid system mode " + mode));

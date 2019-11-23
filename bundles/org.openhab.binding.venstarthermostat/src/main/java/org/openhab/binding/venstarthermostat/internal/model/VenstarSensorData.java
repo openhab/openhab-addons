@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.venstarthermostat.model;
+package org.openhab.binding.venstarthermostat.internal.model;
 
 import java.util.List;
 

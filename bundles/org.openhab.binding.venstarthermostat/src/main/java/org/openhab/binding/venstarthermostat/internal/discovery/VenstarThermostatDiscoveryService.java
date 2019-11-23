@@ -34,7 +34,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.venstarthermostat.VenstarThermostatBindingConstants;
+import org.openhab.binding.venstarthermostat.internal.VenstarThermostatBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,15 +46,15 @@ import org.slf4j.LoggerFactory;
  * @author William Welliver - Initial contribution
  * @author Dan Cunningham - Refactoring and Improvements
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "binding.venstarthermostat")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.venstarthermostat")
 public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService {
-    private final Logger log = LoggerFactory.getLogger(VenstarThermostatDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(VenstarThermostatDiscoveryService.class);
     private static final String COLOR_TOUCH_DISCOVERY_MESSAGE = "M-SEARCH * HTTP/1.1\r\n"
             + "Host: 239.255.255.250:1900\r\n" + "Man: ssdp:discover\r\n" + "ST: colortouch:ecp\r\n" + "\r\n";
     private static final Pattern USN_PATTERN = Pattern
             .compile("^(colortouch:)?ecp((?::[0-9a-fA-F]{2}){6}):name:(.+)(?::type:(\\w+))");
     private static final String SSDP_MATCH = "colortouch:ecp";
-    private static final int BACKGROUND_SCAN_INTERVAL = 300; // seconds
+    private static final int BACKGROUND_SCAN_INTERVAL_SECONDS = 300;
     private ScheduledFuture<?> scheduledFuture;
 
     public VenstarThermostatDiscoveryService() {
@@ -63,11 +63,9 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
 
     @Override
     protected void startBackgroundDiscovery() {
-        log.debug("Starting Background Scan");
+        logger.debug("Starting Background Scan");
         stopBackgroundDiscovery();
-        scheduledFuture = scheduler.scheduleAtFixedRate(() -> {
-            doRunRun();
-        }, 0, BACKGROUND_SCAN_INTERVAL, TimeUnit.SECONDS);
+        scheduledFuture = scheduler.scheduleAtFixedRate(this::doRunRun, 0, BACKGROUND_SCAN_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
@@ -79,12 +77,12 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
 
     @Override
     protected void startScan() {
-        log.debug("Starting Interactive Scan");
+        logger.debug("Starting Interactive Scan");
         doRunRun();
     }
 
     protected synchronized void doRunRun() {
-        log.trace("Sending SSDP discover.");
+        logger.trace("Sending SSDP discover.");
         for (int i = 0; i < 5; i++) {
             try {
                 Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
@@ -96,7 +94,7 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
                     }
                 }
             } catch (IOException e) {
-                log.debug("Error discoverying devices", e);
+                logger.debug("Error discoverying devices", e);
             }
         }
     }
@@ -116,10 +114,10 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
         InetAddress m = InetAddress.getByName("239.255.255.250");
         final int port = 1900;
 
-        log.trace("Considering {}", ni.getName());
+        logger.trace("Considering {}", ni.getName());
         try {
             if (!ni.isUp() || !ni.supportsMulticast()) {
-                log.trace("skipping interface {}", ni.getName());
+                logger.trace("skipping interface {}", ni.getName());
                 return null;
             }
 
@@ -134,7 +132,7 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
                 }
             }
             if (a == null) {
-                log.trace("no ipv4 address on " + ni.getName());
+                logger.trace("no ipv4 address on {}", ni.getName());
                 return null;
             }
 
@@ -148,13 +146,13 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
             socket.setNetworkInterface(ni);
             socket.joinGroup(m);
 
-            log.trace("Joined UPnP Multicast group on Interface: " + ni.getName());
+            logger.trace("Joined UPnP Multicast group on Interface: {}", ni.getName());
             byte[] requestMessage = COLOR_TOUCH_DISCOVERY_MESSAGE.getBytes("UTF-8");
             DatagramPacket datagramPacket = new DatagramPacket(requestMessage, requestMessage.length, m, port);
             socket.send(datagramPacket);
             return socket;
         } catch (IOException e) {
-            log.trace("got ioexception: " + e.getMessage());
+            logger.trace("got ioexception: {}", e.getMessage());
         }
 
         return null;
@@ -178,13 +176,13 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
             DatagramPacket packet = new DatagramPacket(rxbuf, rxbuf.length);
             try {
                 socket.receive(packet);
-            } catch (Exception e) {
-                log.trace("Got exception while trying to receive UPnP packets: " + e.getMessage());
+            } catch (IOException e) {
+                logger.trace("Got exception while trying to receive UPnP packets: {}", e.getMessage());
                 return;
             }
             String response = new String(packet.getData());
             if (response.contains(SSDP_MATCH)) {
-                log.trace("Match: {} ", response);
+                logger.trace("Match: {} ", response);
                 parseResponse(response);
             }
         } while (true);
@@ -206,7 +204,7 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
             }
             String key = pair[0].toLowerCase();
             String value = pair[1].trim();
-            log.trace("key: {} value: {}.", key, value);
+            logger.trace("key: {} value: {}.", key, value);
             switch (key) {
                 case "location":
                     url = value;
@@ -224,10 +222,10 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
         }
         scanner.close();
 
-        log.trace("Found thermostat, name: {} uuid: {} url: {}", name, uuid, url);
+        logger.trace("Found thermostat, name: {} uuid: {} url: {}", name, uuid, url);
 
         if (name == null || uuid == null || url == null) {
-            log.trace("Bad Format from thermostat");
+            logger.trace("Bad Format from thermostat");
             return;
         }
 
@@ -235,13 +233,13 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
 
         ThingUID thingUid = new ThingUID(VenstarThermostatBindingConstants.THING_TYPE_COLOR_TOUCH, uuid);
 
-        log.trace("Got discovered device.");
+        logger.trace("Got discovered device.");
 
         String label = String.format("Venstar Thermostat (%s)", name);
         result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withRepresentationProperty(uuid)
                 .withProperty(VenstarThermostatBindingConstants.PROPERTY_UUID, uuid)
                 .withProperty(VenstarThermostatBindingConstants.PROPERTY_URL, url).build();
-        log.trace("New venstar thermostat discovered with ID=<{}>", uuid);
+        logger.trace("New venstar thermostat discovered with ID=<{}>", uuid);
         this.thingDiscovered(result);
     }
 

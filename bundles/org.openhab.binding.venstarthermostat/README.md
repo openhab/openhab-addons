@@ -31,7 +31,7 @@ After adding the Inbox item, enter the user name and password from the physical 
 ### Channels
 
 | Channel            | Type               | Description                  | Notes                                                  |
-|-:------------------|-:------------------|-:----------------------------|-:------------------------------------------------------|
+|--------------------|--------------------|------------------------------|--------------------------------------------------------|
 | systemMode         | String             | System Mode                  |                                                        |
 | systemModeRaw      | Number             | System Mode Raw (Read Only)  | 0 (Off) 1 (Heat) 2 (Cool) 3 (Auto)                     |
 | systemState        | String             | System State (Read Only)     |                                                        |

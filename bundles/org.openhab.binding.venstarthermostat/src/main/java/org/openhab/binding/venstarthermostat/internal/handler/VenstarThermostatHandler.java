@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.venstarthermostat.handler;
+package org.openhab.binding.venstarthermostat.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.binding.venstarthermostat.VenstarThermostatBindingConstants.*;
+import static org.openhab.binding.venstarthermostat.internal.VenstarThermostatBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -64,7 +64,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.venstarthermostat.internal.VenstarThermostatConfiguration;
-import org.openhab.binding.venstarthermostat.model.*;
+import org.openhab.binding.venstarthermostat.internal.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +81,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
-    private static final int TIMEOUT = 30;
+    private static final int TIMEOUT_SECONDS = 30;
     private static final int UPDATE_AFTER_COMMAND_SECONDS = 2;
 
     private Logger log = LoggerFactory.getLogger(VenstarThermostatHandler.class);
@@ -143,7 +143,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
         stopUpdateTasks();
         if (command instanceof RefreshType) {
-            log.debug("Refresh command requested for " + channelUID);
+            log.debug("Refresh command requested for {}", channelUID);
             stateMap.clear();
             startUpdatesTask(0);
         } else {
@@ -162,7 +162,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
                 setCoolingSetpoint(value);
             } else if (channelUID.getId().equals(CHANNEL_SYSTEM_MODE)) {
                 VenstarSystemMode value;
-                if(command instanceof StringType) {
+                if (command instanceof StringType) {
                     value = VenstarSystemMode.valueOf(((StringType)command).toString().toUpperCase());
 
                 } else {
@@ -185,7 +185,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             try {
                 httpClient.stop();
             } catch (Exception e) {
-                log.error("Could not stop HttpClient", e);
+                log.debug("Could not stop HttpClient", e);
             }
         }
     }
@@ -224,7 +224,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             refresh = config.refresh;
             startUpdatesTask(0);
         } catch (Exception e) {
-            log.debug("Could not conntectto URL  " + url, e);
+            log.debug("Could not conntect to URL  {}", url, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
@@ -236,9 +236,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
      */
     private synchronized void startUpdatesTask(int initialDelay) {
         stopUpdateTasks();
-        updatesTask = scheduler.scheduleAtFixedRate(() -> {
-            updateData();
-        }, initialDelay, refresh, TimeUnit.SECONDS);
+        updatesTask = scheduler.scheduleWithFixedDelay(this::updateData, initialDelay, refresh, TimeUnit.SECONDS);
     }
 
     /**
@@ -410,7 +408,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
     private String getData(String path) throws VenstarAuthenticationException, VenstarCommunicationException {
         try {
             URL getURL = new URL(baseURL, path);
-            Request request = httpClient.newRequest(getURL.toURI()).timeout(TIMEOUT, TimeUnit.SECONDS);
+            Request request = httpClient.newRequest(getURL.toURI()).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             return sendRequest(request);
         } catch (MalformedURLException | URISyntaxException e) {
             throw new VenstarCommunicationException(e);
@@ -421,11 +419,9 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             throws VenstarAuthenticationException, VenstarCommunicationException {
         try {
             URL postURL = new URL(baseURL, path);
-            Request request = httpClient.newRequest(postURL.toURI()).timeout(TIMEOUT, TimeUnit.SECONDS)
+            Request request = httpClient.newRequest(postURL.toURI()).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     .method(HttpMethod.POST);
-            params.forEach((k, v) -> {
-                request.param(k, v);
-            });
+            params.forEach(request::param);
             return sendRequest(request);
         } catch (MalformedURLException | URISyntaxException e) {
             throw new VenstarCommunicationException(e);

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.venstarthermostat.internal;
 
-import static org.openhab.binding.venstarthermostat.VenstarThermostatBindingConstants.THING_TYPE_COLOR_TOUCH;
+import static org.openhab.binding.venstarthermostat.internal.VenstarThermostatBindingConstants.THING_TYPE_COLOR_TOUCH;
 
 import java.util.Collections;
 import java.util.Set;
@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.venstarthermostat.handler.VenstarThermostatHandler;
+import org.openhab.binding.venstarthermostat.internal.handler.VenstarThermostatHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Component;
  * @author William Welliver - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.venstarthermostat")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.venstarthermostat")
 public class VenstarThermostatHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COLOR_TOUCH);

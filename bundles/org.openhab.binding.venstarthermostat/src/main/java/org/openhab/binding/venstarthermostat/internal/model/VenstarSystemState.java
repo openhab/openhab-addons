@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.venstarthermostat.model;
+package org.openhab.binding.venstarthermostat.internal.model;
 
 /**
  * The {@link VenstarSystemState} represents the value of the system state 
@@ -49,7 +49,9 @@ public enum VenstarSystemState {
 
     public static VenstarSystemState fromInt(int state) {
         for(VenstarSystemState ss: values()) {
-            if(ss.state == state) return ss;
+            if (ss.state == state) {
+                return ss;
+            }
         }
 
         throw(new IllegalArgumentException("Invalid system state " + state));
