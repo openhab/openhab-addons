@@ -107,6 +107,7 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_CONTACT_2 = "contact2";
     public static final String CHANNEL_CONTACT_3 = "contact3";
     public static final String CHANNEL_VOLTAGE = "voltage";
+    public static final String CHANNEL_REFERENCE_VOLTAGE = "referenceVoltage";
     public static final String CHANNEL_SET_POINT = "setpoint";
     public static final String CHANNEL_DATE_TIME = "dateTime";
     public static final String CHANNEL_CHIME_SOUND = "chimeSound";
@@ -129,7 +130,7 @@ public class RFXComBindingConstants {
     private static final ThingTypeUID THING_TYPE_FAN_LUCCI_DC = new ThingTypeUID(BINDING_ID, "fan_lucci_dc");
     private static final ThingTypeUID THING_TYPE_FAN_FT1211R = new ThingTypeUID(BINDING_ID, "fan_ft1211r");
     private static final ThingTypeUID THING_TYPE_FAN_FALMEC = new ThingTypeUID(BINDING_ID, "fan_falmec");
-    private static final ThingTypeUID THING_TYPE_FAN_LUCCI_DC_II = new ThingTypeUID(BINDING_ID, "fan_lucci_dc2");
+    private static final ThingTypeUID THING_TYPE_FAN_LUCCI_DC_II = new ThingTypeUID(BINDING_ID, "fan_lucci_dc_ii");
     private static final ThingTypeUID THING_TYPE_FS20 = new ThingTypeUID(BINDING_ID, "fs20");
     private static final ThingTypeUID THING_TYPE_GAS_USAGE = new ThingTypeUID(BINDING_ID, "gasusage");
     private static final ThingTypeUID THING_TYPE_HOME_CONFORT = new ThingTypeUID(BINDING_ID, "homeconfort");

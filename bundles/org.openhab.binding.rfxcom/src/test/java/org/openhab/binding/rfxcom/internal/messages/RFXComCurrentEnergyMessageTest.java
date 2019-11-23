@@ -14,6 +14,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -21,8 +22,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComCurrentEnergyMessageTest {
     private void testMessage(String hexMsg, RFXComCurrentEnergyMessage.SubType subType, int seqNbr, String deviceId,
             int count, double channel1, double channel2, double channel3, double totalUsage, int signalLevel,
@@ -51,6 +53,5 @@ public class RFXComCurrentEnergyMessageTest {
                 2.2d, 0d, 0d, 32547.4d, 8, 9);
         testMessage("135B014FB80002001D0000000000000000000079", RFXComCurrentEnergyMessage.SubType.ELEC4, 79, "47104",
                 2, 2.9d, 0d, 0d, 0d, 7, 9);
-
     }
 }

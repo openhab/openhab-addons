@@ -42,7 +42,7 @@ public enum CommunicationState {
             String password = communicator.getPassword();
             logger.debug("Phase {}", this);
             ParadoxIPPacket packet = new ParadoxIPPacket(password, false)
-                .setCommand(HeaderCommand.CONNECT_TO_IP_MODULE);
+                    .setCommand(HeaderCommand.CONNECT_TO_IP_MODULE);
             sendPacket(communicator, packet);
         }
 
@@ -96,7 +96,7 @@ public enum CommunicationState {
         protected void runPhase(IParadoxInitialLoginCommunicator communicator, Object... args) {
             logger.debug("Phase {}", this);
             ParadoxIPPacket packet = new ParadoxIPPacket(ParadoxIPPacket.EMPTY_PAYLOAD, false)
-                .setCommand(HeaderCommand.LOGIN_COMMAND1);
+                    .setCommand(HeaderCommand.LOGIN_COMMAND1);
             sendPacket(communicator, packet);
         }
 
@@ -112,7 +112,7 @@ public enum CommunicationState {
         protected void runPhase(IParadoxInitialLoginCommunicator communicator, Object... args) {
             logger.debug("Phase {}", this);
             ParadoxIPPacket packet = new ParadoxIPPacket(ParadoxIPPacket.EMPTY_PAYLOAD, false)
-                .setCommand(HeaderCommand.LOGIN_COMMAND2);
+                    .setCommand(HeaderCommand.LOGIN_COMMAND2);
             sendPacket(communicator, packet);
         }
 
@@ -130,7 +130,7 @@ public enum CommunicationState {
             byte[] message4 = new byte[37];
             message4[0] = 0x72;
             ParadoxIPPacket packet = new ParadoxIPPacket(message4, true)
-                .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
+                    .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
             sendPacket(communicator, packet);
         }
 
@@ -160,7 +160,7 @@ public enum CommunicationState {
         protected void runPhase(IParadoxInitialLoginCommunicator communicator, Object... args) {
             logger.debug("Phase {}", this);
             ParadoxIPPacket packet = new ParadoxIPPacket(IpMessagesConstants.UNKNOWN_IP150_REQUEST_MESSAGE01, false)
-                .setCommand(HeaderCommand.SERIAL_CONNECTION_INITIATED);
+                    .setCommand(HeaderCommand.SERIAL_CONNECTION_INITIATED);
             sendPacket(communicator, packet);
         }
 
@@ -179,7 +179,7 @@ public enum CommunicationState {
             message6[0] = 0x5F;
             message6[1] = 0x20;
             ParadoxIPPacket packet = new ParadoxIPPacket(message6, true)
-                .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
+                    .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
             sendPacket(communicator, packet);
         }
 
@@ -206,14 +206,14 @@ public enum CommunicationState {
                 byte[] initializationMessage = (byte[]) args[0];
                 logger.debug("Phase {}", this);
                 byte[] message7 = generateInitializationRequest(initializationMessage,
-                    communicator.getPcPasswordBytes());
+                        communicator.getPcPasswordBytes());
                 ParadoxIPPacket packet = new ParadoxIPPacket(message7, true)
-                    .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
+                        .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
                 sendPacket(communicator, packet);
             } else {
                 logger.error("Error in step {}. Missing argument {}", this, args);
                 throw new IllegalArgumentException(
-                    "Initialization message not send in request for phase + " + this + ". Arguments= " + args);
+                        "Initialization message not send in request for phase + " + this + ". Arguments= " + args);
             }
         }
 
@@ -291,7 +291,7 @@ public enum CommunicationState {
                         logger.debug("Reading ghost packet with length={}", packetLength);
                         ParadoxUtil.printPacket("Reading ghost packet", value);
                     } catch (IOException e) {
-                        logger.debug("Error reading ghost packet. {}", e);
+                        logger.debug("Error reading ghost packet.", e);
                     }
 
                     super.receiveResponse(communicator, response);

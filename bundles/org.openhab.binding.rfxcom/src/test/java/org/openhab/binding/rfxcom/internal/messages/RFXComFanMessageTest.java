@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.junit.Assert.assertEquals;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.CASAFAN;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
@@ -20,17 +27,15 @@ import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
-import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.CASAFAN;
-
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComFanMessageTest {
+    private static final MockDeviceState DEVICE_STATE = new MockDeviceState();
+
     @Test
     public void checkForSupportTest() throws RFXComException {
         RFXComMessageFactory.createMessage(FAN);
@@ -46,17 +51,17 @@ public class RFXComFanMessageTest {
         RFXComTestHelper.basicBoundaryCheck(FAN, message);
     }
 
-    private void testMessage(String hexMsg, int seqNbr, String deviceId,
-                             int signalLevel, State expectedCommand, State expectedLightCommand, State expectedFanSpeed, RFXComBaseMessage.PacketType packetType) throws RFXComException {
-        final RFXComFanMessage msg = (RFXComFanMessage) RFXComMessageFactory
-                .createMessage(HexUtils.hexToBytes(hexMsg));
+    private void testMessage(String hexMsg, int seqNbr, String deviceId, int signalLevel,
+            @Nullable State expectedCommand, State expectedLightCommand, @Nullable State expectedFanSpeed,
+            RFXComBaseMessage.PacketType packetType) throws RFXComException {
+        final RFXComFanMessage msg = (RFXComFanMessage) RFXComMessageFactory.createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
         assertEquals("Sensor Id", deviceId, msg.getDeviceId());
         assertEquals("Signal Level", signalLevel, msg.signalLevel);
 
-        assertEquals(expectedCommand, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(expectedLightCommand, msg.convertToState(CHANNEL_FAN_LIGHT));
-        assertEquals(expectedFanSpeed, msg.convertToState(CHANNEL_FAN_SPEED));
+        assertEquals(expectedCommand, msg.convertToState(CHANNEL_COMMAND, DEVICE_STATE));
+        assertEquals(expectedLightCommand, msg.convertToState(CHANNEL_FAN_LIGHT, DEVICE_STATE));
+        assertEquals(expectedFanSpeed, msg.convertToState(CHANNEL_FAN_SPEED, DEVICE_STATE));
 
         assertEquals(packetType, msg.getPacketType());
 
@@ -72,12 +77,14 @@ public class RFXComFanMessageTest {
 
     @Test
     public void testCommandOn() throws RFXComException {
-        testCommand(CASAFAN, CHANNEL_COMMAND, OnOffType.ON, OnOffType.ON, UnDefType.UNDEF, StringType.valueOf("MED"), StringType.valueOf("MED"), FAN);
+        testCommand(CASAFAN, CHANNEL_COMMAND, OnOffType.ON, OnOffType.ON, UnDefType.UNDEF, StringType.valueOf("MED"),
+                StringType.valueOf("MED"), FAN);
     }
 
     @Test
     public void testCommandOff() throws RFXComException {
-        testCommand(CASAFAN, CHANNEL_COMMAND, OnOffType.OFF, OnOffType.OFF, UnDefType.UNDEF, StringType.valueOf("OFF"), StringType.valueOf("OFF"), FAN);
+        testCommand(CASAFAN, CHANNEL_COMMAND, OnOffType.OFF, OnOffType.OFF, UnDefType.UNDEF, StringType.valueOf("OFF"),
+                StringType.valueOf("OFF"), FAN);
     }
 
     @Test
@@ -102,14 +109,19 @@ public class RFXComFanMessageTest {
 
     @Test
     public void testFanLightOn() throws RFXComException {
-        testCommand(CASAFAN, CHANNEL_FAN_LIGHT, OnOffType.ON, null, OnOffType.ON, null, StringType.valueOf("LIGHT"), FAN);
+        testCommand(CASAFAN, CHANNEL_FAN_LIGHT, OnOffType.ON, null, OnOffType.ON, null, StringType.valueOf("LIGHT"),
+                FAN);
     }
 
-    private void testFanSpeedString(String value, OnOffType expectedCommand, State expectedFanSpeed) throws RFXComException {
-        testCommand(CASAFAN, CHANNEL_FAN_SPEED, StringType.valueOf(value), expectedCommand, UnDefType.UNDEF, expectedFanSpeed, expectedFanSpeed, FAN);
+    private void testFanSpeedString(String value, OnOffType expectedCommand, State expectedFanSpeed)
+            throws RFXComException {
+        testCommand(CASAFAN, CHANNEL_FAN_SPEED, StringType.valueOf(value), expectedCommand, UnDefType.UNDEF,
+                expectedFanSpeed, expectedFanSpeed, FAN);
     }
 
-    static void testCommand(RFXComFanMessage.SubType subType, String channel, State inputValue, OnOffType expectedCommand, State expectedLightCommand, State expectedFanSpeed, State expectedCommandString, RFXComBaseMessage.PacketType packetType) throws RFXComException {
+    static void testCommand(RFXComFanMessage.SubType subType, String channel, State inputValue,
+            @Nullable OnOffType expectedCommand, State expectedLightCommand, @Nullable State expectedFanSpeed,
+            State expectedCommandString, RFXComBaseMessage.PacketType packetType) throws RFXComException {
         RFXComFanMessage msg = new RFXComFanMessage();
 
         msg.setSubType(subType);
@@ -123,11 +135,13 @@ public class RFXComFanMessageTest {
         assertValues(msg, expectedCommand, expectedLightCommand, expectedFanSpeed, packetType, expectedCommandString);
     }
 
-    static void assertValues(RFXComFanMessage msg, OnOffType expectedCommand, State expectedLightCommand, State expectedFanSpeed, RFXComBaseMessage.PacketType packetType, State expectedCommandString) throws RFXComException {
-        assertEquals(expectedCommand, msg.convertToState(CHANNEL_COMMAND));
-        assertEquals(expectedLightCommand, msg.convertToState(CHANNEL_FAN_LIGHT));
-        assertEquals(expectedFanSpeed, msg.convertToState(CHANNEL_FAN_SPEED));
-        assertEquals(expectedCommandString, msg.convertToState(CHANNEL_COMMAND_STRING));
+    private static void assertValues(RFXComFanMessage msg, @Nullable OnOffType expectedCommand,
+            State expectedLightCommand, @Nullable State expectedFanSpeed, RFXComBaseMessage.PacketType packetType,
+            State expectedCommandString) throws RFXComException {
+        assertEquals(expectedCommand, msg.convertToState(CHANNEL_COMMAND, DEVICE_STATE));
+        assertEquals(expectedLightCommand, msg.convertToState(CHANNEL_FAN_LIGHT, DEVICE_STATE));
+        assertEquals(expectedFanSpeed, msg.convertToState(CHANNEL_FAN_SPEED, DEVICE_STATE));
+        assertEquals(expectedCommandString, msg.convertToState(CHANNEL_COMMAND_STRING, DEVICE_STATE));
         assertEquals(packetType, msg.getPacketType());
     }
 }

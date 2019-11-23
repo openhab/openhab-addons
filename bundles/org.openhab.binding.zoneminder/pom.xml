@@ -20,6 +20,12 @@
       <version>1.10.1</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>name.eskildsen</groupId>
+      <artifactId>zoneminder4j</artifactId>
+      <version>0.9.7</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
 </project>

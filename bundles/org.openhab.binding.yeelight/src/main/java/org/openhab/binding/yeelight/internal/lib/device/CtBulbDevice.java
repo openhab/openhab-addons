@@ -69,7 +69,7 @@ public class CtBulbDevice extends DeviceBase {
                 }
             }
         } catch (Exception e) {
-            logger.debug("Problem setting values: {}", e);
+            logger.debug("Problem setting values", e);
         }
 
         super.onNotify(msg);

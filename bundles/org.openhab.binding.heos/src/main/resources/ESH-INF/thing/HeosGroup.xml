@@ -31,7 +31,7 @@
 		</channels>
 		<config-description>
 			<parameter name="members" type="text" readOnly="false">
-				<label>The group member player IDs</label>
+				<label>The Group Member Player IDs</label>
 				<description>Shows the single player IDs of the members of this group</description>
 				<required>true</required>
 			</parameter>

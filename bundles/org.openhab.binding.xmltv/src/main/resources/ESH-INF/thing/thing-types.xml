@@ -10,11 +10,11 @@
 
 		<config-description>
 			<parameter name="filePath" type="text" required="true">
-				<label>XmlTV file path</label>
+				<label>XmlTV File Path</label>
 				<description>Path to an XmlTV file.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" unit="h">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the XMLTV file reload interval in hours</description>
 				<default>24</default>
 			</parameter>
@@ -47,7 +47,7 @@
 			</parameter>
 			
 			<parameter name="refresh" type="integer" unit="s">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds</description>
 				<default>60</default>
 			</parameter>
@@ -57,7 +57,7 @@
 	</thing-type>
 	
 	<channel-group-type id="channelprops">
-		<label>Channel properties</label>
+		<label>Channel Properties</label>
 		<description>Properties of the current channel</description>
 		<channels>
 			<channel id="iconUrl" typeId="iconUrl" />

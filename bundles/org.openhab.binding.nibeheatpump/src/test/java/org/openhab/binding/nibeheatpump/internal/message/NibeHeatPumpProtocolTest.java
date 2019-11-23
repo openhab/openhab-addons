@@ -19,13 +19,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.smarthome.core.util.HexUtils;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocolContext;
 import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocolDefaultContext;
 
+/**
+ * @author Pauli Anttila - Initial contribution
+ */
 public class NibeHeatPumpProtocolTest {
 
     int ackRequestCount = 0;

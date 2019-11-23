@@ -95,16 +95,14 @@ public class AccountServlet extends HttpServlet {
         } catch (UnsupportedEncodingException e) {
             servletUrlWithoutRoot = "";
             servletUrl = "";
-            logger.warn("Register servlet fails {}", e);
+            logger.warn("Register servlet fails", e);
             return;
         }
         servletUrl = "/" + servletUrlWithoutRoot;
         try {
             httpService.registerServlet(servletUrl, this, null, httpService.createDefaultHttpContext());
-        } catch (ServletException e) {
-            logger.warn("Register servlet fails {}", e);
-        } catch (NamespaceException e) {
-            logger.warn("Register servlet fails {}", e);
+        } catch (NamespaceException | ServletException e) {
+            logger.warn("Register servlet fails", e);
         }
     }
 
@@ -325,7 +323,7 @@ public class AccountServlet extends HttpServlet {
             String html = connection.getLoginPage();
             returnHtml(connection, resp, html, "amazon.com");
         } catch (URISyntaxException e) {
-            logger.warn("get failed with uri syntax error {}", e);
+            logger.warn("get failed with uri syntax error", e);
         }
     }
 
@@ -341,7 +339,7 @@ public class AccountServlet extends HttpServlet {
                     try {
                         value = URLDecoder.decode(elements[1], "UTF8");
                     } catch (UnsupportedEncodingException e) {
-                        logger.info("Unsupported encoding {}", e);
+                        logger.info("Unsupported encoding", e);
                     }
                     map.put(name, value);
                 }
@@ -472,7 +470,7 @@ public class AccountServlet extends HttpServlet {
         try {
             resp.getWriter().write(html.toString());
         } catch (IOException e) {
-            logger.warn("return html failed with IO error {}", e);
+            logger.warn("return html failed with IO error", e);
         }
     }
 
@@ -697,7 +695,7 @@ public class AccountServlet extends HttpServlet {
         try {
             resp.getWriter().write(resultHtml);
         } catch (IOException e) {
-            logger.warn("return html failed with IO error {}", e);
+            logger.warn("return html failed with IO error", e);
         }
     }
 
@@ -706,7 +704,7 @@ public class AccountServlet extends HttpServlet {
             resp.getWriter().write("<html>" + StringEscapeUtils.escapeHtml(errorMessage) + "<br><a href='" + servletUrl
                     + "'>Try again</a></html>");
         } catch (IOException e) {
-            logger.info("Returning error message failed {}", e);
+            logger.info("Returning error message failed", e);
         }
     }
 }

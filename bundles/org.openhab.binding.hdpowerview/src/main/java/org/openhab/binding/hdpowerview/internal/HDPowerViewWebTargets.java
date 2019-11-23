@@ -14,6 +14,7 @@ package org.openhab.binding.hdpowerview.internal;
 
 import java.io.IOException;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -55,7 +56,7 @@ public class HDPowerViewWebTargets {
         gson = new Gson();
     }
 
-    public Shades getShades() throws IOException {
+    public Shades getShades() throws JsonParseException, IOException {
         Response response = invoke(shades.request().buildGet(), shades);
         if (response != null) {
             String result = response.readEntity(String.class);
@@ -88,18 +89,23 @@ public class HDPowerViewWebTargets {
         invoke(target.request().buildGet(), sceneActivate);
     }
 
-    private Response invoke(Invocation invocation, WebTarget target) {
+    private Response invoke(Invocation invocation, WebTarget target) throws ProcessingException {
         Response response;
         synchronized (this) {
             response = invocation.invoke();
         }
 
-        if (response.getStatus() != 200) {
-            logger.error("Bridge returned {} while invoking {} : {}", response.getStatus(), target.getUri(),
+        if (response.getStatus() == 423) {
+            // the hub seems to return a 423 error (resource locked) once per day around midnight
+            // this is probably some kind of regular re-initialization process, so suppress the error log
+            logger.debug("Bridge returned '423' while invoking {}", target.getUri());
+            return null;
+        } else if (response.getStatus() != 200) {
+            logger.warn("Bridge returned '{}' while invoking {} : {}", response.getStatus(), target.getUri(),
                     response.readEntity(String.class));
             return null;
         } else if (!response.hasEntity()) {
-            logger.error("Bridge returned null response while invoking {}", target.getUri());
+            logger.warn("Bridge returned null response while invoking {}", target.getUri());
             return null;
         }
 

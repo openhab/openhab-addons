@@ -17,13 +17,17 @@ import java.util.Hashtable;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Application;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpHeader;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -83,6 +87,21 @@ public class HueEmulationService implements EventHandler {
 
     }
 
+    @PreMatching
+    public class RequestInterceptor implements ContainerRequestFilter {
+        @NonNullByDefault({})
+        @Override
+        public void filter(ContainerRequestContext requestContext) {
+            /**
+             * Jetty returns 415 on any GET request if a client sends the Content-Type header.
+             * This is a workaround - stripping it away in the preMatching stage.
+             */
+            if (requestContext.getMethod() == HttpMethod.GET && requestContext.getHeaders().containsKey(HttpHeader.CONTENT_TYPE.asString())){
+                requestContext.getHeaders().remove(HttpHeader.CONTENT_TYPE.asString());
+            }
+        }
+    }
+
     public class LogAccessInterceptor implements ContainerResponseFilter {
         @NonNullByDefault({})
         @Override
@@ -97,6 +116,7 @@ public class HueEmulationService implements EventHandler {
 
     }
 
+    private final ContainerRequestFilter requestCleaner = new RequestInterceptor();
     private final Logger logger = LoggerFactory.getLogger(HueEmulationService.class);
     private final LogAccessInterceptor accessInterceptor = new LogAccessInterceptor();
 
@@ -181,7 +201,7 @@ public class HueEmulationService implements EventHandler {
         resourceConfig.property(ServerProperties.PROCESSING_RESPONSE_ERRORS_ENABLED, true);
 
         resourceConfig.registerInstances(userManagement, configurationAccess, lightItems, sensors, scenes, schedules,
-                rules, statusResource, accessInterceptor);
+                rules, statusResource, accessInterceptor, requestCleaner);
 
         try {
             Hashtable<String, String> initParams = new Hashtable<>();

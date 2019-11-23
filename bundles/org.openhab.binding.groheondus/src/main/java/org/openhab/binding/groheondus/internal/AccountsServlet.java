@@ -55,7 +55,7 @@ public class AccountsServlet extends HttpServlet {
         try {
             httpService.registerServlet(SERVLET_URL, this, null, httpService.createDefaultHttpContext());
         } catch (ServletException | NamespaceException e) {
-            logger.warn("Register servlet fails {}", e);
+            logger.warn("Register servlet fails", e);
         }
     }
 

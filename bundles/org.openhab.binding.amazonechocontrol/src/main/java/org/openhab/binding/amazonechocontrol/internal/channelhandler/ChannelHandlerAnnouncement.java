@@ -33,8 +33,11 @@ import com.google.gson.JsonSyntaxException;
 public class ChannelHandlerAnnouncement extends ChannelHandler {
     private static final String CHANNEL_NAME = "announcement";
 
-    public ChannelHandlerAnnouncement(IAmazonThingHandler thingHandler, Gson gson) {
+    protected final IEchoThingHandler thingHandler;
+
+    public ChannelHandlerAnnouncement(IEchoThingHandler thingHandler, Gson gson) {
         super(thingHandler, gson);
+        this.thingHandler = thingHandler;
     }
 
     @Override
@@ -46,6 +49,7 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                 String body = commandValue;
                 String title = null;
                 String speak = commandValue;
+                Integer volume = null;
                 if (commandValue.startsWith("{") && commandValue.endsWith("}")) {
                     try {
                         AnnouncementRequestJson request = parseJson(commandValue, AnnouncementRequestJson.class);
@@ -54,6 +58,7 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                             if (speak == null || speak.length() == 0) {
                                 speak = " "; // blank generates a beep
                             }
+                            volume = request.volume;
                             title = request.title;
                             body = request.body;
                             if (body == null) {
@@ -70,6 +75,9 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                                     speak = "<speak><lang xml:lang=\"en-UK\">Error: The combination of sound and speak in <prosody rate=\"x-slow\"><say-as interpret-as=\"characters\">SSML</say-as></prosody> syntax is not allowed</lang></speak>";
                                 }
                             }
+                            if ("<speak> </speak>".equals(speak)) {
+                                volume = -1; // Do not change volume
+                            }
                         }
                     } catch (JsonSyntaxException e) {
                         body = "Invalid Json." + e.getLocalizedMessage();
@@ -79,7 +87,7 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                         body = e.getLocalizedMessage();
                     }
                 }
-                connection.sendAnnouncement(device, speak, body, title, 0, 0);
+                thingHandler.startAnnouncment(device, speak, body, title, volume);
             }
             RefreshChannel();
         }
@@ -95,5 +103,6 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
         public @Nullable String title;
         public @Nullable String body;
         public @Nullable String speak;
+        public @Nullable Integer volume;
     }
 }

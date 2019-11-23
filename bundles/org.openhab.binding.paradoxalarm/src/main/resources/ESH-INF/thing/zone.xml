@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ip150" />
 		</supported-bridge-type-refs>
-		<label>Paradox zone</label>
+		<label>Paradox Zone</label>
 		<description>Paradox zone</description>
 
 		<channels>

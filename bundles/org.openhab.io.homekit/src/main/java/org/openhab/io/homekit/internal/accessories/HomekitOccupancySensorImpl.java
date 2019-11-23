@@ -22,9 +22,9 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.beowulfe.hap.accessories.BatteryStatusAccessory;
-import com.beowulfe.hap.accessories.OccupancySensor;
+import io.github.hapjava.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.accessories.BatteryStatusAccessory;
+import io.github.hapjava.accessories.OccupancySensor;
 
 /**
  *

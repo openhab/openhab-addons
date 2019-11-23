@@ -79,6 +79,7 @@ You can add the following channels:
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor. 
 * __retained__: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time. 
+* __qos__: QoS of this channel. Overrides the connection  QoS (defined in broker connection).
 * __trigger__: If `true`, the state topic will not update a state, but trigger a channel instead.
 
 ### Channel Type "string"
@@ -167,11 +168,15 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 
 ### Channel Type "rollershutter"
 
-* __on__: An optional string (like "Open") that is recognized as UP state.
-* __off__: An optional string (like "Close") that is recognized as DOWN state.
-* __stop__: An optional string (like "Stop") that is recognized as STOP state.
+* __on__: An optional string (like "Open") that is recognized as `UP` state.
+* __off__: An optional string (like "Close") that is recognized as `DOWN` state.
+* __stop__: An optional string (like "Stop") that is recognized as `STOP` state.
+
+Internally `UP` is converted to 0%, `DOWN` to 100%.
+If strings are defined for these values, they are used for sending commands to the broker, too.
 
 You can connect this channel to a Rollershutter or Dimmer item.
+
 
 ## Rule Actions
 
@@ -219,6 +224,7 @@ Please note that the incoming value will be discarded if one transformation fail
 
 All mentioned channels allow an optional transformation for outgoing values.
 Please prefer formatting as described in the next section whenever possible.
+Please note that value will be discarded and not sent if one transformation fails (e.g. REGEX did not match).
 
 ## Format before Publish
 

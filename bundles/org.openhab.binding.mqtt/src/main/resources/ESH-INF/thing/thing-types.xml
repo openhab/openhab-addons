@@ -24,7 +24,7 @@
 			</parameter>
 
 			<parameter name="secure" type="boolean" required="true">
-				<label>Secure connection</label>
+				<label>Secure Connection</label>
 				<description>Uses TLS/SSL to establish a secure connection to the broker.</description>
 				<default>false</default>
 			</parameter>
@@ -48,7 +48,7 @@
 			</parameter>
 
 			<parameter name="reconnectTime" type="integer">
-				<label>Reconnect time</label>
+				<label>Reconnect Time</label>
 				<description>Reconnect time in ms. If a connection is lost, the
 					binding will wait this time before it tries to reconnect.</description>
 				<default>60000</default>
@@ -57,22 +57,22 @@
 
 			<parameter name="keepAlive" type="integer">
 				<label>Heartbeat</label>
-				<description>Keep alive / heartbeat timer in ms. It can take up to
+				<description>Keep alive / heartbeat timer in s. It can take up to
 					this time to determine if a server connection is lost. A lower
 					value may keep the broker unnecessarily busy for no or little
 					additional value.</description>
-				<default>60000</default>
+				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="lwtMessage" type="text">
-				<label>Last Will message</label>
+				<label>Last Will Message</label>
 				<description>The last will message.</description>
 				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="lwtTopic" type="text">
-				<label>Last Will topic</label>
+				<label>Last Will Topic</label>
 				<description>Defaults to empty and therefore disables the last will.</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -108,7 +108,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="certificatepin" type="boolean">
-				<label>Certificate pinning</label>
+				<label>Certificate Pinning</label>
 				<description>If this and SSL is set: After the next connection has
 					been successfully established, the certificate is pinned. The
 					connection will be refused if another certificate is used. Clear
@@ -118,7 +118,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="certificate" type="text">
-				<label>Certificate hash</label>
+				<label>Certificate Hash</label>
 				<description>If **certificatepin** is set this hash is used to
 					verify the connection. Clear to allow a new certificate pinning on
 					the next connection attempt. If empty will be filled automatically
@@ -127,7 +127,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="publickeypin" type="boolean">
-				<label>Public key pinning</label>
+				<label>Public Key Pinning</label>
 				<description>If this and SSL is set: After the next connection has
 					been successfully established, the public key of the broker is
 					pinned. The connection will be refused if another public key is
@@ -175,7 +175,7 @@
 
 	<channel-type id="publishTrigger">
 		<kind>trigger</kind>
-		<label>Publish trigger</label>
+		<label>Publish Trigger</label>
 		<description>This channel is triggered when a value is published to the configured MQTT topic on this broker connection. The event payload will be the received MQTT topic value.</description>
 		<event></event>
 		<config-description>
@@ -184,11 +184,11 @@
 				<description>This channel will trigger on this MQTT topic. This topic can contain wildcards like + and # for example "all/in/#" or "sensors/+/config".</description>
 			</parameter>
 			<parameter name="payload" type="text" required="false">
-				<label>Payload condition</label>
+				<label>Payload Condition</label>
 				<description>An optional condition on the value of the MQTT topic that must match before this channel is triggered.</description>
 			</parameter>
 			<parameter name="separator" type="text" required="false">
-				<label>Separator character</label>
+				<label>Separator Character</label>
 				<description>The trigger channel payload usually only contains the received MQTT topic value. If you define a separator character, for example '#', the topic and received value will be in the trigger channel payload. For example: my_topic#my_received_value.</description>
 			</parameter>
 		</config-description>

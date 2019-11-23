@@ -180,7 +180,7 @@
 				<label>Host or IP</label>
 				<description>The host name or IP address of the Autelis Controller.</description>
 			</parameter>
-			<parameter name="port" type="integer" min="1" max="65335" required="false">
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<context>network-address</context>
 				<label>Port</label>
 				<description>The port the Autelis Controller is listening on.</description>
@@ -195,7 +195,7 @@
 				<description>The password to use when connecting to a Autelis Controller.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds</description>
 				<default>5</default>
 			</parameter>

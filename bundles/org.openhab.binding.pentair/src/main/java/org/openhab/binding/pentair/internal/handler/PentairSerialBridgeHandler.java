@@ -122,7 +122,7 @@ public class PentairSerialBridgeHandler extends PentairBaseBridgeHandler {
             try {
                 reader.close();
             } catch (IOException e) {
-                logger.trace("IOException when closing serial reader: {}", e);
+                logger.trace("IOException when closing serial reader", e);
             }
             reader = null;
         }
@@ -131,7 +131,7 @@ public class PentairSerialBridgeHandler extends PentairBaseBridgeHandler {
             try {
                 writer.close();
             } catch (IOException e) {
-                logger.trace("IOException when closing serial writer: {}", e);
+                logger.trace("IOException when closing serial writer", e);
             }
             writer = null;
         }

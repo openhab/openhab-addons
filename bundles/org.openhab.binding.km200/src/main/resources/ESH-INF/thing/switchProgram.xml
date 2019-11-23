@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="kmdevice" />
 		</supported-bridge-type-refs>
-		<label>Switch program</label>
+		<label>Switch Program</label>
 		<description>This thing is representing a switch program.</description>
 		<properties>
 			<property name="root" />

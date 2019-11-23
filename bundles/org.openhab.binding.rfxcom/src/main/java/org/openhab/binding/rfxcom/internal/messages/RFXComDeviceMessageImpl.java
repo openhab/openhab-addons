@@ -21,11 +21,12 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * A base class for all device messages, so this is not about things as interface messages
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
 abstract class RFXComDeviceMessageImpl<T> extends RFXComBaseMessage implements RFXComDeviceMessage<T> {
     byte signalLevel;
@@ -45,12 +46,13 @@ abstract class RFXComDeviceMessageImpl<T> extends RFXComBaseMessage implements R
     }
 
     @Override
-    public Command convertToCommand(String channelId) throws RFXComUnsupportedChannelException {
-        return (Command) convertToState(channelId);
+    public Command convertToCommand(String channelId, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException {
+        return (Command) convertToState(channelId, deviceState);
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_SIGNAL_LEVEL:
                 return convertSignalLevelToSystemWideLevel(signalLevel);

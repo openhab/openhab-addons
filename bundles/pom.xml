@@ -99,6 +99,7 @@
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.hue</module>
+    <module>org.openhab.binding.hydrawise</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.iaqualink</module>
     <module>org.openhab.binding.icloud</module>
@@ -205,6 +206,7 @@
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tankerkoenig</module>
+    <module>org.openhab.binding.telegram</module>    
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>
