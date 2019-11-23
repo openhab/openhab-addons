@@ -57,7 +57,7 @@ public class HydrawiseLocalApiClient {
     }
 
     /**
-     * Initializes a the {@link HydrawiseLocalApiClient} to talk with the network local Hydrawise API
+     * Initializes the {@link HydrawiseLocalApiClient} to talk with the network local Hydrawise API
      *
      * @param host
      * @param username
