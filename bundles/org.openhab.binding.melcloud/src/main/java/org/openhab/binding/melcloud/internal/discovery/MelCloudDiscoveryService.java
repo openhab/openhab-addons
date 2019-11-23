@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.melcloud.internal.MelCloudBindingConstants;
 import org.openhab.binding.melcloud.internal.api.json.Device;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
+import org.openhab.binding.melcloud.internal.exceptions.MelCloudLoginException;
 import org.openhab.binding.melcloud.internal.handler.MelCloudAccountHandler;
 import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
@@ -141,6 +142,8 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
                                 .build());
                     });
                 }
+            } catch (MelCloudLoginException e) {
+                logger.debug("Login error occurred during device list fetch, reason {}. ", e.getMessage(), e);
             } catch (MelCloudCommException e) {
                 logger.debug("Error occurred during device list fetch, reason {}. ", e.getMessage(), e);
             }
