@@ -6,7 +6,7 @@
 
 	<config-description uri="channel-type:input_pin:config">
 		<parameter name="pull_mode" type="text" required="true">
-			<label>PullResistor mode</label>
+			<label>PullResistor Mode</label>
 			<description>mcp2317 input pull resistor mode</description>
 			<options>
 				<option value="OFF">OFF</option>
@@ -18,7 +18,7 @@
 
 	<config-description uri="channel-type:output_pin:config">
 		<parameter name="default_state" type="text" required="true">
-			<label>Default state</label>
+			<label>Default State</label>
 			<description>mcp2317 pin default state (LOW, HIGH)</description>
 			<options>
 				<option value="LOW">LOW</option>

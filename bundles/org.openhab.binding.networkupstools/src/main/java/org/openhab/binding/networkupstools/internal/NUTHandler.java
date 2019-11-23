@@ -280,13 +280,12 @@ public class NUTHandler extends BaseThingHandler {
      * @return status of the UPS or null if it couldn't be determined
      */
     private @Nullable String retrieveUpsStatus() {
-        logger.trace("Get UPS status from server for thing: {}({})", thing.getLabel(), thing.getUID());
         final NutApi localNutApi = nutApi;
 
         if (localNutApi == null) {
             return null;
         }
-        return wrappedNutApiCall(device -> localNutApi.getVariable(device, NutName.UPS_STATUS.getName()));
+        return wrappedNutApiCall(device -> localNutApi.getVariable(device, NutName.UPS_STATUS.getName()), "UPS status");
     }
 
     /**
@@ -295,13 +294,12 @@ public class NUTHandler extends BaseThingHandler {
      * @return variables retrieved send by the NUT server or null if it couldn't be determined
      */
     private @Nullable Map<String, String> retrieveVariables() {
-        logger.trace("Get NUT variables from server for thing: {}({})", thing.getLabel(), thing.getUID());
         final NutApi localNutApi = nutApi;
 
         if (localNutApi == null) {
             return null;
         }
-        return wrappedNutApiCall(localNutApi::getVariables);
+        return wrappedNutApiCall(localNutApi::getVariables, "NUT variables");
     }
 
     /**
@@ -311,13 +309,14 @@ public class NUTHandler extends BaseThingHandler {
      * @param nutApiFunction function that will be called
      * @return the value returned by the api call or null in case of an error
      */
-    private <T> T wrappedNutApiCall(final NutFunction<String, T> nutApiFunction) {
+    private <T> T wrappedNutApiCall(final NutFunction<String, T> nutApiFunction, String logging) {
         try {
             final NUTConfiguration localConfig = config;
 
             if (localConfig == null) {
                 return null;
             }
+            logger.trace("Get {} from server for thing: {}({})", logging, thing.getLabel(), thing.getUID());
             return nutApiFunction.apply(localConfig.device);
         } catch (final NutException e) {
             logger.debug("Refresh Network UPS Tools failed: ", e);

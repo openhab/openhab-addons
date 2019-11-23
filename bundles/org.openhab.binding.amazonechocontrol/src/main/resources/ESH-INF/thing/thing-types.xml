@@ -264,7 +264,7 @@
 	</channel-type>
 	<channel-type id="startRoutine" advanced="true">
 		<item-type>String</item-type>
-		<label>Start A Routine</label>
+		<label>Start a Routine</label>
 		<description>The command which must be spoken to active the routing without the preceding "Alexa," (Write Only)
 		</description>
 	</channel-type>
@@ -448,7 +448,7 @@
 	</channel-type>
 	<channel-type id="notificationVolume" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>Notification volume</label>
+		<label>Notification Volume</label>
 		<description>Notification Volume</description>
 		<state readOnly="false" />
 	</channel-type>

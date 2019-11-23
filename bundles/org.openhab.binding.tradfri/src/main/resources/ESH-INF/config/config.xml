@@ -28,7 +28,7 @@
 		<parameter name="preSharedKey" type="text" required="false">
 			<advanced>true</advanced>
 			<context>password</context>
-			<label>Pre-Shared security key</label>
+			<label>Pre-Shared Security Key</label>
 			<description>Security key obtained during first initialization of the gateway</description>
 		</parameter>
 	</config-description>

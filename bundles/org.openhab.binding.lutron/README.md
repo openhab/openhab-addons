@@ -31,13 +31,15 @@ This binding currently supports the following thing types:
 * **keypad** - Lutron seeTouch or Hybrid seeTouch Keypad
 * **ttkeypad** - Tabletop seeTouch Keypad
 * **intlkeypad** - International seeTouch Keypad (HomeWorks QS only)
+* **palladiomkeypad** - Palladiom Keypad (HomeWorks QS only)
 * **pico** - Pico Keypad
 * **grafikeyekeypad** - GRAFIK Eye QS Keypad (RadioRA 2/HomeWorks QS only)
 * **virtualkeypad** - Repeater virtual keypad
 * **vcrx** - Visor control receiver module (VCRX)
-* **qsio** - HomeWorks QS IO Interface
+* **qsio** - QS IO Interface (HomeWorks QS only)
+* **wci** - QS Wallbox Closure Interface (WCI) (HomeWorks QS only)
 * **cco** - Contact closure output module or VCRX CCO
-* **shade** - Lutron shade or motorized drape
+* **shade** - Lutron shade, motorized drape, or motor controller
 * **blind** - Lutron venetian blind or horizontal sheer blind [**Experimental**]
 * **greenmode** - Green Mode subsystem
 * **timeclock** - Scheduling subsystem
@@ -198,9 +200,9 @@ Thing configuration file example:
 Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true ]
 ```
 
-### International seeTouch Keypads (Homeworks QS)
+### International seeTouch Keypads (HomeWorks QS)
 
-International seeTouch keypads used in the Homeworks QS system use the **intlkeypad** thing.
+International seeTouch keypads used in the HomeWorks QS system use the **intlkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
@@ -218,6 +220,24 @@ Thing configuration file example:
 ```
 Thing intlkeypad kitchenkeypad [ integrationId=15, model="10BRL" autorelease=true ]
 ```
+
+### Palladiom Keypads (HomeWorks QS)
+
+Palladiom keypads used in the HomeWorks QS system use the **palladiomkeypad** thing.
+It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
+See the **keypad** section above for a full discussion of configuration and use.
+
+Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.95 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
+If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:palladiomkeypad:hwprocessor:kitchenkeypad`) from the openHAB CLI to list the channels.
+
+Supported settings for `model` parameter: 2W, 3W, 4W, RW, 22W, 24W, 42W, 44W, 2RW, 4RW, RRW
+
+Thing configuration file example:
+
+```
+Thing palladiomkeypad kitchenkeypad [ integrationId=16, model="4W" autorelease=true ]
+```
+
 
 ### Pico Keypads
 
@@ -320,6 +340,24 @@ Thing configuration file example:
 Thing qsio sensorinputs [ integrationId=42 ]
 ```
 
+### QS Wallbox Closure Interface (WCI) (HomeWorks QS only)
+
+The Lutron Wallbox Closure Interface (QSE-CI-WCI) is used to interface to contact closure keypads.
+It is handled by the **wci** thing.
+The 8 button inputs appear to the HomeWorks system as normal keypad buttons.
+There are also 8 LEDs, although they are normally hidden and thus mainly useful for setup and diagnostics.
+
+Supported options are `integrationId` and `autorelease`.
+Supplying a model is not required, as there is only one model.
+
+See the Lutron documentation for more information.
+
+Thing configuration file example:
+
+```
+Thing wci specialkeypad [ integrationId=48, autorelease=true ]
+```
+
 ### CCO Modules
 
 Contact closure output (**cco**) things accept `outputType` and `pulseLength` parameters.
@@ -352,7 +390,7 @@ Thing ccomaintained relay1 [ integrationId=7 ]
 
 ### Shades
 
-Each Lutron shade or motorized drape is controlled by a **shade** thing.
+Each Lutron shade, motorized drape, or QS motor controller output (LQSE-4M-D) is controlled by a **shade** thing.
 The only configuration parameter it accepts is `integrationId`. 
 
 A single channel *shadelevel* with item type Rollershutter and category Rollershutter will be created for each **shade** thing.
@@ -361,6 +399,10 @@ Sending a Percent command will cause the shade to immediately move so as to be o
 You can also read the current shade level from the channel.
 It is specified as a percentage, where 0% = closed and 100% = fully open. Movement delays are not currently supported.
 The shade handler should be compatible with all Lutron devices which appear to the system as shades, including roller shades, honeycomb shades, pleated shades, roman shades, tension roller shades, drapes, and Kirbe vertical drapes.
+
+Motor controller outputs on a LQSE-4M-D (HomeWorks QS only) behave similarly to a shade.
+The only difference is that percentages other than 0% and 100% will be ignored, since arbitrary positioning is not supported by the hardware.
+The value of *shadelevel* for a motor will likewise always be either 0% or 100%, depending on whether the last command sent was Up or Down.
 
 **Note:** While a shade is moving to a specific level because of a Percent command, the system will report the target level for the shade rather than the actual current level.
 While a shade is moving because of an Up or Down command, it will report the previous level until it stops moving.

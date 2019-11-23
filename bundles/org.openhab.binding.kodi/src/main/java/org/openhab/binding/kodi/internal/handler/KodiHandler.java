@@ -89,6 +89,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     private final KodiConnection connection;
     private final KodiDynamicStateDescriptionProvider stateDescriptionProvider;
 
+    private final ChannelUID profileChannelUID;
+
     private ScheduledFuture<?> connectionCheckerFuture;
     private ScheduledFuture<?> statusUpdaterFuture;
 
@@ -98,6 +100,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         connection = new KodiConnection(this, webSocketClient, callbackUrl);
 
         this.stateDescriptionProvider = stateDescriptionProvider;
+
+        profileChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_PROFILE);
     }
 
     @Override
@@ -297,7 +301,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 break;
             case CHANNEL_CURRENTTIME:
                 if (command instanceof QuantityType) {
-                    connection.setTime(((QuantityType) command).intValue());
+                    connection.setTime(((QuantityType<?>) command).intValue());
                 }
                 break;
             case CHANNEL_CURRENTTIMEPERCENTAGE:
@@ -615,7 +619,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                         updateFavoriteChannelStateDescription();
                         updatePVRChannelStateDescription(PVR_TV, CHANNEL_PVR_OPEN_TV);
                         updatePVRChannelStateDescription(PVR_RADIO, CHANNEL_PVR_OPEN_RADIO);
-                        updateProfileStateDescription(CHANNEL_PROFILE);
+                        updateProfileStateDescription();
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "No connection established");
@@ -656,13 +660,13 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         }
     }
 
-    private void updateProfileStateDescription(final String channelId) {
-        if (isLinked(channelId)) {
+    private void updateProfileStateDescription() {
+        if (isLinked(profileChannelUID)) {
             List<StateOption> options = new ArrayList<>();
             for (KodiProfile profile : connection.getProfiles()) {
                 options.add(new StateOption(profile.getLabel(), profile.getLabel()));
             }
-            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
+            stateDescriptionProvider.setStateOptions(profileChannelUID, options);
         }
     }
 
@@ -699,7 +703,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             updateStatus(ThingStatus.ONLINE);
             scheduler.schedule(() -> connection.getSystemProperties(), 1, TimeUnit.SECONDS);
             scheduler.schedule(() -> connection.updateVolume(), 1, TimeUnit.SECONDS);
-            scheduler.schedule(() -> connection.updateCurrentProfile(), 1, TimeUnit.SECONDS);
+            if (isLinked(profileChannelUID)) {
+                scheduler.schedule(() -> connection.updateCurrentProfile(), 1, TimeUnit.SECONDS);
+            }
             try {
                 String version = connection.getVersion();
                 thing.setProperty(PROPERTY_VERSION, version);
@@ -961,7 +967,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateCurrentProfile(String profile) {
-        updateState(CHANNEL_PROFILE, new StringType(profile));
+        updateState(profileChannelUID, new StringType(profile));
     }
 
     @Override

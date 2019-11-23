@@ -68,14 +68,17 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService impl
     private final PlugwiseCommunicationHandler communicationHandler = new PlugwiseCommunicationHandler();
 
     private @Nullable ScheduledFuture<?> discoveryJob;
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
     private boolean discovering;
     private final ReentrantLock discoveryLock = new ReentrantLock();
     private Condition continueDiscovery = discoveryLock.newCondition();
 
-    public PlugwiseStickDiscoveryService() throws IllegalArgumentException {
+    @Activate
+    public PlugwiseStickDiscoveryService(final @Reference SerialPortManager serialPortManager)
+            throws IllegalArgumentException {
         super(DISCOVERED_THING_TYPES_UIDS, 1, true);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -213,15 +216,6 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService impl
                 discoveryLock.unlock();
             }
         }
-    }
-
-    @Reference
-    protected void setSerialPortManager(SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 
     @Override

@@ -8,7 +8,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Wall mounted Motion Detector Outdoor (WMDO)</label>
+		<label>Wall Mounted Motion Detector Outdoor (WMDO)</label>
 		<description>A battery powered motion detector for outdoors, that also measures luminance.</description>
 
 		<channels>

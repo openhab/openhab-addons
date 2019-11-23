@@ -75,7 +75,7 @@ class NutConnector {
      */
     public synchronized <R> R read(final String command, final NutFunction<NutSupplier<String>, R> readFunction)
             throws NutException {
-        int retry = MAX_RETRIES;
+        int retry = 0;
 
         while (true) {
             try {
@@ -94,12 +94,12 @@ class NutConnector {
                     return readFunction.apply(() -> readLine(localReader));
                 }
             } catch (final NutException | RuntimeException e) {
-                retry--;
+                retry++;
                 close();
-                if (retry == 0) {
-                    throw e;
+                if (retry < MAX_RETRIES) {
+                    logger.debug("Error during command retry {}:", retry, e);
                 } else {
-                    logger.debug("Error during command, retry: {}", retry, e);
+                    throw e;
                 }
             }
         }

@@ -32,7 +32,7 @@ import org.mockito.MockitoAnnotations;
 import org.osgi.framework.BundleContext;
 
 /**
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  */
 public class MapTransformationServiceTest {
 
@@ -91,7 +91,6 @@ public class MapTransformationServiceTest {
 
     @Test
     public void testTransformByMap() throws Exception {
-
         // Test that we find a translation in an existing file
         String transformedResponse = processor.transform(EXISTING_FILENAME_DE, SOURCE_CLOSED);
         Assert.assertEquals("zu", transformedResponse);

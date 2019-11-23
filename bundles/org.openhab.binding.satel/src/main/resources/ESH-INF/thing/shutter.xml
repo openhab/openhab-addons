@@ -10,7 +10,7 @@
 			<bridge-type-ref id="int-rs" />
 		</supported-bridge-type-refs>
 
-		<label>Roller shutter</label>
+		<label>Roller Shutter</label>
 		<description>A roller shutter connected to two subsequent outputs.</description>
 
 		<channels>
@@ -19,15 +19,15 @@
 
 		<config-description>
 			<parameter name="upId" type="integer" min="1" max="256" required="true">
-				<label>Up output</label>
+				<label>Up Output</label>
 				<description>Output number for "up" direction.</description>
 			</parameter>
 			<parameter name="downId" type="integer" min="1" max="256" required="true">
-				<label>Down output</label>
+				<label>Down Output</label>
 				<description>Output number for "down" direction.</description>
 			</parameter>
 			<parameter name="commandOnly" type="boolean" required="false">
-				<label>Command only</label>
+				<label>Command Only</label>
 				<description>Accepts commands only, does not update state of the thing</description>
 			</parameter>
 		</config-description>
@@ -36,7 +36,7 @@
 
 	<channel-type id="shutter_state">
 		<item-type>Rollershutter</item-type>
-		<label>Shutter state</label>
+		<label>Shutter State</label>
 		<description>Represents state of the roller shutter</description>
 	</channel-type>
 

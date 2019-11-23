@@ -117,6 +117,9 @@ import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 @RunWith(MockitoJUnitRunner.class)
 @Ignore("Tests fail because the thingRegistry field has been removed from BaseThingHandler, "
         + "see: https://github.com/openhab/openhab2-addons/issues/6171")
@@ -417,9 +420,6 @@ public class ModbusDataHandlerTest extends JavaTest {
         hookLinkRegistry(dataThingHandler);
         dataThing.setHandler(dataThingHandler);
         dataThingHandler.setCallback(thingCallback);
-        if (context != null) {
-            dataThingHandler.setBundleContext(context);
-        }
         dataThingHandler.initialize();
         return dataThingHandler;
     }

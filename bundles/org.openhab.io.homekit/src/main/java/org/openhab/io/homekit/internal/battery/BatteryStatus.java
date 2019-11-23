@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.HomekitCharacteristicChangeCallback;
 
 /**
  *

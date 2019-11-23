@@ -80,8 +80,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private static final String PROPERTY_CURRENTAUDIOSTREAM = "currentaudiostream";
     private static final String PROPERTY_SUBTITLES = "subtitles";
     private static final String PROPERTY_AUDIOSTREAMS = "audiostreams";
-    private static final String PROPERTY_VIDEOSTREAMS = "videostreams";
-    private static final String PROPERTY_STREAMDETAILS = "streamdetails";
     private static final String PROPERTY_CANHIBERNATE = "canhibernate";
     private static final String PROPERTY_CANREBOOT = "canreboot";
     private static final String PROPERTY_CANSHUTDOWN = "canshutdown";
@@ -1115,7 +1113,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
             JsonElement response = socket.callMethod("Profiles.GetCurrentProfile");
 
             try {
-                listener.updateCurrentProfile(gson.fromJson(response, KodiProfile.class).getLabel());
+                final KodiProfile profile = gson.fromJson(response, KodiProfile.class);
+                if (profile != null) {
+                    listener.updateCurrentProfile(profile.getLabel());
+                }
             } catch (JsonSyntaxException e) {
                 logger.debug("Json syntax exception occurred: {}", e.getMessage(), e);
             }

@@ -29,6 +29,7 @@ public enum OutputType {
     FLUORESCENT_DB,
     INC,
     MLV,
+    MOTOR,
     NON_DIM,
     NON_DIM_ELV,
     NON_DIM_INC,

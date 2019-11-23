@@ -2,7 +2,7 @@
 <thing:thing-descriptions bindingId="zoneminder"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="server">
 		<label>ZoneMinder Server</label>
@@ -25,7 +25,7 @@
 
 	<channel-type id="server_cpu_load">
 		<item-type>Number</item-type>
-		<label>CPU load</label>
+		<label>CPU Load</label>
 		<description>ZoneMinder Server CPU Load</description>
 		<state readOnly="true"/>
 	</channel-type>

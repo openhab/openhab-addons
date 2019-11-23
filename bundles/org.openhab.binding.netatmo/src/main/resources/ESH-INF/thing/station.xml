@@ -9,7 +9,7 @@
 			<bridge-type-ref id="netatmoapi" />
 		</supported-bridge-type-refs>
 
-		<label>Main indoor station</label>
+		<label>Main Indoor Station</label>
 		<description>This represents the main indoor module capable of reporting temperature,humidity,pressure,air quality and sound level</description>
 
 		<channels>
@@ -50,7 +50,7 @@
 			<bridge-type-ref id="netatmoapi" />
 		</supported-bridge-type-refs>
 
-		<label>Outdoor module</label>
+		<label>Outdoor Module</label>
 		<description>This represents the outdoor module capable of reporting temperature and humidity</description>
 
 		<channels>
@@ -87,7 +87,7 @@
 			<bridge-type-ref id="netatmoapi" />
 		</supported-bridge-type-refs>
 
-		<label>Wind gauge module</label>
+		<label>Wind Gauge Module</label>
 		<description>This represents the wind module capable of reporting wind angle and strength</description>
 
 		<channels>
@@ -148,7 +148,7 @@
 			<bridge-type-ref id="netatmoapi" />
 		</supported-bridge-type-refs>
 
-		<label>Additional module</label>
+		<label>Additional Module</label>
 		<description>This represents an additional indoor module capable of reporting temperature, humidity and CO2 level</description>
 
 		<channels>

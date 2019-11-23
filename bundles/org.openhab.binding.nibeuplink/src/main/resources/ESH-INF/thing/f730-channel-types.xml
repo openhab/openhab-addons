@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="f730-type-10001">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fan speed current</label>
+		<label>Fan Speed Current</label>
 		<description>The current fan speed</description>
 		<state pattern="%d %%" readOnly="true">
 		</state>
@@ -33,7 +33,7 @@
 	</channel-type>
 	<channel-type id="f730-type-40020">
 		<item-type>Number:Temperature</item-type>
-		<label>EB100-BT16 Evaporator temp</label>
+		<label>EB100-BT16 Evaporator Temp</label>
 		<description></description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -47,14 +47,14 @@
 	</channel-type>
 	<channel-type id="f730-type-40025">
 		<item-type>Number:Temperature</item-type>
-		<label>BT20 Exhaust air temp. 1</label>
+		<label>BT20 Exhaust Air Temp. 1</label>
 		<description></description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40026">
 		<item-type>Number:Temperature</item-type>
-		<label>BT21 Vented air temp. 1</label>
+		<label>BT21 Vented Air Temp. 1</label>
 		<description></description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -68,49 +68,49 @@
 	</channel-type>
 	<channel-type id="f730-type-40919">
 		<item-type>Number</item-type>
-		<label>Air mix</label>
+		<label>Air Mix</label>
 		<description></description>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-41026">
 		<item-type>Number</item-type>
-		<label>EB100-Adjusted BS1 Air flow</label>
+		<label>EB100-Adjusted BS1 Air Flow</label>
 		<description></description>
 		<state pattern="%.1f" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43066">
 		<item-type>Number:Time</item-type>
-		<label>Defrosting time</label>
+		<label>Defrosting Time</label>
 		<description>Defrosting time, no defrosting heater in the product</description>
 		<state pattern="%d s" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43122">
 		<item-type>Number:Frequency</item-type>
-		<label>Compr. current min.freq.</label>
+		<label>Compr. Current Min.freq.</label>
 		<description>The current minimum frequency of the compressor</description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43123">
 		<item-type>Number:Frequency</item-type>
-		<label>Compr. current max.freq.</label>
+		<label>Compr. Current Max.freq.</label>
 		<description>The current maximum frequency of the compressor</description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43124">
 		<item-type>Number</item-type>
-		<label>Airflow ref.</label>
+		<label>Airflow Ref.</label>
 		<description>Reference value for the airflow.</description>
 		<state pattern="%.1f" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43125">
 		<item-type>Number</item-type>
-		<label>Airflow reduction</label>
+		<label>Airflow Reduction</label>
 		<description></description>
 		<state pattern="%.1f" readOnly="true">
 		</state>
@@ -124,28 +124,28 @@
 	</channel-type>
 	<channel-type id="f730-type-43181">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Chargepump speed</label>
+		<label>Chargepump Speed</label>
 		<description></description>
 		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43416">
 		<item-type>Number</item-type>
-		<label>Compressor starts EB100-EP14</label>
+		<label>Compressor Starts EB100-EP14</label>
 		<description>Number of compressor starts</description>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43420">
 		<item-type>Number:Time</item-type>
-		<label>Tot. op.time compr. EB100-EP14</label>
+		<label>Tot. Op.time Compr. EB100-EP14</label>
 		<description>Total compressor operation time</description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43424">
 		<item-type>Number:Time</item-type>
-		<label>Tot. HW op.time compr. EB100-EP14</label>
+		<label>Tot. HW Op.time Compr. EB100-EP14</label>
 		<description>Total compressor operation time in hot water mode</description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>

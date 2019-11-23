@@ -91,10 +91,6 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private Date lastDbUpdateDate;
     private LutronDeviceDiscoveryService discoveryService;
 
-    public LutronDeviceDiscoveryService getDiscoveryService() {
-        return discoveryService;
-    }
-
     public void setDiscoveryService(LutronDeviceDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
     }

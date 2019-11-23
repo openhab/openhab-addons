@@ -191,7 +191,7 @@ public abstract class DeviceBase {
                 }
             }
         } catch (Exception e) {
-            logger.debug("Exception: {}", e);
+            logger.debug("Exception", e);
         }
     }
 

@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.HomekitCharacteristicChangeCallback;
 
 /**
  *

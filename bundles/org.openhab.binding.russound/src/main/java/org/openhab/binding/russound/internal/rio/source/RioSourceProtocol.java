@@ -731,7 +731,7 @@ class RioSourceProtocol extends AbstractRioProtocol {
             try {
                 httpClient.stop();
             } catch (Exception e) {
-                logger.debug("Error stopping the httpclient: {}", e);
+                logger.debug("Error stopping the httpclient", e);
             }
         }
         super.dispose();
