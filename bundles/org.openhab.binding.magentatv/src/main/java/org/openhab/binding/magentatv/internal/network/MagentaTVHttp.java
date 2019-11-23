@@ -25,8 +25,11 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Properties;
+
+import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -53,7 +56,7 @@ public class MagentaTVHttp {
             httpHeader.setProperty(HEADER_USER_AGENT, USER_AGENT);
             httpHeader.setProperty(HEADER_HOST, host);
             httpHeader.setProperty(HEADER_ACCEPT, "*/*");
-            response = HttpUtil.executeUrl(HTTP_GET, url, httpHeader, null, null, NETWORK_TIMEOUT);
+            response = HttpUtil.executeUrl(HttpMethod.GET, url, httpHeader, null, null, NETWORK_TIMEOUT_MS);
             logger.trace("GET {} - Response={}", url, response);
             return response;
         } catch (IOException e) {
@@ -90,8 +93,9 @@ public class MagentaTVHttp {
             }
 
             logger.trace("POST {} - SoapAction={}, Data = {}", url, postData, soapAction);
-            InputStream dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName("UTF-8")));
-            httpResponse = HttpUtil.executeUrl(HTTP_POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT);
+            InputStream dataStream = new ByteArrayInputStream(
+                    postData.getBytes(Charset.forName(StandardCharsets.UTF_8.name())));
+            httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
             logger.trace("POST {} - Response = {}", url, httpResponse);
             return httpResponse;
         } catch (IOException e) {
@@ -127,7 +131,7 @@ public class MagentaTVHttp {
             BufferedReader buff = new BufferedReader(new InputStreamReader(in));
 
             // wait until somthing to read is available or socket I/O fails (IOException)
-            int retry = NETWORK_TIMEOUT / 50;
+            int retry = NETWORK_TIMEOUT_MS / 50;
             while (!buff.ready() && retry-- > 0) {
                 Thread.sleep(50);
             }

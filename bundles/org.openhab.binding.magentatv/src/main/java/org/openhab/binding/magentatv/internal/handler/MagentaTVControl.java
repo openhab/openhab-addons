@@ -175,7 +175,7 @@ public class MagentaTVControl {
         logger.debug("Subscribe Event Channel for device {} (deviceID={}, {}:{})", thingConfig.getFriendlyName(),
                 thingConfig.getTerminalID(), thingConfig.getIpAddress(), thingConfig.getPort());
         String subscribe = MessageFormat.format(PAIRING_SUBSCRIBE, thingConfig.getIpAddress(), thingConfig.getPort(),
-                network.getLocalIP(), network.getLocalPort(), PAIRING_NOTIFY_URI, PAIRING_TIMEOUT);
+                network.getLocalIP(), network.getLocalPort(), PAIRING_NOTIFY_URI, PAIRING_TIMEOUT_SEC);
         String response = http.sendData(thingConfig.getIpAddress(), thingConfig.getPort(), subscribe);
         if (!response.contains("200 OK")) {
             response = StringUtils.substringBefore(response, "SERVER");
@@ -477,7 +477,7 @@ public class MagentaTVControl {
      */
     public static String computeMD5(String unhashed) {
         try {
-            byte[] bytesOfMessage = unhashed.getBytes(CHARSET_UTF8);
+            byte[] bytesOfMessage = unhashed.getBytes(UTF_8);
 
             MessageDigest md5 = MessageDigest.getInstance(HASH_ALGORITHM_MD5);
             byte[] hash = md5.digest(bytesOfMessage);

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.magentatv.internal;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Set;
 
@@ -30,10 +31,6 @@ public class MagentaTVBindingConstants {
     public static final String BINDING_ID = "magentatv";
     public static final String VENDOR = "Deutsche Telekom";
     public static final String OEM_VENDOR = "HUAWEI";
-    public static final String MODEL_MR400 = "DMS_TPB";
-    public static final String MODEL_MR401B = "MR401B";
-    public static final String MODEL_MR201 = "MR201";
-    public static final String MODEL_AUTO = "AUTO";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RECEIVER = new ThingTypeUID(BINDING_ID, "receiver");
@@ -89,29 +86,26 @@ public class MagentaTVBindingConstants {
      * Definitions for the control interface
      */
     public static final String CONTENT_TYPE_XML = "text/xml; charset=UTF-8";
-    public static final String CHARSET_UTF8 = "utf-8";
 
     public static final String PAIRING_NOTIFY_URI = "/magentatv/notify";
     public static final String NOTIFY_PAIRING_CODE = "X-pairingCheck:";
 
-    public static final String DEF_LOCAL_PORT = "8080";
+    public static final String MODEL_MR400 = "DMS_TPB";
+    public static final String MODEL_MR401B = "MR401B";
+    public static final String MODEL_MR201 = "MR201";
+    public static final String MODEL_AUTO = "AUTO";
+
     public static final String MR400_DEF_REMOTE_PORT = "49152";
     public static final String MR400_DEF_DESCRIPTION_URL = "/description.xml";
     public static final String MR401B_DEF_REMOTE_PORT = "8081";
     public static final String MR401B_DEF_DESCRIPTION_URL = "/xml/dial.xml";
     public static final String DEF_FRIENDLY_NAME = "PAD:openHAB";
 
-    public static final Integer DEF_REFRESH_INTERVAL = 60;
-    public static final int NETWORK_TIMEOUT = 3000;
+    public static final Integer DEF_REFRESH_INTERVAL_SEC = 60;
+    public static final int NETWORK_TIMEOUT_MS = 3000;
 
-    public static final String OPENHAB_HTTP_PORT = "OPENHAB_HTTP_PORT";
+    public static final String UTF_8 = StandardCharsets.UTF_8.name();
 
-    public static final String HTTP_GET = "GET";
-    public static final String HTTP_PUT = "PUT";
-    public static final String HTTP_POST = "POST";
-    public static final String HTTP_DELETE = "DELETE";
-
-    public static final String HEADER_USER_AGENT = "USER_AGENT";
     public static final String HEADER_CONTENT_TYPE = "Content-Type";
     public static final String HEADER_HOST = "HOST";
     public static final String HEADER_ACCEPT = "Accept";
@@ -119,6 +113,7 @@ public class MagentaTVBindingConstants {
     public static final String HEADER_LANGUAGE = "Accept-Language";
     public static final String HEADER_SOAPACTION = "SOAPACTION";
     public static final String HEADER_CONNECTION = "CONNECTION";
+    public static final String HEADER_USER_AGENT = "USER_AGENT";
     public static final String USER_AGENT = "Darwin/16.5.0 UPnP/1.0 HUAWEI_iCOS/iCOS V1R1C00 DLNADOC/1.50";
     public static final String ACCEPT_TYPE = "*/*";
 
@@ -173,7 +168,7 @@ public class MagentaTVBindingConstants {
     //
     public static final String CHECKDEV_URI = "http://{0}:{1}{2}";
 
-    public static final Integer PAIRING_TIMEOUT = 300;
+    public static final Integer PAIRING_TIMEOUT_SEC = 300;
     public static final String PAIRING_CONTROL_URI = "/upnp/service/X-CTC_RemotePairing/Control";
     public static final String PAIRING_SUBSCRIBE = "SUBSCRIBE /upnp/service/X-CTC_RemotePairing/Event HTTP/1.1\r\nHOST: {0}:{1}\r\nCALLBACK: <http://{2}:{3}{4}>\r\nNT: upnp:event\r\nTIMEOUT: Second-{5}\r\nCONNECTION: close\r\n\r\n";
     public static final String CONNECTION_CLOSE = "close";

@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.net.HttpServiceUtil;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -54,7 +55,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RECEIVER);
 
     private @Nullable MagentaTVPoweroffListener upnpListener;
-    private final MagentaTVNetwork network;
+    private final MagentaTVNetwork network = new MagentaTVNetwork();;
     private boolean servletInitialized = false;
 
     @SuppressWarnings("null")
@@ -84,10 +85,15 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
             ComponentContext componentContext, Map<String, Object> configProperties) {
         super.activate(componentContext);
 
-        network = new MagentaTVNetwork();
         try {
             logger.debug("Initialize network access");
-            network.initLocalNet(networkAddressService);
+            System.setProperty("java.net.preferIPv4Stack", "true");
+            String lip = networkAddressService.getPrimaryIpv4HostAddress();
+            Integer port = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
+            if (port == -1) {
+                port = 8080;
+            }
+            network.initLocalNet(lip != null ? lip : "", port.toString());
             upnpListener = new MagentaTVPoweroffListener(this, network.getLocalInterface());
             Validate.notNull(upnpListener);
             if (!upnpListener.isStarted()) {

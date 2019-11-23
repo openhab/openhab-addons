@@ -23,19 +23,26 @@ import java.text.MessageFormat;
 import java.util.Properties;
 import java.util.UUID;
 
+import javax.ws.rs.HttpMethod;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MROAuthGson.OAuthAutenhicateResponse;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MROAuthGson.OAuthTokenResponse;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MROAuthGson.OauthCredentials;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MROAuthGson.OauthKeyValue;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthAutenhicateResponse;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthAutenhicateResponseInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthTokenResponse;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthTokenResponseInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.OauthCredentials;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.OauthCredentialsInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.OauthKeyValue;
 import org.openhab.binding.magentatv.internal.handler.MagentaTVControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The {@link MagentaTVOAuth} class implements the OAuth authentication, which
@@ -70,7 +77,6 @@ public class MagentaTVOAuth {
         String postData = "";
         String httpResponse = "";
         InputStream dataStream = null;
-        Gson gson = new Gson();
 
         // OAuth autentication results
         String oAuthScope = "";
@@ -83,26 +89,30 @@ public class MagentaTVOAuth {
         String retmsg = "";
 
         try {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(OauthCredentials.class, new OauthCredentialsInstanceCreator())
+                    .registerTypeAdapter(OAuthTokenResponse.class, new OAuthTokenResponseInstanceCreator())
+                    .registerTypeAdapter(OAuthAutenhicateResponse.class, new OAuthAutenhicateResponseInstanceCreator())
+                    .create();
+
             step = "get credentials";
             httpHeader = initHttpHeader();
             url = OAUTH_GET_CRED_URL + ":" + OAUTH_GET_CRED_PORT + OAUTH_GET_CRED_URI;
             httpHeader.setProperty(HEADER_HOST, StringUtils.substringAfterLast(OAUTH_GET_CRED_URL, "/"));
             logger.trace("{} from {}", step, url);
-
-            httpResponse = HttpUtil.executeUrl(HTTP_GET, url, httpHeader, null, null, NETWORK_TIMEOUT);
+            httpResponse = HttpUtil.executeUrl(HttpMethod.GET, url, httpHeader, null, null, NETWORK_TIMEOUT_MS);
             logger.trace("http response = {}", httpResponse);
             OauthCredentials cred = gson.fromJson(httpResponse, OauthCredentials.class);
-            epghttpsurl = cred.epghttpsurl;
+            epghttpsurl = getString(cred.epghttpsurl);
             if (epghttpsurl.isEmpty()) {
                 throw new MagentaTVException("Unable to determine EPG url");
             }
             if (!epghttpsurl.contains("/EPG")) {
                 epghttpsurl = epghttpsurl + "/EPG";
             }
-            logger.trace("epghttpsurl = {}", epghttpsurl);
+            logger.debug("epghttpsurl = {}", epghttpsurl);
 
             // get OAuth data from response
-
             if (cred.sam3Para != null) {
                 for (OauthKeyValue si : cred.sam3Para) {
                     logger.trace("sam3Para.{} = {}", si.key, si.value);
@@ -137,15 +147,14 @@ public class MagentaTVOAuth {
             // Data: = ;
             postData = MessageFormat.format(
                     "grant_type=password&username={0}&password={1}&scope={2}%20offline_access&client_id={3}&client_secret={4}&x_telekom.access_token.format=CompactToken&x_telekom.access_token.encoding=text%2Fbase64",
-                    URLEncoder.encode(accountName, "UTF-8"), URLEncoder.encode(accountPassword, "UTF-8"), oAuthScope,
+                    URLEncoder.encode(accountName, UTF_8), URLEncoder.encode(accountPassword, UTF_8), oAuthScope,
                     oAuthClientId, oAuthClientSecret);
-            dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName("UTF-8")));
+            dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName(UTF_8)));
             httpHeader.setProperty(HEADER_HOST, StringUtils.substringAfterLast(oAuthService, "/"));
-            httpResponse = HttpUtil.executeUrl(HTTP_POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT);
+            httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
             logger.trace("http response={}", httpResponse);
-
             OAuthTokenResponse token = gson.fromJson(httpResponse, OAuthTokenResponse.class);
-            if ((token.accessToken == null) || token.accessToken.isEmpty()) {
+            if (getString(token.accessToken).isEmpty()) {
                 String errorMessage = MessageFormat.format("Authentication for account {0} failed: {1} (rc={2})",
                         accountName, token.errorDescription, token.error);
                 throw new MagentaTVException(errorMessage);
@@ -173,18 +182,18 @@ public class MagentaTVOAuth {
             httpHeader.setProperty(HEADER_CONTENT_TYPE, "text/plain;charset=UTF-8");
             url = epghttpsurl + "/JSON/DTAuthenticate?SID=user&T=Iphone";
             dataStream = new ByteArrayInputStream(postData.getBytes(Charset.forName("UTF-8")));
-            httpResponse = HttpUtil.executeUrl(HTTP_POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT);
+            httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
             logger.trace("http response={}", httpResponse);
             OAuthAutenhicateResponse resp = gson.fromJson(httpResponse, OAuthAutenhicateResponse.class);
-            if (resp.retcode.isEmpty() || !resp.retcode.equals("0")) {
-                retmsg = resp.desc;
+            if (getString(resp.retcode).isEmpty() || !resp.retcode.equals("0")) {
+                retmsg = getString(resp.desc);
                 String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} - {2}",
                         accountName, retcode, retmsg);
                 logger.warn("{}", errorMessage);
                 throw new MagentaTVException(errorMessage);
             }
 
-            if ((resp.userID == null) || resp.userID.isEmpty()) {
+            if (getString(resp.userID).isEmpty()) {
                 throw new MagentaTVException("No userID received!");
             }
             String hashedUserID = MagentaTVControl.computeMD5(resp.userID).toUpperCase();
@@ -192,8 +201,8 @@ public class MagentaTVOAuth {
             return hashedUserID;
         } catch (RuntimeException | IOException e) {
             throw new MagentaTVException(e,
-                    "Unable to authenticate ({} failed; serviceURL={}, accountName={} - rc={}({}", step, oAuthService,
-                    accountName, retcode, retmsg);
+                    "Unable to authenticate {0}: {1} failed; serviceURL={2}, rc={3}/{4}, response={5}", accountName,
+                    step, oAuthService, retcode, retmsg, httpResponse);
         }
     }
 
@@ -204,5 +213,9 @@ public class MagentaTVOAuth {
         httpHeader.setProperty(HEADER_LANGUAGE, "de-de");
         httpHeader.setProperty(HEADER_CACHE_CONTROL, "no-cache");
         return httpHeader;
+    }
+
+    private String getString(@Nullable String value) {
+        return value != null ? value : "";
     }
 }

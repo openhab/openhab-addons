@@ -3,6 +3,8 @@
 This Binding allows controlling the Deutsche Telekom Magenta TV Media Receiver series MR4xx and MR2xx (Telekom NGTV / Huawei Envision platform). 
 The Binding does NOT support MR3xx/1xx (old Entertain system based on Microsoft technology)!
 
+Media Receivers are automatically discovered.
+You could send keys as you press them on the remote and the binding receives program information when the channel is switched (no
 The binding provides device discovery, sending keys for the remote and also receiving program information/events.
 It has been tested with the Entertain TV service as well as the  Magenta TV service launched in 10/2018.
 

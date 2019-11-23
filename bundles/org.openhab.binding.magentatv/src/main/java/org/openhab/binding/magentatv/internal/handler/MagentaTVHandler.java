@@ -41,19 +41,25 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.magentatv.internal.MagentaTVConfiguration;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MREventGson.MRPayEvent;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MREventGson.MRProgramInfoEvent;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MREventGson.MRProgramStatus;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MREventGson.MRShortProgramInfo;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.MRPayEvent;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.MRPayEventInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.MRProgramInfoEvent;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.MRProgramInfoEventInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.MRProgramStatus;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.MRProgramStatusInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.MRShortProgramInfo;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.MRShortProgramInfoInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthAutenhicateResponse;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthTokenResponse;
+import org.openhab.binding.magentatv.internal.MagentaTVGson.OauthCredentials;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
 import org.openhab.binding.magentatv.internal.network.MagentaTVNetwork;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The {@link MagentaTVHandler} is responsible for handling commands, which are
@@ -65,6 +71,7 @@ import com.google.gson.Gson;
 public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListener {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVHandler.class);
     protected final MagentaTVConfiguration thingConfig = new MagentaTVConfiguration();
+    private final Gson gson;
     protected MagentaTVNetwork network;
     protected @Nullable MagentaTVControl control;
     protected @Nullable MagentaTVHandlerFactory handlerFactory;
@@ -83,6 +90,12 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         super(thing);
         this.handlerFactory = handlerFactory;
         this.network = network;
+        gson = new GsonBuilder()
+                .registerTypeAdapter(OauthCredentials.class, new MRProgramInfoEventInstanceCreator())
+                .registerTypeAdapter(OAuthTokenResponse.class, new MRProgramStatusInstanceCreator())
+                .registerTypeAdapter(OAuthAutenhicateResponse.class, new MRShortProgramInfoInstanceCreator())
+                .registerTypeAdapter(OAuthAutenhicateResponse.class, new MRPayEventInstanceCreator())
+                .create();
 
         // setup background device check
         scheduler.scheduleWithFixedDelay(new Runnable() {
@@ -159,6 +172,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 errorMessage = e.toString();
             } finally {
                 if (!errorMessage.isEmpty()) {
+                    logger.debug("{}", errorMessage);
                     setOnlineState(ThingStatus.OFFLINE, errorMessage);
                 }
             }
@@ -371,7 +385,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @Override
     public void onMREvent(String jsonInput) {
         logger.trace("Process MR event for device {}, json={}", deviceName(), jsonInput);
-        Gson gson = new Gson();
         boolean flUpdatePower = false;
         String jsonEvent = fixEventJson(jsonInput);
         if (jsonEvent.contains(MR_EVENT_EIT_CHANGE)) {
@@ -383,9 +396,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 updateState(CHANNEL_CHANNEL, new StringType(pinfo.channelNum));
                 updateState(CHANNEL_CHANNEL_CODE, new StringType(pinfo.channelCode));
             }
-            if (pinfo.program_info != null) {
+            if (pinfo.programInfo != null) {
                 int i = 0;
-                for (MRProgramStatus ps : pinfo.program_info) {
+                for (MRProgramStatus ps : pinfo.programInfo) {
                     if ((ps.startTime == null) || ps.startTime.isEmpty()) {
                         logger.debug("EVENT_EIT_CHANGE: empty event data = {}", jsonEvent);
                         continue; // empty program_info
@@ -563,7 +576,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         super.dispose();
     }
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    @Reference
     public void setMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
         this.handlerFactory = handlerFactory;
     }

@@ -32,8 +32,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -145,7 +143,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
             logger.debug("Unable to process http request, data={}", data != null ? data : "<empty>");
         } finally {
             // send response
-            resp.setCharacterEncoding(CHARSET_UTF8);
+            resp.setCharacterEncoding(UTF_8);
             resp.getWriter().write("");
         }
     }
@@ -158,7 +156,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     }
 
     @SuppressWarnings("null")
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    @Reference
     public void setMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
         logger.debug("HandlerFactory bound");
         this.handlerFactory = handlerFactory;

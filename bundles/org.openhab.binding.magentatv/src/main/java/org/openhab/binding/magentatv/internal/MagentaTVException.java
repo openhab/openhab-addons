@@ -34,16 +34,14 @@ public class MagentaTVException extends Exception {
         super(cause);
     }
 
-    public MagentaTVException(Exception cause, String message, Object... a) {
-        super(MessageFormat.format(message, a), cause);
+    public MagentaTVException(Exception e, String message, Object... a) {
+        super(MessageFormat.format(message, a) + " (" + e.getClass() + ": " + e.getMessage() + ")", e);
     }
 
     @Override
     public String toString() {
         String str = getLocalizedMessage();
-        boolean validStr = str != null && !str.isEmpty();
-        str = validStr ? str + " (" + getClass() + ")" : getClass().toString();
-        if (!validStr || getClass().equals(RuntimeException.class)) {
+        if (getClass().equals(RuntimeException.class)) {
             str = str + getStackTrace();
         }
         return str;

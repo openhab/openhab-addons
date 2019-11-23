@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.magentatv.internal.network;
 
-import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -21,12 +19,10 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Map;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,34 +48,26 @@ public class MagentaTVNetwork {
      * @return
      */
     @SuppressWarnings({ "null", "unused" })
-    public void initLocalNet(NetworkAddressService networkAddressService) throws MagentaTVException {
+    public void initLocalNet(String localIP, String localPort) throws MagentaTVException {
         try {
-            Map<String, String> env = System.getenv();
-            String portEnv = env.get(OPENHAB_HTTP_PORT);
-            localPort = (portEnv != null) ? portEnv : DEF_LOCAL_PORT;
-            // }
-            logger.trace("initLocalNet(): local OH port = {}", localPort);
-            System.setProperty("java.net.preferIPv4Stack", "true");
-
-            if (networkAddressService == null) {
-                throw new MagentaTVException("networkAddressService not started");
+            if (localIP.isEmpty() || localIP.equals("0.0.0.0") || localIP.equals("127.0.0.1")) {
+                throw new MagentaTVException("Unable to detect local IP address!");
             }
-            String lip = networkAddressService.getPrimaryIpv4HostAddress();
-            localIP = lip != null ? lip : "";
-            if (!localIP.isEmpty() && !localIP.equals("0.0.0.0") && !localIP.equals("127.0.0.1")) {
-                // get MAC address
-                InetAddress ip = InetAddress.getByName(localIP);
-                localInterface = NetworkInterface.getByInetAddress(ip);
-                if (localInterface != null) {
-                    byte[] mac = localInterface.getHardwareAddress();
+            this.localPort = localPort;
+            this.localIP = localIP;
 
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < mac.length; i++) {
-                        sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));
-                    }
-                    localMAC = sb.toString();
-                    logger.debug("Local IP address={}, Local MAC address = {}", localIP, localMAC);
+            // get MAC address
+            InetAddress ip = InetAddress.getByName(localIP);
+            localInterface = NetworkInterface.getByInetAddress(ip);
+            if (localInterface != null) {
+                byte[] mac = localInterface.getHardwareAddress();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < mac.length; i++) {
+                    sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));
                 }
+                localMAC = sb.toString().toUpperCase();
+                logger.debug("Local IP address={}, Local MAC address = {}", localIP, localMAC);
+                return;
             }
         } catch (RuntimeException | UnknownHostException | SocketException e) {
             throw new MagentaTVException(e);
