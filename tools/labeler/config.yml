@@ -1,0 +1,648 @@
+binding-airquality:
+	- bundles/org.openhab.binding.airquality/*
+
+binding-airvisualnode:
+	- bundles/org.openhab.binding.airvisualnode/*
+
+binding-allplay:
+	- bundles/org.openhab.binding.allplay/*
+
+binding-amazondashbutton:
+	- bundles/org.openhab.binding.amazondashbutton/*
+
+binding-amazonechocontrol:
+	- bundles/org.openhab.binding.amazonechocontrol/*
+
+binding-ambientweather:
+	- bundles/org.openhab.binding.ambientweather/*
+
+binding-astro:
+	- bundles/org.openhab.binding.astro/*
+
+binding-atlona:
+	- bundles/org.openhab.binding.atlona/*
+
+binding-autelis:
+	- bundles/org.openhab.binding.autelis/*
+
+binding-avmfritz:
+	- bundles/org.openhab.binding.avmfritz/*
+
+binding-bigassfan:
+	- bundles/org.openhab.binding.bigassfan/*
+
+binding-bluetooth:
+	- bundles/org.openhab.binding.bluetooth/*
+
+binding-bluetooth-bluegiga:
+	- bundles/org.openhab.binding.bluetooth.bluegiga/*
+
+binding-bluetooth-bluez:
+	- bundles/org.openhab.binding.bluetooth.bluez/*
+
+binding-bluetooth-blukii:
+	- bundles/org.openhab.binding.bluetooth.blukii/*
+
+binding-bluetooth-ruuvitag:
+	- bundles/org.openhab.binding.bluetooth.ruuvitag/*
+
+binding-boschindego:
+	- bundles/org.openhab.binding.boschindego/*
+
+binding-bosesoundtouch:
+	- bundles/org.openhab.binding.bosesoundtouch/*
+
+binding-buienradar:
+	- bundles/org.openhab.binding.buienradar/*
+
+binding-chromecast:
+	- bundles/org.openhab.binding.chromecast/*
+
+binding-cm11a:
+	- bundles/org.openhab.binding.cm11a/*
+
+binding-coolmasternet:
+	- bundles/org.openhab.binding.coolmasternet/*
+
+binding-daikin:
+	- bundles/org.openhab.binding.daikin/*
+
+binding-darksky:
+	- bundles/org.openhab.binding.darksky/*
+
+binding-deconz:
+	- bundles/org.openhab.binding.deconz/*
+
+binding-denonmarantz:
+	- bundles/org.openhab.binding.denonmarantz/*
+
+binding-digiplex:
+	- bundles/org.openhab.binding.digiplex/*
+
+binding-digitalstrom:
+	- bundles/org.openhab.binding.digitalstrom/*
+
+binding-dlinksmarthome:
+	- bundles/org.openhab.binding.dlinksmarthome/*
+
+binding-dmx:
+	- bundles/org.openhab.binding.dmx/*
+
+binding-doorbird:
+	- bundles/org.openhab.binding.doorbird/*
+
+binding-dscalarm:
+	- bundles/org.openhab.binding.dscalarm/*
+
+binding-dsmr:
+	- bundles/org.openhab.binding.dsmr/*
+
+binding-dwdunwetter:
+	- bundles/org.openhab.binding.dwdunwetter/*
+
+binding-elerotransmitterstick:
+	- bundles/org.openhab.binding.elerotransmitterstick/*
+
+binding-enocean:
+	- bundles/org.openhab.binding.enocean/*
+
+binding-enturno:
+	- bundles/org.openhab.binding.enturno/*
+
+binding-evohome:
+	- bundles/org.openhab.binding.evohome/*
+
+binding-exec:
+	- bundles/org.openhab.binding.exec/*
+
+binding-feed:
+	- bundles/org.openhab.binding.feed/*
+
+binding-feican:
+	- bundles/org.openhab.binding.feican/*
+
+binding-folding:
+	- bundles/org.openhab.binding.folding/*
+
+binding-foobot:
+	- bundles/org.openhab.binding.foobot/*
+
+binding-freebox:
+	- bundles/org.openhab.binding.freebox/*
+
+binding-fronius:
+	- bundles/org.openhab.binding.fronius/*
+
+binding-fsinternetradio:
+	- bundles/org.openhab.binding.fsinternetradio/*
+
+binding-ftpupload:
+	- bundles/org.openhab.binding.ftpupload/*
+
+binding-gardena:
+	- bundles/org.openhab.binding.gardena/*
+
+binding-globalcache:
+	- bundles/org.openhab.binding.globalcache/*
+
+binding-gpstracker:
+	- bundles/org.openhab.binding.gpstracker/*
+
+binding-groheondus:
+	- bundles/org.openhab.binding.groheondus/*
+
+binding-harmonyhub:
+	- bundles/org.openhab.binding.harmonyhub/*
+
+binding-hdanywhere:
+	- bundles/org.openhab.binding.hdanywhere/*
+
+binding-hdpowerview:
+	- bundles/org.openhab.binding.hdpowerview/*
+
+binding-helios:
+	- bundles/org.openhab.binding.helios/*
+
+binding-heos:
+	- bundles/org.openhab.binding.heos/*
+
+binding-homematic:
+	- bundles/org.openhab.binding.homematic/*
+
+binding-hpprinter:
+	- bundles/org.openhab.binding.hpprinter/*
+
+binding-hue:
+	- bundles/org.openhab.binding.hue/*
+
+binding-hyperion:
+	- bundles/org.openhab.binding.hyperion/*
+
+binding-iaqualink:
+	- bundles/org.openhab.binding.iaqualink/*
+
+binding-icloud:
+	- bundles/org.openhab.binding.icloud/*
+
+binding-ihc:
+	- bundles/org.openhab.binding.ihc/*
+
+binding-innogysmarthome:
+	- bundles/org.openhab.binding.innogysmarthome/*
+
+binding-ipp:
+	- bundles/org.openhab.binding.ipp/*
+
+binding-irtrans:
+	- bundles/org.openhab.binding.irtrans/*
+
+binding-jeelink:
+	- bundles/org.openhab.binding.jeelink/*
+
+binding-keba:
+	- bundles/org.openhab.binding.keba/*
+
+binding-km200:
+	- bundles/org.openhab.binding.km200/*
+
+binding-knx:
+	- bundles/org.openhab.binding.knx/*
+
+binding-kodi:
+	- bundles/org.openhab.binding.kodi/*
+
+binding-konnected:
+	- bundles/org.openhab.binding.konnected/*
+
+binding-kostalinverter:
+	- bundles/org.openhab.binding.kostalinverter/*
+
+binding-lametrictime:
+	- bundles/org.openhab.binding.lametrictime/*
+
+binding-leapmotion:
+	- bundles/org.openhab.binding.leapmotion/*
+
+binding-lgtvserial:
+	- bundles/org.openhab.binding.lgtvserial/*
+
+binding-lgwebos:
+	- bundles/org.openhab.binding.lgwebos/*
+
+binding-lifx:
+	- bundles/org.openhab.binding.lifx/*
+
+binding-linuxinput:
+	- bundles/org.openhab.binding.linuxinput/*
+
+binding-lirc:
+	- bundles/org.openhab.binding.lirc/*
+
+binding-logreader:
+	- bundles/org.openhab.binding.logreader/*
+
+binding-loxone:
+	- bundles/org.openhab.binding.loxone/*
+
+binding-lutron:
+	- bundles/org.openhab.binding.lutron/*
+
+binding-mail:
+	- bundles/org.openhab.binding.mail/*
+
+binding-max:
+	- bundles/org.openhab.binding.max/*
+
+binding-mcp23017:
+	- bundles/org.openhab.binding.mcp23017/*
+
+binding-meteoblue:
+	- bundles/org.openhab.binding.meteoblue/*
+
+binding-meteostick:
+	- bundles/org.openhab.binding.meteostick/*
+
+binding-miele:
+	- bundles/org.openhab.binding.miele/*
+
+binding-mihome:
+	- bundles/org.openhab.binding.mihome/*
+
+binding-miio:
+	- bundles/org.openhab.binding.miio/*
+
+binding-milight:
+	- bundles/org.openhab.binding.milight/*
+
+binding-minecraft:
+	- bundles/org.openhab.binding.minecraft/*
+
+binding-modbus:
+	- bundles/org.openhab.binding.modbus/*
+
+binding-mqtt:
+	- bundles/org.openhab.binding.mqtt/*
+
+binding-mqtt-generic:
+	- bundles/org.openhab.binding.mqtt.generic/*
+
+binding-mqtt-homeassistant:
+	- bundles/org.openhab.binding.mqtt.homeassistant/*
+
+binding-mqtt-homie:
+	- bundles/org.openhab.binding.mqtt.homie/*
+
+binding-nanoleaf:
+	- bundles/org.openhab.binding.nanoleaf/*
+
+binding-neato:
+	- bundles/org.openhab.binding.neato/*
+
+binding-neeo:
+	- bundles/org.openhab.binding.neeo/*
+
+binding-neohub:
+	- bundles/org.openhab.binding.neohub/*
+
+binding-nest:
+	- bundles/org.openhab.binding.nest/*
+
+binding-netatmo:
+	- bundles/org.openhab.binding.netatmo/*
+
+binding-network:
+	- bundles/org.openhab.binding.network/*
+
+binding-networkupstools:
+	- bundles/org.openhab.binding.networkupstools/*
+
+binding-nibeheatpump:
+	- bundles/org.openhab.binding.nibeheatpump/*
+
+binding-nibeuplink:
+	- bundles/org.openhab.binding.nibeuplink/*
+
+binding-nikobus:
+	- bundles/org.openhab.binding.nikobus/*
+
+binding-nikohomecontrol:
+	- bundles/org.openhab.binding.nikohomecontrol/*
+
+binding-ntp:
+	- bundles/org.openhab.binding.ntp/*
+
+binding-nuki:
+	- bundles/org.openhab.binding.nuki/*
+
+binding-oceanic:
+	- bundles/org.openhab.binding.oceanic/*
+
+binding-omnikinverter:
+	- bundles/org.openhab.binding.omnikinverter/*
+
+binding-onebusaway:
+	- bundles/org.openhab.binding.onebusaway/*
+
+binding-onewire:
+	- bundles/org.openhab.binding.onewire/*
+
+binding-onewiregpio:
+	- bundles/org.openhab.binding.onewiregpio/*
+
+binding-onkyo:
+	- bundles/org.openhab.binding.onkyo/*
+
+binding-opengarage:
+	- bundles/org.openhab.binding.opengarage/*
+
+binding-opensprinkler:
+	- bundles/org.openhab.binding.opensprinkler/*
+
+binding-openuv:
+	- bundles/org.openhab.binding.openuv/*
+
+binding-openweathermap:
+	- bundles/org.openhab.binding.openweathermap/*
+
+binding-orvibo:
+	- bundles/org.openhab.binding.orvibo/*
+
+binding-paradoxalarm:
+	- bundles/org.openhab.binding.paradoxalarm/*
+
+binding-pentair:
+	- bundles/org.openhab.binding.pentair/*
+
+binding-phc:
+	- bundles/org.openhab.binding.phc/*
+
+binding-pioneeravr:
+	- bundles/org.openhab.binding.pioneeravr/*
+
+binding-pjlinkdevice:
+	- bundles/org.openhab.binding.pjlinkdevice/*
+
+binding-plclogo:
+	- bundles/org.openhab.binding.plclogo/*
+
+binding-plugwise:
+	- bundles/org.openhab.binding.plugwise/*
+
+binding-powermax:
+	- bundles/org.openhab.binding.powermax/*
+
+binding-pulseaudio:
+	- bundles/org.openhab.binding.pulseaudio/*
+
+binding-pushbullet:
+	- bundles/org.openhab.binding.pushbullet/*
+
+binding-regoheatpump:
+	- bundles/org.openhab.binding.regoheatpump/*
+
+binding-rfxcom:
+	- bundles/org.openhab.binding.rfxcom/*
+
+binding-rme:
+	- bundles/org.openhab.binding.rme/*
+
+binding-robonect:
+	- bundles/org.openhab.binding.robonect/*
+
+binding-rotel:
+	- bundles/org.openhab.binding.rotel/*
+
+binding-rotelra1x:
+	- bundles/org.openhab.binding.rotelra1x/*
+
+binding-russound:
+	- bundles/org.openhab.binding.russound/*
+
+binding-samsungtv:
+	- bundles/org.openhab.binding.samsungtv/*
+
+binding-satel:
+	- bundles/org.openhab.binding.satel/*
+
+binding-seneye:
+	- bundles/org.openhab.binding.seneye/*
+
+binding-sensebox:
+	- bundles/org.openhab.binding.sensebox/*
+
+binding-serialbutton:
+	- bundles/org.openhab.binding.serialbutton/*
+
+binding-siemensrds:
+	- bundles/org.openhab.binding.siemensrds/*
+
+binding-silvercrestwifisocket:
+	- bundles/org.openhab.binding.silvercrestwifisocket/*
+
+binding-sinope:
+	- bundles/org.openhab.binding.sinope/*
+
+binding-sleepiq:
+	- bundles/org.openhab.binding.sleepiq/*
+
+binding-smaenergymeter:
+	- bundles/org.openhab.binding.smaenergymeter/*
+
+binding-smartmeter:
+	- bundles/org.openhab.binding.smartmeter/*
+
+binding-snmp:
+	- bundles/org.openhab.binding.snmp/*
+
+binding-solaredge:
+	- bundles/org.openhab.binding.solaredge/*
+
+binding-solarlog:
+	- bundles/org.openhab.binding.solarlog/*
+
+binding-somfytahoma:
+	- bundles/org.openhab.binding.somfytahoma/*
+
+binding-sonos:
+	- bundles/org.openhab.binding.sonos/*
+
+binding-sonyaudio:
+	- bundles/org.openhab.binding.sonyaudio/*
+
+binding-sonyprojector:
+	- bundles/org.openhab.binding.sonyprojector/*
+
+binding-spotify:
+	- bundles/org.openhab.binding.spotify/*
+
+binding-squeezebox:
+	- bundles/org.openhab.binding.squeezebox/*
+
+binding-synopanalyzer:
+	- bundles/org.openhab.binding.synopanalyzer/*
+
+binding-systeminfo:
+	- bundles/org.openhab.binding.systeminfo/*
+
+binding-tado:
+	- bundles/org.openhab.binding.tado/*
+
+binding-tankerkoenig:
+	- bundles/org.openhab.binding.tankerkoenig/*
+
+binding-telegram:
+	- bundles/org.openhab.binding.telegram/*
+
+binding-tellstick:
+	- bundles/org.openhab.binding.tellstick/*
+
+binding-tesla:
+	- bundles/org.openhab.binding.tesla/*
+
+binding-toon:
+	- bundles/org.openhab.binding.toon/*
+
+binding-tplinksmarthome:
+	- bundles/org.openhab.binding.tplinksmarthome/*
+
+binding-tradfri:
+	- bundles/org.openhab.binding.tradfri/*
+
+binding-unifi:
+	- bundles/org.openhab.binding.unifi/*
+
+binding-urtsi:
+	- bundles/org.openhab.binding.urtsi/*
+
+binding-valloxmv:
+	- bundles/org.openhab.binding.valloxmv/*
+
+binding-vektiva:
+	- bundles/org.openhab.binding.vektiva/*
+
+binding-velbus:
+	- bundles/org.openhab.binding.velbus/*
+
+binding-vitotronic:
+	- bundles/org.openhab.binding.vitotronic/*
+
+binding-volvooncall:
+	- bundles/org.openhab.binding.volvooncall/*
+
+binding-weatherunderground:
+	- bundles/org.openhab.binding.weatherunderground/*
+
+binding-wemo:
+	- bundles/org.openhab.binding.wemo/*
+
+binding-wifiled:
+	- bundles/org.openhab.binding.wifiled/*
+
+binding-windcentrale:
+	- bundles/org.openhab.binding.windcentrale/*
+
+binding-xmltv:
+	- bundles/org.openhab.binding.xmltv/*
+
+binding-xmppclient:
+	- bundles/org.openhab.binding.xmppclient/*
+
+binding-yamahareceiver:
+	- bundles/org.openhab.binding.yamahareceiver/*
+
+binding-yeelight:
+	- bundles/org.openhab.binding.yeelight/*
+
+binding-zoneminder:
+	- bundles/org.openhab.binding.zoneminder/*
+
+binding-zway:
+	- bundles/org.openhab.binding.zway/*
+
+extensionservice-marketplace:
+	- bundles/org.openhab.extensionservice.marketplace/*
+
+extensionservice-marketplace-automation:
+	- bundles/org.openhab.extensionservice.marketplace.automation/*
+
+io-azureiothub:
+	- bundles/org.openhab.io.azureiothub/*
+
+io-homekit:
+	- bundles/org.openhab.io.homekit/*
+
+io-hueemulation:
+	- bundles/org.openhab.io.hueemulation/*
+
+io-imperihome:
+	- bundles/org.openhab.io.imperihome/*
+
+io-javasound:
+	- bundles/org.openhab.io.javasound/*
+
+io-mqttembeddedbroker:
+	- bundles/org.openhab.io.mqttembeddedbroker/*
+
+io-neeo:
+	- bundles/org.openhab.io.neeo/*
+
+io-openhabcloud:
+	- bundles/org.openhab.io.openhabcloud/*
+
+io-transport-modbus:
+	- bundles/org.openhab.io.transport.modbus/*
+
+io-webaudio:
+	- bundles/org.openhab.io.webaudio/*
+
+persistence-mapdb:
+	- bundles/org.openhab.persistence.mapdb/*
+
+transform-bin2json:
+	- bundles/org.openhab.transform.bin2json/*
+
+transform-exec:
+	- bundles/org.openhab.transform.exec/*
+
+transform-javascript:
+	- bundles/org.openhab.transform.javascript/*
+
+transform-jinja:
+	- bundles/org.openhab.transform.jinja/*
+
+transform-jsonpath:
+	- bundles/org.openhab.transform.jsonpath/*
+
+transform-map:
+	- bundles/org.openhab.transform.map/*
+
+transform-regex:
+	- bundles/org.openhab.transform.regex/*
+
+transform-scale:
+	- bundles/org.openhab.transform.scale/*
+
+transform-xpath:
+	- bundles/org.openhab.transform.xpath/*
+
+transform-xslt:
+	- bundles/org.openhab.transform.xslt/*
+
+voice-googletts:
+	- bundles/org.openhab.voice.googletts/*
+
+voice-mactts:
+	- bundles/org.openhab.voice.mactts/*
+
+voice-marytts:
+	- bundles/org.openhab.voice.marytts/*
+
+voice-picotts:
+	- bundles/org.openhab.voice.picotts/*
+
+voice-pollytts:
+	- bundles/org.openhab.voice.pollytts/*
+
+voice-voicerss:
+	- bundles/org.openhab.voice.voicerss/*
+
