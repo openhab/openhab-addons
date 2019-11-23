@@ -16,12 +16,14 @@ import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHA
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,12 +57,17 @@ public class BoschSHCHandler extends BaseThingHandler {
                 // TODO: handle data refresh
             }
 
-            // TODO: handle command
+            else {
 
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+                // TODO: Find bridge - updates have to be done via the bridge.
+
+                // TODO: handle command
+
+                // Note: if communication with thing fails for some reason,
+                // indicate that by setting the status with detail information:
+                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                // "Could not control device at IP address x.x.x.x");
+            }
         }
     }
 
@@ -70,38 +77,28 @@ public class BoschSHCHandler extends BaseThingHandler {
         config = getConfigAs(BoschSHCConfiguration.class);
         logger.warn("Initializating thing: {}", config.id);
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
+        // Mark immediately as online - if the bridge is online, the thing is too.
+        updateStatus(ThingStatus.ONLINE);
+    }
 
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-        updateStatus(ThingStatus.UNKNOWN);
+    public void processUpdate(DeviceStatusUpdate update) {
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
+        String channel = null;
+        State state = null;
 
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
+        logger.warn("Processing update in BoschSHCHandler: {}", update);
 
-        // logger.debug("Finished initializing!");
+        // TODO Make this work for other kind of updates too!
+        if (update.state.type.equals("powerSwitchState")) {
+            channel = CHANNEL_POWER_SWITCH;
+            state = OnOffType.from(update.state.switchState);
+        }
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        if (channel != null && state != null) {
+            this.updateState(channel, state);
+        } else {
+            logger.warn("Could not process update: {}", update);
+        }
     }
 
 }

@@ -47,4 +47,10 @@ public class DeviceStatusUpdate {
     DeviceState state;
 
     String deviceId;
+
+    @Override
+    public String toString() {
+
+        return this.deviceId + "state: " + this.state.type + "/" + this.state.switchState;
+    }
 }
