@@ -13,15 +13,17 @@
 package org.openhab.binding.phc.internal;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 
 /**
- * The {@link PHCHelper} is responsible for finding the appropriate Thing(UID) to the Channel of the PHC module.
+ * The {@link PHCHelper} is responsible for finding the appropriate Thing(UID)
+ * to the Channel of the PHC module.
  *
  * @author Jonas Hohaus - Initial contribution
  */
-
+@NonNullByDefault
 public class PHCHelper {
 
     /**

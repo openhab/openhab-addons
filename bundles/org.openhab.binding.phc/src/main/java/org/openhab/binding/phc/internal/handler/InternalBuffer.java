@@ -26,11 +26,12 @@ class InternalBuffer {
 
     private Queue<byte[]> byteQueue = new ConcurrentLinkedQueue<byte[]>();
     byte[] buffer;
-    int bufferIndex;
+    int bufferIndex = 0;
     int size;
 
     public void offer(byte[] buffer) {
-        // If the buffer becomes too large, already processed commands accumulate and the reaction becomes slow.
+        // If the buffer becomes too large, already processed commands accumulate and
+        // the reaction becomes slow.
         if (size < MAX_SIZE) {
             byte[] localBuffer = Arrays.copyOf(buffer, Math.min(MAX_SIZE - size, buffer.length));
             byteQueue.offer(localBuffer);

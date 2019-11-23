@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.phc.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link PHCBinding} class defines common constants, which are
- * used across the whole binding.
+ * The {@link PHCBinding} class defines common constants, which are used across
+ * the whole binding.
  *
  * @author Jonas Hohaus - Initial contribution
  */
+@NonNullByDefault
 public class PHCBindingConstants {
 
     public static final String BINDING_ID = "phc";

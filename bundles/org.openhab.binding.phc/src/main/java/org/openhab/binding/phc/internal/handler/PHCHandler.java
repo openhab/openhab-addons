@@ -107,18 +107,16 @@ public class PHCHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if ((CHANNELS_EM.equals(channelUID.getGroupId())) || CHANNELS_JRM_TIME.equals(channelUID.getGroupId())
-                && !(command instanceof OnOffType || command instanceof UpDownType || command instanceof StopMoveType
-                        || command instanceof PercentType)) {
-            return;
-        }
+        final String groupId = channelUID.getGroupId();
         if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            if (CHANNELS_JRM.equals(channelUID.getGroupId()) || CHANNELS_DIM.equals(channelUID.getGroupId())) {
-                getPHCBridgeHandler().send(channelUID.getGroupId(), module & 0x1F, channelUID.getIdWithoutGroup(),
-                        command, times[Integer.parseInt(channelUID.getIdWithoutGroup())]);
-            } else {
-                getPHCBridgeHandler().send(channelUID.getGroupId(), module & 0x1F, channelUID.getIdWithoutGroup(),
-                        command, (short) 0);
+            if ((CHANNELS_JRM.equals(groupId) && (command instanceof UpDownType || command instanceof StopMoveType))
+                    || (CHANNELS_DIM.equals(groupId)
+                            && (command instanceof OnOffType || command instanceof PercentType))) {
+                getPHCBridgeHandler().send(groupId, module & 0x1F, channelUID.getIdWithoutGroup(), command,
+                        times[Integer.parseInt(channelUID.getIdWithoutGroup())]);
+            } else if ((CHANNELS_AM.equals(groupId) || CHANNELS_EM_LED.equals(groupId))
+                    && command instanceof OnOffType) {
+                getPHCBridgeHandler().send(groupId, module & 0x1F, channelUID.getIdWithoutGroup(), command, (short) 0);
             }
 
             if (logger.isDebugEnabled()) {

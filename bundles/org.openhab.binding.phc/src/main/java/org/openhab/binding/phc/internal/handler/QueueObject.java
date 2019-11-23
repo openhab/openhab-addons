@@ -34,6 +34,7 @@ class QueueObject {
         this.channel = channel;
         this.command = command;
     }
+
     public QueueObject(String moduleType, int moduleAddress, String channel, Command command) {
         this.moduleType = moduleType;
         this.moduleAddress = (byte) moduleAddress;
