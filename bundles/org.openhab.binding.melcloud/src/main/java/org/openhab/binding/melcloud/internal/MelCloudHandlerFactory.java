@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.melcloud.internal.handler.MelCloudAccountHandler;
 import org.openhab.binding.melcloud.internal.handler.MelCloudDeviceHandler;
+import org.openhab.binding.melcloud.internal.handler.MelCloudHeatpumpDeviceHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -30,6 +31,7 @@ import org.osgi.service.component.annotations.Component;
  * handlers.
  *
  * @author Luca Calcaterra - Initial contribution
+ * @author Wietse van Buitenen - Added heatpump device
  */
 @Component(configurationPid = "binding.melcloud", service = ThingHandlerFactory.class)
 public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
@@ -48,6 +50,9 @@ public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         } else if (THING_TYPE_ACDEVICE.equals(thingTypeUID)) {
             MelCloudDeviceHandler handler = new MelCloudDeviceHandler(thing);
+            return handler;
+        } else if (THING_TYPE_HEATPUMPDEVICE.equals(thingTypeUID)) {
+            MelCloudHeatpumpDeviceHandler handler = new MelCloudHeatpumpDeviceHandler(thing);
             return handler;
         }
 

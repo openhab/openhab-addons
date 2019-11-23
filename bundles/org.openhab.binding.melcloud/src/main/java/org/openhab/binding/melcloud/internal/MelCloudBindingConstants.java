@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Luca Calcaterra - Initial contribution
+ * @author Wietse van Buitenen - Added heatpump device
  */
 public class MelCloudBindingConstants {
 
@@ -31,6 +32,7 @@ public class MelCloudBindingConstants {
 
     // List of Bridge Type UIDs
     public static final ThingTypeUID THING_TYPE_MELCLOUD_ACCOUNT = new ThingTypeUID(BINDING_ID, "melcloudaccount");
+    public static final ThingTypeUID THING_TYPE_HEATPUMPDEVICE = new ThingTypeUID(BINDING_ID, "heatpumpdevice");
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACDEVICE = new ThingTypeUID(BINDING_ID, "acdevice");
@@ -42,6 +44,10 @@ public class MelCloudBindingConstants {
     public static final String CHANNEL_FAN_SPEED = "fanSpeed";
     public static final String CHANNEL_VANE_HORIZONTAL = "vaneHorizontal";
     public static final String CHANNEL_VANE_VERTICAL = "vaneVertical";
+    public static final String CHANNEL_SET_TEMPERATURE_ZONE1 = "setTemperatureZone1";
+    public static final String CHANNEL_ROOM_TEMPERATURE_ZONE1 = "roomTemperatureZone1";
+    public static final String CHANNEL_FORCED_HOTWATERMODE = "forcedHotWaterMode";
+    public static final String CHANNEL_TANKWATERTEMPERATURE = "tankWaterTemperature";
 
     // Read Only Channels
     public static final String CHANNEL_ROOM_TEMPERATURE = "roomTemperature";
@@ -51,7 +57,9 @@ public class MelCloudBindingConstants {
     public static final String CHANNEL_OFFLINE = "offline";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_MELCLOUD_ACCOUNT, THING_TYPE_ACDEVICE).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_MELCLOUD_ACCOUNT, THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE)
+                    .collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPE_UIDS = Collections.singleton(THING_TYPE_ACDEVICE);
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPE_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE).collect(Collectors.toSet()));
 }
