@@ -1,9 +1,11 @@
 package org.openhab.binding.boschshc.internal;
 
 import static org.eclipse.jetty.http.HttpMethod.*;
+import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -16,7 +18,10 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
@@ -57,11 +62,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             logger.warn("Failed to start http client", e);
         }
-
-        this.getRooms();
-        this.getDevices();
-        this.subscribe();
-        this.longPoll();
     }
 
     private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
@@ -87,6 +87,14 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             boolean thingReachable = true; // <background task with long running initialization here>
             // when done do:
             if (thingReachable) {
+
+                // TODO Check for errors and fall back to ThingStatus.OFFLINE
+                this.getRooms();
+                this.getDevices();
+
+                this.subscribe();
+                this.longPoll();
+
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
@@ -250,6 +258,35 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         for (DeviceStatusUpdate update : parsed.result) {
 
                             logger.warn("Got update: {} <- {}", update.deviceId, update.state.switchState);
+
+                            Bridge bridge = bridgeHandler.getThing();
+                            List<Thing> things = bridge.getThings();
+
+                            for (Thing thing : things) {
+                                logger.warn("Child thing: {}", thing.getUID());
+                            }
+
+                            // Look up the thing for this update
+                            ThingTypeUID thingType = THING_TYPE_INWALL_SWITCH; // TODO Get this from the device state
+                                                                               // update
+                            // TODO deviceID here is hdm:HomeMaticIP:3014F711A0001916D859AA01 - which is invalid because
+                            // of the : characters - instead, need to map this to "bathroom" somehow
+                            ThingUID thingUid = new ThingUID(thingType, bridge.getUID(), "bathroom"); // TODO Crashes
+                            Thing thing = bridge.getThing(thingUid);
+
+                            // TODO Probably should check if it is in fact, the correct handler. Depends a little one
+                            // whether we add more of them or if we just have one Handler for all devices.
+                            if (thing != null) {
+                                BoschSHCHandler thingHandler = (BoschSHCHandler) thing.getHandler();
+
+                                if (thingHandler != null) {
+                                    thingHandler.processUpdate(update);
+                                } else {
+                                    logger.warn("Could not convert thing handler to BoschSHCHandler");
+                                }
+                            } else {
+                                logger.warn("Could not find a thing for device ID: {}", update.deviceId);
+                            }
                         }
                     }
 
