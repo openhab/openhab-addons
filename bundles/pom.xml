@@ -99,6 +99,7 @@
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.hue</module>
+    <module>org.openhab.binding.hydrawise</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.iaqualink</module>
     <module>org.openhab.binding.icloud</module>
