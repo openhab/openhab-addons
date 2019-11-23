@@ -47,6 +47,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.melcloud.internal.api.json.HeatpumpDeviceStatus;
 import org.openhab.binding.melcloud.internal.config.HeatpumpDeviceConfig;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
+import org.openhab.binding.melcloud.internal.exceptions.MelCloudLoginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,6 +187,9 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
             try {
                 HeatpumpDeviceStatus newHeatpumpDeviceStatus = melCloudHandler.sendHeatpumpDeviceStatus(cmdtoSend);
                 updateChannels(newHeatpumpDeviceStatus);
+            } catch (MelCloudLoginException e) {
+                logger.warn("Command '{}' to channel '{}' failed due to login error, reason {}. ", command, channelUID,
+                        e.getMessage(), e);
             } catch (MelCloudCommException e) {
                 logger.warn("Command '{}' to channel '{}' failed, reason {}. ", command, channelUID, e.getMessage(), e);
             }
@@ -221,6 +225,9 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
                 HeatpumpDeviceStatus newHeatpumpDeviceStatus = melCloudHandler
                         .fetchHeatpumpDeviceStatus(config.deviceID, Optional.ofNullable(config.buildingID));
                 updateChannels(newHeatpumpDeviceStatus);
+            } catch (MelCloudLoginException e) {
+                logger.debug("Login error occurred during device '{}' polling, reason {}. ",
+                        getThing().getThingTypeUID(), e.getMessage(), e);
             } catch (MelCloudCommException e) {
                 logger.debug("Error occurred during device '{}' polling, reason {}. ", getThing().getThingTypeUID(),
                         e.getMessage(), e);

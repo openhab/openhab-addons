@@ -17,7 +17,7 @@ package org.openhab.binding.melcloud.internal.exceptions;
  *
  * @author Pauli Anttila - Initial Contribution
  */
-public class MelCloudLoginException extends MelCloudCommException {
+public class MelCloudLoginException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public MelCloudLoginException(Throwable cause) {

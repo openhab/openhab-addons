@@ -131,8 +131,6 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
         connectIfNotConnected();
         try {
             return connection.sendDeviceStatus(deviceStatus);
-        } catch (MelCloudLoginException e) {
-            throw e;
         } catch (MelCloudCommException e) {
             logger.debug("Sending failed, retry once with relogin");
             connect();
@@ -147,8 +145,6 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
 
         try {
             return connection.fetchDeviceStatus(deviceId, bid);
-        } catch (MelCloudLoginException e) {
-            throw e;
         } catch (MelCloudCommException e) {
             logger.debug("Sending failed, retry once with relogin");
             connect();
@@ -161,8 +157,6 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
         connectIfNotConnected();
         try {
             return connection.sendHeatpumpDeviceStatus(heatpumpDeviceStatus);
-        } catch (MelCloudLoginException e) {
-            throw e;
         } catch (MelCloudCommException e) {
             logger.debug("Sending failed, retry once with relogin");
             connect();
@@ -177,8 +171,6 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
 
         try {
             return connection.fetchHeatpumpDeviceStatus(deviceId, bid);
-        } catch (MelCloudLoginException e) {
-            throw e;
         } catch (MelCloudCommException e) {
             logger.debug("Sending failed, retry once with relogin");
             connect();
@@ -205,6 +197,8 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
                 } else {
                     try {
                         connect();
+                    } catch (MelCloudLoginException e) {
+                        logger.debug("Connection to MELCloud down due to login error, reason: {}.", e.getMessage());
                     } catch (MelCloudCommException e) {
                         logger.debug("Connection to MELCloud down, reason: {}.", e.getMessage());
                     } catch (RuntimeException e) {
