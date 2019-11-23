@@ -211,7 +211,7 @@
 /bundles/org.openhab.persistence.mapdb/ @mkhl
 /bundles/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
 /bundles/org.openhab.transform.javascript/ @openhab/2-x-add-ons-maintainers
-/bundles/org.openhab.transform.jinja/ @jochen314
+/bundles/org.openhab.transform.jinja/ @jochen314 
 /bundles/org.openhab.transform.jsonpath/ @clinique
 /bundles/org.openhab.transform.map/ @openhab/2-x-add-ons-maintainers
 /bundles/org.openhab.transform.regex/ @openhab/2-x-add-ons-maintainers
@@ -237,7 +237,7 @@
 /itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
 /itests/org.openhab.binding.wemo.tests/ @hmerk
 /itests/org.openhab.io.hueemulation.tests/ @davidgraeff @digitaldan
-/itests/org.openhab.io.mqttembeddedbroker.tests/ @J-N-K
+/itests/org.openhab.io.mqttembeddedbroker.tests/ @J-N-K 
 /itests/org.openhab.persistence.mapdb.tests/ @mkhl
 
 # PLEASE HELP ADDING FURTHER LINES HERE!

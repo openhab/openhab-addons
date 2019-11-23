@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.millheat.internal.handler;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -26,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Base class for heater and room handlers
- * 
+ *
  * @author Arne Seime - Initial contribution
  */
 public abstract class MillheatBaseThingHandler extends BaseThingHandler {
@@ -43,25 +45,23 @@ public abstract class MillheatBaseThingHandler extends BaseThingHandler {
     }
 
     protected MillheatModel getMillheatModel() {
-        final MillheatAccountHandler accountHandler = getAccountHandler();
-        if (accountHandler != null) {
-            return accountHandler.getModel();
+        final Optional<MillheatAccountHandler> accountHandler = getAccountHandler();
+        if (accountHandler.isPresent()) {
+            return accountHandler.get().getModel();
+        } else {
+            logger.warn(
+                    "Thing {} cannot exist without a bridge and account handler - returning empty model. No heaters or rooms will be found",
+                    getThing().getUID());
+            return new MillheatModel(0);
         }
-        logger.warn(
-                "Thing {} cannot exist without a bridge and account handler - returning empty model. No heaters or rooms will be found",
-                getThing().getUID());
-        return new MillheatModel(0);
     }
 
-    protected MillheatAccountHandler getAccountHandler() {
+    protected Optional<MillheatAccountHandler> getAccountHandler() {
         final Bridge bridge = getBridge();
         if (bridge != null) {
-            final MillheatAccountHandler accountHandler = (MillheatAccountHandler) bridge.getHandler();
-            if (accountHandler != null) {
-                return accountHandler;
-            }
+            return Optional.ofNullable((MillheatAccountHandler) bridge.getHandler());
         }
-        return null;
+        return Optional.empty();
     }
 
     protected abstract void handleCommand(@NonNull ChannelUID uid, @NonNull Command command,

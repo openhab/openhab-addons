@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -46,9 +45,9 @@ public final class RequestLogger {
     private final Gson gson;
     private final String prefix;
 
-    public RequestLogger(final String prefix) {
+    public RequestLogger(final String prefix, final Gson gson) {
         this.parser = new JsonParser();
-        this.gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
+        this.gson = gson;
         this.prefix = prefix;
     }
 

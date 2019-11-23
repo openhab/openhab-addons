@@ -100,7 +100,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     private final RequestLogger requestLogger;
     private final Gson gson;
     private MillheatModel model = new MillheatModel(0);
-    private @NonNullByDefault({}) ScheduledFuture<?> statusFuture;
+    private @Nullable ScheduledFuture<?> statusFuture;
     private @NonNullByDefault({}) MillheatAccountConfiguration config;
 
     private static String getRandomString(final int sizeOfRandomString) {
@@ -118,8 +118,9 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         final BooleanSerializer serializer = new BooleanSerializer();
 
         gson = new GsonBuilder().setPrettyPrinting().setDateFormat("yyyy-MM-dd HH:mm:ss")
-                .registerTypeAdapter(Boolean.class, serializer).registerTypeAdapter(boolean.class, serializer).create();
-        requestLogger = new RequestLogger(bridge.getUID().getId());
+                .registerTypeAdapter(Boolean.class, serializer).registerTypeAdapter(boolean.class, serializer)
+                .setLenient().create();
+        requestLogger = new RequestLogger(bridge.getUID().getId(), gson);
     }
 
     private boolean allowModelUpdate() {
@@ -145,7 +146,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
             final LoginResponse rsp = sendLoginRequest(new LoginRequest(config.username, config.password),
                     LoginResponse.class);
             final int errorCode = rsp.errorCode;
-            if (0 != errorCode) {
+            if (errorCode != 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         String.format("Error login in: code=%s, type=%s, message=%s", errorCode, rsp.errorName,
                                 rsp.errorDescription));
@@ -164,7 +165,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                 }
             }
         } catch (final MillheatCommunicationException e) {
-            logger.debug("Error login: {}", e.getMessage());
+            logger.info("Error login: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error login: " + e.getMessage());
         }
         return false;
@@ -290,6 +291,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     /**
      * Stops this thing's polling future
      */
+    @SuppressWarnings("null")
     private void stopPolling() {
         if (statusFuture != null && !statusFuture.isCancelled()) {
             statusFuture.cancel(true);
@@ -299,25 +301,17 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
 
     public void updateModelFromServerAndUpdateThingStatus() {
         if (allowModelUpdate()) {
-            boolean success = false;
-            int retriesLeft = 2;
-            while (retriesLeft > 0) {
-                retriesLeft--;
-                try {
-                    model = refreshModel();
-                    updateThingStatuses();
-                    success = true;
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (final MillheatCommunicationException e) {
-                    if (AbstractResponse.ERROR_CODE_ACCESS_TOKEN_EXPIRED == e.getErrorCode()
-                            || AbstractResponse.ERROR_CODE_INVALID_SIGNATURE == e.getErrorCode()) {
-                        doLogin();
-                        logger.debug("Error refreshing model", e);
-                    }
-                }
-            }
-            if (!success) {
+            try {
+                model = refreshModel();
+                updateThingStatuses();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (final MillheatCommunicationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                if (AbstractResponse.ERROR_CODE_ACCESS_TOKEN_EXPIRED == e.getErrorCode()
+                        || AbstractResponse.ERROR_CODE_INVALID_SIGNATURE == e.getErrorCode()) {
+                    logger.debug("Error refreshing model - token expired, initiating new login", e);
+                    doLogin();
+                }
             }
         }
     }
@@ -399,11 +393,11 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
             if (temperatureCommand instanceof QuantityType<?>) {
                 setTemp = (int) ((QuantityType<?>) temperatureCommand).longValue();
             }
-            boolean masterOnOff = heater.isPowerStatus();
+            boolean masterOnOff = heater.powerStatus();
             if (masterOnOffCommand != null) {
                 masterOnOff = masterOnOffCommand == OnOffType.ON;
             }
-            boolean fanActive = heater.isFanActive();
+            boolean fanActive = heater.fanActive();
             if (fanCommand != null) {
                 fanActive = fanCommand == OnOffType.ON;
             }

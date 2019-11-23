@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class MillheatModel {
     private final long lastUpdated;
     private final List<Home> homes = new ArrayList<>();
@@ -45,11 +46,11 @@ public class MillheatModel {
         return lastUpdated;
     }
 
-    public Optional<Heater> findHeaterById(@NonNull final Long id) {
+    public Optional<Heater> findHeaterById(final Long id) {
         return findHeaters().filter(heater -> id.equals(heater.getId())).findFirst();
     }
 
-    public Optional<Heater> findHeaterByMac(@NonNull final String macAddress) {
+    public Optional<Heater> findHeaterByMac(final String macAddress) {
         return findHeaters().filter(heater -> macAddress.equals(heater.getMacAddress())).findFirst();
     }
 
@@ -71,12 +72,12 @@ public class MillheatModel {
                 homes.stream().flatMap(room -> room.getIndependentHeaters().stream()));
     }
 
-    public Optional<Room> findRoomById(@NonNull final Long id) {
+    public Optional<Room> findRoomById(final Long id) {
         return homes.stream().flatMap(home -> home.getRooms().stream()).filter(room -> id.equals(room.getId()))
                 .findFirst();
     }
 
-    public Optional<Home> findHomeByRoomId(@NonNull final Long id) {
+    public Optional<Home> findHomeByRoomId(final Long id) {
         for (final Home home : homes) {
             for (final Room room : home.getRooms()) {
                 if (id.equals(room.getId())) {

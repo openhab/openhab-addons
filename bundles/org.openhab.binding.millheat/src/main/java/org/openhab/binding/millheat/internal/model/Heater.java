@@ -83,8 +83,8 @@ public class Heater {
     public String toString() {
         return "Heater [room=" + room + ", id=" + id + ", name=" + name + ", macAddress=" + macAddress
                 + ", heatingActive=" + heatingActive + ", canChangeTemp=" + canChangeTemp + ", subDomain=" + subDomain
-                + ", currentTemp=" + currentTemp + ", targetTemp=" + getTargetTemp() + ", fanActive=" + isFanActive()
-                + ", powerStatus=" + isPowerStatus() + ", windowOpen=" + windowOpen + "]";
+                + ", currentTemp=" + currentTemp + ", targetTemp=" + getTargetTemp() + ", fanActive=" + fanActive()
+                + ", powerStatus=" + powerStatus() + ", windowOpen=" + windowOpen + "]";
     }
 
     public Room getRoom() {
@@ -107,7 +107,7 @@ public class Heater {
         return heatingActive;
     }
 
-    public boolean isCanChangeTemp() {
+    public boolean canChangeTemp() {
         return canChangeTemp;
     }
 
@@ -123,15 +123,15 @@ public class Heater {
         return targetTemp;
     }
 
-    public boolean isFanActive() {
+    public boolean fanActive() {
         return fanActive;
     }
 
-    public boolean isPowerStatus() {
+    public boolean powerStatus() {
         return powerStatus;
     }
 
-    public boolean isWindowOpen() {
+    public boolean windowOpen() {
         return windowOpen;
     }
 

@@ -77,15 +77,15 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
                 }
             } else if (MillheatBindingConstants.CHANNEL_FAN_ACTIVE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, heater.isFanActive() ? OnOffType.ON : OnOffType.OFF);
-                } else if (heater.isCanChangeTemp() && heater.getRoom() == null) {
+                    updateState(channelUID, heater.fanActive() ? OnOffType.ON : OnOffType.OFF);
+                } else if (heater.canChangeTemp() && heater.getRoom() == null) {
                     updateIndependentHeaterProperties(null, null, command);
                 } else {
                     logger.debug("Heater {} cannot change temperature and is in a room", getThing().getUID());
                 }
             } else if (MillheatBindingConstants.CHANNEL_WINDOW_STATE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, heater.isWindowOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                    updateState(channelUID, heater.windowOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
             } else if (MillheatBindingConstants.CHANNEL_INDEPENDENT.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
@@ -108,7 +108,7 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
                 }
             } else if (MillheatBindingConstants.CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    if (heater.isCanChangeTemp() && heater.getTargetTemp() != null) {
+                    if (heater.canChangeTemp() && heater.getTargetTemp() != null) {
                         updateState(channelUID, new QuantityType<>(heater.getTargetTemp(), SIUnits.CELSIUS));
                     } else if (heater.getRoom() != null) {
                         final Integer targetTemperature = heater.getRoom().getTargetTemperature();
@@ -119,24 +119,24 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
                         }
                     } else {
                         logger.info(
-                                "Heater {} is neither connected to a room or marked as standalone. Someting is wrong, heater data: {}",
+                                "Heater {} is neither connected to a room nor marked as standalone. Someting is wrong, heater data: {}",
                                 getThing().getUID(), heater);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                     }
                 } else {
-                    if (heater.isCanChangeTemp() && heater.getRoom() == null) {
+                    if (heater.canChangeTemp() && heater.getRoom() == null) {
                         updateIndependentHeaterProperties(command, null, null);
                     }
                 }
             } else if (MillheatBindingConstants.CHANNEL_MASTER_SWITCH.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, heater.isPowerStatus() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, heater.powerStatus() ? OnOffType.ON : OnOffType.OFF);
                 } else {
-                    if (heater.isCanChangeTemp() && heater.getRoom() == null) {
+                    if (heater.canChangeTemp() && heater.getRoom() == null) {
                         updateIndependentHeaterProperties(null, command, null);
                     } else {
                         // Just overwrite with old state
-                        updateState(channelUID, heater.isPowerStatus() ? OnOffType.ON : OnOffType.OFF);
+                        updateState(channelUID, heater.powerStatus() ? OnOffType.ON : OnOffType.OFF);
                     }
                 }
             } else {
@@ -144,17 +144,16 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
                         channelUID.getId(), command.toString(), this.getThing().getUID());
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 
     private void updateIndependentHeaterProperties(@Nullable final Command temperatureCommand,
             @Nullable final Command masterOnOffCommand, @Nullable final Command fanCommand) {
-        final MillheatAccountHandler accountHandler = getAccountHandler();
-        if (accountHandler != null) {
-            accountHandler.updateIndependentHeaterProperties(config.macAddress, config.heaterId, temperatureCommand,
+        getAccountHandler().ifPresent(handler -> {
+            handler.updateIndependentHeaterProperties(config.macAddress, config.heaterId, temperatureCommand,
                     masterOnOffCommand, fanCommand);
-        }
+        });
     }
 
     @Override
@@ -177,7 +176,7 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
     private void addOptionalChannels(final Heater heater) {
         final List<Channel> newChannels = new ArrayList<>();
         newChannels.addAll(getThing().getChannels());
-        if (heater.isCanChangeTemp() && heater.getRoom() == null) {
+        if (heater.canChangeTemp() && heater.getRoom() == null) {
             // Add power switch channel
             newChannels
                     .add(ChannelBuilder

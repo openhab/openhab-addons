@@ -43,7 +43,7 @@ public class SetDeviceTempRequest implements AbstractRequest {
         this.holdTemp = targetTemperature;
         this.status = masterSwitch;
         this.windStatus = fanActive;
-        if (fanActive != heater.isFanActive()) {
+        if (fanActive != heater.fanActive()) {
             // Changed
             operation = 4;
         } else if (heater.getTargetTemp() != targetTemperature) {

@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -34,8 +35,6 @@ import org.openhab.binding.millheat.internal.model.ModeType;
 import org.openhab.binding.millheat.internal.model.Room;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link MillheatRoomHandler} is responsible for handling commands, which are
@@ -58,10 +57,9 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
     }
 
     private void updateRoomTemperature(final Long roomId, final Command command, final ModeType modeType) {
-        final MillheatAccountHandler accountHandler = getAccountHandler();
-        if (accountHandler != null) {
-            accountHandler.updateRoomTemperature(config.roomId, command, modeType);
-        }
+        getAccountHandler().ifPresent(handler -> {
+            handler.updateRoomTemperature(config.roomId, command, modeType);
+        });
     }
 
     @Override
@@ -73,7 +71,7 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
             final Room room = optionalRoom.get();
             if (CHANNEL_CURRENT_TEMPERATURE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, new QuantityType<>(room.getCurrentTemp(), Units.CELSIUS));
+                    updateState(channelUID, new QuantityType<>(room.getCurrentTemp(), SIUnits.CELSIUS));
                 }
             } else if (CHANNEL_CURRENT_MODE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
@@ -85,19 +83,19 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
                 }
             } else if (CHANNEL_COMFORT_TEMPERATURE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, new QuantityType<>(room.getComfortTemp(), Units.CELSIUS));
+                    updateState(channelUID, new QuantityType<>(room.getComfortTemp(), SIUnits.CELSIUS));
                 } else {
                     updateRoomTemperature(config.roomId, command, ModeType.COMFORT);
                 }
             } else if (CHANNEL_SLEEP_TEMPERATURE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, new QuantityType<>(room.getSleepTemp(), Units.CELSIUS));
+                    updateState(channelUID, new QuantityType<>(room.getSleepTemp(), SIUnits.CELSIUS));
                 } else {
                     updateRoomTemperature(config.roomId, command, ModeType.SLEEP);
                 }
             } else if (CHANNEL_AWAY_TEMPERATURE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, new QuantityType<>(room.getAwayTemp(), Units.CELSIUS));
+                    updateState(channelUID, new QuantityType<>(room.getAwayTemp(), SIUnits.CELSIUS));
                 } else {
                     updateRoomTemperature(config.roomId, command, ModeType.AWAY);
                 }
@@ -105,7 +103,7 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
                 if (command instanceof RefreshType) {
                     final Integer targetTemperature = room.getTargetTemperature();
                     if (targetTemperature != null) {
-                        updateState(channelUID, new QuantityType<>(targetTemperature, Units.CELSIUS));
+                        updateState(channelUID, new QuantityType<>(targetTemperature, SIUnits.CELSIUS));
                     } else {
                         updateState(channelUID, UnDefType.UNDEF);
                     }

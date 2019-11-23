@@ -37,6 +37,7 @@ import org.openhab.binding.millheat.internal.handler.MillheatAccountHandler;
 import org.openhab.binding.millheat.internal.handler.MillheatHeaterHandler;
 import org.openhab.binding.millheat.internal.handler.MillheatRoomHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -49,12 +50,17 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.millheat", service = ThingHandlerFactory.class)
 public class MillheatHandlerFactory extends BaseThingHandlerFactory {
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private HttpClient httpClient;
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(MillheatBindingConstants.THING_TYPE_ACCOUNT, MillheatBindingConstants.THING_TYPE_HEATER,
                     MillheatBindingConstants.THING_TYPE_ROOM).collect(Collectors.toSet()));
+
+    @Activate
+    public MillheatHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     protected @Nullable ThingHandler createHandler(final Thing thing) {
@@ -79,15 +85,6 @@ public class MillheatHandlerFactory extends BaseThingHandlerFactory {
             unregisterDeviceDiscoveryService(thingUID);
         }
         super.removeHandler(thingHandler);
-    }
-
-    @Reference
-    protected void setHttpClientFactory(final HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(final HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
     }
 
     @Override
