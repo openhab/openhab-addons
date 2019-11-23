@@ -47,6 +47,14 @@ public class BoschSHCHandler extends BaseThingHandler {
         logger.warn("Creating thing: {}", thing.getLabel());
     }
 
+    public @Nullable String getBoschID() {
+        if (this.config != null) {
+            return this.config.id;
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
