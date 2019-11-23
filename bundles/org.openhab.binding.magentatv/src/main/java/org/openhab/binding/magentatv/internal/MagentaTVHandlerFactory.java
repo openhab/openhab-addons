@@ -55,7 +55,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RECEIVER);
 
     private @Nullable MagentaTVPoweroffListener upnpListener;
-    private final MagentaTVNetwork network = new MagentaTVNetwork();;
+    private final MagentaTVNetwork network = new MagentaTVNetwork();
     private boolean servletInitialized = false;
 
     @SuppressWarnings("null")

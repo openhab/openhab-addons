@@ -17,6 +17,9 @@ import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.InstanceCreator;
 import com.google.gson.annotations.SerializedName;
 
@@ -27,7 +30,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Markus Michels - Initial contribution
  */
-@SuppressWarnings("null")
+@NonNullByDefault
 public class MagentaTVGson {
     /*
      * Program information event is send by the MR when a channel is changed.
@@ -57,7 +60,7 @@ public class MagentaTVGson {
 
     public static class MRProgramInfoEventInstanceCreator implements InstanceCreator<MRProgramInfoEvent> {
         @Override
-        public MRProgramInfoEvent createInstance(Type type) {
+        public MRProgramInfoEvent createInstance(@Nullable Type type) {
             return new MRProgramInfoEvent();
         }
     }
@@ -77,7 +80,7 @@ public class MagentaTVGson {
 
     public static class MRProgramStatusInstanceCreator implements InstanceCreator<MRProgramStatus> {
         @Override
-        public MRProgramStatus createInstance(Type type) {
+        public MRProgramStatus createInstance(@Nullable Type type) {
             return new MRProgramStatus();
         }
     }
@@ -93,7 +96,7 @@ public class MagentaTVGson {
 
     public static class MRShortProgramInfoInstanceCreator implements InstanceCreator<MRShortProgramInfo> {
         @Override
-        public MRShortProgramInfo createInstance(Type type) {
+        public MRShortProgramInfo createInstance(@Nullable Type type) {
             return new MRShortProgramInfo();
         }
     }
@@ -117,7 +120,7 @@ public class MagentaTVGson {
 
     public static class MRPayEventInstanceCreator implements InstanceCreator<MRPayEvent> {
         @Override
-        public MRPayEvent createInstance(Type type) {
+        public MRPayEvent createInstance(@Nullable Type type) {
             return new MRPayEvent();
         }
     }
@@ -148,7 +151,7 @@ public class MagentaTVGson {
 
     public static class OauthCredentialsInstanceCreator implements InstanceCreator<OauthCredentials> {
         @Override
-        public OauthCredentials createInstance(Type type) {
+        public OauthCredentials createInstance(@Nullable Type type) {
             return new OauthCredentials();
         }
     }
@@ -156,10 +159,6 @@ public class MagentaTVGson {
     public static class OauthKeyValue {
         public String key = "";
         public String value = "";
-
-        public OauthKeyValue() {
-
-        }
     }
 
     public static class OAuthTokenResponse {
@@ -172,7 +171,7 @@ public class MagentaTVGson {
 
     public static class OAuthTokenResponseInstanceCreator implements InstanceCreator<OAuthTokenResponse> {
         @Override
-        public OAuthTokenResponse createInstance(Type type) {
+        public OAuthTokenResponse createInstance(@Nullable Type type) {
             return new OAuthTokenResponse();
         }
     }
@@ -186,7 +185,7 @@ public class MagentaTVGson {
 
     public static class OAuthAutenhicateResponseInstanceCreator implements InstanceCreator<OAuthAutenhicateResponse> {
         @Override
-        public OAuthAutenhicateResponse createInstance(Type type) {
+        public OAuthAutenhicateResponse createInstance(@Nullable Type type) {
             return new OAuthAutenhicateResponse();
         }
     }
