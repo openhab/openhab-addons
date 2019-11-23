@@ -165,7 +165,6 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                 }
             }
         } catch (final MillheatCommunicationException e) {
-            logger.info("Error login: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error login: " + e.getMessage());
         }
         return false;
