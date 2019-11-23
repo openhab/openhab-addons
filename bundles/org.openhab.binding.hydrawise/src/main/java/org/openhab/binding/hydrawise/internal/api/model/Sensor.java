@@ -15,6 +15,7 @@ package org.openhab.binding.hydrawise.internal.api.model;
 import java.util.List;
 
 /**
+ * The {@link Sensor} class models a sensor
  *
  * @author Dan Cunningham - Initial contribution
  */

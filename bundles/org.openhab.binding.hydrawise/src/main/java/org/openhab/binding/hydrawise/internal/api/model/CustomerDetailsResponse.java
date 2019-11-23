@@ -15,6 +15,7 @@ package org.openhab.binding.hydrawise.internal.api.model;
 import java.util.List;
 
 /**
+ * The {@link CustomerDetailsResponse} class models the CustomerDetails response message
  *
  * @author Dan Cunningham - Initial contribution
  */

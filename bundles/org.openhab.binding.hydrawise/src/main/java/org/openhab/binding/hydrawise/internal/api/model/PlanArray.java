@@ -13,6 +13,7 @@
 package org.openhab.binding.hydrawise.internal.api.model;
 
 /**
+ * The {@link PlanArray} class models am account plan.
  *
  * @author Dan Cunningham - Initial contribution
  */

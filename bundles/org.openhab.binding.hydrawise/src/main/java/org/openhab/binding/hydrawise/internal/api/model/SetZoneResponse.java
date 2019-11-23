@@ -13,6 +13,7 @@
 package org.openhab.binding.hydrawise.internal.api.model;
 
 /**
+ * The {@link SetZoneResponse} class models the SetZone response message
  *
  * @author Dan Cunningham - Initial contribution
  */

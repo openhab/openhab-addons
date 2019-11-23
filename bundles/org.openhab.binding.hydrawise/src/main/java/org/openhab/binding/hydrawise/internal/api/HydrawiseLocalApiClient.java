@@ -33,6 +33,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
+ * The {@link HydrawiseLocalApiClient} communicates with a network local Hydrawise controller.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -56,7 +57,7 @@ public class HydrawiseLocalApiClient {
     }
 
     /**
-     * Initializes a Client to talk with the network local Hydrawise API
+     * Initializes a the {@link HydrawiseLocalApiClient} to talk with the network local Hydrawise API
      *
      * @param host
      * @param username
@@ -67,6 +68,13 @@ public class HydrawiseLocalApiClient {
         setCredentials(host, username, password);
     }
 
+    /**
+     * Sets the local credentials and controller host
+     *
+     * @param host
+     * @param username
+     * @param password
+     */
     public void setCredentials(String host, String username, String password) {
         String url = "http://" + host;
         localSetURL = String.format(SET_LOCAL_DATA_URL, url);
@@ -79,7 +87,7 @@ public class HydrawiseLocalApiClient {
     /**
      * Retrieves the {@link LocalScheduleResponse} for the controller
      *
-     * @return
+     * @return the local schedule response
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      */
@@ -91,9 +99,10 @@ public class HydrawiseLocalApiClient {
     }
 
     /**
+     * Stops a given relay
      *
      * @param number
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -104,9 +113,10 @@ public class HydrawiseLocalApiClient {
     }
 
     /**
+     * Runs a given relay for the default amount of time
      *
      * @param number
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -117,10 +127,11 @@ public class HydrawiseLocalApiClient {
     }
 
     /**
+     * Runs a given relay for a specified numbers of seconds
      *
      * @param seconds
      * @param number
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -132,8 +143,9 @@ public class HydrawiseLocalApiClient {
     }
 
     /**
+     * Stops all relays
      *
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -144,8 +156,9 @@ public class HydrawiseLocalApiClient {
     }
 
     /**
+     * Run all relays for the default amount of time
      *
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -156,9 +169,10 @@ public class HydrawiseLocalApiClient {
     }
 
     /**
+     * Run all relays for a given amount of seconds
      *
      * @param seconds
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -168,14 +182,6 @@ public class HydrawiseLocalApiClient {
         return relayCommand(new HydrawiseZoneCommandBuilder(localSetURL).action("runall").duration(seconds).toString());
     }
 
-    /**
-     *
-     * @param url
-     * @return
-     * @throws HydrawiseConnectionException
-     * @throws HydrawiseAuthenticationException
-     * @throws HydrawiseCommandException
-     */
     private String relayCommand(String url)
             throws HydrawiseConnectionException, HydrawiseAuthenticationException, HydrawiseCommandException {
         String json = doGet(url);

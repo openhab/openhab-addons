@@ -15,6 +15,7 @@ package org.openhab.binding.hydrawise.internal.api.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * The {@link Relay} class models the Relay response message
  *
  * @author Dan Cunningham - Initial contribution
  */

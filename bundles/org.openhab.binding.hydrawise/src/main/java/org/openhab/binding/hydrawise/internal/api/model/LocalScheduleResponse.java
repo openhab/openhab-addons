@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * The {@link LocalScheduleResponse} class models the LocalSchedule response message
  *
  * @author Dan Cunningham - Initial contribution
  */

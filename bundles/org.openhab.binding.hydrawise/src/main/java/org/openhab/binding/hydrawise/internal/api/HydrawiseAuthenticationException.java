@@ -13,7 +13,8 @@
 package org.openhab.binding.hydrawise.internal.api;
 
 /**
- *
+ * Thrown when the Hydrawise cloud or local API returns back a "unauthorized" response to commands
+ * 
  * @author Dan Cunningham - Initial contribution
  */
 @SuppressWarnings("serial")

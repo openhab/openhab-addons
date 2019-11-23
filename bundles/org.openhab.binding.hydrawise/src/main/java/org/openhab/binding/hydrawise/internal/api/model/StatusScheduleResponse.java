@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * The {@link StatusScheduleResponse} class models the Status and Schedule response message
  *
  * @author Dan Cunningham - Initial contribution
  */

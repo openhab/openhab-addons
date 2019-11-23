@@ -13,6 +13,7 @@
 package org.openhab.binding.hydrawise.internal.api.model;
 
 /**
+ * The {@link Forecast} class models a daily weather forecast
  *
  * @author Dan Cunningham - Initial contribution
  */

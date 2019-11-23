@@ -15,6 +15,7 @@ package org.openhab.binding.hydrawise.internal.api.model;
 import java.util.List;
 
 /**
+ * The {@link Controller} class models a Hydrawise controller unit
  *
  * @author Dan Cunningham - Initial contribution
  */

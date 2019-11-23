@@ -13,6 +13,7 @@
 package org.openhab.binding.hydrawise.internal.api.model;
 
 /**
+ * The {@link Running} class models a running relay
  *
  * @author Dan Cunningham - Initial contribution
  */

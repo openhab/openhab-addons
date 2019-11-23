@@ -15,6 +15,7 @@ package org.openhab.binding.hydrawise.internal.api.model;
 import java.util.List;
 
 /**
+ * The {@link BocTopologyDesired} class models the desired BocTopology
  *
  * @author Dan Cunningham - Initial contribution
  */

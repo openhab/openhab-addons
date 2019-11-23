@@ -13,7 +13,7 @@
 package org.openhab.binding.hydrawise.internal.api;
 
 /**
- * Thrown for connection issues to the hydrawise controller
+ * Thrown for connection issues to the Hydrawise controller
  *
  * @author Dan Cunningham - Initial contribution
  */

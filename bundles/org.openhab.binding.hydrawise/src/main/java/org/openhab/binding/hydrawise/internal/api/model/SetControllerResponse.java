@@ -13,6 +13,7 @@
 package org.openhab.binding.hydrawise.internal.api.model;
 
 /**
+ * The {@link SetControllerResponse} class models the SetController response message
  *
  * @author Dan Cunningham - Initial contribution
  */

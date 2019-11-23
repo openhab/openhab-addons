@@ -13,6 +13,7 @@
 package org.openhab.binding.hydrawise.internal.api.model;
 
 /**
+ * The {@link Response} class models Response messages
  *
  * @author Dan Cunningham - Initial contribution
  */

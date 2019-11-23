@@ -31,7 +31,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Client for the Hydrawise API
+ * The {@link HydrawiseCloudApiClient} communicates with the cloud based Hydrawise API service
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -113,7 +113,7 @@ public class HydrawiseCloudApiClient {
      * Sets the controller with supplied {@value id} as the current controller
      *
      * @param id
-     * @return
+     * @return SetControllerResponse
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -133,7 +133,7 @@ public class HydrawiseCloudApiClient {
      * Stops a given relay
      *
      * @param relayId
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -148,7 +148,7 @@ public class HydrawiseCloudApiClient {
      * Stops all relays on a given controller
      *
      * @param controllerId
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -163,7 +163,7 @@ public class HydrawiseCloudApiClient {
      * Runs a relay for the default amount of time
      *
      * @param relayId
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -179,7 +179,7 @@ public class HydrawiseCloudApiClient {
      *
      * @param seconds
      * @param relayId
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -194,7 +194,7 @@ public class HydrawiseCloudApiClient {
      * Run all relays on a given controller for the default amount of time
      *
      * @param controllerId
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -210,7 +210,7 @@ public class HydrawiseCloudApiClient {
      *
      * @param seconds
      * @param controllerId
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -225,7 +225,7 @@ public class HydrawiseCloudApiClient {
      * Suspends a given relay
      *
      * @param relayId
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -241,7 +241,7 @@ public class HydrawiseCloudApiClient {
      *
      * @param seconds
      * @param relayId
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException
@@ -257,7 +257,7 @@ public class HydrawiseCloudApiClient {
      *
      * @param seconds
      * @param controllerId
-     * @return
+     * @return Response message
      * @throws HydrawiseConnectionException
      * @throws HydrawiseAuthenticationException
      * @throws HydrawiseCommandException

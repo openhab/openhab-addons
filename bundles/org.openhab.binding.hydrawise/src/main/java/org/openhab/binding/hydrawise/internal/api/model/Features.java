@@ -15,6 +15,7 @@ package org.openhab.binding.hydrawise.internal.api.model;
 import java.util.List;
 
 /**
+ * The {@link Features} class models an accounts features.
  *
  * @author Dan Cunningham - Initial contribution
  */
