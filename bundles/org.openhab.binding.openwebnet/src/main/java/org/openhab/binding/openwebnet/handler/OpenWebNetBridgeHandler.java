@@ -489,7 +489,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void onReconnected() {
         logger.info("==OWN== ------------------- RE-CONNECTED to gateway!");
         updateStatus(ThingStatus.ONLINE);
-        logger.debug("==OWN== Bridge status set to ONLINE");
         logger.debug("==OWN== checking firmware version");
         gateway.send(GatewayManagement.requestFirmwareVersion());
         if (gateway.getFirmwareVersion() != null) {
