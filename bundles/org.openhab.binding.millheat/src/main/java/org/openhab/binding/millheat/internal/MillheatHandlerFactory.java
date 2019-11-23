@@ -35,6 +35,7 @@ import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.millheat.internal.discovery.MillheatDiscoveryService;
 import org.openhab.binding.millheat.internal.handler.MillheatAccountHandler;
 import org.openhab.binding.millheat.internal.handler.MillheatHeaterHandler;
+import org.openhab.binding.millheat.internal.handler.MillheatHomeHandler;
 import org.openhab.binding.millheat.internal.handler.MillheatRoomHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -53,9 +54,10 @@ public class MillheatHandlerFactory extends BaseThingHandlerFactory {
     private HttpClient httpClient;
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(MillheatBindingConstants.THING_TYPE_ACCOUNT, MillheatBindingConstants.THING_TYPE_HEATER,
-                    MillheatBindingConstants.THING_TYPE_ROOM).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(MillheatBindingConstants.THING_TYPE_ACCOUNT, MillheatBindingConstants.THING_TYPE_HEATER,
+                    MillheatBindingConstants.THING_TYPE_ROOM, MillheatBindingConstants.THING_TYPE_HOME)
+            .collect(Collectors.toSet()));
 
     @Activate
     public MillheatHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
@@ -69,6 +71,8 @@ public class MillheatHandlerFactory extends BaseThingHandlerFactory {
             return new MillheatHeaterHandler(thing);
         } else if (MillheatBindingConstants.THING_TYPE_ROOM.equals(thingTypeUID)) {
             return new MillheatRoomHandler(thing);
+        } else if (MillheatBindingConstants.THING_TYPE_HOME.equals(thingTypeUID)) {
+            return new MillheatHomeHandler(thing);
         } else if (MillheatBindingConstants.THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             final MillheatAccountHandler handler = new MillheatAccountHandler((Bridge) thing, httpClient,
                     bundleContext);

@@ -17,6 +17,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.millheat.internal.dto.HomeDTO;
 
 /**
@@ -29,11 +30,14 @@ public class Home {
     private final String name;
     private final int type;
     private final String zoneOffset;
-    private final int holidayTemp;
+    private int holidayTemp;
     private Mode mode;
     private final String program = null;
     private final List<Room> rooms = new ArrayList<>();
     private final List<Heater> independentHeaters = new ArrayList<>();
+    private LocalDateTime vacationModeStart;
+    private LocalDateTime vacationModeEnd;
+    private boolean advancedVacationMode;
 
     public Home(final HomeDTO dto) {
         id = dto.homeId;
@@ -41,11 +45,16 @@ public class Home {
         type = dto.homeType;
         zoneOffset = dto.timeZone;
         holidayTemp = dto.holidayTemp;
+        advancedVacationMode = dto.holidayTempType == 0;
+        if (dto.holidayStartTime != 0) {
+            vacationModeStart = convertFromEpoch(dto.holidayStartTime);
+        }
+        if (dto.holidayEndTime != 0) {
+            vacationModeEnd = convertFromEpoch(dto.holidayEndTime);
+        }
+
         if (dto.holiday) {
-            final LocalDateTime modeStart = LocalDateTime.ofEpochSecond(dto.holidayStartTime, 0,
-                    ZoneOffset.of(zoneOffset));
-            final LocalDateTime modeEnd = LocalDateTime.ofEpochSecond(dto.holidayEndTime, 0, ZoneOffset.of(zoneOffset));
-            mode = new Mode(ModeType.VACATION, modeStart, modeEnd);
+            mode = new Mode(ModeType.VACATION, vacationModeStart, vacationModeEnd);
         } else if (dto.alwaysHome) {
             mode = new Mode(ModeType.ALWAYSHOME, null, null);
         } else {
@@ -54,6 +63,10 @@ public class Home {
             final LocalDateTime modeEnd = modeStart.withHour(dto.modeHour).withMinute(dto.modeMinute);
             mode = new Mode(ModeType.valueOf(dto.currentMode), modeStart, modeEnd);
         }
+    }
+
+    private LocalDateTime convertFromEpoch(long epoch) {
+        return LocalDateTime.ofEpochSecond(epoch, 0, ZoneOffset.of(zoneOffset));
     }
 
     public void addRoom(final Room room) {
@@ -105,5 +118,46 @@ public class Home {
 
     public List<Heater> getIndependentHeaters() {
         return independentHeaters;
+    }
+
+    public LocalDateTime getVacationModeStart() {
+        return vacationModeStart;
+    }
+
+    public LocalDateTime getVacationModeEnd() {
+        return vacationModeEnd;
+    }
+
+    public void setVacationModeStart(long epoch) {
+        vacationModeStart = convertFromEpoch(epoch);
+        updateVacationMode();
+    }
+
+    public void setVacationModeEnd(long epoch) {
+        vacationModeEnd = convertFromEpoch(epoch);
+        updateVacationMode();
+    }
+
+    public void setHolidayTemp(int holidayTemp) {
+        this.holidayTemp = holidayTemp;
+        updateVacationMode();
+    }
+
+    private void updateVacationMode() {
+        if (mode.getMode() == ModeType.VACATION) {
+            mode = new Mode(ModeType.VACATION, vacationModeStart, vacationModeEnd);
+        }
+    }
+
+    public void setVacationModeAdvanced(OnOffType command) {
+        advancedVacationMode = (OnOffType.ON == command);
+    }
+
+    public boolean isAdvancedVacationMode() {
+        return advancedVacationMode;
+    }
+
+    public void setAdvancedVacationMode(boolean advancedVacationMode) {
+        this.advancedVacationMode = advancedVacationMode;
     }
 }

@@ -87,4 +87,8 @@ public class MillheatModel {
         }
         return Optional.empty();
     }
+
+    public Optional<Home> findHomeById(Long homeId) {
+        return homes.stream().filter(e -> e.getId().equals(homeId)).findFirst();
+    }
 }

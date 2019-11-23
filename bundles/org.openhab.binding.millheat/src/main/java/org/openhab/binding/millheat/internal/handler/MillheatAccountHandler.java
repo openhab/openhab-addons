@@ -33,6 +33,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -63,6 +64,8 @@ import org.openhab.binding.millheat.internal.dto.SelectDeviceByRoomResponse;
 import org.openhab.binding.millheat.internal.dto.SelectRoomByHomeRequest;
 import org.openhab.binding.millheat.internal.dto.SelectRoomByHomeResponse;
 import org.openhab.binding.millheat.internal.dto.SetDeviceTempRequest;
+import org.openhab.binding.millheat.internal.dto.SetHolidayParameterRequest;
+import org.openhab.binding.millheat.internal.dto.SetHolidayParameterResponse;
 import org.openhab.binding.millheat.internal.dto.SetRoomTempRequest;
 import org.openhab.binding.millheat.internal.dto.SetRoomTempResponse;
 import org.openhab.binding.millheat.internal.model.Heater;
@@ -207,7 +210,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         stopPolling();
         statusFuture = scheduler.scheduleWithFixedDelay(() -> {
             try {
-                updateModelFromServerWithRetry();
+                updateModelFromServerWithRetry(true);
             } catch (final RuntimeException e) {
                 logger.debug("Error refreshing model", e);
             }
@@ -298,8 +301,8 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public void updateModelFromServerWithRetry() {
-        if (allowModelUpdate()) {
+    public void updateModelFromServerWithRetry(boolean forceUpdate) {
+        if (allowModelUpdate() || forceUpdate) {
             try {
                 updateModel();
             } catch (final MillheatCommunicationException e) {
@@ -423,5 +426,68 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                 logger.info("Error updating temperature for heater {}", macAddress, e);
             }
         });
+    }
+
+    public void updateVacationProperty(Home home, String property, Command command) {
+
+        try {
+            switch (property) {
+                case SetHolidayParameterRequest.PROP_START: {
+                    long epoch = ((DateTimeType) command).getZonedDateTime().toEpochSecond();
+                    SetHolidayParameterRequest req = new SetHolidayParameterRequest(home.getId(), home.getTimezone(),
+                            SetHolidayParameterRequest.PROP_START, epoch);
+                    if (sendLoggedInRequest(req, SetHolidayParameterResponse.class).isSuccess()) {
+                        home.setVacationModeStart(epoch);
+                    }
+                    break;
+                }
+                case SetHolidayParameterRequest.PROP_END: {
+                    long epoch = ((DateTimeType) command).getZonedDateTime().toEpochSecond();
+                    SetHolidayParameterRequest req = new SetHolidayParameterRequest(home.getId(), home.getTimezone(),
+                            SetHolidayParameterRequest.PROP_END, epoch);
+                    if (sendLoggedInRequest(req, SetHolidayParameterResponse.class).isSuccess()) {
+                        home.setVacationModeEnd(epoch);
+                    }
+                    break;
+                }
+                case SetHolidayParameterRequest.PROP_TEMP: {
+                    int holidayTemp = ((QuantityType<?>) command).intValue();
+                    SetHolidayParameterRequest req = new SetHolidayParameterRequest(home.getId(), home.getTimezone(),
+                            SetHolidayParameterRequest.PROP_TEMP, holidayTemp);
+                    if (sendLoggedInRequest(req, SetHolidayParameterResponse.class).isSuccess()) {
+                        home.setHolidayTemp(holidayTemp);
+                    }
+                    break;
+                }
+                case SetHolidayParameterRequest.PROP_MODE_ADVANCED: {
+                    if (home.getMode().getMode() == ModeType.VACATION) {
+                        int value = OnOffType.ON == command ? 0 : 1;
+                        SetHolidayParameterRequest req = new SetHolidayParameterRequest(home.getId(),
+                                home.getTimezone(), SetHolidayParameterRequest.PROP_MODE_ADVANCED, value);
+                        if (sendLoggedInRequest(req, SetHolidayParameterResponse.class).isSuccess()) {
+                            home.setVacationModeAdvanced((OnOffType) command);
+                        }
+                    } else {
+                        logger.info("Must enable vaction mode before advanced vacation mode kan be enabled");
+                    }
+                    break;
+                }
+                case SetHolidayParameterRequest.PROP_MODE: {
+                    if (home.getVacationModeStart() != null && home.getVacationModeEnd() != null) {
+                        int value = OnOffType.ON == command ? 1 : 0;
+                        SetHolidayParameterRequest req = new SetHolidayParameterRequest(home.getId(),
+                                home.getTimezone(), SetHolidayParameterRequest.PROP_MODE, value);
+                        if (sendLoggedInRequest(req, SetHolidayParameterResponse.class).isSuccess()) {
+                            updateModelFromServerWithRetry(true);
+                        }
+                    } else {
+                        logger.info("Cannot enable vacation mode unless start and end time is already set");
+                    }
+                    break;
+                }
+            }
+        } catch (MillheatCommunicationException e) {
+            logger.info("Failure trying to set holiday properties: {}", e.getMessage());
+        }
     }
 }

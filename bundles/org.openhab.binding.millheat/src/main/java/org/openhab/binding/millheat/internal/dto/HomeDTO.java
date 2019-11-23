@@ -37,4 +37,5 @@ public class HomeDTO {
     public Long holidayEndTime;
     public Integer homeType;
     public String programId;
+    public int holidayTempType;
 }

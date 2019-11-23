@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
 public class MillheatDiscoveryService extends AbstractDiscoveryService {
     private static final long REFRESH_INTERVAL_MINUTES = 60;
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(MillheatBindingConstants.THING_TYPE_HEATER, MillheatBindingConstants.THING_TYPE_ROOM)
-                    .collect(Collectors.toSet()));
+            Stream.of(MillheatBindingConstants.THING_TYPE_HEATER, MillheatBindingConstants.THING_TYPE_ROOM,
+                    MillheatBindingConstants.THING_TYPE_HOME).collect(Collectors.toSet()));
     private final Logger logger = LoggerFactory.getLogger(MillheatDiscoveryService.class);
     private ScheduledFuture<?> discoveryJob;
     private final MillheatAccountHandler accountHandler;
@@ -62,9 +62,16 @@ public class MillheatDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Start scan for Millheat devices.");
         try {
             final ThingUID accountUID = accountHandler.getThing().getUID();
-            accountHandler.updateModelFromServerWithRetry();
+            accountHandler.updateModelFromServerWithRetry(false);
             final MillheatModel model = accountHandler.getModel();
             for (final Home home : model.getHomes()) {
+                final ThingUID homeUID = new ThingUID(MillheatBindingConstants.THING_TYPE_HOME, accountUID,
+                        String.valueOf(home.getId()));
+                final DiscoveryResult discoveryResultHome = DiscoveryResultBuilder.create(homeUID)
+                        .withBridge(accountUID).withLabel(home.getName()).withProperty("homeId", home.getId())
+                        .withRepresentationProperty("homeId").build();
+                thingDiscovered(discoveryResultHome);
+
                 for (final Room room : home.getRooms()) {
                     final ThingUID roomUID = new ThingUID(MillheatBindingConstants.THING_TYPE_ROOM, accountUID,
                             String.valueOf(room.getId()));

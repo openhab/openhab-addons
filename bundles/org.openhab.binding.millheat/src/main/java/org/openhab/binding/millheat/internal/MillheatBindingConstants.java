@@ -27,6 +27,7 @@ public class MillheatBindingConstants {
     private static final String BINDING_ID = "millheat";
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_HOME = new ThingTypeUID(BINDING_ID, "home");
     public static final ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
     public static final ThingTypeUID THING_TYPE_HEATER = new ThingTypeUID(BINDING_ID, "heater");
     // List of all Channel ids
@@ -43,6 +44,13 @@ public class MillheatBindingConstants {
     public static final String CHANNEL_INDEPENDENT = "independent";
     public static final String CHANNEL_WINDOW_STATE = "window";
     public static final String CHANNEL_MASTER_SWITCH = "masterSwitch";
+
+    // Vacation mode channels
+    public static final String CHANNEL_HOME_VACATION_TARGET_TEMPERATURE = "vacationModeTargetTemperature";
+    public static final String CHANNEL_HOME_VACATION_MODE = "vacationMode";
+    public static final String CHANNEL_HOME_VACATION_MODE_ADVANCED = "vacationModeAdvanced";
+    public static final String CHANNEL_HOME_VACATION_MODE_START = "vacationModeStart";
+    public static final String CHANNEL_HOME_VACATION_MODE_END = "vacationModeEnd";
 
     public static final String CHANNEL_TYPE_MASTER_SWITCH = "masterSwitch";
     public static final String CHANNEL_TYPE_TARGET_TEMPERATURE_HEATER = "targetTemperatureHeater";

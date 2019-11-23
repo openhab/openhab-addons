@@ -47,4 +47,10 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:millheat:home">
+		<parameter name="homeId" type="integer" required="true">
+			<label>Home ID</label>
+		</parameter>
+	</config-description>
+
 </config-description:config-descriptions>

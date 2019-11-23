@@ -20,7 +20,7 @@
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<state readOnly="false" pattern="%d %unit%" min="5" max="35" step="1" />
+		<state pattern="%d %unit%" min="5" max="35" step="1" />
 	</channel-type>
 	<channel-type id="sleepTemperature">
 		<item-type>Number:Temperature</item-type>
@@ -29,7 +29,7 @@
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<state readOnly="false" pattern="%d %unit%" min="5" max="35" step="1" />
+		<state pattern="%d %unit%" min="5" max="35" step="1" />
 	</channel-type>
 	<channel-type id="awayTemperature">
 		<item-type>Number:Temperature</item-type>
@@ -39,7 +39,7 @@
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<state readOnly="false" pattern="%d %unit%" min="5" max="35" step="1" />
+		<state pattern="%d %unit%" min="5" max="35" step="1" />
 	</channel-type>
 	<channel-type id="targetTemperatureHeater">
 		<item-type>Number:Temperature</item-type>
@@ -48,7 +48,7 @@
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<state readOnly="false" pattern="%d %unit%" min="5" max="35" step="1" />
+		<state pattern="%d %unit%" min="5" max="35" step="1" />
 	</channel-type>
 	<channel-type id="targetTemperatureRoom">
 		<item-type>Number:Temperature</item-type>
@@ -76,14 +76,12 @@
 		<item-type>Switch</item-type>
 		<label>Master Switch</label>
 		<description>Master ON/OFF switch for independent heater</description>
-		<state readOnly="false" />
 	</channel-type>
 	<channel-type id="fanActive">
 		<item-type>Switch</item-type>
 		<label>Fan Active</label>
 		<description>Current state of heater fan (if available, OFF if not found)</description>
 		<category>Flow</category>
-		<state readOnly="false" />
 	</channel-type>
 	<channel-type id="window">
 		<item-type>Contact</item-type>
@@ -107,7 +105,7 @@
 				<option value="Sleep">Sleep</option>
 				<option value="Away">Away</option>
 				<option value="Off">Off</option>
-				<option value="AdvancedAway">Advanced away</option>
+				<option value="AdvancedAway">Vacation away</option>
 			</options>
 		</state>
 	</channel-type>
@@ -118,4 +116,31 @@
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
+	<channel-type id="vacationModeTargetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature Vacation</label>
+		<category>Heating</category>
+		<tags>
+			<tag>TargetTemperature</tag>
+		</tags>
+		<state pattern="%d %unit%" min="5" max="35" step="1" />
+	</channel-type>
+	<channel-type id="vacationMode">
+		<item-type>Switch</item-type>
+		<label>Vacation mode</label>
+		<description>Toggles vacation mode. Start and end time must be preset before activating</description>
+	</channel-type>
+	<channel-type id="vacationModeAdvanced">
+		<item-type>Switch</item-type>
+		<label>Advanced vacation mode</label>
+		<description>Use room Away mode temperatures instead of home global temperature</description>
+	</channel-type>
+	<channel-type id="vacationModeStart">
+		<item-type>DateTime</item-type>
+		<label>Start of vacation</label>
+	</channel-type>
+	<channel-type id="vacationModeEnd">
+		<item-type>DateTime</item-type>
+		<label>End of vacation</label>
+	</channel-type>
 </thing:thing-descriptions>

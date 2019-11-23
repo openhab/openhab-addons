@@ -122,7 +122,7 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(MillheatRoomConfiguration.class);
-        logger.debug("Initializing Millheat heater using config {}", config);
+        logger.debug("Initializing Millheat room using config {}", config);
         final Optional<Room> room = getMillheatModel().findRoomById(config.roomId);
         if (room.isPresent()) {
             updateStatus(ThingStatus.ONLINE);
