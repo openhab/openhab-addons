@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandlerFactory.class);
+    private @Nullable BoschSHCBridgeHandler bridge;
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_INWALL_SWITCH,
             THING_TYPE_SHC);
 
@@ -59,12 +60,23 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_SHC.equals(thingTypeUID)) {
 
-            BoschSHCBridgeHandler bridge = new BoschSHCBridgeHandler((Bridge) thing);
+            bridge = new BoschSHCBridgeHandler((Bridge) thing);
             return bridge;
         }
 
         else if (THING_TYPE_INWALL_SWITCH.equals(thingTypeUID)) {
-            return new BoschSHCHandler(thing);
+            BoschSHCHandler handler = new BoschSHCHandler(thing);
+            String boschId = handler.getBoschID();
+
+            if (bridge != null && boschId != null) {
+                bridge.registerBoschId(boschId, thing);
+
+            } else {
+                logger.warn("Created a thing in createHandler, but could not register Bosch ID with bridge");
+
+            }
+
+            return handler;
         }
 
         else {
