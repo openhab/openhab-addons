@@ -107,10 +107,10 @@ millheat.items:
 ```
 // Items connected to HOME channels
 Number:Temperature Vacation_Target_Temperature "Vacation target temp [%d %unit%]" <temperature>  {channel="millheat:home:home:monaco:vacationModeTargetTemperature"}
-Switch Vacation_Mode "Vacation mode [%s]" <holiday>  {channel="millheat:home:home:monaco:vacationMode"}
-Switch Vacation_Mode_Advanced "Use room away temperatures [%s]" <holiday>  {channel="millheat:home:home:monaco:vacationModeAdvanced"}
-DateTime Vacation_Mode_Start "Vacation mode start [%s]" <holiday>  {channel="millheat:home:home:monaco:vacationModeStart"}
-DateTime Vacation_Mode_End "Vacation mode end [%s]" <holiday>  {channel="millheat:home:home:monaco:vacationModeStart"}
+Switch Vacation_Mode "Vacation mode" <vacation>  {channel="millheat:home:home:monaco:vacationMode"}
+Switch Vacation_Mode_Advanced "Use room away temperatures" <vacation>  {channel="millheat:home:home:monaco:vacationModeAdvanced"}
+DateTime Vacation_Mode_Start "Vacation mode start [%1$td.%1$tm.%1$ty %1$tH:%1$tM]" <vacation>  {channel="millheat:home:home:monaco:vacationModeStart"}
+DateTime Vacation_Mode_End "Vacation mode end [%1$td.%1$tm.%1$ty %1$tH:%1$tM]" <vacation>  {channel="millheat:home:home:monaco:vacationModeStart"}
 
 // Items connected to ROOM channels
 Number:Temperature Heating_Office_Room_Current_Temperature "Office current [%.1f %unit%]" <temperature>  {channel="millheat:room:home:office:currentTemperature"}

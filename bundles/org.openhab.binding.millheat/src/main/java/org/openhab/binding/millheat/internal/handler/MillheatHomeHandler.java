@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.millheat.internal.config.MillheatHomeConfiguration;
+import org.openhab.binding.millheat.internal.dto.SetHolidayParameterRequest;
 import org.openhab.binding.millheat.internal.model.Home;
 import org.openhab.binding.millheat.internal.model.MillheatModel;
 import org.openhab.binding.millheat.internal.model.ModeType;
@@ -68,22 +69,22 @@ public class MillheatHomeHandler extends MillheatBaseThingHandler {
                 if (command instanceof RefreshType) {
                     updateState(channelUID, new QuantityType<>(home.getHolidayTemp(), SIUnits.CELSIUS));
                 } else if (command instanceof QuantityType<?>) {
-                    updateVacationModeProperty(home, "holidayTemp", command);
+                    updateVacationModeProperty(home, SetHolidayParameterRequest.PROP_TEMP, command);
                 } else if (command instanceof DecimalType) {
-                    updateVacationModeProperty(home, "holidayTemp",
+                    updateVacationModeProperty(home, SetHolidayParameterRequest.PROP_TEMP,
                             new QuantityType<Temperature>((DecimalType) command, SIUnits.CELSIUS));
                 }
             } else if (CHANNEL_HOME_VACATION_MODE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
                     updateState(channelUID, OnOffType.from(home.getMode().getMode() == ModeType.VACATION));
                 } else if (command instanceof OnOffType) {
-                    updateVacationModeProperty(home, "isHoliday", command);
+                    updateVacationModeProperty(home, SetHolidayParameterRequest.PROP_MODE, command);
                 }
             } else if (CHANNEL_HOME_VACATION_MODE_ADVANCED.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
                     updateState(channelUID, OnOffType.from(home.isAdvancedVacationMode()));
                 } else if (command instanceof OnOffType) {
-                    updateVacationModeProperty(home, "holidayTempType", command);
+                    updateVacationModeProperty(home, SetHolidayParameterRequest.PROP_MODE_ADVANCED, command);
                 }
             } else if (CHANNEL_HOME_VACATION_MODE_START.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
@@ -94,7 +95,7 @@ public class MillheatHomeHandler extends MillheatBaseThingHandler {
                         updateState(channelUID, UnDefType.UNDEF);
                     }
                 } else if (command instanceof DateTimeType) {
-                    updateVacationModeProperty(home, "holidayStartTime", command);
+                    updateVacationModeProperty(home, SetHolidayParameterRequest.PROP_START, command);
                 }
             } else if (CHANNEL_HOME_VACATION_MODE_END.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
@@ -105,7 +106,7 @@ public class MillheatHomeHandler extends MillheatBaseThingHandler {
                         updateState(channelUID, UnDefType.UNDEF);
                     }
                 } else if (command instanceof DateTimeType) {
-                    updateVacationModeProperty(home, "holidayEndTime", command);
+                    updateVacationModeProperty(home, SetHolidayParameterRequest.PROP_END, command);
                 }
             } else {
                 logger.debug("Received command {} on channel {}, but this channel is not handled or supported by {}",
