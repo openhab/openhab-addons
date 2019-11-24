@@ -132,14 +132,14 @@
 			<parameter name="dimTime1" type="integer" max="255">
 				<advanced>true</advanced>
 				<label>Time Dimmer 1</label>
-				<description>The time (in 1/10 seconds) in which the first dimmer should dim.</description>
-				<default>5</default>
+				<description>The time (in seconds) in which the first dimmer should dim 100%.</description>
+				<default>2</default>
 			</parameter>
 			<parameter name="dimTime2" type="integer" max="255">
 				<advanced>true</advanced>
 				<label>Time Dimmer 2</label>
-				<description>The time (in 1/10 seconds) in which the second dimmer should dim.</description>
-				<default>5</default>
+				<description>The time (in seconds) in which the second dimmer should dim 100%.</description>
+				<default>2</default>
 			</parameter>
 		</config-description>
 	</thing-type>

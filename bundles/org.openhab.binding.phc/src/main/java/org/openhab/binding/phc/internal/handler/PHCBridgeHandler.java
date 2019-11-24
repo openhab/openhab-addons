@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentNavigableMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +29,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -72,10 +69,10 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     short lastReceivedCrc;
     SerialPortManager serialPortManager;
 
-    private final Map<String, Boolean> toggleMap = new HashMap<>();
+    private final Map<Byte, Boolean> toggleMap = new HashMap<Byte, Boolean>();
     private final InternalBuffer buffer = new InternalBuffer();
     private final Queue<QueueObject> receiveQueue = new ConcurrentLinkedQueue<QueueObject>();
-    private final ConcurrentNavigableMap<Long, QueueObject> queue = new ConcurrentSkipListMap<Long, QueueObject>();
+    private final Queue<QueueObject> sendQueue = new ConcurrentLinkedQueue<QueueObject>();
 
     private final byte emLedOutputState[] = new byte[32];
     private final byte amOutputState[] = new byte[32];
@@ -112,12 +109,11 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             serialPort.addEventListener(this);
             // activate the DATA_AVAILABLE notifier
             serialPort.notifyOnDataAvailable(true);
-            serialPort.setRTS(true);
 
             // get the output stream
             serialOut = serialPort.getOutputStream();
 
-            sendPorBroadcast((byte) 0xFF);
+            sendPorBroadcast();
 
             byte[] b = { 0x01 };
             for (int j = 0; j <= 0x1F; j++) {
@@ -144,11 +140,12 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 }
 
             }.start();
+            // sendig commands to the modules
             new Thread("phc-send-messages") {
 
                 @Override
                 public void run() {
-                    processQueueLoop();
+                    processSendQueue();
                 }
             }.start();
         } catch (PortInUseException | TooManyListenersException e) {
@@ -322,15 +319,18 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 // Acknowledgement received (command first byte 0)
                 if (command[0] == 0) {
                     String moduleType;
+                    byte channel = 0; // only needed for dim
                     if ((module & 0xE0) == 0x40) {
                         moduleType = PHCBindingConstants.CHANNELS_AM;
                     } else if ((module & 0xE0) == 0xA0) {
                         moduleType = PHCBindingConstants.CHANNELS_DIM;
+                        channel = (byte) ((command[0] >>> 5) & 0x0F);
                     } else {
                         moduleType = PHCBindingConstants.CHANNELS_EM_LED;
                     }
 
-                    setModuleOutputState(moduleType, (byte) (module & 0x1F), command[1]);
+                    setModuleOutputState(moduleType, (byte) (module & 0x1F), command[1], channel);
+                    toggleMap.put(module, !toggle);
 
                     // initialization (first byte FF)
                 } else if (command[0] == (byte) 0xFF) {
@@ -357,7 +357,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                         if (logger.isDebugEnabled()) {
                             logger.debug("send acknowledge (modul, toggle) {} {}", module, toggle);
                         }
-
                         byte channel = (byte) ((command[0] >>> 4) & 0x0F);
 
                         OnOffType onOff = OnOffType.OFF;
@@ -404,81 +403,109 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
         }
     }
 
-    private void processQueueLoop() {
+    /**
+     * process send queue
+     */
+    private void processSendQueue() {
         while (true) {
-            long limit = System.currentTimeMillis();
+            @Nullable
+            QueueObject qo = sendQueue.poll();
 
-            Map<Long, QueueObject> subQueue = queue.subMap(0L, true, limit, true);
+            if (qo == null) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                continue;
+            }
 
-            for (Long key : subQueue.keySet()) {
-                QueueObject qo = subQueue.get(key);
-                queue.remove(key);
-                if (qo.getCounter() < SEND_RETRY_COUNT && !qo.getCommand()
-                        .equals(isChannelOutputStateSet(qo.getModuleType(), qo.getModuleAddress(), qo.getChannel()))) {
-                    qo.increaseCounter();
+            int sendCount = 0;
+            // Send the command to the module until a response is received. Max. SEND_RETRY_COUNT repeats.
+            do {
+                switch (qo.getModuleType()) {
+                    case PHCBindingConstants.CHANNELS_AM:
+                        sendAm(qo.getModuleAddress(), qo.getChannel(), qo.getCommand());
+                        break;
+                    case PHCBindingConstants.CHANNELS_EM_LED:
+                        sendEm(qo.getModuleAddress(), qo.getChannel(), qo.getCommand());
+                        break;
+                    case PHCBindingConstants.CHANNELS_JRM:
+                        sendJrm(qo.getModuleAddress(), qo.getChannel(), qo.getCommand(), qo.getTime());
+                        break;
+                    case PHCBindingConstants.CHANNELS_DIM:
+                        sendDim(qo.getModuleAddress(), qo.getChannel(), qo.getCommand(), qo.getTime());
+                        break;
+                }
 
-                    switch (qo.getModuleType()) {
-                        case PHCBindingConstants.CHANNELS_AM:
-                            sendAm(qo.getModuleAddress(), qo.getChannel(), qo.getCommand());
-                            break;
-                        case PHCBindingConstants.CHANNELS_EM_LED:
-                            sendEm(qo.getModuleAddress(), qo.getChannel(), qo.getCommand());
-                            break;
-                        case PHCBindingConstants.CHANNELS_JRM:
-                            sendJrm(qo.getModuleAddress(), qo.getChannel(), qo.getCommand(), qo.getTime());
-                            break;
-                        case PHCBindingConstants.CHANNELS_DIM:
-                            sendDim(qo.getModuleAddress(), qo.getChannel(), qo.getCommand(), qo.getTime());
-                            break;
-                    }
+                sendCount++;
+                try {
+                    Thread.sleep(SEND_RETRY_TIME_MILLIS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            } while (!isChannelOutputState(qo.getModuleType(), qo.getModuleAddress(), qo.getChannel(), qo.getCommand())
+                    && sendCount < SEND_RETRY_COUNT);
 
-                    queue.put(System.currentTimeMillis() + SEND_RETRY_TIME_MILLIS, qo);
-                } else if (qo.getCounter() >= SEND_RETRY_COUNT
-                        && !qo.getModuleType().equals(PHCBindingConstants.CHANNELS_JRM)
-                        && !qo.getModuleType().equals(PHCBindingConstants.CHANNELS_DIM)) {
-                    // Can´t process the acknowledgement of JRM/DIM yet.
-                    logger.debug("No acknowlgdge from the module {} received.", qo.getModuleAddress());
+            if (qo.getModuleType().equals(PHCBindingConstants.CHANNELS_JRM)) {
+                // there aren't state per channel for JRM modules
+                amOutputState[qo.getModuleAddress() & 0x1F] = -1;
+            } else if (qo.getModuleType().equals(PHCBindingConstants.CHANNELS_DIM)) {
+                // state ist the same for every dim level except zero/off -> inizialize state
+                // with 0x0F after sending an command.
+                dmOutputState[qo.getModuleAddress() & 0x1F] |= (0x0F << (qo.getChannel() * 4));
+            }
+
+            if (sendCount >= SEND_RETRY_COUNT) {
+                // change the toggle: if no acknowledge received it may be wrong.
+                byte module = qo.getModuleAddress();
+                if (PHCBindingConstants.CHANNELS_AM.equals(qo.getModuleType())
+                        || PHCBindingConstants.CHANNELS_JRM.equals(qo.getModuleType())) {
+                    module |= 0x40;
+                } else if (PHCBindingConstants.CHANNELS_DIM.equals(qo.getModuleType())) {
+                    module |= 0xA0;
+                }
+                toggleMap.put(module, !getToggle(module));
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No acknowledge from the module {} received.", qo.getModuleAddress());
                 }
             }
         }
     }
 
-    private void setModuleOutputState(String moduleType, byte moduleAddress, byte state) {
+    private void setModuleOutputState(String moduleType, byte moduleAddress, byte state, byte channel) {
         if (moduleType == PHCBindingConstants.CHANNELS_EM_LED) {
             emLedOutputState[moduleAddress] = state;
         } else if (moduleType == PHCBindingConstants.CHANNELS_AM) {
             amOutputState[moduleAddress & 0x1F] = state;
         } else if (moduleType == PHCBindingConstants.CHANNELS_DIM) {
-            dmOutputState[moduleAddress & 0x1F] = state;
+            dmOutputState[moduleAddress & 0x1F] = (byte) (state << channel * 4);
         }
     }
 
-    @Nullable
-    private Command isChannelOutputStateSet(String moduleType, byte moduleAddress, byte channel) {
-        Command set = null;
+    private boolean isChannelOutputState(String moduleType, byte moduleAddress, byte channel, Command cmd) {
+        int state = cmd.equals(OnOffType.OFF) ? 0 : 1;
 
         if (moduleType.equals(PHCBindingConstants.CHANNELS_EM_LED)) {
-            set = ((emLedOutputState[moduleAddress] >> channel) & 0x01) == 1 ? OnOffType.ON : OnOffType.OFF;
+            return ((emLedOutputState[moduleAddress & 0x1F] >>> channel) & 0x01) == state;
         } else if (moduleType.equals(PHCBindingConstants.CHANNELS_AM)) {
-            set = ((amOutputState[moduleAddress & 0x1F] >> channel) & 0x01) == 1 ? OnOffType.ON : OnOffType.OFF;
+            return ((amOutputState[moduleAddress & 0x1F] >>> channel) & 0x01) == state;
         } else if (moduleType.equals(PHCBindingConstants.CHANNELS_JRM)) {
-            set = ((amOutputState[moduleAddress & 0x1F] >> channel) & 0x01) == 1 ? OnOffType.ON : OnOffType.OFF;
+            return (amOutputState[moduleAddress & 0x1F] != -1);
         } else if (moduleType.equals(PHCBindingConstants.CHANNELS_DIM)) {
-            set = ((dmOutputState[moduleAddress & 0x1F] >> channel) & 0x01) == 1 ? OnOffType.ON : OnOffType.OFF;
+            return ((dmOutputState[moduleAddress & 0x1F] >>> channel * 4) & 0x0F) != 0x0F;
+        } else {
+            return false;
         }
-
-        return set;
     }
 
-    private boolean toggleChannel(byte moduleAddress, byte channel) {
-        String key = new String(new byte[] { moduleAddress, channel });
-        boolean toggle = false;
-        if (toggleMap.containsKey(key)) {
-            toggle = toggleMap.get(key);
+    private boolean getToggle(byte moduleAddress) {
+        if (!toggleMap.containsKey(moduleAddress)) {
+            toggleMap.put(moduleAddress, false);
         }
-        toggleMap.put(key, !toggle);
 
-        return toggle;
+        return toggleMap.get(moduleAddress);
     }
 
     /**
@@ -492,15 +519,11 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
      */
     public void send(@Nullable String moduleType, int moduleAddress, String channel, Command command,
             short upDownTime) {
-        if (command instanceof OnOffType || command instanceof UpDownType || command.equals(StopMoveType.STOP)
-                || command instanceof PercentType) {
-            if (PHCBindingConstants.CHANNELS_JRM.equals(moduleType)
-                    || PHCBindingConstants.CHANNELS_DIM.equals(moduleType)) { // can´t process acknowledge yet
-                queue.put(System.currentTimeMillis(),
-                        new QueueObject(moduleType, moduleAddress, channel, command, 9, upDownTime));
-            } else {
-                queue.put(System.currentTimeMillis(), new QueueObject(moduleType, moduleAddress, channel, command));
-            }
+        if (PHCBindingConstants.CHANNELS_JRM.equals(moduleType)
+                || PHCBindingConstants.CHANNELS_DIM.equals(moduleType)) {
+            sendQueue.offer(new QueueObject(moduleType, moduleAddress, channel, command, upDownTime));
+        } else {
+            sendQueue.offer(new QueueObject(moduleType, moduleAddress, channel, command));
         }
     }
 
@@ -514,7 +537,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
         } else {
             cmd[0] |= 3;
         }
-        serialWrite(buildMessage(module, channel, cmd, toggleChannel(moduleAddress, channel)));
+        serialWrite(buildMessage(module, channel, cmd, getToggle(module)));
     }
 
     private void sendEm(byte moduleAddress, byte channel, Command command) {
@@ -525,13 +548,16 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
         } else {
             cmd[0] |= 3;
         }
-        serialWrite(buildMessage(moduleAddress, channel, cmd, toggleChannel(moduleAddress, channel)));
+        serialWrite(buildMessage(moduleAddress, channel, cmd, getToggle(moduleAddress)));
     }
 
     private void sendJrm(byte moduleAddress, byte channel, Command command, short upDownTime) {
         // The up and the down message needs two additional bytes for the time.
         int size = (command == StopMoveType.STOP) ? 2 : 4;
         byte[] cmd = new byte[size];
+        if (channel == 0) {
+            channel = 4;
+        }
 
         byte module = (byte) (moduleAddress | 0x40);
 
@@ -554,12 +580,13 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 break;
         }
 
-        serialWrite(buildMessage(module, channel, cmd, toggleChannel(module, channel)));
+        serialWrite(buildMessage(module, channel, cmd, getToggle(module)));
     }
 
     private void sendDim(byte moduleAddress, byte channel, Command command, short dimTime) {
         byte module = (byte) (moduleAddress | 0xA0);
         byte[] cmd = new byte[(command instanceof PercentType && !(((PercentType) command).byteValue() == 0)) ? 3 : 1];
+
         cmd[0] = (byte) (channel << 5);
 
         if (command instanceof OnOffType) {
@@ -577,12 +604,15 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 cmd[2] = (byte) dimTime;
             }
         }
-        serialWrite(buildMessage(module, channel, cmd, toggleChannel(module, channel)));
+        serialWrite(buildMessage(module, channel, cmd, getToggle(module)));
     }
 
-    private void sendPorBroadcast(byte b) {
-        byte[] cmd = { 0 };
-        writeMsg(buildMessage((byte) 0xFF, 0, cmd, false), 20);
+    private void sendPorBroadcast() {
+        byte[] msg = buildMessage((byte) 0xFF, 0, new byte[] { 0 }, false);
+        for (int i = 0; i < 20; i++) {
+            serialWrite(msg);
+
+        }
     }
 
     private void sendAmConfig(byte moduleAddress) {
@@ -615,8 +645,11 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     }
 
     private void sendEmAcknowledge(byte module, boolean toggle) {
-        byte[] cmd = { 0 };
-        writeMsg(buildMessage(module, 0, cmd, toggle), 2); // 2 times needed?
+        byte[] msg = buildMessage(module, 0, new byte[] { 0 }, toggle);
+        for (int i = 0; i < 3; i++) { // send three times stops the module faster from sending messages if the first
+                                      // response is not recognized.
+            serialWrite(msg);
+        }
     }
 
     /**
@@ -691,20 +724,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
         } else {
             logger.debug("No Thing with UID {} available.", uid.getAsString());
-        }
-    }
-
-    /**
-     * Send message to to serial port x times.
-     *
-     * @param msg
-     * @param sendCnt
-     */
-    private void writeMsg(byte[] msg, int sendCnt) {
-        int count = sendCnt;
-        while (0 < count) {
-            serialWrite(msg);
-            count--;
         }
     }
 

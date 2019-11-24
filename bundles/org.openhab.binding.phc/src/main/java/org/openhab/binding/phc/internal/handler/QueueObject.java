@@ -25,7 +25,6 @@ class QueueObject {
     private final byte channel;
     private final Command command;
 
-    private int counter;
     private short time;
 
     public QueueObject(String moduleType, byte moduleAddress, byte channel, Command command) {
@@ -42,9 +41,8 @@ class QueueObject {
         this.command = command;
     }
 
-    public QueueObject(String moduleType, int moduleAddress, String channel, Command command, int couner, short time) {
+    public QueueObject(String moduleType, int moduleAddress, String channel, Command command, short time) {
         this(moduleType, moduleAddress, channel, command);
-        this.counter = couner;
         this.time = time;
     }
 
@@ -62,14 +60,6 @@ class QueueObject {
 
     public Command getCommand() {
         return command;
-    }
-
-    public void increaseCounter() {
-        counter++;
-    }
-
-    public int getCounter() {
-        return counter;
     }
 
     public short getTime() {
