@@ -49,9 +49,9 @@ public class RachioDevice extends RachioCloudDevice {
     public int rainDelay = 0;
 
     @Nullable
-    public ThingUID bridge_uid;
+    public ThingUID bridgeUID;
     @Nullable
-    public ThingUID dev_uid;
+    public ThingUID devUID;
     private HashMap<String, RachioZone> zoneList = new HashMap<String, RachioZone>();
     @Nullable
     private RachioDeviceHandler thingHandler = null;
@@ -138,8 +138,8 @@ public class RachioDevice extends RachioCloudDevice {
      * @param deviceUID
      */
     public void setUID(ThingUID bridgeUID, ThingUID deviceUID) {
-        bridge_uid = bridgeUID;
-        dev_uid = deviceUID;
+        bridgeUID = bridgeUID;
+        devUID = deviceUID;
     }
 
     /**
@@ -147,7 +147,7 @@ public class RachioDevice extends RachioCloudDevice {
      */
     @Nullable
     public ThingUID getUID() {
-        return dev_uid;
+        return devUID;
     }
 
     /**

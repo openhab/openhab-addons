@@ -25,6 +25,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.HttpMethod;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -103,7 +104,7 @@ public class RachioImageServlet extends HttpServlet {
             String path = request.getRequestURI().substring(0, SERVLET_IMAGE_PATH.length());
             logger.trace("RachioImage: Reqeust from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
                     request.getRemoteHost(), request.getServerPort(), request.getProtocol());
-            if (!request.getMethod().equalsIgnoreCase(HTTP_METHOD_GET)) {
+            if (!request.getMethod().equalsIgnoreCase(HttpMethod.GET)) {
                 logger.warn("RachioImage: Unexpected method='{}'", request.getMethod());
             }
             if (!path.equalsIgnoreCase(SERVLET_IMAGE_PATH)) {

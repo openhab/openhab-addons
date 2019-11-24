@@ -69,13 +69,15 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
     /**
      * OSGi activation callback.
      *
-     * @param config Service config.
      */
     @Activate
-    protected void activate(ComponentContext componentContext,
+    public RachioHandlerFactory(ComponentContext componentContext,
             @Nullable Map<String, @Nullable Object> configProperties) {
         super.activate(componentContext);
-        logger.debug("RachioBridge: Activate, configurarion (services/rachio.cfg):");
+        logger.debug("RachioHandlerFactory: Initialized Rachio Thing handler.");
+        bridgeList = new HashMap<String, RachioBridge>();
+
+        logger.debug("RachioBridge: Activate, configurarion:");
         bindingConfig.updateConfig(configProperties);
         try {
             // Load list of AWS IP address ranges
@@ -83,11 +85,6 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         } catch (RachioApiException | RuntimeException e) {
             logger.warn("Unable to activate Rachio Service: {}", e.getMessage());
         }
-    }
-
-    public RachioHandlerFactory() {
-        logger.debug("RachioHandlerFactory: Initialized Rachio Thing handler.");
-        bridgeList = new HashMap<String, RachioBridge>();
     }
 
     @Override

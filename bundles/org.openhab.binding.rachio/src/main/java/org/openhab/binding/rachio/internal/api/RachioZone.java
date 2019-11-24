@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
 public class RachioZone extends RachioCloudZone {
     private final Logger logger = LoggerFactory.getLogger(RachioZone.class);
     @Nullable
-    protected ThingUID dev_uid;
+    protected ThingUID devUID;
     @Nullable
-    protected ThingUID zone_uid;
+    protected ThingUID zoneUID;
     @Nullable
     protected RachioZoneHandler thingHandler;
     protected String uniqueId = "";
@@ -114,18 +114,18 @@ public class RachioZone extends RachioCloudZone {
     public void setUID(@Nullable ThingUID deviceUID, @Nullable ThingUID zoneUID) {
         Validate.notNull(deviceUID);
         Validate.notNull(zoneUID);
-        dev_uid = deviceUID;
-        zone_uid = zoneUID;
+        this.devUID = deviceUID;
+        this.zoneUID = zoneUID;
     }
 
     @Nullable
     public ThingUID getUID() {
-        return zone_uid;
+        return zoneUID;
     }
 
     @Nullable
     public ThingUID getDevUID() {
-        return dev_uid;
+        return devUID;
     }
 
     public String getThingID() {

@@ -121,7 +121,7 @@ public class RachioApi {
     protected String email = "";
 
     protected RachioApiResult lastApiResult = new RachioApiResult();
-    protected static final Integer externalIdSalt = (int) (Math.random() * 50 + 1);
+    protected static final Integer EXTERNAL_ID_SALT = (int) (Math.random() * 50 + 1);
 
     private HashMap<String, RachioDevice> deviceList = new HashMap<String, RachioDevice>();
     @Nullable
@@ -164,7 +164,7 @@ public class RachioApi {
         String subType = ""; // "subType" : "ZONE_DELTA",
         String id = ""; // "id" : "e9d4fa9f-1619-37c4-b457-3845620643d2",
         String type = ""; // "type" : "DELTA",
-        String category = "";  // "category" : "DEVICE",
+        String category = ""; // "category" : "DEVICE",
         String deviceId = ""; // "deviceId" : "d3beb3ab-b85a-49fe-a45d-37c4d95ea9a8",
         String timestamp = ""; // "timestamp" : "2018-04-09T23:17:14.365Z"
     }
@@ -191,7 +191,7 @@ public class RachioApi {
     @Nullable
     public String getExternalId() {
         // return a salted ash of the apikey
-        String hash = "OH_" + getMD5Hash(apikey) + "_" + externalIdSalt.toString();
+        String hash = "OH_" + getMD5Hash(apikey) + "_" + EXTERNAL_ID_SALT.toString();
         return getMD5Hash(hash);
     }
 
@@ -215,11 +215,11 @@ public class RachioApi {
     public RachioDevice getDevByUID(@Nullable ThingUID bridgeUID, @Nullable ThingUID thingUID) {
         for (HashMap.Entry<String, RachioDevice> entry : deviceList.entrySet()) {
             RachioDevice dev = entry.getValue();
-            logger.trace("RachioDev.getDevByUID: bridge {} / {}, device {} / {}", bridgeUID, dev.bridge_uid, thingUID,
-                    dev.dev_uid);
+            logger.trace("RachioDev.getDevByUID: bridge {} / {}, device {} / {}", bridgeUID, dev.bridgeUID, thingUID,
+                    dev.devUID);
             Validate.notNull(dev);
-            Validate.notNull(dev.bridge_uid);
-            if (dev.bridge_uid.equals(bridgeUID) && dev.getUID().equals(thingUID)) {
+            Validate.notNull(dev.bridgeUID);
+            if (dev.bridgeUID.equals(bridgeUID) && dev.getUID().equals(thingUID)) {
                 logger.trace("RachioApi: Device '{}' found.", dev.name);
                 return dev;
             }

@@ -71,7 +71,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
     }
 
     public RachioDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, BINDING_DISCOVERY_TIMEOUT, true);
+        super(SUPPORTED_THING_TYPES_UIDS, BINDING_DISCOVERY_TIMEOUT_SEC, true);
         String uids = SUPPORTED_THING_TYPES_UIDS.toString();
         logger.debug("Rachio: thing types: {} registered.", uids);
     }

@@ -1,8 +1,6 @@
 
 # Rachio Sprinkler Binding
 
-_Release 2.5.0pre2_
-
 This binding allows to retrieve status information from Rachio Sprinklers and control some function like run zones, stop watering etc. It uses the Rachio Cloud API, so you need an account and an apikey. You are able to enabled callbacks to receive events like start/stop zones, skip watering etc. However, this requires some network configuration (e.g. port forwarding on the router). The binding could run in polling mode, but then you don't receive those events. 
 
 ## Supported Things
@@ -25,31 +23,13 @@ As a result the following things are created
 
 Example: 2 controllers with 8 zones each under the same account creates 19 things (1xbridge, 2xdevice, 16xzone). 
 
-## Binding Configuration
+##  Configuration
 
-If the apikey is configured in the rachio.cfg file a bridge thing is created dynamically and device discovery starts. 
-
-```
-# Configuration for the Rachio Binding
-# apikey=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx
-# callbackUrl="http://mydomain.com:myport/rachio/webhook
-# clearAllCallbacks=false
-# pollingInterval=120
-# defaultRuntime=120
-```
-
-See configuration of bridge things below for a description of the config parameters.
-
-## Thing Configuration
-
-### cloud thing - represents a Rachio Cloud account
-
-The cloud api is represented by a Bridge Thing. All devices are connected to this thing, all zones to the corresponding device. Rachio requires an api key created by the user to provide access to the cloud API.
-
+The cloud api connector is represented by a Bridge Thing. All devices are connected to this thing, all zones to the corresponding device. Rachio requires an api key created by the user to provide access to the cloud API.
 conf/things/rachio.things
 
 ```
-Bridge rachio:cloud:1 [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx", pollingInterval=180, defaultRuntime=120, callbackUrl="http://mydomain.com:50043/rachio/webhook", clearAllCallbacks=true  ]
+Bridge rachio:cloud:1 [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx", pollingInterval=180, defaultRuntime=120, callbackUrl="https://mydomain.com:443/rachio/webhook", clearAllCallbacks=true  ]
 {
 }
 ```
@@ -60,46 +40,189 @@ Bridge rachio:cloud:1 [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx", pollingInterv
 |pollingInterval|Specifies the delay between two status polls. Usually something like 10 minutes should be enough to have a regular status update when the interfaces is configured. If you don't want/can use events a smaller delay might be interesting to get quicker responses on running zones etc.|
 ||Important: Please make sure to use an interval > 90sec. Rachio has a reshhold for the number of API calls per day: 1700. This means if you are accessing the API for more than once in a minute your account gets blocked for the rest of the day.|
 |defaultRuntime|You could run zones in 2 different ways:|
-||1. Just by pushing the button in your UI. The zone will start watering for  <defaultRuntime> seconds.|
-||2. Setting the zone's channel runTime to <n> seconds and then starting the zone. This will start the zone for <n> seconds.<br/>Usually this variant required a OH rule setting the runTime and then sending a ON to the run channel.|
+||1. Just by pushing the button in your UI. The zone will start watering for &lt;defaultRuntime&gt; seconds.|
+||2. Setting the zone's channel runTime to &lt;n&gt; seconds and then starting the zone. This will start the zone for &lt;n&gt; seconds. Usually this variant required a OH rule setting the runTime and then sending a ON to the run channel.|
 |callbackUrl|Enable event interface:|
-||The Rachio Cloud allows receiving events. For this a REST interface will be provided by the binding (<server>:<port>:/rachio/webhook). However, this requires to open a port to the Internet. This can be done by a simple port forwarding from an external port (e.g. 50043) to you OH device. Please make sure to us "http://", so the transport layer is encrypted (https IS NOT YET SUPPORTED).|
-||Please make sure that notifications are enabled if you want to use the event interface. Go to the Rachio Web App-&gt;Accounts Settings&Guten Tag,;Notifications|
+||The Rachio Cloud allows receiving events. For this a callback interface will be provided by the binding (&lt;server&gt;:&lt;port&gt;/rachio/webhook). However, this requires to open a port to the Internet. Please make sure to use https the callback (url starts with "https://") so the transport layer is encrypted. See below how to setup a secure callback.|
+||Also notifications have to be enabled if you want to use the event interface. Go to the Rachio Web App-&gt;Accounts Settings-&gt;Notifications|
 |clearAllCallbacks|The binding dynamically registers the callback. It also supports multiple applications registered to receive events, e.g. a 2nd OH device with the binding providing the same functionality. If for any reason your device setup changes (e.g. new ip address) you need to clear the registered URL once to avoid the "old URL" still receiving events. This also allows to move for a test setup to the regular setup.|
+|ipFilter|Only accept events from the given IP address or subnet list, e.g. '192.168.1.1' or "192.168.1.0/24;192.168.2.0/24"|
 
 The bridge thing doesn't have any channels.
-<hr/>
 
-### device thing - represents a single Rachio controller
+### Device Thing - represents one Rachio Controller
+
+|Channel|Description|
+|:--|:--|
+|name|Device Name - name of the controller|
+|active|ON: Device is active, OFF: Device is deactivated|
+|online|ON: Controller is connected to the cloud. OFF: Controller is offline, check internet connection.|
+|paused|OFF: Device is in normal run mode; ON: The device is in suspend mode, no schedule is executed|
+|stop|ON: Stop watering for all zones (command), OFF: normal operation|
+|run|ON: Start warting selected/all zones (defined in runZones)|
+|runZones|Zones to run at a time - list, e.g: "1,3" = run zone 1 and 3; "" means: run all zones; Zones will be started by sending ON to the run channel|
+|scheduleName|Currently running schedule, if empty no schedule is running|
+|devEvent|Receives a JSON-formatted message on each device event from the cloud (requires event callback).|
 
 The are no additional configuration options on the device level.
+
+### Zone Thing - represents one zone of a Controller
 
 | Channel |Description|
 |:--|:--|
 |number|Zone number as assigned by the controller (zone 1..16)|
 |name|Name of the zone as configured in the App.|
 |enabled|ON: zone is enabled (ready to run), OFF: zone is disabled.|
-|run|If this channel received ON the zone starts watering. If runTime is = 0 the defaultRuntime will be used.|
+|run|ON: The zone starts watering. If runTime is = 0 the defaultRuntime will be used. OFF: Zone stops watering.|
 |runTime|Number of seconds to run the zone when run receives ON command|
 |runTotal|Total number of seconds the zone was watering (as returned by the cloud service).|
 |imageUrl|URL to the zone picture as configured in the App. Rachio supplies default pictures if no image was created. This can be used e.g. in a habPanel to show the zione picture and display the zone name.|
-|event|This channel receives a JSON-formatted message on each event received from the Rachio Cloud.<br/>Format:|
-
-### zone thing - represents one zone of a controller
-
-The are no additional configuration options on the zone level.
+|zoneEvent|Receives a JSON-formatted message on each zone event from the cloud (requires event callback).|
 
 
-## Configuring the event callback
+# Full example
 
-The Rachio Cloud API supports an event driven model. The binding registeres a so called "web hook" to receive events. In fact this is kind of call callback via http. Receiving those notifications requires two things
+## Thing Definition
+```
+Bridge rachio:cloud:1 @ "Sprinkler" [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",  pollingInterval=60, defaultRuntime=120  ]
+{
+    // Controller
+    Thing rachio:device:1:XXXXXXXXXXXX "Rachio-XXXXXX" @ "Sprinkler"
+    
+    // Zones
+    Thing rachio:zone:1:XXXXXXXXXXXX-1 "Rachio zone 1" @ "Sprinkler"
+    Thing rachio:zone:1:XXXXXXXXXXXX-2 "Rachio zone 2" @ "Sprinkler"
+    Thing rachio:zone:1:XXXXXXXXXXXX-3 "Rachio zone 3" @ "Sprinkler"
+    Thing rachio:zone:1:XXXXXXXXXXXX-4 "Rachio zone 4" @ "Sprinkler"
+    Thing rachio:zone:1:XXXXXXXXXXXX-5 "Rachio zone 5" @ "Sprinkler"
+    Thing rachio:zone:1:XXXXXXXXXXXX-6 "Rachio zone 6" @ "Sprinkler"
+    Thing rachio:zone:1:XXXXXXXXXXXX-7 "Rachio zone 7" @ "Sprinkler"
+}
+```
+
+### Items Definition
+
+```
+    // Sprinkler Controller
+    String   RachioC04DAC_Name        "Name"                 {channel="rachio:device:1:XXXXXXXXXXXX:name"}
+    Switch   RachioC04DAC_Active      "Active"               {channel="rachio:device:1:XXXXXXXXXXXX:active"}
+    Switch   RachioC04DAC_Online      "Online"               {channel="rachio:device:1:XXXXXXXXXXXX:online"}
+    Switch   RachioC04DAC_Paused      "Paused"               {channel="rachio:device:1:XXXXXXXXXXXX:paused"}
+    Switch   RachioC04DAC_Stop        "Stop Watering"        {channel="rachio:device:1:XXXXXXXXXXXX:stop"}
+    Switch   RachioC04DAC_Run         "Run Multiple Zones"   {channel="rachio:device:1:XXXXXXXXXXXX:run"}
+    String   RachioC04DAC_RunZones    "Run Zone List"        {channel="rachio:device:1:XXXXXXXXXXXX:runZones"}
+    Number   RachioC04DAC_RunTime     "Run Time"             {channel="rachio:device:1:XXXXXXXXXXXX:runTime"}
+    Number   RachioC04DAC_RainDelay   "Rain Delay"           {channel="rachio:device:1:XXXXXXXXXXXX:rainDelay"}
+    String   RachioC04DAC_DevEvent    "Last Device Event"    {channel="rachio:device:1:XXXXXXXXXXXX:devEvent"}
+    Number   RachioC04DAC_Latitude    "Latitude"             {channel="rachio:device:1:XXXXXXXXXXXX:latitude"}
+    Number   RachioC04DAC_Longitude   "Longitude"            {channel="rachio:device:1:XXXXXXXXXXXX:longitude"}
+
+    // Zone1
+    String   RachioZone1_Name        "Zone Name"         {channel="rachio:zone:1:XXXXXXXXXXXX-1:name"}
+    Number   RachioZone1_Number      "Zone Number"       {channel="rachio:zone:1:XXXXXXXXXXXX-1:number"}
+    Switch   RachioZone1_Enabled     "Zone Enabled"      {channel="rachio:zone:1:XXXXXXXXXXXX-1:enabled"}
+    Switch   RachioZone1_Run         "Run Zone"          {channel="rachio:zone:1:XXXXXXXXXXXX-1:run"}
+    Number   RachioZone1_RunTime     "Zone Runtime"      {channel="rachio:zone:1:XXXXXXXXXXXX-1:runTime"}
+    Number   RachioZone1_RunTotal    "Total Runtime"     {channel="rachio:zone:1:XXXXXXXXXXXX-1:runTotal"}
+    String   RachioZone1_ImageUrl    "Zone Image URL"    {channel="rachio:zone:1:XXXXXXXXXXXX-1:imageUrl"}
+    String   RachioZone1_ZoneEvent   "Last Zone Event"   {channel="rachio:zone:1:XXXXXXXXXXXX-1:zoneEvent"}
+
+    // Zone2
+    String   RachioZone2_Name        "Zone Name"         {channel="rachio:zone:1:XXXXXXXXXXXX-2:name"}
+    Number   RachioZone2_Number      "Zone Number"       {channel="rachio:zone:1:XXXXXXXXXXXX-2:number"}
+    Switch   RachioZone2_Enabled     "Zone Enabled"      {channel="rachio:zone:1:XXXXXXXXXXXX-2:enabled"}
+    Switch   RachioZone2_Run         "Run Zone"          {channel="rachio:zone:1:XXXXXXXXXXXX-2:run"}
+    Number   RachioZone2_RunTime     "Zone Runtime"      {channel="rachio:zone:1:XXXXXXXXXXXX-2:runTime"}
+    Number   RachioZone2_RunTotal    "Total Runtime"     {channel="rachio:zone:1:XXXXXXXXXXXX-2:runTotal"}
+    String   RachioZone2_ImageUrl    "Zone Image URL"    {channel="rachio:zone:1:XXXXXXXXXXXX-2:imageUrl"}
+    String   RachioZone2_ZoneEvent   "Last Zone Event"   {channel="rachio:zone:1:XXXXXXXXXXXX-2:zoneEvent"}
+```
+
+### Rule Example
+
+```
+var Timer rachio_timer5
+
+rule "Start Rachio zone6_2"
+    when
+        Item ZWaveNode051ZRC90SceneMaster8ButtonRemote_SceneNumber changed
+    then
+        if (ZWaveNode051ZRC90SceneMaster8ButtonRemote_SceneNumber.state==8.3) {
+            if (RachioZone6_Run.state==OFF) {
+                // Set zone Quick run time to 1800 sec
+                RachioZone6_RunTime.sendCommand(1800)
+                RachioZone6_Run.sendCommand(ON)
+                ZWaveNode051ZRC90SceneMaster8ButtonRemote_SceneNumber.sendCommand(0.0)
+                rachio_timer5 = createTimer(now.plusSeconds(1800)) [|
+                RachioZone6_RunTime.sendCommand(120)
+                RachioZone6_Run.sendCommand(OFF)
+                rachio_timer5 = null
+                ]
+            }
+    else {
+                if (RachioZone6_Run.state==ON) {
+                    // Change back zone Quick run time to default 120 sec
+                    RachioZone6_RunTime.sendCommand(120)
+                    RachioZone6_Run.sendCommand(OFF)
+                    ZWaveNode051ZRC90SceneMaster8ButtonRemote_SceneNumber.sendCommand(0.0)
+                    }
+         }  
+        }
+end
+```
+
+### Rule Example
+
+Sample rule to catch zone events (replace rachio_zone_1_xxxxxxxx_1_zoneEvent with the connect item name):
+
+```
+var int totalRunTime = 0
+
+/* ------- Alarm handler ----- */
+rule "Zone started"
+when
+    Item rachio_zone_1_xxxxxxxx_1_zoneEvent changed
+then
+    var jsonString = rachio_zone_1_xxxxxxxx_1_zoneEvent.state.toString
+    logDebug("RachioEvent", "Event triggered (JSON='" + jsonString + "')")
+    
+    var eventTimestamp = transform("JSONPATH","$.timestamp",jsonString);
+    var eventType = transform("JSONPATH","$.type",jsonString)
+    var eventSubType = transform("JSONPATH","$.subType",jsonString)
+    var eventSummary = transform("JSONPATH","$.summary",jsonString)
+
+    if (eventType == "ZONE_STATUS") {
+        var zoneName = transform("JSONPATH","$.zoneName",jsonString)
+        var zoneNumber = transform("JSONPATH","$.zoneNumber",jsonString)
+        var runState = transform("JSONPATH","$.zoneRunState",jsonString)
+        var runStart = transform("JSONPATH","$.startTime",jsonString)
+        var runEnd = transform("JSONPATH","$.endTime",jsonString)
+        var runDuration = transform("JSONPATH","$.duration",jsonString)
+        var scheduleType = transform("JSONPATH","$.scheduleType",jsonString)
+        logInfo("RachioEvent", eventTimestamp + " " + zoneName + "[" + zoneNumber + "]: " + eventSummary + "(type='" + scheduleType + "', state='" + runState + "')")
+        if (eventSubType == "ZONE_COMPLETED") {
+            totalRunTime = totalRunTime + Integer::parseInt(runDuration)
+            logInfo("RachioZone", "Zone [" + zoneNumber + "]: start: " + runStart + ", end: " + runEnd + ", duration: " + runDuration + " => Total run time = " + totalRunTime)
+        }
+    } 
+    else {
+        // generic message
+        logInfo("RachioEvent", eventTimestamp + " [" + eventSubType + "]: " + eventSummary)
+    }
+
+end
+```
+
+# Configuring the Event Callback
+
+The Rachio Cloud API supports an event driven model. The binding registers a so called "web hook" to receive events. In fact this is kind of call callback via http(s). Receiving those notifications requires two things
 
 - the binding listering to a specific URI (in this case /rachio/webhook)
 - a port forward on the router to direct inbound requests to the OH device
 
 The router configuration has to be done manually (supporting UPnP-based auto-config is planned, but not yet implemented). In general the following logic applies
 
-- usually openHAB listens on port 8080 for http traffic
+- usually openHAB listens on port 8080 for http and 443 for https traffic
 - you need to create a forward from a user defined port exposed to the Inernet to the OH ip:8080, e.g. forward external port 50000 tcp to openHAB ip port 8080
   if the router is asking for a port range use the same values external-ip:50000-50000 -&gt; internal_ip:8080-8080
 - this results into the callbackUrl https://mydomain.com:50000/rachio/webhook - you need to included this in the thing definition (callbackUrl=xxx), see above
@@ -109,7 +232,7 @@ If events are not received (e.g. no events are shown after starting / stopping a
 - make suire to use http instead of https for the moment - https IS NOT supported at the moment
 - run a browser and open URL http://127.0.0.1:8080/rachio/webhook - you should get a white screen (no error message) and should the a message in the OH log that the binding is not able to process the request.
 - ping your domain and make sure that it returns the external IP of your router
-- open URL http://<your domain>:<port>/rachio/webhook - you should see the same page rather than an error
+- open URL http://&lt;your domain&gt;:&lt;port&gt;/rachio/webhook - you should see the same page rather than an error
 
 you could verify the proper registration of the callback after the binding is initialized
 
@@ -127,8 +250,9 @@ replace xxxxxxxx-... with the apikey and yyyyyyyy... with the device id found in
 - The document https://support.rachio.com/hc/en-us/articles/115010541948-How-secure-is-my-Rachio-controller describes the Rachio Cloud security.
 - The cloud API is hosted on AWS - events are coming from different IPs. Fire-walling could be limited to AWS’ IP address ranges. AWS provides the option to retrieve the current list of ip address ranges: https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html. I’ll will add support to the binding. This list could be loaded when the binding initializes, so the application level IP filtering becomes dynamic. Maybe a daily refresh or so is required to prevent necessary OH restarts when amazon adds more address ranges to the list.
 
-For now the following security pattern is implemented:
+The following security pattern is implemented:
 
+- accessing the could API with the reigistered API key
 - validation of the originator’s IP address (based on up-to-date AWS address ranges - the list is auto-loaded by the binding)
 - validation of the URI (/rachio/webhook)
 - validation of the externalId (generated by the binding)
@@ -158,8 +282,8 @@ Refer to https://docs.openhab.org/installation/security.html#nginx-openssl. This
 
 This is an example, which
 
-- provides general https access to https://<openhab-dnsname>/ using basic auth, but
-- https access to https://<openhab-dnsname>/rachio/webhook without user auth. This is important, otherwise the Rachio cloud server couldn't connect to your openhab instance and the Rachio binding.
+- provides general https access to https://&lt;openhab-dnsname&gt;/ using basic auth, but
+- https access to https://&lt;openhab-dnsname&gt;/rachio/webhook without user auth. This is important, otherwise the Rachio cloud server couldn't connect to your openhab instance and the Rachio binding.
 - the sample uses strong https setup (see https://docs.openhab.org/installation/security.html#nginx-https-security). You need to perform the additional installation steps to use this sample.
 - user auth is also NOT requested when accessing openhab from your local network, see "allow    192.168.0.0/16;"
 - the section location /rachio/webhook enabled direct http access to the binding url for the weebhook

@@ -574,7 +574,8 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
 
         if (config.apikey.isEmpty()) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(PARAM_APIKEY)
-                    .withMessageKeySuffix(RachioConfiguration.ERR_APIKEY).withArguments(PARAM_APIKEY).build());
+                    .withMessageKeySuffix("ERROR: No/invalid APIKEY in binding configuration!")
+                    .withArguments(PARAM_APIKEY).build());
         }
 
         return configStatusMessages;

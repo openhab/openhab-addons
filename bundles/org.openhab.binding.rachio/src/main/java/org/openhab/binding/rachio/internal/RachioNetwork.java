@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioHttp;
 // import com.offbynull.portmapper;
@@ -27,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * RachioNetwork: Implement network related functions
@@ -38,7 +38,8 @@ public class RachioNetwork {
     private final Logger logger = LoggerFactory.getLogger(RachioNetwork.class);
 
     public class AwsIpAddressRange {
-        public String ip_prefix = "";
+        @SerializedName("ip_prefix")
+        public String ipPrefix = "";
         public String region = "";
         public String service = "";
     }
@@ -62,16 +63,14 @@ public class RachioNetwork {
             String jsonList = http.httpGet(AWS_IPADDR_DOWNLOAD_URL, "").resultString;
             Gson gson = new Gson();
             Validate.notNull(gson);
-            @Nullable
             AwsIpList list = gson.fromJson(jsonList, AwsIpList.class);
             Validate.notNull(list);
             for (int i = 0; i < list.prefixes.size(); i++) {
-                @Nullable
                 AwsIpAddressRange entry = list.prefixes.get(i);
                 Validate.notNull(entry);
                 if (entry.region.startsWith(AWS_IPADDR_REGION_FILTER)) {
-                    logger.trace("RachioNetwork: Adding range '{}' (region '{}' to AWS IP address list",
-                            entry.ip_prefix, entry.region);
+                    logger.trace("RachioNetwork: Adding range '{}' (region '{}' to AWS IP address list", entry.ipPrefix,
+                            entry.region);
                     awsIpRanges.add(entry);
                 }
             }
@@ -123,7 +122,7 @@ public class RachioNetwork {
 
         for (int i = 0; i < awsIpRanges.size(); i++) {
             AwsIpAddressRange e = awsIpRanges.get(i);
-            if ((e != null) && isIpInSubnet(clientIp, e.ip_prefix)) {
+            if ((e != null) && isIpInSubnet(clientIp, e.ipPrefix)) {
                 return true;
             }
         }

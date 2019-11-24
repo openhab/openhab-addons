@@ -28,19 +28,19 @@ import com.google.gson.Gson;
 @SuppressWarnings("unused")
 public class RachioEventString {
     @Nullable
-    private genericEvent gEvent;
+    private GenericEvent gEvent;
     @Nullable
-    private zoneEvent    zEvent;
-    private Gson         gson = new Gson();
+    private ZoneEvent zEvent;
+    private Gson gson = new Gson();
 
-    private class genericEvent {
+    private class GenericEvent {
         private final String timetstamp;
         private final String summary;
         private final String topic;
         private final String type;
         private final String subType;
 
-        public genericEvent(RachioCloudEvent event) {
+        public GenericEvent(RachioCloudEvent event) {
             timetstamp = event.timestamp;
             summary = event.summary;
             topic = event.topic;
@@ -49,22 +49,22 @@ public class RachioEventString {
         }
     }
 
-    private class zoneEvent {
+    private class ZoneEvent {
         private final String timestamp;
         private final String summary;
         private final String type;
         private final String subType;
 
         private final String zoneName;
-        private final int    zoneNumber;
+        private final int zoneNumber;
         private final String zoneRunState;
         private final String scheduleType;
         private final String startTime;
         private final String endTime;
-        private final int    duration;
+        private final int duration;
 
         @SuppressWarnings("null")
-        public zoneEvent(RachioCloudEvent event) {
+        public ZoneEvent(RachioCloudEvent event) {
             timestamp = event.timestamp;
             summary = event.summary;
             type = event.type;
@@ -83,9 +83,9 @@ public class RachioEventString {
     public RachioEventString(RachioCloudEvent event) {
         Validate.notNull(event);
         if (event.type.equals("ZONE_STATUS")) {
-            zEvent = new zoneEvent(event);
+            zEvent = new ZoneEvent(event);
         } else {
-            gEvent = new genericEvent(event);
+            gEvent = new GenericEvent(event);
         }
     }
 
