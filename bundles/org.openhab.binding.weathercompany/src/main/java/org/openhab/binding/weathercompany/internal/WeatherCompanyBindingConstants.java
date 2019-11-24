@@ -14,6 +14,8 @@ package org.openhab.binding.weathercompany.internal;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -28,9 +30,25 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class WeatherCompanyBindingConstants {
     private static final String BINDING_ID = "weathercompany";
 
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_WEATHER = new ThingTypeUID(BINDING_ID, "weather");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WEATHER);
+    // Bridge
+    public static final String THING_TYPE_BRIDGE = "bridge";
+    public static final ThingTypeUID UID_BRIDGE = new ThingTypeUID(BINDING_ID, THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(UID_BRIDGE).collect(Collectors.toSet()));
+
+    // Thing Types
+    public static final ThingTypeUID THING_TYPE_WEATHER_OBSERVATIONS = new ThingTypeUID(BINDING_ID,
+            "weather-observations");
+    public static final ThingTypeUID THING_TYPE_WEATHER_FORECAST = new ThingTypeUID(BINDING_ID, "weather-forecast");
+
+    // Collection of weather station thing types
+    public static final Set<ThingTypeUID> SUPPORTED_WEATHER_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_WEATHER_OBSERVATIONS, THING_TYPE_WEATHER_FORECAST).collect(Collectors.toSet()));
+
+    // Collection of all supported thing types
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.concat(SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream(), SUPPORTED_WEATHER_THING_TYPES_UIDS.stream())
+                    .collect(Collectors.toSet()));
 
     // Thing for local weather created during discovery
     public static final String LOCAL = "local";

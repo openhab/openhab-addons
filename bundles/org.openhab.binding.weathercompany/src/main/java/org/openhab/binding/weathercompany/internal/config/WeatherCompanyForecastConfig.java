@@ -12,19 +12,12 @@
  */
 package org.openhab.binding.weathercompany.internal.config;
 
-import org.openhab.binding.weathercompany.internal.WeatherCompanyBindingConstants;
-
 /**
- * The {@link WeatherCompanyConfig} class contains fields mapping thing configuration parameters.
+ * The {@link WeatherCompanyForecastConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class WeatherCompanyConfig {
-    /**
-     * API key
-     */
-    public String apiKey;
-
+public class WeatherCompanyForecastConfig {
     /**
      * Type of location (postal, geocode, etc.)
      */
@@ -51,20 +44,14 @@ public class WeatherCompanyConfig {
     public String language;
 
     /**
-     * Personal Weather Station Id
-     */
-    public String pwsStationId;
-
-    /**
      * Interval with which forecast will be updated.
      */
     public int refreshInterval;
 
     @Override
     public String toString() {
-        return "WeatherCompanyConfig: { apiKey=" + WeatherCompanyBindingConstants.REPLACE_API_KEY + ", locationType="
-                + locationType + ", postalCode=" + postalCode + ", geocode=" + geocode + ", iataCode=" + iataCode
-                + ", language=" + language + ", pwsStationId=" + pwsStationId + ", refreshInterval=" + refreshInterval
+        return "WeatherCompanyConfig: { locationType=" + locationType + ", postalCode=" + postalCode + ", geocode="
+                + geocode + ", iataCode=" + iataCode + ", language=" + language + ", refreshInterval=" + refreshInterval
                 + " }";
     }
 }

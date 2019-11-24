@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyHandler;
+import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyAbstractHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -103,8 +103,9 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>(3);
         properties.put(CONFIG_LOCATION_TYPE, CONFIG_LOCATION_TYPE_GEOCODE);
         properties.put(CONFIG_GEOCODE, String.format("%s,%s", location.getLatitude(), location.getLongitude()));
-        properties.put(CONFIG_LANGUAGE, WeatherCompanyHandler.getWeatherCompanyLanguage(localeProvider.getLocale()));
-        ThingUID localWeatherThing = new ThingUID(THING_TYPE_WEATHER, LOCAL);
+        properties.put(CONFIG_LANGUAGE,
+                WeatherCompanyAbstractHandler.getWeatherCompanyLanguage(localeProvider.getLocale()));
+        ThingUID localWeatherThing = new ThingUID(THING_TYPE_WEATHER_FORECAST, LOCAL);
         thingDiscovered(DiscoveryResultBuilder.create(localWeatherThing).withLabel(LOCAL_WEATHER)
                 .withProperties(properties).build());
     }

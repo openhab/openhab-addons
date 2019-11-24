@@ -19,13 +19,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyHandler;
+import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyForecastHandler;
+import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyObservationsHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -59,8 +61,12 @@ public class WeatherCompanyHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_WEATHER.equals(thingTypeUID)) {
-            return new WeatherCompanyHandler(thing, timeZoneProvider, httpClient, unitProvider);
+        if (THING_TYPE_WEATHER_FORECAST.equals(thingTypeUID)) {
+            return new WeatherCompanyForecastHandler(thing, timeZoneProvider, httpClient, unitProvider);
+        } else if (THING_TYPE_WEATHER_OBSERVATIONS.equals(thingTypeUID)) {
+            return new WeatherCompanyObservationsHandler(thing, timeZoneProvider, httpClient, unitProvider);
+        } else if (SUPPORTED_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return new WeatherCompanyBridgeHandler((Bridge) thing);
         }
         return null;
     }

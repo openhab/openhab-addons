@@ -3,18 +3,37 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="weather">
-		<label>WeatherCompany Weather Thing</label>
-		<description>Weather Company weather thing</description>
+	<bridge-type id="bridge">
+		<label>Weather Company Bridge</label>
+		<description>Represents a connection to the Weather Company service</description>
+		<config-description-ref uri="thing-type:weathercompany:bridge" />
+	</bridge-type>
 
+	<thing-type id="weather-observations">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Weather Company Observations</label>
+		<description>Weather Company weather observations</description>
 		<channel-groups>
-
 			<!-- Current PWS observations -->
 			<channel-group id="pwsObservations" typeId="pwsObservations">
 				<label>PWS Current Observations</label>
 				<description>Current observations from Personal Weather Station</description>
 			</channel-group>
+		</channel-groups>
+		<config-description-ref uri="thing-type:weathercompany:weather-observations" />
+	</thing-type>
 
+	<thing-type id="weather-forecast">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Weather Company Forecast</label>
+		<description>Weather Company weather forecast</description>
+		<channel-groups>
 			<!-- Daily forecasts -->
 			<channel-group id="forecastDay0" typeId="forecastDay">
 				<label>Weather Forecast Today</label>
@@ -50,7 +69,6 @@
 				<label>Night-time Weather Forecast for Tonight</label>
 				<description>This is the night-time weather forecast for tonight</description>
 			</channel-group>
-
 			<channel-group id="forecastDay1Day" typeId="forecastDaypart">
 				<label>Daytime Weather Forecast for Tomorrow</label>
 				<description>This is the daytime weather forecast for tomorrow</description>
@@ -59,7 +77,6 @@
 				<label>Night-time Weather Forecast for Tomorrow</label>
 				<description>This is the night-time weather forecast for tomorrow night</description>
 			</channel-group>
-
 			<channel-group id="forecastDay2Day" typeId="forecastDaypart">
 				<label>Daytime Weather Forecast Day 2</label>
 				<description>This is the daytime weather forecast in 2 days</description>
@@ -68,7 +85,6 @@
 				<label>Night-time Weather Forecast Day 2</label>
 				<description>This is the night-time weather forecast in 2 days</description>
 			</channel-group>
-
 			<channel-group id="forecastDay3Day" typeId="forecastDaypart">
 				<label>Daytime Weather Forecast Day 3</label>
 				<description>This is the daytime weather forecast in 3 days</description>
@@ -77,7 +93,6 @@
 				<label>Night-time Weather Forecast Day 3</label>
 				<description>This is the night-time weather forecast in 3 days</description>
 			</channel-group>
-
 			<channel-group id="forecastDay4Day" typeId="forecastDaypart">
 				<label>Daytime Weather Forecast Day 3</label>
 				<description>This is the daytime weather forecast in 4 days</description>
@@ -86,7 +101,6 @@
 				<label>Night-time Weather Forecast Day 4</label>
 				<description>This is the night-time weather forecast in 4 days</description>
 			</channel-group>
-
 			<channel-group id="forecastDay5Day" typeId="forecastDaypart">
 				<label>Daytime Weather Forecast Day 5</label>
 				<description>This is the daytime weather forecast in 5 days</description>
@@ -96,8 +110,7 @@
 				<description>This is the night-time weather forecast in 5 days</description>
 			</channel-group>
 		</channel-groups>
-
-		<config-description-ref uri="thing-type:weathercompany:weather" />
+		<config-description-ref uri="thing-type:weathercompany:weather-forecast" />
 	</thing-type>
 
 	<channel-group-type id="pwsObservations">

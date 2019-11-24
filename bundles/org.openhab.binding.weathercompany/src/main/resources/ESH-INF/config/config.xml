@@ -3,12 +3,26 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:weathercompany:weather">
+	<config-description uri="thing-type:weathercompany:bridge">
 		<parameter name="apiKey" type="text" required="true">
 			<label>API Key</label>
 			<description>Enter the API key</description>
 		</parameter>
+	</config-description>
 
+	<config-description uri="thing-type:weathercompany:weather-observations">
+		<parameter name="pwsStationId" type="text" required="true">
+			<label>PWS Station ID</label>
+			<description>ID of your Personal Weather Station (e.g. KILCHICA52)</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="2" required="false" unit="min">
+			<label>Refresh interval</label>
+			<description>Specifies the refresh interval in minutes</description>
+			<default>30</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:weathercompany:weather-forecast">
 		<parameter name="locationType" type="text" required="true">
 			<label>Location Type</label>
 			<description>Location type (Postal Code, Geocode)</description>
@@ -19,22 +33,23 @@
 				<option value="iataCode">IATA Code</option>
 			</options>
 		</parameter>
-
 		<parameter name="postalCode" type="text" required="false">
 			<label>Postal code</label>
 			<description>Postal code of form postal:country (e.g. 10001:US)</description>
 		</parameter>
-
 		<parameter name="geocode" type="text" required="false">
 			<label>Geocode</label>
 			<description>Latitude and longitude (e.g. 40.75079698301718,-73.98944348261394)</description>
 		</parameter>
-
 		<parameter name="iataCode" type="text" required="false">
 			<label>IATA Code</label>
 			<description>IATA airport code (e.g. BWI)</description>
 		</parameter>
-
+		<parameter name="refreshInterval" type="integer" min="2" required="false" unit="min">
+			<label>Refresh interval</label>
+			<description>Specifies the refresh interval in minutes</description>
+			<default>30</default>
+		</parameter>
 		<parameter name="language" type="text" required="true">
 			<label>Language</label>
 			<description>Language to be used by the Weather Company service</description>
@@ -118,18 +133,6 @@
 				<option value="vi-VN">Vietnamese - (Viet Nam)</option>
 			</options>
 		</parameter>
-
-		<parameter name="pwsStationId" type="text" required="false">
-			<label>PWS Station ID</label>
-			<description>ID of your Personal Weather Station (e.g. KILCHICA52)</description>
-		</parameter>
-
-		<parameter name="refreshInterval" type="integer" min="2" required="false" unit="min">
-			<label>Refresh interval</label>
-			<description>Specifies the refresh interval in minutes</description>
-			<default>30</default>
-		</parameter>
-
 	</config-description>
 
 </config-description:config-descriptions>
