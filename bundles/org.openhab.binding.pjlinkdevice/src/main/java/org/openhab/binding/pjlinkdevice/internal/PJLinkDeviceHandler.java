@@ -249,7 +249,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     }
   }
 
-  private @Nullable String getChannelTypeId(ChannelUID channelUID) throws ConfigurationException {
+  private @Nullable String getChannelTypeId(ChannelUID channelUID) {
     Channel channel = thing.getChannel(channelUID);
     if (channel == null) {
       logger.debug("channel is null");
