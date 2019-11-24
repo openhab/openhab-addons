@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LampStatesResponse extends PrefixedResponse<List<LampStatesResponse.LampState>> {
+  @NonNullByDefault
   public class LampState {
     private boolean active;
     private int lampHours;

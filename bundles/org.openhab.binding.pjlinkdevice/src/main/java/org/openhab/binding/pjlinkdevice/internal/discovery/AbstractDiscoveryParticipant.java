@@ -23,16 +23,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Discovery of PJLink devices. Checks IP addresses in parallel processing.
@@ -48,7 +46,7 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
   private Integer scannedIPcount = 0;
   private @Nullable ExecutorService executorService = null;
 
-  public AbstractDiscoveryParticipant(Set<@NonNull ThingTypeUID> supportedThingTypes, int timeout,
+  public AbstractDiscoveryParticipant(Set<ThingTypeUID> supportedThingTypes, int timeout,
       boolean backgroundDiscoveryEnabledByDefault) throws IllegalArgumentException {
     super(supportedThingTypes, timeout, backgroundDiscoveryEnabledByDefault);
   }
