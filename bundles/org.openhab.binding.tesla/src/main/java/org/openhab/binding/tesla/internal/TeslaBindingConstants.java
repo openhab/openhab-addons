@@ -27,7 +27,6 @@ public class TeslaBindingConstants {
     // REST URI constants
     public static final String API_NAME = "Tesla Client API";
     public static final String API_VERSION = "api/1/";
-    public static final String PASSWORD = "password";
     public static final String PATH_COMMAND = "command/{cmd}";
     public static final String PATH_DATA_REQUEST = "data_request/{cmd}";
     public static final String PATH_VEHICLE_ID = "/{vid}/";
@@ -35,7 +34,6 @@ public class TeslaBindingConstants {
     public static final String URI_ACCESS_TOKEN = "oauth/token";
     public static final String URI_EVENT = "https://streaming.vn.teslamotors.com/stream/";
     public static final String URI_OWNERS = "https://owner-api.teslamotors.com/";
-    public static final String USERNAME = "username";
     public static final String VALETPIN = "valetpin";
     public static final String VEHICLES = "vehicles";
     public static final String VIN = "vin";
@@ -69,11 +67,16 @@ public class TeslaBindingConstants {
     public static final String GUI_STATE = "gui_settings";
     public static final String MOBILE_ENABLED_STATE = "mobile_enabled";
     public static final String VEHICLE_STATE = "vehicle_state";
+    public static final String VEHICLE_CONFIG = "vehicle_config";
 
     public static final String BINDING_ID = "tesla";
 
     // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_MODELS = new ThingTypeUID(BINDING_ID, "models");
+    public static final ThingTypeUID THING_TYPE_MODEL3 = new ThingTypeUID(BINDING_ID, "model3");
+    public static final ThingTypeUID THING_TYPE_MODELX = new ThingTypeUID(BINDING_ID, "modelx");
+    public static final ThingTypeUID THING_TYPE_MODELY = new ThingTypeUID(BINDING_ID, "modely");
 
     public enum EventKeys {
         timestamp,
@@ -91,9 +94,14 @@ public class TeslaBindingConstants {
         heading
     }
 
-    // List of all Channels
     public static final String CHANNEL_CHARGE = "charge";
-    public static final String CHANNEL_ALLOWWAKEUP = "allowwakeup";
-    public static final String CHANNEL_ENABLEEVENTS = "enableevents";
+    public static final String CHANNEL_COMBINED_TEMP = "combinedtemp";
+
+    // thing configurations
+    public static final String CONFIG_ALLOWWAKEUP = "allowWakeup";
+    public static final String CONFIG_ENABLEEVENTS = "enableEvents";
+    public static final String CONFIG_REFRESHTOKEN = "refreshToken";
+    public static final String CONFIG_USERNAME = "username";
+    public static final String CONFIG_PASSWORD = "password";
 
 }

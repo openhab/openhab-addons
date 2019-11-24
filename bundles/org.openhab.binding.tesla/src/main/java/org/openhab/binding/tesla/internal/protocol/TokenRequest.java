@@ -33,6 +33,7 @@ import org.openhab.binding.tesla.internal.TeslaBindingConstants;
  * @author Karel Goderis - Initial contribution
  * @author Nicolai Grødum - Adding token based auth
  */
+@SuppressWarnings("unused")
 public abstract class TokenRequest {
     private String client_id;
     private String client_secret;
