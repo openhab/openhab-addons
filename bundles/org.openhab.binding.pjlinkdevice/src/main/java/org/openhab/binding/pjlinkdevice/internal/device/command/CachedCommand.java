@@ -39,6 +39,7 @@ public class CachedCommand<ResponseType extends Response<?>> implements Command<
             try {
                 return this.cachedCommand.execute();
             } catch (ResponseException | IOException | AuthenticationException e) {
+                // wrap exception into RuntimeException to unwrap again later in CachedCommand.execute()
                 throw new RuntimeException(e);
             }
         });
@@ -56,6 +57,7 @@ public class CachedCommand<ResponseType extends Response<?>> implements Command<
             }
             return result;
         } catch (RuntimeException e) {
+            // try to unwrap RuntimeException thrown in ExpiringCache
             Throwable cause = e.getCause();
             if (cause instanceof ResponseException) {
                 throw (ResponseException) cause;
