@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ThingType;
+import org.eclipse.smarthome.core.thing.util.ThingHelper;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
@@ -52,6 +53,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.util.FutureCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +96,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
     protected final TransformationServiceProvider transformationServiceProvider;
 
+    private boolean started;
+
     /**
      * Create a new thing handler for HomeAssistant MQTT components.
      * A channel type provider and a topic value receive timeout must be provided.
@@ -119,6 +123,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     @SuppressWarnings({ "null", "unused" })
     @Override
     public void initialize() {
+        started = false;
+
         config = getConfigAs(HandlerConfiguration.class);
         if (CollectionUtils.isEmpty(config.topics)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device topics unknown");
@@ -182,6 +188,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
      */
     @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
+        started = true;
+
         connection.setRetain(true);
         connection.setQos(1);
 
@@ -189,7 +197,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
         // Start all known components and channels within the components and put the Thing offline
         // if any subscribing failed ( == broker connection lost)
-        CompletableFuture<@Nullable Void> future = haComponents.values().stream()
+        CompletableFuture<@Nullable Void> future = haComponents.values().parallelStream()
                 .map(e -> e.start(connection, scheduler, attributeReceiveTimeout))
                 .reduce(CompletableFuture.completedFuture(null), (a, v) -> a.thenCompose(b -> v)) // reduce to one
                 .exceptionally(e -> {
@@ -203,10 +211,16 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
     @Override
     protected void stop() {
-        discoverComponents.stopDiscovery();
-        delayedProcessing.join();
-        // haComponents does not need to be synchronised -> the discovery thread is disabled
-        haComponents.values().stream().map(e -> e.stop());
+        if (started) {
+            discoverComponents.stopDiscovery();
+            delayedProcessing.join();
+            // haComponents does not need to be synchronised -> the discovery thread is disabled
+            haComponents.values().parallelStream().map(e -> e.stop()) //
+                    // we need to join all the stops, otherwise they might not be done when start is called
+                    .collect(FutureCollector.allOf()).join();
+
+            started = false;
+        }
     }
 
     @SuppressWarnings({ "null", "unused" })
@@ -250,7 +264,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             return;
         }
 
-        List<Channel> channels;
         synchronized (haComponents) { // sync whenever discoverComponents is started
             for (AbstractComponent<?> discovered : discoveredComponentsList) {
                 AbstractComponent<?> known = haComponents.get(discovered.uid().getId());
@@ -275,28 +288,25 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     logger.warn("Failed to start component {}", discovered.uid(), e);
                     return null;
                 });
+
+                Collection<Channel> channels = discovered.channelTypes().values().stream().map(c -> c.getChannel())
+                        .collect(Collectors.toList());
+                ThingHelper.addChannelsToThing(thing, channels);
             }
-            // Add channels to Thing
-            channels = haComponents.values().stream().map(c -> c.channelTypes().values()).flatMap(Collection::stream)
-                    .map(c -> c.getChannel()).collect(Collectors.toList());
         }
 
         updateThingType();
-        updateThing(editThing().withChannels(channels).build());
         updateThingStatus();
     }
 
     private void updateThingStatus() {
-
-        boolean allActive;
         synchronized (haComponents) { // sync whenever discoverComponents is started
-            allActive = haComponents.values().stream().allMatch(comp -> comp.isActive());
-        }
-
-        if (allActive) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "At least one component not active");
+            boolean allActive = haComponents.values().stream().allMatch(comp -> comp.isActive());
+            if (allActive) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "At least one component not active");
+            }
         }
     }
 

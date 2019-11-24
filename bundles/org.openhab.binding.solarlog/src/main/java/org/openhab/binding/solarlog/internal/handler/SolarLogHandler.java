@@ -80,7 +80,7 @@ public class SolarLogHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 // Very rudimentary Exception differentiation
             } catch (IOException e) {
-                logger.debug("Error reading response from Solar-Log: {}", e);
+                logger.debug("Error reading response from Solar-Log", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Communication error with the device. Please retry later.");
             } catch (JsonSyntaxException je) {
@@ -148,7 +148,7 @@ public class SolarLogHandler extends BaseThingHandler {
                         return new StringType(value);
                     }
                 } catch (IllegalArgumentException e) {
-                    logger.warn("Parsing date failed: {}. Returning nothing", e);
+                    logger.warn("Parsing date failed. Returning nothing", e);
                     return UnDefType.UNDEF;
                 }
                 // All other channels should be numbers
@@ -158,7 +158,7 @@ public class SolarLogHandler extends BaseThingHandler {
                     return new DecimalType(new BigDecimal(value));
                 } catch (NumberFormatException e) {
                     // Log a warning and return UNDEF
-                    logger.warn("Parsing number failed: {}. Returning nothing", e);
+                    logger.warn("Parsing number failed. Returning nothing", e);
                     return UnDefType.UNDEF;
                 }
         }

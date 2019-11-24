@@ -1,14 +1,17 @@
 # Daikin Binding
 
-The Daikin binding allows you to control your Daikin air conditioning units with openHAB. In order to do so, your Daikin air conditioning unit must have a BRP072A42 or BRP15B61 WiFi adapter installed.
+The Daikin binding allows you to control your Daikin air conditioning units with openHAB.
+In order to do so, your Daikin air conditioning unit must have a BRP072A42 or BRP15B61 WiFi adapter installed.
 
 ## Supported Things
 
-Daikin air conditioning units with a BRP072A42 or BRP15B61 installed. This may work with the older KRP series of wired adapters, but has not been tested with them.
+Daikin air conditioning units with a BRP072A42 or BRP15B61 installed.
+This may work with the older KRP series of wired adapters, but has not been tested with them.
 
 ## Discovery
 
-This addon will broadcast messages on your local network looking for Daikin air conditioning units and adding them to the queue of new items discovered. You can also manually add a new item if you know the IP address.
+This add-on will broadcast messages on your local network looking for Daikin air conditioning units and adding them to the queue of new items discovered.
+You can also manually add a new item if you know the IP address.
 
 ## Thing Configuration
 
@@ -88,7 +91,7 @@ Selection item=DaikinACUnit_Mode mappings=["AUTO"="Auto", "DEHUMIDIFIER"="Dehumi
 Selection item=DaikinACUnit_Fan mappings=["AUTO"="Auto", "SILENCE"="Silence", "LEVEL_1"="Level 1", "LEVEL_2"="Level 2", "LEVEL_3"="Level 3", "LEVEL_4"="Level 4", "LEVEL_5"="Level 5"] visibility=[DaikinACUnit_Power==ON]
 Text item=DaikinACUnit_IndoorTemperature
 Text item=DaikinACUnit_OutdoorTemperature
-# Additional items for BRP1B61
+# Additional items for BRP15B61
 Switch item=DaikinACUnit_Zone1 visibility=[DaikinACUnit_Power==ON]
 Switch item=DaikinACUnit_Zone2 visibility=[DaikinACUnit_Power==ON]
 Switch item=DaikinACUnit_Zone3 visibility=[DaikinACUnit_Power==ON]

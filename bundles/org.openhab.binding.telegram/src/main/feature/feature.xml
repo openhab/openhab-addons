@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.telegram-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-telegram" description="Telegram Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.telegram/${project.version}</bundle>
+        <bundle start-level="80">wrap:mvn:com.github.pengrad/java-telegram-bot-api/4.4.0</bundle>
+        <bundle start-level="80">wrap:mvn:com.squareup.okhttp3/okhttp/3.12.3</bundle>
+        <bundle start-level="80">wrap:mvn:com.squareup.okio/okio/1.15.0</bundle>
+        <bundle start-level="80">wrap:mvn:com.squareup.okhttp3/logging-interceptor/3.12.3</bundle>        
+    </feature>
+</features>

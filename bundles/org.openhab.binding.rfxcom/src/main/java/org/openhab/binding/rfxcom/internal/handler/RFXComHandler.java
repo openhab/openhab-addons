@@ -14,6 +14,9 @@ package org.openhab.binding.rfxcom.internal.handler;
 
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -29,6 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -46,10 +50,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class RFXComHandler extends BaseThingHandler implements DeviceMessageListener {
+public class RFXComHandler extends BaseThingHandler implements DeviceMessageListener, DeviceState {
     private static final int LOW_BATTERY_LEVEL = 1;
 
     private final Logger logger = LoggerFactory.getLogger(RFXComHandler.class);
+
+    private final Map<String, Type> stateMap = new ConcurrentHashMap<>();
 
     private RFXComBridgeHandler bridgeHandler;
     private RFXComDeviceConfiguration config;
@@ -90,6 +96,8 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
         logger.debug("Initializing thing {}", getThing().getUID());
         initializeBridge((getBridge() == null) ? null : getBridge().getHandler(),
                 (getBridge() == null) ? null : getBridge().getStatus());
+
+        stateMap.clear();
     }
 
     @Override
@@ -149,15 +157,16 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                                 case CHANNEL_COMMAND:
                                 case CHANNEL_CHIME_SOUND:
                                 case CHANNEL_MOOD:
-                                    postNullableCommand(uid, message.convertToCommand(channelId));
+                                    postNullableCommand(uid, message.convertToCommand(channelId, this));
                                     break;
 
                                 case CHANNEL_LOW_BATTERY:
-                                    updateNullableState(uid, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
+                                    updateNullableState(uid,
+                                            isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL, this)));
                                     break;
 
                                 default:
-                                    updateNullableState(uid, message.convertToState(channelId));
+                                    updateNullableState(uid, message.convertToState(channelId, this));
                                     break;
                             }
                         } catch (RFXComException e) {
@@ -176,6 +185,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
             return;
         }
 
+        stateMap.put(uid.getId(), state);
         updateState(uid, state);
     }
 
@@ -184,7 +194,13 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
             return;
         }
 
+        stateMap.put(uid.getId(), command);
         postCommand(uid, command);
+    }
+
+    @Override
+    public Type getLastState(String channelId) {
+        return stateMap.get(channelId);
     }
 
     /**

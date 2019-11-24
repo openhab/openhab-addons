@@ -62,7 +62,6 @@ public class MoquetteTest extends JavaOSGiTest {
         // Wait for the EmbeddedBrokerService internal connection to be connected
         embeddedConnection = new EmbeddedBrokerTools().waitForConnection(mqttService);
         embeddedConnection.setQos(1);
-        embeddedConnection.setRetain(true);
 
         clientConnection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
                 embeddedConnection.isSecure(), "client");
@@ -85,7 +84,7 @@ public class MoquetteTest extends JavaOSGiTest {
     public void singleTopic() throws InterruptedException, ExecutionException, TimeoutException {
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
 
-        futures.add(embeddedConnection.publish(TEST_TOPIC, "testPayload".getBytes(StandardCharsets.UTF_8)));
+        futures.add(embeddedConnection.publish(TEST_TOPIC, "testPayload".getBytes(StandardCharsets.UTF_8), 1, true));
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
 
@@ -102,8 +101,8 @@ public class MoquetteTest extends JavaOSGiTest {
             throws InterruptedException, ExecutionException, TimeoutException {
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
 
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/1", "testPayload1".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/2", "testPayload2".getBytes(StandardCharsets.UTF_8)));
+        futures.add(embeddedConnection.publish(TEST_TOPIC + "/1", "testPayload1".getBytes(StandardCharsets.UTF_8), 1, true));
+        futures.add(embeddedConnection.publish(TEST_TOPIC + "/2", "testPayload2".getBytes(StandardCharsets.UTF_8), 1, true));
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
 
@@ -121,8 +120,8 @@ public class MoquetteTest extends JavaOSGiTest {
             throws InterruptedException, ExecutionException, TimeoutException {
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
 
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/1", "testPayload1".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/2", "testPayload2".getBytes(StandardCharsets.UTF_8)));
+        futures.add(embeddedConnection.publish(TEST_TOPIC + "/1", "testPayload1".getBytes(StandardCharsets.UTF_8), 1, true));
+        futures.add(embeddedConnection.publish(TEST_TOPIC + "/2", "testPayload2".getBytes(StandardCharsets.UTF_8), 1, true));
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
 
@@ -139,8 +138,8 @@ public class MoquetteTest extends JavaOSGiTest {
             throws InterruptedException, ExecutionException, TimeoutException {
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
 
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/1", "testPayload1".getBytes(StandardCharsets.UTF_8)));
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/2", "testPayload2".getBytes(StandardCharsets.UTF_8)));
+        futures.add(embeddedConnection.publish(TEST_TOPIC + "/1", "testPayload1".getBytes(StandardCharsets.UTF_8), 1, true));
+        futures.add(embeddedConnection.publish(TEST_TOPIC + "/2", "testPayload2".getBytes(StandardCharsets.UTF_8), 1, true));
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
 

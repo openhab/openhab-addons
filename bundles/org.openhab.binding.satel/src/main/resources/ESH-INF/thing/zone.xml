@@ -34,15 +34,15 @@
 
 		<config-description>
 			<parameter name="id" type="integer" min="1" max="256" required="true">
-				<label>Zone number</label>
+				<label>Zone Number</label>
 				<description>Number that identifies the zone in the alarm system</description>
 			</parameter>
 			<parameter name="invertState" type="boolean" required="false">
-				<label>Invert state</label>
+				<label>Invert State</label>
 				<description>Changes active (ON) state to 0</description>
 			</parameter>
 			<parameter name="wireless" type="boolean" required="false">
-				<label>Wireless zone</label>
+				<label>Wireless Zone</label>
 				<description>This zone is monitored by a wireless detector like APD-100, AFD-100, etc</description>
 			</parameter>
 		</config-description>
@@ -72,21 +72,21 @@
 
 	<channel-type id="tamper_alarm">
 		<item-type>Switch</item-type>
-		<label>Tamper alarm</label>
+		<label>Tamper Alarm</label>
 		<description>Active when detector in the zone is tampered and zone is armed</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="alarm_memory">
 		<item-type>Switch</item-type>
-		<label>Alarm memory</label>
+		<label>Alarm Memory</label>
 		<description>Memorized alarm state for the zone</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="tamper_alarm_memory">
 		<item-type>Switch</item-type>
-		<label>Tamper alarm memory</label>
+		<label>Tamper Alarm Memory</label>
 		<description>Memorized tamper alarm state for the zone</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -99,14 +99,14 @@
 
 	<channel-type id="no_violation_trouble" advanced="true">
 		<item-type>Switch</item-type>
-		<label>No violation trouble</label>
+		<label>No Violation Trouble</label>
 		<description>Active when no violation has been detected in the zone for configured time</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="long_violation_trouble" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Long violation trouble</label>
+		<label>Long Violation Trouble</label>
 		<description>Active when violation in the zone lasts longer than configured time</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -126,7 +126,7 @@
 
 	<channel-type id="masked_memory" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Masked memory</label>
+		<label>Masked Memory</label>
 		<description>Memorized masked state for the zone</description>
 		<state readOnly="true" />
 	</channel-type>

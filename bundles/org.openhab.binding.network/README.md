@@ -130,11 +130,11 @@ Linux has three different tools:
 *   arping by Thomas Habets (Ubuntu/Debian: `apt-get install arping`)
 *   arp-ping by Eli Fulkerson (Windows: https://www.elifulkerson.com/projects/arp-ping.php)
 
-arping by Thomas Habets runs on Windows and MacOS as well.
+arping by Thomas Habets runs on Windows and macOS as well.
 
 Make sure the tool is available in the PATH, or in the same path as the openHAB executable.
 
-On Linux and MacOS elevated access permissions may be needed, for instance by making the executable a suid executable (`chmod u+s /usr/sbin/arping`).
+On Linux and macOS elevated access permissions may be needed, for instance by making the executable a suid executable (`chmod u+s /usr/sbin/arping`).
 Just test the executable on the command line; if `sudo` is required, grant elevated permissions.
 
 ### DHCP Listen

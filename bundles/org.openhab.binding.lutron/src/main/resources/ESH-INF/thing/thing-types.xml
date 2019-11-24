@@ -41,7 +41,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="delay" type="integer" min="0" max="250" unit="ms">
-				<label>Send delay</label>
+				<label>Send Delay</label>
 				<description>The delay in milliseconds between sending integration commands (for throttling)</description>
 				<unitLabel>ms</unitLabel>
 				<default>0</default>
@@ -99,6 +99,37 @@
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
 				<description>Address of shade in the Lutron system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="blind">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Lutron Blind</label>
+		<description>Controls venetian and horizontal sheer blinds</description>
+		<category>Blinds</category>
+
+		<channels>
+			<channel id="blindliftlevel" typeId="blindLift"/>
+			<channel id="blindtiltlevel" typeId="blindTilt"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of blind in the Lutron system</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Type of blind</description>
+				<options>
+					<option value="Sheer">Sheer</option>
+					<option value="Venetian">Venetian</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -349,6 +380,45 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="palladiomkeypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Palladiom Keypad</label>
+		<description>Lutron Palladiom keypad (HomeWorks QS Only)</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of keypad in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>Keypad Model</label>
+				<description>Keypad/faceplate model number without the system prefix</description>
+				<options>
+					<option value="2W">2W</option>
+					<option value="3W">3W</option>
+					<option value="4W">4W</option>
+					<option value="RW">RW</option>
+					<option value="22W">22W</option>
+					<option value="24W">24W</option>
+					<option value="42W">42W</option>
+					<option value="44W">44W</option>
+					<option value="2RW">2RW</option>
+					<option value="4RW">4RW</option>
+					<option value="RRW">RRW</option>
+					<option value="Generic">Generic</option>
+				</options>
+				<default>Generic</default>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<thing-type id="pico">
 		<supported-bridge-type-refs>
@@ -436,6 +506,28 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<thing-type id="wci">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>WCI</label>
+		<description>QS Wallbox Closure Interface</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of WCI in the Lutron control system</description>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 
 	<thing-type id="virtualkeypad">
 		<supported-bridge-type-refs>
@@ -544,11 +636,11 @@
 		<channels>
 			<channel id="buttonpress" typeId="buttonpress"/>
 			<channel id="zonelowerstop" typeId="button">
-				<label>All zone lower stop</label>
+				<label>All Zone Lower Stop</label>
 				<description>Stopping all ramping down on all Control Units</description>
 			</channel>
 			<channel id="zoneraisestop" typeId="button">
-				<label>All zone raise stop</label>
+				<label>All Zone Raise Stop</label>
 				<description>Stopping all ramping up on all Control Units</description>
 			</channel>
 			<channel id="timeclock" typeId="timeclock"/>
@@ -600,7 +692,7 @@
 				<default>nwk</default>
 			</parameter>
 			<parameter name="retryPolling" type="integer">
-				<label>Polling Interval to try to reconnect</label>
+				<label>Polling Interval to Try to Reconnect</label>
 				<description>Interval (in seconds) to try to (re)connect to the matrix</description>
 				<default>30</default>
 			</parameter>
@@ -958,6 +1050,22 @@
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
+	<channel-type id="blindLift">
+		<item-type>Rollershutter</item-type>
+		<label>Blind Level</label>
+		<description>Raise/lower the blind level</description>
+		<category>Rollershutter</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="blindTilt">
+		<item-type>Rollershutter</item-type>
+		<label>Blind Tilt</label>
+		<description>Tilt the blinds up/down</description>
+		<category>Rollershutter</category>
+		<state min="0" max="50" pattern="%d %%"/>
+	</channel-type>
+
 	<channel-type id="switchState">
 		<item-type>Switch</item-type>
 		<label>Switch State</label>
@@ -975,28 +1083,28 @@
 
 	<channel-type id="button">
 		<item-type>Switch</item-type>
-		<label>Keypad button</label>
+		<label>Keypad Button</label>
 		<description>Button to trigger a scene or rule</description>
 		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="buttonAdvanced" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Keypad button</label>
+		<label>Keypad Button</label>
 		<description>Button to trigger a scene or rule</description>
 		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="ledIndicator">
 		<item-type>Switch</item-type>
-		<label>Keypad button LED indicator</label>
+		<label>Keypad Button LED Indicator</label>
 		<description>LED indicator for the associated button</description>
 		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="ledIndicatorAdvanced" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Keypad button LED indicator</label>
+		<label>Keypad Button LED Indicator</label>
 		<description>LED indicator for the associated button</description>
 		<category>Light</category>
 	</channel-type>
@@ -1117,28 +1225,28 @@
 
 	<channel-type id="zonelock">
 		<item-type>Switch</item-type>
-		<label>Zone lockout</label>
+		<label>Zone Lockout</label>
 		<description>Locks/Unlocks the zone</description>
 		<category>Zone</category>
 	</channel-type>
 
 	<channel-type id="zonerampdown">
 		<item-type>Switch</item-type>
-		<label>Ramps down the zone</label>
+		<label>Ramps Down the Zone</label>
 		<description>Starts ramping down the zone</description>
 		<category>Zone</category>
 	</channel-type>
 
 	<channel-type id="zonerampup">
 		<item-type>Switch</item-type>
-		<label>Ramps up the zone</label>
+		<label>Ramps up the Zone</label>
 		<description>Starts ramping up the zone</description>
 		<category>Zone</category>
 	</channel-type>
 
 	<channel-type id="zonefade">
 		<item-type>Number</item-type>
-		<label>Zone Fade (in seconds)</label>
+		<label>Zone Fade (in Seconds)</label>
 		<description>Specifies the fade (in seconds [truncated to nearest minute if more than 60 seconds]) when applying intensity changes</description>
 		<category>Zone</category>
 		<state min="1" max="3600"/>

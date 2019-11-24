@@ -1,10 +1,10 @@
 # Sonos Binding
 
-This binding integrates the [Sonos Multi-Room Audio system](http://www.sonos.com).
+This binding integrates the [Sonos Multi-Room Audio system](https://www.sonos.com).
 
 **Attention:** 
 You might run into trouble if your control system (the binding) is in another subnet than your Sonos device. 
-Sonos devices make use of multicast which in most cases needs additional router configuration outside of a single subnet.   
+Sonos devices make use of multicast which in most cases needs additional router configuration outside of a single subnet.
 If you observe communication errors (COMMUNICATION_ERROR/not registered), you might need to configure your router to increase the TTL of the packets send by your Sonos device. 
 This happens because of a TTL=1 for ALIVE packets send by Sonos devices, resulting in dropped packets after one hop.
 
@@ -32,7 +32,7 @@ The binding has the following configuration options, which can be set for "bindi
 ## Thing Configuration
 
 The Sonos Thing requires the UPnP UDN (Unique Device Name) as a configuration value in order for the binding to know how to access it.
-All the Sonos UDN have the "RINCON_000E58D8403A0XXXX" format (value to be found via Sonos item in the PaperUI Inbox).
+All the Sonos UDN have the "RINCON_000E58D8403A0XXXX" format (value to be found via Sonos item in the Paper UI Inbox).
 Additionally, a refresh interval, used to poll the Sonos device, can be specified (in seconds).
 You can use the `notificationVolume` property for setting a default volume (in percent) to be used to play notifications.
 In the thing file, this looks e.g. like
@@ -52,7 +52,7 @@ The devices support the following channels:
 | alarmproperties     | String    | R           | Properties of the alarm currently running                                                                                                                 | all                                  |
 | alarmrunning        | Switch    | R           | Set to ON if the alarm was triggered                                                                                                                      | all                                  |
 | clearqueue          | Switch    | W           | Suppress all songs from the current queue                                                                                                                 | all                                  |
-| control             | Player    | RW          | Control the Zone Player, e.g. start/stop/next/previous/ffward/rewind                                                                                      | all                                  |
+| control             | Player    | RW          | Control the Zone Player, e.g. PLAY/PAUSE/NEXT/PREVIOUS                                                                                      | all                                  |
 | coordinator         | String    | R           | UDN of the coordinator for the current group                                                                                                              | all                                  |
 | currentalbum        | String    | R           | Name of the album currently playing                                                                                                                       | all                                  |
 | currentalbumart     | Image     | R           | Cover art of the album currently playing                                                                                                                  | all                                  |
@@ -63,7 +63,7 @@ The devices support the following channels:
 | currenttrackuri     | String    | R           | URI of the current track                                                                                                                                  | all                                  |
 | currenttransporturi | String    | R           | URI of the current AV transport                                                                                                                           | all                                  |
 | favorite            | String    | W           | Play the given favorite entry. The favorite entry has to be predefined in the Sonos Controller app                                                        | all                                  |
-| led                 | Switch    | RW          | Set or get the status of the white led on the front of the Zone Player                                                                                    | all                                  |
+| led                 | Switch    | RW          | Set or get the status of the white LED on the front of the Zone Player                                                                                    | all                                  |
 | linein              | Switch    | R           | Indicator set to ON when the line-in of the Zone Player is connected                                                                                      | PLAY5, CONNECT, CONNECTAMP, PLAYBASE |
 | localcoordinator    | Switch    | R           | Indicator set to ON if the this Zone Player is the Zone Group Coordinator                                                                                 | all                                  |
 | mute                | Switch    | RW          | Set or get the mute state of the master volume of the Zone Player                                                                                         | all                                  |

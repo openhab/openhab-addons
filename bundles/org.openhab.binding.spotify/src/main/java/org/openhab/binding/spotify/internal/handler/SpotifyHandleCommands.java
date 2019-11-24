@@ -57,8 +57,11 @@ class SpotifyHandleCommands {
         this.spotifyApi = spotifyApi;
     }
 
-    public void setLists(List<Device> devices, List<Playlist> playlists) {
+    public void setDevices(final List<Device> devices) {
         this.devices = devices;
+    }
+
+    public void setPlaylists(final List<Playlist> playlists) {
         this.playlists = playlists;
     }
 

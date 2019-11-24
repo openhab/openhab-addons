@@ -156,7 +156,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
                 }
             }
         } catch (IOException | URISyntaxException e) {
-            logger.warn("Handle command failed {}", e);
+            logger.warn("Handle command failed", e);
         }
         if (waitForUpdate >= 0) {
             this.updateStateJob = scheduler.schedule(() -> accountHandler.updateFlashBriefingHandlers(), waitForUpdate,

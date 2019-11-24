@@ -35,6 +35,7 @@
 /bundles/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @J-N-K
+/bundles/org.openhab.binding.doorbird/ @mhilbush
 /bundles/org.openhab.binding.dscalarm/ @RSStephens
 /bundles/org.openhab.binding.dsmr/ @Hilbrand
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
@@ -63,6 +64,7 @@
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.hpprinter/ @cossey
 /bundles/org.openhab.binding.hue/ @cweitkamp
+/bundles/org.openhab.binding.hydrawise/ @digitaldan
 /bundles/org.openhab.binding.hyperion/ @tavalin
 /bundles/org.openhab.binding.iaqualink/ @digitaldan
 /bundles/org.openhab.binding.icloud/ @pgfeller
@@ -109,6 +111,7 @@
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
+/bundles/org.openhab.binding.networkupstools/ @Hilbrand
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
 /bundles/org.openhab.binding.nibeuplink/ @alexf2015
 /bundles/org.openhab.binding.nikobus/ @crnjan
@@ -167,6 +170,7 @@
 /bundles/org.openhab.binding.systeminfo/ @svilenvul
 /bundles/org.openhab.binding.tado/ @dfrommi
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
+/bundles/org.openhab.binding.telegram/ @ZzetT
 /bundles/org.openhab.binding.tellstick/ @jarlebh
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.toon/ @jongj

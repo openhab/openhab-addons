@@ -40,7 +40,7 @@ Thing exec:command:uniquename [command="/command/to/execute here", interval=15, 
 ```
 
 
-The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax).
+The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax).
 The following parameters are automatically added:
 
 -   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)

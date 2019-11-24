@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for BBQ temperature message.
@@ -123,13 +124,13 @@ public class RFXComBBQTemperatureMessage extends RFXComBatteryDeviceMessage<RFXC
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         if (CHANNEL_FOOD_TEMPERATURE.equals(channelId)) {
             return new DecimalType(foodTemperature);
         } else if (CHANNEL_BBQ_TEMPERATURE.equals(channelId)) {
             return new DecimalType(bbqTemperature);
         } else {
-            return super.convertToState(channelId);
+            return super.convertToState(channelId, deviceState);
         }
     }
 

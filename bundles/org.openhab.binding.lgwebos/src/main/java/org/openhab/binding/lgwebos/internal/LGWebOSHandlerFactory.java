@@ -70,15 +70,15 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        // LGWebOS TVs only uses WEAK cipher suites, thus not using SSL.
+        // LGWebOS TVs only support WEAK cipher suites, thus not using SSL.
         // SslContextFactory sslContextFactory = new SslContextFactory(true);
         // sslContextFactory.addExcludeProtocols("tls/1.3");
 
         // reduce timeout from default 15sec
         this.webSocketClient.setConnectTimeout(1000);
 
-        // channel and app listing are json docs up to 2MB
-        this.webSocketClient.getPolicy().setMaxTextMessageSize(2097152);
+        // channel and app listing are json docs up to 3MB
+        this.webSocketClient.getPolicy().setMaxTextMessageSize(3 * 1024 * 1024);
 
         // since this is not using openHAB's shared web socket client we need to start and stop
         try {
