@@ -4,24 +4,21 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="models">
+	<thing-type id="model3">
 
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
-		<label>Tesla Model S</label>
-		<description>A Tesla Model S Vehicle</description>
+		<label>Tesla Model 3</label>
+		<description>A Tesla Model 3 Vehicle</description>
 
 		<channels>
-			<channel id="allowwakeup" typeId="allowwakeup" />
 			<channel id="autoconditioning" typeId="autoconditioning" />
 			<channel id="autoparkstate" typeId="autoparkstate" />
 			<channel id="autoparkstate2" typeId="autoparkstate" />
 			<channel id="autoparkstyle" typeId="autoparkstyle" />
 			<channel id="batterycurrent" typeId="batterycurrent" />
-			<channel id="batteryheater" typeId="batteryheater" />
-			<channel id="batteryheaternopower" typeId="batteryheaternopower" />
 			<channel id="batterylevel" typeId="batterylevel" />
 			<channel id="batteryrange" typeId="batteryrange" />
 			<channel id="calendarenabled" typeId="calendarenabled" />
@@ -81,7 +78,6 @@
 			<channel id="maxcharges" typeId="maxcharges" />
 			<channel id="mobileenabled" typeId="mobileenabled" />
 			<channel id="minavailabletemp" typeId="minavailabletemp" />
-			<channel id="nativelocation" typeId="location" />
 			<channel id="notenoughpower" typeId="notenoughpower" />
 			<channel id="notificationsenabled" typeId="notificationsenabled" />
 			<channel id="notificationssupported" typeId="notificationssupported" />
@@ -110,9 +106,6 @@
 			<channel id="soc" typeId="soc" />
 			<channel id="speed" typeId="speed" />
 			<channel id="state" typeId="state" />
-			<channel id="steeringwheelheater" typeId="steeringwheelheater" />
-			<channel id="sunroof" typeId="sunroof" />
-			<channel id="sunroofstate" typeId="sunroofstate" />
 			<channel id="combinedtemp" typeId="combinedtemp" />
 			<channel id="timetofullcharge" typeId="timetofullcharge" />
 			<channel id="tripcharging" typeId="tripcharging" />
@@ -121,7 +114,6 @@
 			<channel id="valetmode" typeId="valetmode" />
 			<channel id="valetpin" typeId="valetpin" />
 			<channel id="wakeup" typeId="wakeup" />
-			<channel id="wiperbladeheater" typeId="wiperbladeheater" />
 		</channels>
 
 		<config-description>

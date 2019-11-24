@@ -10,8 +10,8 @@
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
-		<label>Tesla Model S</label>
-		<description>A Tesla Model S Vehicle</description>
+		<label>Tesla Model X</label>
+		<description>A Tesla Model X Vehicle</description>
 
 		<channels>
 			<channel id="allowwakeup" typeId="allowwakeup" />
