@@ -18,6 +18,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.TemporalAmount;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +33,9 @@ import biweekly.io.text.ICalReader;
 import biweekly.property.DateEnd;
 import biweekly.property.DateStart;
 import biweekly.property.DurationProperty;
+import biweekly.property.Status;
 import biweekly.property.Summary;
+import biweekly.property.Uid;
 import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 
 /**
@@ -77,10 +81,17 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public @Nullable Event getNextEvent(Instant instant) {
-        VEventWPeriod earliestNextEvent = null;
+
         Instant recurrenceCalculationEnd = instant.plus(lookAround);
 
+        List<VEventWPeriod> positiveCandidates = new LinkedList<VEventWPeriod>();
+        List<VEventWPeriod> negativeCandidates = new LinkedList<VEventWPeriod>();
         for (VEvent currentEvent : bakingCalendar.getEvents()) {
+            @Nullable
+            Status eventStatus = currentEvent.getStatus();
+            boolean additive = (eventStatus == null
+                    || (eventStatus != null && (eventStatus.isTentative() || eventStatus.isConfirmed())));
+
             DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
             Duration duration = getEventLength(currentEvent);
             if (duration == null) {
@@ -90,13 +101,34 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             while (startDates.hasNext()) {
                 Instant startInstant = startDates.next().toInstant();
                 Instant endInstant = startInstant.plus(duration);
-                if (startInstant.isAfter(instant)
-                        && (earliestNextEvent == null || earliestNextEvent.start.isAfter(startInstant))) {
-                    earliestNextEvent = new VEventWPeriod(currentEvent, startInstant, endInstant);
+                if (startInstant.isAfter(instant)) {
+                    List<VEventWPeriod> candidateList = (additive ? positiveCandidates : negativeCandidates);
+                    candidateList.add(new VEventWPeriod(currentEvent, startInstant, endInstant));
                 }
                 if (startInstant.isAfter(recurrenceCalculationEnd)) {
                     break;
                 }
+            }
+        }
+        VEventWPeriod earliestNextEvent = null;
+        for (VEventWPeriod positiveCandidate : positiveCandidates) {
+            @Nullable
+            Uid pcUid = positiveCandidate.vEvent.getUid();
+            boolean cancel = false;
+            if (pcUid != null) {
+                for (VEventWPeriod negativeCandidate : negativeCandidates) {
+                    @Nullable
+                    Uid ncUid = negativeCandidate.vEvent.getUid();
+                    if (ncUid != null && ncUid.getValue().contentEquals(pcUid.getValue())
+                            && positiveCandidate.start.equals(negativeCandidate.start)
+                            && positiveCandidate.end.equals(negativeCandidate.end)) {
+                        cancel = true;
+                        break;
+                    }
+                }
+            }
+            if (!cancel && (earliestNextEvent == null || earliestNextEvent.start.isAfter(positiveCandidate.start))) {
+                earliestNextEvent = positiveCandidate;
             }
         }
 
@@ -111,7 +143,13 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         Instant recurrenceCalculationEnd = instant.plus(lookAround);
         // new DateTime(instant.plus(lookAround).getEpochSecond() * 1000));
         // DateTime instantDate = new DateTime(instant.getEpochSecond() * 1000);
+        List<VEventWPeriod> positiveCandidates = new LinkedList<VEventWPeriod>();
+        List<VEventWPeriod> negativeCandidates = new LinkedList<VEventWPeriod>();
         for (VEvent currentEvent : bakingCalendar.getEvents()) {
+            @Nullable
+            Status eventStatus = currentEvent.getStatus();
+            boolean additive = (eventStatus == null
+                    || (eventStatus != null && (eventStatus.isTentative() || eventStatus.isConfirmed())));
             DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
             Duration duration = getEventLength(currentEvent);
             if (duration == null) {
@@ -122,11 +160,32 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                 Instant startInstant = startDates.next().toInstant();
                 Instant endInstant = startInstant.plus(duration);
                 if (startInstant.isBefore(instant) && endInstant.isAfter(instant)) {
-                    return new VEventWPeriod(currentEvent, startInstant, endInstant);
+                    List<VEventWPeriod> candidateList = (additive ? positiveCandidates : negativeCandidates);
+                    candidateList.add(new VEventWPeriod(currentEvent, startInstant, endInstant));
+                    break;
                 }
                 if (startInstant.isAfter(recurrenceCalculationEnd)) {
                     break;
                 }
+            }
+        }
+
+        for (VEventWPeriod possibleCandidate : positiveCandidates) {
+            boolean cancel = false;
+            @Nullable
+            Uid candidateUid = possibleCandidate.vEvent.getUid();
+            if (candidateUid != null) {
+                for (VEventWPeriod possibleCancellation : negativeCandidates) {
+                    @Nullable
+                    Uid cancellationUid = possibleCancellation.vEvent.getUid();
+                    if (cancellationUid != null && candidateUid.getValue().contentEquals(cancellationUid.getValue())) {
+                        cancel = true;
+                        break;
+                    }
+                }
+            }
+            if (!cancel) {
+                return possibleCandidate;
             }
         }
         return null;
