@@ -305,7 +305,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                 updateThingStatuses();
                 updateStatus(ThingStatus.ONLINE);
             } catch (final MillheatCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 if (AbstractResponse.ERROR_CODE_ACCESS_TOKEN_EXPIRED == e.getErrorCode()
                         || AbstractResponse.ERROR_CODE_INVALID_SIGNATURE == e.getErrorCode()) {
                     logger.debug("Error refreshing model - token expired, initiating new login", e);
