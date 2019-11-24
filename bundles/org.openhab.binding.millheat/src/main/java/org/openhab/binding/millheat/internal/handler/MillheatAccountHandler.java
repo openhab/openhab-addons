@@ -207,7 +207,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         stopPolling();
         statusFuture = scheduler.scheduleWithFixedDelay(() -> {
             try {
-                updateModelFromServerAndUpdateThingStatus();
+                updateModelFromServerWithRetry();
             } catch (final RuntimeException e) {
                 logger.debug("Error refreshing model", e);
             }
@@ -227,7 +227,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
             final Request request = buildLoggedInRequest(req);
             return sendRequest(request, req, responseType);
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            throw new MillheatCommunicationException("Error building Millheat request", e);
+            throw new MillheatCommunicationException("Error building Millheat request: " + e.getMessage(), e);
         }
     }
 
@@ -252,7 +252,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                                 + " and payload " + responseJson);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new MillheatCommunicationException("Error sending request to Millheat server", e);
+            throw new MillheatCommunicationException("Error sending request to Millheat server: " + e.getMessage(), e);
         }
     }
 
@@ -298,21 +298,35 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public void updateModelFromServerAndUpdateThingStatus() {
+    public void updateModelFromServerWithRetry() {
         if (allowModelUpdate()) {
             try {
-                model = refreshModel();
-                updateThingStatuses();
-                updateStatus(ThingStatus.ONLINE);
+                updateModel();
             } catch (final MillheatCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                if (AbstractResponse.ERROR_CODE_ACCESS_TOKEN_EXPIRED == e.getErrorCode()
-                        || AbstractResponse.ERROR_CODE_INVALID_SIGNATURE == e.getErrorCode()) {
-                    logger.debug("Error refreshing model - token expired, initiating new login", e);
-                    doLogin();
+                try {
+                    if (AbstractResponse.ERROR_CODE_ACCESS_TOKEN_EXPIRED == e.getErrorCode()
+                            || AbstractResponse.ERROR_CODE_INVALID_SIGNATURE == e.getErrorCode()
+                            || AbstractResponse.ERROR_CODE_AUTHENTICATION_FAILURE == e.getErrorCode()) {
+                        logger.debug("Token expired, will refresh token, then retry state refresh", e);
+                        if (doLogin()) {
+                            updateModel();
+                        }
+                    } else {
+                        logger.debug("Initiating retry due to error {}", e.getMessage(), e);
+                        updateModel();
+                    }
+                } catch (MillheatCommunicationException e1) {
+                    logger.debug("Retry failed, waiting for next refresh cycle: {}", e.getMessage(), e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e1.getMessage());
                 }
             }
         }
+    }
+
+    private void updateModel() throws MillheatCommunicationException {
+        model = refreshModel();
+        updateThingStatuses();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void updateThingStatuses() {
@@ -385,9 +399,8 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     public void updateIndependentHeaterProperties(@Nullable final String macAddress, @Nullable final Long heaterId,
             @Nullable final Command temperatureCommand, @Nullable final Command masterOnOffCommand,
             @Nullable final Command fanCommand) {
-        final Optional<Heater> optionalHeater = model.findHeaterByMacOrId(macAddress, heaterId);
-        if (optionalHeater.isPresent()) {
-            final Heater heater = optionalHeater.get();
+
+        model.findHeaterByMacOrId(macAddress, heaterId).ifPresent(heater -> {
             int setTemp = heater.getTargetTemp();
             if (temperatureCommand instanceof QuantityType<?>) {
                 setTemp = (int) ((QuantityType<?>) temperatureCommand).longValue();
@@ -409,6 +422,6 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
             } catch (final MillheatCommunicationException e) {
                 logger.info("Error updating temperature for heater {}", macAddress, e);
             }
-        }
+        });
     }
 }

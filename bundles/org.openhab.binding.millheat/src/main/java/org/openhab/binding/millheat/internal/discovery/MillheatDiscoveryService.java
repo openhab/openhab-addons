@@ -62,7 +62,7 @@ public class MillheatDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Start scan for Millheat devices.");
         try {
             final ThingUID accountUID = accountHandler.getThing().getUID();
-            accountHandler.updateModelFromServerAndUpdateThingStatus();
+            accountHandler.updateModelFromServerWithRetry();
             final MillheatModel model = accountHandler.getModel();
             for (final Home home : model.getHomes()) {
                 for (final Room room : home.getRooms()) {
