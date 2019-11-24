@@ -32,8 +32,6 @@
 	<channel-type id="timer">
 		<item-type>Number</item-type>
 		<label>Off timer</label>
-		<!-- <category>Humidity</category> -->
-		<!-- <tags> <tag>CurrentHumidity</tag> </tags> -->
 		<description>Number of seconds until turning off</description>
 		<state readOnly="false" />
 	</channel-type>

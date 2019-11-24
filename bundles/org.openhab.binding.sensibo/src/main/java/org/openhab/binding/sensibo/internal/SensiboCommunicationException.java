@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.sensibo.internal;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
 
 /**
@@ -20,6 +20,7 @@ import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class SensiboCommunicationException extends Exception {
     private static final long serialVersionUID = 1L;
 
@@ -31,7 +32,7 @@ public class SensiboCommunicationException extends Exception {
         super(message);
     }
 
-    public SensiboCommunicationException(@NonNull final AbstractRequest req, final String overallStatus) {
+    public SensiboCommunicationException(final AbstractRequest req, final String overallStatus) {
         super("Server responded with error to request " + req.getClass().getSimpleName() + "/" + req.getRequestUrl()
                 + ": " + overallStatus);
     }

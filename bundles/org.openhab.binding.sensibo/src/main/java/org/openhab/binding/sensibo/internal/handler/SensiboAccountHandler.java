@@ -84,7 +84,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     private RequestLogger requestLogger;
     private Gson gson;
     private SensiboModel model = new SensiboModel(0);
-    private @NonNullByDefault({}) ScheduledFuture<?> statusFuture;
+    private @Nullable ScheduledFuture<?> statusFuture;
     private @NonNullByDefault({}) SensiboAccountConfiguration config;
 
     public SensiboAccountHandler(final Bridge bridge, final HttpClient httpClient, final BundleContext context) {
@@ -103,9 +103,9 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
                 return ZonedDateTime.parse(in.nextString());
             }
 
-        }).create();
+        }).setLenient().setPrettyPrinting().create();
 
-        requestLogger = new RequestLogger(bridge.getUID().getId());
+        requestLogger = new RequestLogger(bridge.getUID().getId(), gson);
     }
 
     private boolean allowModelUpdate() {
@@ -217,6 +217,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     /**
      * Stops this thing's polling future
      */
+    @SuppressWarnings("null")
     private void stopPolling() {
         if (statusFuture != null && !statusFuture.isCancelled()) {
             statusFuture.cancel(true);
@@ -299,7 +300,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
         return request;
     }
 
-    public void updateSensiboSkyAcState(@Nullable final String macAddress, String property, Object value,
+    public void updateSensiboSkyAcState(final String macAddress, String property, Object value,
             SensiboBaseThingHandler handler) {
         Optional<SensiboSky> optionalHeater = model.findSensiboSkyByMacAddress(macAddress);
         if (optionalHeater.isPresent()) {
@@ -320,7 +321,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public void updateSensiboSkyTimer(@Nullable final String macAddress, @Nullable Integer secondsFromNow) {
+    public void updateSensiboSkyTimer(final String macAddress, @Nullable Integer secondsFromNow) {
         Optional<SensiboSky> optionalHeater = model.findSensiboSkyByMacAddress(macAddress);
         if (optionalHeater.isPresent()) {
             SensiboSky sensiboSky = optionalHeater.get();

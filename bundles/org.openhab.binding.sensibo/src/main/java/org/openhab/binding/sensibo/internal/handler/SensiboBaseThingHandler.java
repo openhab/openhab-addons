@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.sensibo.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public abstract class SensiboBaseThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SensiboBaseThingHandler.class);
 
@@ -41,28 +44,28 @@ public abstract class SensiboBaseThingHandler extends BaseThingHandler {
     }
 
     public SensiboModel getSensiboModel() {
-        final SensiboAccountHandler accountHandler = getAccountHandler();
-        if (accountHandler != null) {
-            return accountHandler.getModel();
+        final Optional<SensiboAccountHandler> accountHandler = getAccountHandler();
+        if (accountHandler.isPresent()) {
+            return accountHandler.get().getModel();
+        } else {
+            logger.debug(
+                    "Thing {} cannot exist without a bridge and account handler - returning empty model. No heaters or rooms will be found",
+                    getThing().getUID());
+            return new SensiboModel(0);
         }
-        logger.debug(
-                "Thing {} cannot exist without a bridge and account handler - returning empty model. No heaters or rooms will be found",
-                getThing().getUID());
-        return new SensiboModel(0);
     }
 
-    protected SensiboAccountHandler getAccountHandler() {
+    protected Optional<SensiboAccountHandler> getAccountHandler() {
         final Bridge bridge = getBridge();
         if (bridge != null) {
             final SensiboAccountHandler accountHandler = (SensiboAccountHandler) bridge.getHandler();
             if (accountHandler != null) {
-                return accountHandler;
+                return Optional.of(accountHandler);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    protected abstract void handleCommand(@NonNull ChannelUID uid, @NonNull Command command,
-            @NonNull SensiboModel model);
+    protected abstract void handleCommand(ChannelUID uid, Command command, SensiboModel model);
 
 }

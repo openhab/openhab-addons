@@ -35,7 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -96,10 +95,8 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     public void updateAcState(SensiboSky sensiboSky, String property, Object value) {
         StateChange stateChange = checkStateChangeValid(sensiboSky, property, value);
         if (stateChange.valid) {
-            final SensiboAccountHandler accountHandler = getAccountHandler();
-            if (accountHandler != null) {
-                accountHandler.updateSensiboSkyAcState(config.macAddress, property, stateChange.value, this);
-            }
+            getAccountHandler().ifPresent(
+                    handler -> handler.updateSensiboSkyAcState(config.macAddress, property, stateChange.value, this));
         } else {
             logger.info("Update command not sent; invalid state change for SensiboSky AC state: {}",
                     stateChange.validationMessage);
@@ -107,15 +104,12 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     }
 
     private void updateTimer(SensiboSky sensiboSky, @Nullable Integer secondsFromNowUntilSwitchOff) {
-        final SensiboAccountHandler accountHandler = getAccountHandler();
-        if (accountHandler != null) {
-            accountHandler.updateSensiboSkyTimer(config.macAddress, secondsFromNowUntilSwitchOff);
-        }
+        getAccountHandler()
+                .ifPresent(handler -> handler.updateSensiboSkyTimer(config.macAddress, secondsFromNowUntilSwitchOff));
     }
 
     @Override
-    protected void handleCommand(@NonNull final ChannelUID channelUID, @NonNull final Command command,
-            @NonNull final SensiboModel model) {
+    protected void handleCommand(final ChannelUID channelUID, final Command command, final SensiboModel model) {
         final Optional<SensiboSky> optionalSensiboSky = model.findSensiboSkyByMacAddress(config.macAddress);
         if (optionalSensiboSky.isPresent()) {
             final SensiboSky unit = optionalSensiboSky.get();
@@ -241,7 +235,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         final Optional<SensiboSky> sensiboSky = getSensiboModel().findSensiboSkyByMacAddress(config.macAddress);
         if (sensiboSky.isPresent()) {
             final SensiboSky pod = sensiboSky.get();
-            addDynamicChannelsAndProperties(sensiboSky.get());
+            addDynamicChannelsAndProperties(pod);
 
             if (pod.isAlive()) {
                 updateStatus(ThingStatus.ONLINE);

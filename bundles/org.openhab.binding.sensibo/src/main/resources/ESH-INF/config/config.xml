@@ -6,13 +6,12 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:sensibo:account">
-		<parameter name="apiKey" type="text">
+		<parameter name="apiKey" type="text" required="true">
 			<label>API Key</label>
 			<description>Your Sensibo app API key</description>
-			<required>true</required>
 		</parameter>
 
-		<parameter name="refreshInterval" type="integer" required="false" min="30" unit="s">
+		<parameter name="refreshInterval" type="integer" min="30" unit="s">
 			<label>Refresh interval</label>
 			<description>How often to fetch updates from Sensibo service (polling interval)</description>
 			<default>120</default>

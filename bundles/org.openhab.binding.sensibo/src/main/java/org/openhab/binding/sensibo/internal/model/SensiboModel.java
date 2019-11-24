@@ -17,13 +17,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SensiboModel} represents the home structure as designed by the user in the Sensibo app.
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class SensiboModel {
     private final long lastUpdated;
     private final List<SensiboSky> pods = new ArrayList<>();
@@ -53,12 +54,8 @@ public class SensiboModel {
      * @param macAddress
      * @param acState
      */
-    public void updateAcState(@Nullable String macAddress, AcState acState) {
-        Optional<SensiboSky> sensiboSky = findSensiboSkyByMacAddress(macAddress);
-        if (sensiboSky.isPresent()) {
-            sensiboSky.get().updateAcState(acState);
-        }
-
+    public void updateAcState(String macAddress, AcState acState) {
+        findSensiboSkyByMacAddress(macAddress).ifPresent(sky -> sky.updateAcState(acState));
     }
 
 }

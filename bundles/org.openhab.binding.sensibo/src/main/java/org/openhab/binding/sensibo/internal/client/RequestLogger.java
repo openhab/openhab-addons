@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -36,7 +35,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Gili Tzabari - Initial contribution https://stackoverflow.com/users/14731/gili
  *         https://stackoverflow.com/questions/50318736/how-to-log-httpclient-requests-response-including-body
- * @author Arne Seime - adapted for Sensibo binding
+ * @author Arne Seime - adapted for Openhab binding
  */
 @NonNullByDefault
 public final class RequestLogger {
@@ -46,9 +45,9 @@ public final class RequestLogger {
     private final Gson gson;
     private final String prefix;
 
-    public RequestLogger(final String prefix) {
-        parser = new JsonParser();
-        gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
+    public RequestLogger(final String prefix, final Gson gson) {
+        this.parser = new JsonParser();
+        this.gson = gson;
         this.prefix = prefix;
     }
 
@@ -58,10 +57,10 @@ public final class RequestLogger {
             final String id = prefix + "-" + idV;
             final StringBuilder group = new StringBuilder();
             request.onRequestBegin(theRequest -> group.append(
-                    "Request " + id + "\n" + id + " > " + theRequest.getMethod() + " " + theRequest.getURI() + "\n"));
+                    String.format("Request %s\n%s > %s %s\n", id, id, theRequest.getMethod(), theRequest.getURI())));
             request.onRequestHeaders(theRequest -> {
                 for (final HttpField header : theRequest.getHeaders()) {
-                    group.append(id + " > " + header + "\n");
+                    group.append(String.format("%s > %s\n", id, header));
                 }
             });
             final StringBuilder contentBuffer = new StringBuilder();
@@ -69,34 +68,37 @@ public final class RequestLogger {
                     .append(reformatJson(getCharset(theRequest.getHeaders()).decode(content).toString())));
             request.onRequestSuccess(theRequest -> {
                 if (contentBuffer.length() > 0) {
-                    group.append("\n" + contentBuffer.toString());
+                    group.append("\n");
+                    group.append(contentBuffer);
                 }
-                String debugStatement = group.toString();
-                logger.debug(debugStatement);
+                String dataToLog = group.toString();
+                logger.debug(dataToLog);
                 contentBuffer.delete(0, contentBuffer.length());
                 group.delete(0, group.length());
             });
             request.onResponseBegin(theResponse -> {
-                group.append("Response " + id + "\n" + id + " < " + theResponse.getVersion() + " "
-                        + theResponse.getStatus());
+                group.append(String.format("Response %s\n%s < %s %s", id, id, theResponse.getVersion(),
+                        theResponse.getStatus()));
                 if (theResponse.getReason() != null) {
-                    group.append(" " + theResponse.getReason());
+                    group.append(" ");
+                    group.append(theResponse.getReason());
                 }
                 group.append("\n");
             });
             request.onResponseHeaders(theResponse -> {
                 for (final HttpField header : theResponse.getHeaders()) {
-                    group.append(id + " < " + header + "\n");
+                    group.append(String.format("%s < %s\n", id, header));
                 }
             });
             request.onResponseContent((theResponse, content) -> contentBuffer
                     .append(reformatJson(getCharset(theResponse.getHeaders()).decode(content).toString())));
             request.onResponseSuccess(theResponse -> {
                 if (contentBuffer.length() > 0) {
-                    group.append("\n" + contentBuffer.toString());
+                    group.append("\n");
+                    group.append(contentBuffer);
                 }
-                String debugStatement = group.toString();
-                logger.debug(debugStatement);
+                String dataToLog = group.toString();
+                logger.debug(dataToLog);
             });
         }
     }
