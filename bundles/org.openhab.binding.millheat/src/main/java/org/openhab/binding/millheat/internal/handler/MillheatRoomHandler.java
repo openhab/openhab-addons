@@ -16,7 +16,6 @@ import static org.openhab.binding.millheat.internal.MillheatBindingConstants.*;
 
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -63,8 +62,7 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
     }
 
     @Override
-    protected void handleCommand(@NonNull final ChannelUID channelUID, @NonNull final Command command,
-            @NonNull final MillheatModel model) {
+    protected void handleCommand(final ChannelUID channelUID, final Command command, final MillheatModel model) {
         final Optional<Room> optionalRoom = model.findRoomById(config.roomId);
         if (optionalRoom.isPresent()) {
             updateStatus(ThingStatus.ONLINE);

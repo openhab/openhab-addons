@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.millheat.internal;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.millheat.internal.dto.AbstractRequest;
 import org.openhab.binding.millheat.internal.dto.AbstractResponse;
 
@@ -21,6 +21,7 @@ import org.openhab.binding.millheat.internal.dto.AbstractResponse;
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class MillheatCommunicationException extends Exception {
     private static final long serialVersionUID = 1L;
     private int errorCode = 0;
@@ -33,8 +34,7 @@ public class MillheatCommunicationException extends Exception {
         super(message);
     }
 
-    public MillheatCommunicationException(@NonNull final AbstractRequest request,
-            @NonNull final AbstractResponse response) {
+    public MillheatCommunicationException(final AbstractRequest request, final AbstractResponse response) {
         super("Server responded with error to request " + request.getClass().getSimpleName() + "/"
                 + request.getRequestUrl() + ": " + response.errorCode + "/" + response.errorName + "/"
                 + response.errorDescription);

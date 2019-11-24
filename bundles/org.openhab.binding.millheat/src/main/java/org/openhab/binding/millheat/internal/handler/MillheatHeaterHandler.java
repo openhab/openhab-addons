@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -61,8 +60,7 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
     }
 
     @Override
-    protected void handleCommand(final ChannelUID channelUID, @NonNull final Command command,
-            @NonNull final MillheatModel model) {
+    protected void handleCommand(final ChannelUID channelUID, final Command command, final MillheatModel model) {
         final Optional<Heater> optionalHeater = model.findHeaterByMacOrId(config.macAddress, config.heaterId);
         if (optionalHeater.isPresent()) {
             updateStatus(ThingStatus.ONLINE);

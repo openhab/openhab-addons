@@ -14,7 +14,7 @@ package org.openhab.binding.millheat.internal.handler;
 
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public abstract class MillheatBaseThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(MillheatBaseThingHandler.class);
 
@@ -59,12 +60,14 @@ public abstract class MillheatBaseThingHandler extends BaseThingHandler {
     protected Optional<MillheatAccountHandler> getAccountHandler() {
         final Bridge bridge = getBridge();
         if (bridge != null) {
-            return Optional.ofNullable((MillheatAccountHandler) bridge.getHandler());
+            MillheatAccountHandler handler = (MillheatAccountHandler) bridge.getHandler();
+            if (handler != null) {
+                return Optional.of(handler);
+            }
         }
         return Optional.empty();
     }
 
-    protected abstract void handleCommand(@NonNull ChannelUID uid, @NonNull Command command,
-            @NonNull MillheatModel model);
+    protected abstract void handleCommand(ChannelUID uid, Command command, MillheatModel model);
 
 }
