@@ -95,7 +95,7 @@
 		<item-type>Number</item-type>
 		<label>Lamp hours</label>
 		<description>How long the lamp has been in use (in hours)</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%d h" />
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
 				<label>Lamp number</label>
