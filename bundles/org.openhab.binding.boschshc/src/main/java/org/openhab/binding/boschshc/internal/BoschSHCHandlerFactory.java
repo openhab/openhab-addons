@@ -66,16 +66,6 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         else if (THING_TYPE_INWALL_SWITCH.equals(thingTypeUID)) {
             BoschSHCHandler handler = new BoschSHCHandler(thing);
-            String boschId = handler.getBoschID();
-
-            if (bridge != null && boschId != null) {
-                bridge.registerBoschId(boschId, thing);
-
-            } else {
-                logger.warn("Created a thing in createHandler, but could not register Bosch ID with bridge");
-
-            }
-
             return handler;
         }
 

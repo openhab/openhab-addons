@@ -4,9 +4,11 @@ import static org.eclipse.jetty.http.HttpMethod.*;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -142,6 +144,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     for (Device d : this.devices) {
                         Room room = this.getRoomForDevice(d);
                         logger.warn("Found device: name={} room={} id={}", d.name, room != null ? room.name : "", d.id);
+                        if (d.deviceSerivceIDs != null) {
+                            for (String s : d.deviceSerivceIDs) {
+                                logger.warn(".... service: " + s);
+                            }
+                        }
                     }
                 }
 
@@ -238,58 +245,74 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                 @Override
                 public void onComplete(@Nullable Result result) {
-                    if (result != null && !result.isFailed()) {
 
-                        byte[] responseContent = getContent();
-                        String content = new String(responseContent);
+                    logger.warn("Entered onComplete");
+                    try {
+                        if (result != null && !result.isFailed()) {
 
-                        logger.debug("Response complete: {} - return code: {}", content,
-                                result.getResponse().getStatus());
+                            byte[] responseContent = getContent();
+                            String content = new String(responseContent);
 
-                        LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
+                            logger.debug("Response complete: {} - return code: {}", content,
+                                    result.getResponse().getStatus());
 
-                        for (DeviceStatusUpdate update : parsed.result) {
+                            LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
 
-                            logger.warn("Got update: {} <- {}", update.deviceId, update.state.switchState);
+                            for (DeviceStatusUpdate update : parsed.result) {
 
-                            Bridge bridge = bridgeHandler.getThing();
-                            Thing thing = null;
+                                if (update != null && update.state != null) {
 
-                            for (Thing childThing : bridge.getThings()) {
-                                BoschSHCHandler handler = (BoschSHCHandler) childThing.getHandler();
+                                    logger.warn("Got update: {} <- {}", update.deviceId, update.state.switchState);
 
-                                if (handler != null) {
+                                    Bridge bridge = bridgeHandler.getThing();
+                                    Thing thing = null;
 
-                                    logger.debug("Registered device: {} - looking for {}", handler.getBoschID(),
-                                            update.deviceId);
+                                    List<Thing> things = bridge.getThings();
+                                    for (Thing childThing : things) {
+                                        BoschSHCHandler handler = (BoschSHCHandler) childThing.getHandler();
 
-                                    if (update.deviceId.equals(handler.getBoschID())) {
-                                        thing = childThing;
+                                        if (handler != null) {
+
+                                            logger.debug("Registered device: {} - looking for {}", handler.getBoschID(),
+                                                    update.deviceId);
+
+                                            if (update.deviceId.equals(handler.getBoschID())) {
+                                                thing = childThing;
+                                            }
+                                        }
+
+                                    }
+
+                                    // TODO Probably should check if it is in fact, the correct handler. Depends a
+                                    // little
+                                    // one
+                                    // whether we add more of them or if we just have one Handler for all devices.
+                                    if (thing != null) {
+
+                                        BoschSHCHandler thingHandler = (BoschSHCHandler) thing.getHandler();
+
+                                        if (thingHandler != null) {
+                                            thingHandler.processUpdate(update);
+                                        } else {
+                                            logger.warn("Could not convert thing handler to BoschSHCHandler");
+                                        }
+                                    } else {
+                                        logger.warn("Could not find a thing for device ID: {}", update.deviceId);
                                     }
                                 }
                             }
+                        } else {
 
-                            // TODO Probably should check if it is in fact, the correct handler. Depends a little one
-                            // whether we add more of them or if we just have one Handler for all devices.
-                            if (thing != null) {
-
-                                BoschSHCHandler thingHandler = (BoschSHCHandler) thing.getHandler();
-
-                                if (thingHandler != null) {
-                                    thingHandler.processUpdate(update);
-                                } else {
-                                    logger.warn("Could not convert thing handler to BoschSHCHandler");
-                                }
-                            } else {
-                                logger.warn("Could not find a thing for device ID: {}", update.deviceId);
-                            }
+                            logger.warn("Failed in onComplete");
                         }
-                    } else {
 
-                        logger.warn("Failed in onComplete");
+                    } catch (Exception e) {
+
+                        logger.warn("Exception in onComplete - ignoring to avoid breaking long polling: {}", e);
                     }
 
                     // TODO Is this call okay? Should we use scheduler.execute instead?
+                    logger.warn("Starting new longPoll");
                     bridgeHandler.longPoll();
                 }
             }
@@ -341,5 +364,95 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     }
 
     private BoschSHCBridgeConfiguration config;
+
+    /**
+     * Query the Bosch Smart Home Controller for the current power switch state.
+     *
+     * @param thing The thing to query the device state for
+     */
+    public DeviceState refreshSwitchState(@NonNull Thing thing) {
+
+        BoschSHCHandler handler = (BoschSHCHandler) thing.getHandler();
+
+        if (this.httpClient != null && handler != null) {
+
+            ContentResponse contentResponse;
+            try {
+
+                String boschID = handler.getBoschID();
+                logger.warn("Requesting state update from Bosch: {}", boschID);
+
+                // GET request
+                // ----------------------------------------------------------------------------------
+
+                // TODO: PowerSwitch is hard-coded
+                contentResponse = this.httpClient
+                        .newRequest("https://192.168.178.128:8444/smarthome/devices/" + boschID
+                                + "/services/PowerSwitch/state")
+                        .header("Content-Type", "application/json").header("Accept", "application/json")
+                        .header("Gateway-ID", "64-DA-A0-02-14-9B").method(GET).send();
+
+                String content = contentResponse.getContentAsString();
+                logger.warn("Refresh switch state request complete: [{}] - return code: {}", content,
+                        contentResponse.getStatus());
+
+                Gson gson = new GsonBuilder().create();
+
+                DeviceState state = gson.fromJson(content, DeviceState.class);
+                return state;
+
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                logger.warn("HTTP request failed: {}", e);
+            }
+        }
+
+        return null;
+    }
+
+    /*
+     * {{shc_api}}/devices/{{device_id}}/services/PowerSwitch/state
+     */
+    public void updateSwitchState(@NonNull Thing thing, String command) {
+
+        BoschSHCHandler handler = (BoschSHCHandler) thing.getHandler();
+
+        if (this.httpClient != null && handler != null) {
+
+            ContentResponse contentResponse;
+            try {
+
+                String boschID = handler.getBoschID();
+                logger.warn("Sending update request to Bosch device {}: update: {}", boschID, command);
+
+                // PUT request
+                // ----------------------------------------------------------------------------------
+
+                // From:
+                // https://github.com/philbuettner/bosch-shc-api-docs/blob/90913cc8a6fe5f322c0d819d269566e8e3708080/postman/Bosch%20Smart%20Home%20v0.3.postman_collection.json#L949
+                // TODO This should be different for other kinds of devices.
+                PowerSwitchStateUpdate state = new PowerSwitchStateUpdate("powerSwitchState", command);
+
+                Gson gson = new Gson();
+                String str_content = gson.toJson(state);
+
+                // hdm:HomeMaticIP:3014F711A0001916D859A8A9
+                logger.warn("Sending content: {}", str_content);
+
+                // TODO Path should be different for other kinds of device updates
+                contentResponse = this.httpClient
+                        .newRequest("https://192.168.178.128:8444/smarthome/devices/" + boschID
+                                + "/services/PowerSwitch/state")
+                        .header("Content-Type", "application/json").header("Accept", "application/json")
+                        .header("Gateway-ID", "64-DA-A0-02-14-9B").method(PUT)
+                        .content(new StringContentProvider(str_content)).send();
+
+                String content = contentResponse.getContentAsString();
+                logger.warn("Response complete: [{}] - return code: {}", content, contentResponse.getStatus());
+
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                logger.warn("HTTP request failed: {}", e);
+            }
+        }
+    }
 
 }

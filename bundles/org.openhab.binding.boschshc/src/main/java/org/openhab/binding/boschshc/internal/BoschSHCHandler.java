@@ -17,6 +17,7 @@ import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHA
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -58,25 +59,38 @@ public class BoschSHCHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
-        logger.warn("Handle command for: {}", config.id);
+        logger.warn("Handle command for: {} - {}", config.id, command);
 
-        if (CHANNEL_POWER_SWITCH.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
+        Bridge bridge = this.getBridge();
+        if (bridge != null) {
 
-            else {
+            BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
 
-                // TODO: Find bridge - updates have to be done via the bridge.
+            if (bridgeHandler != null) {
 
-                // TODO: handle command
+                if (CHANNEL_POWER_SWITCH.equals(channelUID.getId())) {
+                    if (command instanceof RefreshType) {
+                        DeviceState state = bridgeHandler.refreshSwitchState(getThing());
 
-                // Note: if communication with thing fails for some reason,
-                // indicate that by setting the status with detail information:
-                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                // "Could not control device at IP address x.x.x.x");
+                        if (state != null) {
+
+                            State powerState = OnOffType.from(state.switchState);
+                            updateState(channelUID, powerState);
+                        }
+                    }
+
+                    else {
+                        bridgeHandler.updateSwitchState(getThing(), command.toFullString());
+                    }
+                }
             }
         }
+
+        // Note: if communication with thing fails for some reason,
+        // indicate that by setting the status with detail information:
+        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        // "Could not control device at IP address x.x.x.x");
+
     }
 
     @Override
