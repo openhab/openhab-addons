@@ -105,7 +105,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                             channelUID.toString());
                 }
                 break;
-            case CHANNEL_BRIGHTNESS: // Dimmer
+            case CHANNEL_BRIGHTNESS: // e.g.Dimmer
                 Integer value = -1;
                 if (command instanceof PercentType) {
                     value = ((PercentType) command).intValue();
@@ -113,6 +113,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     value = ((DecimalType) command).intValue();
                 } else if (command instanceof OnOffType) {
                     value = ((OnOffType) command) == OnOffType.ON ? 100 : 0;
+                }
+                if (profile.isDimmer && (value == 0)) {
+                    value = 1; // special case: Dimmer accepts only 1-100
                 }
                 validateRange("brightness", value, 0, 100);
                 logger.debug("{}: Setting dimmer brightness to {}", thingName, value);
