@@ -180,7 +180,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      */
     private @Nullable CidrAddress getLocalIP4Address() {
         List<CidrAddress> adrList = NetUtil.getAllInterfaceAddresses().stream()
-                .filter(a -> a.getAddress() instanceof Inet4Address).map(a -> a).collect(Collectors.toList());
+                .filter(a -> a.getAddress() instanceof Inet4Address).collect(Collectors.toList());
 
         for (CidrAddress adr : adrList) {
             // Don't return a "fake" DHCP lease.

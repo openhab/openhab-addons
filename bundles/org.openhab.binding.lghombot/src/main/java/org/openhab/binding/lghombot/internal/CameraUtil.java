@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CameraUtil} is responsible for parsing the raw yuv 422 image from the LG HomBot.
+ * The {@link CameraUtil} is responsible for parsing the raw yuv 422 image from a LG HomBot.
  *
  * @author Fredrik Ahlström - Initial contribution
  */
@@ -39,10 +39,15 @@ public class CameraUtil {
         // No need to instance this class.
     }
 
-    static State parseImageFromBytes(byte[] yuvData) {
-
-        final int width = 320;
-        final int height = 240;
+    /**
+     * This converts a non-interleaved YUV-422 image to a JPEG image.
+     * 
+     * @param yuvData The uncompressed YUV data
+     * @param width The width of image.
+     * @param height The height of the image.
+     * @return A JPEG image as a State
+     */
+    static State parseImageFromBytes(byte[] yuvData, int width, int height) {
         final int size = width * height;
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);

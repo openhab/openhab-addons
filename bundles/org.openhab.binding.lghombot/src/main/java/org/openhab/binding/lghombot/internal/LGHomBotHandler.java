@@ -248,7 +248,7 @@ public class LGHomBotHandler extends BaseThingHandler {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        logger.debug("Status received: {}", status);
+        logger.trace("Status received: {}", status);
         return status;
     }
 
@@ -552,11 +552,13 @@ public class LGHomBotHandler extends BaseThingHandler {
         if (!isLinked(CHANNEL_CAMERA)) {
             return;
         }
-        final int size = 320 * 240;
+        final int width = 320;
+        final int height = 240;
+        final int size = width * height;
         String url = buildHttpAddress("/images/snapshot.yuv");
         byte[] yuvData = HttpUtil.downloadData(url, null, false, size * 2).getBytes();
 
-        currentImage = CameraUtil.parseImageFromBytes(yuvData);
+        currentImage = CameraUtil.parseImageFromBytes(yuvData, width, height);
     }
 
     /** Parse the maps.html file to find the black-box filename. */
