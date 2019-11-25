@@ -3,15 +3,15 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="bridge">
-		<label>Weather Company Bridge</label>
-		<description>Represents a connection to the Weather Company service</description>
+	<bridge-type id="account">
+		<label>Weather Company Account</label>
+		<description>Represents an account at the Weather Company service</description>
 		<config-description-ref uri="thing-type:weathercompany:bridge" />
 	</bridge-type>
 
 	<thing-type id="weather-observations">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
 		<label>Weather Company Observations</label>
@@ -28,7 +28,7 @@
 
 	<thing-type id="weather-forecast">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
 		<label>Weather Company Forecast</label>

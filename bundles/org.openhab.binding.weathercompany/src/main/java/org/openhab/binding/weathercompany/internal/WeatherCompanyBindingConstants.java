@@ -31,7 +31,7 @@ public class WeatherCompanyBindingConstants {
     private static final String BINDING_ID = "weathercompany";
 
     // Bridge
-    public static final String THING_TYPE_BRIDGE = "bridge";
+    public static final String THING_TYPE_BRIDGE = "account";
     public static final ThingTypeUID UID_BRIDGE = new ThingTypeUID(BINDING_ID, THING_TYPE_BRIDGE);
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(UID_BRIDGE).collect(Collectors.toSet()));

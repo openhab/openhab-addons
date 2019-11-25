@@ -64,8 +64,8 @@ public class WeatherCompanyBridgeHandler extends BaseBridgeHandler {
                     logger.debug("Bridge: HttpResponseException: API key is not valid");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API key is invalid");
                 } else {
-                    logger.info("Bridge: IOException trying to validate Api key: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+                    logger.debug("Bridge: IOException trying to validate Api key: {}", e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
                 }
             }
         }
