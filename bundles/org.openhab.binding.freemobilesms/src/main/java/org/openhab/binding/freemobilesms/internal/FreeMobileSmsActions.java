@@ -33,14 +33,14 @@ public class FreeMobileSmsActions implements ThingActions {
     public @Nullable ThingHandler getThingHandler() { return handler; }
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
-    public void sendMessage(
+    public void sendFreeMobileSMS(
             @ActionInput(name = "message", label = "@text/actionInputMessageLabel", description = "@text/actionInputMessageDesc") @Nullable String message) {
         this.handler.sendMessage(message);
     }
 
-    public static void sendMessage(@Nullable ThingActions actions, @Nullable String message) {
+    public static void sendFreeMobileSMS(@Nullable ThingActions actions, @Nullable String message) {
         if (actions instanceof FreeMobileSmsActions) {
-            ((FreeMobileSmsActions) actions).sendMessage(message);
+            ((FreeMobileSmsActions) actions).sendFreeMobileSMS(message);
         } else {
             throw new IllegalArgumentException("Instance is not an FreeMobileSmsActions class.");
         }

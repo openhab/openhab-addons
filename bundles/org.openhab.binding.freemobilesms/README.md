@@ -35,11 +35,19 @@ This binding includes a rule action, which allows to send a message to a configu
 There is a separated instance for each account.
 
 ```
-var actions = getActions()
+var actions = getActions("freemobilesms","freemobilesms:account:123456")
 ```
 
+First syntax, object oriented.
+
 ```
-actions.sendMessage()
+actions.sendFreeMobileSMS("The message")
+```
+
+Second syntax, function oriented.
+
+```
+sendFreeMobileSMS(actions, "The message")
 ```
 
 | Parameter | Description          |
@@ -58,4 +66,15 @@ demo.items:
 
 ```xtend
 String DAD_SMS "Dad's SMS" { channel="freemobilesms:account:dad:message" }
+```
+
+demo.rules:
+
+```xtend
+rule "Alert John at home"
+when
+  Item Presence_Mobile_John changed from OFF to ON
+then
+  DAD_SMS.sendCommand("John is at home!")
+end
 ```
