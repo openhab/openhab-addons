@@ -173,16 +173,10 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
         return value == null ? UnDefType.UNDEF : new QuantityType<>(value, unit);
     }
 
-    protected State undefOrLocation(@Nullable Number lat, @Nullable Number lon, @Nullable Number eliv) {
-        PointType location = null;
-        if (lat != null && lon != null && eliv != null) {
-            // FIXME Convert eliv to meters
-            location = new PointType(new DecimalType(lat.doubleValue()), new DecimalType(lon.doubleValue()),
-                    new DecimalType(eliv.doubleValue()));
-        } else if (lat != null && lon != null) {
-            location = new PointType(new DecimalType(lat.doubleValue()), new DecimalType(lon.doubleValue()));
-        }
-        return location == null ? UnDefType.UNDEF : location;
+    protected State undefOrPoint(@Nullable Number lat, @Nullable Number lon) {
+        return lat != null && lon != null
+                ? new PointType(new DecimalType(lat.doubleValue()), new DecimalType(lon.doubleValue()))
+                : UnDefType.UNDEF;
     }
 
     /*

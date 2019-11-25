@@ -161,6 +161,7 @@
 			<channel id="stationId" typeId="stationId" />
 			<channel id="country" typeId="country" />
 			<channel id="location" typeId="location" />
+			<channel id="elevation" typeId="elevation" />
 			<channel id="qcStatus" typeId="qcStatus" />
 			<channel id="softwareType" typeId="softwareType" />
 		</channels>
@@ -292,8 +293,15 @@
 	<channel-type id="location" advanced="true">
 		<item-type>Location</item-type>
 		<label>Weather Station Location</label>
-		<description>Latitude, longitude and elevation of weather station</description>
-		<state readOnly="true" pattern="%2$s°N, %3$s°W, %1$s ft" />
+		<description>Latitude and longitude of weather station</description>
+		<state readOnly="true" pattern="%1$s°N, %2$s°W" />
+	</channel-type>
+
+	<channel-type id="elevation" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Weather Station Elevation</label>
+		<description>Elevation above ground of weather station</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="narrative">

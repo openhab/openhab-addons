@@ -167,8 +167,8 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
         updatePws(CH_PWS_NEIGHBORHOOD, undefOrString(obs.neighborhood));
         updatePws(CH_PWS_STATION_ID, undefOrString(obs.stationID));
         updatePws(CH_PWS_COUNTRY, undefOrString(obs.country));
-
-        updatePws(CH_PWS_LOCATION, undefOrLocation(obs.lat, obs.lon, obs.imperial.elev));
+        updatePws(CH_PWS_LOCATION, undefOrPoint(obs.lat, obs.lon));
+        updatePws(CH_PWS_ELEVATION, undefOrQuantity(obs.imperial.elev, ImperialUnits.FOOT));
         updatePws(CH_PWS_QC_STATUS, undefOrDecimal(obs.qcStatus));
         updatePws(CH_PWS_SOFTWARE_TYPE, undefOrString(obs.softwareType));
     }

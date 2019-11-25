@@ -84,6 +84,7 @@ public class WeatherCompanyBindingConstants {
     public static final String CH_PWS_WIND_GUST = "currentWindSpeedGust";
     public static final String CH_PWS_COUNTRY = "country";
     public static final String CH_PWS_LOCATION = "location";
+    public static final String CH_PWS_ELEVATION = "elevation";
     public static final String CH_PWS_NEIGHBORHOOD = "neighborhood";
     public static final String CH_PWS_OBSERVATION_TIME_LOCAL = "observationTimeLocal";
     public static final String CH_PWS_QC_STATUS = "qcStatus";
