@@ -81,6 +81,7 @@
 /bundles/org.openhab.binding.kostalinverter/ @cschneider
 /bundles/org.openhab.binding.lametrictime/ @syphr42
 /bundles/org.openhab.binding.leapmotion/ @kaikreuzer
+/bundles/org.openhab.binding.lghombot/ @FluBBaOfWard
 /bundles/org.openhab.binding.lgtvserial/ @fa2k
 /bundles/org.openhab.binding.lgwebos/ @sprehn
 /bundles/org.openhab.binding.lifx/ @wborn
