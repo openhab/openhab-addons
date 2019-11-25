@@ -27,7 +27,6 @@ import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.rachio.internal.api.RachioApi.RachioApiResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +61,7 @@ public class RachioHttp {
      * @return RachioApiResult including GET response, http code etc.
      * @throws Exception
      */
-    public RachioApiResult httpGet(String url, @Nullable String urlParameters) throws RachioApiException {
+    public RachioApiRateLimit httpGet(String url, @Nullable String urlParameters) throws RachioApiException {
         return httpRequest(HttpMethod.GET, url, urlParameters, null);
     }
 
@@ -74,7 +73,7 @@ public class RachioHttp {
      * @return RachioApiResult including GET response, http code etc.
      * @throws Exception
      */
-    public RachioApiResult httpPut(String url, String putData) throws RachioApiException {
+    public RachioApiRateLimit httpPut(String url, String putData) throws RachioApiException {
         return httpRequest(HttpMethod.PUT, url, null, putData);
     }
 
@@ -86,7 +85,7 @@ public class RachioHttp {
      * @return RachioApiResult including GET response, http code etc.
      * @throws Exception
      */
-    public RachioApiResult httpPost(String url, String postData) throws RachioApiException {
+    public RachioApiRateLimit httpPost(String url, String postData) throws RachioApiException {
         return httpRequest(HttpMethod.POST, url, null, postData);
     }
 
@@ -98,7 +97,7 @@ public class RachioHttp {
      * @return RachioApiResult including GET response, http code etc.
      * @throws Exception if something went wrong (e.g. unable to connect)
      */
-    public RachioApiResult httpDelete(String url, @Nullable String urlParameters) throws RachioApiException {
+    public RachioApiRateLimit httpDelete(String url, @Nullable String urlParameters) throws RachioApiException {
         return httpRequest(HttpMethod.DELETE, url, urlParameters, null);
     }
 
@@ -110,10 +109,10 @@ public class RachioHttp {
      * @return RachioApiResult including GET response, http code etc.
      * @throws Exception
      */
-    protected RachioApiResult httpRequest(String method, String url, @Nullable String urlParameters,
+    protected RachioApiRateLimit httpRequest(String method, String url, @Nullable String urlParameters,
             @Nullable String reqDatas) throws RachioApiException {
 
-        RachioApiResult result = new RachioApiResult();
+        RachioApiRateLimit result = new RachioApiRateLimit();
         try {
             apiCalls++;
 

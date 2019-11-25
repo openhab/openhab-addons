@@ -47,12 +47,12 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "binding.rachio")
 @NonNullByDefault
 public class RachioDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(RachioDiscoveryService.class);
+    private final Logger        logger        = LoggerFactory.getLogger(RachioDiscoveryService.class);
     private RachioConfiguration bindingConfig = new RachioConfiguration();
-    private boolean scanning = false;
+    private boolean             scanning      = false;
 
     @Nullable
-    private RachioApi rachioApi;
+    private RachioApi           rachioApi;
 
     @Nullable
     private RachioBridgeHandler cloudHandler;
@@ -66,14 +66,14 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
     @Override
     @Activate
     protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
-        logger.debug("Rachio: Activate HandlerFactory, configurarion (services/binding." + BINDING_ID + ".cfg):");
+        logger.debug("Activate HandlerFactory, configurarion:");
         bindingConfig.updateConfig(configProperties);
     }
 
     public RachioDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, BINDING_DISCOVERY_TIMEOUT_SEC, true);
         String uids = SUPPORTED_THING_TYPES_UIDS.toString();
-        logger.debug("Rachio: thing types: {} registered.", uids);
+        logger.debug("Thing types: {} registered.", uids);
     }
 
     public void setCloudHandler(final RachioBridgeHandler cloudHandler) {
@@ -93,7 +93,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
         try {
             synchronized (this) {
                 if (scanning) {
-                    logger.debug("RachioDiscovery: Already discoverying");
+                    logger.debug("Already discoverring");
                     return;
                 }
                 scanning = true;
@@ -105,7 +105,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
             if (cloudHandler == null) {
                 String apikey = bindingConfig.apikey;
                 if (apikey.isEmpty()) {
-                    logger.debug("RachioDiscovery: API not yet initialized");
+                    logger.debug("Discovery: API not yet initialized");
                     return;
                 }
                 bridgeUID = new ThingUID(BINDING_ID, "cloud", apikey);
@@ -124,20 +124,20 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
                 bridgeUID = cloudHandler.getThing().getUID();
             }
             if (deviceList == null) {
-                logger.debug("RachioDiscovery: Rachio Cloud access not initialized yet!");
+                logger.debug("Discovery: Rachio Cloud access not initialized yet!");
                 return;
             }
-            logger.debug("RachioDiscovery: Found {} devices.", deviceList.size());
+            logger.debug("Found {} devices.", deviceList.size());
             for (HashMap.Entry<String, RachioDevice> de : deviceList.entrySet()) {
                 RachioDevice dev = de.getValue();
-                logger.debug("RachioDiscovery: Check Rachio device with ID '{}'", dev.id);
+                logger.debug("Check Rachio device with ID '{}'", dev.id);
 
                 // register thing if it not already exists
                 ThingUID devThingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
                 dev.setUID(bridgeUID, devThingUID);
                 if ((cloudHandler == null) || (cloudHandler.getThingByUID(devThingUID) == null)) {
-                    logger.info("RachioDiscovery: New Rachio device discovered: '{}' (id {}), S/N={}, MAC={}", dev.name,
-                            dev.id, dev.serialNumber, dev.macAddress);
+                    logger.info("New Rachio device discovered: '{}' (id {}), S/N={}, MAC={}", dev.name, dev.id,
+                            dev.serialNumber, dev.macAddress);
                     logger.debug("  latitude={}, longitude={}", dev.latitude, dev.longitude);
                     logger.info("   device status={}, paused/sleep={}, on={}", dev.status, dev.getSleepMode(),
                             dev.getEnabled());
@@ -149,17 +149,17 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
                 }
 
                 HashMap<String, RachioZone> zoneList = dev.getZones();
-                logger.debug("RachioDiscovery: Found {} zones for this device.", zoneList.size());
+                logger.debug("Found {} zones for this device.", zoneList.size());
                 for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
                     RachioZone zone = ze.getValue();
-                    logger.debug("RachioDiscovery: Checking zone with ID '{}'", zone.id);
+                    logger.debug("Checking zone with ID '{}'", zone.id);
 
                     // register thing if it not already exists
                     ThingUID zoneThingUID = new ThingUID(THING_TYPE_ZONE, bridgeUID, zone.getThingID());
                     zone.setUID(devThingUID, zoneThingUID);
                     if ((cloudHandler == null) || (cloudHandler.getThingByUID(zoneThingUID) == null)) {
-                        logger.info("RachioDiscovery: Zone#{} '{}' (id={}) added, enabled={}", zone.zoneNumber,
-                                zone.name, zone.id, zone.getEnabled());
+                        logger.info("Zone#{} '{}' (id={}) added, enabled={}", zone.zoneNumber, zone.name, zone.id,
+                                zone.getEnabled());
 
                         if (zone.getEnabled() == OnOffType.ON) {
                             @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -169,13 +169,12 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
                                     .withLabel(dev.name + "[" + zone.zoneNumber + "]: " + zone.name).build();
                             thingDiscovered(zoneDiscoveryResult);
                         } else {
-                            logger.info("RachioDiscovery: Zone#{} '{}' is disabled, skip thing creation", zone.name,
-                                    zone.id);
+                            logger.info("Zone#{} '{}' is disabled, skip thing creation", zone.name, zone.id);
                         }
                     }
                 }
             }
-            logger.info("{}  Rachio controller initialized.", deviceList.size());
+            logger.info("{}  Rachio device initialized.", deviceList.size());
 
             stopScan();
         } catch (RachioApiException e) {
@@ -189,7 +188,7 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
     protected synchronized void stopScan() {
         super.stopScan();
         scanning = false;
-        logger.debug("RachioDiscervery done.");
+        logger.debug("Discovery done.");
     }
 
     private Map<String, String> fillProperties(String id) {

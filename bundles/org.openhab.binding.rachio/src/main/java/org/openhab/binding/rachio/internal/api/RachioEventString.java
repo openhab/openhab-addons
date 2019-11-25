@@ -15,7 +15,7 @@ package org.openhab.binding.rachio.internal.api;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.rachio.internal.api.json.RachioCloudEvent;
+import org.openhab.binding.rachio.internal.api.json.RachioEventGson;
 
 import com.google.gson.Gson;
 
@@ -40,7 +40,7 @@ public class RachioEventString {
         private final String type;
         private final String subType;
 
-        public GenericEvent(RachioCloudEvent event) {
+        public GenericEvent(RachioEventGson event) {
             timetstamp = event.timestamp;
             summary = event.summary;
             topic = event.topic;
@@ -64,7 +64,7 @@ public class RachioEventString {
         private final int duration;
 
         @SuppressWarnings("null")
-        public ZoneEvent(RachioCloudEvent event) {
+        public ZoneEvent(RachioEventGson event) {
             timestamp = event.timestamp;
             summary = event.summary;
             type = event.type;
@@ -80,7 +80,7 @@ public class RachioEventString {
         }
     }
 
-    public RachioEventString(RachioCloudEvent event) {
+    public RachioEventString(RachioEventGson event) {
         Validate.notNull(event);
         if (event.type.equals("ZONE_STATUS")) {
             zEvent = new ZoneEvent(event);

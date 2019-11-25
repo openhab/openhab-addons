@@ -19,7 +19,6 @@ import java.text.MessageFormat;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.rachio.internal.api.RachioApi.RachioApiResult;
 
 /**
  * The {@link RachioApiException} implements an extension to the standard Exception class. This allows to keep also the
@@ -31,9 +30,9 @@ import org.openhab.binding.rachio.internal.api.RachioApi.RachioApiResult;
 @NonNullByDefault
 public class RachioApiException extends Exception {
     private static final long serialVersionUID = -2579498702258574787L;
-    private RachioApiResult   apiResult        = new RachioApiResult();
+    private RachioApiRateLimit apiResult = new RachioApiRateLimit();
     @Nullable
-    private Throwable         e                = null;
+    private Throwable e = null;
 
     public RachioApiException(String message) {
         super(message);
@@ -44,18 +43,18 @@ public class RachioApiException extends Exception {
         e = throwable;
     }
 
-    public RachioApiException(String message, RachioApiResult result) {
+    public RachioApiException(String message, RachioApiRateLimit result) {
         super(message);
         apiResult = result;
     }
 
-    public RachioApiException(String message, RachioApiResult result, Throwable throwable) {
+    public RachioApiException(String message, RachioApiRateLimit result, Throwable throwable) {
         super(message);
         apiResult = result;
         e = throwable;
     }
 
-    public RachioApiResult getApiResult() {
+    public RachioApiRateLimit getApiResult() {
         return apiResult;
     }
 
@@ -64,7 +63,7 @@ public class RachioApiException extends Exception {
         return super.getMessage();
     }
 
-    @SuppressWarnings("null")
+    @SuppressWarnings({ "null", "unused" })
     @Override
     public String toString() {
         String message = super.getMessage();

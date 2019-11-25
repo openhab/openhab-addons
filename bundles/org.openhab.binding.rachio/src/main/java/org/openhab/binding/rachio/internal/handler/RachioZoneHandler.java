@@ -37,7 +37,7 @@ import org.openhab.binding.rachio.internal.RachioBindingConstants;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.RachioZone;
-import org.openhab.binding.rachio.internal.api.json.RachioCloudEvent;
+import org.openhab.binding.rachio.internal.api.json.RachioEventGson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,16 +50,16 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class RachioZoneHandler extends BaseThingHandler implements RachioStatusListener {
-    private final Logger logger = LoggerFactory.getLogger(RachioZoneHandler.class);
-    private Map<String, State> channelData = new HashMap<>();
+    private final Logger        logger      = LoggerFactory.getLogger(RachioZoneHandler.class);
+    private Map<String, State>  channelData = new HashMap<>();
     @Nullable
     private RachioBridgeHandler cloudHandler;
     @Nullable
-    Bridge bridge;
+    Bridge                      bridge;
     @Nullable
-    private RachioDevice dev;
+    private RachioDevice        dev;
     @Nullable
-    private RachioZone zone;
+    private RachioZone          zone;
 
     public RachioZoneHandler(Thing thing) {
         super(thing);
@@ -68,7 +68,7 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-        logger.debug("RachioZone: Initializing zone '{}'", this.getThing().getUID().toString());
+        logger.debug("Initializing zone '{}'", this.getThing().getUID().toString());
 
         try {
             // initialize class objects
@@ -85,12 +85,12 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
                 }
             }
             if ((bridge == null) || (cloudHandler == null) || (dev == null) || (zone == null)) {
-                logger.debug("RachioZone: Thing initialisation failed!");
+                logger.debug("Thing initialisation failed!");
             } else {
                 // listen to bridge events
                 cloudHandler.registerStatusListener(this);
                 if (bridge.getStatus() != ThingStatus.ONLINE) {
-                    logger.debug("Rachio: Bridge is offline!");
+                    logger.debug("Bridge is offline!");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 } else {
                     updateProperties();
@@ -99,7 +99,7 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
                 }
             }
         } catch (RuntimeException e) {
-            logger.debug("RachioZone: Initialisation failed: {}", e.getMessage());
+            logger.debug("Initialisation failed: {}", e.getMessage());
         }
 
         updateStatus(ThingStatus.OFFLINE);
@@ -114,9 +114,9 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
          * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
          */
         String channel = channelUID.getId();
-        logger.debug("RachioZone.handleCommand {} for {}", command.toString(), channelUID.getAsString());
+        logger.debug("Handle command {} for {}", command.toString(), channelUID.getAsString());
         if ((cloudHandler == null) || (zone == null)) {
-            logger.debug("RachioZone: Cloud handler or device not initialized!");
+            logger.debug("Cloud handler or device not initialized!");
             return;
         }
 
@@ -127,21 +127,21 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
             } else if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_ENABLED)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        logger.info("Enabling zone '{} [{}]'", zone.name, zone.zoneNumber);
+                        logger.debug("Enabling zone '{} [{}]'", zone.name, zone.zoneNumber);
                     }
                 }
             } else if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_RUN)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
                         int runtime = zone.getStartRunTime();
-                        logger.info("Starting zone '{} [{}]' for {} secs", zone.name, zone.zoneNumber, runtime);
+                        logger.debug("Starting zone '{} [{}]' for {} secs", zone.name, zone.zoneNumber, runtime);
                         if (runtime == 0) {
                             runtime = cloudHandler.getDefaultRuntime();
                             logger.debug("No specific runtime selected, using default ({} secs);", runtime);
                         }
                         cloudHandler.startZone(zone.id, runtime);
                     } else {
-                        logger.info("Stop watering for the device");
+                        logger.debug("Stop watering for the device");
                         cloudHandler.stopWatering(dev.id);
                     }
                 } else {
@@ -150,7 +150,7 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
             } else if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_RUN_TIME)) {
                 if (command instanceof DecimalType) {
                     int runtime = ((DecimalType) command).intValue();
-                    logger.info("Zone {} will start for {} sec", zone.name, runtime);
+                    logger.debug("Zone {} will start for {} sec", zone.name, runtime);
                     zone.setStartRunTime(runtime);
                 } else {
                     logger.debug("Command value is no DecimalType: {}", command);
@@ -185,7 +185,7 @@ public class RachioZoneHandler extends BaseThingHandler implements RachioStatusL
     }
 
     @SuppressWarnings("null")
-    public boolean webhookEvent(RachioCloudEvent event) {
+    public boolean webhookEvent(RachioEventGson event) {
         boolean update = false;
         try {
             // zone.setEvent(event); // set last zone event

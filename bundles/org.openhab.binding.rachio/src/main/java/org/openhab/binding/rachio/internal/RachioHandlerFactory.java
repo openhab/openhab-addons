@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
-import org.openhab.binding.rachio.internal.api.json.RachioCloudEvent;
+import org.openhab.binding.rachio.internal.api.json.RachioEventGson;
 import org.openhab.binding.rachio.internal.discovery.RachioDiscoveryService;
 import org.openhab.binding.rachio.internal.handler.RachioBridgeHandler;
 import org.openhab.binding.rachio.internal.handler.RachioDeviceHandler;
@@ -136,7 +136,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
      * @param event
      */
     @SuppressWarnings("null")
-    public boolean webHookEvent(String ipAddress, RachioCloudEvent event) {
+    public boolean webHookEvent(String ipAddress, RachioEventGson event) {
         try {
             logger.debug("Rachio Cloud Event for device '{}' received", event.deviceId);
             if (!RachioNetwork.isIpInSubnet(ipAddress, getIpFilter()) && !rachioNetwork.isIpInAwsList(ipAddress)) {

@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.rachio.internal.api.json.RachioCloudZone;
+import org.openhab.binding.rachio.internal.api.json.RachioZoneGson.RachioCloudZone;
 import org.openhab.binding.rachio.internal.handler.RachioZoneHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,16 +34,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RachioZone extends RachioCloudZone {
-    private final Logger logger = LoggerFactory.getLogger(RachioZone.class);
+    private final Logger        logger       = LoggerFactory.getLogger(RachioZone.class);
     @Nullable
-    protected ThingUID devUID;
+    protected ThingUID          devUID;
     @Nullable
-    protected ThingUID zoneUID;
+    protected ThingUID          zoneUID;
     @Nullable
     protected RachioZoneHandler thingHandler;
-    protected String uniqueId = "";
+    protected String            uniqueId     = "";
 
-    protected int startRunTime = 0;
+    protected int               startRunTime = 0;
 
     /**
      * Use reflection to shallow copy simple type fields with matching names from one object to another
@@ -63,15 +63,15 @@ public class RachioZone extends RachioCloudZone {
                 String uri = zone.imageUrl.substring(zone.imageUrl.lastIndexOf("/"));
                 if (!uri.isEmpty()) {
                     this.imageUrl = SERVLET_IMAGE_PATH + uri;
-                    logger.trace("RachioZone: imageUrl rewritten to '{}' for zone '{}'", imageUrl, name);
+                    logger.trace("imageUrl rewritten to '{}' for zone '{}'", imageUrl, name);
                 }
             }
 
             this.uniqueId = uniqueId;
-            logger.trace("RachioZone: Zone '{}' (number={}, id={}, enable={}) initialized.", zone.name, zone.zoneNumber,
-                    zone.id, zone.enabled);
+            logger.trace("Zone '{}' (number={}, id={}, enable={}) initialized.", zone.name, zone.zoneNumber, zone.id,
+                    zone.enabled);
         } catch (RuntimeException e) {
-            logger.warn("RachioZone: Unable to initialized: {}", e.getMessage());
+            logger.warn("Unable to initialized: {}", e.getMessage());
         }
     }
 

@@ -16,35 +16,18 @@ import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.rachio.internal.api.RachioApi.RachioApiResult;
-import org.openhab.binding.rachio.internal.api.json.RachioCloudDevice.RachioCloudNetworkSettings;
+import org.openhab.binding.rachio.internal.api.RachioApiRateLimit;
+import org.openhab.binding.rachio.internal.api.json.RachioApiGson.RachioEventProperty;
+import org.openhab.binding.rachio.internal.api.json.RachioApiGson.RachioZoneStatus;
+import org.openhab.binding.rachio.internal.api.json.RachioDeviceGson.RachioCloudNetworkSettings;
 
 /**
- * {@link RachioCloudEvent} maps the API result into a Java object (using GSon).
+ * {@link RachioEventGson} maps the API result into a Java object (using GSon).
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class RachioCloudEvent {
-    public class RachioEventProperty {
-        public String propertyName = "";
-        public String oldValue     = "";
-        public String newValue     = "";
-    }
-
-    public class RachioZoneStatus {
-        public Integer duration      = 0;
-        public String  scheduleType  = "";
-        public Integer zoneNumber    = 0;
-        public String  executionType = "";
-        public String  state         = "";
-        public String  startTime     = "";
-        public String  endTime       = "";
-        // public Integer corId = 0; // currently unused
-        // public Integer seqId = 0; // currently unused
-        // public Integer ix = 0; // currently unused
-    }
-
+public class RachioEventGson {
     public String                               externalId        = "";
     public String                               routingId         = "";
     public String                               connectId         = "";
@@ -64,7 +47,8 @@ public class RachioCloudEvent {
     public long                                 createDate        = -1;
     public long                                 lastUpdateDate    = -1;
     public int                                  sequence          = -1;
-    public String                               status            = ""; // COLD_REBOOT: "status" : "coldReboot",
+    public String                               status            = "";                      // COLD_REBOOT: "status" :
+                                                                                             // "coldReboot",
 
     /*
      * type : DEVICE_STATUS
@@ -144,14 +128,13 @@ public class RachioCloudEvent {
     public String                               scheduleType      = "";
 
     // COLD_REBOOT
-    public String                               deviceName        = ""; // "deviceName" : "Rachio Turtle Pine House",
+    public String                               deviceName        = "";                      // "deviceName" : "My
+                                                                                             // Rachio",
     @Nullable
-    public RachioCloudNetworkSettings           network; // "network" : {"gw" : "192.168.1.1", "rssi" : -61, "dns2" :
-                                                         // "75.75.76.76", "dns1" : "75.75.75.75", "ip" : "192.168.1.112", "nm" :
-                                                         // "255.255.255.0" }
+    public RachioCloudNetworkSettings           network;                                     // "network" : {}
     String                                      pin               = "";
 
-    public RachioApiResult                      apiResult         = new RachioApiResult();
+    public RachioApiRateLimit                   apiResult         = new RachioApiRateLimit();
 
     // public JsonArray eventDatas;
     @Nullable
@@ -159,7 +142,6 @@ public class RachioCloudEvent {
     @Nullable
     public HashMap<String, RachioEventProperty> deltaProperties;
 
-    public RachioCloudEvent() {
+    public RachioEventGson() {
     }
-
 }

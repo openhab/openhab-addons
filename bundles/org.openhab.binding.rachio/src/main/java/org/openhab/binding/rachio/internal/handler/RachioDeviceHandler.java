@@ -36,7 +36,7 @@ import org.openhab.binding.rachio.internal.RachioBindingConstants;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.RachioZone;
-import org.openhab.binding.rachio.internal.api.json.RachioCloudEvent;
+import org.openhab.binding.rachio.internal.api.json.RachioEventGson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,14 +48,14 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RachioDeviceHandler extends BaseThingHandler implements RachioStatusListener {
-    private final Logger logger = LoggerFactory.getLogger(RachioDeviceHandler.class);
+    private final Logger       logger      = LoggerFactory.getLogger(RachioDeviceHandler.class);
 
     @Nullable
-    Bridge bridge;
+    Bridge                     bridge;
     @Nullable
-    RachioBridgeHandler cloudHandler;
+    RachioBridgeHandler        cloudHandler;
     @Nullable
-    RachioDevice dev;
+    RachioDevice               dev;
     private Map<String, State> channelData = new HashMap<>();
 
     public RachioDeviceHandler(Thing thing) {
@@ -85,7 +85,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
                         } else {
                             updateProperties();
                             updateStatus(dev.getStatus());
-                            logger.debug("Rachio device '{}' initialized.", getThing().getUID().getAsString());
+                            logger.debug("Device '{}' initialized.", getThing().getUID().getAsString());
                             return;
                         }
                     }
@@ -100,9 +100,9 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
             }
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.debug("RachioBridge: {}", errorMessage);
+                logger.warn("ERROR: {}", errorMessage);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         }
     }
 
@@ -110,7 +110,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channel = channelUID.getId();
-        logger.debug("handleCommand {} for {}", command.toString(), channel);
+        logger.debug("Handle Command {} for {}", command.toString(), channel);
 
         if ((cloudHandler == null) || (dev == null)) {
             logger.debug("Cloud handler or device not initialized!");
@@ -175,7 +175,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
             errorMessage = e.getMessage();
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.debug("Rachio: {}", errorMessage);
+                logger.debug("ERROR: {}", errorMessage);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             }
         }
@@ -246,7 +246,6 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
         }
     }
 
-    @SuppressWarnings("null")
     public void shutdown() {
         Validate.notNull(dev);
         dev.setStatus("OFFLINE");
@@ -254,7 +253,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
     }
 
     @SuppressWarnings("null")
-    public boolean webhookEvent(RachioCloudEvent event) {
+    public boolean webhookEvent(RachioEventGson event) {
         boolean update = true; // 1=event processed, 2=processed + force refresh, 0=unhandled event
 
         try {
@@ -274,36 +273,35 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
                 // sub types:
                 // COLD_REBOOT, ONLINE, OFFLINE, OFFLINE_NOTIFICATION, SLEEP_MODE_ON, SLEEP_MODE_OFF, BROWNOUT_VALVE
                 // RAIN_SENSOR_DETECTION_ON, RAIN_SENSOR_DETECTION_OFF, RAIN_DELAY_ON, RAIN_DELAY_OFF
-                logger.debug("Rachio device {} ('{}') changed to status '{}'.", dev.name, dev.id, event.subType);
+                logger.debug("Device {} ('{}') changed to status '{}'.", dev.name, dev.id, event.subType);
                 if (event.subType.equals("COLD_REBOOT")) {
-                    logger.info("Rachio device {} (id '{}') was restarted, ip={}/{}, gw={}, dns={}/{}, wifi rssi={}.",
+                    logger.info("Device {} (id '{}') was restarted, ip={}/{}, gw={}, dns={}/{}, wifi rssi={}.",
                             dev.name, dev.id, dev.network.ip, dev.network.nm, dev.network.gw, dev.network.dns1,
                             dev.network.dns2, dev.network.rssi);
                     dev.setNetwork(event.network);
                 } else if (event.subType.equals("ONLINE")) {
-                    logger.info("Rachio device {} ('{}') is now ONLINE.", dev.name, dev.id);
+                    logger.info("Device {} ('{}') is now ONLINE.", dev.name, dev.id);
                     dev.setStatus(event.subType);
                 } else if (event.subType.equals("OFFLINE") || event.subType.equals("OFFLINE_NOTIFICATION")) {
-                    logger.info("Rachio device {} ('{}') is now OFFLINE (subType = '{}').", dev.name, dev.id,
-                            event.subType);
+                    logger.info("Device {} ('{}') is now OFFLINE (subType = '{}').", dev.name, dev.id, event.subType);
                     dev.setStatus(event.subType);
                 } else if (event.subType.equals("SLEEP_MODE_ON")) {
-                    logger.info("Rachio device {} ('{}') is now in sleep mode.", dev.name, dev.id);
+                    logger.info("Device {} ('{}') is now in sleep mode.", dev.name, dev.id);
                     dev.setSleepMode(event.subType);
                 } else if (event.subType.equals("SLEEP_MODE_OFF")) {
-                    logger.info("Rachio device {} ('{}') was resumed (exit from sleep mode).", dev.name, dev.id);
+                    logger.info("Device {} ('{}') was resumed (exit from sleep mode).", dev.name, dev.id);
                     dev.setSleepMode(event.subType);
                 } else if (event.subType.equals("RAIN_DELAY_ON")) {
-                    logger.info("Rachio device {} ('{}') reporterd a rain delay ON.", dev.name, dev.id);
+                    logger.info("Device {} ('{}') reporterd a rain delay ON.", dev.name, dev.id);
                     update = false; // details missing
                 } else if (event.subType.equals("RAIN_DELAY_OFF")) {
-                    logger.info("Rachio device {} ('{}') reporterd a rain delay OFF.", dev.name, dev.id);
+                    logger.info("Device {} ('{}') reporterd a rain delay OFF.", dev.name, dev.id);
                     update = false; // details missing
                 } else if (event.subType.equals("RAIN_SENSOR_DETECTION_ON")) {
-                    logger.info("Rachio device {} ('{}') reporterd a rain sensor ON.", dev.name, dev.id);
+                    logger.info("Device {} ('{}') reporterd a rain sensor ON.", dev.name, dev.id);
                     update = false; // details missing
                 } else if (event.subType.equals("RAIN_SENSOR_DETECTION_ON")) {
-                    logger.info("Rachio device {} ('{}') reporterd a rain sensor OFF.", dev.name, dev.id);
+                    logger.info("Device {} ('{}') reporterd a rain sensor OFF.", dev.name, dev.id);
                     update = false; // details missing
                 } else {
                     update = false; // details missing
@@ -334,7 +332,7 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
     @SuppressWarnings("null")
     private void updateProperties() {
         if (dev != null) {
-            logger.trace("Updating Rachio sprinkler properties");
+            logger.trace("Updating device properties");
             updateProperties(dev.fillProperties());
         }
     }

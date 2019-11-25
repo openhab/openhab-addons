@@ -25,9 +25,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.rachio.internal.RachioBindingConstants;
-import org.openhab.binding.rachio.internal.api.json.RachioCloudDevice;
-import org.openhab.binding.rachio.internal.api.json.RachioCloudEvent;
-import org.openhab.binding.rachio.internal.api.json.RachioCloudZone;
+import org.openhab.binding.rachio.internal.api.json.RachioEventGson;
+import org.openhab.binding.rachio.internal.api.json.RachioDeviceGson.RachioCloudDevice;
+import org.openhab.binding.rachio.internal.api.json.RachioDeviceGson.RachioCloudNetworkSettings;
+import org.openhab.binding.rachio.internal.api.json.RachioZoneGson.RachioCloudZone;
 import org.openhab.binding.rachio.internal.handler.RachioDeviceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,31 +40,31 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RachioDevice extends RachioCloudDevice {
-    private final Logger logger = LoggerFactory.getLogger(RachioDevice.class);
+    private final Logger                logger       = LoggerFactory.getLogger(RachioDevice.class);
 
     // extensions to cloud attributes
-    public String runList = "";
-    public Integer runTime = 0;
-    public String lastEvent = "";
-    public boolean paused = false;
-    public int rainDelay = 0;
+    public String                       runList      = "";
+    public Integer                      runTime      = 0;
+    public String                       lastEvent    = "";
+    public boolean                      paused       = false;
+    public int                          rainDelay    = 0;
 
     @Nullable
-    public ThingUID bridgeUID;
+    public ThingUID                     bridgeUID;
     @Nullable
-    public ThingUID devUID;
-    private HashMap<String, RachioZone> zoneList = new HashMap<String, RachioZone>();
+    public ThingUID                     devUID;
+    private HashMap<String, RachioZone> zoneList     = new HashMap<String, RachioZone>();
     @Nullable
-    private RachioDeviceHandler thingHandler = null;
-    public RachioCloudNetworkSettings network = new RachioCloudNetworkSettings();
-    public String scheduleName = "";
+    private RachioDeviceHandler         thingHandler = null;
+    public RachioCloudNetworkSettings   network      = new RachioCloudNetworkSettings();
+    public String                       scheduleName = "";
 
     @SuppressWarnings("unused")
     public RachioDevice(RachioCloudDevice device) {
         try {
             RachioApi.copyMatchingFields(device, this);
-            logger.trace("RachioDevice: Adding ddevice '{}' (id='{}', model='{}', on={}, status={}, deleted={})",
-                    device.name, device.id, device.model, device.on, device.status, device.deleted);
+            logger.trace("Adding ddevice '{}' (id='{}', model='{}', on={}, status={}, deleted={})", device.name,
+                    device.id, device.model, device.on, device.status, device.deleted);
             if (!device.deleted) {
                 zoneList = new HashMap<String, RachioZone>(); // discard current list
                 for (int i = 0; i < device.zones.size(); i++) {
@@ -73,13 +74,12 @@ public class RachioDevice extends RachioCloudDevice {
                     if (true /* zone.enabled */) {
                         zoneList.put(zone.id, new RachioZone(zone, getThingID()));
                     } else {
-                        logger.trace("RachioDevice: Zone '{}.{}[{}]' is disabled, skip.", device.name, zone.name,
-                                zone.zoneNumber);
+                        logger.trace("Zone '{}.{}[{}]' is disabled, skip.", device.name, zone.name, zone.zoneNumber);
                     }
                 }
             }
         } catch (RuntimeException e) {
-            logger.warn("RachioDevice: Unable to initialize '{}': {}", device.name, e.getMessage());
+            logger.warn("Unable to initialize device '{}': {}", device.name, e.getMessage());
         }
     }
 
@@ -111,7 +111,7 @@ public class RachioDevice extends RachioCloudDevice {
     public boolean compare(@Nullable RachioDevice cdev) {
         if ((cdev == null) || !id.equalsIgnoreCase(cdev.id) || !status.equalsIgnoreCase(cdev.status) || (on != cdev.on)
                 || (paused != cdev.paused)) {
-            logger.trace("RachioDevice: update data received");
+            logger.trace("Device data was updated");
             return false;
         }
         return true;
@@ -138,7 +138,7 @@ public class RachioDevice extends RachioCloudDevice {
      * @param deviceUID
      */
     public void setUID(ThingUID bridgeUID, ThingUID deviceUID) {
-        bridgeUID = bridgeUID;
+        this.bridgeUID = bridgeUID;
         devUID = deviceUID;
     }
 
@@ -205,7 +205,7 @@ public class RachioDevice extends RachioCloudDevice {
         if (status.equals("OFFLINE")) {
             return ThingStatus.OFFLINE;
         }
-        logger.debug("RachioDevice: Device status '{}' was mapped to OFFLINE", status);
+        logger.debug("Device status '{}' was mapped to OFFLINE", status);
         return ThingStatus.OFFLINE;
     }
 
@@ -214,7 +214,7 @@ public class RachioDevice extends RachioCloudDevice {
             status = new_status;
             return;
         }
-        logger.debug("RachioDevice: Device status '{}' was not set!", new_status);
+        logger.debug("Device status '{}' was not set!", new_status);
     }
 
     /**
@@ -294,7 +294,7 @@ public class RachioDevice extends RachioCloudDevice {
     }
 
     @SuppressWarnings("null")
-    public void setEvent(RachioCloudEvent event) {
+    public void setEvent(RachioEventGson event) {
         String s = new RachioEventString(event).toJson();
         if (!s.isEmpty()) {
             lastEvent = s;

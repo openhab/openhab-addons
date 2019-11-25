@@ -27,7 +27,7 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.RachioHandlerFactory;
-import org.openhab.binding.rachio.internal.api.json.RachioCloudEvent;
+import org.openhab.binding.rachio.internal.api.json.RachioEventGson;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -120,7 +120,7 @@ public class RachioWebHookServlet extends HttpServlet {
                                                      // contact Rachio Support.",
 
                 logger.trace("RachioWebHook: Data='{}'", data);
-                RachioCloudEvent event = gson.fromJson(data, RachioCloudEvent.class);
+                RachioEventGson event = gson.fromJson(data, RachioEventGson.class);
                 if ((event != null) && (rachioHandlerFactory != null)) {
                     logger.trace("RachioEvent {}.{} for device '{}': {}", event.category, event.type, event.deviceId,
                             event.summary);

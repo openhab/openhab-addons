@@ -35,6 +35,7 @@ Example: 2 controllers with 8 zones each under the same account creates 19 thing
 ###  Configuration
 
 Option A: Using Paper UI
+
 - Go to Paper UI:Inbox and press the + button.
 - Click Add Manually at the end of the list, this will open a list of addable things.
 - Select the Rachio Binding
@@ -96,13 +97,14 @@ The are no additional configuration options on the device level.
 |run|ON: The zone starts watering. If runTime is = 0 the defaultRuntime will be used. OFF: Zone stops watering.|
 |runTime|Number of seconds to run the zone when run receives ON command|
 |runTotal|Total number of seconds the zone was watering (as returned by the cloud service).|
-|imageUrl|URL to the zone picture as configured in the App. Rachio supplies default pictures if no image was created. This can be used e.g. in a habPanel to show the zione picture and display the zone name.|
+|imageUrl|URL to the zone picture as configured in the App. Rachio supplies default pictures if no image was created. This can be used e.g. in a habPanel to show the zone picture and display the zone name.|
 |zoneEvent|Receives a JSON-formatted message on each zone event from the cloud (requires event callback).|
 
 
 # Full example
 
 ## Thing Definition
+
 ```
 Bridge rachio:cloud:1 @ "Sprinkler" [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",  pollingInterval=60, defaultRuntime=120  ]
 {
