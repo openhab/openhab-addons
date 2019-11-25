@@ -84,7 +84,7 @@ The binding uses the network settings in openHAB system configuration to determi
 ## Channels
 
 |Group   |Channel        |Description                                                                                                 |
-|----- --|---------------|------------------------------------------------------------------------------------------------------------|
+|-------|---------------|------------------------------------------------------------------------------------------------------------|
 |control |power          |Switching the channel simulates pressing the power button (same as sending "POWER" to the key channel). The receiver doesn't offer ON and OFF, but just toggles the power state. For that it's tricky to ensure the power state. Maybe some future versions will use some kind of testing to determine the current state.                                                                                  |
 |        | channelUp     |Switch one channel up (same as sending "CHUP" to the key channel)                                           |
 |        | channelDown   |Switch one channel down (same as sending "CHDOWN" to the key channel)                                       |
