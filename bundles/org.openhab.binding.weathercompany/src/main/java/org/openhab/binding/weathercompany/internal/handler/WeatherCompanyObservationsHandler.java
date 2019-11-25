@@ -60,7 +60,7 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
 
     private @Nullable Future<?> refreshObservationsJob;
 
-    private Runnable refreshRunnable = new Runnable() {
+    private final Runnable refreshRunnable = new Runnable() {
         @Override
         public void run() {
             refreshPwsObservations();

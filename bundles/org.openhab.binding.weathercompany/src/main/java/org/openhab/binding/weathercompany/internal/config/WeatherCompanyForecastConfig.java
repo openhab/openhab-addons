@@ -12,36 +12,40 @@
  */
 package org.openhab.binding.weathercompany.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link WeatherCompanyForecastConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class WeatherCompanyForecastConfig {
     /**
      * Type of location (postal, geocode, etc.)
      */
-    public String locationType;
+    public @Nullable String locationType;
 
     /**
      * Postal code
      */
-    public String postalCode;
+    public @Nullable String postalCode;
 
     /**
      * Geocode
      */
-    public String geocode;
+    public @Nullable String geocode;
 
     /**
      * IATA code
      */
-    public String iataCode;
+    public @Nullable String iataCode;
 
     /**
      * Language
      */
-    public String language;
+    public @Nullable String language;
 
     /**
      * Interval with which forecast will be updated.

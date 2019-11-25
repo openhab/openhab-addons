@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.weathercompany.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link WeatherCompanyBridgeConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class WeatherCompanyBridgeConfig {
     /**
      * API key
      */
-    public String apiKey;
+    public @Nullable String apiKey;
 }

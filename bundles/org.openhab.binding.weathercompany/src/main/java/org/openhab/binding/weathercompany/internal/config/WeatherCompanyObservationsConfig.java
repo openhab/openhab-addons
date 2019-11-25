@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.weathercompany.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link WeatherCompanyObservationsConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class WeatherCompanyObservationsConfig {
     /**
      * Personal Weather Station Id
      */
-    public String pwsStationId;
+    public @Nullable String pwsStationId;
 
     /**
      * Interval with which forecast will be updated.

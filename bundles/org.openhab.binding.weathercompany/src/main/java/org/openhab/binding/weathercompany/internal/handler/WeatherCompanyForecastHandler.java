@@ -66,7 +66,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
 
     private final Logger logger = LoggerFactory.getLogger(WeatherCompanyForecastHandler.class);
 
-    private LocaleProvider localeProvider;
+    private final LocaleProvider localeProvider;
 
     private int refreshIntervalSeconds;
     private String locationQueryString = "";
@@ -74,7 +74,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
 
     private @Nullable Future<?> refreshForecastJob;
 
-    private Runnable refreshRunnable = new Runnable() {
+    private final Runnable refreshRunnable = new Runnable() {
         @Override
         public void run() {
             refreshForecast();
@@ -119,7 +119,11 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
 
     private boolean isValidLocation() {
         boolean validLocation = false;
-        switch (getConfigAs(WeatherCompanyForecastConfig.class).locationType) {
+        String locationType = getConfigAs(WeatherCompanyForecastConfig.class).locationType;
+        if (locationType == null) {
+            return validLocation;
+        }
+        switch (locationType) {
             case CONFIG_LOCATION_TYPE_POSTAL_CODE:
                 String postalCode = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).postalCode);
                 if (postalCode == null) {

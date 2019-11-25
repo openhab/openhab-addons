@@ -46,7 +46,7 @@ public class WeatherCompanyBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable Future<?> validateApiKeyJob;
 
-    private Runnable validateApiKeyRunnable = new Runnable() {
+    private final Runnable validateApiKeyRunnable = new Runnable() {
         @Override
         public void run() {
             logger.debug("Bridge: Attempting to validate API key");
@@ -85,6 +85,11 @@ public class WeatherCompanyBridgeHandler extends BaseBridgeHandler {
         cancelValidateApiKeyJob();
     }
 
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // Bridge doesn't handle any commands
+    }
+
     public @Nullable String getApiKey() {
         return getConfigAs(WeatherCompanyBridgeConfig.class).apiKey;
     }
@@ -102,10 +107,5 @@ public class WeatherCompanyBridgeHandler extends BaseBridgeHandler {
             validateApiKeyJob = null;
             logger.debug("Bridge: Canceling job to validate API key");
         }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // Bridge doesn't handle any commands
     }
 }

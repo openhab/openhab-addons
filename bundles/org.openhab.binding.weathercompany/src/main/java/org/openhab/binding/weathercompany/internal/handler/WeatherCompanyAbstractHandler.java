@@ -63,10 +63,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * The {@link WeatherCompanyAbstractHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link WeatherCompanyAbstractHandler} contains common utilities used by
+ * handlers.
  *
- * API documentation is located here
+ * Weather Company API documentation is located here
  * - https://docs.google.com/document/d/1eKCnKXI9xnoMGRRzOL1xPCBihNV2rOet08qpE_gArAY/edit
  *
  * @author Mark Hilbush - Initial contribution
@@ -83,9 +83,9 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
     protected final Map<String, State> weatherDataCache = Collections.synchronizedMap(new HashMap<>());
 
     // Provided by handler factory
-    private TimeZoneProvider timeZoneProvider;
-    private HttpClient httpClient;
-    private SystemOfUnits systemOfUnits;
+    private final TimeZoneProvider timeZoneProvider;
+    private final HttpClient httpClient;
+    private final SystemOfUnits systemOfUnits;
 
     public WeatherCompanyAbstractHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient,
             UnitProvider unitProvider) {

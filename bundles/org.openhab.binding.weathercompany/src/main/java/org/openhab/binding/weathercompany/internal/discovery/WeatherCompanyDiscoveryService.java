@@ -49,9 +49,9 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(WeatherCompanyDiscoveryService.class);
 
-    private LocationProvider locationProvider;
-    private LocaleProvider localeProvider;
-    private WeatherCompanyBridgeHandler bridgeHandler;
+    private final LocationProvider locationProvider;
+    private final LocaleProvider localeProvider;
+    private final WeatherCompanyBridgeHandler bridgeHandler;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
