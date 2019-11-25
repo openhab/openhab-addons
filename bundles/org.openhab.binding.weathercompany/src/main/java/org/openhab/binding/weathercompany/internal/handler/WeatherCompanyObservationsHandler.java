@@ -42,8 +42,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link WeatherCompanyObservationsHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link WeatherCompanyObservationsHandler} is responsible for pulling Personal
+ * Weather Station (PWS) observations from the Weather Company API.
  *
  * API documentation is located here
  * - https://docs.google.com/document/d/1eKCnKXI9xnoMGRRzOL1xPCBihNV2rOet08qpE_gArAY/edit
