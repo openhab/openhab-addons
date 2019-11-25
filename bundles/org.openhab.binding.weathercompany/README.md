@@ -195,7 +195,7 @@ Number:Angle WC_PWS_WindDirection "Wind Direction [%.0f %unit%]" <wind> { channe
 Number:Speed WC_PWS_WindSpeed "Wind Speed [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:pwsObservations#currentWindSpeed" }
 Number:Speed WC_PWS_WindSpeedGust "Wind Speed Gust [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:pwsObservations#currentWindSpeedGust" }
 String WC_PWS_Country "Country [%s]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#country" }
-Location WC_PWS_Location "Lat/Lon [%s]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#location" }
+Location WC_PWS_Location "Lat/Lon [%2$s°N, %3$s°W]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#location" }
 Number:Length WC_PWS_Elevation "Elevation [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#elevation" }
 String WC_PWS_Neighborhood "Neighborhood [%s]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#neighborhood" }
 DateTime WC_PWS_ObservationTimeLocal "Observation Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="weathercompany:weather-observations:observations:pwsObservations#observationTimeLocal" }

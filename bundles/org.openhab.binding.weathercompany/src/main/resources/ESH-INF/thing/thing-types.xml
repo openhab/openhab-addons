@@ -294,7 +294,7 @@
 		<item-type>Location</item-type>
 		<label>Weather Station Location</label>
 		<description>Latitude and longitude of weather station</description>
-		<state readOnly="true" pattern="%1$s°N, %2$s°W" />
+		<state readOnly="true" pattern="%2$s°N, %3$s°W" />
 	</channel-type>
 
 	<channel-type id="elevation" advanced="true">
