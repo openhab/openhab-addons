@@ -66,6 +66,8 @@ public class RachioBindingConstants {
     public static final String PROPERTY_MODEL = "model";
     public static final String PROPERTY_EXT_ID = "externalId";
     public static final String PROPERTY_DEV_ID = "deviceId";
+    public static final String PROPERTY_DEV_LAT = "latitude";
+    public static final String PROPERTY_DEV_LONG = "longitude";
     public static final String PROPERTY_ZONE_ID = "zoneId";
     public static final String PROPERTY_PERSON_ID = "personId";
     public static final String PROPERTY_PERSON_USER = "accounUserName";
@@ -82,8 +84,6 @@ public class RachioBindingConstants {
     public static final String CHANNEL_DEVICE_RUN_TIME = "runTime";
     public static final String CHANNEL_DEVICE_STOP = "stop";
     public static final String CHANNEL_DEVICE_EVENT = "event";
-    public static final String CHANNEL_DEVICE_LATITUDE = "latitude";
-    public static final String CHANNEL_DEVICE_LONGITUDE = "longitude";
     public static final String CHANNEL_DEVICE_SCHEDULE = "scheduleName";
     public static final String CHANNEL_DEVICE_RAIN_DELAY = "rainDelay";
 

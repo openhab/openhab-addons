@@ -120,14 +120,12 @@ public class RachioCloudDevice {
     }
 
     public class RachioCloudNetworkSettings {
-        // "network" : {
         public String gw   = ""; // "gw" : "192.168.1.1",
         public String rssi = ""; // "rssi" : -61,
         public String dns2 = ""; // "dns2" : "75.75.76.76",
         public String dns1 = ""; // "dns1" : "75.75.75.75",
         public String ip   = ""; // "ip" : "192.168.1.112",
         public String nm   = ""; // "nm" : "255.255.255.0"
-        // }
     }
 
 }

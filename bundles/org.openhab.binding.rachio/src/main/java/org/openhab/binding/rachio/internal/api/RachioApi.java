@@ -260,10 +260,8 @@ public class RachioApi {
 
         Validate.notNull(httpApi);
         lastApiResult = httpApi.httpGet(APIURL_BASE + APIURL_GET_PERSON, null);
-        @Nullable
         Gson gson = new Gson();
         Validate.notNull(gson);
-        @Nullable
         RachioCloudPersonId pid = gson.fromJson(lastApiResult.resultString, RachioCloudPersonId.class);
         Validate.notNull(pid);
         personId = pid.id;

@@ -194,8 +194,6 @@ public class RachioDeviceHandler extends BaseThingHandler implements RachioStatu
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_RUN_TIME, new DecimalType(dev.getRunTime()));
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_RAIN_DELAY, new DecimalType(dev.rainDelay));
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_EVENT, new StringType(dev.getEvent()));
-            updateChannel(RachioBindingConstants.CHANNEL_DEVICE_LATITUDE, new DecimalType(dev.longitude));
-            updateChannel(RachioBindingConstants.CHANNEL_DEVICE_LONGITUDE, new DecimalType(dev.latitude));
             updateChannel(RachioBindingConstants.CHANNEL_DEVICE_SCHEDULE, new StringType(dev.scheduleName));
         }
     }

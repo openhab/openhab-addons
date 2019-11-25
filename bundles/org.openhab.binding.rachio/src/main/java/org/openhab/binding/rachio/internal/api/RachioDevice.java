@@ -162,6 +162,9 @@ public class RachioDevice extends RachioCloudDevice {
         properties.put(PROPERTY_MODEL, model);
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+        properties.put(PROPERTY_DEV_ID, id);
+        properties.put(PROPERTY_DEV_LAT, new Double(latitude).toString());
+        properties.put(PROPERTY_DEV_LONG, new Double(longitude).toString());
         properties.put(PROPERTY_IP_ADDRESS, network.ip);
         properties.put(PROPERTY_IP_MASK, network.ip);
         properties.put(PROPERTY_IP_GW, network.gw);
@@ -308,7 +311,7 @@ public class RachioDevice extends RachioCloudDevice {
     }
 
     public String getAllRunZonesJson(int defaultRuntime) {
-        boolean flAll = runList.equals("") || runList.equalsIgnoreCase("ALL");
+        boolean flAll = runList.isEmpty() || runList.equalsIgnoreCase("ALL");
 
         String list = runList + ","; // make sure last entry is terminated by ','
         String json = "{ \"zones\" : [";

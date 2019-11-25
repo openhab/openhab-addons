@@ -61,7 +61,7 @@ public class RachioZone extends RachioCloudZone {
                 // local servlet. The serverlet loads the provided image and then writs it as binary data to the output
                 // stream with the correct mime type.
                 String uri = zone.imageUrl.substring(zone.imageUrl.lastIndexOf("/"));
-                if (!uri.equals("")) {
+                if (!uri.isEmpty()) {
                     this.imageUrl = SERVLET_IMAGE_PATH + uri;
                     logger.trace("RachioZone: imageUrl rewritten to '{}' for zone '{}'", imageUrl, name);
                 }

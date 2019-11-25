@@ -180,7 +180,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
             Validate.notNull(bridge);
             Validate.notNull(bridge.cloudHandler);
             String ipFilter = bridge.cloudHandler.getIpFilter();
-            if ((ipFilter != null) && !ipFilter.equals("")) {
+            if ((ipFilter != null) && !ipFilter.isEmpty()) {
                 ipList = ipList + ";" + ipFilter;
             }
         }

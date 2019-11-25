@@ -40,18 +40,20 @@ public class RachioConfiguration {
     public String callbackUrl = "";
     public Boolean clearAllCallbacks = false;
 
+    @SuppressWarnings("null")
     public void updateConfig(@Nullable Map<String, @Nullable Object> config) {
         Validate.notNull(config);
         for (HashMap.@Nullable Entry<String, @Nullable Object> ce : config.entrySet()) {
-            Validate.notNull(ce);
             String key = ce.getKey();
             Validate.notNull(key);
-            Validate.notNull(ce.getValue());
-            @SuppressWarnings("null")
-            String value = ce.getValue().toString();
             if (key.equalsIgnoreCase("component.name") || key.equalsIgnoreCase("component.id")) {
                 continue;
             }
+            if (ce.getValue() == null) {
+                // no value set
+                continue;
+            }
+            String value = ce.getValue().toString();
 
             if (key.equalsIgnoreCase("service.pid")) {
                 logger.debug("Rachio: Binding configuration:");

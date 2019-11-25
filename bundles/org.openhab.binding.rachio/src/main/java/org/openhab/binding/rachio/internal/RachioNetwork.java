@@ -94,7 +94,7 @@ public class RachioNetwork {
      */
     @SuppressWarnings("null")
     public static boolean isIpInSubnet(String clientIp, String ipList) {
-        if ((ipList == null) || ipList.equals("")) {
+        if ((ipList == null) || ipList.isEmpty()) {
             // No ip address provided
             return true;
         }

@@ -100,13 +100,11 @@ public class RachioDiscoveryService extends AbstractDiscoveryService {
             }
 
             logger.debug("Starting scan for new Rachio controllers");
-            @Nullable
             HashMap<String, RachioDevice> deviceList = null;
             ThingUID bridgeUID;
-            Validate.notNull(rachioApi);
             if (cloudHandler == null) {
                 String apikey = bindingConfig.apikey;
-                if (apikey.equals("")) {
+                if (apikey.isEmpty()) {
                     logger.debug("RachioDiscovery: API not yet initialized");
                     return;
                 }

@@ -4,6 +4,7 @@
 
     <feature name="openhab-binding-rachio" description="Rachio Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab.tp-httpclient</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.rachio/${project.version}</bundle>
     </feature>
 </features>

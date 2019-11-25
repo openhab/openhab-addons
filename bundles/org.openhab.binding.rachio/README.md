@@ -5,6 +5,9 @@ This binding allows to retrieve status information from Rachio Sprinklers and co
 
 ## Supported Things
 
+The cloud api connector is represented by a Bridge Thing. 
+All devices are connected to this thing, all zones to the corresponding device. 
+
 |Thing|Description|
 |:---|:---|
 |cloud|Each Rachio account is reppresented by a cloud thing. The binding supports multiple accounts at the same time.|
@@ -13,8 +16,14 @@ This binding allows to retrieve status information from Rachio Sprinklers and co
 
 ## Discovery
 
-The device setup is read from the Cloude setup, so it shares the same items as the Smartphone and Web Apps, so there is no special setup required. In fact all Apps (including this binding) control the same device. The binding implements monitoring and control functions, but no configuration etc. To change configuration you could use the smartphone App. 
+You need to register an application and get an API key before the binding could discover your devices. 
 
+- Go to [Rachio Web App](https://rachio.com->login), click on Account Settings in the left navigation. At the bottom you'll find a link "Get API key". 
+- Copy the copy and post it to the bridge configuration: apikey=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx.
+ 
+The binding implements monitoring and control functions, but no configuration etc. To change configuration you could use the smartphone App. 
+
+Once the binding is able to connect to the Cloud API it will start the auto-discovery of all controller and zonzes under this account. 
 As a result the following things are created
 
 - 1 cloud per account
@@ -23,10 +32,21 @@ As a result the following things are created
 
 Example: 2 controllers with 8 zones each under the same account creates 19 things (1xbridge, 2xdevice, 16xzone). 
 
-##  Configuration
+###  Configuration
 
-The cloud api connector is represented by a Bridge Thing. All devices are connected to this thing, all zones to the corresponding device. Rachio requires an api key created by the user to provide access to the cloud API.
-conf/things/rachio.things
+Option A: Using Paper UI
+- Go to Paper UI:Inbox and press the + button.
+- Click Add Manually at the end of the list, this will open a list of addable things.
+- Select the Rachio Binding
+- Select Rachio Cloud Connector things
+- Enter at least the api key, other settings are optional
+- save
+
+Now the binding is able to connect to the cloud and start discovery devices and zones.
+
+Option B: Using .things file
+
+Create conf/things/rachio.things and fill in the parameters:
 
 ```
 Bridge rachio:cloud:1 [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx", pollingInterval=180, defaultRuntime=120, callbackUrl="https://mydomain.com:443/rachio/webhook", clearAllCallbacks=true  ]
@@ -36,7 +56,7 @@ Bridge rachio:cloud:1 [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx", pollingInterv
 
 |Parameter|Description|
 |:---|:---|
-|apikey|This is a token required to access the Rachio Cloud account. Go to [Rachio Web App](https://rachio.com->login), click on Account Settings in the left navigation. At the bottom you'll find a link "Get API key". Copy the copy and post it to the bridge configuration: apikey=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx.|
+|apikey|This is a token required to access the Rachio Cloud account. See Discovery on information how to get that code.|
 |pollingInterval|Specifies the delay between two status polls. Usually something like 10 minutes should be enough to have a regular status update when the interfaces is configured. If you don't want/can use events a smaller delay might be interesting to get quicker responses on running zones etc.|
 ||Important: Please make sure to use an interval > 90sec. Rachio has a reshhold for the number of API calls per day: 1700. This means if you are accessing the API for more than once in a minute your account gets blocked for the rest of the day.|
 |defaultRuntime|You could run zones in 2 different ways:|

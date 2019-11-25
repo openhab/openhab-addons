@@ -119,7 +119,6 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
             Validate.notNull(deviceList);
             for (HashMap.Entry<String, RachioDevice> de : deviceList.entrySet()) {
                 Validate.notNull(de);
-                @Nullable
                 RachioDevice dev = de.getValue();
                 Validate.notNull(dev);
                 ThingUID devThingUID = new ThingUID(THING_TYPE_DEVICE, bridgeThing.getUID(), dev.getThingID());
@@ -127,7 +126,6 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
                 // Set DeviceUID for all zones
                 HashMap<String, RachioZone> zoneList = dev.getZones();
                 for (HashMap.Entry<String, RachioZone> ze : zoneList.entrySet()) {
-                    @Nullable
                     RachioZone zone = ze.getValue();
                     Validate.notNull(zone);
                     ThingUID zoneThingUID = new ThingUID(THING_TYPE_ZONE, bridgeThing.getUID(), zone.getThingID());
@@ -373,7 +371,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
      */
     public String getApiKey() {
         String apikey = getConfigAs(RachioConfiguration.class).apikey;
-        if (!apikey.equals("")) {
+        if (!apikey.isEmpty()) {
             return apikey;
         }
         Configuration config = getThing().getConfiguration();
@@ -479,7 +477,7 @@ public class RachioBridgeHandler extends ConfigStatusBridgeHandler {
      */
     @SuppressWarnings("null")
     public void registerWebHook(String deviceId) throws RachioApiException {
-        if (getCallbackUrl().equals("")) {
+        if (getCallbackUrl().isEmpty()) {
             logger.trace("RachioApi: No callbackUrl configured.");
         } else {
             Validate.notNull(rachioApi);
