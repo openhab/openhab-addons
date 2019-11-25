@@ -46,8 +46,9 @@ Specify latitude and longitude of the location for which the forecast is desired
 **IATA Code** (required when Location Type is IATA Code):
 Three character airport code (e.g. BWI, FCO).
 
-**Langauge** (required):
+**Langauge** (optional):
 Supports full list of TWC-supported languages.
+If the language not specified in the thing configuration, the binding will try to select the language based on the locale set in openHAB.
 
 **Forecast Refresh Interval** (required):
 Default to 30 minutes.

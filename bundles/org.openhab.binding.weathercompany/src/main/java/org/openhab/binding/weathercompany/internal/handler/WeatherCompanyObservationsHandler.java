@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
@@ -51,19 +52,13 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHandler {
-    // Personal Weather Station observations URL
     private static final String BASE_PWS_URL = "https://api.weather.com/v2/pws/observations/current";
 
     private final Logger logger = LoggerFactory.getLogger(WeatherCompanyObservationsHandler.class);
 
-    // Thing configuration
-    private @Nullable String pwsStationId;
     private int refreshIntervalSeconds;
 
-    private @Nullable String pwsUrl;
-
-    // Job to update the forecast and PWS observations
-    private @Nullable Future<?> refreshJob;
+    private @Nullable Future<?> refreshObservationsJob;
 
     private Runnable refreshRunnable = new Runnable() {
         @Override
@@ -73,23 +68,19 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
     };
 
     public WeatherCompanyObservationsHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient,
-            UnitProvider unitProvider) {
+            UnitProvider unitProvider, LocaleProvider localeProvider) {
         super(thing, timeZoneProvider, httpClient, unitProvider);
     }
 
     @Override
     public void initialize() {
-        // Get the configuration
-        WeatherCompanyObservationsConfig config = getConfigAs(WeatherCompanyObservationsConfig.class);
-        logger.debug("Configuration: {}", config.toString());
-        pwsStationId = config.pwsStationId;
-        refreshIntervalSeconds = config.refreshInterval * 60;
+        logger.debug("Initializing observations handler with configuration: {}",
+                getConfigAs(WeatherCompanyObservationsConfig.class).toString());
 
+        refreshIntervalSeconds = getConfigAs(WeatherCompanyObservationsConfig.class).refreshInterval * 60;
         weatherDataCache.clear();
-
-        // Schedule the job to refresh the forecast
         scheduleRefreshJob();
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(isBridgeOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
     }
 
     @Override
@@ -112,7 +103,7 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
      * Build the URL for requesting the PWS current observations
      */
     private @Nullable String buildPwsUrl() {
-        if (StringUtils.isEmpty(pwsStationId)) {
+        if (StringUtils.isEmpty(getConfigAs(WeatherCompanyObservationsConfig.class).pwsStationId)) {
             return null;
         }
         String apiKey = getApiKey();
@@ -122,7 +113,7 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
         // Set response type as JSON
         sb.append("&format=json");
         // Set PWS station Id from config
-        sb.append("&stationId=").append(pwsStationId);
+        sb.append("&stationId=").append(getConfigAs(WeatherCompanyObservationsConfig.class).pwsStationId);
         // Set API key from config
         sb.append("&apiKey=").append(apiKey);
         String url = sb.toString();
@@ -176,9 +167,8 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
         updatePws(CH_PWS_NEIGHBORHOOD, undefOrString(obs.neighborhood));
         updatePws(CH_PWS_STATION_ID, undefOrString(obs.stationID));
         updatePws(CH_PWS_COUNTRY, undefOrString(obs.country));
-        updatePws(CH_PWS_LATITUDE, undefOrDecimal(obs.lat));
-        updatePws(CH_PWS_LONGITUDE, undefOrDecimal(obs.lon));
-        updatePws(CH_PWS_ELEVATION, undefOrQuantity(obs.imperial.precipTotal, ImperialUnits.FOOT));
+
+        updatePws(CH_PWS_LOCATION, undefOrLocation(obs.lat, obs.lon, obs.imperial.elev));
         updatePws(CH_PWS_QC_STATUS, undefOrDecimal(obs.qcStatus));
         updatePws(CH_PWS_SOFTWARE_TYPE, undefOrString(obs.softwareType));
     }
@@ -188,20 +178,20 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
     }
 
     /*
-     * The refresh job updates the daily forecast and the PWS current
-     * observations on the refresh interval set in the thing config
+     * The refresh job updates the PWS current observations
+     * on the refresh interval set in the thing config
      */
     private void scheduleRefreshJob() {
-        logger.debug("Handler: Scheduling forecast refresh job in {} seconds", REFRESH_JOB_INITIAL_DELAY_SECONDS);
+        logger.debug("Handler: Scheduling observations refresh job in {} seconds", REFRESH_JOB_INITIAL_DELAY_SECONDS);
         cancelRefreshJob();
-        refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, REFRESH_JOB_INITIAL_DELAY_SECONDS,
+        refreshObservationsJob = scheduler.scheduleWithFixedDelay(refreshRunnable, REFRESH_JOB_INITIAL_DELAY_SECONDS,
                 refreshIntervalSeconds, TimeUnit.SECONDS);
     }
 
     private void cancelRefreshJob() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
-            logger.debug("Handler: Canceling forecast refresh job");
+        if (refreshObservationsJob != null) {
+            refreshObservationsJob.cancel(true);
+            logger.debug("Handler: Canceling observations refresh job");
         }
     }
 }

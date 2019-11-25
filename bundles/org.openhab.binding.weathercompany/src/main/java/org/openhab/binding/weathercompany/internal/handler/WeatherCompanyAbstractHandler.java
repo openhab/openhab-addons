@@ -42,6 +42,7 @@ import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
@@ -103,10 +104,18 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
         }
     }
 
+    protected boolean isBridgeOnline() {
+        boolean bridgeStatus = false;
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            bridgeStatus = true;
+        }
+        return bridgeStatus;
+    }
+
     protected String getApiKey() {
         String apiKey = "unknown";
         Bridge bridge = getBridge();
-
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
             WeatherCompanyBridgeHandler handler = (WeatherCompanyBridgeHandler) bridge.getHandler();
             if (handler != null) {
@@ -162,6 +171,18 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
 
     protected State undefOrQuantity(@Nullable Number value, Unit<?> unit) {
         return value == null ? UnDefType.UNDEF : new QuantityType<>(value, unit);
+    }
+
+    protected State undefOrLocation(@Nullable Number lat, @Nullable Number lon, @Nullable Number eliv) {
+        PointType location = null;
+        if (lat != null && lon != null && eliv != null) {
+            // FIXME Convert eliv to meters
+            location = new PointType(new DecimalType(lat.doubleValue()), new DecimalType(lon.doubleValue()),
+                    new DecimalType(eliv.doubleValue()));
+        } else if (lat != null && lon != null) {
+            location = new PointType(new DecimalType(lat.doubleValue()), new DecimalType(lon.doubleValue()));
+        }
+        return location == null ? UnDefType.UNDEF : location;
     }
 
     /*
@@ -291,7 +312,7 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
      * Called by discovery service to get TWC language based on
      * the locale configured in openHAB
      */
-    public static String getWeatherCompanyLanguage(Locale locale) {
+    public static String lookupLanguage(Locale locale) {
         String ohLanguage = locale.getLanguage() + "-" + locale.getCountry();
         for (String language : WEATHER_CHANNEL_LANGUAGES) {
             if (language.equals(ohLanguage)) {

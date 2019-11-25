@@ -7,6 +7,7 @@
 		<parameter name="apiKey" type="text" required="true">
 			<label>API Key</label>
 			<description>Enter the API key</description>
+			<context>password</context>
 		</parameter>
 	</config-description>
 
@@ -38,8 +39,14 @@
 			<description>Postal code of form postal:country (e.g. 10001:US)</description>
 		</parameter>
 		<parameter name="geocode" type="text" required="false">
-			<label>Geocode</label>
-			<description>Latitude and longitude (e.g. 40.75079698301718,-73.98944348261394)</description>
+			<context>location</context>
+			<label>Location</label>
+			<description><![CDATA[
+<p>The location of this weather forecast.</p>
+<p>Coordinates as &lt;latitude&gt;,&lt;longitude&gt;[&lt;altitude&gt;]</p>
+<p>Example: "52.5200066,13.4049540" (Berlin)</p>
+]]>
+			</description>
 		</parameter>
 		<parameter name="iataCode" type="text" required="false">
 			<label>IATA Code</label>
@@ -50,10 +57,9 @@
 			<description>Specifies the refresh interval in minutes</description>
 			<default>30</default>
 		</parameter>
-		<parameter name="language" type="text" required="true">
+		<parameter name="language" type="text" required="false">
 			<label>Language</label>
 			<description>Language to be used by the Weather Company service</description>
-			<default>en-US</default>
 			<options>
 				<option value="sq-AL">Albanian - (Albania)</option>
 				<option value="ar-AE">Arabic - (United Arab Emirates)</option>

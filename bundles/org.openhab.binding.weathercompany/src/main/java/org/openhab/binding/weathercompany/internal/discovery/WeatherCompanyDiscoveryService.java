@@ -23,14 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.weathercompany.internal.WeatherCompanyBridgeHandler;
 import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyAbstractHandler;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,28 +39,50 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.weathercompany")
 public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(WeatherCompanyDiscoveryService.class);
+    // Thing for local weather created during discovery
+    private static final String LOCAL = "local";
+    private static final String LOCAL_WEATHER = "Weather Company Local Forecast";
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 4;
-    private static final int DISCOVERY_INTERVAL = 1200;
+    private static final int DISCOVERY_INTERVAL_SECONDS = 1200;
+
+    private final Logger logger = LoggerFactory.getLogger(WeatherCompanyDiscoveryService.class);
+
+    private LocationProvider locationProvider;
+    private LocaleProvider localeProvider;
+    private WeatherCompanyBridgeHandler bridgeHandler;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
-
-    private @NonNullByDefault({}) LocationProvider locationProvider;
 
     /**
      * Creates a WeatherCompanyDiscoveryService with discovery enabled
      */
-    public WeatherCompanyDiscoveryService() {
+    public WeatherCompanyDiscoveryService(WeatherCompanyBridgeHandler bridgeHandler, LocationProvider locationProvider,
+            LocaleProvider localeProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, true);
+        this.bridgeHandler = bridgeHandler;
+        this.locationProvider = locationProvider;
+        this.localeProvider = localeProvider;
+    }
+
+    @Override
+    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+        super.activate(configProperties);
+        logger.debug("Discovery: Activating discovery service for {}", bridgeHandler.getThing().getUID());
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
+        logger.debug("Discovery: Deactivating discovery service for {}", bridgeHandler.getThing().getUID());
     }
 
     @Override
     protected void startScan() {
-        logger.debug("Starting Weather Company discovery scan");
+        logger.debug("Discovery: Starting Weather Company discovery scan");
         createDiscoveryResult();
+        stopScan();
     }
 
     @Override
@@ -71,8 +91,9 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
         if (job == null || job.isCancelled()) {
             job = scheduler.scheduleWithFixedDelay(() -> {
                 createDiscoveryResult();
-            }, 15, DISCOVERY_INTERVAL, TimeUnit.SECONDS);
-            logger.debug("Discovery: Scheduled Weather Company discovery job every {} seconds", DISCOVERY_INTERVAL);
+            }, 15, DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
+            logger.debug("Discovery: Scheduled Weather Company discovery job to run every {} seconds",
+                    DISCOVERY_INTERVAL_SECONDS);
         }
     }
 
@@ -87,44 +108,17 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void createDiscoveryResult() {
-        if (locationProvider == null || locationProvider.getLocation() == null) {
-            logger.debug("Discovery: Can't create discovery result because location is not set in openHAB");
-            return;
-        }
         PointType location = locationProvider.getLocation();
         if (location == null) {
             logger.debug("Discovery: Can't create discovery result because location is not set in openHAB");
             return;
         }
-        if (localeProvider == null) {
-            logger.debug("Discovery: Can't create discovery result because locale is not set in openHAB");
-            return;
-        }
         Map<String, Object> properties = new HashMap<>(3);
         properties.put(CONFIG_LOCATION_TYPE, CONFIG_LOCATION_TYPE_GEOCODE);
         properties.put(CONFIG_GEOCODE, String.format("%s,%s", location.getLatitude(), location.getLongitude()));
-        properties.put(CONFIG_LANGUAGE,
-                WeatherCompanyAbstractHandler.getWeatherCompanyLanguage(localeProvider.getLocale()));
+        properties.put(CONFIG_LANGUAGE, WeatherCompanyAbstractHandler.lookupLanguage(localeProvider.getLocale()));
         ThingUID localWeatherThing = new ThingUID(THING_TYPE_WEATHER_FORECAST, LOCAL);
-        thingDiscovered(DiscoveryResultBuilder.create(localWeatherThing).withLabel(LOCAL_WEATHER)
-                .withProperties(properties).build());
-    }
-
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = null;
-    }
-
-    @Reference
-    protected void setLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = null;
+        thingDiscovered(DiscoveryResultBuilder.create(localWeatherThing).withBridge(bridgeHandler.getThing().getUID())
+                .withLabel(LOCAL_WEATHER).withProperties(properties).build());
     }
 }

@@ -50,10 +50,6 @@ public class WeatherCompanyBindingConstants {
             Stream.concat(SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream(), SUPPORTED_WEATHER_THING_TYPES_UIDS.stream())
                     .collect(Collectors.toSet()));
 
-    // Thing for local weather created during discovery
-    public static final String LOCAL = "local";
-    public static final String LOCAL_WEATHER = "Local Weather";
-
     // Thing configuration
     public static final String CONFIG_LOCATION_TYPE = "locationType";
     public static final String CONFIG_LOCATION_TYPE_GEOCODE = "geocode";
@@ -87,9 +83,7 @@ public class WeatherCompanyBindingConstants {
     public static final String CH_PWS_WIND_SPEED = "currentWindSpeed";
     public static final String CH_PWS_WIND_GUST = "currentWindSpeedGust";
     public static final String CH_PWS_COUNTRY = "country";
-    public static final String CH_PWS_ELEVATION = "elevation";
-    public static final String CH_PWS_LATITUDE = "latitude";
-    public static final String CH_PWS_LONGITUDE = "longitude";
+    public static final String CH_PWS_LOCATION = "location";
     public static final String CH_PWS_NEIGHBORHOOD = "neighborhood";
     public static final String CH_PWS_OBSERVATION_TIME_LOCAL = "observationTimeLocal";
     public static final String CH_PWS_QC_STATUS = "qcStatus";

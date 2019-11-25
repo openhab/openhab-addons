@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.library.types.RawType;
@@ -61,21 +62,17 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler {
-    // Five-day weather forecast URL
     private static final String BASE_FORECAST_URL = "https://api.weather.com/v3/wx/forecast/daily/5day";
 
     private final Logger logger = LoggerFactory.getLogger(WeatherCompanyForecastHandler.class);
 
-    // Thing configuration
-    private @Nullable String locationType;
-    private @Nullable String postalCode;
-    private @Nullable String geocode;
-    private @Nullable String iataCode;
-    private @Nullable String language;
-    private int refreshIntervalSeconds;
+    private LocaleProvider localeProvider;
 
-    // Job to update the forecast and PWS observations
-    private @Nullable Future<?> refreshJob;
+    private int refreshIntervalSeconds;
+    private String locationQueryString = "";
+    private String languageQueryString = "";
+
+    private @Nullable Future<?> refreshForecastJob;
 
     private Runnable refreshRunnable = new Runnable() {
         @Override
@@ -85,27 +82,23 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
     };
 
     public WeatherCompanyForecastHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient,
-            UnitProvider unitProvider) {
+            UnitProvider unitProvider, LocaleProvider localeProvider) {
         super(thing, timeZoneProvider, httpClient, unitProvider);
+        this.localeProvider = localeProvider;
     }
 
     @Override
     public void initialize() {
-        // Get the configuration
-        WeatherCompanyForecastConfig config = getConfigAs(WeatherCompanyForecastConfig.class);
-        logger.debug("Configuration: {}", config.toString());
-        locationType = config.locationType;
-        postalCode = config.postalCode;
-        geocode = config.geocode;
-        iataCode = config.iataCode;
-        language = config.language;
-        refreshIntervalSeconds = config.refreshInterval * 60;
+        logger.debug("Forecast handler initializing with configuration: {}",
+                getConfigAs(WeatherCompanyForecastConfig.class).toString());
 
-        weatherDataCache.clear();
-
-        // Schedule the job to refresh the forecast
-        scheduleRefreshJob();
-        updateStatus(ThingStatus.OFFLINE);
+        refreshIntervalSeconds = getConfigAs(WeatherCompanyForecastConfig.class).refreshInterval * 60;
+        if (isValidLocation()) {
+            weatherDataCache.clear();
+            setLanguage();
+            scheduleRefreshJob();
+            updateStatus(isBridgeOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        }
     }
 
     @Override
@@ -124,6 +117,56 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
         }
     }
 
+    private boolean isValidLocation() {
+        boolean validLocation = false;
+        switch (getConfigAs(WeatherCompanyForecastConfig.class).locationType) {
+            case CONFIG_LOCATION_TYPE_POSTAL_CODE:
+                String postalCode = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).postalCode);
+                if (postalCode == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Postal code is not set");
+                } else {
+                    locationQueryString = "&postalKey=" + postalCode.replace(" ", "");
+                    validLocation = true;
+                }
+                break;
+            case CONFIG_LOCATION_TYPE_GEOCODE:
+                String geocode = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).geocode);
+                if (geocode == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Geocode is not set");
+                } else {
+                    locationQueryString = "&geocode=" + geocode.replace(" ", "");
+                    validLocation = true;
+                }
+                break;
+            case CONFIG_LOCATION_TYPE_IATA_CODE:
+                String iataCode = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).iataCode);
+                if (iataCode == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IATA code is not set");
+                } else {
+                    locationQueryString = "&iataCode=" + iataCode.replace(" ", "").toUpperCase();
+                    validLocation = true;
+                }
+                break;
+            default:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Location Type is not set");
+                break;
+        }
+        return validLocation;
+    }
+
+    private void setLanguage() {
+        String language = StringUtils.trimToNull(getConfigAs(WeatherCompanyForecastConfig.class).language);
+        if (language == null) {
+            // Nothing in the thing config, so try to get a match from the openHAB locale
+            String derivedLanguage = WeatherCompanyAbstractHandler.lookupLanguage(localeProvider.getLocale());
+            languageQueryString = "&language=" + derivedLanguage;
+            logger.debug("Language not set in thing config, using {}", derivedLanguage);
+        } else {
+            // Use what is set in the thing config
+            languageQueryString = "&language=" + language;
+        }
+    }
+
     /*
      * Build the URL for requesting the 5-day forecast. It's important to request
      * the desired language AND units so that the forecast narrative contains
@@ -135,58 +178,16 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
         // Set response type as JSON
         sb.append("?format=json");
         // Set language from config
-        sb.append("&language=").append(language);
+        sb.append(languageQueryString);
         // Set API key from config
         sb.append("&apiKey=").append(apiKey);
         // Set the units to Imperial or Metric
         sb.append("&units=").append(getUnitsQueryString());
         // Set the location from config
-        sb.append(getLocationQueryString());
+        sb.append(locationQueryString);
         String url = sb.toString();
         logger.debug("Forecast URL is {}", url.replace(apiKey, REPLACE_API_KEY));
         return url.toString();
-    }
-
-    private String getLocationQueryString() {
-        boolean validConfig = true;
-        StringBuilder sb = new StringBuilder();
-        String location;
-        switch (locationType) {
-            case CONFIG_LOCATION_TYPE_POSTAL_CODE:
-                location = StringUtils.trimToNull(postalCode);
-                if (location == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Postal code is not set");
-                    validConfig = false;
-                } else {
-                    sb.append("&postalKey=").append(location.replace(" ", ""));
-                }
-                break;
-            case CONFIG_LOCATION_TYPE_GEOCODE:
-                location = StringUtils.trimToNull(geocode);
-                if (location == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Geocode is not set");
-                    validConfig = false;
-                } else {
-                    sb.append("&geocode=").append(location.replace(" ", ""));
-                }
-                break;
-            case CONFIG_LOCATION_TYPE_IATA_CODE:
-                location = StringUtils.trimToNull(iataCode);
-                if (location == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IATA code is not set");
-                    validConfig = false;
-                } else {
-                    sb.append("&iataCode=").append(location.replace(" ", "").toUpperCase());
-                }
-                break;
-            default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Location Type is not set");
-                validConfig = false;
-        }
-        if (validConfig) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-        return sb.toString();
     }
 
     private synchronized void refreshForecast() {
@@ -326,19 +327,19 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
     }
 
     /*
-     * The refresh job updates the daily forecast and the PWS current
-     * observations on the refresh interval set in the thing config
+     * The refresh job updates the daily forecast on the
+     * refresh interval set in the thing config
      */
     private void scheduleRefreshJob() {
         logger.debug("Handler: Scheduling forecast refresh job in {} seconds", REFRESH_JOB_INITIAL_DELAY_SECONDS);
         cancelRefreshJob();
-        refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, REFRESH_JOB_INITIAL_DELAY_SECONDS,
+        refreshForecastJob = scheduler.scheduleWithFixedDelay(refreshRunnable, REFRESH_JOB_INITIAL_DELAY_SECONDS,
                 refreshIntervalSeconds, TimeUnit.SECONDS);
     }
 
     private void cancelRefreshJob() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        if (refreshForecastJob != null) {
+            refreshForecastJob.cancel(true);
             logger.debug("Handler: Canceling forecast refresh job");
         }
     }
