@@ -27,7 +27,7 @@ public class FreeMobileSmsActions implements ThingActions {
     private @Nullable FreeMobileSmsHandler handler;
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) { handler = (FreeMobileSmsHandler) handler; }
+    public void setThingHandler(@Nullable ThingHandler handler) { this.handler = (FreeMobileSmsHandler) handler; }
 
     @Override
     public @Nullable ThingHandler getThingHandler() { return handler; }
