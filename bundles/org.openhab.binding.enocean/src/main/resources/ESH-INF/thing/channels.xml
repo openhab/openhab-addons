@@ -257,6 +257,27 @@
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
+	<channel-type id="illuminationWest">
+		<item-type>Number:Illuminance</item-type>
+		<label>Sun West</label>
+		<description>Illumination in lux</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="illuminationSouthNorth">
+		<item-type>Number:Illuminance</item-type>
+		<label>Sun South/North</label>
+		<description>Illumination in lux</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="illuminationEast">
+		<item-type>Number:Illuminance</item-type>
+		<label>Sun East</label>
+		<description>Illumination in lux</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
 	<channel-type id="autoOFF" advanced="true">
 		<item-type>Number:Duration</item-type>
 		<label>Auto Off</label>
@@ -329,6 +350,21 @@
 		<item-type>Number</item-type>
 		<label>Current</label>
 		<description>Current</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="windspeed">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed</label>
+		<description>Current wind speed</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="rainStatus">
+		<item-type>Switch</item-type>
+		<label>Rain</label>
+		<description>Rain indicator</description>
+		<category>Switch</category>
 		<state readOnly="true" />
 	</channel-type>
 
