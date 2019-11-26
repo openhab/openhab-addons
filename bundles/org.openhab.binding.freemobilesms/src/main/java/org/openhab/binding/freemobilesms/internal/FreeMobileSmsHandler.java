@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freemobilesms.internal.FreeMobileSmsConfiguration;
@@ -55,7 +56,7 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
         super(thing);
     }
 
-    protected void sendMessage(String message) {
+    protected void sendMessage(@NonNull String message) {
       logger.debug("Message to send: {}", message);
       try {
         // Local variable to disable Null annotation locally

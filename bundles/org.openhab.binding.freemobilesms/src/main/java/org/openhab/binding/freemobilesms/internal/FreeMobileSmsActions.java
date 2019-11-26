@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.freemobilesms.internal;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -34,11 +35,11 @@ public class FreeMobileSmsActions implements ThingActions {
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void sendFreeMobileSMS(
-            @ActionInput(name = "message", label = "@text/actionInputMessageLabel", description = "@text/actionInputMessageDesc") @Nullable String message) {
+            @ActionInput(name = "message", label = "@text/actionInputMessageLabel", description = "@text/actionInputMessageDesc") @NonNull String message) {
         this.handler.sendMessage(message);
     }
 
-    public static void sendFreeMobileSMS(@Nullable ThingActions actions, @Nullable String message) {
+    public static void sendFreeMobileSMS(@Nullable ThingActions actions, @NonNull String message) {
         if (actions instanceof FreeMobileSmsActions) {
             ((FreeMobileSmsActions) actions).sendFreeMobileSMS(message);
         } else {
