@@ -103,24 +103,22 @@ public class ShellyComponents {
                 } else {
                     for (ShellySettingsEMeter emeter : status.emeters) {
                         Integer meterIndex = m + 1;
-                        if (emeter.isValid) {
+                        if (getBool(emeter.isValid)) {
                             String groupName = profile.numMeters > 1 ? CHANNEL_GROUP_METER + meterIndex.toString()
                                     : CHANNEL_GROUP_METER;
-                            if (emeter.isValid) {
-                                // convert Watt/Hour tok w/h
-                                updated |= th.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
-                                        toQuantityType(getDouble(emeter.power), SmartHomeUnits.WATT));
-                                BigDecimal bd = new BigDecimal(getDouble(emeter.total) / 1000);
-                                updated |= th.updateChannel(groupName, CHANNEL_METER_TOTALKWH, toQuantityType(
-                                        bd.setScale(5, BigDecimal.ROUND_HALF_DOWN), SmartHomeUnits.KILOWATT_HOUR));
-                                bd = new BigDecimal(getDouble(emeter.totalReturned) / 1000);
-                                updated |= th.updateChannel(groupName, CHANNEL_EMETER_TOTALRET, toQuantityType(
-                                        bd.setScale(5, BigDecimal.ROUND_HALF_DOWN), SmartHomeUnits.KILOWATT_HOUR));
-                                updated |= th.updateChannel(groupName, CHANNEL_EMETER_REACTWATTS,
-                                        toQuantityType(getDouble(emeter.reactive), SmartHomeUnits.WATT));
-                                updated |= th.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
-                                        toQuantityType(getDouble(emeter.voltage), SmartHomeUnits.VOLT));
-                            }
+                            // convert Watt/Hour tok w/h
+                            updated |= th.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
+                                    toQuantityType(getDouble(emeter.power), SmartHomeUnits.WATT));
+                            BigDecimal bd = new BigDecimal(getDouble(emeter.total) / 1000);
+                            updated |= th.updateChannel(groupName, CHANNEL_METER_TOTALKWH, toQuantityType(
+                                    bd.setScale(5, BigDecimal.ROUND_HALF_DOWN), SmartHomeUnits.KILOWATT_HOUR));
+                            bd = new BigDecimal(getDouble(emeter.totalReturned) / 1000);
+                            updated |= th.updateChannel(groupName, CHANNEL_EMETER_TOTALRET, toQuantityType(
+                                    bd.setScale(5, BigDecimal.ROUND_HALF_DOWN), SmartHomeUnits.KILOWATT_HOUR));
+                            updated |= th.updateChannel(groupName, CHANNEL_EMETER_REACTWATTS,
+                                    toQuantityType(getDouble(emeter.reactive), SmartHomeUnits.WATT));
+                            updated |= th.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
+                                    toQuantityType(getDouble(emeter.voltage), SmartHomeUnits.VOLT));
                             m++;
                         }
                     }

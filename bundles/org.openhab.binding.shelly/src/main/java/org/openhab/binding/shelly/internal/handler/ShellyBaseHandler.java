@@ -56,33 +56,39 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceListener {
-    public final Logger logger = LoggerFactory.getLogger(ShellyBaseHandler.class);
+    public final Logger                      logger           = LoggerFactory.getLogger(ShellyBaseHandler.class);
 
-    protected final ShellyHandlerFactory handlerFactory;
-    protected ShellyThingConfiguration config = new ShellyThingConfiguration();
-    protected @Nullable ShellyHttpApi api;
-    private @Nullable ShellyCoapHandler coap;
-    protected @Nullable ShellyDeviceProfile profile;
+    protected final ShellyHandlerFactory     handlerFactory;
+    protected ShellyThingConfiguration       config           = new ShellyThingConfiguration();
+    protected @Nullable ShellyHttpApi        api;
+    private @Nullable ShellyCoapHandler      coap;
+    protected @Nullable ShellyDeviceProfile  profile;
     private final @Nullable ShellyCoapServer coapServer;
 
-    private @Nullable ScheduledFuture<?> statusJob;
-    private int skipUpdate = 0;
-    public int scheduledUpdates = 0;
-    private int skipCount = UPDATE_SKIP_COUNT;
-    private int refreshCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS; // force settings
-                                                                                                  // refresh every x
+    private @Nullable ScheduledFuture<?>     statusJob;
+    private int                              skipUpdate       = 0;
+    public int                               scheduledUpdates = 0;
+    private int                              skipCount        = UPDATE_SKIP_COUNT;
+    private int                              refreshCount     = UPDATE_SETTINGS_INTERVAL_SECONDS
+            / UPDATE_STATUS_INTERVAL_SECONDS;                                                                    // force
+                                                                                                                 // settings
+                                                                                                                 // refresh
+                                                                                                                 // every
+                                                                                                                 // x
     // seconds
-    private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS; // delay before
-                                                                                                      // enabling
-                                                                                                      // channel
+    private final int                        cacheCount       = UPDATE_SETTINGS_INTERVAL_SECONDS
+            / UPDATE_STATUS_INTERVAL_SECONDS;                                                                    // delay
+                                                                                                                 // before
+                                                                                                                 // enabling
+                                                                                                                 // channel
     // cache
-    private boolean refreshSettings = false;
-    private boolean channelCache = false;
-    protected boolean lockUpdates = false;
+    private boolean                          refreshSettings  = false;
+    private boolean                          channelCache     = false;
+    protected boolean                        lockUpdates      = false;
 
-    public String thingName = "";
-    private Map<String, Object> channelData = new HashMap<>();
-    protected ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
+    public String                            thingName        = "";
+    private Map<String, Object>              channelData      = new HashMap<>();
+    protected ShellyBindingConfiguration     bindingConfig    = new ShellyBindingConfiguration();
 
     /**
      *
@@ -120,7 +126,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 handlerFactory.registerDeviceListener(this);
                 initializeThing();
             } catch (RuntimeException | IOException e) {
-                if (e.getMessage().contains(HTTP_401_UNAUTHORIZED)) {
+                if (e.getMessage().contains(APIERR_HTTP_401_UNAUTHORIZED)) {
                     logger.warn("{}: Device {} reported 'Access defined' (userid/password mismatch)",
                             getThing().getLabel(), config.deviceIp);
                     logger.info(
@@ -129,10 +135,11 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                             "or you need to disable device protection (userid/password) in the Shelly App for device discovery.");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Access denied, set userid/password for the thing or in the thing config");
+                } else if (e.getMessage().contains("Timeout")) {
+                    logger.warn("Timeout accessing device API, re-issue command.");
                 } else {
                     logger.warn("{}: Unable to initialize: {} ({}), retrying later", getThing().getLabel(),
                             e.getMessage(), e.getClass());
-
                 }
             } finally {
                 // even this initialization failed we start the status update
@@ -295,12 +302,14 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 requestUpdates(1, false);
             }
         } catch (RuntimeException | IOException e) {
-            if (e.getMessage().contains(HTTP_401_UNAUTHORIZED)) {
+            if (e.getMessage().contains(APIERR_HTTP_401_UNAUTHORIZED)) {
                 logger.warn(
                         "{}: Device {} reported 'Access defined' (userid/password mismatch). Set userid/password for the thing or in the binding config",
                         thingName, config.deviceIp);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Access denied, set userid/password for the thing or  binding config");
+            } else if (e.getMessage().contains(APIERR_NOT_CALIBRATED)) {
+                logger.warn("Device is not calibrated, use Shelly App to perform initial roller calibration.");
             } else {
                 logger.debug("{} ERROR: Unable to process command for channel {}: {} ({})", thingName,
                         channelUID.toString(), e.getMessage(), e.getClass());
@@ -373,7 +382,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             } else {
                 logger.debug("{}: Unable to update status: {} ({})", thingName, e.getMessage(), e.getClass());
             }
-            if (e.getMessage().contains(HTTP_401_UNAUTHORIZED) || (profile != null && !profile.isSensor)) {
+            if (e.getMessage().contains(APIERR_HTTP_401_UNAUTHORIZED) || (profile != null && !profile.isSensor)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } catch (RuntimeException e) {

@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.ws.rs.HttpMethod;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,12 +53,12 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ShellyHttpApi {
-    private final Logger logger = LoggerFactory.getLogger(ShellyHttpApi.class);
+    private final Logger                   logger    = LoggerFactory.getLogger(ShellyHttpApi.class);
     private final ShellyThingConfiguration config;
-    private final String thingName = "";
-    private Gson gson = new Gson();
+    private final String                   thingName = "";
+    private Gson                           gson      = new Gson();
 
-    private @Nullable ShellyDeviceProfile profile;
+    private @Nullable ShellyDeviceProfile  profile;
 
     public ShellyHttpApi(ShellyThingConfiguration config) {
         Validate.notNull(config, "Shelly Http Api: Config must not be null!");
@@ -464,14 +466,14 @@ public class ShellyHttpApi {
                         HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(value.getBytes()));
             }
 
-            httpResponse = HttpUtil.executeUrl(HTTP_GET, url, headers, null, "", SHELLY_API_TIMEOUT_MS);
+            httpResponse = HttpUtil.executeUrl(HttpMethod.GET, url, headers, null, "", SHELLY_API_TIMEOUT_MS);
             Validate.notNull(httpResponse, "httpResponse must not be null");
             // all api responses are returning the result in Json format. If we are getting
             // something else it must
             // be an error message, e.g. http result code
-            if (httpResponse.contains(HTTP_401_UNAUTHORIZED)) {
+            if (httpResponse.contains(APIERR_HTTP_401_UNAUTHORIZED)) {
                 throw new IOException(
-                        HTTP_401_UNAUTHORIZED + ", set/correct userid and password in the thing/binding config");
+                        APIERR_HTTP_401_UNAUTHORIZED + ", set/correct userid and password in the thing/binding config");
             }
             if (!httpResponse.startsWith("{") && !httpResponse.startsWith("[")) {
                 throw new IOException("Unexpected http response: " + httpResponse);
@@ -480,7 +482,7 @@ public class ShellyHttpApi {
             logger.trace("HTTP response from {}: {}", thingName, httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            if (e.getMessage().contains("TimeoutException")) {
+            if (e.getMessage().contains("Timeout")) {
                 throw new IOException("Shelly API call failed: Timeout (" + SHELLY_API_TIMEOUT_MS + " ms)");
 
             } else {

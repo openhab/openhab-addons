@@ -56,9 +56,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
-    private final Logger logger = LoggerFactory.getLogger(ShellyDiscoveryParticipant.class);
+    private final Logger                         logger        = LoggerFactory
+            .getLogger(ShellyDiscoveryParticipant.class);
     private @Nullable ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
-    private @Nullable ShellyHandlerFactory handlerFactory;
+    private @Nullable ShellyHandlerFactory       handlerFactory;
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -150,7 +151,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 logger.trace("name={}, thingType={}, deviceType={}, mode={}", name, thingType, profile.deviceType,
                         mode.isEmpty() ? "<standard>" : mode);
             } catch (IOException e) {
-                if (e.getMessage().contains(HTTP_401_UNAUTHORIZED)) {
+                if (e.getMessage().contains(APIERR_HTTP_401_UNAUTHORIZED)) {
                     logger.warn("Device {} ({}) reported 'Access defined' (userid/password mismatch).", name, address);
                     logger.info(
                             "You could set a default userid and passowrd in the binding config and re-discover devices");
