@@ -150,31 +150,28 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
         }
         Observations obs = pwsObservations.observations[0];
         logger.debug("Handler: Processing observations from station {} at {}", obs.stationID, obs.obsTimeLocal);
-        updatePws(CH_PWS_TEMP, undefOrQuantity(obs.imperial.temp, ImperialUnits.FAHRENHEIT));
-        updatePws(CH_PWS_TEMP_HEAT_INDEX, undefOrQuantity(obs.imperial.heatIndex, ImperialUnits.FAHRENHEIT));
-        updatePws(CH_PWS_TEMP_WIND_CHILL, undefOrQuantity(obs.imperial.windChill, ImperialUnits.FAHRENHEIT));
-        updatePws(CH_PWS_TEMP_DEW_POINT, undefOrQuantity(obs.imperial.dewpt, ImperialUnits.FAHRENHEIT));
-        updatePws(CH_PWS_HUMIDITY, undefOrQuantity(obs.humidity, SmartHomeUnits.PERCENT));
-        updatePws(CH_PWS_PRESSURE, undefOrQuantity(obs.imperial.pressure, ImperialUnits.INCH_OF_MERCURY));
-        updatePws(CH_PWS_PRECIPTATION_RATE, undefOrQuantity(obs.imperial.precipRate, SmartHomeUnits.INCHES_PER_HOUR));
-        updatePws(CH_PWS_PRECIPITATION_TOTAL, undefOrQuantity(obs.imperial.precipTotal, ImperialUnits.INCH));
-        updatePws(CH_PWS_WIND_SPEED, undefOrQuantity(obs.imperial.windSpeed, ImperialUnits.MILES_PER_HOUR));
-        updatePws(CH_PWS_WIND_GUST, undefOrQuantity(obs.imperial.windGust, ImperialUnits.MILES_PER_HOUR));
-        updatePws(CH_PWS_WIND_DIRECTION, undefOrQuantity(obs.winddir, SmartHomeUnits.DEGREE_ANGLE));
-        updatePws(CH_PWS_SOLAR_RADIATION, undefOrQuantity(obs.solarRadiation, SmartHomeUnits.IRRADIANCE));
-        updatePws(CH_PWS_UV, undefOrDecimal(obs.uv));
-        updatePws(CH_PWS_OBSERVATION_TIME_LOCAL, undefOrDate(obs.obsTimeUtc));
-        updatePws(CH_PWS_NEIGHBORHOOD, undefOrString(obs.neighborhood));
-        updatePws(CH_PWS_STATION_ID, undefOrString(obs.stationID));
-        updatePws(CH_PWS_COUNTRY, undefOrString(obs.country));
-        updatePws(CH_PWS_LOCATION, undefOrPoint(obs.lat, obs.lon));
-        updatePws(CH_PWS_ELEVATION, undefOrQuantity(obs.imperial.elev, ImperialUnits.FOOT));
-        updatePws(CH_PWS_QC_STATUS, undefOrDecimal(obs.qcStatus));
-        updatePws(CH_PWS_SOFTWARE_TYPE, undefOrString(obs.softwareType));
-    }
-
-    private void updatePws(String channelId, State state) {
-        updateChannel(CH_GROUP_PWS_OBSERVATIONS + "#" + channelId, state);
+        updateChannel(CH_PWS_TEMP, undefOrQuantity(obs.imperial.temp, ImperialUnits.FAHRENHEIT));
+        updateChannel(CH_PWS_TEMP_HEAT_INDEX, undefOrQuantity(obs.imperial.heatIndex, ImperialUnits.FAHRENHEIT));
+        updateChannel(CH_PWS_TEMP_WIND_CHILL, undefOrQuantity(obs.imperial.windChill, ImperialUnits.FAHRENHEIT));
+        updateChannel(CH_PWS_TEMP_DEW_POINT, undefOrQuantity(obs.imperial.dewpt, ImperialUnits.FAHRENHEIT));
+        updateChannel(CH_PWS_HUMIDITY, undefOrQuantity(obs.humidity, SmartHomeUnits.PERCENT));
+        updateChannel(CH_PWS_PRESSURE, undefOrQuantity(obs.imperial.pressure, ImperialUnits.INCH_OF_MERCURY));
+        updateChannel(CH_PWS_PRECIPTATION_RATE,
+                undefOrQuantity(obs.imperial.precipRate, SmartHomeUnits.INCHES_PER_HOUR));
+        updateChannel(CH_PWS_PRECIPITATION_TOTAL, undefOrQuantity(obs.imperial.precipTotal, ImperialUnits.INCH));
+        updateChannel(CH_PWS_WIND_SPEED, undefOrQuantity(obs.imperial.windSpeed, ImperialUnits.MILES_PER_HOUR));
+        updateChannel(CH_PWS_WIND_GUST, undefOrQuantity(obs.imperial.windGust, ImperialUnits.MILES_PER_HOUR));
+        updateChannel(CH_PWS_WIND_DIRECTION, undefOrQuantity(obs.winddir, SmartHomeUnits.DEGREE_ANGLE));
+        updateChannel(CH_PWS_SOLAR_RADIATION, undefOrQuantity(obs.solarRadiation, SmartHomeUnits.IRRADIANCE));
+        updateChannel(CH_PWS_UV, undefOrDecimal(obs.uv));
+        updateChannel(CH_PWS_OBSERVATION_TIME_LOCAL, undefOrDate(obs.obsTimeUtc));
+        updateChannel(CH_PWS_NEIGHBORHOOD, undefOrString(obs.neighborhood));
+        updateChannel(CH_PWS_STATION_ID, undefOrString(obs.stationID));
+        updateChannel(CH_PWS_COUNTRY, undefOrString(obs.country));
+        updateChannel(CH_PWS_LOCATION, undefOrPoint(obs.lat, obs.lon));
+        updateChannel(CH_PWS_ELEVATION, undefOrQuantity(obs.imperial.elev, ImperialUnits.FOOT));
+        updateChannel(CH_PWS_QC_STATUS, undefOrDecimal(obs.qcStatus));
+        updateChannel(CH_PWS_SOFTWARE_TYPE, undefOrString(obs.softwareType));
     }
 
     /*

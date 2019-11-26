@@ -57,29 +57,29 @@ The following configuration parameters are available on the Weather Observations
 
 #### Channels for Personal Weather Station (PWS) Current Observations
 
-| Channel Group ID             | Channel ID                      | Item Type               | Description                              |
-|------------------------------|---------------------------------|-------------------------|------------------------------------------|
-| pwsObservations              | observationTimeLocal            | DateTime                | Time when conditions were observed       |
-| pwsObservations              | neighborhood                    | String                  | Neighborhood                             |
-| pwsObservations              | currentTemperature              | Number:Temperature      | Current temperature                      |
-| pwsObservations              | currentTemperatureDewPoint      | Number:Temperature      | Current dew point temperature            |
-| pwsObservations              | currentTemperatureHeatIndex     | Number:Temperature      | Current heat index temperature           |
-| pwsObservations              | currentTemperatureWindChill     | Number:Temperature      | Current wind chill temperature           |
-| pwsObservations              | currentHumidity                 | Number:Dimensionless    | Current relative humidity                |
-| pwsObservations              | currentPressure                 | Number:Pressure         | Current atmospheric pressure             |
-| pwsObservations              | currentPrecipitationRate        | Number:Speed            | Current precipitation rate               |
-| pwsObservations              | currentPrecipitationTotal       | Number:Length           | Current precipitation total              |
-| pwsObservations              | currentSolarRadiation           | Number:Intensity        | Current solar radiation                  |
-| pwsObservations              | currentUv                       | Number                  | Current UV index                         |
-| pwsObservations              | currentWindSpeed                | Number:Speed            | Current wind speed                       |
-| pwsObservations              | currentWindSpeedGust            | Number:Speed            | Current wind speed gust                  |
-| pwsObservations              | currentWindDirection            | Number:Angle            | Current wind direction                   |
-| pwsObservations              | stationId                       | String                  | Station Id                               |
-| pwsObservations              | country                         | String                  | Country                                  |
-| pwsObservations              | location                        | Location                | Latitude & longitude of weather station  |
-| pwsObservations              | elevation                       | Number:Length           | Elevation of weather station             |
-| pwsObservations              | qcStatus                        | Number                  | QC status                                |
-| pwsObservations              | softwareType                    | String                  | Software type                            |
+| Channel ID                      | Item Type               | Description                              |
+|---------------------------------|-------------------------|------------------------------------------|
+| observationTimeLocal            | DateTime                | Time when conditions were observed       |
+| neighborhood                    | String                  | Neighborhood                             |
+| currentTemperature              | Number:Temperature      | Current temperature                      |
+| currentTemperatureDewPoint      | Number:Temperature      | Current dew point temperature            |
+| currentTemperatureHeatIndex     | Number:Temperature      | Current heat index temperature           |
+| currentTemperatureWindChill     | Number:Temperature      | Current wind chill temperature           |
+| currentHumidity                 | Number:Dimensionless    | Current relative humidity                |
+| currentPressure                 | Number:Pressure         | Current atmospheric pressure             |
+| currentPrecipitationRate        | Number:Speed            | Current precipitation rate               |
+| currentPrecipitationTotal       | Number:Length           | Current precipitation total              |
+| currentSolarRadiation           | Number:Intensity        | Current solar radiation                  |
+| currentUv                       | Number                  | Current UV index                         |
+| currentWindSpeed                | Number:Speed            | Current wind speed                       |
+| currentWindSpeedGust            | Number:Speed            | Current wind speed gust                  |
+| currentWindDirection            | Number:Angle            | Current wind direction                   |
+| stationId                       | String                  | Station Id                               |
+| country                         | String                  | Country                                  |
+| location                        | Location                | Latitude & longitude of weather station  |
+| elevation                       | Number:Length           | Elevation of weather station             |
+| qcStatus                        | Number                  | QC status                                |
+| softwareType                    | String                  | Software type                            |
 
 #### Channels for Daily Forecast (Today, Tomorrow, Day 2, Day 3, Day 4, Day 5)
 
@@ -159,30 +159,30 @@ Bridge weathercompany:account:bridge [ apiKey="734982347982374" ] {
 
 ```
 // PWS Current Observations
-Number:Temperature WC_PWS_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:pwsObservations#currentTemperature" }
-Number:Temperature WC_PWS_TemperatureDewPoint "Dew Point Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:pwsObservations#currentTemperatureDewPoint" }
-Number:Temperature WC_PWS_TemperatureHeatIndex "Heat Index Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:pwsObservations#currentTemperatureHeatIndex" }
-Number:Temperature WC_PWS_TemperatureWindChill "Wind Chill Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:pwsObservations#currentTemperatureWindChill" }
-Number:Dimensionless WC_PWS_RelativeHumidity "Relative Humidity [%.1f %unit%]" <humidity> { channel="weathercompany:weather-observations:observations:pwsObservations#currentHumidity" }
-Number:Pressure WC_PWS_Pressure "Pressure [%.2f %unit%]" <pressure> { channel="weathercompany:weather-observations:observations:pwsObservations#currentPressure" }
+Number:Temperature WC_PWS_Temperature "Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:currentTemperature" }
+Number:Temperature WC_PWS_TemperatureDewPoint "Dew Point Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:currentTemperatureDewPoint" }
+Number:Temperature WC_PWS_TemperatureHeatIndex "Heat Index Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:currentTemperatureHeatIndex" }
+Number:Temperature WC_PWS_TemperatureWindChill "Wind Chill Temperature [%.1f %unit%]" <temperature> { channel="weathercompany:weather-observations:observations:currentTemperatureWindChill" }
+Number:Dimensionless WC_PWS_RelativeHumidity "Relative Humidity [%.1f %unit%]" <humidity> { channel="weathercompany:weather-observations:observations:currentHumidity" }
+Number:Pressure WC_PWS_Pressure "Pressure [%.2f %unit%]" <pressure> { channel="weathercompany:weather-observations:observations:currentPressure" }
 // Use this for SI units
-Number:Speed WC_PWS_PrecipitationRate "Precipitation Rate [%.1f mm/h]" <rain> { channel="weathercompany:weather-observations:observations:pwsObservations#currentPrecipitationRate" }
+Number:Speed WC_PWS_PrecipitationRate "Precipitation Rate [%.1f mm/h]" <rain> { channel="weathercompany:weather-observations:observations:currentPrecipitationRate" }
 // Use this for Imperial units
-//Number:Speed WC_PWS_PrecipitationRate "Precipitation Rate [%.2f in/h]" <rain> { channel="weathercompany:weather-observations:observations:pwsObservations#currentPrecipitationRate" }
-Number:Length WC_PWS_PrecipitationTotal "Precipitation Total [%.1f %unit%]" <rain> { channel="weathercompany:weather-observations:observations:pwsObservations#currentPrecipitationTotal" }
-Number:Intensity WC_PWS_SolarRadiation "Solar Radiation [%.1f %unit%]" <sun> { channel="weathercompany:weather-observations:observations:pwsObservations#currentSolarRadiation" }
-Number WC_PWS_UV "UV Index [%.0f]" <sun> { channel="weathercompany:weather-observations:observations:pwsObservations#currentUv" }
-Number:Angle WC_PWS_WindDirection "Wind Direction [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:pwsObservations#currentWindDirection" }
-Number:Speed WC_PWS_WindSpeed "Wind Speed [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:pwsObservations#currentWindSpeed" }
-Number:Speed WC_PWS_WindSpeedGust "Wind Speed Gust [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:pwsObservations#currentWindSpeedGust" }
-String WC_PWS_Country "Country [%s]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#country" }
-Location WC_PWS_Location "Lat/Lon [%2$s°N, %3$s°W]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#location" }
-Number:Length WC_PWS_Elevation "Elevation [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#elevation" }
-String WC_PWS_Neighborhood "Neighborhood [%s]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#neighborhood" }
-DateTime WC_PWS_ObservationTimeLocal "Observation Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="weathercompany:weather-observations:observations:pwsObservations#observationTimeLocal" }
-Number WC_PWS_QcStatus "QC Status [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#qcStatus" }
-String WC_PWS_SoftwareType "Software Type [%s]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#softwareType" }
-String WC_PWS_StationId "Station Id [%s]" <none> { channel="weathercompany:weather-observations:observations:pwsObservations#stationId" }
+//Number:Speed WC_PWS_PrecipitationRate "Precipitation Rate [%.2f in/h]" <rain> { channel="weathercompany:weather-observations:observations:currentPrecipitationRate" }
+Number:Length WC_PWS_PrecipitationTotal "Precipitation Total [%.1f %unit%]" <rain> { channel="weathercompany:weather-observations:observations:currentPrecipitationTotal" }
+Number:Intensity WC_PWS_SolarRadiation "Solar Radiation [%.1f %unit%]" <sun> { channel="weathercompany:weather-observations:observations:currentSolarRadiation" }
+Number WC_PWS_UV "UV Index [%.0f]" <sun> { channel="weathercompany:weather-observations:observations:currentUv" }
+Number:Angle WC_PWS_WindDirection "Wind Direction [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindDirection" }
+Number:Speed WC_PWS_WindSpeed "Wind Speed [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindSpeed" }
+Number:Speed WC_PWS_WindSpeedGust "Wind Speed Gust [%.0f %unit%]" <wind> { channel="weathercompany:weather-observations:observations:currentWindSpeedGust" }
+String WC_PWS_Country "Country [%s]" <none> { channel="weathercompany:weather-observations:observations:country" }
+Location WC_PWS_Location "Lat/Lon [%2$s°N, %3$s°W]" <none> { channel="weathercompany:weather-observations:observations:location" }
+Number:Length WC_PWS_Elevation "Elevation [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:observations:elevation" }
+String WC_PWS_Neighborhood "Neighborhood [%s]" <none> { channel="weathercompany:weather-observations:observations:neighborhood" }
+DateTime WC_PWS_ObservationTimeLocal "Observation Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="weathercompany:weather-observations:observations:observationTimeLocal" }
+Number WC_PWS_QcStatus "QC Status [%.0f %unit%]" <none> { channel="weathercompany:weather-observations:observations:qcStatus" }
+String WC_PWS_SoftwareType "Software Type [%s]" <none> { channel="weathercompany:weather-observations:observations:softwareType" }
+String WC_PWS_StationId "Station Id [%s]" <none> { channel="weathercompany:weather-observations:observations:stationId" }
 
 // Day 0 - Today
 String WC_Day0_DayOfWeek "Day of Week [%s]" <time> { channel="weathercompany:weather-forecast:forecast:forecastDay0#dayOfWeek" }

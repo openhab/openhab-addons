@@ -6,7 +6,7 @@
 	<bridge-type id="account">
 		<label>Weather Company Account</label>
 		<description>Represents an account at the Weather Company service</description>
-		<config-description-ref uri="thing-type:weathercompany:bridge" />
+		<config-description-ref uri="thing-type:weathercompany:account" />
 	</bridge-type>
 
 	<thing-type id="weather-observations">
@@ -15,14 +15,56 @@
 		</supported-bridge-type-refs>
 
 		<label>Weather Company Observations</label>
-		<description>Weather Company weather observations</description>
-		<channel-groups>
-			<!-- Current PWS observations -->
-			<channel-group id="pwsObservations" typeId="pwsObservations">
-				<label>PWS Current Observations</label>
-				<description>Current observations from Personal Weather Station</description>
-			</channel-group>
-		</channel-groups>
+		<description>Current observations from Personal Weather Station</description>
+		<channels>
+			<channel id="neighborhood" typeId="neighborhood" />
+			<channel id="observationTimeLocal" typeId="observationTimeLocal" />
+			<channel id="currentTemperature" typeId="temperature">
+				<label>Current Temperature</label>
+			</channel>
+			<channel id="currentTemperatureDewPoint" typeId="temperature">
+				<label>Dew Point Temperature</label>
+			</channel>
+			<channel id="currentTemperatureHeatIndex" typeId="temperature">
+				<label>Heat Index Temperature</label>
+			</channel>
+			<channel id="currentTemperatureWindChill" typeId="temperature">
+				<label>Wind Chill Temperature</label>
+			</channel>
+			<channel id="currentHumidity" typeId="relativeHumidity">
+				<label>Current Humidity</label>
+			</channel>
+			<channel id="currentPressure" typeId="pressure">
+				<label>Current Pressure</label>
+			</channel>
+			<channel id="currentPrecipitationRate" typeId="precipitationRate">
+				<label>Current Precipitation Rate</label>
+			</channel>
+			<channel id="currentPrecipitationTotal" typeId="precipitationTotal">
+				<label>Current Precipitation Total</label>
+			</channel>
+			<channel id="currentSolarRadiation" typeId="solarRadiation">
+				<label>Current Solar Radiation</label>
+			</channel>
+			<channel id="currentUv" typeId="uvIndex">
+				<label>Current UV Index</label>
+			</channel>
+			<channel id="currentWindDirection" typeId="windDirection">
+				<label>Current Wind Direction</label>
+			</channel>
+			<channel id="currentWindSpeed" typeId="windSpeed">
+				<label>Current Wind Speed</label>
+			</channel>
+			<channel id="currentWindSpeedGust" typeId="windSpeed">
+				<label>Current Wind Gust Speed</label>
+			</channel>
+			<channel id="stationId" typeId="stationId" />
+			<channel id="country" typeId="country" />
+			<channel id="location" typeId="location" />
+			<channel id="elevation" typeId="elevation" />
+			<channel id="qcStatus" typeId="qcStatus" />
+			<channel id="softwareType" typeId="softwareType" />
+		</channels>
 		<config-description-ref uri="thing-type:weathercompany:weather-observations" />
 	</thing-type>
 
@@ -112,60 +154,6 @@
 		</channel-groups>
 		<config-description-ref uri="thing-type:weathercompany:weather-forecast" />
 	</thing-type>
-
-	<channel-group-type id="pwsObservations">
-		<label>PWS Current Observations</label>
-		<description>Current observations from Personal Weather Station</description>
-		<channels>
-			<channel id="neighborhood" typeId="neighborhood" />
-			<channel id="observationTimeLocal" typeId="observationTimeLocal" />
-			<channel id="currentTemperature" typeId="temperature">
-				<label>Current Temperature</label>
-			</channel>
-			<channel id="currentTemperatureDewPoint" typeId="temperature">
-				<label>Dew Point Temperature</label>
-			</channel>
-			<channel id="currentTemperatureHeatIndex" typeId="temperature">
-				<label>Heat Index Temperature</label>
-			</channel>
-			<channel id="currentTemperatureWindChill" typeId="temperature">
-				<label>Wind Chill Temperature</label>
-			</channel>
-			<channel id="currentHumidity" typeId="relativeHumidity">
-				<label>Current Humidity</label>
-			</channel>
-			<channel id="currentPressure" typeId="pressure">
-				<label>Current Pressure</label>
-			</channel>
-			<channel id="currentPrecipitationRate" typeId="precipitationRate">
-				<label>Current Precipitation Rate</label>
-			</channel>
-			<channel id="currentPrecipitationTotal" typeId="precipitationTotal">
-				<label>Current Precipitation Total</label>
-			</channel>
-			<channel id="currentSolarRadiation" typeId="solarRadiation">
-				<label>Current Solar Radiation</label>
-			</channel>
-			<channel id="currentUv" typeId="uvIndex">
-				<label>Current UV Index</label>
-			</channel>
-			<channel id="currentWindDirection" typeId="windDirection">
-				<label>Current Wind Direction</label>
-			</channel>
-			<channel id="currentWindSpeed" typeId="windSpeed">
-				<label>Current Wind Speed</label>
-			</channel>
-			<channel id="currentWindSpeedGust" typeId="windSpeed">
-				<label>Current Wind Gust Speed</label>
-			</channel>
-			<channel id="stationId" typeId="stationId" />
-			<channel id="country" typeId="country" />
-			<channel id="location" typeId="location" />
-			<channel id="elevation" typeId="elevation" />
-			<channel id="qcStatus" typeId="qcStatus" />
-			<channel id="softwareType" typeId="softwareType" />
-		</channels>
-	</channel-group-type>
 
 	<channel-group-type id="forecastDay">
 		<label>Weather Forecast Day</label>

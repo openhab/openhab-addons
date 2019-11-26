@@ -65,9 +65,6 @@ public class WeatherCompanyBindingConstants {
     // Used to sanitize the API key in the URL in debug log messages
     public static final String REPLACE_API_KEY = "XXXXXXXXXXXXXXXXXXXXX";
 
-    // Channel group pwsObservations
-    public static final String CH_GROUP_PWS_OBSERVATIONS = "pwsObservations";
-
     // List of pwsObservations channel IDs
     public static final String CH_PWS_HUMIDITY = "currentHumidity";
     public static final String CH_PWS_PRECIPTATION_RATE = "currentPrecipitationRate";
