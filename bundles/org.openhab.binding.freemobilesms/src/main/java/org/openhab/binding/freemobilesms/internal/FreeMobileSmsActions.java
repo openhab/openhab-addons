@@ -21,10 +21,14 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ThingActionsScope(name = "freemobilesms") // Your bindings id is usually the scope
 @NonNullByDefault
 public class FreeMobileSmsActions implements ThingActions {
+    private final Logger logger = LoggerFactory.getLogger(FreeMobileSmsActions.class);
+
     private @Nullable FreeMobileSmsHandler handler;
 
     @Override
@@ -36,7 +40,10 @@ public class FreeMobileSmsActions implements ThingActions {
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void sendFreeMobileSMS(
             @ActionInput(name = "message", label = "@text/actionInputMessageLabel", description = "@text/actionInputMessageDesc") @NonNull String message) {
-        this.handler.sendMessage(message);
+        if (this.handler == null)
+            logger.error("Handler is null!");
+        else
+            this.handler.sendMessage(message);
     }
 
     public static void sendFreeMobileSMS(@Nullable ThingActions actions, @NonNull String message) {
