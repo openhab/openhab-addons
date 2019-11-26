@@ -372,8 +372,3 @@ In case of issues you may find it helpful to enable debug level logging and chec
 log:set debug org.openhab.binding.lgwebos
 ```
 
-Additional logs are available from the underlying library:
-
-```
-log:set debug com.connectsdk
-```
