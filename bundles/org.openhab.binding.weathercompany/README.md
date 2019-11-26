@@ -9,9 +9,11 @@ weather data to WeatherUnderground.
 
 The following thing types are supported:
 
-- Account (bridge) thing for maintaining API key for accessing Weather Company API,
-- Forecast thing for handling the Weather Company 5-day weather forecast, and
-- Observations thing for handling the Personal Weather Station (PWS) weather observations.
+| Thing        |  ID                  |  Description |
+|--------------|----------------------|--------------|
+| Account      | account              | Maintains API key for accessing Weather Company API |
+| Forecast     | weather-forecast     | Provides the Weather Company 5-day forecast |
+| Observations | weather-observations | Provides the Personal Weather Station current observations |
 
 ## Discovery
 
@@ -21,15 +23,15 @@ and locale are set in the openHAB configuration.
 
 ## Thing Configuration
 
-### Account Thing
+### Account
 
 The following configuration parameters are available on the Account thing:
 
 | Parameter        | Parameter ID      | Required/Optional | Description |
 |------------------|-------------------|-------------------|-------------|
-| API Key          | apiKey            | Required          | Get the API key from your Weather Underground PWS page.Old Weather Underground API keys will not work with this binding. |
+| API Key          | apiKey            | Required          | Get the API key from your Weather Underground PWS page. Old Weather Underground API keys will not work with this binding. |
 
-### Weather Forecast Thing
+### Weather Forecast
 
 The following configuration parameters are available on the Weather Forecast thing:
 
@@ -42,7 +44,7 @@ The following configuration parameters are available on the Weather Forecast thi
 | Language         | language          | Optional                               | Languages supported by The Weather Company API. If the language not specified in the thing configuration, the binding will try to select the language based on the locale set in openHAB. |
 | Refresh Interval | refreshInterval   | Required                               | Frequency with which forecast will be updated. Defaults to 30 minutes. Minimum is 2 minutes. |
 
-### Weather Observations Thing
+### Weather Observations
 
 The following configuration parameters are available on the Weather Observations thing:
 
