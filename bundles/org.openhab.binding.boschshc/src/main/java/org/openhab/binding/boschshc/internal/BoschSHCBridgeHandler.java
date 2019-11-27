@@ -127,13 +127,13 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
             ContentResponse contentResponse;
             try {
-                logger.warn("Sending http request to Bosch to request clients");
+                logger.debug("Sending http request to Bosch to request clients");
                 contentResponse = this.httpClient.newRequest("https://192.168.178.128:8444/smarthome/devices")
                         .header("Content-Type", "application/json").header("Accept", "application/json").method(GET)
                         .send();
 
                 String content = contentResponse.getContentAsString();
-                logger.warn("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+                logger.info("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
                 Gson gson = new GsonBuilder().create();
                 Type collectionType = new TypeToken<ArrayList<Device>>() {
@@ -143,6 +143,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 if (this.devices != null) {
                     for (Device d : this.devices) {
                         Room room = this.getRoomForDevice(d);
+
+                        // TODO keeping these as warn for the time being, until we have a better means of listing
+                        // devices with their Bosch ID
                         logger.warn("Found device: name={} room={} id={}", d.name, room != null ? room.name : "", d.id);
                         if (d.deviceSerivceIDs != null) {
                             for (String s : d.deviceSerivceIDs) {
@@ -168,7 +171,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
             ContentResponse contentResponse;
             try {
-                logger.warn("Sending subscribe request to Bosch");
+                logger.debug("Sending subscribe request to Bosch");
 
                 String[] params = { "com/bosch/sh/remote/*", null }; // TODO Not sure about the tailing null, copied
                                                                      // from NodeJs
@@ -177,7 +180,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 Gson gson = new Gson();
                 String str_content = gson.toJson(r);
 
-                logger.warn("Sending content: {}", str_content);
+                logger.debug("Sending content: {}", str_content);
 
                 contentResponse = this.httpClient.newRequest("https://192.168.178.128:8444/remote/json-rpc")
                         .header("Content-Type", "application/json").header("Accept", "application/json")
@@ -191,10 +194,10 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 // body: [ [ '{"jsonrpc":"2.0","method":"RE/longPoll","params":["e71k823d0-16",20]}' ] ]
 
                 String content = contentResponse.getContentAsString();
-                logger.warn("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+                logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
                 SubscribeResult result = gson.fromJson(content, SubscribeResult.class);
-                logger.warn("Got subscription ID: {} {}", result.getResult(), result.getJsonrpc());
+                logger.info("Got subscription ID: {} {}", result.getResult(), result.getJsonrpc());
 
                 this.subscriptionId = result.getResult();
 
@@ -228,7 +231,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             Gson gson = new Gson();
             String str_content = gson.toJson(r);
 
-            logger.warn("Sending content: {}", str_content);
+            logger.debug("Sending content: {}", str_content);
 
             /**
              * TODO Move this to separate file?
@@ -246,14 +249,13 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 @Override
                 public void onComplete(@Nullable Result result) {
 
-                    logger.warn("Entered onComplete");
                     try {
                         if (result != null && !result.isFailed()) {
 
                             byte[] responseContent = getContent();
                             String content = new String(responseContent);
 
-                            logger.debug("Response complete: {} - return code: {}", content,
+                            logger.info("Response complete: {} - return code: {}", content,
                                     result.getResponse().getStatus());
 
                             LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
@@ -262,7 +264,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                                 if (update != null && update.state != null) {
 
-                                    logger.warn("Got update: {} <- {}", update.deviceId, update.state.switchState);
+                                    logger.info("Got update: {} <- {}", update.deviceId, update.state.switchState);
 
                                     Bridge bridge = bridgeHandler.getThing();
                                     Thing thing = null;
@@ -297,7 +299,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                                             logger.warn("Could not convert thing handler to BoschSHCHandler");
                                         }
                                     } else {
-                                        logger.warn("Could not find a thing for device ID: {}", update.deviceId);
+                                        logger.info("Could not find a thing for device ID: {}", update.deviceId);
                                     }
                                 }
                             }
@@ -312,7 +314,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     }
 
                     // TODO Is this call okay? Should we use scheduler.execute instead?
-                    logger.warn("Starting new longPoll");
                     bridgeHandler.longPoll();
                 }
             }
@@ -337,13 +338,13 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
             ContentResponse contentResponse;
             try {
-                logger.warn("Sending http request to Bosch to request rooms");
+                logger.debug("Sending http request to Bosch to request rooms");
                 contentResponse = this.httpClient.newRequest("https://192.168.178.128:8444/smarthome/remote/json-rpc")
                         .header("Content-Type", "application/json").header("Accept", "application/json").method(GET)
                         .send();
 
                 String content = contentResponse.getContentAsString();
-                logger.warn("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+                logger.info("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
                 Gson gson = new GsonBuilder().create();
                 Type collectionType = new TypeToken<ArrayList<Room>>() {
@@ -380,7 +381,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             try {
 
                 String boschID = handler.getBoschID();
-                logger.warn("Requesting state update from Bosch: {}", boschID);
+                logger.debug("Requesting state update from Bosch: {}", boschID);
 
                 // GET request
                 // ----------------------------------------------------------------------------------
@@ -393,7 +394,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         .header("Gateway-ID", "64-DA-A0-02-14-9B").method(GET).send();
 
                 String content = contentResponse.getContentAsString();
-                logger.warn("Refresh switch state request complete: [{}] - return code: {}", content,
+                logger.info("Refresh switch state request complete: [{}] - return code: {}", content,
                         contentResponse.getStatus());
 
                 Gson gson = new GsonBuilder().create();
@@ -422,7 +423,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             try {
 
                 String boschID = handler.getBoschID();
-                logger.warn("Sending update request to Bosch device {}: update: {}", boschID, command);
+                logger.info("Sending update request to Bosch device {}: update: {}", boschID, command);
 
                 // PUT request
                 // ----------------------------------------------------------------------------------
@@ -447,7 +448,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         .content(new StringContentProvider(str_content)).send();
 
                 String content = contentResponse.getContentAsString();
-                logger.warn("Response complete: [{}] - return code: {}", content, contentResponse.getStatus());
+                logger.info("Response complete: [{}] - return code: {}", content, contentResponse.getStatus());
 
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("HTTP request failed: {}", e);
