@@ -59,7 +59,7 @@ public class BoschSHCHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
-        logger.warn("Handle command for: {} - {}", config.id, command);
+        logger.info("Handle command for: {} - {}", config.id, command);
 
         Bridge bridge = this.getBridge();
         if (bridge != null) {
