@@ -13,8 +13,8 @@
 @Requirement(namespace = ExtenderNamespace.EXTENDER_NAMESPACE, filter = "(osgi.extender=osgi.serviceloader.registrar)")
 @Requirement(namespace = ExtenderNamespace.EXTENDER_NAMESPACE, filter = "(&(osgi.extender=osgi.serviceloader.processor)(version>=1.0)(!(version>=2.0)))")
 @Requirement(namespace = "osgi.serviceloader", filter = "(osgi.serviceloader=org.pcap4j.packet.factory.PacketFactoryBinderProvider)", cardinality = Cardinality.MULTIPLE)
-@Capability(namespace = "osgi.serviceloader", name="org.pcap4j.packet.factory.PacketFactoryBinderProvider")
-package org.openhab.binding.bluetooth.bluez;
+@Capability(namespace = "osgi.serviceloader", name = "org.pcap4j.packet.factory.PacketFactoryBinderProvider")
+package org.openhab.binding.amazondashbutton;
 
 import org.osgi.annotation.bundle.Capability;
 import org.osgi.annotation.bundle.Requirement;
