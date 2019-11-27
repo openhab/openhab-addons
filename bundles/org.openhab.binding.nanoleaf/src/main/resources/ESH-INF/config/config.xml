@@ -25,7 +25,7 @@
 				<description>@text/thing-type.config.nanoleaf.controller.refreshInterval.description</description>
 				<default>60</default>
 			</parameter>
-+            <parameter name="deviceType" type="text">
++            <parameter name="deviceType" type="text" readOnly="true">
                 <label>@text/thing-type.config.nanoleaf.controller.deviceType.label</label>             
                 <description>@text/thing-type.config.nanoleaf.controller.deviceType.description</description>
                 <default>lightPanels</default>

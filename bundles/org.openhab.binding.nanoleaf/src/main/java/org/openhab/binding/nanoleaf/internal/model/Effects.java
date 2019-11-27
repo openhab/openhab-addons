@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,11 +22,12 @@ import java.util.List;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class Effects {
 
-    private String select;
-    private List<String> effectsList = null;
-    private Write write;
+    private String select="";
+    private List<String> effectsList = new ArrayList<>();
+    private Write write = new Write();
 
     public String getSelect() {
         return select;

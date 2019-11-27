@@ -13,16 +13,18 @@
 package org.openhab.binding.nanoleaf.internal.model;
 
 import com.google.gson.annotations.SerializedName;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Represents an Authorization Token
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class AuthToken {
 
     @SerializedName("auth_token")
-    private String authToken;
+    private String authToken="";
 
     public String getAuthToken() {
         return authToken;

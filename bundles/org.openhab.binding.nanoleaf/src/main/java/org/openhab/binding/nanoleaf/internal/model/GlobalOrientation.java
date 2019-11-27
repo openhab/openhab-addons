@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents global orientation settings of the light panels
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class GlobalOrientation {
 
-    private int value;
-    private Integer max;
-    private Integer min;
+    private int value = 0;
+    private Integer max = -1;
+    private Integer min = -1;
 
     public int getValue() {
         return value;

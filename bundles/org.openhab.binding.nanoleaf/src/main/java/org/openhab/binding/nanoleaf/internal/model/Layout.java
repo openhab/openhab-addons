@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -20,11 +24,13 @@ import java.util.TreeMap;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class Layout {
 
     private int numPanels;
     private int sideLength;
-    private List<PositionDatum> positionData = null;
+
+    private List<PositionDatum> positionData = new ArrayList<>();
 
     public int getNumPanels() {
         return numPanels;
@@ -66,31 +72,35 @@ public class Layout {
 
 
         for (int index = 0; index<numPanels; index++) {
-            PositionDatum panel = positionData.get(index);
-            if (panel.getPosX()<minx) minx=panel.getPosX();
-            if (panel.getPosX()>maxx) maxx=panel.getPosX();
-            if (panel.getPosY()<miny) miny=panel.getPosY();
-            if (panel.getPosY()>maxy) maxy=panel.getPosY();
+            @Nullable PositionDatum panel = positionData.get(index);
+
+            if (panel.getPosX() < minx) minx = panel.getPosX();
+            if (panel.getPosX() > maxx) maxx = panel.getPosX();
+            if (panel.getPosY() < miny) miny = panel.getPosY();
+            if (panel.getPosY() > maxy) maxy = panel.getPosY();
         }
 
         int shiftWidth=getSideLength()/2;
 
         int lineY = maxy;
-        TreeMap<Integer, PositionDatum> map;
+        TreeMap<Integer, PositionDatum> map = new TreeMap<>();
 
         while (lineY>=miny) {
             map = new TreeMap<>();
             for (int index = 0; index < numPanels; index++) {
-                PositionDatum panel = positionData.get(index);
+                @Nullable  PositionDatum panel = positionData.get(index);
                 if (panel.getPosY() == lineY)
                     map.put(panel.getPosX(), panel);
             }
             lineY -= shiftWidth;
 
             for (int x=minx; x <=maxx; x+=shiftWidth) {
-                PositionDatum panel = map.get(x);
-                if (panel!=null)
+
+
+                if (map.containsKey(x)) {
+                    @Nullable  PositionDatum panel = map.get(x);
                     view += String.format("%5s ", panel.getPanelId());
+                }
                 else
                     view+= "      ";
 

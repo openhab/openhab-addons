@@ -22,6 +22,7 @@ import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
  *
  * @author Martin Raepple - Initial contribution
  */
+
 @NonNullByDefault
 public interface NanoleafControllerListener {
 

@@ -12,21 +12,24 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents rhythm module settings
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class Rhythm {
 
     private boolean rhythmConnected;
     private boolean rhythmActive;
     private int rhythmId;
-    private String hardwareVersion;
-    private String firmwareVersion;
+    private String hardwareVersion="";
+    private String firmwareVersion="";
     private boolean auxAvailable;
     private int rhythmMode;
-    private RhythmPos rhythmPos;
+    private RhythmPos rhythmPos = new RhythmPos();
 
     public boolean getRhythmConnected() {
         return rhythmConnected;
@@ -53,7 +56,7 @@ public class Rhythm {
     }
 
     public String getHardwareVersion() {
-        return hardwareVersion == null ? "" : this.hardwareVersion;
+        return this.hardwareVersion;
     }
 
     public void setHardwareVersion(String hardwareVersion) {
@@ -61,7 +64,7 @@ public class Rhythm {
     }
 
     public String getFirmwareVersion() {
-        return firmwareVersion == null ? "" : this.firmwareVersion;
+        return this.firmwareVersion;
     }
 
     public void setFirmwareVersion(String firmwareVersion) {

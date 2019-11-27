@@ -13,12 +13,14 @@
 package org.openhab.binding.nanoleaf.internal.model;
 
 import com.google.gson.annotations.SerializedName;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Represents rhythm module position
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class RhythmPos {
 
     @SerializedName("x")

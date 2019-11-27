@@ -12,15 +12,19 @@
  */
 package org.openhab.binding.nanoleaf.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link NanoleafPanelConfig} class contains fields mapping an individual panel configuration parameters.
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class NanoleafPanelConfig {
     /** ID of the light panel assigned by the controller */
     public static final String ID = "id";
-    public Integer id;
+
+    public Integer id=0;
 
     public Integer getId() {
         return id;

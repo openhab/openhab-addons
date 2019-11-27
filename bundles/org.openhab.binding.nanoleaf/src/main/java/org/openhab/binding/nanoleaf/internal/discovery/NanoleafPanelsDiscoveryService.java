@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService implements NanoleafControllerListener {
 
     private static final int SEARCH_TIMEOUT_SECONDS = 60;
@@ -76,13 +79,12 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService imp
     @Override
     public void onControllerInfoFetched(ThingUID bridge, ControllerInfo controllerInfo) {
         logger.debug("Discover panels connected to controller with id {}", bridge.getAsString());
-        if (controllerInfo.getPanelLayout() != null) {
+        //if (controllerInfo.getPanelLayout() != null) {
             if (controllerInfo.getPanelLayout().getLayout().getNumPanels() > 0) {
                 Iterator<PositionDatum> iterator = controllerInfo.getPanelLayout().getLayout().getPositionData()
                         .iterator();
                 while (iterator.hasNext()) {
-                    PositionDatum panel = iterator.next();
-                    panel.getPanelId();
+                    @Nullable PositionDatum panel = iterator.next();
                     ThingUID newPanelThingUID = new ThingUID(NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL, bridge,
                             Integer.toString(panel.getPanelId()));
 
@@ -97,8 +99,8 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService imp
                     thingDiscovered(newPanel);
                 }
             }
-        } else {
+ /*       } else {
             logger.info("No panels found or connected to controller");
-        }
+        }*/
     }
 }

@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -48,13 +49,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Raepple - Initial contribution
  */
-
+@NonNullByDefault
 @Component(configurationPid = "binding.nanoleaf", service = ThingHandlerFactory.class)
 public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafHandlerFactory.class);
 
-    private HttpClient httpClient;
+    private @NonNullByDefault({}) HttpClient httpClient;
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -107,11 +108,12 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Discovery service for panels registered.");
     }
 
+    @SuppressWarnings("null")
     private synchronized void unregisterDiscoveryService(Thing thing) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
-        if (serviceReg != null) {
+        @Nullable  ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
+        // would require null check but "if (response!=null)" throws warning on comoile time :´-(
+        if (serviceReg!=null)
             serviceReg.unregister();
-            logger.debug("Discovery service for panels removed.");
-        }
+        logger.debug("Discovery service for panels removed.");
     }
 }

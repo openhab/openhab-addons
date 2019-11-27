@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,15 +22,16 @@ import java.util.List;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class Write {
 
-    private String command;
-    private String animType;
-    private String animName;
-    private List<Palette> palette = null;
-    private String colorType;
-    private String animData;
-    private boolean loop;
+    private String command ="";
+    private String animType ="";
+    private String animName ="";
+    private List<Palette> palette = new ArrayList<>();
+    private String colorType="";
+    private String animData="";
+    private boolean loop = false;
 
     public String getCommand() {
         return command;

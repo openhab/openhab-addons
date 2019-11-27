@@ -13,22 +13,25 @@
 package org.openhab.binding.nanoleaf.internal.model;
 
 import com.google.gson.annotations.SerializedName;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Represents overall state settings of the light panels
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class State {
 
-    private On on;
-    private Brightness brightness;
-    private Hue hue;
+    private On on = new On();
+    private Brightness brightness = new Brightness();
+    private Hue hue = new Hue();
     @SerializedName("sat")
-    private Sat saturation;
+    private Sat saturation = new Sat();
     @SerializedName("ct")
-    private Ct colorTemperature;
-    private String colorMode;
+    private Ct colorTemperature = new Ct();
+
+    private String colorMode = "undefined" ;
 
     public On getOn() {
         return on;

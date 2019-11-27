@@ -63,6 +63,7 @@ Don't worry: the binding comes with some helpful support in the background (this
 
 - fire up your browser and open the openhab server on port 9001 which shows the logs.
 - look out for something like "Panel layout and ids" in the logs. Below that you will see a panel layout similar to
+
 ```                                     
                                     41451                                     
                                
@@ -84,6 +85,7 @@ The controller thing has the following parameters:
 | port            | Port number of the light panels contoller. Default is 16021                           |
 | authToken       | The authentication token received from the controller after successful pairing.       |
 | refreshInterval | Interval in seconds to refresh the state of the light panels settings. Default is 60. |
+| deviceType      | (readOnly) defines the type: lightpanels (triangle) or canvas (square)                |
 
 The lightpanel thing has the following parameters:
 
@@ -286,7 +288,7 @@ when
 then
     logInfo("CanvasTouch", "Nanoleaf Canvas Panel 1 was touched twice. Toggle Power of whole canvas.")
 
-    if (NanoleafPower.state ==OFF ) {
+    if (NanoleafPower.state == OFF ) {
         sendCommand(NanoleafPower,ON)
     } else {
         sendCommand(NanoleafPower,OFF)

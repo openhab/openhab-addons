@@ -21,6 +21,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class OpenAPIUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(OpenAPIUtils.class);
@@ -50,7 +53,7 @@ public class OpenAPIUtils {
         return httpClient.newRequest(requestURI).method(method);
     }
 
-    public static URI getUri(NanoleafControllerConfig controllerConfig, String apiOperation, String query) throws NanoleafException {
+    public static URI getUri(NanoleafControllerConfig controllerConfig, String apiOperation, @Nullable String query) throws NanoleafException {
         String path;
 
         // get network settings from configuration
@@ -81,7 +84,7 @@ public class OpenAPIUtils {
     public static ContentResponse sendOpenAPIRequest(Request request)
             throws NanoleafException, NanoleafUnauthorizedException {
         try {
-            logger.trace("Sending Request {} {}",request.getQuery(), request.getURI());
+            logger.trace("Sending Request {} {}",request.getURI(), request.getQuery() == null ? "no query parameters": request.getQuery());
             ContentResponse openAPIResponse = request.send();
             if (logger.isTraceEnabled()) {
                 logger.trace("API response from Nanoleaf controller: {}", openAPIResponse.getContentAsString());

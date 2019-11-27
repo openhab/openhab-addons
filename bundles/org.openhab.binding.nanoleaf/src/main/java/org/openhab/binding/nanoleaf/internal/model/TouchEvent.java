@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -36,7 +35,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TouchEvent {
 
     private String panelId ="";
-
     private int gesture=-1;
 
     public String getPanelId() {

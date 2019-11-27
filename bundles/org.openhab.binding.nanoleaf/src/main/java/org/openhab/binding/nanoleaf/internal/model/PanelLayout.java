@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents panel layout of the light panels
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class PanelLayout {
 
-    private Layout layout;
-    private GlobalOrientation globalOrientation;
+    private Layout layout = new Layout();
+    private GlobalOrientation globalOrientation = new GlobalOrientation();
 
     public Layout getLayout() {
         return layout;
