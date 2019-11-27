@@ -1,17 +1,20 @@
 # Ambient Weather Binding
 
 The Ambient Weather binding integrates weather station data that's stored on the Ambient Weather online service.
-The binding uses Ambient Weather's real-time API, so updates from weather stations are delivered the the binding in near real-time.
+The binding uses Ambient Weather's real-time API, so updates from weather stations are delivered to the binding in near real-time.
 
 ## Supported Things
 
-The binding currently supports weather data from these weather stations
+The binding currently supports weather data from these weather stations.
 
-- WS-0900-IP,
-- WS-1400-IP / WS-1401-IP,
-- WS-2902A,
-- WS-8482, and
-- WS-0265.
+| Thing                    | ID        | 
+|--------------------------|-----------|
+| Account                  | bridge    |
+| WS-0900-IP               | ws0900ip  |
+| WS-1400-IP / WS-1401-IP  | ws1400ip  |
+| WS-2902A                 | ws2902a   |
+| WS-8482                  | ws8482    |
+| WS-0265                  | ws0265    |
 
 Other stations can be added relatively easily with changes in just several places in the source code.
 
@@ -21,15 +24,18 @@ Automatic discovery is currently not supported due to the lack of weather statio
 
 ## Thing Configuration
 
-### Bridge Thing Configuration
+### Account
 
-The Bridge thing requires a valid application Key and API key.
-Application and API keys can be obtained on the *My Account* page of your `ambientweather.net` dashboard.
+| Parameter        | Parameter ID      | Required/Optional | Description |
+|------------------|-------------------|-------------------|-------------|
+| API Key          | apiKey            | Required          | Obtain the API key on the *My Account* page of your `ambientweather.net` dashboard. |
+| Application Key  | apiKey            | Required          | Obtain the Application key on the *My Account* page of your `ambientweather.net` dashboard. |
 
-### Weather Station Thing Configuration
+### Weather Station
 
-The Weather Station things require the MAC address of the weather station. 
-This MAC address must be on the same `ambientweather.net` dashboard as the API and Application keys.
+| Parameter        | Parameter ID      | Required/Optional | Description |
+|------------------|-------------------|-------------------|-------------|
+| MAC Address      | macAddress        | Required          | This is the weather station's MAC address. It must be configured in your `ambientweather.net` dashboard. |
 
 ## Channels
 
