@@ -75,6 +75,7 @@
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
+    <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.enturno</module>
     <module>org.openhab.binding.evohome</module>
