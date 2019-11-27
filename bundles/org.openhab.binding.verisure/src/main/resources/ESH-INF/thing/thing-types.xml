@@ -33,7 +33,8 @@
 			</parameter>
 			<parameter name="pin" type="text">
 				<label>Pin Code</label>
-				<description>The username's pin code to arm/disarm alarm and lock/unlock door. Comma separated in case of many installations.</description>
+				<description>The username's pin code to arm/disarm alarm and lock/unlock door. Comma separated in case of many
+					installations.</description>
 				<context>password</context>
 			</parameter>
 		</config-description>
@@ -292,7 +293,7 @@
 		<description>Verisure Presence information about your configured Verisure users.</description>
 
 		<channels>
-		    <channel id="status" typeId="status" />
+			<channel id="status" typeId="status" />
 			<channel id="userName" typeId="userName" />
 			<channel id="webAccount" typeId="webAccount" />
 			<channel id="userLocationName" typeId="userLocationName" />
@@ -369,7 +370,7 @@
 		<description>Information on user location name.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
-	
+
 	<channel-type id="userDeviceName">
 		<item-type>String</item-type>
 		<label>User Device Name</label>
@@ -397,15 +398,15 @@
 		<description>User who did the last change.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
-	
-    <channel-type id="changedVia">
+
+	<channel-type id="changedVia">
 		<item-type>String</item-type>
 		<label>Changed via</label>
 		<description>Method used to change status.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
-    <channel-type id="motorJam">
+	<channel-type id="motorJam">
 		<item-type>String</item-type>
 		<label>SmartLock Motor Jam</label>
 		<description>Tells if the SmartLock motor has jammed.</description>
@@ -490,10 +491,10 @@
 		<category>Humidity</category>
 		<state readOnly="true" min="0" max="100" pattern="%d %%" />
 	</channel-type>
-	
+
 	<channel-type id="humidityEnabled">
 		<item-type>String</item-type>
-		<label>Humidity Enabled</label> 
+		<label>Humidity Enabled</label>
 		<description>Is Climate device capable of reporting humidity.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>

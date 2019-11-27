@@ -66,6 +66,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class VerisureSession {
 
+    @NonNullByDefault
     private final class VerisureInstallation {
         private @Nullable String installationName;
         private @Nullable BigDecimal installationId;

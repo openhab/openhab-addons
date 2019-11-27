@@ -80,6 +80,7 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
+    @NonNullByDefault
     public static class Climate {
 
         private @Nullable Device device;
@@ -209,6 +210,7 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
 
     }
 
+    @NonNullByDefault
     public static class Data {
 
         private @Nullable Installation installation;
@@ -261,6 +263,7 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
 
     }
 
+    @NonNullByDefault
     public static class Installation {
 
         private @Nullable List<Climate> climates = null;
@@ -325,6 +328,7 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
 
     }
 
+    @NonNullByDefault
     public static class Device {
 
         private @Nullable String deviceLabel;
@@ -414,6 +418,7 @@ public class VerisureClimatesJSON extends VerisureBaseThingJSON {
 
     }
 
+    @NonNullByDefault
     public static class Gui {
 
         private @Nullable String label;

@@ -80,6 +80,7 @@ public class VerisureAlarmsJSON extends VerisureBaseThingJSON {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
+    @NonNullByDefault
     public static class Data {
 
         @SerializedName("installation")
@@ -134,6 +135,7 @@ public class VerisureAlarmsJSON extends VerisureBaseThingJSON {
 
     }
 
+    @NonNullByDefault
     public static class Installation {
 
         private @Nullable ArmState armState;
@@ -198,6 +200,7 @@ public class VerisureAlarmsJSON extends VerisureBaseThingJSON {
 
     }
 
+    @NonNullByDefault
     public static class ArmState {
 
         private @Nullable String type;

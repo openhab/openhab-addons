@@ -77,6 +77,7 @@ public class VerisureBroadbandConnectionsJSON extends VerisureBaseThingJSON {
         return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
+    @NonNullByDefault
     public static class Broadband {
 
         private @Nullable String testDate;
@@ -154,6 +155,7 @@ public class VerisureBroadbandConnectionsJSON extends VerisureBaseThingJSON {
 
     }
 
+    @NonNullByDefault
     public static class Data {
 
         private @Nullable Installation installation;
@@ -206,6 +208,7 @@ public class VerisureBroadbandConnectionsJSON extends VerisureBaseThingJSON {
 
     }
 
+    @NonNullByDefault
     public static class Installation {
 
         private @Nullable Broadband broadband;
