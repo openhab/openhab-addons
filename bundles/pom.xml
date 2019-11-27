@@ -59,6 +59,7 @@
     <module>org.openhab.binding.bluetooth.daikinmadoka</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.boschindego</module>
+    <module>org.openhab.binding.boschshc</module>
     <module>org.openhab.binding.bosesoundtouch</module>
     <module>org.openhab.binding.bsblan</module>
     <module>org.openhab.binding.bticinosmarther</module>
