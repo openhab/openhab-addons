@@ -119,6 +119,8 @@ public class ShellyComponents {
                                     toQuantityType(getDouble(emeter.reactive), SmartHomeUnits.WATT));
                             updated |= th.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
                                     toQuantityType(getDouble(emeter.voltage), SmartHomeUnits.VOLT));
+                            updated |= th.updateChannel(groupName, CHANNEL_METER_TIMESTAMP,
+                                    new StringType(ShellyHandlerFactory.convertTimestamp(getLong(emeter.timestamp))));
                             m++;
                         }
                     }

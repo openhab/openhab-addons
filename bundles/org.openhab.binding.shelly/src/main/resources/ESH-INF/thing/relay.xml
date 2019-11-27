@@ -227,9 +227,9 @@
 		<description>A Shelly dimmer channel</description>
 		<channels>
 			<channel id="output" typeId="dimmerOutput" />
+            <channel id="brightness" typeId="dimmerBrightness" />
 			<channel id="input1" typeId="inputState1" />
 			<channel id="input2" typeId="inputState2" />
-			<channel id="brightness" typeId="dimmerBrightness" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="event" typeId="eventTrigger" />
@@ -273,10 +273,12 @@
 		<label>Power Meter</label>
 		<description>Power consumption for the relay</description>
 		<channels>
+			<channel id="currentWatts" typeId="meterWatts" />
 			<channel id="totalKWH" typeId="meterTotal" />
 			<channel id="returnedKWH" typeId="meterReturned" />
 			<channel id="reactiveWatts" typeId="meterReactive" />
 			<channel id="voltage" typeId="meterVoltage" />
+			<channel id="timestamp" typeId="meterTimestamp" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="basicMeter">

@@ -42,6 +42,8 @@ public class ShellyApiJson {
         public Integer numOutputs;
         @SerializedName("num_meters")
         public Integer numMeters;
+        @SerializedName("num_emeters")
+        public Integer numEMeters;
         @SerializedName("num_rollers")
         public Integer numRollers;
     }

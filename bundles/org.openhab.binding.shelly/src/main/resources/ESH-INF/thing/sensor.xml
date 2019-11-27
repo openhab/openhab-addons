@@ -111,8 +111,8 @@
 		<description>Status of the device's battery</description>
 		<channels>
 			<channel id="batteryLevel" typeId="batLevel" />
-			<channel id="lowBattery" typeId="batAlert" />
 			<channel id="voltage" typeId="batVoltage" />
+            <channel id="lowBattery" typeId="batAlert" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="shortBatteryStatus">
