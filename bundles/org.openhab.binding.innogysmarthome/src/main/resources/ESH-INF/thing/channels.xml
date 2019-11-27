@@ -323,7 +323,7 @@
 	<!-- CPUUsage -->
 	<channel-type id="CPUUsage">
 		<item-type>Number</item-type>
-		<label>CPU usage</label>
+		<label>CPU Usage</label>
 		<description>The CPU usage of SHC-A, updated every 5 minutes</description>
 		<category>System</category>
 		<state readOnly="true"></state>
@@ -332,7 +332,7 @@
 	<!-- DiskUsage -->
 	<channel-type id="DiskUsage">
 		<item-type>Number</item-type>
-		<label>Disk usage</label>
+		<label>Disk Usage</label>
 		<description>The disk usage of SHC-A, updated every 5 minutes</description>
 		<category>System</category>
 		<state readOnly="true"></state>
@@ -341,7 +341,7 @@
 	<!-- MemoryUsage -->
 	<channel-type id="MemoryUsage">
 		<item-type>Number</item-type>
-		<label>Memory usage</label>
+		<label>Memory Usage</label>
 		<description>The memory usage of SHC-A, updated every 5 minutes</description>
 		<category>System</category>
 		<state readOnly="true"></state>

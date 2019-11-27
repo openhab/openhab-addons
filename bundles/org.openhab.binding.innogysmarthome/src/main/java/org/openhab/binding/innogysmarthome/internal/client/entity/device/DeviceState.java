@@ -14,7 +14,6 @@ package org.openhab.binding.innogysmarthome.internal.client.entity.device;
 
 import java.util.HashMap;
 
-import org.openhab.binding.innogysmarthome.internal.client.Util;
 import org.openhab.binding.innogysmarthome.internal.client.entity.Property;
 
 /**
@@ -117,7 +116,7 @@ public class DeviceState {
      * @return true, if the {@link Device} is "Included"
      */
     public boolean deviceIsIncluded() {
-        return Util.equalsIfPresent(getState().getDeviceInclusionState().getValue(), DEVICE_INCLUSION_STATE_INCLUDED);
+        return DEVICE_INCLUSION_STATE_INCLUDED.equals(getState().getDeviceInclusionState().getValue());
     }
 
     /**
@@ -140,7 +139,7 @@ public class DeviceState {
      * @return true, if the inclusion state is "InclusionPending"
      */
     public Boolean deviceInclusionIsPending() {
-        return Util.equalsIfPresent(getDeviceInclusionState(), DEVICE_INCLUSION_STATE_PENDING);
+        return DEVICE_INCLUSION_STATE_PENDING.equals(getDeviceInclusionState());
     }
 
     /**
@@ -158,7 +157,7 @@ public class DeviceState {
      * @return true, if the deviceUpdateState is "UpToDate"
      */
     public Boolean deviceIsUpToDate() {
-        return Util.equalsIfPresent(getDeviceUpdateState(), DEVICE_UPDATE_STATE_UPTODATE);
+        return DEVICE_UPDATE_STATE_UPTODATE.equals(getDeviceUpdateState());
     }
 
     /**

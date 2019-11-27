@@ -106,16 +106,6 @@ public class Message {
     private List<String> deviceLinkList;
 
     /**
-     * Reference to the underlying capabilities, which the message relates to.
-     *
-     * Optional.
-     *
-     * TODO: unclear how the structure looks. May be like {@link Message#properties}
-     */
-    // @SerializedName("capabilities")
-    // private List<Link> capabilityLinkList;
-
-    /**
      * Container for all parameters of the message. The parameters are contained in Property entities.
      *
      * Optional.

@@ -68,7 +68,6 @@ public class DeviceConfig {
 
     private String displayCurrentTemperature;
 
-    // TODO VRCC
     private String underlyingDeviceIds;
 
     private String meterId;

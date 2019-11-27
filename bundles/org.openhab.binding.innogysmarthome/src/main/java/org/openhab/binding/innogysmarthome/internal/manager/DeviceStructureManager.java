@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,7 +59,7 @@ public class DeviceStructureManager {
     public DeviceStructureManager(InnogyClient client) {
         this.client = client;
         deviceMap = Collections.synchronizedMap(new HashMap<>());
-        capabilityIdToDeviceMap = Collections.synchronizedMap(new HashMap<>());
+        capabilityIdToDeviceMap = new ConcurrentHashMap<>();
     }
 
     /**

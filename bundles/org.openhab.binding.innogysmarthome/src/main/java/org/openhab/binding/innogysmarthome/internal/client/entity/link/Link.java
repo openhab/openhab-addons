@@ -57,8 +57,8 @@ public class Link {
      */
     public static String getId(String link) {
         if (link != null) {
-            String linkType = getLinkType(link);
-            if (linkType != null && !linkType.equals(Link.LINK_TYPE_UNKNOWN) && !linkType.equals(Link.LINK_TYPE_SHC)) {
+            final String linkType = getLinkType(link);
+            if (linkType != null && !Link.LINK_TYPE_UNKNOWN.equals(linkType) && !Link.LINK_TYPE_SHC.equals(linkType)) {
                 return link.replace(linkType, "");
             }
         }
@@ -71,7 +71,7 @@ public class Link {
      * @return
      */
     public static boolean isTypeCapability(String link) {
-        return Link.getLinkType(link).equals(LINK_TYPE_CAPABILITY);
+        return LINK_TYPE_CAPABILITY.equals(Link.getLinkType(link));
     }
 
     /**
@@ -80,7 +80,7 @@ public class Link {
      * @return
      */
     public static boolean isTypeDevice(String link) {
-        return Link.getLinkType(link).equals(LINK_TYPE_DEVICE);
+        return LINK_TYPE_DEVICE.equals(Link.getLinkType(link));
     }
 
     /**
@@ -89,7 +89,7 @@ public class Link {
      * @return
      */
     public static boolean isTypeMessage(String link) {
-        return Link.getLinkType(link).equals(LINK_TYPE_MESSAGE);
+        return LINK_TYPE_MESSAGE.equals(Link.getLinkType(link));
     }
 
     /**
@@ -98,7 +98,7 @@ public class Link {
      * @return
      */
     public static boolean isTypeSHC(String link) {
-        return Link.getLinkType(link).equals(LINK_TYPE_SHC);
+        return LINK_TYPE_SHC.equals(Link.getLinkType(link));
     }
 
     /**
@@ -107,6 +107,6 @@ public class Link {
      * @return
      */
     public static boolean isTypeUnknown(String link) {
-        return Link.getLinkType(link).equals(LINK_TYPE_UNKNOWN);
+        return LINK_TYPE_UNKNOWN.equals(Link.getLinkType(link));
     }
 }

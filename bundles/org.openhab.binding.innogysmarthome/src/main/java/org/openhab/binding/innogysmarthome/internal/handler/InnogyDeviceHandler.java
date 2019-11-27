@@ -59,6 +59,11 @@ import org.slf4j.LoggerFactory;
 public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatusListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = SUPPORTED_DEVICE_THING_TYPES;
+
+    private static final String DEBUG = "DEBUG";
+    private static final String LONG_PRESS = "LongPress";
+    private static final String SHORT_PRESS = "ShortPress";
+
     private final Logger logger = LoggerFactory.getLogger(InnogyDeviceHandler.class);
     private final Object lock = new Object();
 
@@ -97,11 +102,11 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
         }
 
         // SWITCH
-        if (channelUID.getId().equals(CHANNEL_SWITCH)) {
+        if (CHANNEL_SWITCH.equals(channelUID.getId())) {
             // DEBUGGING HELPER
             // ----------------
             final Device device = innogyBridgeHandler.getDeviceById(deviceId);
-            if (device.getConfig().getName().equals("DEBUG")) {
+            if (DEBUG.equals(device.getConfig().getName())) {
                 logger.debug("DEBUG SWITCH ACTIVATED!");
                 if (OnOffType.ON.equals(command)) {
                     innogyBridgeHandler.onEvent(
@@ -118,7 +123,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             }
 
             // DIMMER
-        } else if (channelUID.getId().equals(CHANNEL_DIMMER)) {
+        } else if (CHANNEL_DIMMER.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
                 final DecimalType dimLevel = (DecimalType) command;
                 innogyBridgeHandler.commandSetDimmLevel(deviceId, dimLevel.intValue());
@@ -131,7 +136,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             }
 
             // ROLLERSHUTTER
-        } else if (channelUID.getId().equals(CHANNEL_ROLLERSHUTTER)) {
+        } else if (CHANNEL_ROLLERSHUTTER.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
                 final DecimalType rollerShutterLevel = (DecimalType) command;
                 innogyBridgeHandler.commandSetRollerShutterLevel(deviceId,
@@ -155,29 +160,30 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             }
 
             // SET_TEMPERATURE
-        } else if (channelUID.getId().equals(CHANNEL_SET_TEMPERATURE)) {
+        } else if (CHANNEL_SET_TEMPERATURE.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
                 final DecimalType pointTemperature = (DecimalType) command;
                 innogyBridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature.doubleValue());
             }
 
             // OPERATION_MODE
-        } else if (channelUID.getId().equals(CHANNEL_OPERATION_MODE)) {
+        } else if (CHANNEL_OPERATION_MODE.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 final String autoModeCommand = command.toString();
 
-                if (autoModeCommand.equals("Auto")) {
+                if (CapabilityState.STATE_VALUE_OPERATION_MODE_AUTO.equals(autoModeCommand)) {
                     innogyBridgeHandler.commandSetOperationMode(deviceId, true);
-                } else if (autoModeCommand.equals("Manu")) {
+                } else if (CapabilityState.STATE_VALUE_OPERATION_MODE_MANUAL.equals(autoModeCommand)) {
                     innogyBridgeHandler.commandSetOperationMode(deviceId, false);
                 } else {
                     logger.warn("Could not set operationmode. Invalid value '{}'! Only '{}' or '{}' allowed.",
-                            autoModeCommand, "Auto", "Manu");
+                            autoModeCommand, CapabilityState.STATE_VALUE_OPERATION_MODE_AUTO,
+                            CapabilityState.STATE_VALUE_OPERATION_MODE_MANUAL);
                 }
             }
 
             // ALARM
-        } else if (channelUID.getId().equals(CHANNEL_ALARM)) {
+        } else if (CHANNEL_ALARM.equals(channelUID.getId())) {
             if (command instanceof OnOffType) {
                 innogyBridgeHandler.commandSwitchAlarm(deviceId, OnOffType.ON.equals(command));
             }
@@ -269,7 +275,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 }
 
                 // Thermostat
-                // TODO: RST2
                 if (Device.DEVICE_TYPE_RST.equals(device.getType())
                         || Device.DEVICE_TYPE_WRT.equals(device.getType())) {
                     properties.put(PROPERTY_DISPLAY_CURRENT_TEMPERATURE,
@@ -296,7 +301,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
 
                 updateProperties(properties);
 
-                // TODO: check device state first! E.g. there is no state, when device is still in configuration state.
                 onDeviceStateChanged(device);
                 return true;
             } else {
@@ -393,7 +397,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                             device.getType());
                     continue;
                 }
-                // TODO: ADD DEVICES
                 switch (c.getType()) {
                     case Capability.TYPE_VARIABLEACTUATOR:
                         final Boolean variableActuatorState = c.getCapabilityState().getVariableActuatorState();
@@ -587,9 +590,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                                 if (buttonIndexState >= 0 && buttonIndexState <= 7) {
                                     final int channelIndex = buttonIndexState + 1;
                                     final String type = c.getCapabilityState().getPushButtonSensorButtonIndexType();
-                                    final String triggerEvent = "ShortPress".equals(type)
+                                    final String triggerEvent = SHORT_PRESS.equals(type)
                                             ? CommonTriggerEvents.SHORT_PRESSED
-                                            : ("LongPress".equals(type) ? CommonTriggerEvents.LONG_PRESSED
+                                            : (LONG_PRESS.equals(type) ? CommonTriggerEvents.LONG_PRESSED
                                                     : CommonTriggerEvents.PRESSED);
 
                                     triggerChannel(CHANNEL_BUTTON + channelIndex, triggerEvent);
@@ -720,7 +723,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 if (capability.hasState()) {
                     capabilityState = capability.getCapabilityState();
 
-                    // TODO: ADD DEVICES
                     // VariableActuator
                     if (capability.isTypeVariableActuator()) {
                         capabilityState.setVariableActuatorState(event.getProperties().getValue());

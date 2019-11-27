@@ -102,7 +102,7 @@ public class BaseEvent {
      * @return
      */
     public boolean isConfigChangedEvent() {
-        return getType().equals(TYPE_CONFIGURATION_CHANGED);
+        return TYPE_CONFIGURATION_CHANGED.equals(getType());
     }
 
     /**
@@ -111,7 +111,7 @@ public class BaseEvent {
      * @return
      */
     public boolean isControllerConnectivityChangedEvent() {
-        return getType().equals(TYPE_CONTROLLER_CONNECTIVITY_CHANGED);
+        return TYPE_CONTROLLER_CONNECTIVITY_CHANGED.equals(getType());
     }
 
     /**
@@ -120,7 +120,7 @@ public class BaseEvent {
      * @return
      */
     public boolean isDisconnectedEvent() {
-        return getType().equals(TYPE_DISCONNECT);
+        return TYPE_DISCONNECT.equals(getType());
     }
 
     /**
@@ -129,7 +129,7 @@ public class BaseEvent {
      * @return
      */
     public boolean isMessageDeletedEvent() {
-        return getType().equals(TYPE_MESSAGE_DELETED);
+        return TYPE_MESSAGE_DELETED.equals(getType());
     }
 
     /**
@@ -138,7 +138,7 @@ public class BaseEvent {
      * @return
      */
     public boolean isNewMessageReceivedEvent() {
-        return getType().equals(TYPE_NEW_MESSAGE_RECEIVED);
+        return TYPE_NEW_MESSAGE_RECEIVED.equals(getType());
     }
 
     /**
@@ -147,7 +147,7 @@ public class BaseEvent {
      * @return
      */
     public boolean isStateChangedEvent() {
-        return getType().equals(TYPE_STATE_CHANGED);
+        return TYPE_STATE_CHANGED.equals(getType());
     }
 
 }

@@ -179,7 +179,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeVariableActuator() {
-        return getType().equals(TYPE_VARIABLEACTUATOR);
+        return TYPE_VARIABLEACTUATOR.equals(getType());
     }
 
     /**
@@ -188,7 +188,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeSwitchActuator() {
-        return getType().equals(TYPE_SWITCHACTUATOR);
+        return TYPE_SWITCHACTUATOR.equals(getType());
     }
 
     /**
@@ -197,7 +197,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeThermostatActuator() {
-        return getType().equals(TYPE_THERMOSTATACTUATOR);
+        return TYPE_THERMOSTATACTUATOR.equals(getType());
     }
 
     /**
@@ -206,7 +206,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeTemperatureSensor() {
-        return getType().equals(TYPE_TEMPERATURESENSOR);
+        return TYPE_TEMPERATURESENSOR.equals(getType());
     }
 
     /**
@@ -215,7 +215,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeHumiditySensor() {
-        return getType().equals(TYPE_HUMIDITYSENSOR);
+        return TYPE_HUMIDITYSENSOR.equals(getType());
     }
 
     /**
@@ -224,7 +224,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeWindowDoorSensor() {
-        return getType().equals(TYPE_WINDOWDOORSENSOR);
+        return TYPE_WINDOWDOORSENSOR.equals(getType());
     }
 
     /**
@@ -233,7 +233,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeSmokeDetectorSensor() {
-        return getType().equals(TYPE_SMOKEDETECTORSENSOR);
+        return TYPE_SMOKEDETECTORSENSOR.equals(getType());
     }
 
     /**
@@ -242,7 +242,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeAlarmActuator() {
-        return getType().equals(TYPE_ALARMACTUATOR);
+        return TYPE_ALARMACTUATOR.equals(getType());
     }
 
     /**
@@ -251,7 +251,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeMotionDetectionSensor() {
-        return getType().equals(TYPE_MOTIONDETECTIONSENSOR);
+        return TYPE_MOTIONDETECTIONSENSOR.equals(getType());
     }
 
     /**
@@ -260,7 +260,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeLuminanceSensor() {
-        return getType().equals(TYPE_LUMINANCESENSOR);
+        return TYPE_LUMINANCESENSOR.equals(getType());
     }
 
     /**
@@ -269,7 +269,7 @@ public class Capability {
      * @return
      */
     public boolean isTypePushButtonSensor() {
-        return getType().equals(TYPE_PUSHBUTTONSENSOR);
+        return TYPE_PUSHBUTTONSENSOR.equals(getType());
     }
 
     /**
@@ -278,7 +278,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeDimmerActuator() {
-        return getType().equals(TYPE_DIMMERACTUATOR);
+        return TYPE_DIMMERACTUATOR.equals(getType());
     }
 
     /**
@@ -287,7 +287,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeRollerShutterActuator() {
-        return getType().equals(TYPE_ROLLERSHUTTERACTUATOR);
+        return TYPE_ROLLERSHUTTERACTUATOR.equals(getType());
     }
 
     /**
@@ -296,7 +296,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeEnergyConsumptionSensor() {
-        return getType().equals(TYPE_ENERGYCONSUMPTIONSENSOR);
+        return TYPE_ENERGYCONSUMPTIONSENSOR.equals(getType());
     }
 
     /**
@@ -305,7 +305,7 @@ public class Capability {
      * @return
      */
     public boolean isTypePowerConsumptionSensor() {
-        return getType().equals(TYPE_POWERCONSUMPTIONSENSOR);
+        return TYPE_POWERCONSUMPTIONSENSOR.equals(getType());
     }
 
     /**
@@ -314,7 +314,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeGenerationMeterEnergySensor() {
-        return getType().equals(TYPE_GENERATIONMETERENERGYSENSOR);
+        return TYPE_GENERATIONMETERENERGYSENSOR.equals(getType());
     }
 
     /**
@@ -323,7 +323,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeGenerationMeterPowerConsumptionSensor() {
-        return getType().equals(TYPE_GENERATIONMETERPOWERCONSUMPTIONSENSOR);
+        return TYPE_GENERATIONMETERPOWERCONSUMPTIONSENSOR.equals(getType());
     }
 
     /**
@@ -332,7 +332,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeTwoWayMeterEnergyConsumptionSensor() {
-        return getType().equals(TYPE_TWOWAYMETERENERGYCONSUMPTIONSENSOR);
+        return TYPE_TWOWAYMETERENERGYCONSUMPTIONSENSOR.equals(getType());
     }
 
     /**
@@ -341,7 +341,7 @@ public class Capability {
      * @return
      */
     public boolean isTypeTwoWayMeterEnergyFeedSensor() {
-        return getType().equals(TYPE_TWOWAYMETERENERGYFEEDSENSOR);
+        return TYPE_TWOWAYMETERENERGYFEEDSENSOR.equals(getType());
     }
 
     /**
@@ -350,6 +350,6 @@ public class Capability {
      * @return
      */
     public boolean isTypeTwoWayMeterPowerConsumptionSensor() {
-        return getType().equals(TYPE_TWOWAYMETERPOWERCONSUMPTIONSENSOR);
+        return TYPE_TWOWAYMETERPOWERCONSUMPTIONSENSOR.equals(getType());
     }
 }

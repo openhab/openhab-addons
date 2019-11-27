@@ -725,10 +725,9 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             return;
         }
         try {
-            // TODO: ADD DEVICES
             // VariableActuator
             final String deviceType = deviceStructMan.getDeviceById(deviceId).getType();
-            if (deviceType.equals(DEVICE_VARIABLE_ACTUATOR)) {
+            if (DEVICE_VARIABLE_ACTUATOR.equals(deviceType)) {
                 final String capabilityId = deviceStructMan.getCapabilityId(deviceId, Capability.TYPE_VARIABLEACTUATOR);
                 if (capabilityId == null) {
                     return;
@@ -736,8 +735,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                 client.setVariableActuatorState(capabilityId, state);
 
                 // PSS / PSSO / ISS2
-            } else if (deviceType.equals(DEVICE_PSS) || deviceType.equals(DEVICE_PSSO)
-                    || deviceType.equals(DEVICE_ISS2)) {
+            } else if (DEVICE_PSS.equals(deviceType) || DEVICE_PSSO.equals(deviceType)
+                    || DEVICE_ISS2.equals(deviceType)) {
                 final String capabilityId = deviceStructMan.getCapabilityId(deviceId, Capability.TYPE_SWITCHACTUATOR);
                 if (capabilityId == null) {
                     return;
@@ -924,7 +923,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     private void refreshAccessToken() {
         try {
-            OAuthClientService localOAuthService = this.oAuthService;
+            final OAuthClientService localOAuthService = this.oAuthService;
 
             if (localOAuthService != null) {
                 oAuthService.refreshToken();

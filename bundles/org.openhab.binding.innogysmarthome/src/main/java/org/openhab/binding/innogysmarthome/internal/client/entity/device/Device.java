@@ -389,9 +389,9 @@ public class Device {
     public void setMessageList(List<Message> messageList) {
         this.messageList = messageList;
 
-        for (Message m : messageList) {
-            setLowBattery(m.getType().equals(Message.TYPE_DEVICE_LOW_BATTERY));
-            setReachable(!m.getType().equals(Message.TYPE_DEVICE_UNREACHABLE));
+        for (final Message m : messageList) {
+            setLowBattery(Message.TYPE_DEVICE_LOW_BATTERY.equals(m.getType()));
+            setReachable(!Message.TYPE_DEVICE_UNREACHABLE.equals(m.getType()));
         }
     }
 
@@ -535,9 +535,9 @@ public class Device {
 
     @Override
     public String toString() {
-        String string = "Device [" + "id=" + getId() + " manufacturer=" + getManufacturer() + " version=" + getVersion()
-                + " product=" + getProduct() + " serialnumber=" + getSerialnumber() + " type=" + getType() + " name="
-                + getConfig().getName() + "]";
+        final String string = "Device [" + "id=" + getId() + " manufacturer=" + getManufacturer() + " version="
+                + getVersion() + " product=" + getProduct() + " serialnumber=" + getSerialnumber() + " type="
+                + getType() + " name=" + getConfig().getName() + "]";
         return string;
     }
 

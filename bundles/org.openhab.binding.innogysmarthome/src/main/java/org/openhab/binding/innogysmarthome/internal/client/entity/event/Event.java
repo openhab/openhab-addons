@@ -118,8 +118,8 @@ public class Event extends BaseEvent {
      * @return String the id of the link or null
      */
     public String getSourceId() {
-        String linkType = getSourceLinkType();
-        if (linkType != null && !linkType.equals(Link.LINK_TYPE_UNKNOWN) && !linkType.equals(Link.LINK_TYPE_SHC)) {
+        final String linkType = getSourceLinkType();
+        if (linkType != null && !Link.LINK_TYPE_UNKNOWN.equals(linkType) && !Link.LINK_TYPE_SHC.equals(linkType)) {
             if (source != null) {
                 return source.replace(linkType, "");
             }

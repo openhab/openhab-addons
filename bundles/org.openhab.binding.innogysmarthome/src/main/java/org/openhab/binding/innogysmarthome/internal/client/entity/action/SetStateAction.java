@@ -21,6 +21,8 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Cap
  */
 public class SetStateAction extends Action {
 
+    private static final String CONSTANT = "Constant";
+
     /**
      * Constructs a new {@link SetStateAction}.
      *
@@ -32,14 +34,14 @@ public class SetStateAction extends Action {
     public SetStateAction(String capabilityId, String capabilityType, boolean state) {
         setType(ACTION_TYPE_SETSTATE);
         setTargetCapabilityById(capabilityId);
-        ActionParams params = new ActionParams();
+        final ActionParams params = new ActionParams();
 
-        if (capabilityType.equals(Capability.TYPE_SWITCHACTUATOR)) {
-            params.setOnState(new BooleanActionParam("Constant", state));
-        } else if (capabilityType.equals(Capability.TYPE_VARIABLEACTUATOR)) {
-            params.setValue(new BooleanActionParam("Constant", state));
-        } else if (capabilityType.equals(Capability.TYPE_ALARMACTUATOR)) {
-            params.setOnState(new BooleanActionParam("Constant", state));
+        if (Capability.TYPE_SWITCHACTUATOR.equals(capabilityType)) {
+            params.setOnState(new BooleanActionParam(CONSTANT, state));
+        } else if (Capability.TYPE_VARIABLEACTUATOR.equals(capabilityType)) {
+            params.setValue(new BooleanActionParam(CONSTANT, state));
+        } else if (Capability.TYPE_ALARMACTUATOR.equals(capabilityType)) {
+            params.setOnState(new BooleanActionParam(CONSTANT, state));
         }
         setParams(params);
     }
@@ -54,10 +56,10 @@ public class SetStateAction extends Action {
     public SetStateAction(String capabilityId, String capabilityType, double newValue) {
         setType(ACTION_TYPE_SETSTATE);
         setTargetCapabilityById(capabilityId);
-        ActionParams params = new ActionParams();
+        final ActionParams params = new ActionParams();
 
-        if (capabilityType.equals(Capability.TYPE_THERMOSTATACTUATOR)) {
-            params.setPointTemperature(new DoubleActionParam("Constant", newValue));
+        if (Capability.TYPE_THERMOSTATACTUATOR.equals(capabilityType)) {
+            params.setPointTemperature(new DoubleActionParam(CONSTANT, newValue));
         }
         setParams(params);
     }
@@ -72,12 +74,12 @@ public class SetStateAction extends Action {
     public SetStateAction(String capabilityId, String capabilityType, int newValue) {
         setType(ACTION_TYPE_SETSTATE);
         setTargetCapabilityById(capabilityId);
-        ActionParams params = new ActionParams();
+        final ActionParams params = new ActionParams();
 
-        if (capabilityType.equals(Capability.TYPE_DIMMERACTUATOR)) {
-            params.setDimLevel(new IntegerActionParam("Constant", newValue));
-        } else if (capabilityType.equals(Capability.TYPE_ROLLERSHUTTERACTUATOR)) {
-            params.setShutterLevel(new IntegerActionParam("Constant", newValue));
+        if (Capability.TYPE_DIMMERACTUATOR.equals(capabilityType)) {
+            params.setDimLevel(new IntegerActionParam(CONSTANT, newValue));
+        } else if (Capability.TYPE_ROLLERSHUTTERACTUATOR.equals(capabilityType)) {
+            params.setShutterLevel(new IntegerActionParam(CONSTANT, newValue));
         }
 
         setParams(params);
@@ -93,10 +95,10 @@ public class SetStateAction extends Action {
     public SetStateAction(String capabilityId, String capabilityType, String newValue) {
         setType(ACTION_TYPE_SETSTATE);
         setTargetCapabilityById(capabilityId);
-        ActionParams params = new ActionParams();
+        final ActionParams params = new ActionParams();
 
-        if (capabilityType.equals(Capability.TYPE_THERMOSTATACTUATOR)) {
-            params.setOperationMode(new StringActionParam("Constant", newValue));
+        if (Capability.TYPE_THERMOSTATACTUATOR.equals(capabilityType)) {
+            params.setOperationMode(new StringActionParam(CONSTANT, newValue));
         }
         setParams(params);
     }

@@ -105,11 +105,9 @@ public class CapabilityState {
     }
 
     public void setThermostatActuatorOperationModeState(final String operationMode) {
-        if (operationMode.equals(STATE_VALUE_OPERATION_MODE_MANUAL)) {
-            getState().getOperationModeState().setValue(STATE_VALUE_OPERATION_MODE_MANUAL);
-        } else {
-            getState().getOperationModeState().setValue(STATE_VALUE_OPERATION_MODE_AUTO);
-        }
+        getState().getOperationModeState()
+                .setValue(STATE_VALUE_OPERATION_MODE_MANUAL.equals(operationMode) ? STATE_VALUE_OPERATION_MODE_MANUAL
+                        : STATE_VALUE_OPERATION_MODE_AUTO);
     }
 
     public Boolean getThermostatActuatorWindowReductionActiveState() {
