@@ -23,7 +23,6 @@ import java.time.format.FormatStyle;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
@@ -57,6 +56,7 @@ import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
+import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
 import org.openhab.binding.innogysmarthome.internal.client.entity.event.BaseEvent;
 import org.openhab.binding.innogysmarthome.internal.client.entity.event.Event;
 import org.openhab.binding.innogysmarthome.internal.client.entity.event.MessageEvent;
@@ -114,8 +114,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     /**
      * Constructs a new {@link InnogyBridgeHandler}.
      *
-     * @param bridge Brigde thing to be used by this handler
-     * @param oAuthFactory Factory class to get OAuth2 servce
+     * @param bridge Bridge thing to be used by this handler
+     * @param oAuthFactory Factory class to get OAuth2 service
      * @param httpClient httpclient instance
      */
     public InnogyBridgeHandler(final Bridge bridge, final OAuthFactory oAuthFactory, final HttpClient httpClient) {
@@ -211,15 +211,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
      * Initializes the client and connects to the innogy SmartHome service via Client API. Based on the provided
      * {@Link Configuration} while constructing {@Link InnogyClient}, the given oauth2 access and refresh tokens are
      * used or - if not yet available - new tokens are fetched from the service using the provided auth code.
-     *
-     * Throws {@link ApiException}s or {@link IOException}s as described in {@link #getOAuth2Tokens()} and
-     * {@link #refreshStatus()}.
-     *
-     * @param handle
-     *
-     * @throws IOException
-     * @throws ApiException
-     * @throws AuthenticationException
      */
     private void startClient() {
         try {
@@ -230,6 +221,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             }
         } catch (AuthenticationException | ApiException | IOException e) {
             if (handleClientException(e)) {
+                // If exception could not be handled properly it's no use to continue so we won't continue start
                 logger.debug("Error initializing innogy SmartHome client.", e);
                 return;
             }
@@ -242,6 +234,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             deviceStructMan.refreshDevices();
         } catch (IOException | ApiException | AuthenticationException e) {
             if (handleClientException(e)) {
+                // If exception could not be handled properly it's no use to continue so we won't continue start
                 logger.debug("Error starting device structure manager.", e);
                 return;
             }
@@ -303,47 +296,40 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     }
 
     private void setBridgeProperties(final Device bridgeDevice) {
-        logger.debug("Setting Bridge Device Properties for Bridge of type '{}' with ID '{}'",
-                bridgeDevice.getConfig().getName(), bridgeDevice.getId());
+        final DeviceConfig config = bridgeDevice.getConfig();
 
+        logger.debug("Setting Bridge Device Properties for Bridge of type '{}' with ID '{}'", config.getName(),
+                bridgeDevice.getId());
         final Map<String, String> properties = editProperties();
-        Optional.ofNullable(bridgeDevice.getManufacturer())
-                .ifPresent(manufacturer -> properties.put(Thing.PROPERTY_VENDOR, manufacturer));
-        Optional.ofNullable(bridgeDevice.getSerialnumber())
-                .ifPresent(serialNumber -> properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber));
-        Optional.ofNullable(bridgeDevice.getId()).ifPresent(id -> properties.put(PROPERTY_ID, id));
-        Optional.ofNullable(bridgeDevice.getConfig().getFirmwareVersion())
-                .ifPresent(firmwareVersion -> properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion));
-        Optional.ofNullable(bridgeDevice.getConfig().getHardwareVersion())
-                .ifPresent(hardwareVersion -> properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareVersion));
-        Optional.ofNullable(bridgeDevice.getConfig().getSoftwareVersion())
-                .ifPresent(softwareVersion -> properties.put(PROPERTY_SOFTWARE_VERSION, softwareVersion));
-        Optional.ofNullable(bridgeDevice.getConfig().getIPAddress())
-                .ifPresent(ipAddress -> properties.put(PROPERTY_IP_ADDRESS, ipAddress));
-        Optional.ofNullable(bridgeDevice.getConfig().getMACAddress())
-                .ifPresent(macAddress -> properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress));
-        Optional.ofNullable(bridgeDevice.getConfig().getRegistrationTime())
-                .ifPresent(registrationTime -> properties.put(PROPERTY_REGISTRATION_TIME,
-                        registrationTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))));
-        Optional.ofNullable(bridgeDevice.getConfig().getConfigurationState())
-                .ifPresent(configurationState -> properties.put(PROPERTY_CONFIGURATION_STATE, configurationState));
-        Optional.ofNullable(bridgeDevice.getType()).ifPresent(shcType -> properties.put(PROPERTY_SHC_TYPE, shcType));
-        Optional.ofNullable(bridgeDevice.getConfig().getTimeZone())
-                .ifPresent(timeZone -> properties.put(PROPERTY_TIME_ZONE, timeZone));
-        Optional.ofNullable(bridgeDevice.getConfig().getProtocolId())
-                .ifPresent(protocolId -> properties.put(PROPERTY_PROTOCOL_ID, protocolId));
-        Optional.ofNullable(bridgeDevice.getConfig().getGeoLocation())
-                .ifPresent(geoLocation -> properties.put(PROPERTY_GEOLOCATION, geoLocation));
-        Optional.ofNullable(bridgeDevice.getConfig().getCurrentUTCOffset()).ifPresent(
-                currentUTCOffset -> properties.put(PROPERTY_CURRENT_UTC_OFFSET, currentUTCOffset.toString()));
-        Optional.ofNullable(bridgeDevice.getConfig().getBackendConnectionMonitored())
-                .ifPresent(backendConnectionMonitored -> properties.put(PROPERTY_BACKEND_CONNECTION_MONITORED,
-                        backendConnectionMonitored.toString()));
-        Optional.ofNullable(bridgeDevice.getConfig().getRFCommFailureNotification())
-                .ifPresent(rfCommFailureNotification -> properties.put(PROPERTY_RFCOM_FAILURE_NOTIFICATION,
-                        rfCommFailureNotification.toString()));
 
+        setPropertyIfPresent(Thing.PROPERTY_VENDOR, bridgeDevice.getManufacturer(), properties);
+        setPropertyIfPresent(Thing.PROPERTY_SERIAL_NUMBER, bridgeDevice.getSerialnumber(), properties);
+        setPropertyIfPresent(PROPERTY_ID, bridgeDevice.getId(), properties);
+        setPropertyIfPresent(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion(), properties);
+        setPropertyIfPresent(Thing.PROPERTY_HARDWARE_VERSION, config.getHardwareVersion(), properties);
+        setPropertyIfPresent(PROPERTY_SOFTWARE_VERSION, config.getSoftwareVersion(), properties);
+        setPropertyIfPresent(PROPERTY_IP_ADDRESS, config.getIPAddress(), properties);
+        setPropertyIfPresent(Thing.PROPERTY_MAC_ADDRESS, config.getMACAddress(), properties);
+        if (config.getRegistrationTime() != null) {
+            properties.put(PROPERTY_REGISTRATION_TIME,
+                    config.getRegistrationTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+        }
+        setPropertyIfPresent(PROPERTY_CONFIGURATION_STATE, config.getConfigurationState(), properties);
+        setPropertyIfPresent(PROPERTY_SHC_TYPE, bridgeDevice.getType(), properties);
+        setPropertyIfPresent(PROPERTY_TIME_ZONE, config.getTimeZone(), properties);
+        setPropertyIfPresent(PROPERTY_PROTOCOL_ID, config.getProtocolId(), properties);
+        setPropertyIfPresent(PROPERTY_GEOLOCATION, config.getGeoLocation(), properties);
+        setPropertyIfPresent(PROPERTY_CURRENT_UTC_OFFSET, config.getCurrentUTCOffset(), properties);
+        setPropertyIfPresent(PROPERTY_BACKEND_CONNECTION_MONITORED, config.getBackendConnectionMonitored(), properties);
+        setPropertyIfPresent(PROPERTY_RFCOM_FAILURE_NOTIFICATION, config.getRFCommFailureNotification(), properties);
         updateProperties(properties);
+    }
+
+    private void setPropertyIfPresent(final String key, final @Nullable Object data,
+            final Map<String, String> properties) {
+        if (data != null) {
+            properties.put(key, data instanceof String ? (String) data : data.toString());
+        }
     }
 
     @Override

@@ -17,7 +17,6 @@ import static org.openhab.binding.innogysmarthome.internal.client.Constants.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,7 @@ import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.binding.innogysmarthome.internal.client.entity.StatusResponse;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.Action;
-import org.openhab.binding.innogysmarthome.internal.client.entity.action.SetStateAction;
+import org.openhab.binding.innogysmarthome.internal.client.entity.action.StateActionSetter;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.CapabilityState;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
@@ -117,9 +116,8 @@ public class InnogyClient {
      */
     public void refreshStatus() throws IOException, ApiException, AuthenticationException {
         logger.debug("Get innogy SmartHome status...");
-        final ContentResponse response = executeGet(API_URL_STATUS);
+        final StatusResponse status = executeGet(API_URL_STATUS, StatusResponse.class);
 
-        final StatusResponse status = gson.fromJson(response.getContentAsString(), StatusResponse.class);
         bridgeDetails = status.gateway;
         configVersion = bridgeDetails.getConfigVersion();
 
@@ -127,16 +125,34 @@ public class InnogyClient {
     }
 
     /**
-     * Executes a HTTP GET request with default headers.
+     * Executes a HTTP GET request with default headers and returns data as object of type T.
      *
      * @param url
+     * @param clazz type of data to return
      * @return
      * @throws IOException
      * @throws AuthenticationException
      * @throws ApiException
      */
-    private ContentResponse executeGet(final String url) throws IOException, AuthenticationException, ApiException {
-        return request(httpClient.newRequest(url).method(HttpMethod.GET));
+    private <T> T executeGet(final String url, final Class<T> clazz)
+            throws IOException, AuthenticationException, ApiException {
+        final ContentResponse response = request(httpClient.newRequest(url).method(HttpMethod.GET));
+
+        return gson.fromJson(response.getContentAsString(), clazz);
+    }
+
+    /**
+     * Executes a HTTP GET request with default headers and returns data as List of type T.
+     *
+     * @param url
+     * @param clazz array type of data to return as list
+     * @throws IOException
+     * @throws AuthenticationException
+     * @throws ApiException
+     */
+    private <T> List<T> executeGetList(final String url, final Class<T[]> clazz)
+            throws IOException, AuthenticationException, ApiException {
+        return executeGetList(url, clazz);
     }
 
     /**
@@ -260,7 +276,7 @@ public class InnogyClient {
      */
     public void setSwitchActuatorState(final String capabilityId, final boolean state)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION, new SetStateAction(capabilityId, Capability.TYPE_SWITCHACTUATOR, state));
+        executePost(API_URL_ACTION, new StateActionSetter(capabilityId, Capability.TYPE_SWITCHACTUATOR, state));
     }
 
     /**
@@ -273,7 +289,7 @@ public class InnogyClient {
      */
     public void setDimmerActuatorState(final String capabilityId, final int dimLevel)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION, new SetStateAction(capabilityId, Capability.TYPE_DIMMERACTUATOR, dimLevel));
+        executePost(API_URL_ACTION, new StateActionSetter(capabilityId, Capability.TYPE_DIMMERACTUATOR, dimLevel));
     }
 
     /**
@@ -287,7 +303,7 @@ public class InnogyClient {
     public void setRollerShutterActuatorState(final String capabilityId, final int rollerShutterLevel)
             throws IOException, ApiException, AuthenticationException {
         executePost(API_URL_ACTION,
-                new SetStateAction(capabilityId, Capability.TYPE_ROLLERSHUTTERACTUATOR, rollerShutterLevel));
+                new StateActionSetter(capabilityId, Capability.TYPE_ROLLERSHUTTERACTUATOR, rollerShutterLevel));
     }
 
     /**
@@ -300,7 +316,7 @@ public class InnogyClient {
      */
     public void setVariableActuatorState(final String capabilityId, final boolean state)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION, new SetStateAction(capabilityId, Capability.TYPE_VARIABLEACTUATOR, state));
+        executePost(API_URL_ACTION, new StateActionSetter(capabilityId, Capability.TYPE_VARIABLEACTUATOR, state));
     }
 
     /**
@@ -314,7 +330,7 @@ public class InnogyClient {
     public void setPointTemperatureState(final String capabilityId, final double pointTemperature)
             throws IOException, ApiException, AuthenticationException {
         executePost(API_URL_ACTION,
-                new SetStateAction(capabilityId, Capability.TYPE_THERMOSTATACTUATOR, pointTemperature));
+                new StateActionSetter(capabilityId, Capability.TYPE_THERMOSTATACTUATOR, pointTemperature));
     }
 
     /**
@@ -328,7 +344,7 @@ public class InnogyClient {
     public void setOperationMode(final String capabilityId, final boolean autoMode)
             throws IOException, ApiException, AuthenticationException {
         executePost(API_URL_ACTION,
-                new SetStateAction(capabilityId, Capability.TYPE_THERMOSTATACTUATOR,
+                new StateActionSetter(capabilityId, Capability.TYPE_THERMOSTATACTUATOR,
                         autoMode ? CapabilityState.STATE_VALUE_OPERATION_MODE_AUTO
                                 : CapabilityState.STATE_VALUE_OPERATION_MODE_MANUAL));
     }
@@ -343,7 +359,7 @@ public class InnogyClient {
      */
     public void setAlarmActuatorState(final String capabilityId, final boolean alarmState)
             throws IOException, ApiException, AuthenticationException {
-        executePost(API_URL_ACTION, new SetStateAction(capabilityId, Capability.TYPE_ALARMACTUATOR, alarmState));
+        executePost(API_URL_ACTION, new StateActionSetter(capabilityId, Capability.TYPE_ALARMACTUATOR, alarmState));
     }
 
     /**
@@ -355,9 +371,7 @@ public class InnogyClient {
      */
     public List<Device> getDevices() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading innogy devices...");
-        final ContentResponse response = executeGet(API_URL_DEVICE);
-
-        return Arrays.asList(gson.fromJson(response.getContentAsString(), Device[].class));
+        return executeGetList(API_URL_DEVICE, Device[].class);
     }
 
     /**
@@ -370,9 +384,7 @@ public class InnogyClient {
      */
     public Device getDeviceById(final String deviceId) throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device with id {}...", deviceId);
-        final ContentResponse response = executeGet(API_URL_DEVICE_ID.replace("{id}", deviceId));
-
-        return gson.fromJson(response.getContentAsString(), Device.class);
+        return executeGet(API_URL_DEVICE_ID.replace("{id}", deviceId), Device.class);
     }
 
     /**
@@ -507,18 +519,16 @@ public class InnogyClient {
         deviceState.setId(deviceId);
         deviceState.setState(state);
 
-        // deviceState.setStateList(deviceStateList);
-
         // MESSAGES
         final List<Message> messageList = getMessages();
-
         final List<Message> ml = new ArrayList<>();
+        final String deviceIdPath = "/device/" + deviceId;
 
         for (final Message m : messageList) {
             logger.trace("Message Type {} with ID {}", m.getType(), m.getId());
             if (m.getDeviceLinkList() != null && !m.getDeviceLinkList().isEmpty()) {
                 for (final String li : m.getDeviceLinkList()) {
-                    if (li.equals("/device/" + deviceId)) {
+                    if (deviceIdPath.equals(li)) {
                         ml.add(m);
                     }
                 }
@@ -574,9 +584,7 @@ public class InnogyClient {
      */
     public List<DeviceState> getDeviceStates() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states...");
-        final ContentResponse response = executeGet(API_URL_DEVICE_STATES);
-
-        return Arrays.asList(gson.fromJson(response.getContentAsString(), DeviceState[].class));
+        return executeGetList(API_URL_DEVICE_STATES, DeviceState[].class);
     }
 
     /**
@@ -590,9 +598,7 @@ public class InnogyClient {
     public State getDeviceStateByDeviceId(final String deviceId)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading device states for device id {}...", deviceId);
-        final ContentResponse response = executeGet(API_URL_DEVICE_ID_STATE.replace("{id}", deviceId));
-
-        return gson.fromJson(response.getContentAsString(), State.class);
+        return executeGet(API_URL_DEVICE_ID_STATE.replace("{id}", deviceId), State.class);
     }
 
     /**
@@ -604,9 +610,7 @@ public class InnogyClient {
      */
     public List<Location> getLocations() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading locations...");
-        final ContentResponse response = executeGet(API_URL_LOCATION);
-
-        return Arrays.asList(gson.fromJson(response.getContentAsString(), Location[].class));
+        return executeGetList(API_URL_LOCATION, Location[].class);
     }
 
     /**
@@ -620,9 +624,7 @@ public class InnogyClient {
     public List<Capability> getCapabilitiesForDevice(final String deviceId)
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capabilities for device {}...", deviceId);
-        final ContentResponse response = executeGet(API_URL_DEVICE_CAPABILITIES.replace("{id}", deviceId));
-
-        return Arrays.asList(gson.fromJson(response.getContentAsString(), Capability[].class));
+        return executeGetList(API_URL_DEVICE_CAPABILITIES.replace("{id}", deviceId), Capability[].class);
     }
 
     /**
@@ -634,9 +636,7 @@ public class InnogyClient {
      */
     public List<Capability> getCapabilities() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capabilities...");
-        final ContentResponse response = executeGet(API_URL_CAPABILITY);
-
-        return Arrays.asList(gson.fromJson(response.getContentAsString(), Capability[].class));
+        return executeGetList(API_URL_CAPABILITY, Capability[].class);
     }
 
     /**
@@ -648,9 +648,7 @@ public class InnogyClient {
      */
     public List<CapabilityState> getCapabilityStates() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading capability states...");
-        final ContentResponse response = executeGet(API_URL_CAPABILITY_STATES);
-
-        return Arrays.asList(gson.fromJson(response.getContentAsString(), CapabilityState[].class));
+        return executeGetList(API_URL_CAPABILITY_STATES, CapabilityState[].class);
     }
 
     /**
@@ -662,9 +660,7 @@ public class InnogyClient {
      */
     public List<Message> getMessages() throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading messages...");
-        final ContentResponse response = executeGet(API_URL_MESSAGE);
-
-        return Arrays.asList(gson.fromJson(response.getContentAsString(), Message[].class));
+        return executeGetList(API_URL_MESSAGE, Message[].class);
     }
 
     /**

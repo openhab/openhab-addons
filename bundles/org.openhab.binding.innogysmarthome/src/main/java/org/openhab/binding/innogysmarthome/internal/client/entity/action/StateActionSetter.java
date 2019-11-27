@@ -19,19 +19,19 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Cap
  *
  * @author Oliver Kuhl - Initial contribution
  */
-public class SetStateAction extends Action {
+public class StateActionSetter extends Action {
 
     private static final String CONSTANT = "Constant";
 
     /**
-     * Constructs a new {@link SetStateAction}.
+     * Constructs a new {@link StateActionSetter}.
      *
      * @param capabilityId String of the 32 character capability id
      * @param capabilityType the type of the {@link Capability}, {@link Capability#TYPE_SWITCHACTUATOR} or
      *            {@link Capability#TYPE_VARIABLEACTUATOR}
      * @param state the new state as boolean (true=on, false=off)
      */
-    public SetStateAction(String capabilityId, String capabilityType, boolean state) {
+    public StateActionSetter(String capabilityId, String capabilityType, boolean state) {
         setType(ACTION_TYPE_SETSTATE);
         setTargetCapabilityById(capabilityId);
         final ActionParams params = new ActionParams();
@@ -47,13 +47,13 @@ public class SetStateAction extends Action {
     }
 
     /**
-     * Constructs a new {@link SetStateAction}.
+     * Constructs a new {@link StateActionSetter}.
      *
      * @param capabilityId String of the 32 character capability id
      * @param capabilityType the type of the {@link Capability}, {@link Capability#TYPE_THERMOSTATACTUATOR}
      * @param newValue the new double value
      */
-    public SetStateAction(String capabilityId, String capabilityType, double newValue) {
+    public StateActionSetter(String capabilityId, String capabilityType, double newValue) {
         setType(ACTION_TYPE_SETSTATE);
         setTargetCapabilityById(capabilityId);
         final ActionParams params = new ActionParams();
@@ -65,13 +65,13 @@ public class SetStateAction extends Action {
     }
 
     /**
-     * Constructs a new {@link SetStateAction}.
+     * Constructs a new {@link StateActionSetter}.
      *
      * @param capabilityId String of the 32 character capability id
      * @param capabilityType the type of the {@link Capability}, {@link Capability#TYPE_DIMMERACTUATOR}
      * @param newValue the new int value
      */
-    public SetStateAction(String capabilityId, String capabilityType, int newValue) {
+    public StateActionSetter(String capabilityId, String capabilityType, int newValue) {
         setType(ACTION_TYPE_SETSTATE);
         setTargetCapabilityById(capabilityId);
         final ActionParams params = new ActionParams();
@@ -86,13 +86,13 @@ public class SetStateAction extends Action {
     }
 
     /**
-     * Constructs a new {@link SetStateAction}.
+     * Constructs a new {@link StateActionSetter}.
      *
      * @param capabilityId String of the 32 character capability id
      * @param capabilityType the type of the {@link Capability}, {@link Capability#TYPE_THERMOSTATACTUATOR}
      * @param newValue the new string value
      */
-    public SetStateAction(String capabilityId, String capabilityType, String newValue) {
+    public StateActionSetter(String capabilityId, String capabilityType, String newValue) {
         setType(ACTION_TYPE_SETSTATE);
         setTargetCapabilityById(capabilityId);
         final ActionParams params = new ActionParams();

@@ -69,7 +69,6 @@ public class InnogyWebSocket {
      */
     public synchronized void start() throws Exception {
         final SslContextFactory sslContextFactory = new SslContextFactory();
-        // sslContextFactory.setTrustAll(true); // The magic
 
         if (client == null || client.isStopped()) {
             client = new WebSocketClient(sslContextFactory);
