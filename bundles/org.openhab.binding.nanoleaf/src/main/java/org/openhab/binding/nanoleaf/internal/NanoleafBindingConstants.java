@@ -82,5 +82,5 @@ public class NanoleafBindingConstants {
     public static final String EFFECT_NAME_STATIC_COLOR = "*Dynamic*";
 
     // Color channels increase/decrease brightness step size
-    public final static int BRIGHTNESS_STEP_SIZE = 5;
+    public static final int BRIGHTNESS_STEP_SIZE = 5;
 }

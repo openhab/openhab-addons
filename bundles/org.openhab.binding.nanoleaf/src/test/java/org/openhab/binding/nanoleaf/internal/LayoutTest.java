@@ -1,6 +1,20 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.nanoleaf.internal;
 
 import com.google.gson.Gson;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.nanoleaf.internal.model.Layout;
@@ -8,10 +22,17 @@ import org.openhab.binding.nanoleaf.internal.model.Layout;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Test for the Layout
+ *
+ * @author Stefan Höhn - Initial contribution
+ */
+
+@NonNullByDefault
 public class LayoutTest {
 
     private final Gson gson = new Gson();
-    String layout1Json;
+    String layout1Json="";
 
     @Before
     public void setup() {
@@ -20,7 +41,7 @@ public class LayoutTest {
 
     @Test
     public void testTheRightLayoutView() {
-        Layout layout = gson.fromJson(layout1Json, Layout.class);
+        @Nullable Layout layout = gson.fromJson(layout1Json, Layout.class);
         String layoutView = layout.getLayoutView();
         assertThat(layoutView,is(equalTo(
                 "            31413                    9162       13276                         \n"+

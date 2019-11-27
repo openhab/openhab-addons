@@ -76,10 +76,10 @@ import com.google.gson.JsonSyntaxException;
 public class NanoleafControllerHandler extends BaseBridgeHandler {
 
     // Pairing interval in seconds
-    private final static int PAIRING_INTERVAL = 25;
+    private static final int PAIRING_INTERVAL = 25;
 
     // Panel discovery interval in seconds
-    private final static int PANEL_DISCOVERY_INTERVAL = 30;
+    private static final int PANEL_DISCOVERY_INTERVAL = 30;
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafControllerHandler.class);
     private HttpClient httpClient;

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OpenAPIUtils {
 
-    private final static Logger logger = LoggerFactory.getLogger(OpenAPIUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenAPIUtils.class);
 
     // Regular expression for firmware version
     private static final Pattern FIRMWARE_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
@@ -75,7 +75,7 @@ public class OpenAPIUtils {
         try {
             requestURI = new URI(HttpScheme.HTTP.asString(), null, address, port, path, query, null);
         } catch (URISyntaxException use) {
-            logger.warn("URI could not be parsed with path {}", path);
+            LOGGER.warn("URI could not be parsed with path {}", path);
             throw new NanoleafException("Wrong URI format for API request");
         }
         return requestURI;
@@ -84,12 +84,12 @@ public class OpenAPIUtils {
     public static ContentResponse sendOpenAPIRequest(Request request)
             throws NanoleafException, NanoleafUnauthorizedException {
         try {
-            logger.trace("Sending Request {} {}",request.getURI(), request.getQuery() == null ? "no query parameters": request.getQuery());
+            LOGGER.trace("Sending Request {} {}",request.getURI(), request.getQuery() == null ? "no query parameters": request.getQuery());
             ContentResponse openAPIResponse = request.send();
-            if (logger.isTraceEnabled()) {
-                logger.trace("API response from Nanoleaf controller: {}", openAPIResponse.getContentAsString());
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("API response from Nanoleaf controller: {}", openAPIResponse.getContentAsString());
             }
-            logger.debug("API response code: {}", openAPIResponse.getStatus());
+            LOGGER.debug("API response code: {}", openAPIResponse.getStatus());
             int responseStatus = openAPIResponse.getStatus();
             if (responseStatus == HttpStatus.OK_200 || responseStatus == HttpStatus.NO_CONTENT_204) {
                 return openAPIResponse;
@@ -105,7 +105,7 @@ public class OpenAPIUtils {
             if (clientException.getCause() instanceof HttpResponseException) {
                 if (((HttpResponseException) clientException.getCause()).getResponse()
                         .getStatus() == HttpStatus.UNAUTHORIZED_401) {
-                    logger.warn("OpenAPI request unauthorized. Invalid authorization token.");
+                    LOGGER.warn("OpenAPI request unauthorized. Invalid authorization token.");
                     throw new NanoleafUnauthorizedException("Invalid authorization token");
                 }
             }

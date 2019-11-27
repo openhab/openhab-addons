@@ -63,7 +63,6 @@ public class Layout {
      * @return a String containing the layout
      */
     public String getLayoutView() {
-
         if (positionData.isEmpty()) return "";
 
         String view ="";

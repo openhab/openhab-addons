@@ -1,12 +1,35 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.nanoleaf.internal;
 
 import com.google.gson.Gson;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Test;
+import org.openhab.binding.nanoleaf.internal.model.TouchEvent;
 import org.openhab.binding.nanoleaf.internal.model.TouchEvents;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Test for the TouchEvents
+ *
+ * @author Stefan Höhn - Initial contribution
+ */
+
+@NonNullByDefault
 public class TouchTest {
 
     private final Gson gson = new Gson();
@@ -14,10 +37,11 @@ public class TouchTest {
     @Test
     public void testTheRightLayoutView() {
         String json = "{\"events\":[{\"panelId\":48111,\"gesture\":1}]}";
-        final Gson gson = new Gson();
-        TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
+        @Nullable TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
+        assertThat(touchEvents.getEvents().size(),greaterThan(0));
         assertThat(touchEvents.getEvents().size(), is(1));
-        assertThat(touchEvents.getEvents().get(0).getPanelId(),is("48111"));
-        assertThat(touchEvents.getEvents().get(0).getGesture(),is(1));
+        @Nullable TouchEvent touchEvent = touchEvents.getEvents().get(0);
+        assertThat(touchEvent.getPanelId(),is("48111"));
+        assertThat(touchEvent.getGesture(),is(1));
     }
 }

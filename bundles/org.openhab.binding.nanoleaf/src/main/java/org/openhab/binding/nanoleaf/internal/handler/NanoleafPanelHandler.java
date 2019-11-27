@@ -61,8 +61,8 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class NanoleafPanelHandler extends BaseThingHandler {
 
-    private final static PercentType MIN_PANEL_BRIGHTNESS = PercentType.ZERO;
-    private final static PercentType MAX_PANEL_BRIGHTNESS = PercentType.HUNDRED;
+    private static final PercentType MIN_PANEL_BRIGHTNESS = PercentType.ZERO;
+    private static final PercentType MAX_PANEL_BRIGHTNESS = PercentType.HUNDRED;
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafPanelHandler.class);
 
@@ -240,7 +240,6 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     }
 
     public void updatePanelColorChannel() {
-
         @Nullable HSBType panelColor = getPanelColor();
         if (panelColor!=null)
             updateState(CHANNEL_PANEL_COLOR, panelColor);
