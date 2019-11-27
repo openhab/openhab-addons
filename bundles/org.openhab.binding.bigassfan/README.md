@@ -113,7 +113,7 @@ The following item definitions would be used to control the light.
 
 ```java
 Switch PorchFanLightPower { channel="bigassfan:fan:20F85EDAA56A:light-power" }
-Dimmer PorchFanLightLeve { channel="bigassfan:fan:20F85EDAA56A:light-level" }
+Dimmer PorchFanLightLevel { channel="bigassfan:fan:20F85EDAA56A:light-level" }
 Switch PorchFanLightAuto { channel="bigassfan:fan:20F85EDAA56A:light-auto" }
 Switch PorchFanLightSmarter { channel="bigassfan:fan:20F85EDAA56A:light-smarter" }
 Dimmer PorchFanLightLevelMin { channel="bigassfan:fan:20F85EDAA56A:light-level-min" }
