@@ -3,10 +3,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Ambient Weather Bridge -->
+	<!-- Ambient Weather Account -->
 	<bridge-type id="bridge">
-		<label>Ambient Weather Bridge</label>
-		<description>The Ambient Weather bridge represents a connection to the Ambient Weasther service</description>
+		<label>Ambient Weather Account</label>
+		<description>Represents an account at Ambient Weather (ambientweather.net)</description>
 		<config-description-ref uri="thing-type:ambientweather:bridge" />
 	</bridge-type>
 </thing:thing-descriptions>
