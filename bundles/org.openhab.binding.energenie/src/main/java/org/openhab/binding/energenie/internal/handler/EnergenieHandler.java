@@ -82,7 +82,6 @@ public class EnergenieHandler extends BaseThingHandler {
                 input = socket.getInputStream();
                 authorize();
                 socket.close();
-
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE);
                 logger.debug("Couldn't get I/O for the connection to: {}:{}.", host, TCP_PORT);
@@ -134,7 +133,6 @@ public class EnergenieHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         Configuration config = getConfig();
 
         if ((config.get("host") != null) && (config.get("password") != null)) {
@@ -196,10 +194,8 @@ public class EnergenieHandler extends BaseThingHandler {
 
         try {
             if (output != null && input != null) {
-
                 output.write(message);
                 logger.trace("Start Condition '{}' send to EG", message);
-
                 input.read(response);
                 for (int i = 0; i < 4; i++) {
                     task[i] = response[i];

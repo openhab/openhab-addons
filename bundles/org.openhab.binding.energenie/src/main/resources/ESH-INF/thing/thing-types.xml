@@ -4,171 +4,171 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="pm2lan">
-        <label>Gembird energenie EG-PM2-LAN</label>
-        <description>Gembird energenie programmable power strip with LAN interface</description>
-        
-        <channels>
-            <channel id="socket1" typeId="socket1"/>
-            <channel id="socket2" typeId="socket2"/>
-            <channel id="socket3" typeId="socket3"/>
-            <channel id="socket4" typeId="socket4"/>
-        </channels>
+	<thing-type id="pm2lan">
+		<label>Gembird energenie EG-PM2-LAN</label>
+		<description>Gembird energenie programmable power strip with LAN interface</description>
 
-        <config-description>
-            <parameter name="host" type="text" required="true">
-                <label>IP-Address</label>
-                <description>The IP address of this device</description>
-            </parameter>
-            <parameter name="password" type="text" required="true">
-                <label>Password</label>
-                <description>The password of this device</description>
-                <default>1</default>
-            </parameter>
-        </config-description>
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
 
-    </thing-type>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>IP-Address</label>
+				<description>The IP address of this device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password of this device</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
 
-    <thing-type id="pmslan">
-        <label>Gembird energenie EG-PMS-LAN</label>
-        <description>Gembird energenie programmable power strip with LAN interface</description>
-        
-        <channels>
-            <channel id="socket1" typeId="socket1"/>
-            <channel id="socket2" typeId="socket2"/>
-            <channel id="socket3" typeId="socket3"/>
-            <channel id="socket4" typeId="socket4"/>
-        </channels>
+	</thing-type>
 
-        <config-description>
-            <parameter name="host" type="text" required="true">
-                <label>IP-Address</label>
-                <description>The IP address of this device</description>
-            </parameter>
-            <parameter name="password" type="text" required="true">
-                <label>Password</label>
-                <description>The password of this device</description>
-                <default>1</default>
-            </parameter>
-        </config-description>
+	<thing-type id="pmslan">
+		<label>Gembird energenie EG-PMS-LAN</label>
+		<description>Gembird energenie programmable power strip with LAN interface</description>
 
-    </thing-type>
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
 
-    <thing-type id="pms2lan">
-        <label>Gembird energenie EG-PMS2-LAN</label>
-        <description>Gembird energenie programmable power strip with LAN interface</description>
-        
-        <channels>
-            <channel id="socket1" typeId="socket1"/>
-            <channel id="socket2" typeId="socket2"/>
-            <channel id="socket3" typeId="socket3"/>
-            <channel id="socket4" typeId="socket4"/>
-        </channels>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>IP-Address</label>
+				<description>The IP address of this device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password of this device</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
 
-        <config-description>
-            <parameter name="host" type="text" required="true">
-                <label>IP-Address</label>
-                <description>The IP address of this device</description>
-            </parameter>
-            <parameter name="password" type="text" required="true">
-                <label>Password</label>
-                <description>The password of this device</description>
-                <default>1</default>
-            </parameter>
-        </config-description>
+	</thing-type>
 
-    </thing-type>
+	<thing-type id="pms2lan">
+		<label>Gembird energenie EG-PMS2-LAN</label>
+		<description>Gembird energenie programmable power strip with LAN interface</description>
 
-    <thing-type id="pmswlan">
-        <label>Gembird energenie EG-PMS-WLAN</label>
-        <description>Gembird energenie programmable power strip with WLAN interface</description>
-        
-        <channels>
-            <channel id="socket1" typeId="socket1"/>
-            <channel id="socket2" typeId="socket2"/>
-            <channel id="socket3" typeId="socket3"/>
-            <channel id="socket4" typeId="socket4"/>
-        </channels>
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
 
-        <config-description>
-            <parameter name="host" type="text" required="true">
-                <label>IP-Address</label>
-                <description>The IP address of this device</description>
-            </parameter>
-            <parameter name="password" type="text" required="true">
-                <label>Password</label>
-                <description>The password of this device</description>
-                <default>1</default>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>IP-Address</label>
+				<description>The IP address of this device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password of this device</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
 
-    </thing-type>
-    <thing-type id="pwmlan">
-        <label>Gembird energenie EGM-PWM-LAN</label>
-        <description>Gembird energenie energy meter with LAN interface</description>
+	</thing-type>
 
-        <channels>
-            <channel id="voltage" typeId="voltage"/>
-            <channel id="current" typeId="current"/>
-            <channel id="power" typeId="power"/>
-            <channel id="energy" typeId="energy"/>
-        </channels>
+	<thing-type id="pmswlan">
+		<label>Gembird energenie EG-PMS-WLAN</label>
+		<description>Gembird energenie programmable power strip with WLAN interface</description>
 
-        <config-description>
-            <parameter name="host" type="text" required="true">
-                <label>IP address</label>
-                <description>The IP address of this device</description>
-            </parameter>
-        </config-description>
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
 
-    </thing-type>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>IP-Address</label>
+				<description>The IP address of this device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password of this device</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
 
-    <channel-type id="socket1">
-        <item-type>Switch</item-type>
-        <label>Socket 1 state</label>
-        <description>Channel representing the state of socket 1</description>
-    </channel-type>
+	</thing-type>
+	<thing-type id="pwmlan">
+		<label>Gembird energenie EGM-PWM-LAN</label>
+		<description>Gembird energenie energy meter with LAN interface</description>
 
-    <channel-type id="socket2">
-        <item-type>Switch</item-type>
-        <label>Socket 2 state</label>
-        <description>Channel representing the state of socket 2</description>
-    </channel-type>
+		<channels>
+			<channel id="voltage" typeId="voltage" />
+			<channel id="current" typeId="current" />
+			<channel id="power" typeId="power" />
+			<channel id="energy" typeId="energy" />
+		</channels>
 
-    <channel-type id="socket3">
-        <item-type>Switch</item-type>
-        <label>Socket 3 state</label>
-        <description>Channel representing the state of socket 3</description>
-    </channel-type>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>IP address</label>
+				<description>The IP address of this device</description>
+			</parameter>
+		</config-description>
 
-    <channel-type id="socket4">
-        <item-type>Switch</item-type>
-        <label>Socket 4 state</label>
-        <description>Channel representing the state of socket 4</description>
-    </channel-type>
+	</thing-type>
 
-    <channel-type id="voltage">
-        <item-type>Number</item-type>
-        <label>Voltage </label>
-        <description>Channel representing the voltage</description>
-    </channel-type>
+	<channel-type id="socket1">
+		<item-type>Switch</item-type>
+		<label>Socket 1 state</label>
+		<description>Channel representing the state of socket 1</description>
+	</channel-type>
 
-    <channel-type id="current">
-        <item-type>Number</item-type>
-        <label>Current </label>
-        <description>Channel representing the current</description>
-    </channel-type>
+	<channel-type id="socket2">
+		<item-type>Switch</item-type>
+		<label>Socket 2 state</label>
+		<description>Channel representing the state of socket 2</description>
+	</channel-type>
 
-    <channel-type id="power">
-        <item-type>Number</item-type>
-        <label>Power </label>
-        <description>Channel representing the power consumption</description>
-    </channel-type>
+	<channel-type id="socket3">
+		<item-type>Switch</item-type>
+		<label>Socket 3 state</label>
+		<description>Channel representing the state of socket 3</description>
+	</channel-type>
 
-    <channel-type id="energy">
-        <item-type>Number</item-type>
-        <label>Energy </label>
-        <description>Channel representing the energy consumption</description>
-    </channel-type>
+	<channel-type id="socket4">
+		<item-type>Switch</item-type>
+		<label>Socket 4 state</label>
+		<description>Channel representing the state of socket 4</description>
+	</channel-type>
+
+	<channel-type id="voltage">
+		<item-type>Number</item-type>
+		<label>Voltage </label>
+		<description>Channel representing the voltage</description>
+	</channel-type>
+
+	<channel-type id="current">
+		<item-type>Number</item-type>
+		<label>Current </label>
+		<description>Channel representing the current</description>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Number</item-type>
+		<label>Power </label>
+		<description>Channel representing the power consumption</description>
+	</channel-type>
+
+	<channel-type id="energy">
+		<item-type>Number</item-type>
+		<label>Energy </label>
+		<description>Channel representing the energy consumption</description>
+	</channel-type>
 
 </thing:thing-descriptions>

@@ -78,7 +78,6 @@ public class EnergeniePWMHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         Configuration config = getConfig();
 
         if ((config.get("host") != null) && (config.get("password") != null)) {
@@ -182,7 +181,7 @@ public class EnergeniePWMHandler extends BaseThingHandler {
             updateState(channel, valueState);
 
         } else {
-            logger.trace("searchstring %s not found", stateResponseSearch);
+            logger.trace("searchstring '{} not found", stateResponseSearch);
         }
 
     }

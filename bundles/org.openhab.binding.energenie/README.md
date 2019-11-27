@@ -48,6 +48,7 @@ PWM-LAN devices support the following channels
 ## Full Example
 
 Things
+
 ```
 Thing energenie:pm2lan:pm2lan [ host="xxx.xxx.xxx.xxx", password="your password" ]
 Thing energenie:pmslan:pmslan [ host="xxx.xxx.xxx.xxx", password="your password" ]
@@ -56,6 +57,7 @@ Thing energenie:pmswlan:pmswlan [ host="xxx.xxx.xxx.xxx", password="your passwor
 Thing energenie:pwmlan:pwmlan [ host="xxx.xxx.xxx.xxx", password="your password" ]
 ```
 Items
+
 ```
 //Power extenders
 Switch Socket1  { channel="energenie:pm2lan:pm2lan:socket1" }
@@ -71,6 +73,7 @@ Number Energy { channel="energenie:pwmlan:pwmlan:energy" }
 ```
 
 Sitemap
+
 ```
 sitemap energenie label="Energenie Devices"
 {
@@ -89,4 +92,4 @@ sitemap energenie label="Energenie Devices"
        }
 }
 ```
-      
+       
