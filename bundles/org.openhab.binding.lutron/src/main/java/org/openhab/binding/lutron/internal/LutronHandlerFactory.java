@@ -209,7 +209,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Register a discovery service for an IP bridge handler.
      *
-     * @param thingHandler bridge handler for which to register the discovery service
+     * @param bridgeHandler bridge handler for which to register the discovery service
      */
     private synchronized void registerDiscoveryService(IPBridgeHandler bridgeHandler) {
         logger.debug("Registering discovery service.");
