@@ -13,88 +13,88 @@
 
 package org.openhab.binding.touchwand.internal.data;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link TouchWandUnitData} implements unit property.
  *
  * @author Roie Geron - Initial contribution
  */
-@NonNullByDefault
-public class TouchWandUnitData {
+public abstract class TouchWandUnitData {
 
+    @SerializedName("id")
+    @Expose
+    private Integer id;
+    @SerializedName("name")
+    @Expose
     private String name;
+    @SerializedName("type")
+    @Expose
     private String type;
-    private String nodeId;
-    private int epId;
+    @SerializedName("nodeId")
+    @Expose
+    private Integer nodeId;
+    @SerializedName("epId")
+    @Expose
+    private Integer epId;
+    @SerializedName("icon")
+    @Expose
+    private Object icon;
+    @SerializedName("connectivity")
+    @Expose
     private String connectivity;
+    @SerializedName("status")
+    @Expose
     private String status;
-    private int errorCode;
-    private String idData;
-    private String currStatus;
+    @SerializedName("isFavorite")
+    @Expose
+    private Object isFavorite;
+    @SerializedName("errorCode")
+    @Expose
+    private Object errorCode;
+    @SerializedName("hasPowerMeter")
+    @Expose
+    private Object hasPowerMeter;
+    @SerializedName("hasBattery")
+    @Expose
+    private Object hasBattery;
+    @SerializedName("config")
+    @Expose
+    private Object config;
+    @SerializedName("association")
+    @Expose
+    private Object association;
+    @SerializedName("customOp")
+    @Expose
+    private Object customOp;
+    @SerializedName("isHidden")
+    @Expose
+    private Object isHidden;
+    @SerializedName("createdAt")
+    @Expose
+    private String createdAt;
+    @SerializedName("updatedAt")
+    @Expose
+    private String updatedAt;
+    @SerializedName("roomId")
+    @Expose
+    private Object roomId;
 
-    public TouchWandUnitData(String id, String name) {
-        nodeId = id;
-        type = "";
-        epId = 0;
-        connectivity = "";
-        status = "";
-        errorCode = 0;
-        idData = "";
-        currStatus = "";
-        this.name = name;
+    public Integer getId() {
+        return id;
     }
 
-    public String getUnitId() {
-        return nodeId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getUnitName() {
+    public String getName() {
         return name;
     }
 
-    public String getConnectivity() {
-        return connectivity;
-    }
-
-    public String getIdData() {
-        return idData;
-    }
-
-    public void setIdData(String idData) {
-        this.idData = idData;
-    }
-
-    public int getEpId() {
-        return epId;
-    }
-
-    public void setEpId(int epId) {
-        this.epId = epId;
-    }
-
-    public int getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public String getCurrStatus() {
-        return currStatus;
-    }
-
-    public void setCurrStatus(String currStatus) {
-        this.currStatus = currStatus;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getType() {
@@ -105,4 +105,133 @@ public class TouchWandUnitData {
         this.type = type;
     }
 
+    public Integer getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(Integer nodeId) {
+        this.nodeId = nodeId;
+    }
+
+    public Integer getEpId() {
+        return epId;
+    }
+
+    public void setEpId(Integer epId) {
+        this.epId = epId;
+    }
+
+    public Object getIcon() {
+        return icon;
+    }
+
+    public void setIcon(Object icon) {
+        this.icon = icon;
+    }
+
+    public String getConnectivity() {
+        return connectivity;
+    }
+
+    public void setConnectivity(String connectivity) {
+        this.connectivity = connectivity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Object getIsFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(Object isFavorite) {
+        this.isFavorite = isFavorite;
+    }
+
+    public Object getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(Object errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public Object getHasPowerMeter() {
+        return hasPowerMeter;
+    }
+
+    public void setHasPowerMeter(Object hasPowerMeter) {
+        this.hasPowerMeter = hasPowerMeter;
+    }
+
+    public Object getHasBattery() {
+        return hasBattery;
+    }
+
+    public void setHasBattery(Object hasBattery) {
+        this.hasBattery = hasBattery;
+    }
+
+    public Object getConfig() {
+        return config;
+    }
+
+    public void setConfig(Object config) {
+        this.config = config;
+    }
+
+    public Object getAssociation() {
+        return association;
+    }
+
+    public void setAssociation(Object association) {
+        this.association = association;
+    }
+
+    public Object getCustomOp() {
+        return customOp;
+    }
+
+    public void setCustomOp(Object customOp) {
+        this.customOp = customOp;
+    }
+
+    public Object getIsHidden() {
+        return isHidden;
+    }
+
+    public void setIsHidden(Object isHidden) {
+        this.isHidden = isHidden;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Object getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(Object roomId) {
+        this.roomId = roomId;
+    }
+
+    public abstract Integer getCurrStatus();
 }

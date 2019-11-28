@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TouchWandRestClient} is responsible for handling low level commands units Touchwand WonderFull hub
+ * The {@link TouchWandRestClient} is responsible for handling low level commands units TouchWand WonderFull hub
  * REST API interface
  *
  * @author Roie Geron - Initial contribution
@@ -100,7 +100,7 @@ public class TouchWandRestClient {
 
         String command = buildUrl(CMD_LOGIN) + "user=" + user + "&" + "psw=" + pass;
         String response = sendCommand(command, METHOD_GET, null);
-        if (response != null) {
+        if (response != null && !response.equals("Unauthorized")) {
             return true;
         }
         return false;
@@ -167,7 +167,7 @@ public class TouchWandRestClient {
         return url;
     }
 
-    private String sendCommand(String command, HttpMethod method, String content) {
+    private synchronized String sendCommand(String command, HttpMethod method, String content) {
         ContentResponse response;
         Request request;
 

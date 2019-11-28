@@ -38,7 +38,7 @@
 		</parameter>
 		<parameter name="statusrefresh" type="integer">
 			<required>false</required>
-			<default>5</default>
+			<default>120</default>
 			<description>unit status refresh interval (seconds)</description>
 			<label>Refresh</label>
 			<advanced>true</advanced>

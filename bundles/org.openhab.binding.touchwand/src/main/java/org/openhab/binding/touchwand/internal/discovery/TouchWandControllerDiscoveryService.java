@@ -23,6 +23,7 @@ import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -106,6 +107,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
         socketReceiveThread.start();
     }
 
+    @NonNullByDefault
     private class ReceiverThread extends Thread {
 
         private static final int BUFFER_LENGTH = 256;

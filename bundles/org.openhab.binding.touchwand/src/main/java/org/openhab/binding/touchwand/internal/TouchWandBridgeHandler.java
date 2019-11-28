@@ -18,18 +18,31 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.discovery.TouchWandUnitDiscoveryService;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,22 +53,28 @@ import org.slf4j.LoggerFactory;
  * @author Roie Geron - Initial contribution
  */
 
-public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
+public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements TouchWandWebSocketListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(TouchWandBridgeHandler.class);
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private Configuration config;
     private String host;
     private String port;
     private int statusRefreshRate;
     private boolean addSecondaryUnits;
+    private BundleContext bundleContext;
+    private TouchWandWebSockets touchWandWebSockets;
+    private Map<String, TouchWandUnitUpdateListener> unitUpdateListeners = new ConcurrentHashMap<>();
 
     public TouchWandRestClient touchWandClient;
 
-    public TouchWandBridgeHandler(Bridge bridge, HttpClient httpClient) {
+    public TouchWandBridgeHandler(Bridge bridge, HttpClient httpClient, BundleContext bundleContext) {
         super(bridge);
         touchWandClient = new TouchWandRestClient(httpClient);
+        this.bundleContext = bundleContext;
+        touchWandWebSockets = null;
     }
 
     @Override
@@ -86,12 +105,16 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
             thingReachable = touchWandClient.connect(username, password, host, port);
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
+                registerItemDiscoveryService(this);
+                touchWandWebSockets = new TouchWandWebSockets(host);
+                touchWandWebSockets.registerListener(this);
+                touchWandWebSockets.connect();
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
 
-        logger.debug("Finished initializing!");
+        logger.trace("Finished initializing!");
     }
 
     @Override
@@ -109,6 +132,68 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler {
 
     public int getStatusRefreshTime() {
         return statusRefreshRate;
+    }
+
+    private synchronized void registerItemDiscoveryService(TouchWandBridgeHandler bridgeHandler) {
+        TouchWandUnitDiscoveryService discoveryService = new TouchWandUnitDiscoveryService(bridgeHandler);
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    @Override
+    public void dispose() {
+        logger.trace("Handler disposed");
+        ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(this.getThing().getUID());
+        if (serviceReg != null) {
+            // remove discovery service
+            TouchWandUnitDiscoveryService service = (TouchWandUnitDiscoveryService) bundleContext
+                    .getService(serviceReg.getReference());
+            serviceReg.unregister();
+            if (service != null) {
+                service.deactivate();
+            }
+        }
+
+        if (touchWandWebSockets != null) {
+            touchWandWebSockets.unregisterListener(this);
+            touchWandWebSockets.dispose();
+        }
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+
+    }
+
+    public synchronized boolean registerUpdateListener(TouchWandUnitUpdateListener listener) {
+        boolean result = false;
+        logger.warn("Adding Status update listener for device {}", listener.getId());
+        if (!unitUpdateListeners.containsKey(listener.getId())) {
+            unitUpdateListeners.put(listener.getId(), listener);
+            result = true;
+
+        }
+        return result;
+    }
+
+    public synchronized boolean unregisterUpdateListener(TouchWandUnitUpdateListener listener) {
+        logger.warn("Remove Status update listener for device {}", listener.getId());
+        unitUpdateListeners.remove(listener.getId());
+        return true;
+    }
+
+    @Override
+    public void onDataReceived(TouchWandUnitData unitData) {
+        logger.debug("onDataReceived TouchWandUnitData :{}", unitData.getName());
+        if (unitUpdateListeners.containsKey(unitData.getId().toString())) {
+            TouchWandUnitUpdateListener updateListener = unitUpdateListeners.get(unitData.getId().toString());
+            updateListener.onItemStatusUpdate(unitData);
+        }
     }
 
 }
