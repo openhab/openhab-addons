@@ -17,7 +17,6 @@ import static org.openhab.binding.energenie.internal.EnergenieBindingConstants.*
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -26,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -35,6 +33,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.energenie.internal.config.EnergenieConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,25 +48,21 @@ public class EnergenieHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EnergenieHandler.class);
 
-    private String protocol = "EG_PROTO_V20";
+    private String egprotocol = "EG_PROTO_V20";
     private String host = "";
     private String password = "";
+    private int refreshInterval;
 
-    @Nullable
-    Socket socket = null;
-    @Nullable
-    private OutputStream output = null;
-    @Nullable
-    private InputStream input = null;
+    private @Nullable EnergenieConfiguration config;
+
+    private @Nullable Socket socket = null;
+    private @Nullable OutputStream output = null;
+    private @Nullable InputStream input = null;
 
     private byte[] key = new byte[KEY_LEN];
     private byte[] task = new byte[TASK_LEN];
     private byte[] solution = new byte[SOLUTION_LEN];
 
-    /**
-     * The default refresh interval in Seconds.
-     */
-    private int DEFAULT_REFRESH_INTERVAL = 60;
     @Nullable
     private ScheduledFuture<?> refreshJob;
     private Runnable refreshRunnable = new Runnable() {
@@ -89,8 +84,9 @@ public class EnergenieHandler extends BaseThingHandler {
         }
     };
 
-    public EnergenieHandler(Thing thing) {
+    public EnergenieHandler(Thing thing, String protocol) {
         super(thing);
+        egprotocol = protocol;
     }
 
     @Override
@@ -101,16 +97,16 @@ public class EnergenieHandler extends BaseThingHandler {
             byte[] ctrl = { DONT_SWITCH, DONT_SWITCH, DONT_SWITCH, DONT_SWITCH };
             switch (channelUID.getId()) {
                 case SOCKET_1:
-                    ctrl[0] = command.equals(OnOffType.ON) ? SWITCH_ON : SWITCH_OFF;
+                    ctrl[0] = OnOffType.ON.equals(command) ? SWITCH_ON : SWITCH_OFF;
                     break;
                 case SOCKET_2:
-                    ctrl[1] = command.equals(OnOffType.ON) ? SWITCH_ON : SWITCH_OFF;
+                    ctrl[1] = OnOffType.ON.equals(command) ? SWITCH_ON : SWITCH_OFF;
                     break;
                 case SOCKET_3:
-                    ctrl[2] = command.equals(OnOffType.ON) ? SWITCH_ON : SWITCH_OFF;
+                    ctrl[2] = OnOffType.ON.equals(command) ? SWITCH_ON : SWITCH_OFF;
                     break;
                 case SOCKET_4:
-                    ctrl[3] = command.equals(OnOffType.ON) ? SWITCH_ON : SWITCH_OFF;
+                    ctrl[3] = OnOffType.ON.equals(command) ? SWITCH_ON : SWITCH_OFF;
                     break;
             }
             String ctrlString = getByteString(ctrl);
@@ -124,6 +120,7 @@ public class EnergenieHandler extends BaseThingHandler {
                 authorize();
                 byte[] controlmessage = encryptControls(ctrl);
                 output.write(controlmessage);
+                socket.close();
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE);
                 logger.debug("Couldn't get I/O for the connection to: {}:{}.", host, TCP_PORT);
@@ -133,20 +130,16 @@ public class EnergenieHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Configuration config = getConfig();
+        EnergenieConfiguration config = getConfigAs(EnergenieConfiguration.class);
 
-        if ((config.get("host") != null) && (config.get("password") != null)) {
-            host = (String) config.get("host");
-            password = (String) config.get("password");
+        this.config = config;
+
+        if (config.host != null && config.password != null) {
+            host = config.host;
+            password = config.password;
+            refreshInterval = config.DEFAULT_REFRESH_INTERVAL;
             key = getKey();
-            logger.debug("Initializing EnergenieHandler for Host '{}'", host);
-            if (getThing().getThingTypeUID().getId().equals("pmslan")) {
-                protocol = "EG_PROTO_V20";
-            } else if (getThing().getThingTypeUID().getId().equals("pmswlan")) {
-                protocol = "EG_PROTO_WLAN";
-            } else {
-                protocol = "EG_PROTO_V21";
-            }
+            logger.debug("Initializing EnergenieHandler for Host '{}'", config.host);
 
             try {
                 socket = new Socket(host, TCP_PORT);
@@ -235,7 +228,6 @@ public class EnergenieHandler extends BaseThingHandler {
             passwordString = passwordString + " ";
         }
         byte[] key = passwordString.getBytes();
-        String ts = getByteString(key);
         return key;
     }
 
@@ -253,8 +245,6 @@ public class EnergenieHandler extends BaseThingHandler {
         for (int i = 0; i < 4; i++) {
             uIntTask[i] = Byte.toUnsignedInt(task[i]);
         }
-
-        int test = (((uIntTask[0] ^ key[2]) * key[0]) ^ (key[6] | (key[4] << 8)) ^ uIntTask[2]);
 
         int solutionLoword = (((uIntTask[0] ^ key[2]) * key[0]) ^ (key[6] | (key[4] << 8)) ^ uIntTask[2]);
 
@@ -296,7 +286,7 @@ public class EnergenieHandler extends BaseThingHandler {
         String statusOn = STATE_ON;
         String statusOff = STATE_OFF;
         byte stat = status[0];
-        switch (protocol) {
+        switch (egprotocol) {
             case "EG_PROTO_V20":
                 statusOn = STATE_ON;
                 statusOff = STATE_OFF;
@@ -328,12 +318,7 @@ public class EnergenieHandler extends BaseThingHandler {
                     break;
             }
             stat = status[i];
-
-            StringBuilder sbStatus = new StringBuilder();
-            sbStatus.append(String.format("%02x", stat));
-            String stringStatus = sbStatus.toString();
-            stringStatus = "0x" + stringStatus;
-
+            String stringStatus = String.format("0x%02x", stat);
             if (stringStatus.equals(statusOn)) {
                 updateState(socket, OnOffType.ON);
             } else if (stringStatus.equals(statusOff)) {
@@ -345,12 +330,6 @@ public class EnergenieHandler extends BaseThingHandler {
 
     private synchronized void onUpdate() {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Configuration config = getThing().getConfiguration();
-            int refreshInterval = DEFAULT_REFRESH_INTERVAL;
-            Object refreshConfig = config.get("refresh");
-            if (refreshConfig != null) {
-                refreshInterval = ((BigDecimal) refreshConfig).intValue();
-            }
             refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 5, refreshInterval, TimeUnit.SECONDS);
         }
     }

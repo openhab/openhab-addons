@@ -15,15 +15,14 @@ package org.openhab.binding.energenie.internal.handler;
 import static org.openhab.binding.energenie.internal.EnergenieBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -33,6 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.energenie.internal.config.EnergenieConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,25 +47,16 @@ public class EnergeniePWMHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EnergeniePWMHandler.class);
 
+    private static final int HTTP_TIMEOUT_MILLISECONDS = 6000;
+
+    private @Nullable EnergenieConfiguration config;
+
     private String host = "";
     private String password = "";
+    private int refreshInterval;
 
-    /** the timeout to use for connecting to a given host (defaults to 5000 milliseconds) */
-    private int timeout = 6000;
-
-    /**
-     * The default refresh interval in Seconds.
-     */
-    private int DEFAULT_REFRESH_INTERVAL = 60;
     @Nullable
     private ScheduledFuture<?> refreshJob;
-    private Runnable refreshRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            getState();
-        }
-    };
 
     public EnergeniePWMHandler(Thing thing) {
         super(thing);
@@ -78,11 +69,14 @@ public class EnergeniePWMHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Configuration config = getConfig();
+        EnergenieConfiguration config = getConfigAs(EnergenieConfiguration.class);
 
-        if ((config.get("host") != null) && (config.get("password") != null)) {
-            host = (String) config.get("host");
-            password = (String) config.get("password");
+        this.config = config;
+
+        if (config.host != null && config.password != null) {
+            host = config.host;
+            password = config.password;
+            refreshInterval = config.DEFAULT_REFRESH_INTERVAL;
             logger.debug("Initializing EnergeniePWMHandler for Host '{}'", host);
             updateStatus(ThingStatus.ONLINE);
             onUpdate();
@@ -110,7 +104,7 @@ public class EnergeniePWMHandler extends BaseThingHandler {
         try {
             logger.trace("sendlogin to {} with password {}", host, password);
             logger.trace("sending 'POST' request to URL : {}", url);
-            loginResponseString = HttpUtil.executeUrl("POST", url, urlContent, "TEXT/PLAIN", timeout);
+            loginResponseString = HttpUtil.executeUrl("POST", url, urlContent, "TEXT/PLAIN", HTTP_TIMEOUT_MILLISECONDS);
 
             if (loginResponseString != null) {
                 readState(loginResponseString, "voltage");
@@ -118,16 +112,16 @@ public class EnergeniePWMHandler extends BaseThingHandler {
                 readState(loginResponseString, "power");
                 readState(loginResponseString, "energy");
                 try {
-                    HttpUtil.executeUrl("POST", url, timeout);
+                    HttpUtil.executeUrl("POST", url, HTTP_TIMEOUT_MILLISECONDS);
                     logger.trace("logout from ip {}", host);
-                } catch (Exception e) {
-                    logger.error("failed to logout from ip {}", host);
+                } catch (IOException e) {
+                    logger.debug("failed to logout from {} with ip {}", thing.getUID(), host, e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
 
-        } catch (Exception e) {
-            logger.error("energenie: failed to login to ip {}", host);
+        } catch (IOException e) {
+            logger.debug("energenie: failed to login to {} with ip {}", thing.getUID(), host, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -188,13 +182,7 @@ public class EnergeniePWMHandler extends BaseThingHandler {
 
     private synchronized void onUpdate() {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Configuration config = getThing().getConfiguration();
-            int refreshInterval = DEFAULT_REFRESH_INTERVAL;
-            Object refreshConfig = config.get("refresh");
-            if (refreshConfig != null) {
-                refreshInterval = ((BigDecimal) refreshConfig).intValue();
-            }
-            refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 5, refreshInterval, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::getState, 5, refreshInterval, TimeUnit.SECONDS);
         }
     }
 
