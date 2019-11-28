@@ -13,8 +13,7 @@
 			<channel id="shutter" typeId="shutter">
 				<description>Shutter control</description>
 			</channel>
-		</channels>
-		<config-description-ref uri="thing-types:touchwand:shutter" />
+		</channels>		
 	</thing-type>
 	<channel-type id="shutter">
 		<item-type>Rollershutter</item-type>

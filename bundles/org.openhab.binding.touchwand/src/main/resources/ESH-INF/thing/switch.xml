@@ -14,7 +14,6 @@
 				<description>Unit on off switch</description>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-types:touchwand:switch" />
 	</thing-type>
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
