@@ -198,7 +198,7 @@ public class SendMailActions implements ThingActions {
         return SendMailActions.sendHtmlMail(actions, recipient, subject, html, new ArrayList<String>());
     }
 
-    public static boolean sendHtmMail(@Nullable ThingActions actions, @Nullable String recipient,
+    public static boolean sendHtmlMail(@Nullable ThingActions actions, @Nullable String recipient,
             @Nullable String subject, @Nullable String html, @Nullable String urlString) {
         List<String> urlList = new ArrayList<>();
         if (urlString != null) {
