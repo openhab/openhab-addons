@@ -22,8 +22,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
@@ -515,7 +515,7 @@ public class GardenaSmartImpl implements GardenaSmart {
         public void run() {
             try {
                 logger.debug("Refreshing gardena device data");
-                Map<String, Device> newDevicesById = new HashMap<>();
+                final Map<String, Device> newDevicesById = new HashMap<>();
 
                 for (Location location : allLocations) {
                     Devices devices = loadDevices(location);
@@ -535,22 +535,18 @@ public class GardenaSmartImpl implements GardenaSmart {
                 }
 
                 // determine deleted devices
-                @SuppressWarnings("unchecked")
-                Collection<Device> deletedDevices = CollectionUtils.subtract(allDevicesById.values(),
-                        newDevicesById.values());
+                Collection<Device> deletedDevices = allDevicesById.values().stream()
+                        .filter(d -> !newDevicesById.values().contains(d)).collect(Collectors.toSet());
 
                 // determine new devices
-                @SuppressWarnings("unchecked")
-                Collection<Device> newDevices = CollectionUtils.subtract(newDevicesById.values(),
-                        allDevicesById.values());
+                Collection<Device> newDevices = newDevicesById.values().stream()
+                        .filter(d -> !allDevicesById.values().contains(d)).collect(Collectors.toSet());
 
                 // determine updated devices
-                @SuppressWarnings("unchecked")
-                Collection<Device> updatedDevices = CollectionUtils.intersection(allDevicesById.values(),
-                        newDevicesById.values());
+                Collection<Device> updatedDevices = allDevicesById.values().stream().distinct()
+                        .filter(newDevicesById.values()::contains).collect(Collectors.toSet());
 
                 allDevicesById = newDevicesById;
-                newDevicesById = null;
 
                 for (Device deletedDevice : deletedDevices) {
                     eventListener.onDeviceDeleted(deletedDevice);
