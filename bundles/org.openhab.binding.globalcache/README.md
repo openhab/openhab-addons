@@ -1,31 +1,123 @@
 # GlobalCache Binding
 
-The [GlobalCache](https://www.globalcache.com) binding is used to enable communication
+The [GlobalCache](https://www.globalcache.com) binding enables communication
 between openHAB and GlobalCache [GC-100](https://www.globalcache.com/products/gc-100/) and [iTach](https://www.globalcache.com/products/itach/) family of devices.
-Global Cache devices enable the control and automation of infrared, serial, and contact closure devices through an IP network (wired or wireless).
+GlobalCache devices enable the control and automation of infrared, serial, and contact closure devices over a wired or wireless IP network.
 
 ## Overview
 
 The GlobalCache binding discovers GC-100 and iTach devices on the network, and creates an inbox entry for each discovered device.
-Once added as a thing, the user can complete the configuration of the device, such as selecting a MAP file for IR and serial codes.
+Once added as a thing, the user can complete the configuration of the device, such as adding the name of the MAP file that contains IR and/or serial codes.
 
 ## Devices Supported
 
 Devices are discovered dynamically.
-There is a single thing created for each physical GC-100 or iTach device connected to the network.
+There is a single thing created for each physical GC-100 or iTach device discovered on the network.
 Each thing has channels that correspond to the physical connectors on the device.
 
 Currently supported devices include:
 
-- iTach WF2IR and IP2IR
-- iTach WF2CC and IP2CC
-- iTach WF2SL and IP2SL
-- iTach Flex Ethernet
-- iTach Flex Ethernet PoE
-- iTach Flex WiFi
-- GC-100-6
-- GC-100-12
-- ZMOTE Wi-Fi Universal Remote
+| Device                            | Thing ID  |
+|-----------------------------------|-----------|
+| iTach WF2IR and IP2IR             | itachIR   |
+| iTach WF2SL and IP2SL             | itachSL   |
+| iTach WF2CC and IP2CC             | itachCC   |
+| iTach Flex Ethernet and Flex WiFi | itachFlex |
+| GC-100-6                          | gc100_06  |
+| GC-100-12                         | gc100_12  |
+| ZMOTE WiFi Universal Remote       | zmote     |
+
+## Thing Configuration
+
+The binding uses the MAP transformation service to convert commands into IR and/or serial codes.
+If not already installed, the MAP transformation service is installed automatically when the binding is installed.
+
+In the event that the device's IP address is changed, the thing configuration must be updated manually, as the device cannot auto-discover the change.
+
+### iTach IR and ZMOTE
+
+The iTach IR (Infrared) and ZMOTE devices have the following configuration parameters.
+
+| Parameter    | Parameter ID | Required/Optional | Description |
+|--------------|--------------|-------------------|-------------|
+| IP Address   | ipAddress    | Required          | The device's IP address. |
+| MAP Filename | mapFilename  | Required          | The MAP file that contains mappings of commands to the IR codes. |
+
+### iTach SL
+
+The iTach SL (Serial) device has the following configuration parameters.
+Note that you must use the iTach SL's web application to set the serial port
+parameters for **baud rate**, **flow control**, and **parity** to match the configuration of the end device to which the iTach is connected.
+
+| Parameter      | Parameter ID  | Required/Optional | Description |
+|----------------|---------------|-------------------|-------------|
+| IP Address     | ipAddress     | Required          | The device's IP address. |
+| MAP Filename   | mapFilename   | Required          | The MAP file that contains mappings of commands to the serial codes. |
+| Enable Two Way | enableTwoWay1 | Optional          | Enable two-way communication with the device. By default, the binding only sends commands to the device. |
+| EOM Delimiter  | eomDelimiter1 | Optional          | The End-of-Message delimiter used to identify the end of a message that the binding received from the device. |
+
+### iTach CC
+
+The iTach CC (Contact Closure) device has the following configuration parameters.
+
+| Parameter    | Parameter ID | Required/Optional | Description |
+|--------------|--------------|-------------------|-------------|
+| IP Address   | ipAddress    | Required          | The device's IP address. |
+
+### iTach Flex
+
+The iTach Flex device has the following configuration parameters.
+Note that you must set the Active Cable configuration parameter to match how the Flex is configured.
+Available options are Infrared, Serial, and Relay/Sensor.
+The default is Infrared.
+
+When the iTach Fles is configured for serial operation, you must use the iTach Flex's web application to set the serial port
+parameters for **baud rate**, **flow control**, and **parity** to match the configuration of the end device to which the iTach Flex is connected.
+
+| Parameter      | Parameter ID  | Required/Optional | Description |
+|----------------|---------------|-------------------|-------------|
+| IP Address     | ipAddress     | Required          | The device's IP address. |
+| MAP Filename   | mapFilename   | Required          | The MAP file that contains mappings of commands to the IR and/or serial codes. |
+| Active Cable   | activeCable   | Required          | Available options are Infrared (FLEX_INFRARED), Serial (FLEX_SERIAL) or Relay/Sensor (FLEX_RELAY). |
+| Enable Two Way | enableTwoWay1 | Optional          | Enable two-way communication with the device. By default, the binding only sends commands to the device. |
+| EOM Delimiter  | eomDelimiter1 | Optional          | The End-of-Message delimiter used to identify the end of a message that the binding received from the device. |
+
+### GC-100-6
+
+The GC-100-6 device has the following configuration parameters.
+Note that you must use the GC-100-6's web application to set the serial port
+parameters for **baud rate**, **flow control**, and **parity** to match the configuration of the end device to which the GC-100-6 is connected.
+
+| Parameter      | Parameter ID  | Required/Optional | Description |
+|----------------|---------------|-------------------|-------------|
+| IP Address     | ipAddress     | Required          | The device's IP address. |
+| MAP Filename   | mapFilename   | Required          | The MAP file that contains mappings of commands to the IR and serial codes. |
+| Enable Two Way | enableTwoWay1 | Optional          | Enable two-way communication with the device. By default, the binding only sends commands to the device. |
+| EOM Delimiter  | eomDelimiter1 | Optional          | The End-of-Message delimiter used to identify the end of a message that the binding received from the device. |
+
+### GC-100-12
+
+The GC-100-12 device has the following configuration parameters.
+Note that you must use the GC-100-12's web application to set the serial port
+parameters for **baud rate**, **flow control**, and **parity** to match the configuration of the end device to which the GC-100-12 is connected.
+
+| Parameter        | Parameter ID  | Required/Optional | Description |
+|------------------|---------------|-------------------|-------------|
+| IP Address       | ipAddress     | Required          | The device's IP address. |
+| MAP Filename     | mapFilename   | Required          | The MAP file that contains mappings of commands to the IR and/or serial codes. |
+| Enable Two Way 1 | enableTwoWay1 | Optional          | Enable two-way communication between the binding and the device on serial port #1. By default, the binding only sends commands to the device. |
+| EOM Delimiter 1  | eomDelimiter1 | Optional          | The End-of-Message delimiter used to identify the end of a message that the binding received from the device on serial port #1. |
+| Enable Two Way 2 | enableTwoWay2 | Optional          | Enable two-way communication between the binding and the device on serial port #2. By default, the binding only sends commands to the device. |
+| EOM Delimiter 2  | eomDelimiter2 | Optional          | The End-of-Message delimiter used to identify the end of a message that the binding received from the device on serial port #2. |
+
+### Manual Thing Creation
+
+Devices can be created in the *Paper UI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.
+See example below.
+
+### Binding Dependencies
+
+The GlobalCache binding uses the **transform** binding to map commands to IR and serial codes.  See example below.
 
 ## Device Discovery
 
@@ -42,32 +134,6 @@ discovery.globalcache:background=false
 Note that automatic device discovery **will not work** with GC-100's running firmware earlier than v3.0 as those versions do not emit announcement beacons on the multicast address.
 GC-100's running firmware earlier than v3.0 must be configured manually, either through *Paper UI* or using a *.things* file.
 See below.
-
-## Thing Configuration
-
-The iTach IR, iTach SL, GC-100, and Zmote devices require a MAP file in order to transform the openHAB command to an IR command or to a serial command.
-In the thing configuration, enter the name of the MAP file containing the IR and/or serial codes ().
-The MAP file should be placed in the *conf/transform* directory.
-See example below.
-
-For iTach SL and GC-100 devices that support serial connections, you must use the GlobalCache device web application to set the serial port parameters for **baud rate**, **flow control**, and **parity**.
-These settings must match the serial port settings of the AV device being controlled.
-
-For iTach Flex devices, you must set the Active Cable configuration parameter to match how the Flex is configured.
-Available options are Infrared, Serial, and Relay/Sensor.
-The default is Infrared.
-
-The device's IP address is set at time of discovery.
-However, in the event that the device's IP address is changed, the device IP address must be changed in the thing's configuration.
-
-### Manual Thing Creation
-
-Devices can be manually created in the *Paper UI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.
-See example below.
-
-### Binding Dependencies
-
-The GlobalCache binding uses the **transform** binding to map commands to IR and serial codes.  See example below.
 
 ## Channels and Channel Types
 
