@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Kodi Thing Type -->
-	<thing-type id="kodi" extensible="pvr-open-tv,pvr-open-radio,shownotification">
+	<thing-type id="kodi" extensible="shownotification">
 		<label>Kodi Mediacenter</label>
 		<description>Kodi Mediacenter Binding</description>
 
