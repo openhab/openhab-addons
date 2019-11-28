@@ -10,31 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.innogysmarthome.internal.client.entity.state;
+package org.openhab.binding.innogysmarthome.internal.client.entity;
 
-import com.google.api.client.util.Key;
+import org.openhab.binding.innogysmarthome.internal.client.entity.device.Gateway;
 
 /**
- * The general structure of the state of an entity.
+ * Defines the structure of the status response
  *
  * @author Oliver Kuhl - Initial contribution
  */
-public class EntityState extends StatePropertyList {
-
-    @Key("Id")
-    private String id;
-
+public class StatusResponse {
     /**
-     * @return the id
+     * The innogy SmartHome gateway. Can be null in case there is no registered for the current logged in user.
      */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
+    public Gateway gateway;
 }
