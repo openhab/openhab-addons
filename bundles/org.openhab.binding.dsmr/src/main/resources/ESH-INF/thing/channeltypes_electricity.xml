@@ -28,6 +28,18 @@
 		<description>The total amount of electricity used for tariff 2.</description>
 		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
+	<channel-type id="deliveryTariff1BelgiumType">
+		<item-type>Number:Energy</item-type>
+		<label>Delivery Tariff 1</label>
+		<description>The total amount of electricity used for tariff 1.</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="deliveryTariff2BelgiumType">
+		<item-type>Number:Energy</item-type>
+		<label>Delivery Tariff 2</label>
+		<description>The total amount of electricity used for tariff 2.</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
 	<channel-type id="deliveryTariff0AntiFraudType" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Delivery Tariff 0</label>
@@ -59,6 +71,18 @@
 		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="productionTariff2Type" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Production Tariff 2</label>
+		<description>The total amount of electricity produced for tariff 2.</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="productionTariff1BelgiumType" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Production Tariff 1</label>
+		<description>The total amount of electricity produced for tariff 1.</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="productionTariff2BelgiumType" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Production Tariff 2</label>
 		<description>The total amount of electricity produced for tariff 2.</description>

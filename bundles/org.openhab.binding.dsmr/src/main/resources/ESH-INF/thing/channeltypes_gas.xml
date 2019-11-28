@@ -21,6 +21,18 @@
 		<description>The total amount used in the past period.</description>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="gasLastDeliveryType">
+		<item-type>Number:Volume</item-type>
+		<label>Gas Delivery</label>
+		<description>Last value of not temperature corrected gas volume.</description>
+		<state pattern="%.3f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="gasLastTimestampType">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Timestamp of the last gas meter capture time.</description>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="gasValvePositionType">
 		<item-type>Number</item-type>
 		<label>Gas Valve Position</label>
