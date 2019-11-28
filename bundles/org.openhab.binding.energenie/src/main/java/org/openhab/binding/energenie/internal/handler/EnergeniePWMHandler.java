@@ -51,7 +51,7 @@ public class EnergeniePWMHandler extends BaseThingHandler {
         VOLTAGE("var V  = ", 9, 20, 10, SmartHomeUnits.VOLT),
         CURRENT("var V  = ", 9, 20, 100, SmartHomeUnits.AMPERE),
         POWER("var P=", 6, 20, 466, SmartHomeUnits.WATT),
-        ENERGY("var E=", 6, 20, 25600, SmartHomeUnits.KILOWATT_HOUR);
+        ENERGY("var E=", 6, 20, 25600, SmartHomeUnits.WATT_HOUR);
 
         private final Logger logger = LoggerFactory.getLogger(PWMState.class);
 
