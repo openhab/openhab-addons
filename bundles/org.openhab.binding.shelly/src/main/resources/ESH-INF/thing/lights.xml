@@ -19,9 +19,6 @@
 			<channel-group id="white" typeId="whiteSettings">
 				<label>White settings</label>
 			</channel-group>
-			<channel-group id="meter" typeId="basicMeter">
-				<label>Meter</label>
-			</channel-group>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />

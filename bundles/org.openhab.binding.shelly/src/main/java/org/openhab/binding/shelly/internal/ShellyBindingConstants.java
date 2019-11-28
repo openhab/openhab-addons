@@ -268,4 +268,14 @@ public class ShellyBindingConstants {
     public static final String            APIERR_HTTP_401_UNAUTHORIZED     = "401 Unauthorized";
     public static final String            APIERR_TIMEOUT                   = "Timeout";
     public static final String            APIERR_NOT_CALIBRATED            = "Not calibrated!";
+
+    public static final int               DIM_STEPSIZE                     = 5;
+
+    // Formatting: Number of scaling digits
+    public static final int               DIGITS_WATT                      = 3;
+    public static final int               DIGITS_KWH                       = 4;
+    public static final int               DIGITS_VOLT                      = 2;
+    public static final int               DIGITS_TEMP                      = 2;
+    public static final int               DIGITS_LUX                       = 2;
+    public static final int               DIGITS_PERCENT                   = 2;
 }

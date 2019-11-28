@@ -10,12 +10,12 @@ This includes sending commands to the devices as well as reding the device statu
 |--------------------|--------------------------------------------------------|----------------------------------------------------------|
 | shelly1            | Shelly Single Relay Switch                             | fully supported                                          |
 | shelly1pm          | Shelly Single Relay Switch with integrated Power Meter | fully supported                                          |
-| shelly1em          | Shelly EM  with integrated Power Meter                 | fully support                                            |
+| shellyem           | Shelly EM  with integrated Power Meter                 | fully support                                            |
 | shelly2-relay      | Shelly Double Relay Switch in relay mode               | fully supported                                          |
 | shelly2-roller     | Shelly2 in Roller Mode                                 | fully supported                                          |
 | shelly25-relay     | Shelly 2.5 in Relay Switch                             | fully supported                                          |
 | shelly25-roller    | Shelly 2.5 in Roller Mode                              | fully supported                                          |
-| shelly2dimmer      | Shelly Dimmer                                          | fully supported                                          |
+| shellydimmer       | Shelly Dimmer                                          | fully supported                                          |
 | shellyht           | Shelly Sensor (temp+humidity)                          | fully supported                                          |
 | shellyplugs        | Shelly Plug-S                                          | fully supported                                          |
 | shellyplug         | Shelly Plug                                            | fully supported                                          |
@@ -106,7 +106,7 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 |          |             |         |         |          the payload includes the event type and value as JSON string           |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 
-### Shelly 1PM (thing-type: shelly1)
+### Shelly 1PM (thing-type: shelly1pm)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
@@ -117,11 +117,11 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
 
-### Shelly EM (thing-type: shelly1)
+### Shelly EM (thing-type: shellyem)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
@@ -162,7 +162,7 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
 
@@ -179,8 +179,8 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                  |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                       |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                       |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                       |
-|          |totalKWH    |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)     |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                       |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)    |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                   |
 
 ### Shelly 2.5 - relay mode (thing-type:shelly25-relay) 
@@ -211,12 +211,12 @@ For this the binding aggregates the power consumption of both relays and include
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                  |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                       |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                       |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                       |
-|          |totalKWH    |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)     |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                       |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)     |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                   |
 
 
-### Shelly4 Pro
+### Shelly4 Pro (thing-type: shelly4pro)
 
 The Shelly 4Pro provides 4 relays and 4 power meters.
  
@@ -245,8 +245,8 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
-|          |totalKWH    |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
 |led       |statusLed    |Switch   |r/w      |ON: Status LED is disabled, OFF: LED enabled                                     |
 |          |powerLed     |Switch   |r/w      |ON: Power LED is disabled, OFF: LED enabled                                      |
@@ -255,7 +255,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 
 |Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
-|relay     |brightness   |Percent  |r/w      |Currently selected brightness.                                                   |
+|relay     |brightness   |Dimmer   |r/w      |Currently selected brightness.                                                   |
 |          |input1       |Switch   |yes      |State of Input 1 (S1)                                                            |
 |          |input2       |Switch   |yes      |State of Input 2 (S2)                                                            |
 |          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds          |
@@ -268,8 +268,8 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
-|          |totalKWH    |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly Bulb (thing-type: shellybulb)
@@ -294,11 +294,10 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |             |         |         |  0=No effect, 1=Meteor Shows, 2=Gradual Change, 3=Breath              |
 |          |             |         |         |  4=Flash, 5=On/Off Gradual, 6=Red/Green Change                        |
 |white     |             |         |         |Color settings: only valid in WHITE mode                               |
-|          |temperature  |Dimmer   |         |Color temperature: 0..100% for 3000..6500K                             |
+|          |temperature  |Number   |r/w      |color temperature (K): 0..100% or 3000..6500                           |
 |          |brightness   |Dimmer   |         |Brightness: 0..100% or 0..100                                          |
-|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                     |
  
-### Shelly RGBW2 in Color Mode
+### Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                             |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
@@ -309,16 +308,16 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |light     |color        |Color    |r/w      |Color picker (HSBType)                                                 |
 |          |fullColor    |String   |r/w      |Set Red / Green / Blue / Yellow / White mode and switch mode           | 
 |          |             |         |r/w      |Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w" | 
+|          |red          |Dimmer   |r/w      |Red brightness: 0..100% or 0..255 (control only the red channel)       |
+|          |green        |Dimmer   |r/w      |Green brightness: 0..100% or 0..255 (control only the red channel)     |
+|          |blue         |Dimmer   |r/w      |Blue brightness: 0..100% or 0..255 (control only the red channel)      |
+|          |white        |Dimmer   |r/w      |White brightness: 0..100% or 0..255 (control only the red channel)     |
+|          |gain         |Dimmer   |r/w      |Gain setting: 0..100%     or 0..100                                    |
 |          |effect       |Number   |r/w      |Select a special effect                                                | 
-|          |red          |Dimmer   |r/w      |red brightness 0..255, use this only when not using the color picker   |
-|          |green        |Dimmer   |r/w      |green brightness 0..255, use this only when not using the color picker |
-|          |blue         |Dimmer   |r/w      |blue brightness 0..255, use this only when not using the color picker  |
-|          |white        |Dimmer   |r/w      |white brightness 0..255, use this only when not using the color picker |
-|          |gain         |Dimmer   |r/w      |gain 0..255, use this only when not using the color picker             |
-|          |temperature  |Number   |r/w      |color temperature (K): 3000..6500                                      |
+|          |             |         |         |  0=No effect, 1=Meteor Shows, 2=Gradual Change, 3=Flash               |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                     |
 
-### Shelly RGBW2 in White Mode
+### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-white)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                             |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
@@ -369,7 +368,7 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
 
 
-### Shelly Sense
+### Shelly Sense (thing-type: shellysense) 
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|

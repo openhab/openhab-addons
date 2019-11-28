@@ -87,11 +87,13 @@ public class ShellyUtils {
         return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
     }
 
-    public static State toQuantityType(@Nullable Double value, Unit<?> unit) {
-        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    @SuppressWarnings("null")
+    public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {
+        BigDecimal bd = new BigDecimal(value.doubleValue());
+        return value == null ? UnDefType.NULL : toQuantityType(bd.setScale(digits, BigDecimal.ROUND_HALF_DOWN), unit);
     }
 
-    public static State toQuantityType(@Nullable BigDecimal value, Unit<?> unit) {
+    public static State toQuantityType(@Nullable Number value, Unit<?> unit) {
         return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
     }
 
@@ -125,5 +127,4 @@ public class ShellyUtils {
                     "Unsupported encoding format: " + StandardCharsets.UTF_8.toString() + ", input=" + input);
         }
     }
-
 }

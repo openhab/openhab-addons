@@ -18,7 +18,6 @@ import static org.openhab.binding.shelly.internal.ShellyUtils.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -80,20 +79,19 @@ public class ShellyComponents {
                                 groupName = CHANNEL_GROUP_METER;
                             }
                             updated |= th.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
-                                    toQuantityType(getDouble(meter.power), SmartHomeUnits.WATT));
+                                    toQuantityType(getDouble(meter.power), DIGITS_WATT, SmartHomeUnits.WATT));
                             // convert Watt/Min to kw/h
                             if (meter.total != null) {
-                                BigDecimal bd = new BigDecimal(getDouble(meter.total) / 1000);
                                 updated |= th.updateChannel(groupName, CHANNEL_METER_TOTALKWH, toQuantityType(
-                                        bd.setScale(5, BigDecimal.ROUND_HALF_DOWN), SmartHomeUnits.KILOWATT_HOUR));
+                                        getDouble(meter.total) / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
                             }
                             if (meter.counters != null) {
                                 updated |= th.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
-                                        toQuantityType(getDouble(meter.counters[0]), SmartHomeUnits.WATT));
+                                        toQuantityType(getDouble(meter.counters[0]), DIGITS_WATT, SmartHomeUnits.WATT));
                                 updated |= th.updateChannel(groupName, CHANNEL_METER_LASTMIN2,
-                                        toQuantityType(getDouble(meter.counters[1]), SmartHomeUnits.WATT));
+                                        toQuantityType(getDouble(meter.counters[1]), DIGITS_WATT, SmartHomeUnits.WATT));
                                 updated |= th.updateChannel(groupName, CHANNEL_METER_LASTMIN3,
-                                        toQuantityType(getDouble(meter.counters[2]), SmartHomeUnits.WATT));
+                                        toQuantityType(getDouble(meter.counters[2]), DIGITS_WATT, SmartHomeUnits.WATT));
                             }
                             updated |= th.updateChannel(groupName, CHANNEL_METER_TIMESTAMP,
                                     new StringType(ShellyHandlerFactory.convertTimestamp(getLong(meter.timestamp))));
@@ -108,17 +106,15 @@ public class ShellyComponents {
                                     : CHANNEL_GROUP_METER;
                             // convert Watt/Hour tok w/h
                             updated |= th.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
-                                    toQuantityType(getDouble(emeter.power), SmartHomeUnits.WATT));
-                            BigDecimal bd = new BigDecimal(getDouble(emeter.total) / 1000);
+                                    toQuantityType(getDouble(emeter.power), DIGITS_WATT, SmartHomeUnits.WATT));
                             updated |= th.updateChannel(groupName, CHANNEL_METER_TOTALKWH, toQuantityType(
-                                    bd.setScale(5, BigDecimal.ROUND_HALF_DOWN), SmartHomeUnits.KILOWATT_HOUR));
-                            bd = new BigDecimal(getDouble(emeter.totalReturned) / 1000);
+                                    getDouble(emeter.total) / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
                             updated |= th.updateChannel(groupName, CHANNEL_EMETER_TOTALRET, toQuantityType(
-                                    bd.setScale(5, BigDecimal.ROUND_HALF_DOWN), SmartHomeUnits.KILOWATT_HOUR));
+                                    getDouble(emeter.totalReturned) / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
                             updated |= th.updateChannel(groupName, CHANNEL_EMETER_REACTWATTS,
-                                    toQuantityType(getDouble(emeter.reactive), SmartHomeUnits.WATT));
+                                    toQuantityType(getDouble(emeter.reactive), DIGITS_WATT, SmartHomeUnits.WATT));
                             updated |= th.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
-                                    toQuantityType(getDouble(emeter.voltage), SmartHomeUnits.VOLT));
+                                    toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
                             updated |= th.updateChannel(groupName, CHANNEL_METER_TIMESTAMP,
                                     new StringType(ShellyHandlerFactory.convertTimestamp(getLong(emeter.timestamp))));
                             m++;
@@ -150,18 +146,18 @@ public class ShellyComponents {
                     }
                 }
                 updated |= th.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
-                        toQuantityType(getDouble(lastMin1), SmartHomeUnits.WATT));
+                        toQuantityType(getDouble(lastMin1), DIGITS_WATT, SmartHomeUnits.WATT));
                 updated |= th.updateChannel(groupName, CHANNEL_METER_LASTMIN2,
-                        toQuantityType(getDouble(lastMin2), SmartHomeUnits.WATT));
+                        toQuantityType(getDouble(lastMin2), DIGITS_WATT, SmartHomeUnits.WATT));
                 updated |= th.updateChannel(groupName, CHANNEL_METER_LASTMIN3,
-                        toQuantityType(getDouble(lastMin3), SmartHomeUnits.WATT));
+                        toQuantityType(getDouble(lastMin3), DIGITS_WATT, SmartHomeUnits.WATT));
 
                 // convert totalWatts into kw/h
                 totalWatts = totalWatts / (60.0 * 10000.0);
                 updated |= th.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
-                        toQuantityType(getDouble(currentWatts), SmartHomeUnits.WATT));
+                        toQuantityType(getDouble(currentWatts), DIGITS_WATT, SmartHomeUnits.WATT));
                 updated |= th.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
-                        toQuantityType(getDouble(totalWatts), SmartHomeUnits.KILOWATT_HOUR));
+                        toQuantityType(getDouble(totalWatts), DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
                 updated |= th.updateChannel(groupName, CHANNEL_METER_TIMESTAMP,
                         new StringType(ShellyHandlerFactory.convertTimestamp(timestamp)));
             }
@@ -197,19 +193,18 @@ public class ShellyComponents {
                         // convert Fahrenheit to Celsius
                         temp = new DecimalType((temp.floatValue() - 32) * 5 / 9.0);
                     }
-                    BigDecimal bd = new BigDecimal(temp.doubleValue());
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
-                            toQuantityType(bd.setScale(2, BigDecimal.ROUND_HALF_DOWN), SIUnits.CELSIUS));
+                            toQuantityType(temp.doubleValue(), DIGITS_TEMP, SIUnits.CELSIUS));
                 }
                 if (sdata.hum != null) {
                     th.logger.trace("{}: Updating humidity", th.thingName);
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM,
-                            toQuantityType(getDouble(sdata.hum.value), SmartHomeUnits.PERCENT));
+                            toQuantityType(getDouble(sdata.hum.value), DIGITS_PERCENT, SmartHomeUnits.PERCENT));
                 }
                 if ((sdata.lux != null) && getBool(sdata.lux.isValid)) {
                     th.logger.trace("{}: Updating lux", th.thingName);
                     updated |= th.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
-                            toQuantityType(getDouble(sdata.lux.value), SmartHomeUnits.LUX));
+                            toQuantityType(getDouble(sdata.lux.value), DIGITS_LUX, SmartHomeUnits.LUX));
                 }
                 if (sdata.flood != null) {
                     th.logger.trace("{}: Updating flood", th.thingName);
@@ -218,12 +213,12 @@ public class ShellyComponents {
                 if (sdata.bat != null) {
                     th.logger.trace("{}: Updating battery", th.thingName);
                     updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
-                            toQuantityType(getDouble(sdata.bat.value), SmartHomeUnits.PERCENT));
+                            toQuantityType(getDouble(sdata.bat.value), DIGITS_PERCENT, SmartHomeUnits.PERCENT));
                     updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
                             getDouble(sdata.bat.value) < th.config.lowBattery ? OnOffType.ON : OnOffType.OFF);
                     if (sdata.bat.value != null) { // no update for Sense
                         updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_VOLT,
-                                toQuantityType(getDouble(sdata.bat.voltage), SmartHomeUnits.VOLT));
+                                toQuantityType(getDouble(sdata.bat.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
                     }
                 }
                 if (profile.isSense) {

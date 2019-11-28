@@ -112,7 +112,7 @@
 		<channels>
 			<channel id="batteryLevel" typeId="batLevel" />
 			<channel id="voltage" typeId="batVoltage" />
-            <channel id="lowBattery" typeId="batAlert" />
+			<channel id="lowBattery" typeId="batAlert" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="shortBatteryStatus">

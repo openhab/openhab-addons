@@ -65,23 +65,23 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class ShellyCoapHandler implements ShellyCoapListener {
-    private final Logger logger = LoggerFactory.getLogger(ShellyCoapHandler.class);
+    private final Logger                   logger      = LoggerFactory.getLogger(ShellyCoapHandler.class);
 
-    private final ShellyBaseHandler thingHandler;
+    private final ShellyBaseHandler        thingHandler;
     private final ShellyThingConfiguration config;
-    private final GsonBuilder gsonBuilder;
-    private final Gson gson;
-    private String thingName;
+    private final GsonBuilder              gsonBuilder;
+    private final Gson                     gson;
+    private String                         thingName;
 
-    private @Nullable ShellyCoapServer coapServer;
-    private @Nullable CoapClient statusClient;
-    private @Nullable Request reqDescription;
-    private @Nullable Request reqStatus;
+    private @Nullable ShellyCoapServer     coapServer;
+    private @Nullable CoapClient           statusClient;
+    private @Nullable Request              reqDescription;
+    private @Nullable Request              reqStatus;
 
-    private int lastSerial = -1;
-    private String lastPayload = "";
-    private Map<String, CoIotDescrBlk> blockMap = new HashMap<String, CoIotDescrBlk>();
-    private Map<String, CoIotDescrSen> sensorMap = new HashMap<String, CoIotDescrSen>();
+    private int                            lastSerial  = -1;
+    private String                         lastPayload = "";
+    private Map<String, CoIotDescrBlk>     blockMap    = new HashMap<String, CoIotDescrBlk>();
+    private Map<String, CoIotDescrSen>     sensorMap   = new HashMap<String, CoIotDescrSen>();
 
     public ShellyCoapHandler(ShellyThingConfiguration config, ShellyBaseHandler thingHandler,
             @Nullable ShellyCoapServer coapServer) {
@@ -375,15 +375,15 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 switch (sen.type.toLowerCase()) /* CoIoT_STypes.valueOf(sen.T) */ {
                     case "t" /* Temperature */:
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
-                                toQuantityType(s.value, SIUnits.CELSIUS));
+                                toQuantityType(s.value, DIGITS_TEMP, SIUnits.CELSIUS));
                         break;
                     case "h" /* Humidity */:
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM,
-                                toQuantityType(s.value, SmartHomeUnits.PERCENT));
+                                toQuantityType(s.value, DIGITS_PERCENT, SmartHomeUnits.PERCENT));
                         break;
                     case "b" /* BatteryLevel */:
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LEVEL,
-                                toQuantityType(s.value, SmartHomeUnits.PERCENT));
+                                toQuantityType(s.value, DIGITS_PERCENT, SmartHomeUnits.PERCENT));
                         break;
                     case "m" /* Motion */:
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
@@ -391,12 +391,12 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         break;
                     case "l" /* Luminosity */:
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LUX,
-                                toQuantityType(s.value, SmartHomeUnits.LUX));
+                                toQuantityType(s.value, DIGITS_LUX, SmartHomeUnits.LUX));
                         break;
                     case "w" /* Watt */:
                         String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER : CHANNEL_GROUP_METER + rIndex;
                         updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
-                                toQuantityType(s.value, SmartHomeUnits.WATT));
+                                toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
                         break;
                     case "o": // Overtemp
                         updateChannel(updates, rGroup, CHANNEL_OVERTEMP, s.value == 1 ? OnOffType.ON : OnOffType.OFF);

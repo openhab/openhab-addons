@@ -35,6 +35,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyShortStatusDimmer;
+import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusDimmer;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
@@ -52,7 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyLightHandler extends ShellyBaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(ShellyLightHandler.class);
+    private final Logger                             logger = LoggerFactory.getLogger(ShellyLightHandler.class);
     private @Nullable Map<Integer, ShellyColorUtils> channelColors;
 
     /**
@@ -109,9 +111,11 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 col.setMode((OnOffType) command == OnOffType.ON ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE);
                 break;
             case CHANNEL_COLOR_PICKER:
+                logger.debug("{}: Update colors from color picker", thingName);
                 update = handleColorPicker(profile, lightId, col, command);
                 break;
             case CHANNEL_COLOR_FULL:
+                logger.debug("{}: Set colors to {}", thingName, command.toString());
                 handleFullColor(col, command);
                 break;
             case CHANNEL_COLOR_RED:
@@ -138,6 +142,35 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 } else if (command instanceof DecimalType) {
                     value = ((DecimalType) command).intValue();
                     logger.debug("{}: Set brightness to {} (Integer)", thingName, value);
+                } else if (command instanceof OnOffType) { // Switch
+                    logger.debug("Switch light {}", command.toString());
+                    api.setRelayTurn(lightId, (OnOffType) command == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
+                    break;
+                }
+
+                if (value == 0) {
+                    logger.debug("{}: Brightness=0 -> switch light OFF", thingName);
+                    api.setRelayTurn(lightId, SHELLY_API_OFF);
+                    break;
+                }
+
+                ShellyStatusDimmer status = api.getDimmerStatus(lightId);
+                Validate.notNull(status, "Unable to get Dimmer status for brightness");
+                ShellyShortStatusDimmer light = status.lights.get(lightId);
+                Validate.notNull(light, "Unable to get Light status for brightness");
+
+                if (command instanceof IncreaseDecreaseType) {
+                    if (((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
+                        value = Math.min(light.brightness + DIM_STEPSIZE, 100);
+                    } else {
+                        value = Math.max(light.brightness - DIM_STEPSIZE, 0);
+                    }
+                    logger.debug("{}: Change brightness from {} to {}", thingName, light.brightness, value);
+                }
+
+                if (!light.ison) {
+                    logger.debug("{}: Switch light ON to set brightness", thingName);
+                    api.setRelayTurn(lightId, SHELLY_API_ON);
                 }
                 validateRange("brightness", value, 0, 100);
                 col.setBrightness(value);
