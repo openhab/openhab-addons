@@ -10,22 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.innogysmarthome.internal.client.exception;
+package org.openhab.binding.innogysmarthome.internal.client.entity.state;
 
 /**
- * Thrown, if an error occurs fetching the access tokens.
- *
  * @author Oliver Kuhl - Initial contribution
  *
  */
-@SuppressWarnings("serial")
-public class InvalidAuthCodeException extends ApiException {
+public class IntegerState extends BaseState {
+    private Integer value;
 
-    public InvalidAuthCodeException() {
+    /**
+     * @return the value
+     */
+    public Integer getValue() {
+        return value;
     }
 
-    public InvalidAuthCodeException(String message) {
-        super(message);
+    /**
+     * @param value the value to set
+     */
+    public void setValue(Integer value) {
+        this.value = value;
     }
 
 }

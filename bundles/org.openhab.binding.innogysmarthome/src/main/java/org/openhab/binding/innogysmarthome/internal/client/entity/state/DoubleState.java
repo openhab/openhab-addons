@@ -10,20 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.innogysmarthome.internal.client.entity.link;
-
-import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
+package org.openhab.binding.innogysmarthome.internal.client.entity.state;
 
 /**
- * Defines a {@link Link} to a {@link Capability}
- *
  * @author Oliver Kuhl - Initial contribution
+ *
  */
-public class CapabilityLink extends Link {
-    public static final String LINK_BASE = "/capability/";
+public class DoubleState extends BaseState {
+    private Double value;
 
-    @Override
-    public String getId() {
-        return getValue().replace(LINK_BASE, "");
+    /**
+     * @return the value
+     */
+    public Double getValue() {
+        return value;
     }
+
+    /**
+     * @param value the value to set
+     */
+    public void setValue(Double value) {
+        this.value = value;
+    }
+
 }
