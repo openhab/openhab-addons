@@ -96,6 +96,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
+    private static final long WEBSOCKET_TIMEOUT_RETRY_SECONDS = 5;
+
     private final Logger logger = LoggerFactory.getLogger(InnogyBridgeHandler.class);
     private final Gson gson = new Gson();
     private final Object lock = new Object();
@@ -176,7 +178,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             deviceStructMan = new DeviceStructureManager(localClient);
             oAuthService.addAccessTokenRefreshListener(this);
             registerDeviceStatusListener(InnogyBridgeHandler.this);
-            startClient();
+            scheduleRestartClient(0);
         }
     }
 
@@ -242,6 +244,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         setBridgeProperties(deviceStructMan.getBridgeDevice());
         bridgeId = deviceStructMan.getBridgeDevice().getId();
         startWebsocket();
+        cancelReinitJob();
     }
 
     /**
@@ -292,7 +295,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             return;
         }
         logger.debug("Scheduling reinitialize in {} seconds.", seconds);
-        reinitJob = scheduler.schedule(this::startClient, seconds, TimeUnit.SECONDS);
+        reinitJob = scheduler.scheduleWithFixedDelay(this::startClient, seconds, REINITIALIZE_RETRY_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     private void setBridgeProperties(final Device bridgeDevice) {
@@ -335,24 +339,26 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         logger.debug("Disposing innogy SmartHome bridge handler '{}'", getThing().getUID().getId());
-
         unregisterDeviceStatusListener(this);
-
-        if (reinitJob != null) {
-            reinitJob.cancel(true);
-            reinitJob = null;
-        }
-
+        cancelReinitJob();
         if (webSocket != null) {
             webSocket.stop();
             webSocket = null;
         }
-
         client = null;
         deviceStructMan = null;
 
         super.dispose();
         logger.debug("innogy SmartHome bridge handler shut down.");
+    }
+
+    private synchronized void cancelReinitJob() {
+        ScheduledFuture<?> reinitJob = this.reinitJob;
+
+        if (reinitJob != null) {
+            reinitJob.cancel(true);
+            reinitJob = null;
+        }
     }
 
     /**
@@ -886,7 +892,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof TimeoutException) {
             logger.debug("WebSocket timeout: {}", e.getMessage());
-            reinitialize = 0;
+            reinitialize = WEBSOCKET_TIMEOUT_RETRY_SECONDS;
         } else if (e instanceof SocketTimeoutException) {
             logger.debug("Socket timeout: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
