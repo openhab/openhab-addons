@@ -116,9 +116,12 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         setPort(config.port);
         setRefreshIntervall(config.refreshInterval);
         setAuthToken(config.authToken);
-        @Nullable String deviceType = getThing().getProperties().get(Thing.PROPERTY_MODEL_ID);
-        if (deviceType.equals(MODEL_ID_CANVAS))
+
+        if (getThing().getProperties().get(Thing.PROPERTY_MODEL_ID).equals(MODEL_ID_CANVAS)) {
             config.deviceType = DEVICE_TYPE_CANVAS;
+        } else {
+            config.deviceType = DEVICE_TYPE_LIGHTPANELS;
+        }
         setDeviceType(config.deviceType);
 
         try {
@@ -315,10 +318,14 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
     private synchronized void startTouchJob() {
         NanoleafControllerConfig config = getConfigAs(NanoleafControllerConfig.class);
-        if (config.deviceType != DEVICE_TYPE_CANVAS)
+        if (config.deviceType != DEVICE_TYPE_CANVAS) {
+            logger.debug("NOT starting TouchJob for Panel {} because it has wrong device type {}",this.getThing().getUID(),config.deviceType);
             return;
+        }
+        else
+            logger.debug("Starting TouchJob for Panel {}",this.getThing().getUID());
 
-        logger.debug("Starting TouchJob for Panel {}",this.getThing().getUID());
+
 
         if (StringUtils.isNotEmpty(getAuthToken())) {
             if ((touchJob == null || touchJob.isCancelled())) {
@@ -342,6 +349,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         logger.debug("Run update job");
         try {
             updateFromControllerInfo();
+            startTouchJob(); // if device type has changed, start touch detection.
             // controller might have been offline, e.g. for firmware update. In this case, return to online state
             if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
                 logger.debug("Controller {} is back online", thing.getUID());
@@ -395,6 +403,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     Configuration config = editConfiguration();
                     config.put(NanoleafControllerConfig.AUTH_TOKEN, authToken.getAuthToken());
                     updateConfiguration(config);
+                    logger.info("--------device type3 {}",config.getProperties().get(Thing.PROPERTY_MODEL_ID));
+
                     updateStatus(ThingStatus.ONLINE);
                     // Update local field
                     setAuthToken(authToken.getAuthToken());
@@ -572,6 +582,25 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, controllerInfo.getSerialNo());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, controllerInfo.getFirmwareVersion());
         updateProperties(properties);
+
+        Configuration config = editConfiguration();
+
+        if (controllerInfo.getModel().equals(MODEL_ID_CANVAS)) {
+            config.put(NanoleafControllerConfig.DEVICE_TYPE,DEVICE_TYPE_CANVAS);
+            logger.debug("Set to device type {}", DEVICE_TYPE_CANVAS);
+        } else {
+            config.put(NanoleafControllerConfig.DEVICE_TYPE,DEVICE_TYPE_LIGHTPANELS);
+            logger.debug("Set to device type {}", DEVICE_TYPE_LIGHTPANELS);
+        }
+        updateConfiguration(config);
+
+        getConfig().getProperties().forEach(
+                (key, value) -> { logger.trace("Configuration property: key {} value {}", key, value);}
+        );
+
+        getThing().getProperties().forEach(
+                (key, value) -> { logger.info("Thing property:  key {} value {}", key, value);}
+        );
 
         // update the color channels of each panel
         this.getThing().getThings().forEach(child -> {
