@@ -8,7 +8,7 @@ Successfully tested are internet radios:
 
  * [Hama IR100](https://de.hama.com/00054823/hama-internetradio-ir110)
  * [Medion MD87180, MD86988, MD86955, MD87528](http://internetradio.medion.com/)
- * [Silvercrest SMRS18A1, SMRS30A1, SMRS35A1, SIRD 14 C2](https://www.silvercrest-multiroom.de/en/products/stereo-internet-radio/)
+ * [Silvercrest SMRS18A1, SMRS30A1, SMRS35A1, SIRD 14 C2, SIRD 14 D1](https://www.silvercrest-multiroom.de/en/products/stereo-internet-radio/)
  * [Roberts Stream 83i and 93i](https://www.robertsradio.com/uk/products/radio/smart-radio/)
  * [Auna Connect 150, Auna KR200](https://www.auna.de/Radios/Internetradios/)
  * [TechniSat DIGITRADIO 350 IR and 850](https://www.technisat.com/en_XX/DAB+-Radios-with-Internetradio/352-10996/)
