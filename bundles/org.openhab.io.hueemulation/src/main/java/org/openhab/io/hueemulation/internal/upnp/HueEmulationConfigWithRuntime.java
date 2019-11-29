@@ -60,10 +60,10 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
         address = InetAddress.getByName(addrString);
         if (address instanceof Inet6Address) {
             addressString = "[" + address.getHostAddress().split("%")[0] + "]";
-            multicastAddress = MULTI_ADDR_IPV4;
+            multicastAddress = MULTI_ADDR_IPV6;
         } else {
             addressString = address.getHostAddress();
-            multicastAddress = MULTI_ADDR_IPV6;
+            multicastAddress = MULTI_ADDR_IPV4;
         }
 
         port = config.discoveryHttpPort == 0 ? Integer.getInteger("org.osgi.service.http.port", 8080)
@@ -79,10 +79,10 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
         address = InetAddress.getByName("localhost");
         if (address instanceof Inet6Address) {
             addressString = "[" + address.getHostAddress().split("%")[0] + "]";
-            multicastAddress = MULTI_ADDR_IPV4;
+            multicastAddress = MULTI_ADDR_IPV6;
         } else {
             addressString = address.getHostAddress();
-            multicastAddress = MULTI_ADDR_IPV6;
+            multicastAddress = MULTI_ADDR_IPV4;
         }
         port = 8080;
     }
