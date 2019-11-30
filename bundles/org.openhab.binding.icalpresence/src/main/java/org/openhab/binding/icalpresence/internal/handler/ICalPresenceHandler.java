@@ -173,6 +173,7 @@ public class ICalPresenceHandler extends BaseThingHandler implements CalendarUpd
             AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(
                     new FileInputStream(this.calendarFile), Duration.ofMinutes(config.readAroundTime.longValue()));
             this.runtimeCalendar = calendar;
+            this.rescheduleCalendarStateUpdate();
         } catch (IOException | CalendarException e) {
             this.logger.warn("Loading calendar failed.", e);
             return false;
