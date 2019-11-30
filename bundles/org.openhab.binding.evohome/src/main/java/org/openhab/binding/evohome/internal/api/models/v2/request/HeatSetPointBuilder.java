@@ -12,16 +12,21 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.request;
 
+import java.time.LocalDateTime;
+
 /**
  * Builder for heat set point API requests
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author James Kinsman - Added temporary override support
  *
  */
 public class HeatSetPointBuilder implements RequestBuilder<HeatSetPoint> {
 
     private double setPoint;
+    private LocalDateTime endTime;
     private boolean hasSetPoint;
+    private boolean hasEndTime;
     private boolean cancelSetPoint;
 
     /**
@@ -36,6 +41,9 @@ public class HeatSetPointBuilder implements RequestBuilder<HeatSetPoint> {
             return new HeatSetPoint();
         }
         if (hasSetPoint) {
+            if (hasEndTime) {
+                return new HeatSetPoint(setPoint, endTime.toString() + "Z");
+            }
             return new HeatSetPoint(setPoint);
         }
         return null;
@@ -44,6 +52,12 @@ public class HeatSetPointBuilder implements RequestBuilder<HeatSetPoint> {
     public HeatSetPointBuilder setSetPoint(double setPoint) {
         this.hasSetPoint = true;
         this.setPoint = setPoint;
+        return this;
+    }
+
+    public HeatSetPointBuilder setEndTime(LocalDateTime endTime) {
+        this.hasEndTime = true;
+        this.endTime = endTime;
         return this;
     }
 

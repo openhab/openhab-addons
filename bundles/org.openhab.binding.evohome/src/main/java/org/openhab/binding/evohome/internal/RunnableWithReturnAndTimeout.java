@@ -10,20 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.configuration;
+package org.openhab.binding.evohome.internal;
+
+import java.util.concurrent.TimeoutException;
 
 /**
- * Contains the configuration of the binding.
+ * Provides an interface for a delegate that can throw a timeout and return an Object
  *
- * @author Jasper van Zuijlen - Initial contribution
+ * @author James Kinsman - Initial contribution
  *
  */
-public class EvohomeAccountConfiguration {
-    public String username;
-    public String password;
-    public String applicationId;
-    public int refreshInterval;
-    public int overrideMode;
-    public int overrideTime;
+public interface RunnableWithReturnAndTimeout {
+
+    public abstract Object run() throws TimeoutException;
 
 }

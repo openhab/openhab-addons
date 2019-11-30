@@ -45,6 +45,15 @@ public class EvohomeBindingConstants {
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_NAME = "name";
 
+    // List of override mode options
+    public static final int SETPOINT_OVERRIDE_INHERIT = -1;
+    public static final int SETPOINT_OVERRIDE_PERMANENT = 0;
+    public static final int SETPOINT_OVERRIDE_TEMPORARY_SCHEDULE_NEXT = 1;
+    public static final int SETPOINT_OVERRIDE_TEMPORARY_TIME_ADD = 2;
+
+    // Setpoint timing override magic number
+    public static final int SETPOINT_TIMING_INHERIT = -1;
+
     // List of all addressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_EVOHOME_ACCOUNT, THING_TYPE_EVOHOME_DISPLAY, THING_TYPE_EVOHOME_HEATING_ZONE)

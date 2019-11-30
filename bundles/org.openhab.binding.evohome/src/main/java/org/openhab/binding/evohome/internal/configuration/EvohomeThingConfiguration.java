@@ -16,9 +16,12 @@ package org.openhab.binding.evohome.internal.configuration;
  * Contains the common configuration definition of an evohome Thing
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author James Kinsman - Added support for inherited schedule overrides
  *
  */
 public class EvohomeThingConfiguration {
     public String id;
     public String name;
+    public int overrideMode;
+    public int overrideTime;
 }

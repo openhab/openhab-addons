@@ -18,6 +18,7 @@ import com.google.gson.annotations.SerializedName;
  * Request model for the mode
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author James Kinsman - Added temporary override support
  *
  */
 public class HeatSetPoint {
@@ -41,6 +42,19 @@ public class HeatSetPoint {
         heatSetpointValue = Math.round(setPoint * 2) / 2.0;
         setpointMode = "PermanentOverride";
         timeUntil = null;
+    }
+
+    /**
+     * Constructs a temporary override with the given temperature until the given time
+     *
+     * @param setPoint The target temperature to set the set point to
+     * @param until    The time to set the temperature until
+     */
+    HeatSetPoint(double setPoint, String until) {
+        // Make sure that the value is rounded toward the nearest 0.5
+        heatSetpointValue = Math.round(setPoint * 2) / 2.0;
+        setpointMode = "TemporaryOverride";
+        timeUntil = until;
     }
 
     @SerializedName("heatSetpointValue")

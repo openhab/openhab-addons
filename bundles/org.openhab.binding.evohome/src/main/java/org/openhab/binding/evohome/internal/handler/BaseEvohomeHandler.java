@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.openhab.binding.evohome.internal.EvohomeBindingConstants;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
 import org.openhab.binding.evohome.internal.configuration.EvohomeThingConfiguration;
 
@@ -58,6 +59,32 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      */
     protected EvohomeThingConfiguration getEvohomeThingConfig() {
         return configuration;
+    }
+
+    /**
+     * Returns the delegated override mode of the Thing
+     *
+     * @return The override mode to use
+     */
+    protected int getOverrideMode() {
+        if (getEvohomeThingConfig().overrideMode == -1) {
+            return this.getEvohomeBridge().getOverrideMode();
+        } else {
+            return getEvohomeThingConfig().overrideMode;
+        }
+    }
+
+    /**
+     * Returns the delegated override time of the Thing
+     *
+     * @return The override time to use
+     */
+    protected int getOverrideTime() {
+        if (getEvohomeThingConfig().overrideTime == EvohomeBindingConstants.SETPOINT_TIMING_INHERIT) {
+            return this.getEvohomeBridge().getOverrideTime();
+        } else {
+            return getEvohomeThingConfig().overrideTime;
+        }
     }
 
     /**

@@ -14,6 +14,7 @@ package org.openhab.binding.evohome.internal.api;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.openhab.binding.evohome.internal.api.models.v2.request.HeatSetPointBu
 import org.openhab.binding.evohome.internal.api.models.v2.request.Mode;
 import org.openhab.binding.evohome.internal.api.models.v2.request.ModeBuilder;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
+import org.openhab.binding.evohome.internal.api.models.v2.response.DailySchedules;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
 import org.openhab.binding.evohome.internal.api.models.v2.response.LocationStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * Implementation of the evohome client V2 api
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author James Kinsman - Added schedule based set point setting
  *
  */
 public class EvohomeApiClient {
@@ -142,8 +145,19 @@ public class EvohomeApiClient {
         apiAccess.doAuthenticatedPut(url, modeCommand);
     }
 
+    public DailySchedules getZoneSchedule(String zoneType, String zoneId) throws TimeoutException {
+        String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_SCHEDULE;
+        url = String.format(url, zoneType, zoneId);
+        return apiAccess.doAuthenticatedGet(url, DailySchedules.class);
+    }
+
     public void setHeatingZoneOverride(String zoneId, double setPoint) throws TimeoutException {
         HeatSetPoint setPointCommand = new HeatSetPointBuilder().setSetPoint(setPoint).build();
+        setHeatingZoneOverride(zoneId, setPointCommand);
+    }
+
+    public void setHeatingZoneOverride(String zoneId, double setPoint, LocalDateTime endTime) throws TimeoutException {
+        HeatSetPoint setPointCommand = new HeatSetPointBuilder().setSetPoint(setPoint).setEndTime(endTime).build();
         setHeatingZoneOverride(zoneId, setPointCommand);
     }
 
@@ -189,7 +203,6 @@ public class EvohomeApiClient {
     }
 
     private boolean authenticate(String credentials, String grantType) {
-
         String data = credentials + "&" + "Host=rs.alarmnet.com%2F&" + "Pragma=no-cache&"
                 + "Cache-Control=no-store+no-cache&"
                 + "scope=EMEA-V1-Basic+EMEA-V1-Anonymous+EMEA-V1-Get-Current-User-Account&" + "grant_type=" + grantType

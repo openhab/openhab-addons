@@ -31,7 +31,10 @@
 			<channel id="SetPointStatus" typeId="setpointstatus" />
 		<channel id="SetPoint" typeId="setpoint" /> 
 		</channels>
-		<config-description>	  
+		<config-description>
+			<parameter-group name="setPoint">
+				<advanced>true</advanced>
+				<label>Set Point Handling</label></parameter-group>	  
 			<parameter name="id" type="text" required="true" readOnly="true">
 				<label>ID</label>
 				<description>ID of the zone</description>
@@ -39,6 +42,24 @@
 			<parameter name="name" type="text" required="false" readOnly="true">
 				<label>Name</label>
 				<description>Name of the zone</description>
+			</parameter>
+			<parameter name="overrideMode" type="integer" groupName="setPoint">
+				<label>Setpoint Override Mode</label>
+				<default>-1</default>
+				<options>
+					<option value="-1">Inherit from Bridge</option>
+					<option value="0">Permanent Override</option>
+					<option value="1">Override till next scheduled set point change</option>
+					<option value="2">Override for specific duration</option>
+				</options>
+				<description>Choose how sending a command to a set point channel will behave</description>
+			</parameter>
+			<parameter name="overrideTime" type="integer" groupName="setPoint" min="-1" max="1440">
+				<label>Override Time</label>
+				<description>
+					Override time in minutes when using mode 3 (or if mode 2 fails to find a schedule point) (-1 causes this setting to be inherited from the bridge)
+				</description>
+				<default>-1</default>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -21,4 +21,5 @@ package org.openhab.binding.evohome.internal.configuration;
 public class EvohomeTemperatureControlSystemConfiguration {
     public String id;
     public String name;
+
 }

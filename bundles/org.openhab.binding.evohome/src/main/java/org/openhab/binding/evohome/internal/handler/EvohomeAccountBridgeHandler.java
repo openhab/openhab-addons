@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.evohome.internal.handler;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,8 +33,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.evohome.internal.RunnableWithReturnAndTimeout;
 import org.openhab.binding.evohome.internal.RunnableWithTimeout;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
+import org.openhab.binding.evohome.internal.api.models.v2.response.DailySchedules;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
 import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
@@ -113,16 +116,36 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
+    EvohomeAccountConfiguration getConfiguration() {
+        return configuration;
+    }
+
     public Locations getEvohomeConfig() {
-        return apiClient.getInstallationInfo();
+        return (Locations) tryToCall(() -> apiClient.getInstallationInfo());
     }
 
     public LocationsStatus getEvohomeStatus() {
-        return apiClient.getInstallationStatus();
+        return (LocationsStatus) tryToCall(() -> apiClient.getInstallationStatus());
+    }
+
+    public int getOverrideMode() {
+        return configuration.overrideMode;
+    }
+
+    public int getOverrideTime() {
+        return configuration.overrideTime;
+    }
+
+    public DailySchedules getZoneSchedule(String zoneType, String zoneId) {
+        return (DailySchedules) tryToCall(() -> apiClient.getZoneSchedule(zoneType, zoneId));
     }
 
     public void setTcsMode(String tcsId, String mode) {
         tryToCall(() -> apiClient.setTcsMode(tcsId, mode));
+    }
+
+    public void setTemporarySetPoint(String zoneId, double doubleValue, LocalDateTime endPoint) {
+        tryToCall(() -> apiClient.setHeatingZoneOverride(zoneId, doubleValue, endPoint));
     }
 
     public void setPermanentSetPoint(String zoneId, double doubleValue) {
@@ -140,6 +163,16 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
     public void removeAccountStatusListener(AccountStatusListener listener) {
         listeners.remove(listener);
+    }
+
+    private Object tryToCall(RunnableWithReturnAndTimeout action) {
+        try {
+            return action.run();
+        } catch (TimeoutException e) {
+            updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Timeout on executing request");
+            return null;
+        }
     }
 
     private void tryToCall(RunnableWithTimeout action) {

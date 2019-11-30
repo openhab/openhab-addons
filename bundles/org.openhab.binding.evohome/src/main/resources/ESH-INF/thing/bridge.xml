@@ -9,6 +9,9 @@
 				<label>Authentication</label>
 				<description>Contains the settings needed to authenticate against the TCC service.</description>
 			</parameter-group>
+			<parameter-group name="setPoint">
+				<advanced>true</advanced>
+				<label>Set Point Handling</label></parameter-group>
 			<parameter name="username" type="text" required="true" groupName="auth">
 				<label>Username</label>
 				<description>Your TCC Username</description>
@@ -23,6 +26,23 @@
 				<description>The refresh interval to poll TCC (in seconds).</description>
 				<default>15</default>
 				<advanced>true</advanced>
+			</parameter>
+			<parameter name="overrideMode" type="integer" groupName="setPoint">
+				<label>Setpoint Override Mode</label>
+				<default>0</default>
+				<options>
+					<option value="0">Permanent Override</option>
+					<option value="1">Override until next scheduled set point change</option>
+					<option value="2">Override for specific duration</option>
+				</options>
+				<description>Choose how sending a command to a set point channel will behave</description>
+			</parameter>
+			<parameter name="overrideTime" type="integer" groupName="setPoint" min="5" max="1440">
+				<label>Override Time</label>
+				<description>
+					Override time in minutes when using mode 3 (or if mode 2 fails to find a schedule point)
+				</description>
+				<default>60</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
