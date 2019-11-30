@@ -183,7 +183,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
         ThingUID bridgeUID = touchWandBridgeHandler.getThing().getUID();
         ThingUID thingUID = new ThingUID(typeUID, bridgeUID, unit.getId().toString());
         Map<String, Object> properties = new HashMap<>();
-        properties.put("id", unit.getId());
+        properties.put("id", unit.getId().toString());
         properties.put("name", unit.getName());
         // @formatter:off
         thingDiscovered(DiscoveryResultBuilder.create(thingUID)
