@@ -4,6 +4,7 @@
 
     <feature name="openhab-io-javasound" description="JavaSound Audio Support" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <bundle dependency="true">mvn:commons-collections/commons-collections/3.2.1</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.javasound/${project.version}</bundle>
     </feature>
 </features>
