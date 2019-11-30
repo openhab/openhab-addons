@@ -12,13 +12,10 @@
  */
 package org.openhab.automation.module.script.graaljs.commonjs.internal;
 
-import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
-
-import javax.script.ScriptContext;
 
 /**
  * Class to register commonjs support / 'require' property to a specific context
@@ -27,27 +24,27 @@ import javax.script.ScriptContext;
  */
 @NonNullByDefault
 public class Require {
+    public static Module enable(Context ctx, Folder folder, Iterable<Folder> libPaths) throws PolyglotException {
+        return enable(ctx, folder, ctx.getBindings("js"), libPaths);
+    }
 
-  public static Module enable(Context ctx, Folder folder, Iterable<Folder> libPaths) throws PolyglotException {
-    return enable(ctx, folder, ctx.getBindings("js"), libPaths);
-  }
+    // This overload registers the require function in a specific Binding. It is
+    // useful when re-using the
+    // same script engine across multiple threads (each thread should have his own
+    // global scope defined
+    // through the binding that is passed as an argument).
+    public static Module enable(Context ctx, Folder folder, Value bindings, Iterable<Folder> libPaths)
+            throws PolyglotException {
+        Value module = ctx.eval("js", "({})");
+        Value exports = ctx.eval("js", "({})");
 
-  // This overload registers the require function in a specific Binding. It is useful when re-using the
-  // same script engine across multiple threads (each thread should have his own global scope defined
-  // through the binding that is passed as an argument).
-  public static Module enable(Context ctx, Folder folder, Value bindings, Iterable<Folder> libPaths)
-      throws PolyglotException {
-    Value module = ctx.eval("js", "({})");
-    Value exports = ctx.eval("js", "({})");
+        Module created = new Module(ctx, folder, libPaths, new ModuleCache(), "<main>", module, exports, null, null);
+        created.setLoaded();
 
-    Module created =
-        new Module(ctx, folder, libPaths, new ModuleCache(),"<main>", module, exports, null, null);
-    created.setLoaded();
+        bindings.putMember("require", created);
+        bindings.putMember("module", module);
+        bindings.putMember("exports", exports);
 
-    bindings.putMember("require", created);
-    bindings.putMember("module", module);
-    bindings.putMember("exports", exports);
-
-    return created;
-  }
+        return created;
+    }
 }

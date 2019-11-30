@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.automation.module.script.graaljs.commonjs.internal;
 
 import org.graalvm.polyglot.Value;
@@ -26,7 +25,7 @@ import static org.junit.Assert.*;
  */
 public class AssertUtils {
     static void assertValueEquals(Value v1, Value v2) {
-      assertEquals(v1.toString(), v2.toString());
+        assertEquals(v1.toString(), v2.toString());
     }
 
     static void assertAbsent(Optional<?> opt) {

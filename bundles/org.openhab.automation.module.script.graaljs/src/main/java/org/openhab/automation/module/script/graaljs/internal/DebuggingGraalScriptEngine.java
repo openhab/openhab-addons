@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.automation.module.script.graaljs.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -19,7 +18,9 @@ import org.graalvm.polyglot.PolyglotException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.*;
+import javax.script.Invocable;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -27,18 +28,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Optional;
 
-
 /**
- * Wraps ScriptEngines provided by Graal to provide error messages and stack traces for scripts.
+ * Wraps ScriptEngines provided by Graal to provide error messages and stack
+ * traces for scripts.
  *
  * @author Jonathan Gilbert - Initial contribution
  */
 @NonNullByDefault
 class DebuggingGraalScriptEngine {
-
     private static final Logger logger = LoggerFactory.getLogger(DebuggingGraalScriptEngine.class);
     private static final Logger stackLogger = LoggerFactory.getLogger("org.openhab.automation.script.javascript.stack");
-
     private ScriptEngine engine;
 
     private DebuggingGraalScriptEngine(ScriptEngine engine) {
@@ -57,8 +56,9 @@ class DebuggingGraalScriptEngine {
     }
 
     /**
-     * Creates an implementation of ScriptEngine (& Invocable), wrapping the contained engine, that logs PolyglotExceptions
-     * that are thrown from any 'eval' methods.
+     * Creates an implementation of ScriptEngine (& Invocable), wrapping the
+     * contained engine, that logs PolyglotExceptions that are thrown from any
+     * 'eval' methods.
      *
      * @return a ScriptEngine which logs script exceptions
      */
@@ -67,10 +67,8 @@ class DebuggingGraalScriptEngine {
     }
 
     private ScriptEngine createProxy() {
-        return (ScriptEngine) Proxy.newProxyInstance(
-                ScriptEngine.class.getClassLoader(),
-                new Class<?>[]{ScriptEngine.class, Invocable.class},
-                (proxy, method, args) -> {
+        return (ScriptEngine) Proxy.newProxyInstance(ScriptEngine.class.getClassLoader(),
+                new Class<?>[] { ScriptEngine.class, Invocable.class }, (proxy, method, args) -> {
                     try {
                         if (method.getName().equals("eval")) {
                             return evalInvocation(method, args);
@@ -84,15 +82,16 @@ class DebuggingGraalScriptEngine {
     }
 
     /**
-     * Logs error with JS stack trace if it's caused by a PolyglotException (e.g. the script caused the error)
+     * Logs error with JS stack trace if it's caused by a PolyglotException (e.g.
+     * the script caused the error)
      */
-    private Object evalInvocation(Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
+    private Object evalInvocation(Method method, Object[] args)
+            throws InvocationTargetException, IllegalAccessException {
         try {
-            //if this is the eval(Reader) version, attempt inject the script name
-            if(method.equals(EVAL_WITH_READER_METHOD)) {
-                findPathForReader((Reader)args[0]).
-                        ifPresent(filename ->
-                            engine.getContext().setAttribute(ScriptEngine.FILENAME, filename, ScriptContext.ENGINE_SCOPE));
+            // if this is the eval(Reader) version, attempt inject the script name
+            if (method.equals(EVAL_WITH_READER_METHOD)) {
+                findPathForReader((Reader) args[0]).ifPresent(filename -> engine.getContext()
+                        .setAttribute(ScriptEngine.FILENAME, filename, ScriptContext.ENGINE_SCOPE));
             }
 
             return method.invoke(engine, args);
@@ -106,9 +105,10 @@ class DebuggingGraalScriptEngine {
     }
 
     /**
-     * Nasty hack to opportunistically extract the path from the passed Reader. Not currently possible as insufficient
-     * information is passed. Not guaranteed to work, fragile and depends on caller implementation. Ideally requires
-     * update of
+     * Nasty hack to opportunistically extract the path from the passed Reader. Not
+     * currently possible as insufficient information is passed. Not guaranteed to
+     * work, fragile and depends on caller implementation. Ideally requires update
+     * of
      */
     private Optional<String> findPathForReader(Reader reader) {
         try {

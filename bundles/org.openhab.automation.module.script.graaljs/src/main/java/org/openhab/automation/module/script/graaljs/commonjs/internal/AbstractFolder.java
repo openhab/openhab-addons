@@ -13,7 +13,6 @@
 package org.openhab.automation.module.script.graaljs.commonjs.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.Optional;
 
@@ -24,41 +23,41 @@ import java.util.Optional;
  */
 @NonNullByDefault
 public abstract class AbstractFolder implements Folder {
-  private Optional<Folder> parent;
-  private String path;
+    private Optional<Folder> parent;
+    private String path;
 
-  public Optional<Folder> getParent() {
-    return parent;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  AbstractFolder(Optional<Folder> parent, String path) {
-    this.parent = parent;
-    this.path = path;
-  }
-
-  public Optional<Folder> resolveChild(String[] elements) {
-
-    Optional<Folder> rv = Optional.of(this);
-
-    for (String name : elements) {
-      switch (name) {
-        case "":
-          throw new IllegalArgumentException();
-        case ".":
-          continue;
-        case "..":
-          rv = rv.flatMap(Folder::getParent);
-          break;
-        default:
-          rv = rv.flatMap(x -> x.getFolder(name));
-          break;
-      }
+    public Optional<Folder> getParent() {
+        return parent;
     }
 
-    return rv;
-  }
+    public String getPath() {
+        return path;
+    }
+
+    AbstractFolder(Optional<Folder> parent, String path) {
+        this.parent = parent;
+        this.path = path;
+    }
+
+    public Optional<Folder> resolveChild(String[] elements) {
+
+        Optional<Folder> rv = Optional.of(this);
+
+        for (String name : elements) {
+            switch (name) {
+            case "":
+                throw new IllegalArgumentException();
+            case ".":
+                continue;
+            case "..":
+                rv = rv.flatMap(Folder::getParent);
+                break;
+            default:
+                rv = rv.flatMap(x -> x.getFolder(name));
+                break;
+            }
+        }
+
+        return rv;
+    }
 }

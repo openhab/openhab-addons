@@ -13,7 +13,6 @@
 package org.openhab.automation.module.script.graaljs.commonjs.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.Optional;
 
@@ -24,9 +23,13 @@ import java.util.Optional;
  */
 @NonNullByDefault
 public interface Folder {
-  String getPath();
-  Optional<Folder> getParent();
-  Optional<String> tryReadFile(String name);
-  Optional<Folder> getFolder(String name);
-  Optional<Folder> resolveChild(String[] elements);
+    String getPath();
+
+    Optional<Folder> getParent();
+
+    Optional<String> tryReadFile(String name);
+
+    Optional<Folder> getFolder(String name);
+
+    Optional<Folder> resolveChild(String[] elements);
 }

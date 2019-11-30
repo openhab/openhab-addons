@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Paths {
-  static String[] splitPath(String path) {
-    return path.split("[\\\\/]");
-  }
+    static String[] splitPath(String path) {
+        return path.split("[\\\\/]");
+    }
 }

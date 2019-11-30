@@ -35,44 +35,45 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * An implementation of {@link ScriptEngineFactory} with customizations for GraalJS ScriptEngines.
+ * An implementation of {@link ScriptEngineFactory} with customizations for
+ * GraalJS ScriptEngines.
  *
  * @author Jonathan Gilbert - Initial contribution
  */
 @NonNullByDefault
 @Component(service = ScriptEngineFactory.class)
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
-
     private final Logger logger = LoggerFactory.getLogger(GraalJSScriptEngineFactory.class);
-
     /*
-    we could get these from GraalJSEngineFactory, but this causes problems with OSGi. This class attempts to replace
-    (well, fill with nulls) Nashorn at class load time (which is generally ok), but if loaded a second time (e.g. the
-    bundle is reloaded) then it ironically chokes at <clinit> time due to the state that it's left Nashorn in.
+     * we could get these from GraalJSEngineFactory, but this causes problems with
+     * OSGi. This class attempts to replace (well, fill with nulls) Nashorn at class
+     * load time (which is generally ok), but if loaded a second time (e.g. the
+     * bundle is reloaded) then it ironically chokes at <clinit> time due to the
+     * state that it's left Nashorn in.
      */
-    private static List<String> mimeTypes = Arrays.asList("application/javascript", "application/ecmascript", "text/javascript", "text/ecmascript");
+    private static List<String> mimeTypes = Arrays
+            .asList("application/javascript", "application/ecmascript", "text/javascript", "text/ecmascript");
     private static List<String> extensions = Collections.singletonList("js");
-
     private static final String DISABLE_GRAALJS_SCRIPT_DEBUG = "graaljs.script.debug.disabled";
-
     private static final String DISABLE_GRAALJS_SCRIPT_COMMONJS = "graaljs.script.commonjs.disabled";
-
     private static final String COMMONJS_LIB_PATHS = "graaljs.commonjs.lib.paths";
-    private static final String DEFAULT_COMMONJS_LIB_PATHS =
-            System.getenv("OPENHAB_CONF") + "/automation/lib/javascript/personal/;" +
-            System.getenv("OPENHAB_CONF") + "/automation/lib/javascript/community/;" +
-            System.getenv("OPENHAB_CONF") + "/automation/lib/javascript/core/;";
+    private static final String DEFAULT_COMMONJS_LIB_PATHS = System
+            .getenv("OPENHAB_CONF") + "/automation/lib/javascript/personal/;" + System
+            .getenv("OPENHAB_CONF") + "/automation/lib/javascript/community/;" + System
+            .getenv("OPENHAB_CONF") + "/automation/lib/javascript/core/;";
 
     static {
 
-        //if Java 8, we bundle Graal, and need to assist it into OSGi...
-        if(System.getProperty("java.specification.version").compareTo("1.9") < 0) {
-        /*
-        Graal will attempt to neuter Nashorn by making it support no (well, null) languages. This will cause problems
-        for any code that attempts to use (or is using) Nashorn in another classloader (e.g. another bundle), as Graal
-        will not be available in those classloaders (and this would result in Nashorn not being either). Prevent this
-        by preventing Nashorn being seen in Graal's startup
-         */
+        // if Java 8, we bundle Graal, and need to assist it into OSGi...
+        if (System.getProperty("java.specification.version").compareTo("1.9") < 0) {
+            /*
+             * Graal will attempt to neuter Nashorn by making it support no (well, null)
+             * languages. This will cause problems for any code that attempts to use (or is
+             * using) Nashorn in another classloader (e.g. another bundle), as Graal will
+             * not be available in those classloaders (and this would result in Nashorn not
+             * being either). Prevent this by preventing Nashorn being seen in Graal's
+             * startup
+             */
             ClassLoader original = Thread.currentThread().getContextClassLoader();
 
             try {
@@ -88,22 +89,23 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
                 });
                 Class.forName("com.oracle.truffle.js.scriptengine.GraalJSEngineFactory");
             } catch (ClassNotFoundException e) {
-                //ignore, we'll fail later, outside a static initializer
+                // ignore, we'll fail later, outside a static initializer
             } finally {
                 Thread.currentThread().setContextClassLoader(original);
             }
 
-        /*
-        Graal will also try to load bits and pieces from the wrong classloader at <clinit> time from it's Engine. This
-        is only a problem for reloading the bundle as some classes are leaked. This attempts to contain them in the
-        current bundle's classloader
-         */
+            /*
+             * Graal will also try to load bits and pieces from the wrong classloader at
+             * <clinit> time from it's Engine. This is only a problem for reloading the
+             * bundle as some classes are leaked. This attempts to contain them in the
+             * current bundle's classloader
+             */
             ClassLoader tccl = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(GraalJSScriptEngineFactory.class.getClassLoader());
             try {
                 Engine.newBuilder().build();
             } catch (Exception e) {
-                //ignore, we'll fail later, outside a static initializer
+                // ignore, we'll fail later, outside a static initializer
             } finally {
                 Thread.currentThread().setContextClassLoader(tccl);
             }
@@ -141,13 +143,10 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     @Override
     public @Nullable ScriptEngine createScriptEngine(String scriptType) {
-        //create context with full access + nashorn compatibility
+        // create context with full access + nashorn compatibility
         GraalJSScriptEngine engine = GraalJSScriptEngine.create(null,
-                Context.newBuilder("js")
-                        .allowExperimentalOptions(true)
-                        .allowAllAccess(true)
-                        .option("js.syntax-extensions", "true")
-                        .option("js.nashorn-compat", "true")
+                Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
+                        .option("js.syntax-extensions", "true").option("js.nashorn-compat", "true")
                         .option("js.ecmascript-version", "2020"));
 
         return configureEngine(engine);
@@ -159,18 +158,16 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         if (!Boolean.getBoolean(DISABLE_GRAALJS_SCRIPT_COMMONJS)) {
             String libPathsStr = System.getProperty(COMMONJS_LIB_PATHS);
 
-            if(libPathsStr == null || libPathsStr.equals("")) {
+            if (libPathsStr == null || libPathsStr.equals("")) {
                 libPathsStr = DEFAULT_COMMONJS_LIB_PATHS;
             }
 
-            List<Folder> libPaths = Arrays.stream(libPathsStr.split(";"))
-                    .filter(s -> (s != null && s.length() > 0))
-                    .map(File::new)
-                    .filter(f -> f.exists() && f.isDirectory())
-                    .map(f -> FilesystemFolder.create(f, "UTF-8"))
-                    .collect(Collectors.toList());
+            List<Folder> libPaths = Arrays.stream(libPathsStr.split(";")).filter(s -> (s != null && s.length() > 0))
+                    .map(File::new).filter(f -> f.exists() && f.isDirectory())
+                    .map(f -> FilesystemFolder.create(f, "UTF-8")).collect(Collectors.toList());
 
-            Require.enable(engine.getPolyglotContext(), getModuleRoots(), engine.getPolyglotContext().eval("js", "this"), libPaths);
+            Require.enable(engine.getPolyglotContext(), getModuleRoots(),
+                    engine.getPolyglotContext().eval("js", "this"), libPaths);
         }
 
         // log stack traces in user code if requested
@@ -182,6 +179,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     }
 
     private FilesystemFolder getModuleRoots() {
-        return FilesystemFolder.create(new File(System.getenv("OPENHAB_CONF")+"/automation/lib/javascript/core/"), "UTF-8");
+        return FilesystemFolder
+                .create(new File(System.getenv("OPENHAB_CONF") + "/automation/lib/javascript/core/"), "UTF-8");
     }
 }

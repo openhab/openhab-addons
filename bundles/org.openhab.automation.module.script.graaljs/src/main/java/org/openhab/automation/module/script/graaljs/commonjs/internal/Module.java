@@ -12,9 +12,6 @@
  */
 package org.openhab.automation.module.script.graaljs.commonjs.internal;
 
-import java.io.IOException;
-import java.util.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
@@ -23,6 +20,9 @@ import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Main module loading implementation. Creates a hierarchy of (cached) modules.
@@ -35,32 +35,19 @@ public class Module implements RequireFunction {
     private Value objectConstructor;
     private Value jsonConstructor;
     private Value errorConstructor;
-
     private Folder folder;
     private ModuleCache cache;
     private Iterable<Folder> modulePaths;
-
     private Module top;
     private Value module;
     private List<Value> children = new ArrayList<>();
     private Value exports;
     private static ThreadLocal<Map<String, Value>> refCache = new ThreadLocal<>();
-
     public Value main;
-
     private Logger logger = LoggerFactory.getLogger(Module.class);
 
-    public Module(
-            Context context,
-            Folder folder,
-            Iterable<Folder> modulePaths,
-            ModuleCache cache,
-            String filename,
-            Value module,
-            Value exports,
-            @Nullable Module parent,
-            @Nullable Module top)
-            throws PolyglotException {
+    public Module(Context context, Folder folder, Iterable<Folder> modulePaths, ModuleCache cache, String filename,
+            Value module, Value exports, @Nullable Module parent, @Nullable Module top) throws PolyglotException {
 
         this.context = context;
 
@@ -128,18 +115,21 @@ public class Module implements RequireFunction {
                     logger.debug("Returning cached module {}", module);
                     return cachedExports;
                 } else {
-                    // We must store a reference to currently loading module to avoid circular requires
+                    // We must store a reference to currently loading module to avoid circular
+                    // requires
                     refCache.get().put(requestedFullPath, createNewObject());
                 }
             }
 
             try {
-                // If not cached, we try to resolve the module from the current folder, ignoring node_modules
+                // If not cached, we try to resolve the module from the current folder, ignoring
+                // node_modules
                 if (isPrefixedModuleName(module)) {
                     found = resolvedFolder.flatMap(f -> attemptToLoadFromThisFolder(f, filename));
                 }
 
-                // Then, if not successful, we'll look at the library paths in the current folder and then
+                // Then, if not successful, we'll look at the library paths in the current
+                // folder and then
                 // in all parent folders until we reach the top.
                 if (!found.isPresent()) {
                     found = searchForModuleInNodeModules(folder, folderParts, filename);
@@ -169,25 +159,24 @@ public class Module implements RequireFunction {
         throw new InternalError("Failed to throw correct exception!");
     }
 
-    private Optional<Module> searchForModuleInPath(
-            Folder resolvedFolder, String[] folderParts, String filename) throws PolyglotException {
+    private Optional<Module> searchForModuleInPath(Folder resolvedFolder, String[] folderParts, String filename)
+            throws PolyglotException {
 
-        return attemptToLoadFromThisFolder(resolvedFolder, filename)
-                .map(Optional::of).orElse(searchForModuleInNodeModules(resolvedFolder, folderParts, filename));
+        return attemptToLoadFromThisFolder(resolvedFolder, filename).map(Optional::of)
+                .orElse(searchForModuleInNodeModules(resolvedFolder, folderParts, filename));
     }
 
-    private Optional<Module> searchForModuleInNodeModules(
-            Folder resolvedFolder, String[] folderParts, String filename) throws PolyglotException {
+    private Optional<Module> searchForModuleInNodeModules(Folder resolvedFolder, String[] folderParts, String filename)
+            throws PolyglotException {
         Optional<Folder> current = Optional.of(resolvedFolder);
 
         while (current.isPresent()) {
             Optional<Folder> nodeModules = current.get().getFolder("node_modules");
 
-            Optional<Module> found = nodeModules
-                    .flatMap(f -> f.resolveChild(folderParts))
+            Optional<Module> found = nodeModules.flatMap(f -> f.resolveChild(folderParts))
                     .flatMap(f -> attemptToLoadFromThisFolder(f, filename));
 
-            if(found.isPresent()) {
+            if (found.isPresent()) {
                 return found;
             }
 
@@ -209,8 +198,6 @@ public class Module implements RequireFunction {
             logger.debug("Returning cached module from path {}", requestedFullPath);
             return found;
         }
-
-
 
         // First we try to load as a file, trying out various variations on the path
         found = loadModuleAsFile(resolvedFolder, filename)
@@ -246,17 +233,13 @@ public class Module implements RequireFunction {
 
     private Optional<Module> loadModuleAsFolder(Folder parent, String name) throws PolyglotException {
 
-        return parent.getFolder(name).flatMap(folder ->
-            loadModuleThroughPackageJson(folder)
-                    .map(Optional::of).orElse(loadModuleThroughIndexJs(folder))
-                    .map(Optional::of).orElse(loadModuleThroughIndexJson(folder))
-        );
+        return parent.getFolder(name).flatMap(folder -> loadModuleThroughPackageJson(folder).map(Optional::of)
+                .orElse(loadModuleThroughIndexJs(folder)).map(Optional::of).orElse(loadModuleThroughIndexJson(folder)));
     }
 
     private Optional<Module> loadModuleThroughPackageJson(Folder parent) throws PolyglotException {
         Optional<String> packageJson = parent.tryReadFile("package.json");
         Optional<String> mainFile = packageJson.flatMap(this::getMainFileFromPackageJson);
-
 
         Optional<String[]> parts = mainFile.map(Paths::splitPath);
 
@@ -266,20 +249,14 @@ public class Module implements RequireFunction {
             String filename = p[p.length - 1];
             Optional<Folder> folder = parent.resolveChild(folders);
 
-            return folder
-                    .flatMap(f -> loadModuleAsFile(f, filename))
-                    .map(Optional::of).orElse( // 'or' requires Java9
-                            parent.resolveChild(p)
-                                    .flatMap(this::loadModuleThroughIndexJs)
-                    );
+            return folder.flatMap(f -> loadModuleAsFile(f, filename)).map(Optional::of).orElse( // 'or' requires Java9
+                    parent.resolveChild(p).flatMap(this::loadModuleThroughIndexJs));
         });
     }
 
     private Optional<String> getMainFileFromPackageJson(String packageJson) throws PolyglotException {
         Value parsed = parseJson(packageJson);
-        return Optional.ofNullable(parsed.getMember("main"))
-                .filter(Value::isString)
-                .map(Value::asString);
+        return Optional.ofNullable(parsed.getMember("main")).filter(Value::isString).map(Value::asString);
     }
 
     private Optional<Module> loadModuleThroughIndexJs(Folder parent) throws PolyglotException {
@@ -306,21 +283,21 @@ public class Module implements RequireFunction {
             return Optional.empty();
         }
 
-        // We keep a cache entry for the compiled module using it's effective path, to avoid
+        // We keep a cache entry for the compiled module using it's effective path, to
+        // avoid
         // recompiling even if module is requested through a different initial path.
         cache.put(fullPath, created);
 
         return Optional.of(created);
     }
 
-    private Module compileJavaScriptModule(Folder parent, String fullPath, String code)
-            throws PolyglotException {
+    private Module compileJavaScriptModule(Folder parent, String fullPath, String code) throws PolyglotException {
 
         Value module = createNewObject();
 
-        // If we have cached bindings, use them to rebind exports instead of creating new ones
-        Value exports = Optional.ofNullable(refCache.get().get(fullPath))
-                .orElse(createNewObject());
+        // If we have cached bindings, use them to rebind exports instead of creating
+        // new ones
+        Value exports = Optional.ofNullable(refCache.get().get(fullPath)).orElse(createNewObject());
 
         Module created = new Module(context, parent, modulePaths, cache, fullPath, module, exports, this, this.top);
 
@@ -328,16 +305,15 @@ public class Module implements RequireFunction {
         String filename = split[split.length - 1];
         String dirname = fullPath.substring(0, Math.max(fullPath.length() - filename.length() - 1, 0));
 
-
         try {
-            // This mimics how Node wraps module in a function. I used to pass a 2nd parameter
+            // This mimics how Node wraps module in a function. I used to pass a 2nd
+            // parameter
             // to eval to override global context, but it caused problems Object.create.
             //
             // The \n at the end is to take care of files ending with a comment
-            Source source = Source.newBuilder(
-                    "js",
-                    "(function (exports, require, module, __filename, __dirname) {" + code + "\n})",
-                    filename).build();
+            Source source = Source
+                    .newBuilder("js", "(function (exports, require, module, __filename, __dirname) {" + code + "\n})",
+                            filename).build();
 
             Value function = context.eval(source);
 
@@ -354,8 +330,7 @@ public class Module implements RequireFunction {
         return created;
     }
 
-    private Module compileJsonModule(Folder parent, String fullPath, String code)
-            throws PolyglotException {
+    private Module compileJsonModule(Folder parent, String fullPath, String code) throws PolyglotException {
         Value module = createNewObject();
         Value exports = createNewObject();
         Module created = new Module(context, parent, modulePaths, cache, fullPath, module, exports, this, this.top);
@@ -370,7 +345,7 @@ public class Module implements RequireFunction {
     }
 
     private <T> T throwModuleNotFoundException(String module) throws PolyglotException {
-        //we can't create PolyglotExceptions, so just get Graal to throw it for us
+        // we can't create PolyglotExceptions, so just get Graal to throw it for us
         evalJs("throw {name:'ModuleNotFoundError', message:'Module not found: " + module + "', code: 'MODULE_NOT_FOUND'}");
         return null;
     }
@@ -388,6 +363,6 @@ public class Module implements RequireFunction {
     }
 
     private static String[] getFilenamesToAttempt(String filename) {
-        return new String[]{filename, filename + ".js", filename + ".json"};
+        return new String[] { filename, filename + ".js", filename + ".json" };
     }
 }

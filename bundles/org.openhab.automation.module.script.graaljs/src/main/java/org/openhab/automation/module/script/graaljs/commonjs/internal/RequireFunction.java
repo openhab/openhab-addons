@@ -12,11 +12,11 @@
  */
 package org.openhab.automation.module.script.graaljs.commonjs.internal;
 
-import javax.script.ScriptException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.PolyglotException;
+
+import javax.script.ScriptException;
 
 /**
  * Simple interface describing the require function
@@ -26,5 +26,5 @@ import org.graalvm.polyglot.PolyglotException;
 @NonNullByDefault
 @FunctionalInterface
 public interface RequireFunction {
-  Object require(@Nullable String module) throws ScriptException, PolyglotException;
+    Object require(@Nullable String module) throws ScriptException, PolyglotException;
 }
