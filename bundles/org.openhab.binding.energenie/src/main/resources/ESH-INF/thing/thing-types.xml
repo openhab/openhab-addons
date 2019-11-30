@@ -8,11 +8,12 @@
 		<label>Energenie EG-PM2-LAN</label>
 		<description>Energenie programmable power strip with LAN interface</description>
 
-		<channel-groups>
-			<channel-group id="socketChannel" typeId="socketChannel">
-				<label>Sockets</label>
-			</channel-group>
-		</channel-groups>
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
 
 		<config-description-ref uri="thing-type:energenie:config" />
 
@@ -22,11 +23,12 @@
 		<label>EG-PMS-LAN</label>
 		<description>Energenie programmable power strip with LAN interface</description>
 
-		<channel-groups>
-			<channel-group id="socketChannel" typeId="socketChannel">
-				<label>Sockets</label>
-			</channel-group>
-		</channel-groups>
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
 
 		<config-description-ref uri="thing-type:energenie:config" />
 
@@ -36,11 +38,12 @@
 		<label>EG-PMS2-LAN</label>
 		<description>Energenie programmable power strip with LAN interface</description>
 
-		<channel-groups>
-			<channel-group id="socketChannel" typeId="socketChannel">
-				<label>Sockets</label>
-			</channel-group>
-		</channel-groups>
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
 
 		<config-description-ref uri="thing-type:energenie:config" />
 
@@ -50,11 +53,12 @@
 		<label>EG-PMS-WLAN</label>
 		<description>Energenie programmable power strip with WLAN interface</description>
 
-		<channel-groups>
-			<channel-group id="socketChannel" typeId="socketChannel">
-				<label>Sockets</label>
-			</channel-group>
-		</channel-groups>
+		<channels>
+			<channel id="socket1" typeId="socket1" />
+			<channel id="socket2" typeId="socket2" />
+			<channel id="socket3" typeId="socket3" />
+			<channel id="socket4" typeId="socket4" />
+		</channels>
 
 		<config-description-ref uri="thing-type:energenie:config" />
 
@@ -74,17 +78,6 @@
 		<config-description-ref uri="thing-type:energenie:config" />
 
 	</thing-type>
-
-	<channel-group-type id="socketChannel">
-		<label>Socket channel</label>
-		<description>A Energenie relay channel</description>
-		<channels>
-			<channel id="socket1" typeId="socket1" />
-			<channel id="socket2" typeId="socket2" />
-			<channel id="socket3" typeId="socket3" />
-			<channel id="socket4" typeId="socket4" />
-		</channels>
-	</channel-group-type>
 
 	<channel-type id="socket1">
 		<item-type>Switch</item-type>
