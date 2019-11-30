@@ -17,7 +17,10 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +31,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -64,6 +69,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private @Nullable ShellyCoapHandler      coap;
     protected @Nullable ShellyDeviceProfile  profile;
     private final @Nullable ShellyCoapServer coapServer;
+
+    private long                             lastUpdate       = 0;
+    private long                             lastUptime       = 0;
+    private long                             lastRssiWarning  = 0;
 
     private @Nullable ScheduledFuture<?>     statusJob;
     private int                              skipUpdate       = 0;
@@ -262,6 +271,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
         }
 
+        fillDeviceStatus(getLong(status.uptime), false, getInteger(status.wifiSta.rssi));
     }
 
     /**
@@ -362,11 +372,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 updated |= ShellyComponents.updateMeters(this, status);
                 updated |= ShellyComponents.updateSensors(this, status);
 
-                if (updated && profile.isSensor) {
-                    // add last update information
-                    LocalDateTime datetime = LocalDateTime.now();
-                    String time = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(datetime);
-                    updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LASTUPDATE, new StringType(time));
+                if (scheduledUpdates <= 1) {
+                    fillDeviceStatus(getLong(status.uptime), updated, getInteger(status.wifiSta.rssi));
                 }
             }
         } catch (IOException e) {
@@ -391,6 +398,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (scheduledUpdates > 0) {
                 --scheduledUpdates;
                 logger.debug("{}: {} more updates requested", thingName, scheduledUpdates);
+            } else {
+
             }
             if (bindingConfig.channelCache && (skipUpdate >= cacheCount) && !channelCache) {
                 logger.debug("{}: Enabling channel cache ({} updates / {}s)", thingName, skipUpdate,
@@ -399,6 +408,48 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
         }
 
+    }
+
+    private void fillDeviceStatus(long uptime, boolean updated, int rssi) {
+        long now = System.currentTimeMillis() / 1000L;
+        String alarm = "";
+
+        // Check every SIGNAL_ALARM_INTERVAL_SEC WiFi signal strength and raise an alarm when it becomes weak
+        if (isLinked(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI))) {
+            updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI,
+                    toQuantityType(new DecimalType(rssi), SmartHomeUnits.DECIBEL_MILLIWATTS));
+            if ((rssi < SIGNAL_ALARM_MIN_RSSI)
+                    && ((lastRssiWarning == 0) || (now > lastRssiWarning + SIGNAL_ALARM_INTERVAL_SEC))) {
+                alarm = "Weak WiFi Signal detected, check installation!";
+                lastRssiWarning = now;
+            }
+        }
+
+        if (uptime < lastUptime) {
+            alarm = "Device was restarted (uptime < lastUptime)";
+        }
+        lastUptime = uptime;
+        updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
+                toQuantityType(new DecimalType(uptime), SmartHomeUnits.SECOND));
+
+        if (updated) {
+            updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_LAST_UPDATE,
+                    new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(now), ZoneId.systemDefault())));
+            lastUpdate = now;
+        }
+
+        if (updated || !alarm.isEmpty()) {
+            LocalDateTime datetime = LocalDateTime.now();
+            String time = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(datetime);
+            String payload = "\"status\" : { \"uptime\":" + uptime + ", \"lastUpdate\":\"" + time + "\", \"signal\":"
+                    + rssi + "\", alarm\":\"" + alarm + "\" }";
+            if (!alarm.isEmpty()) {
+                logger.warn("{}: Alarm condition: {}, payload={}", getThing().getLabel(), alarm, payload);
+            } else {
+                logger.debug("{}: Trigger device event for {}, payload={}", thingName, getThing().getLabel(), payload);
+            }
+            triggerChannel(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_EVENT_TRIGGER), payload);
+        }
     }
 
     /**
@@ -451,8 +502,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             Validate.isTrue(!group.isEmpty(), "Unsupported event class: " + type);
 
             String channel = mkChannelId(group, CHANNEL_EVENT_TRIGGER);
-            logger.debug("Trigger {} event, channel {}, payload={}", type, channel, payload);
-            triggerChannel(channel, payload);
+            if (isLinked(channel)) {
+                logger.debug("Trigger {} event, channel {}, payload={}", type, channel, payload);
+                triggerChannel(channel, payload);
+            }
 
             requestUpdates(scheduledUpdates >= 3 ? 0 : !hasBattery ? 2 : 1, true); // request update on next interval
                                                                                    // (2x for non-battery devices)
@@ -508,23 +561,25 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
     @SuppressWarnings("null")
     public boolean updateChannel(String channelId, State value, Boolean forceUpdate) {
-        Validate.notNull(channelData, "updateChannel(): channelData must not be null!");
-        Validate.notNull(channelId, "updateChannel(): channelId must not be null!");
+        Validate.notNull(channelData);
+        Validate.notNull(channelId);
         Validate.notNull(value, "updateChannel(): value must not be null!");
         try {
             Object current = channelData.get(channelId);
             // logger.trace("{}: Predict channel {}.{} to become {} (type {}).", thingName,
             // group, channel, value, value.getClass());
             if (!channelCache || forceUpdate || (current == null) || !current.equals(value)) {
-                updateState(channelId, value);
-                if (current == null) {
-                    channelData.put(channelId, value);
-                } else {
-                    channelData.replace(channelId, value);
+                if (isLinked(channelId)) {
+                    updateState(channelId, value);
+                    if (current == null) {
+                        channelData.put(channelId, value);
+                    } else {
+                        channelData.replace(channelId, value);
+                    }
+                    logger.trace("{}: Channel {} updated with {} (type {}).", thingName, channelId, value,
+                            value.getClass());
+                    return true;
                 }
-                logger.trace("{}: Channel {} updated with {} (type {}).", thingName, channelId, value,
-                        value.getClass());
-                return true;
             }
         } catch (RuntimeException e) {
             logger.debug("Unable to update channel {}.{} with {} (type {}): {} ({})", thingName, channelId, value,
@@ -550,7 +605,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         Validate.notNull(status, "updateProperties(): status must not be null!");
         if (status.wifiSta != null) {
             properties.put(PROPERTY_WIFI_NETW, getString(status.wifiSta.ssid));
-            properties.put(PROPERTY_WIFI_RSSI, getInteger(status.wifiSta.rssi).toString());
             properties.put(PROPERTY_WIFI_IP, getString(status.wifiSta.ip));
         }
         if (status.update != null) {

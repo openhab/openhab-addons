@@ -8,12 +8,8 @@
 		<label>Shelly1 (SHSW-1)</label>
 		<description>Shelly1 device with single relay</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel">
-				<label>Relay</label>
-			</channel-group>
-			<channel-group id="meter" typeId="basicMeter">
-				<label>Meter</label>
-			</channel-group>
+			<channel-group id="relay" typeId="relayChannel" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -23,12 +19,9 @@
 		<label>Shelly1PM (SHSW-PM)</label>
 		<description>Shelly1PM device with single relay and power meter</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel">
-				<label>Relay</label>
-			</channel-group>
-			<channel-group id="meter" typeId="meter">
-				<label>Meter</label>
-			</channel-group>
+			<channel-group id="relay" typeId="relayChannel" />
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -38,15 +31,14 @@
 		<label>ShellyEM</label>
 		<description>ShellyEM device with single relay and power meter</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel">
-				<label>Relay</label>
-			</channel-group>
+			<channel-group id="relay" typeId="relayChannel" />
 			<channel-group id="meter1" typeId="emeter">
-				<label>Meter 1</label>
+				<label>Power Meter 1</label>
 			</channel-group>
 			<channel-group id="meter2" typeId="emeter">
-				<label>Meter 2</label>
+				<label>Power Meter 2</label>
 			</channel-group>
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -63,9 +55,8 @@
 			<channel-group id="relay2" typeId="relayChannel">
 				<label>Relay 2</label>
 			</channel-group>
-			<channel-group id="meter" typeId="meter">
-				<label>Power Meter</label>
-			</channel-group>
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -75,12 +66,9 @@
 		<description>Shelly2 in Roller Mode</description>
 
 		<channel-groups>
-			<channel-group id="roller" typeId="rollerControl">
-				<label>Roller Control</label>
-			</channel-group>
-			<channel-group id="meter" typeId="meter">
-				<label>Power Meter</label>
-			</channel-group>
+			<channel-group id="roller" typeId="rollerControl" />
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -97,11 +85,12 @@
 				<label>Relay 2</label>
 			</channel-group>
 			<channel-group id="meter1" typeId="meter">
-				<label>Power Meter Channel 1</label>
+				<label>Power Meter 1</label>
 			</channel-group>
 			<channel-group id="meter2" typeId="meter">
-				<label>Power Meter Channel 2</label>
+				<label>Power Meter 2</label>
 			</channel-group>
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -111,12 +100,9 @@
 		<description>Shelly2 in Roller Mode</description>
 
 		<channel-groups>
-			<channel-group id="roller" typeId="rollerControl">
-				<label>Roller Control</label>
-			</channel-group>
-			<channel-group id="meter" typeId="meter">
-				<label>Power Meter</label>
-			</channel-group>
+			<channel-group id="roller" typeId="rollerControl" />
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -151,6 +137,7 @@
 			<channel-group id="meter4" typeId="meter">
 				<label>Power Meter 4</label>
 			</channel-group>
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -160,12 +147,9 @@
 		<label>Shelly Plug</label>
 		<description>Shelly Plug device with relay and power meter</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel">
-				<label>Relay</label>
-			</channel-group>
-			<channel-group id="meter" typeId="simpleMeter">
-				<label>Power Meter</label>
-			</channel-group>
+			<channel-group id="relay" typeId="relayChannel" />
+			<channel-group id="meter" typeId="simpleMeter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -176,15 +160,10 @@
 		<description>Shelly Plug-S with relay, meter and LED control</description>
 
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel">
-				<label>Plug</label>
-			</channel-group>
-			<channel-group id="meter" typeId="simpleMeter">
-				<label>Power Meter</label>
-			</channel-group>
-			<channel-group id="led" typeId="ledControl">
-				<label>LED Control</label>
-			</channel-group>
+			<channel-group id="relay" typeId="relayChannel" />
+			<channel-group id="meter" typeId="simpleMeter" />
+			<channel-group id="led" typeId="ledControl" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
@@ -194,25 +173,21 @@
 		<label>Shelly Dimmer (SHDM-1)</label>
 		<description>Shelly Dimmer</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="dimmerChannel">
-				<label>Dimmer</label>
-			</channel-group>
-			<channel-group id="status" typeId="dimmerStatus">
-				<label>Status</label>
-			</channel-group>
-			<channel-group id="meter" typeId="meter">
-				<label>Meter</label>
-			</channel-group>
+			<channel-group id="relay" typeId="dimmerChannel" />
+			<channel-group id="status" typeId="dimmerStatus" />
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:generic" />
 	</thing-type>
 
+
 	<channel-group-type id="relayChannel">
-		<label>Relay channel</label>
+		<label>Relay</label>
 		<description>A Shelly relay channel</description>
 		<channels>
-			<channel id="output" typeId="output" />
+			<channel id="output" typeId="system.power" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />
@@ -223,7 +198,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="dimmerChannel">
-		<label>Dimmer channel</label>
+		<label>Dimmer</label>
 		<description>A Shelly dimmer channel</description>
 		<channels>
 			<channel id="output" typeId="dimmerOutput" />
@@ -296,206 +271,23 @@
 			<channel id="totalKWH" typeId="meterTotal" />
 		</channels>
 	</channel-group-type>
-
 	<channel-group-type id="ledControl">
-		<label>LED control</label>
+		<label>LED Control</label>
 		<description>Control the LEDs</description>
 		<channels>
 			<channel id="statusLed" typeId="ledStatusDisable" />
 			<channel id="powerLed" typeId="ledPowerDisable" />
 		</channels>
 	</channel-group-type>
-
-	<channel-type id="output">
-		<item-type>Switch</item-type>
-		<label>Output</label>
-		<description>Control the relay output</description>
-	</channel-type>
-	<channel-type id="overpower">
-		<item-type>Switch</item-type>
-		<label>Overpower</label>
-		<description>ON: Device detected an over power situation</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="timerAutoOn">
-		<item-type>Number:Time</item-type>
-		<label>Auto ON timer</label>
-		<description>When Off - Turn On After xx seconds; 0 disables the timer</description>
-		<state min="0" step="1" pattern="%d %unit%" readOnly="false"></state>
-	</channel-type>
-	<channel-type id="timerAutoOff">
-		<item-type>NumberTime</item-type>
-		<label>Auto OFF timer</label>
-		<description>When ON - Turn On After xx seconds; 0 disables the timer</description>
-		<state min="0" step="1" pattern="%d %unit%" readOnly="false"></state>
-	</channel-type>
-	<channel-type id="timerActive">
-		<item-type>Switch</item-type>
-		<label>Auto ON/OFF timer active</label>
-		<description>ON: A timer is active, OFF: no timer active</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="eventTrigger">
-		<kind>trigger</kind>
-		<label>Event Trigger</label>
-		<description>Triggers channel for events, type code be btn_on, btn_off, out_on, out_off</description>
-		<event />
-	</channel-type>
-	<channel-type id="rollerShutter">
-		<item-type>Rollershutter</item-type>
-		<label>Roller Control (0=open, 100=closed))</label>
-		<description>Controls the roller</description>
-		<category>Blinds</category>
-	</channel-type>
-	<channel-type id="rollerPosition">
-		<item-type>Dimmer</item-type>
-		<label>Roller Position (100=open, 0=closed)</label>
-		<description>Position the roller (100..0 in %, where 100%=open, 0%=closed)</description>
-		<state readOnly="false" min="0" max="100" pattern="%.2f %%" />
-	</channel-type>
-	<channel-type id="rollerStop">
-		<item-type>String</item-type>
-		<label>Roller stop reason</label>
-		<description>Last cause for stopping: normal, safety_switch, obstacle</description>
-		<state readOnly="true">
-			<options>
-				<option value="normal">normal</option>
-				<option value="safety_switch">safety switch</option>
-				<option value="obstacle">obstacle detected</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="rollerDirection">
-		<item-type>String</item-type>
-		<label>Last Roller Direction</label>
-		<description>Last direction: open or close</description>
-		<state readOnly="true">
-			<options>
-				<option value="open">open</option>
-				<option value="close">close</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="deviceOverTemp">
-		<item-type>Switch</item-type>
-		<label>Over temperature</label>
-		<description>Dimmer reported over temperature</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="dimmerOutput">
-		<item-type>Switch</item-type>
-		<label>Light</label>
-		<description>Turn light ON or OFF</description>
-	</channel-type>
-	<channel-type id="inputState">
-		<item-type>Switch</item-type>
-		<label>Input</label>
-		<description>Input/Button state</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="inputState1">
-		<item-type>Switch</item-type>
-		<label>Input #1</label>
-		<description>Input/Button state</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="inputState2">
-		<item-type>Switch</item-type>
-		<label>Input #2</label>
-		<description>Input/Button state</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="dimmerBrightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>Light brightness in %</description>
-		<state readOnly="false" min="1" max="100" step="1" pattern="%.0f %unit%" />
-	</channel-type>
-	<channel-type id="dimmerLoadError">
-		<item-type>Switch</item-type>
-		<label>Load Error</label>
-		<description>Error reported load error</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="dimmerOverload">
-		<item-type>Switch</item-type>
-		<label>Overload</label>
-		<description>Error reported overload condition</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="meterWatts">
-		<item-type>Number:Power</item-type>
-		<label>Watt</label>
-		<description>Current power consumption in Watt</description>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="lastPower1">
-		<item-type>Number:Energy</item-type>
-		<label>Last Power #1</label>
-		<description>Last power consumption #1 - one rounded minute</description>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="lastPower2">
-		<item-type>Number:Energy</item-type>
-		<label>Last Power #2</label>
-		<description>Last power consumption #2 - one rounded minute</description>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="lastPower3">
-		<item-type>Number:Energy</item-type>
-		<label>Last Power #3</label>
-		<description>Last power consumption #3 - one rounded minute</description>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="meterTotal">
-		<item-type>Number:Energy</item-type>
-		<label>Total Energy</label>
-		<description>Total power consumption in kw/h</description>
-		<state readOnly="true" pattern="%.5f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="meterReturned">
-		<item-type>Number:Energy</item-type>
-		<label>Total Returned Energy (kw/h)</label>
-		<description>Total returned energy in kw/h</description>
-		<state readOnly="true" pattern="%.5f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="meterVoltage">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Voltage</label>
-		<description>RMS voltage, Volts	</description>
-		<state readOnly="true" pattern="%.3f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="meterTimestamp">
-		<item-type>String</item-type>
-		<label>Last Update</label>
-		<description>Timestamp of last measurement</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="ledStatusDisable">
-		<item-type>Switch</item-type>
-		<label>Disable Status LED</label>
-		<description>Disable LED indication for network status</description>
-	</channel-type>
-	<channel-type id="ledPowerDisable">
-		<item-type>Switch</item-type>
-		<label>Disable Power LED</label>
-		<description>Disable LED indication for output status</description>
-	</channel-type>
+	<channel-group-type id="deviceStatus" advanced="true">
+		<label>Device Status</label>
+		<description>Some details on the device status</description>
+		<channels>
+			<channel id="uptime" typeId="uptime" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="signal" typeId="signalStrength" />
+			<channel id="event" typeId="eventTrigger" />
+		</channels>
+	</channel-group-type>
 
 </thing:thing-descriptions>

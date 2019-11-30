@@ -18,8 +18,6 @@ import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
 import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.*;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +34,8 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
@@ -454,13 +452,31 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                         s.value == 1 ? OnOffType.ON : OnOffType.OFF);
                                 break;
 
-                            case "red": // RGBW2/Bulb
-                            case "green": // RGBW2/Bulb
-                            case "blue": // RGBW2/Bulb
-                            case "white": // RGBW2/Bulb
-                            case "gain": // RGBW2/Bulb
-                            case "temp": // Bulb: Color Temp
-                                // Those value are send to the device so it doesn't make sense to process them as input
+                            // RGBW2/Bulb
+                            case "red":
+                                updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED,
+                                        new DecimalType(s.value));
+                                break;
+                            case "green":
+                                updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN,
+                                        new DecimalType(s.value));
+                                break;
+                            case "blue":
+                                updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE,
+                                        new DecimalType(s.value));
+                                break;
+                            case "white":
+                                updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE,
+                                        new DecimalType(s.value));
+                                break;
+                            case "gain":
+                                updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
+                                        new DecimalType(s.value));
+                                break;
+                            case "temp":
+                                updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_TEMP,
+                                        new DecimalType(s.value));
+
                                 break;
 
                             default:
@@ -481,13 +497,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         }
 
         if (updates.size() > 0) {
-            if (profile.isSensor) {
-                // add last update information
-                LocalDateTime datetime = LocalDateTime.now();
-                String time = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(datetime);
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_LASTUPDATE, new StringType(time));
-            }
-
             logger.debug("{}: Process {} CoIoT channel updates", thingName, updates.size());
             int i = 0;
             for (Map.Entry<String, State> u : updates.entrySet()) {
@@ -540,17 +549,17 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // Shelly1PM: reports temp senmsors without desc -> add description
         // Shelly Dimmer: sensors are reported without descriptions -> map to S
         // SHelly Sense: multiple issues: Description should not be lower case, invalid type for Motion and Battery
-        if (sen.type == "S") {
-            switch (sen.desc.toLowerCase()) {
-                case "motion": // fix acc to spec it's T=M
-                    sen.type = "M";
-                    sen.desc = "Motion";
-                    break;
-                case "battery": // fix: type is B not H
-                    sen.type = "B";
-                    sen.desc = "Battery";
-                    break;
-            }
+        // Shelly Sense: Battery is reported with Desc "battery", but type "H" instead of "B"
+        // Shelly Sense: Motion is reported with Desc "battery", but type "H" instead of "B"
+        switch (sen.desc.toLowerCase()) {
+            case "motion": // fix acc to spec it's T=M
+                sen.type = "M";
+                sen.desc = "Motion";
+                break;
+            case "battery": // fix: type is B not H
+                sen.type = "B";
+                sen.desc = "Battery";
+                break;
         }
 
         if (sen.desc == null) {
@@ -725,5 +734,4 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         return "coap://" + ipAddress + ":" + COIOT_PORT + uri;
 
     }
-
 }

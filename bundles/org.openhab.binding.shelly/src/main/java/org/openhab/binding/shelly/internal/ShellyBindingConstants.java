@@ -104,7 +104,6 @@ public class ShellyBindingConstants {
     public static final String            PROPERTY_NUM_METER               = "numberMeters";
     public static final String            PROPERTY_LAST_ACTIVE             = "lastActive";
     public static final String            PROPERTY_WIFI_NETW               = "wifiNetwork";
-    public static final String            PROPERTY_WIFI_RSSI               = "wifiRSSI";
     public static final String            PROPERTY_WIFI_IP                 = "networkIP";
     public static final String            PROPERTY_UPDATE_STATUS           = "updateStatus";
     public static final String            PROPERTY_UPDATE_AVAILABLE        = "updateAvailable";
@@ -169,7 +168,6 @@ public class ShellyBindingConstants {
     public static final String            CHANNEL_SENSOR_FLOOD             = "flood";
     public static final String            CHANNEL_SENSOR_MOTION            = "motion";
     public static final String            CHANNEL_SENSOR_CHARGER           = "charger";
-    public static final String            CHANNEL_SENSOR_LASTUPDATE        = "last_update";
 
     public static final String            CHANNEL_GROUP_SENSE_CONTROL      = "control";
     public static final String            CHANNEL_SENSE_KEY                = "key";
@@ -199,6 +197,12 @@ public class ShellyBindingConstants {
     // Bulb/RGBW2 in White Mode
     public static final String            CHANNEL_GROUP_WHITE_CONTROL      = "white";
     public static final String            CHANNEL_COLOR_TEMP               = "temperature";
+
+    // Device Status
+    public static final String            CHANNEL_GROUP_DEV_STATUS         = "device";
+    public static final String            CHANNEL_DEVST_UPTIME             = "uptime";
+    public static final String            CHANNEL_DEVST_LAST_UPDATE        = "lastUpdate";
+    public static final String            CHANNEL_DEVST_RSSI               = "signal";
 
     // General
     public static final String            SERVICE_TYPE                     = "_http._tcp.local.";
@@ -268,6 +272,11 @@ public class ShellyBindingConstants {
     public static final String            APIERR_HTTP_401_UNAUTHORIZED     = "401 Unauthorized";
     public static final String            APIERR_TIMEOUT                   = "Timeout";
     public static final String            APIERR_NOT_CALIBRATED            = "Not calibrated!";
+
+    // Minimum signal strength for basic connectivity. Packet delivery may be unreliable.
+    public static final int               SIGNAL_ALARM_INTERVAL_SEC        = 600;                                       // every
+                                                                                                                        // 10min
+    public static final int               SIGNAL_ALARM_MIN_RSSI            = -70;
 
     public static final int               DIM_STEPSIZE                     = 5;
 

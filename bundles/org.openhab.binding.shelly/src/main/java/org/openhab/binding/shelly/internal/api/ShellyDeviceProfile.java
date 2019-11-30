@@ -104,9 +104,7 @@ public class ShellyDeviceProfile {
         profile.fwVersion = getString(StringUtils.substringBetween(profile.settings.fw, "/", "@"));
         profile.fwId = getString(StringUtils.substringAfter(profile.settings.fw, "@"));
 
-        // Shelly1 has a meter, nevertheless numMeters is null!
         profile.isRoller = profile.mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
-
         profile.isPlugS = thingType.equalsIgnoreCase(ShellyBindingConstants.THING_TYPE_SHELLYPLUGS.getId());
         profile.hasLed = profile.isPlugS;
         profile.isBulb = thingType.equalsIgnoreCase(ShellyBindingConstants.THING_TYPE_SHELLYBULB.getId());
@@ -140,9 +138,6 @@ public class ShellyDeviceProfile {
         if ((profile.numMeters == 0) && profile.isLight) {
             // RGBW2 doesn't report, but has one
             profile.numMeters = profile.inColor ? 1 : getInteger(profile.settings.device.numOutputs);
-        }
-        if ((profile.numMeters == 0) && (profile.numRelays == 1)) {
-            profile.numMeters = 1; // Shelly 1 reports no meters, but has one
         }
         profile.hasMeter = (profile.numMeters > 0);
         profile.maxPower = profile.settings.maxPower != null ? profile.settings.maxPower : 0;

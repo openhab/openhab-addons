@@ -1,30 +1,29 @@
+# Shelly Binding
 
-# Shelly Binding (org.openhab.binding.shelly)
-
-This openHAB 2 Binding implements control for the Shelly series of devices.
-This includes sending commands to the devices as well as reding the device status and sensor data.
+This Binding implements control for the Shelly series of devices.
+This supports sending commands to the devices as well as reading device status and sensor data.
 
 ## Supported Devices
 
-|Thing               |Type                                                    | Status                                                   |
-|--------------------|--------------------------------------------------------|----------------------------------------------------------|
-| shelly1            | Shelly Single Relay Switch                             | fully supported                                          |
-| shelly1pm          | Shelly Single Relay Switch with integrated Power Meter | fully supported                                          |
-| shellyem           | Shelly EM  with integrated Power Meter                 | fully support                                            |
-| shelly2-relay      | Shelly Double Relay Switch in relay mode               | fully supported                                          |
-| shelly2-roller     | Shelly2 in Roller Mode                                 | fully supported                                          |
-| shelly25-relay     | Shelly 2.5 in Relay Switch                             | fully supported                                          |
-| shelly25-roller    | Shelly 2.5 in Roller Mode                              | fully supported                                          |
-| shellydimmer       | Shelly Dimmer                                          | fully supported                                          |
-| shellyht           | Shelly Sensor (temp+humidity)                          | fully supported                                          |
-| shellyplugs        | Shelly Plug-S                                          | fully supported                                          |
-| shellyplug         | Shelly Plug                                            | fully supported                                          |
-| shellyrgbw2        | Shelly RGB Controller                                  | fully supported                                          |
-| shellybulb         | Shelly Bulb in Color or WHite Mode                     | fully supported                                          |
-| shellysense        | Shelly Motion and IR Controller                        | fully supported                                          |
-| shelly4pro         | Shelly 4x Relay Switch                                 | fully supported                                          |
-| shellysmoke        | Shelly Sensor (temp+humidity)                          | should get discovered, but no special handling yet       |
-
+|Thing               |Type                                                    |
+|--------------------|--------------------------------------------------------|
+| shelly1            | Shelly Single Relay Switch                             |
+| shelly1pm          | Shelly Single Relay Switch with integrated Power Meter |
+| shellyem           | Shelly EM with integrated Power Meter                  |
+| shelly2-relay      | Shelly Double Relay Switch in relay mode               |
+| shelly2-roller     | Shelly2 in Roller Mode                                 |
+| shelly25-relay     | Shelly 2.5 in Relay Switch                             |
+| shelly25-roller    | Shelly 2.5 in Roller Mode                              |
+| shelly4pro         | Shelly 4x Relay Switch                                 |
+| shellydimmer       | Shelly Dimmer                                          |
+| shellyplugs        | Shelly Plug-S                                          |
+| shellyplug         | Shelly Plug                                            |
+| shellyrgbw2        | Shelly RGB Controller                                  |
+| shellybulb         | Shelly Bulb in Color or WHite Mode                     |
+| shellyht           | Shelly Sensor (temp+humidity)                          |
+| shellysense        | Shelly Motion and IR Controller                        |
+| shellysmoke        | Shelly Sensor                                          |
+| shellyflood        | Shelly Flood Sensor                                    |
 
 ## Firmware
 
@@ -35,8 +34,6 @@ Older versions work in general, but have impacts to functionality (e.g. no event
 The binding displays a WARNING if the firmware is older.
 It also informs you when an update is available.
 Use the device's web ui or the Shelly App to perform the update.
-
-
 
 ## Discovery
 
@@ -76,23 +73,22 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 
 | Parameter      |Description                                                    |Mandatory|Default                                         |
 |----------------|---------------------------------------------------------------|---------|------------------------------------------------|
-| defaultUserId  |Default userid for http authentication when not set in thing   |    no   |none                                            |
-| defaultPassword|Default password for http authentication when not set in thing |    no   |none                                            |
-
+| defaultUserId  |Default userid for http authentication when not set in thing   |    no   |admin                                           |
+| defaultPassword|Default password for http authentication when not set in thing |    no   |admin                                           |
 
 ## Thing Configuration
 
 |Parameter         |Description                                                   |Mandatory|Default                                           |
 |------------------|--------------------------------------------------------------|---------|--------------------------------------------------|
 |deviceIp          |IP address of the Shelly device, usually auto-discovered      |    yes  |none                                              |
-|userId            |The userid used for http authentication*                      |    no   |none                                              |
+|userId            |The user id used for http authentication                      |    no   |none                                              |
 |password          |Password for http authentication*                             |    no   |none                                              |
 |lowBattery        |Threshold for battery level. Set alert when level is below.   |    no   |20 (=20%), only for battery powered devices       |
 |updateInterval    |Interval for the background status check in seconds.          |    no   |1h for battery powered devices, 60s for all others|
 |eventsButton      |true: register event "trigger when a button is pushed"        |    no   |false                                             |
 |eventsSwitch      |true: register event "trigger of switching the relay output"  |    no   |true                                              |
 |eventsSensorReport|true: register event "posted updated sensor data"             |    no   |true for sensor devices                           |
-|eventsCoIoT       |true: Listen for CoIoT/COAP events, OFF: Don't use COAP       |    no   |true for battery devices, false for others        |
+|eventsCoIoT       |true: Listen for CoIoT/COAP events                            |    no   |true for battery devices, false for others        |
 
 ## Channels
 
@@ -214,7 +210,6 @@ For this the binding aggregates the power consumption of both relays and include
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                       |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)     |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                   |
-
 
 ### Shelly4 Pro (thing-type: shelly4pro)
 
@@ -354,8 +349,7 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
 
-
-### Shelly Flood (thing type: shelly-flood)
+### Shelly Flood (thing type: shellyflood)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
@@ -366,7 +360,6 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
-
 
 ### Shelly Sense (thing-type: shellysense) 
 
@@ -388,15 +381,11 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |batteryAlert |Switch   |yes      |Low battery alert                                                      |
 
-
 ## Full Example
 
-Note: PaperUI is recommended, if you want to use text files make sure to replace the thing id from you channel definition 
+### shelly.things
 
-Replace roller:XXXXXn with the last 6 digits of the Shelly device's MAC address.
-
-* .things
-
+```
 /* Shelly 2.5 Roller */
 Thing shelly:shelly25-roller:XXXXX1 "Shelly 25 Roller XXXXX1" @ "Home Theater" [deviceIp="x.x.x.x", userId="", password=""]
 Thing shelly:shelly25-roller:XXXXX2 "Shelly 25 Roller XXXXX2" @ "Living Room"  [deviceIp="x.x.x.x", userId="admin", password="secret"]
@@ -407,21 +396,48 @@ Thing shelly:shelly25-relay:XXXXX3 "Shelly 25 Relay XXXXX3" @ "Hall Way" [device
 Thing shelly:shelly25-relay:XXXXX4 "Shelly 25 Relay XXXXX4" @ "Dining Room" [deviceIp="x.x.x.x", userId="", password=""]
 Thing shelly:shelly25-relay:XXXXX5 "Shelly 25 Relay XXXXX5" @ "Bed Room" [deviceIp="x.x.x.x", userId="", password=""]
 
-* .items
+/* Other *
+Thing shelly:shellyht:e01691 "ShellyChimenea" @ "lowerground" [ deviceIp="10.0.55.101", userId="", password="", lowBattery=15 , eventsCoIoT=true ]
+Thing shelly:shellyht:e01681 "ShellyDormitorio" @ "upperground" [ deviceIp="10.0.55.102", userId="", password="", lowBattery=15 , eventsCoIoT=true ]
+Thing shelly:shellyflood:XXXXXX "ShellyFlood" @ "cellar" [ deviceIp="10.0.0.103", userId="", password="", lowBattery=15, eventsSwitch=true, eventsButton=true, eventsCoIoT=true ]
 
-Switch Shelly_XXXXX3_Relay "Garage Light" (garage) {channel="shelly:shelly1:XXXXX3:relay#output"}
-Switch Shelly_XXXXX3_OverPower "Garage Light Over Power" (garage) {channel="shelly:shelly1:XXXXX3:relay#overpower"}
-Switch Shelly_XXXXX3_OverTemp "Garage Light Over Temperature" (garage) {channel="shelly:shelly1:XXXXX3:relay#overtemperature"}
-Number Shelly_XXXXX3_AutoOnTimer "Garage Light Auto On Timer" (garage) {channel="shelly:shelly1:XXXXX3:relay#autoOn"}
-Number Shelly_XXXXX3_AutoOffTimer "Garage Light Auto Off Timer" (garage){channel="shelly:shelly1:BA2F18:relay#autoOff"}
-Switch Shelly__TimerActive "Garage Light Timer Active" (garage) {channel="shelly:shelly1:BA2F18:relay#timerActive"}
+```
+
+### shelly.items
+
+```
+/* Relays */
+Switch Shelly_XXXXX3_Relay        "Garage Light"                  {channel="shelly:shelly1:XXXXX3:relay#output"}
+Switch Shelly_XXXXX3_OverPower    "Garage Light Over Power"       {channel="shelly:shelly1:XXXXX3:relay#overpower"}
+Switch Shelly_XXXXX3_OverTemp     "Garage Light Over Temperature" {channel="shelly:shelly1:XXXXX3:relay#overtemperature"}
+Number Shelly_XXXXX3_AutoOnTimer  "Garage Light Auto On Timer"    {channel="shelly:shelly1:XXXXX3:relay#autoOn"}
+Number Shelly_XXXXX3_AutoOffTimer "Garage Light Auto Off Timer"   {channel="shelly:shelly1:BA2F18:relay#autoOff"}
+Switch Shelly__TimerActive        "Garage Light Timer Active"     {channel="shelly:shelly1:BA2F18:relay#timerActive"}
+
+/* Sensors */
+Number ShellyHT_Dormitorio_Temp  "Dormitorio Temperature" <temperature> {channel="shelly:shellyht:e01681:sensors#temperature"}
+Number ShellyHT_Dormitorio_Humid "Dormitorio Humidity"    <humidity>    {channel="shelly:shellyht:e01681:sensors#humidity"}
+Number ShellyHT_Dormitorio_Batt  "Dormitorio Battery"     <battery>     {channel="shelly:shellyht:e01681:battery#batteryLevel"}
+Number ShellyHT_Chimenea_Temp    "Chimenea Temperature"   <temperature> {channel="shelly:shellyht:e01691:sensors#temperature"}
+Number ShellyHT_Chimenea_Humid   "Chimenea Humidity"      <humidity>    {channel="shelly:shellyht:e01691:sensors#humidity"}
+Number ShellyHT_Chimenea_Batt    "Chimenea Battery"       <battery>     {channel="shelly:shellyht:e01691:battery#batteryLevel"}
+Number ShellyF_Sotano_Temp       "Sotano Temperature"     <temperature> {channel="shelly:shellyflood:764fe0:sensors#temperature"}
+Number ShellyF_Sotano_Batt       "Sotano Battery"         <battery>     {channel="shelly:shellyflood:764fe0:battery#batteryLevel"}
+Switch ShellyF_Sotano_Flood      "Sotano Flood Alarm"     <alarm>       {channel="shelly:shellyflood:764fe0:sensors#flood"}
+
+/* Dimmer */
+Switch DimmerSwitch     "Light on/off" {channel="shelly:shellydimmer:XXX:relay#brightness"}
+Dimmer DimmerBrightness "Garage Light Brightness" {channel="shelly:shellydimmer:XXX:relay#brightness"}
+Dimmer DimmerIncDec     "Garage Light +/-" {channel="shelly:shellydimmer:XXX:relay#brightness"}
 
 /* Power Meter */
-Number Shelly_BA2F18_Power "Bath Room Light Power" (bathroom) {channel="shelly:shelly1:BA2F18:meter#currentWatts"}
+Number Shelly_XXXXXX_Power       "Bath Room Light Power"                {channel="shelly:shelly1:XXXXXX:meter#currentWatts"}
 
+```
 
-* .rules
+###shelly.rules
 
+```
 reading colors from color picker:
 import org.openhab.core.library.types.*
 
@@ -434,3 +450,19 @@ then
     var int greenValue = hsbValue.green.intValue
     var int blueValue = hsbValue.blue.intValue
 end
+
+```
+
+### shelly.sitemap
+
+```
+sitemap demo label="Home"
+{
+        Frame label="Dimmer" {
+            Switch   item=DimmerSwitch
+            Slider   item=DimmerBrightness
+            SetPoint item=DimmerIncDec
+        }
+}
+
+```

@@ -9,12 +9,9 @@
 		<description>Shelly HT sensor device (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="htSensor">
-				<label>Sensor Data</label>
-			</channel-group>
-			<channel-group id="battery" typeId="batteryStatus">
-				<label>Battery Status</label>
-			</channel-group>
+			<channel-group id="sensors" typeId="htSensor" />
+			<channel-group id="battery" typeId="batteryStatus" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:battery" />
@@ -25,12 +22,10 @@
 		<description>Shelly Smoke sensor device (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="smokeSensor">
-				<label>Sensor</label>
-			</channel-group>
-			<channel-group id="battery" typeId="batteryStatus">
-				<label>Battery Status</label>
-			</channel-group>
+			<channel-group id="sensors" typeId="smokeSensor" />
+			<channel-group id="battery" typeId="batteryStatus" />
+			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:battery" />
@@ -39,14 +34,10 @@
 	<thing-type id="shellyflood">
 		<label>Shelly Flood (SHWT-1)</label>
 		<description>Shelly Flood sensor device (battery powered)</description>
-
 		<channel-groups>
-			<channel-group id="sensors" typeId="floodSensor">
-				<label>Sensor Data</label>
-			</channel-group>
-			<channel-group id="battery" typeId="batteryStatus">
-				<label>Battery Status</label>
-			</channel-group>
+			<channel-group id="sensors" typeId="floodSensor" />
+			<channel-group id="battery" typeId="batteryStatus" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:battery" />
@@ -55,17 +46,11 @@
 	<thing-type id="shellysense">
 		<label>Shelly Sense</label>
 		<description>Shelly Sense Remote IR controller</description>
-
 		<channel-groups>
-			<channel-group id="control" typeId="senseControl">
-				<label>Control</label>
-			</channel-group>
-			<channel-group id="sensors" typeId="senseSensors">
-				<label>Sensors</label>
-			</channel-group>
-			<channel-group id="battery" typeId="shortBatteryStatus">
-				<label>Battery Status</label>
-			</channel-group>
+			<channel-group id="control" typeId="senseControl" />
+			<channel-group id="sensors" typeId="senseSensors" />
+			<channel-group id="battery" typeId="shortBatteryStatus" />
+			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:shelly:battery" />
@@ -77,7 +62,6 @@
 		<channels>
 			<channel id="temperature" typeId="sensorTemp" />
 			<channel id="humidity" typeId="sensorHumidity" />
-			<channel id="last_update" typeId="lastUpdate" />
 			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
@@ -88,7 +72,6 @@
 		<channels>
 			<channel id="temperature" typeId="sensorTemp" />
 			<channel id="flood" typeId="sensorFlood" />
-			<channel id="last_update" typeId="lastUpdate" />
 			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
@@ -100,9 +83,8 @@
 			<channel id="temperature" typeId="sensorTemp" />
 			<channel id="humidity" typeId="sensorHumidity" />
 			<channel id="lux" typeId="sensorLux" />
-			<channel id="motion" typeId="sensorMotion" />
+			<channel id="motion" typeId="system.motion" />
 			<channel id="charger" typeId="sensorCharger" />
-			<channel id="last_update" typeId="lastUpdate" />
 			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
@@ -110,17 +92,17 @@
 		<label>Battery Status</label>
 		<description>Status of the device's battery</description>
 		<channels>
-			<channel id="batteryLevel" typeId="batLevel" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="voltage" typeId="batVoltage" />
-			<channel id="lowBattery" typeId="batAlert" />
+			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="shortBatteryStatus">
 		<label>Battery Status</label>
 		<description>Status of the device's battery</description>
 		<channels>
-			<channel id="batteryLevel" typeId="batLevel" />
-			<channel id="lowBattery" typeId="batAlert" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
+			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 	</channel-group-type>
 
@@ -131,80 +113,5 @@
 			<channel id="key" typeId="senseKey" />
 		</channels>
 	</channel-group-type>
-
-	<channel-type id="sensorTemp">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Temperature from the sensor</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="sensorHumidity">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<description>Relative humidity in % (0..100%)</description>
-		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
-	</channel-type>
-	<channel-type id="sensorFlood">
-		<item-type>Switch</item-type>
-		<label>Flood Alarm</label>
-		<description>TRUE: Indicates flood condition / water detected</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="sensorLux">
-		<item-type>Number:Illuminance</item-type>
-		<label>Lux</label>
-		<description>Brightness from the sensor (Lux)</description>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="sensorMotion">
-		<item-type>Switch</item-type>
-		<label>Motion detected</label>
-		<description>ON: Motion detected, OFF: No Motion</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="sensorCharger">
-		<item-type>Switch</item-type>
-		<label>Charger connected</label>
-		<description>ON: Device is charging, OFF: No charger connected</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="batLevel">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Battery level</label>
-		<description>Battery level in %</description>
-		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
-	</channel-type>
-	<channel-type id="batAlert">
-		<item-type>Switch</item-type>
-		<label>Low Battery</label>
-		<description>ON: Battery level is less than 20%</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="batVoltage">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Battery voltage</label>
-		<description>Battery voltage in V</description>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="senseKey">
-		<item-type>String</item-type>
-		<label>IR Key to send</label>
-		<description>Send a defined key code</description>
-	</channel-type>
-	<channel-type id="lastUpdate">
-		<item-type>String</item-type>
-		<label>Last Update</label>
-		<description>Timestamp of last measurement</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
 
 </thing:thing-descriptions>
