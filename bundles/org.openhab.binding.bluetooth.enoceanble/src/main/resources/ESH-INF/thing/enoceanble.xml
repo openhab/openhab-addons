@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ptm215b">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bluegiga" />
+			<bridge-type-ref id="bluez" />
+		</supported-bridge-type-refs>
+
+		<label>Enocean PTM 215B Rocker</label>
+		<description>An Enocean BLE Rocker (PTM 215B)</description>
+
+		<channels>
+			<channel id="rssi" typeId="rssi" />
+			<channel id="rocker" typeId="system.rawrocker" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>
