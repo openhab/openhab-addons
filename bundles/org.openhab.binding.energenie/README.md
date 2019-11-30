@@ -37,12 +37,12 @@ The following channels are supported by PM2-LAN, PMS-LAN, PMS2-LAN or PMS-WLAN d
 
 PWM-LAN devices support the following channels
 
-| channel  | type   | description                              |
-|----------|--------|------------------------------------------|
-| voltage  | Number | Channel for output voltage measurement   |
-| current  | Number | Channel for output current measurement   |
-| power    | Number | Channel for output power measurement     |
-| energy   | Number | channel for output energy measurement    |
+| channel  | type                     | description                              |
+|----------|--------------------------|------------------------------------------|
+| voltage  | Number:ElectricPotential | Channel for output voltage measurement   |
+| current  | Number:ElectricCurrent   | Channel for output current measurement   |
+| power    | Number:Power             | Channel for output power measurement     |
+| energy   | Number:Energy            | channel for output energy measurement    |
 
 
 ## Full Example

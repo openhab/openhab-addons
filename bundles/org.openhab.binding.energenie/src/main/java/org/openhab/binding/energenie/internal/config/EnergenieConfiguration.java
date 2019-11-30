@@ -18,12 +18,11 @@ package org.openhab.binding.energenie.internal.config;
  * @author Hans-Jörg Merk - Initial contribution
  */
 public class EnergenieConfiguration {
-
-    public String host = "";
-    public String password = "";
     /**
      * The default refresh interval in Seconds.
      */
-    public int DEFAULT_REFRESH_INTERVAL = 60;
+    public static final int DEFAULT_REFRESH_INTERVAL = 60;
 
+    public String host = "";
+    public String password = "";
 }

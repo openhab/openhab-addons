@@ -19,7 +19,7 @@
 	</thing-type>
 
 	<thing-type id="pmslan">
-		<label>Energenie EG-PMS-LAN</label>
+		<label>EG-PMS-LAN</label>
 		<description>Energenie programmable power strip with LAN interface</description>
 
 		<channel-groups>
@@ -33,7 +33,7 @@
 	</thing-type>
 
 	<thing-type id="pms2lan">
-		<label>Energenie EG-PMS2-LAN</label>
+		<label>EG-PMS2-LAN</label>
 		<description>Energenie programmable power strip with LAN interface</description>
 
 		<channel-groups>
@@ -47,7 +47,7 @@
 	</thing-type>
 
 	<thing-type id="pmswlan">
-		<label>Energenie EG-PMS-WLAN</label>
+		<label>EG-PMS-WLAN</label>
 		<description>Energenie programmable power strip with WLAN interface</description>
 
 		<channel-groups>
@@ -61,7 +61,7 @@
 	</thing-type>
 
 	<thing-type id="pwmlan">
-		<label>Energenie EGM-PWM-LAN</label>
+		<label>EGM-PWM-LAN</label>
 		<description>Energenie energy meter with LAN interface</description>
 
 		<channels>
@@ -112,28 +112,28 @@
 
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Voltage </label>
+		<label>Voltage</label>
 		<description>Channel representing the voltage</description>
 		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Current </label>
+		<label>Current</label>
 		<description>Channel representing the current</description>
 		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
-		<label>Power </label>
+		<label>Power</label>
 		<description>Channel representing the power consumption</description>
 		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="energy">
 		<item-type>Number:Energy</item-type>
-		<label>Energy </label>
+		<label>Energy</label>
 		<description>Channel representing the energy consumption</description>
 		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>

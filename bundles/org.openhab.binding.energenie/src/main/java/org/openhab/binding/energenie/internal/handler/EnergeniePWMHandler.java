@@ -15,7 +15,7 @@ package org.openhab.binding.energenie.internal.handler;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -141,7 +141,7 @@ public class EnergeniePWMHandler extends BaseThingHandler {
         if (config.host != null && config.password != null) {
             host = config.host;
             password = config.password;
-            refreshInterval = config.DEFAULT_REFRESH_INTERVAL;
+            refreshInterval = EnergenieConfiguration.DEFAULT_REFRESH_INTERVAL;
             logger.debug("Initializing EnergeniePWMHandler for Host '{}'", host);
             updateStatus(ThingStatus.ONLINE);
             onUpdate();
@@ -163,7 +163,7 @@ public class EnergeniePWMHandler extends BaseThingHandler {
     public void getState() {
         String url = "http://" + host + "/login.html";
         String urlParameters = "pw=" + password;
-        InputStream urlContent = new ByteArrayInputStream(urlParameters.getBytes(Charset.forName("UTF-8")));
+        InputStream urlContent = new ByteArrayInputStream(urlParameters.getBytes(StandardCharsets.UTF_8));
         String loginResponseString = null;
 
         try {

@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EnergenieHandler extends BaseThingHandler {
 
+    private static final String CHANNEL_SOCKET_PREFIX = "socket";
     private final Logger logger = LoggerFactory.getLogger(EnergenieHandler.class);
 
     private String egprotocol = "EG_PROTO_V20";
@@ -137,7 +138,7 @@ public class EnergenieHandler extends BaseThingHandler {
         if (config.host != null && config.password != null) {
             host = config.host;
             password = config.password;
-            refreshInterval = config.DEFAULT_REFRESH_INTERVAL;
+            refreshInterval = EnergenieConfiguration.DEFAULT_REFRESH_INTERVAL;
             key = getKey();
             logger.debug("Initializing EnergenieHandler for Host '{}'", config.host);
 
@@ -300,23 +301,8 @@ public class EnergenieHandler extends BaseThingHandler {
                 statusOff = WLAN_STATE_OFF;
                 break;
         }
-
         for (int i = 0; i < 4; i++) {
-            String socket = SOCKET_1;
-            switch (i) {
-                case 0:
-                    socket = SOCKET_1;
-                    break;
-                case 1:
-                    socket = SOCKET_2;
-                    break;
-                case 2:
-                    socket = SOCKET_3;
-                    break;
-                case 3:
-                    socket = SOCKET_4;
-                    break;
-            }
+            String socket = CHANNEL_SOCKET_PREFIX + (i + 1);
             stat = status[i];
             String stringStatus = String.format("0x%02x", stat);
             if (stringStatus.equals(statusOn)) {

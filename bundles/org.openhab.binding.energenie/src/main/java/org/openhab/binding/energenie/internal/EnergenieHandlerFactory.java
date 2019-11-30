@@ -50,17 +50,13 @@ public class EnergenieHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_PMSLAN.equals(thingTypeUID)) {
             return new EnergenieHandler(thing, "EG_PROTO_V20");
-        }
-        if (THING_TYPE_PM2LAN.equals(thingTypeUID) || THING_TYPE_PMS2LAN.equals(thingTypeUID)) {
+        } else if (THING_TYPE_PM2LAN.equals(thingTypeUID) || THING_TYPE_PMS2LAN.equals(thingTypeUID)) {
             return new EnergenieHandler(thing, "EG_PROTO_V21");
-        }
-        if (THING_TYPE_PMSWLAN.equals(thingTypeUID)) {
+        } else if (THING_TYPE_PMSWLAN.equals(thingTypeUID)) {
             return new EnergenieHandler(thing, "EG_PROTO_WLAN");
-        }
-        if (THING_TYPE_PWMLAN.equals(thingTypeUID)) {
+        } else if (THING_TYPE_PWMLAN.equals(thingTypeUID)) {
             return new EnergeniePWMHandler(thing);
         }
-
         return null;
     }
 }
