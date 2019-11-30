@@ -15,6 +15,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.2.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>javazoom</groupId>
       <artifactId>jlayer</artifactId>
       <version>1.0.1</version>

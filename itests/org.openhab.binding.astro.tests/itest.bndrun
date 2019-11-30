@@ -22,7 +22,6 @@ Fragment-Host: org.openhab.binding.astro
 	org.openhab.core.config.core;version='[2.5.0,2.5.1)',\
 	org.openhab.core.storage.json;version='[2.5.0,2.5.1)',\
 	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
-	org.apache.commons.collections;version='[3.2.1,3.2.2)',\
 	org.objenesis;version='[2.6.0,2.6.1)',\
 	org.openhab.binding.astro;version='[2.5.0,2.5.1)',\
 	org.openhab.binding.astro.tests;version='[2.5.0,2.5.1)',\
