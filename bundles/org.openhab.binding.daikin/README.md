@@ -54,11 +54,11 @@ For the BRP15B61:
 
 ## Full Example
 
+### For the BRP072A42:
 daikin.things:
 
 ```
 daikin:ac_unit:living_room_ac [ host="192.168.0.5" ]
-daikin:airbase_ac_unit:living_room_ac [ host="192.168.0.5" ]
 ```
 
 daikin.items:
@@ -70,15 +70,45 @@ String DaikinACUnit_Mode { channel="daikin:ac_unit:living_room_ac:mode" }
 String DaikinACUnit_Fan { channel="daikin:ac_unit:living_room_ac:fanspeed" }
 Number:Temperature DaikinACUnit_IndoorTemperature { channel="daikin:ac_unit:living_room_ac:indoortemp" }
 Number:Temperature DaikinACUnit_OutdoorTemperature { channel="daikin:ac_unit:living_room_ac:outdoortemp" }
-# Additional items for BRP1B61
-Switch DaikinACUnit_Zone1 { channel="daikin:airbase_ac_unit:living_room_ac:zone1" }
-Switch DaikinACUnit_Zone2 { channel="daikin:airbase_ac_unit:living_room_ac:zone2" }
-Switch DaikinACUnit_Zone3 { channel="daikin:airbase_ac_unit:living_room_ac:zone3" }
-Switch DaikinACUnit_Zone4 { channel="daikin:airbase_ac_unit:living_room_ac:zone4" }
-Switch DaikinACUnit_Zone5 { channel="daikin:airbase_ac_unit:living_room_ac:zone5" }
-Switch DaikinACUnit_Zone6 { channel="daikin:airbase_ac_unit:living_room_ac:zone6" }
-Switch DaikinACUnit_Zone7 { channel="daikin:airbase_ac_unit:living_room_ac:zone7" }
-Switch DaikinACUnit_Zone8 { channel="daikin:airbase_ac_unit:living_room_ac:zone8" }
+```
+
+daikin.sitemap:
+
+```
+Switch item=DaikinACUnit_Power
+Setpoint item=DaikinACUnit_SetPoint visibility=[DaikinACUnit_Power==ON]
+Selection item=DaikinACUnit_Mode mappings=["AUTO"="Auto", "DEHUMIDIFIER"="Dehumidifier", "COLD"="Cold", "HEAT"="Heat", "FAN"="Fan"] visibility=[DaikinACUnit_Power==ON]
+Selection item=DaikinACUnit_Fan mappings=["AUTO"="Auto", "SILENCE"="Silence", "LEVEL_1"="Level 1", "LEVEL_2"="Level 2", "LEVEL_3"="Level 3", "LEVEL_4"="Level 4", "LEVEL_5"="Level 5"] visibility=[DaikinACUnit_Power==ON]
+Text item=DaikinACUnit_IndoorTemperature
+Text item=DaikinACUnit_OutdoorTemperature
+```
+
+
+### For the BRP15B61:
+
+daikin.things:
+
+```
+daikin:airbase_ac_unit:ac [ host="192.168.0.5" ]
+```
+
+daikin.items:
+
+```
+Switch DaikinACUnit_Power { channel="daikin:airbase_ac_unit:ac:power" }
+Number:Temperature DaikinACUnit_SetPoint { channel="daikin:airbase_ac_unit:ac:settemp" }
+String DaikinACUnit_Mode { channel="daikin:airbase_ac_unit:ac:mode" }
+String DaikinACUnit_Fan { channel="daikin:airbase_ac_unit:ac:airbasefanspeed" }
+Number:Temperature DaikinACUnit_IndoorTemperature { channel="daikin:airbase_ac_unit:ac:indoortemp" }
+Number:Temperature DaikinACUnit_OutdoorTemperature { channel="daikin:airbase_ac_unit:ac:outdoortemp" }
+Switch DaikinACUnit_Zone1 { channel="daikin:airbase_ac_unit:ac:zone1" }
+Switch DaikinACUnit_Zone2 { channel="daikin:airbase_ac_unit:ac:zone2" }
+Switch DaikinACUnit_Zone3 { channel="daikin:airbase_ac_unit:ac:zone3" }
+Switch DaikinACUnit_Zone4 { channel="daikin:airbase_ac_unit:ac:zone4" }
+Switch DaikinACUnit_Zone5 { channel="daikin:airbase_ac_unit:ac:zone5" }
+Switch DaikinACUnit_Zone6 { channel="daikin:airbase_ac_unit:ac:zone6" }
+Switch DaikinACUnit_Zone7 { channel="daikin:airbase_ac_unit:ac:zone7" }
+Switch DaikinACUnit_Zone8 { channel="daikin:airbase_ac_unit:ac:zone8" }
 
 ```
 
@@ -91,7 +121,6 @@ Selection item=DaikinACUnit_Mode mappings=["AUTO"="Auto", "DEHUMIDIFIER"="Dehumi
 Selection item=DaikinACUnit_Fan mappings=["AUTO"="Auto", "SILENCE"="Silence", "LEVEL_1"="Level 1", "LEVEL_2"="Level 2", "LEVEL_3"="Level 3", "LEVEL_4"="Level 4", "LEVEL_5"="Level 5"] visibility=[DaikinACUnit_Power==ON]
 Text item=DaikinACUnit_IndoorTemperature
 Text item=DaikinACUnit_OutdoorTemperature
-# Additional items for BRP15B61
 Switch item=DaikinACUnit_Zone1 visibility=[DaikinACUnit_Power==ON]
 Switch item=DaikinACUnit_Zone2 visibility=[DaikinACUnit_Power==ON]
 Switch item=DaikinACUnit_Zone3 visibility=[DaikinACUnit_Power==ON]
