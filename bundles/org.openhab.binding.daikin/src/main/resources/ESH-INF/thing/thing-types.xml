@@ -110,7 +110,6 @@
 				<option value="heat">Heating On</option>
 				<option value="cool">Cooling On</option>
 				<option value="off">Off</option>
-
 			</options>
 		</state>
 	</channel-type>

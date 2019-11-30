@@ -31,6 +31,7 @@ For the BRP072A42:
 | outdoortemp  | The outdoor temperature as measured by the external part of the air conditioning system. May not be available when unit is off. |
 | humidity     | The indoor humidity as measured by the unit. This is not available on all units.            |
 | mode         | The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)                             |
+| homekit mode | A mode that is compatible with homekit/alexa/google home (off, on, heat, cool)              |
 | fanspeed     | The fan speed set for the unit (AUTO, SILENCE, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5) |
 
 For the BRP15B61:
@@ -42,6 +43,7 @@ For the BRP15B61:
 | indoortemp      | The indoor temperature as measured by the unit.                                             |
 | outdoortemp     | The outdoor temperature as measured by the external part of the air conditioning system. May not be available when unit is off. |
 | mode            | The mode set for the unit (AUTO, DEHUMIDIFIER, COLD, HEAT, FAN)                             |
+| homekit mode    | A mode that is compatible with homekit/alexa/google home (off, on, heat, cool)              | 
 | airbasefanspeed | The fan speed set for the unit (AUTO, LEVEL_1, LEVEL_2, LEVEL_3)                            |
 | zone1           | Turns zone 1 on/off for the air conditioning unit (if a zoned controller is installed.      |
 | zone2           | Turns zone 2 on/off for the air conditioning unit.                                          |
@@ -67,6 +69,7 @@ daikin.items:
 Switch DaikinACUnit_Power { channel="daikin:ac_unit:living_room_ac:power" }
 Number:Temperature DaikinACUnit_SetPoint { channel="daikin:ac_unit:living_room_ac:setpoint" }
 String DaikinACUnit_Mode { channel="daikin:ac_unit:living_room_ac:mode" }
+String DaikinACUnit_HomekitMode { channel="daikin:ac_unit:living_room_ac:homekitmode" }
 String DaikinACUnit_Fan { channel="daikin:ac_unit:living_room_ac:fanspeed" }
 Number:Temperature DaikinACUnit_IndoorTemperature { channel="daikin:ac_unit:living_room_ac:indoortemp" }
 Number:Temperature DaikinACUnit_OutdoorTemperature { channel="daikin:ac_unit:living_room_ac:outdoortemp" }
