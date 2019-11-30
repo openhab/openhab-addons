@@ -6,7 +6,8 @@ This extension supports Bluetooth access via BlueZ on Linux (ARMv6hf).
 
 Please note that at least BlueZ 5.43 is required, while 5.48 or above are [not (yet) supported](https://github.com/intel-iot-devkit/tinyb/issues/131) either.
 
-Some settings are required to ensure that openHAB has access to Bluez. To allow openHAB to access Bluez via dbus you need to add the following entry within your dbus configuration in `/etc/dbus-1/system.d/bluetooth.conf`
+Some settings are required to ensure that openHAB has access to Bluez.
+To allow openHAB to access Bluez via dbus you need to add the following entry within your dbus configuration in `/etc/dbus-1/system.d/bluetooth.conf`
 
 ```xml
 <busconfig>
@@ -26,7 +27,8 @@ and add openHAB to the "bluetooth" group.
 sudo adduser openhab bluetooth
 ```
 
-Also, in case you don't want to manually enable your bluetooth adapters with `bluetoothctl`, ensure that it's automatically enabled by setting the option `AutoEnable` in your `/etc/bluetooth/main.conf` to `true`. Restart running services for changes to take effect.
+Also, in case you don't want to manually enable your bluetooth adapters with `bluetoothctl`, ensure that it's automatically enabled by setting the option `AutoEnable` in your `/etc/bluetooth/main.conf` to `true`.
+Restart running services for changes to take effect.
 
 ```
 systemctl restart dbus
