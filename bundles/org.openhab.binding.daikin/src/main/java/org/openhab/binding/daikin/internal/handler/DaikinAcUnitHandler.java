@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
@@ -117,9 +118,13 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
                     return;
                 }
                 break;
+            case DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE:
+                if (command != RefreshType.REFRESH) {
+                    changeHomekitMode(command.toString());
+                }
+                break;
             case DaikinBindingConstants.CHANNEL_AC_MODE:
                 if (command instanceof StringType) {
-
                     if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT))
                         changeMode(Mode.valueOf(((StringType) command).toString()));
                     else
@@ -190,6 +195,15 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
                 pollStatus();
             } else {
                 pollAirbaseStatus();
+            }
+            if (DaikinBindingConstants.CHANNEL_AC_POWER == "FALSE") {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("off"));
+            } else if (DaikinBindingConstants.CHANNEL_AC_MODE == "COLD") {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("cool"));
+            } else if (DaikinBindingConstants.CHANNEL_AC_MODE == "HEAT") {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("heat"));
+            } else {
+                updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("heat"));
             }
 
         } catch (IOException e) {
@@ -310,6 +324,34 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
         ControlInfo info = webTargets.getControlInfo();
         info.mode = mode;
         webTargets.setControlInfo(info);
+    }
+
+    private void changeHomekitMode(String homekitmode) throws DaikinCommunicationException {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (homekitmode.equals("off")) {
+           changePower(false);
+        } else {
+           changePower(true);
+           if (homekitmode.equals("on")) {
+              if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
+                changeMode(Mode.valueOf(((String) "AUTO").toString()));
+              } else {
+                changeAirbaseMode(AirbaseMode.valueOf(((String) "AUTO").toString()));
+              }
+           } else if (homekitmode.equals("heat")) {
+              if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
+                changeMode(Mode.valueOf(((String) "HEAT").toString()));
+              } else {
+                changeAirbaseMode(AirbaseMode.valueOf(((String) "HEAT").toString()));
+              }
+           } else if (homekitmode.equals("cool")) {
+              if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
+                changeMode(Mode.valueOf(((String) "COLD").toString()));
+              } else {
+                changeAirbaseMode(AirbaseMode.valueOf(((String) "COLD").toString()));
+              }
+           }       
+        }
     }
 
     private void changeAirbaseMode(AirbaseMode mode) throws DaikinCommunicationException {
