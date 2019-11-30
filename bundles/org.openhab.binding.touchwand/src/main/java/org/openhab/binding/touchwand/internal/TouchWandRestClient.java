@@ -188,7 +188,6 @@ public class TouchWandRestClient {
 
         try {
             response = request.send();
-            logger.debug("Return string {}", response.getContentAsString());
             return response.getContentAsString();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error open connecton to {} : {} ", touchWandIpAddr, e.getMessage());

@@ -172,7 +172,7 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements
 
     public synchronized boolean registerUpdateListener(TouchWandUnitUpdateListener listener) {
         boolean result = false;
-        logger.warn("Adding Status update listener for device {}", listener.getId());
+        logger.debug("Adding Status update listener for device {}", listener.getId());
         if (!unitUpdateListeners.containsKey(listener.getId())) {
             unitUpdateListeners.put(listener.getId(), listener);
             result = true;
@@ -182,7 +182,7 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements
     }
 
     public synchronized boolean unregisterUpdateListener(TouchWandUnitUpdateListener listener) {
-        logger.warn("Remove Status update listener for device {}", listener.getId());
+        logger.trace("Remove Status update listener for device {}", listener.getId());
         unitUpdateListeners.remove(listener.getId());
         return true;
     }

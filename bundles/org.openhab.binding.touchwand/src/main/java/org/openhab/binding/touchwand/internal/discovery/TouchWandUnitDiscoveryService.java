@@ -43,7 +43,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link TouchWandUnitDiscoveryService} Discovery service for units.
+ * The {@link TouchWandUnitDiscoveryService} Discovery service for TouchWand units.
  *
  * @author Roie Geron - Initial contribution
  */
@@ -78,17 +78,16 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
         }
 
         if (touchWandBridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Could not scan units while bridge offline");
+            logger.warn("Could not scan units while bridge offline");
             return;
         }
 
-        logger.debug("Starting TouchWand discovery on bridge {}", touchWandBridgeHandler.getThing().getUID());
+        logger.trace("Starting TouchWand discovery on bridge {}", touchWandBridgeHandler.getThing().getUID());
         String response = touchWandBridgeHandler.touchWandClient.cmdListUnits();
         if (response == null) {
             return;
         }
 
-        logger.debug("Recieved list units respose {}", response);
         JsonParser jsonParser = new JsonParser();
         try {
             JsonArray jsonArray = jsonParser.parse(response).getAsJsonArray();
@@ -107,8 +106,9 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
                         if (!touchWandBridgeHandler.isAddSecondaryControllerUnits()) {
                             if (!Arrays.asList(switchOptions).contains(touchWandUnit.getConnectivity())) {
-                                logger.debug("Skipped secondary controller unit id {} name {}", touchWandUnit.getId(),
-                                        touchWandUnit.getName());
+                                // logger.debug("Skipped secondary controller unit id {} name {}",
+                                // touchWandUnit.getId(),
+                                // touchWandUnit.getName());
                                 continue;
                             }
                         }
@@ -117,8 +117,8 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                         } else if (touchWandUnit.getType().equals("shutter")) {
                             addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
                         }
-                        logger.debug("id is {} name {} type {} connectivity {}", touchWandUnit.getId(),
-                                touchWandUnit.getName(), touchWandUnit.getType(), touchWandUnit.getConnectivity());
+                        // logger.debug("id is {} name {} type {} connectivity {}", touchWandUnit.getId(),
+                        // touchWandUnit.getName(), touchWandUnit.getType(), touchWandUnit.getConnectivity());
                     }
                 } catch (JsonSyntaxException e) {
                     logger.warn("Could not parse unit {}", e.getMessage());
@@ -138,19 +138,19 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
     public void activate() {
         super.activate(null);
         removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
-        logger.debug("activate discovery service");
+        logger.trace("Activate TouchWand units discovery service");
     }
 
     @Override
     public void deactivate() {
         removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
         super.deactivate();
-        logger.debug("deactivate discovery services");
+        logger.trace("deactivate TouchWand units discovery services");
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Start TouchWand units background discovery");
+        logger.trace("Start TouchWand units background discovery");
         if (scanningJob == null || scanningJob.isCancelled()) {
             scanningJob = scheduler.scheduleWithFixedDelay(scanningRunnable, LINK_DISCOVERY_SERVICE_INITIAL_DELAY,
                     SCAN_INTERVAL, TimeUnit.SECONDS);
@@ -159,7 +159,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Stop TouchWand device units discovery");
+        logger.trace("Stop TouchWand device units discovery");
         if (scanningJob != null && !scanningJob.isCancelled()) {
             scanningJob.cancel(true);
             scanningJob = null;

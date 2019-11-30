@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -77,7 +76,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
+        logger.trace("Handler disposed.");
         if (pollingJob != null) {
             pollingJob.cancel(true);
         }
@@ -110,7 +109,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
 
-        logger.debug("initializeThing Thing {} Bridge status {}", getThing().getUID(), bridgeStatus);
+        logger.trace("initializeThing Thing {} Bridge status {}", getThing().getUID(), bridgeStatus);
 
         Thing thing = getThing();
         Map<String, String> properties = thing.getProperties();
@@ -123,9 +122,9 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
             thingReachable = !(response == null);
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                int statusRefreshRate = bridgeHandler.getStatusRefreshTime();
-                pollingJob = scheduler.scheduleWithFixedDelay(runnable, INITIAL_UPDATE_TIME, statusRefreshRate,
-                        TimeUnit.SECONDS);
+                // int statusRefreshRate = bridgeHandler.getStatusRefreshTime();
+                // pollingJob = scheduler.scheduleWithFixedDelay(runnable, INITIAL_UPDATE_TIME, statusRefreshRate,
+                // TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }

@@ -50,12 +50,14 @@ public class TouchWandWebSockets {
     private WebSocketClient client;
     private String controllerAddress;
     private TouchWandSocket touchWandSocket;
+    private boolean isShutDown = false;
 
     private final Logger logger = LoggerFactory.getLogger(TouchWandWebSockets.class);
     private List<TouchWandWebSocketListener> listeners = new ArrayList<>();
 
     private static final String WS_ENDPOINT_TOUCHWAND = "/async";
     private @Nullable URI uri;
+    private static final int connectTimeOut = 10000;
 
     public TouchWandWebSockets(String ipAddress) {
 
@@ -73,7 +75,7 @@ public class TouchWandWebSockets {
             return;
         }
 
-        client.setConnectTimeout(10000);
+        client.setConnectTimeout(connectTimeOut);
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         request.setSubProtocols("relay_protocol");
 
@@ -87,6 +89,7 @@ public class TouchWandWebSockets {
     }
 
     public void dispose() {
+        isShutDown = true;
         try {
             client.stop();
         } catch (Exception e) {
@@ -96,7 +99,7 @@ public class TouchWandWebSockets {
 
     public synchronized void registerListener(TouchWandWebSocketListener listener) {
         if (!listeners.contains(listener)) {
-            logger.trace("Adding TouchWandWebSocket listener {}", listener);
+            logger.debug("Adding TouchWandWebSocket listener {}", listener);
             listeners.add(listener);
         }
     }
@@ -105,8 +108,9 @@ public class TouchWandWebSockets {
         listeners.remove(listener);
     }
 
-    @WebSocket
+    @WebSocket(maxIdleTime = connectTimeOut * 5)
     public class TouchWandSocket {
+
         @SuppressWarnings("unused")
         private @Nullable Session session;
 
@@ -115,13 +119,31 @@ public class TouchWandWebSockets {
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
-            logger.debug("Connection closed: {} - {}", statusCode, reason);
-            this.session = null;
+            logger.info("Connection closed: {} - {}", statusCode, reason);
+            if (!isShutDown) {
+                logger.info("weSocket Closed - reconnecting");
+                WebSocketReconnect reconnect = new WebSocketReconnect();
+                setTimeOut(reconnect, connectTimeOut * 2);
+            } else {
+                this.session = null;
+            }
+        }
+
+        private synchronized void setTimeOut(WebSocketReconnect reconnect, int delay) {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(delay);
+                    reconnect.run();
+                } catch (Exception e) {
+                    logger.warn("Error open setTimeout thread {} ", e.getMessage());
+                }
+            }).start();
+
         }
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
-            logger.debug("TouchWandWebSockets connected to {}", session.getRemoteAddress().toString());
+            logger.info("TouchWandWebSockets connected to {}", session.getRemoteAddress().toString());
             this.session = session;
             try {
                 session.getRemote().sendString("{\"openhab\": \"openhab\"}");
@@ -162,7 +184,20 @@ public class TouchWandWebSockets {
         @OnWebSocketError
         public void onError(Throwable cause) {
             logger.warn("WebSocket Error: {}", cause.getMessage());
+            if (!isShutDown) {
+                logger.warn("WebSocket onError - reconnecting");
+                WebSocketReconnect reconnect = new WebSocketReconnect();
+                setTimeOut(reconnect, connectTimeOut);
+            } else {
+                this.session = null;
+            }
+        }
+
+        private class WebSocketReconnect implements Runnable {
+            @Override
+            public void run() {
+                connect();
+            }
         }
     }
-
 }
