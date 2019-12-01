@@ -57,7 +57,7 @@ public class TouchWandWebSockets {
 
     private static final String WS_ENDPOINT_TOUCHWAND = "/async";
     private @Nullable URI uri;
-    private static final int CONNECT_TIMEOUT = 10000;
+    private static final int CONNECT_TIMEOUT = 10000; // 10 seconds
 
     public TouchWandWebSockets(String ipAddress) {
         client = new WebSocketClient();
@@ -97,12 +97,13 @@ public class TouchWandWebSockets {
 
     public synchronized void registerListener(TouchWandWebSocketListener listener) {
         if (!listeners.contains(listener)) {
-            logger.debug("Adding TouchWandWebSocket listener {}", listener);
+            logger.info("Adding TouchWandWebSocket listener {}", listener);
             listeners.add(listener);
         }
     }
 
     public synchronized void unregisterListener(TouchWandWebSocketListener listener) {
+        logger.info("Removing TouchWandWebSocket listener {}", listener);
         listeners.remove(listener);
     }
 
@@ -143,7 +144,7 @@ public class TouchWandWebSockets {
             logger.info("TouchWandWebSockets connected to {}", session.getRemoteAddress().toString());
             this.session = session;
             try {
-                session.getRemote().sendString("{\"openhab\": \"openhab\"}");
+                session.getRemote().sendString("{\"myopenhab\": \"myopenhab\"}");
             } catch (IOException e) {
                 logger.warn("sendString : {}", e.getMessage());
             }

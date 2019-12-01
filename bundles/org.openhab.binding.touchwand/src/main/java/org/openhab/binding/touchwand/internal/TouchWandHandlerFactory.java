@@ -62,8 +62,7 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            TouchWandBridgeHandler handler = new TouchWandBridgeHandler((Bridge) thing, httpClient, bundleContext);
-            return handler;
+            return new TouchWandBridgeHandler((Bridge) thing, httpClient, bundleContext);
         } else if (THING_TYPE_SWITCH.equals(thingTypeUID)) {
             return new TouchWandSwitchHandler(thing);
         } else if (THING_TYPE_SHUTTER.equals(thingTypeUID)) {
@@ -73,10 +72,6 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
     }
 
     @Reference

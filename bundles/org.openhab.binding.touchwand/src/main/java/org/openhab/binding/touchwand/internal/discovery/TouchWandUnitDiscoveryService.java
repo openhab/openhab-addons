@@ -106,9 +106,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
                         if (!touchWandBridgeHandler.isAddSecondaryControllerUnits()) {
                             if (!Arrays.asList(CONNECTIVITY_OPTIONS).contains(touchWandUnit.getConnectivity())) {
-                                // logger.debug("Skipped secondary controller unit id {} name {}",
-                                // touchWandUnit.getId(),
-                                // touchWandUnit.getName());
                                 continue;
                             }
                         }
@@ -119,8 +116,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                         } else if (touchWandUnit.getType().equals("WallController")) {
                             addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_WALLCONTROLLER);
                         }
-                        // logger.debug("id is {} name {} type {} connectivity {}", touchWandUnit.getId(),
-                        // touchWandUnit.getName(), touchWandUnit.getType(), touchWandUnit.getConnectivity());
                     }
                 } catch (JsonSyntaxException e) {
                     logger.warn("Could not parse unit {}", e.getMessage());
