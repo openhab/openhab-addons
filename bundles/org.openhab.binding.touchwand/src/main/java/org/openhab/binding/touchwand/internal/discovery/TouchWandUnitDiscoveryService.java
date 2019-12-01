@@ -52,7 +52,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
     private static final int SEARCH_TIME = 10;
     private static final int SCAN_INTERVAL = 60;
     private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY = 5;
-    private static final String[] switchOptions = { "zwave", "knx" };
+    private static final String[] CONNECTIVITY_OPTIONS = { "zwave", "knx" };
 
     private ScheduledFuture<?> scanningJob;
 
@@ -105,7 +105,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                         }
 
                         if (!touchWandBridgeHandler.isAddSecondaryControllerUnits()) {
-                            if (!Arrays.asList(switchOptions).contains(touchWandUnit.getConnectivity())) {
+                            if (!Arrays.asList(CONNECTIVITY_OPTIONS).contains(touchWandUnit.getConnectivity())) {
                                 // logger.debug("Skipped secondary controller unit id {} name {}",
                                 // touchWandUnit.getId(),
                                 // touchWandUnit.getName());
@@ -116,6 +116,8 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                             addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SWITCH);
                         } else if (touchWandUnit.getType().equals("shutter")) {
                             addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
+                        } else if (touchWandUnit.getType().equals("WallController")) {
+                            addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_WALLCONTROLLER);
                         }
                         // logger.debug("id is {} name {} type {} connectivity {}", touchWandUnit.getId(),
                         // touchWandUnit.getName(), touchWandUnit.getType(), touchWandUnit.getConnectivity());

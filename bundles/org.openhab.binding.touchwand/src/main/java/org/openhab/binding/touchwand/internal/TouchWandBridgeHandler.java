@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements TouchWandWebSocketListener {
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(TouchWandBridgeHandler.class);
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -79,9 +78,7 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements
 
     @Override
     public void initialize() {
-
         updateStatus(ThingStatus.UNKNOWN);
-
         config = getThing().getConfiguration();
 
         try {
@@ -172,7 +169,7 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements
 
     public synchronized boolean registerUpdateListener(TouchWandUnitUpdateListener listener) {
         boolean result = false;
-        logger.warn("Adding Status update listener for device {}", listener.getId());
+        logger.trace("Adding Status update listener for device {}", listener.getId());
         if (!unitUpdateListeners.containsKey(listener.getId())) {
             unitUpdateListeners.put(listener.getId(), listener);
             result = true;

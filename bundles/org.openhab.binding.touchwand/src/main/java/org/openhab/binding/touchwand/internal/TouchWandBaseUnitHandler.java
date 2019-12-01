@@ -57,13 +57,12 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     @NonNullByDefault({})
     protected String unitId;
     private final Logger logger = LoggerFactory.getLogger(TouchWandBaseUnitHandler.class);
-    private final static int INITIAL_UPDATE_TIME = 10;
     private @Nullable ScheduledFuture<?> pollingJob;
 
     @NonNullByDefault({})
     protected TouchWandBridgeHandler bridgeHandler;
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_SHUTTER, THING_TYPE_SWITCH));
+            Arrays.asList(THING_TYPE_SHUTTER, THING_TYPE_SWITCH, THING_TYPE_WALLCONTROLLER));
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -87,11 +86,8 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     @Override
     public void initialize() {
-
         ThingStatus bridgeStatus;
-
         logger.trace("Initializing TocuhWand Unit handler");
-
         Bridge bridge = getBridge();
 
         if (bridge == null) {
@@ -122,9 +118,6 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
             thingReachable = !(response == null);
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                // int statusRefreshRate = bridgeHandler.getStatusRefreshTime();
-                // pollingJob = scheduler.scheduleWithFixedDelay(runnable, INITIAL_UPDATE_TIME, statusRefreshRate,
-                // TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
@@ -134,7 +127,6 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     }
 
     private int getUnitState(String unitId) {
-
         int status = 0;
 
         if (bridgeHandler == null) {
@@ -174,8 +166,6 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     @Override
     public void onItemStatusUpdate(TouchWandUnitData unitData) {
-        logger.debug("Received Status update , I am unitData {} , update unit {} status {}", unitData.getId(), unitId,
-                unitData.getCurrStatus());
         updateTouchWandUnitState(unitData.getCurrStatus());
     }
 

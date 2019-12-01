@@ -57,17 +57,15 @@ public class TouchWandWebSockets {
 
     private static final String WS_ENDPOINT_TOUCHWAND = "/async";
     private @Nullable URI uri;
-    private static final int connectTimeOut = 10000;
+    private static final int CONNECT_TIMEOUT = 10000;
 
     public TouchWandWebSockets(String ipAddress) {
-
         client = new WebSocketClient();
         touchWandSocket = new TouchWandSocket();
         this.controllerAddress = ipAddress;
     }
 
     public void connect() {
-
         try {
             uri = new URI("ws://" + controllerAddress + WS_ENDPOINT_TOUCHWAND);
         } catch (URISyntaxException e) {
@@ -75,7 +73,7 @@ public class TouchWandWebSockets {
             return;
         }
 
-        client.setConnectTimeout(connectTimeOut);
+        client.setConnectTimeout(CONNECT_TIMEOUT);
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         request.setSubProtocols("relay_protocol");
 
@@ -108,7 +106,7 @@ public class TouchWandWebSockets {
         listeners.remove(listener);
     }
 
-    @WebSocket(maxIdleTime = connectTimeOut * 5)
+    @WebSocket(maxIdleTime = CONNECT_TIMEOUT * 12)
     public class TouchWandSocket {
 
         @SuppressWarnings("unused")
@@ -123,7 +121,7 @@ public class TouchWandWebSockets {
             if (!isShutDown) {
                 logger.info("weSocket Closed - reconnecting");
                 WebSocketReconnect reconnect = new WebSocketReconnect();
-                setTimeOut(reconnect, connectTimeOut * 2);
+                setTimeOut(reconnect, CONNECT_TIMEOUT * 2);
             } else {
                 this.session = null;
             }
@@ -138,7 +136,6 @@ public class TouchWandWebSockets {
                     logger.warn("Error open setTimeout thread {} ", e.getMessage());
                 }
             }).start();
-
         }
 
         @OnWebSocketConnect
@@ -149,13 +146,11 @@ public class TouchWandWebSockets {
                 session.getRemote().sendString("{\"openhab\": \"openhab\"}");
             } catch (IOException e) {
                 logger.warn("sendString : {}", e.getMessage());
-
             }
         }
 
         @OnWebSocketMessage
         public void onMessage(String msg) {
-
             TouchWandUnitData touchWandUnit;
             JsonParser jsonParser = new JsonParser();
             Gson gson = new Gson();
@@ -178,7 +173,6 @@ public class TouchWandWebSockets {
             } catch (JsonSyntaxException e) {
                 logger.warn("jsonParser.parse {} ", e.getMessage());
             }
-
         }
 
         @OnWebSocketError
@@ -187,7 +181,7 @@ public class TouchWandWebSockets {
             if (!isShutDown) {
                 logger.warn("WebSocket onError - reconnecting");
                 WebSocketReconnect reconnect = new WebSocketReconnect();
-                setTimeOut(reconnect, connectTimeOut);
+                setTimeOut(reconnect, CONNECT_TIMEOUT);
             } else {
                 this.session = null;
             }

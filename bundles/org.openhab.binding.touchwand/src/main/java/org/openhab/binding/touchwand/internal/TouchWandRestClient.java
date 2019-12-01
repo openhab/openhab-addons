@@ -71,13 +71,12 @@ public class TouchWandRestClient {
 
     private static final String CONTENT_TYPE_APPLICATION_JSON = MimeTypes.Type.APPLICATION_JSON.asString();
 
-    private static final int timeout = 10000; // 10 seconds
+    private static final int REQUEST_TIMEOUT = 10000; // 10 seconds
     private Map<String, String> commandmap = new HashMap<String, String>();
 
     private HttpClient httpClient = null;
 
     public TouchWandRestClient(HttpClient httpClient) {
-
         commandmap.put(CMD_LOGIN, "/auth/login?");
         commandmap.put(CMD_LIST_UNITS, "/units/listUnits");
         commandmap.put(CMD_LIST_SCENARIOS, "/scenarios/listScenarios");
@@ -88,7 +87,6 @@ public class TouchWandRestClient {
     }
 
     public final boolean connect(String user, String pass, String ipAddr, String port) {
-
         touchWandIpAddr = ipAddr;
         touchWandPort = port;
         isConnected = cmdLogin(user, pass, ipAddr);
@@ -97,7 +95,6 @@ public class TouchWandRestClient {
     }
 
     private final boolean cmdLogin(String user, String pass, String ipAddr) {
-
         String command = buildUrl(CMD_LOGIN) + "user=" + user + "&" + "psw=" + pass;
         String response = sendCommand(command, METHOD_GET, null);
         if (response != null && !response.equals("Unauthorized")) {
@@ -107,7 +104,6 @@ public class TouchWandRestClient {
     }
 
     public String cmdListUnits() {
-
         String command = buildUrl(CMD_LIST_UNITS);
         String response = sendCommand(command, METHOD_GET, null);
 
@@ -115,7 +111,6 @@ public class TouchWandRestClient {
     }
 
     public String cmdGetUnitById(String id) {
-
         String command = buildUrl(CMD_GET_UNIT_BY_ID) + "id=" + id;
         String response = sendCommand(command, METHOD_GET, null);
 
@@ -154,7 +149,6 @@ public class TouchWandRestClient {
     }
 
     private String cmdUnitAction(String action) {
-
         String command = buildUrl(CMD_UNIT_ACTION);
         String response = sendCommand(command, METHOD_POST, action);
 
@@ -162,7 +156,6 @@ public class TouchWandRestClient {
     }
 
     private String buildUrl(String command) {
-
         String url = "http://" + touchWandIpAddr + ":" + touchWandPort + commandmap.get(command);
         return url;
     }
@@ -179,7 +172,7 @@ public class TouchWandRestClient {
             return null;
         }
 
-        request = httpClient.newRequest(url.toString()).timeout(timeout, TimeUnit.SECONDS).method(method);
+        request = httpClient.newRequest(url.toString()).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS).method(method);
         if (method.equals(METHOD_POST) && (content != null)) {
             ContentProvider contentProvider = new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON, content,
                     StandardCharsets.UTF_8);

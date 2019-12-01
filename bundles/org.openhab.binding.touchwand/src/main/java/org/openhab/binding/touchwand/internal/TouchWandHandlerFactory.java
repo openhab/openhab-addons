@@ -68,6 +68,8 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
             return new TouchWandSwitchHandler(thing);
         } else if (THING_TYPE_SHUTTER.equals(thingTypeUID)) {
             return new TouchWandShutterHandler(thing);
+        } else if (THING_TYPE_WALLCONTROLLER.equals(thingTypeUID)) {
+            return new TouchWandWallControllerHandler(thing);
         }
 
         return null;
