@@ -21,18 +21,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ShellyThingConfiguration {
-    public String deviceIp = ""; // ip address of thedevice
-    public int updateInterval = 60; // schedule interval for the update job
-    public float lowBattery = 20; // threshold for battery value
+    public String  deviceIp           = "";    // ip address of thedevice
+    public int     updateInterval     = 60;    // schedule interval for the update job
+    public float   lowBattery         = 20;    // threshold for battery value
 
-    public String userId = ""; // userid for http basic auth
-    public String password = ""; // password for http basic auth
+    public String  userId             = "";    // userid for http basic auth
+    public String  password           = "";    // password for http basic auth
 
-    public boolean eventsButton = false; // true: register for Relay btn_xxx events
-    public boolean eventsSwitch = true; // true: register for de vice out_xxx events
-    public boolean eventsSensorReport = true; // true: register for sensor events
-    public boolean eventsCoIoT = false; // true: use CoIoT events (based on COAP)
+    public boolean eventsButton       = false; // true: register for Relay btn_xxx events
+    public boolean eventsSwitch       = true;  // true: register for device out_xxx events
+    public boolean eventsPush         = true;  // true: register for short/long push events
+    public boolean eventsSensorReport = true;  // true: register for sensor events
+    public boolean eventsCoIoT        = false; // true: use CoIoT events (based on COAP)
 
-    public String localIp = ""; // local ip addresses used to create callback url
-    public Integer httpPort = 0;
+    public String  localIp            = "";    // local ip addresses used to create callback url
+    public Integer httpPort           = 0;
 }

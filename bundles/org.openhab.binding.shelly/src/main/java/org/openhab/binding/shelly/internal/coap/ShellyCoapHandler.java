@@ -40,9 +40,7 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrAct;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrBlk;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrP;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotDevDescription;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSon.CoIotGenericSensorList;
@@ -272,17 +270,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 addSensor(descr.sen.get(i));
             }
         }
-        if (descr.act != null) {
-            logger.trace("{}:  Device has {} actors", thingName, descr.act.size());
-            for (i = 0; i < descr.act.size(); i++) {
-                CoIotDescrAct act = descr.act.get(i);
-                logger.trace("{}:    id={}: {}, Links={}", thingName, act.id, act.desc, act.links);
-                for (int p = 0; p < act.pTag.size(); p++) {
-                    CoIotDescrP pinfo = act.pTag.get(p);
-                    logger.trace("{}:      P[{}]: {}, Range={}", thingName, pinfo.id, pinfo.desc, pinfo.range);
-                }
-            }
-        }
 
         // Save to thing properties
         thingHandler.updateProperties(PROPERTY_COAP_DESCR, payload);
@@ -291,11 +278,21 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private void addSensor(CoIotDescrSen sen) {
         logger.debug("{}:    id {}: {}, Type={}, Range={}, Links={}", thingName, sen.id, sen.desc, sen.type, sen.range,
                 sen.links);
-        CoIotDescrSen fixed = fixDescription(sen);
-        if (!sensorMap.containsKey(fixed.id)) {
-            sensorMap.put(sen.id, sen);
-        } else {
-            sensorMap.replace(sen.id, sen);
+        try {
+            logger.trace("before fixDescription()");
+            CoIotDescrSen fixed = fixDescription(sen);
+            logger.trace("after fixDescription()");
+            logger.trace("insert to map, id={}", fixed.id);
+            if (!sensorMap.containsKey(fixed.id)) {
+                logger.trace("put to map, id={}", fixed.id);
+                sensorMap.put(sen.id, fixed);
+            } else {
+                logger.trace("replace in map, id={}", fixed.id);
+                sensorMap.replace(sen.id, fixed);
+            }
+            logger.trace("sensor fixed");
+        } catch (RuntimeException e) {
+            logger.debug("{}:    Unable to decode sensor definition -> skip ({})", thingName, e.getMessage());
         }
     }
 
@@ -371,16 +368,16 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
 
                 switch (sen.type.toLowerCase()) /* CoIoT_STypes.valueOf(sen.T) */ {
+                    case "b" /* BatteryLevel */:
+                        updateChannel(updates, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
+                                toQuantityType(s.value, DIGITS_PERCENT, SmartHomeUnits.PERCENT));
+                        break;
                     case "t" /* Temperature */:
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
                                 toQuantityType(s.value, DIGITS_TEMP, SIUnits.CELSIUS));
                         break;
                     case "h" /* Humidity */:
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM,
-                                toQuantityType(s.value, DIGITS_PERCENT, SmartHomeUnits.PERCENT));
-                        break;
-                    case "b" /* BatteryLevel */:
-                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LEVEL,
                                 toQuantityType(s.value, DIGITS_PERCENT, SmartHomeUnits.PERCENT));
                         break;
                     case "m" /* Motion */:
@@ -551,6 +548,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // SHelly Sense: multiple issues: Description should not be lower case, invalid type for Motion and Battery
         // Shelly Sense: Battery is reported with Desc "battery", but type "H" instead of "B"
         // Shelly Sense: Motion is reported with Desc "battery", but type "H" instead of "B"
+        // Shelly Bulb: Colors are coded with Type="Red" etc. rather than Type="S" and color as Descr
         switch (sen.desc.toLowerCase()) {
             case "motion": // fix acc to spec it's T=M
                 sen.type = "M";
@@ -562,7 +560,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 break;
         }
 
-        if (sen.desc == null) {
+        if ((sen.desc == null) || sen.desc.isEmpty()) {
             switch (sen.type.toLowerCase()) {
                 case "w":
                     sen.desc = "Power";
@@ -599,6 +597,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 case "white":
                 case "gain":
                 case "temp": // Bulb: Color temperature
+                    sen.desc = sen.type;
+                    sen.type = "S";
+                    break;
+
                 case "vswitch":
                     // it seems that Shelly tends to break their own spec: T is the description and D is no longer
                     // included

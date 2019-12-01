@@ -29,20 +29,20 @@ import com.google.gson.stream.JsonWriter;
  */
 public class ShellyCoapJSon {
 
-    public static final String COIOT_TAG_BLK = "blk";
-    public static final String COIOT_TAG_SEN = "sen";
-    public static final String COIOT_TAG_ACT = "act";
+    public static final String COIOT_TAG_BLK     = "blk";
+    public static final String COIOT_TAG_SEN     = "sen";
+    public static final String COIOT_TAG_ACT     = "act";
     public static final String COIOT_TAG_GENERIC = "G";
 
     public static class CoIotDescrBlk {
         @SerializedName("I")
-        String id; // ID
+        String        id;    // ID
         @SerializedName("D")
-        String desc; // Description
+        String        desc;  // Description
 
         // Sometimes sen entries are part of the blk array - not conforming the Spec!
         @SerializedName("T")
-        public String type; // Type
+        public String type;  // Type
         @SerializedName("R")
         public String range; // Range
         @SerializedName("L")
@@ -51,11 +51,11 @@ public class ShellyCoapJSon {
 
     public static class CoIotDescrSen {
         @SerializedName("I")
-        String id; // ID
+        String        id;    // ID
         @SerializedName("D")
-        String desc; // Description
+        String        desc;  // Description
         @SerializedName("T")
-        public String type; // Type
+        public String type;  // Type
         @SerializedName("R")
         public String range; // Range
         @SerializedName("L")
@@ -64,22 +64,22 @@ public class ShellyCoapJSon {
 
     public static class CoIotDescrP {
         @SerializedName("I")
-        String id; // ID
+        String        id;    // ID
         @SerializedName("D")
-        String desc; // Description
+        String        desc;  // Description
         @SerializedName("R")
         public String range; // Range
     }
 
     public static class CoIotDescrAct {
         @SerializedName("I")
-        String id; // ID
+        String                        id;    // ID
         @SerializedName("D")
-        String desc; // Description
+        String                        desc;  // Description
         @SerializedName("L")
-        public String links; // Links
+        public String                 links; // Links
         @SerializedName("P")
-        public ArrayList<CoIotDescrP> pTag; // ?
+        public ArrayList<CoIotDescrP> pTag;  // ?
     }
 
     public static class CoIotDevDescription {

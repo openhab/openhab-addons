@@ -51,10 +51,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 public class ShellyEventServlet extends HttpServlet {
-    private static final long serialVersionUID = 549582869577534569L;
-    private final Logger logger = LoggerFactory.getLogger(ShellyEventServlet.class);
+    private static final long              serialVersionUID = 549582869577534569L;
+    private final Logger                   logger           = LoggerFactory.getLogger(ShellyEventServlet.class);
 
-    private @Nullable HttpService httpService;
+    private @Nullable HttpService          httpService;
     private @Nullable ShellyHandlerFactory handlerFactory;
 
     @SuppressWarnings("null")
@@ -95,7 +95,7 @@ public class ShellyEventServlet extends HttpServlet {
             logger.debug("CallbackServlet: {} Request from {}:{}{}?{}", request.getProtocol(), ipAddress,
                     request.getRemotePort(), path, parameters.toString());
             if (!path.toLowerCase().startsWith(SHELLY_CALLBACK_URI) || !path.contains("/event/shelly")) {
-                logger.info("ERROR: CallbackServletreceived unknown request- path = {}, data={}", path, data);
+                logger.warn("CallbackServlet received unknown request: path = {}, data={}", path, data);
                 return;
             }
 

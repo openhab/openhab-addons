@@ -44,13 +44,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyCoapServer {
-    private final Logger logger = LoggerFactory.getLogger(ShellyCoapServer.class);
+    private final Logger                    logger        = LoggerFactory.getLogger(ShellyCoapServer.class);
 
-    private @Nullable CoapEndpoint statusEndpoint;
+    private @Nullable CoapEndpoint          statusEndpoint;
     private @Nullable UdpMulticastConnector statusConnector;
-    private @Nullable CoapServer server;
-    boolean started = false;
-    private final Set<ShellyCoapListener> coapListeners = new CopyOnWriteArraySet<>();
+    private @Nullable CoapServer            server;
+    boolean                                 started       = false;
+    private final Set<ShellyCoapListener>   coapListeners = new CopyOnWriteArraySet<>();
 
     @SuppressWarnings("null")
     @NonNullByDefault
@@ -115,7 +115,6 @@ public class ShellyCoapServer {
     public void start() {
         if (!started) {
             logger.debug("Start CoIoT Listener");
-            // server.start();
             started = true;
         }
     }

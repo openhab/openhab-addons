@@ -50,13 +50,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class, ShellyHandlerFactory.class }, configurationPid = "binding.shelly")
 public class ShellyHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(ShellyHandlerFactory.class);
+    private final Logger                    logger                     = LoggerFactory
+            .getLogger(ShellyHandlerFactory.class);
 
-    private final ShellyCoapServer coapServer;
-    private final Set<ShellyDeviceListener> deviceListeners = new CopyOnWriteArraySet<>();
+    private final ShellyCoapServer          coapServer;
+    private final Set<ShellyDeviceListener> deviceListeners            = new CopyOnWriteArraySet<>();
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-    private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
+    private static final Set<ThingTypeUID>  SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+    private ShellyBindingConfiguration      bindingConfig              = new ShellyBindingConfiguration();
 
     /**
      * Activate the bundle: save properties
@@ -81,8 +82,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             if (bindingConfig.httpPort == -1) {
                 bindingConfig.httpPort = 8080;
             }
-            Validate.isTrue(bindingConfig.httpPort > 0, "Unable to get OH http port");
-            logger.debug("Using OH http port {}", bindingConfig.httpPort);
+            Validate.isTrue(bindingConfig.httpPort > 0, "Unable to get OH HTTP port");
+            logger.debug("Using OH HTTP port {}", bindingConfig.httpPort);
         }
         if (bindingConfig.localIp.isEmpty()) {
             String lip = networkAddressService.getPrimaryIpv4HostAddress();
@@ -147,7 +148,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     }
 
     public static String convertTimestamp(Long timestamp) {
-        Date date = new java.util.Date(timestamp * 1000L);
+        Date date = new Date(timestamp * 1000L);
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
         String result = sdf.format(date);

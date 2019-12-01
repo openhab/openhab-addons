@@ -35,6 +35,12 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
+		<parameter name="eventsPush" type="boolean" required="false">
+			<label>Enable Push Events (short/long)</label>
+			<description>True if the binding should register to get the Short/Long Push Events.</description>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
 			<label>Enable CoIoT Events</label>
 			<description>If enabled the Coap protocol will be used to receive status updates.</description>

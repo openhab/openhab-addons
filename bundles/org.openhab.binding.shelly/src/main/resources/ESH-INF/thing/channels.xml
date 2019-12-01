@@ -108,7 +108,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Light brightness in %</description>
-		<state readOnly="false" min="0" max="100" step="1" />
+		<category>DimmableLight</category>
 	</channel-type>
 	<channel-type id="dimmerLoadError">
 		<item-type>Switch</item-type>
@@ -271,7 +271,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Brightness: 0..100%</description>
-		<state min="0" max="100" step="1" readOnly="false"></state>
+		<category>DimmableLight</category>
 	</channel-type>
 	<channel-type id="colorEffectBulb">
 		<item-type>Number</item-type>
@@ -338,7 +338,7 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="batVoltage" advanced="true" >
+	<channel-type id="batVoltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery voltage</label>
 		<description>Battery voltage in V</description>

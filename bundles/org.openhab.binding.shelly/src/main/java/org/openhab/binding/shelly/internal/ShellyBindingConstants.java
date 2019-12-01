@@ -114,17 +114,12 @@ public class ShellyBindingConstants {
     // Relay
     public static final String            CHANNEL_GROUP_RELAY_CONTROL      = "relay";
     public static final String            CHANNEL_OUTPUT                   = "output";
-    public static final String            CHANNEL_INPUT                    = "input";                                   // prefix
-                                                                                                                        // for
-                                                                                                                        // input1,
-                                                                                                                        // input2...
+    public static final String            CHANNEL_INPUT                    = "input";
     public static final String            CHANNEL_INPUT1                   = "input1";
     public static final String            CHANNEL_INPUT2                   = "input2";
     public static final String            CHANNEL_OVERPOWER                = "overpower";
     public static final String            CHANNEL_OVERTEMP                 = "overtemp";
-    public static final String            CHANNEL_BRIGHTNESS               = "brightness";                              // Dimmer
-                                                                                                                        // /
-                                                                                                                        // Blub
+    public static final String            CHANNEL_BRIGHTNESS               = "brightness";
 
     public static final String            CHANNEL_TIMER_AUTOON             = "autoOn";
     public static final String            CHANNEL_TIMER_AUTOOFF            = "autoOff";

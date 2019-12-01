@@ -36,7 +36,6 @@ public class ShellyTriggerGson {
     public @Nullable String    hum;
     public @Nullable String    flood;
     public @Nullable String    batv;
-    public @Nullable String    vatv;
     public @Nullable String    alarm;
     public @Nullable String    unknown;
 

@@ -79,7 +79,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Activate
     protected void activate(ComponentContext componentContext) {
         try {
-            logger.debug("Shelly Discoverxy service activated");
+            logger.debug("Shelly Discovery service activated");
             Validate.notNull(componentContext);
             Validate.notNull(bindingConfig);
             bindingConfig.updateFromProperties(componentContext.getProperties());
@@ -121,7 +121,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             name = service.getName().toLowerCase();
             address = StringUtils.substringBetween(service.toString(), "/", ":80");
             if (address == null) {
-                logger.debug("Discovered Shelly device {} doesn't have an IP address, service-info={}", name, service);
+                logger.debug("Shelly device discovered: IP address={}, name={}", address, name);
                 return null;
             }
             logger.info("Shelly device discovered: IP-Adress={}, name={}", address, name);

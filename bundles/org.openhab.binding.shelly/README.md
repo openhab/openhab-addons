@@ -185,8 +185,6 @@ Notes:
 |          |rollerpos    |Number   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stops, see Notes |
 |          |direction    |String   |yes      |Last direction: open or close                                                         |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
-|          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode                                                     |
-|          |positioning  |Switch   |yes      |ON: Roller is positioning/moving                                                      |
 |          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format             |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                         |
