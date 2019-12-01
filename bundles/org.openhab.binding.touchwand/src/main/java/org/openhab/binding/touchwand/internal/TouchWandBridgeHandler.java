@@ -31,13 +31,11 @@ import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
 import org.openhab.binding.touchwand.internal.discovery.TouchWandUnitDiscoveryService;
@@ -110,8 +108,6 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
-
-        logger.trace("Finished initializing!");
     }
 
     @Override
@@ -155,16 +151,6 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements
             touchWandWebSockets.unregisterListener(this);
             touchWandWebSockets.dispose();
         }
-    }
-
-    @Override
-    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-
-    }
-
-    @Override
-    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-
     }
 
     public synchronized boolean registerUpdateListener(TouchWandUnitUpdateListener listener) {
