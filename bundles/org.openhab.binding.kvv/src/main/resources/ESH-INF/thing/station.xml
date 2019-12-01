@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="kvv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="kvvstation">
+		<label>KVV Station</label>
+		<description>Train station for KVV Binding.</description>
+
+		<config-description>
+			<parameter name="stationId" type="text">
+				<label>Station ID</label>
+				<description>ID of the train station.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="maxTrains" type="integer" required="true" min="0" max="127">
+				<label>Maximum Trains Listed</label>
+				<description>Maximum number of trains listed.</description>
+			</parameter>
+			<parameter name="updateInterval" type="integer" required="true" min="0">
+				<label>Update Interval</label>
+				<description>Update interval in milliseconds.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="kvv-train">
+	   <label>KVV Train</label>
+	   <channels>
+	       <channel id="name" typeId="kvv-train-name" />
+	       <channel id="destination" typeId="kvv-train-destination" />
+	       <channel id="eta" typeId="kvv-train-eta" />
+	   </channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
