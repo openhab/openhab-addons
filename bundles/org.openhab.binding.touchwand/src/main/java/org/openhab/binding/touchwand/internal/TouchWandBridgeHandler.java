@@ -189,7 +189,6 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements
 
     @Override
     public void onDataReceived(TouchWandUnitData unitData) {
-        logger.debug("onDataReceived TouchWandUnitData :{}", unitData.getName());
         if (unitUpdateListeners.containsKey(unitData.getId().toString())) {
             TouchWandUnitUpdateListener updateListener = unitUpdateListeners.get(unitData.getId().toString());
             updateListener.onItemStatusUpdate(unitData);
