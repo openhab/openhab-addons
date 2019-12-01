@@ -16,6 +16,7 @@
   <name>openHAB Add-ons :: Bundles</name>
 
   <modules>
+    <module>org.openhab.binding.adorne</module>
     <!-- io -->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
