@@ -17,7 +17,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link TouchWandUnitData} implements Csc data class.
+ * The {@link Csc} implements Csc data class.
  *
  * @author Roie Geron - Initial contribution
  */

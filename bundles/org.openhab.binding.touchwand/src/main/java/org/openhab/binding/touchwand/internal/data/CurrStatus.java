@@ -17,7 +17,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link TouchWandUnitData} implements CurrStatus data class.
+ * The {@link CurrStatus} implements CurrStatus data class.
  *
  * @author Roie Geron - Initial contribution
  */
