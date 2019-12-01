@@ -121,7 +121,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         }
 
         if (data.isReadOnly()) {
-            logger.warn("Channel {} is a read-only channel, ignoring command {}", channelUID, command);
+            logger.trace("Channel {} is a read-only channel, ignoring command {}", channelUID, command);
             return;
         }
 
