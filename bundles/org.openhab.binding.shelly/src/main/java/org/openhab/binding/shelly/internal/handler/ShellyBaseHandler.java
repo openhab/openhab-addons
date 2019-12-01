@@ -526,7 +526,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 group = CHANNEL_GROUP_SENSOR;
             }
             if (group.isEmpty()) {
-                logger.debug("Unsupported event class: " + type);
+                logger.debug("Unsupported event class: {}", type);
                 return;
             }
 
