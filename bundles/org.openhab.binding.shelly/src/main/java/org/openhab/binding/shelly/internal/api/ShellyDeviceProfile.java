@@ -52,8 +52,8 @@ public class ShellyDeviceProfile {
     public String               fwDate;
 
     public Boolean              hasRelays;                                 // true if it has at least 1 power meter
-    public Integer              numRelays;
-    public Integer              numRollers;
+    public Integer              numRelays;                                 // number of relays/outputs
+    public Integer              numRollers;                                // number of Rollers, usually 1
     public Boolean              isRoller;                                  // true for Shelly2 in roller mode
     public Boolean              isDimmer;                                  // true for a Shelly Dimmer (SHDM-1)
 
@@ -76,6 +76,7 @@ public class ShellyDeviceProfile {
 
     public Boolean              supportsButtonUrls;                        // true if the btn_xxx urls are supported
     public Boolean              supportsOutUrls;                           // true if the out_xxx urls are supported
+    public Boolean              supportsPushUrls;                          // true if sensor report_url is supported
     public Boolean              supportsRollerUrls;                        // true if the roller_xxx urls are supported
     public Boolean              supportsSensorUrls;                        // true if sensor report_url is supported
 
@@ -146,6 +147,7 @@ public class ShellyDeviceProfile {
                 || profile.settingsJson.contains(SHELLY_API_EVENTURL_BTN1_ON)
                 || profile.settingsJson.contains(SHELLY_API_EVENTURL_BTN2_ON);
         profile.supportsOutUrls = profile.settingsJson.contains(SHELLY_API_EVENTURL_OUT_ON);
+        profile.supportsPushUrls = profile.settingsJson.contains(SHELLY_API_EVENTURL_SHORT_PUSH);
         profile.supportsRollerUrls = profile.settingsJson.contains(SHELLY_API_EVENTURL_ROLLER_OPEN);
         profile.supportsSensorUrls = profile.settingsJson.contains(SHELLY_API_EVENTURL_REPORT);
 

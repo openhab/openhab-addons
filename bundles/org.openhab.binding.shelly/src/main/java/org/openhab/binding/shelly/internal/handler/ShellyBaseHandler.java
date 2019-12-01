@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.handler;
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
+import static org.openhab.binding.shelly.internal.handler.ShellyTriggerGson.*;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -24,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -70,9 +72,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     protected @Nullable ShellyDeviceProfile  profile;
     private final @Nullable ShellyCoapServer coapServer;
 
-    private long                             lastUpdate       = 0;
+    @SuppressWarnings("unused")
+    private long                             lastUpdateTs     = 0;
     private long                             lastUptime       = 0;
-    private long                             lastRssiWarning  = 0;
+    private long                             lastAlarmTs      = 0;
 
     private @Nullable ScheduledFuture<?>     statusJob;
     private int                              skipUpdate       = 0;
@@ -225,12 +228,14 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 tmpPrf.fwDate, tmpPrf.fwId);
         logger.debug("{}: Shelly settings info: {}", thingName, tmpPrf.settingsJson);
         logger.debug(
-                "{}: Device has relays: {} (numRelays={}), is roller: {} (numRoller={}), is Plug S: {}, is Dimmer: {}, has LEDs: {}, is Light: {}, has Meter: {} (numMeter={}, EMeter: {}), is Sensor: {}, is Sense: {}, has Battery: {}{}, event urls: btn:{},out:{}.roller:{},sensor:{}",
+                "{}: Device has relays: {} (numRelays={}, is roller: {} (numRoller={}), is Plug S: {}, is Dimmer: {}, "
+                        + "has LEDs: {}, is Light: {}, has Meter: {} (numMeter={}, EMeter: {}), is Sensor: {}, is Sense: {}, has Battery: {} {}, "
+                        + "event urls: btn:{},out:{},push{},roller:{},sensor:{}",
                 tmpPrf.hostname, tmpPrf.hasRelays, tmpPrf.numRelays, tmpPrf.isRoller, tmpPrf.numRollers, tmpPrf.isPlugS,
                 tmpPrf.isDimmer, tmpPrf.hasLed, tmpPrf.isLight, tmpPrf.hasMeter, tmpPrf.numMeters, tmpPrf.isEMeter,
                 tmpPrf.isSensor, tmpPrf.isSense, tmpPrf.hasBattery,
                 tmpPrf.hasBattery ? "(low battery threshold=" + config.lowBattery + "%)" : "",
-                tmpPrf.supportsButtonUrls, tmpPrf.supportsOutUrls, tmpPrf.supportsRollerUrls,
+                tmpPrf.supportsButtonUrls, tmpPrf.supportsOutUrls, tmpPrf.supportsPushUrls, tmpPrf.supportsRollerUrls,
                 tmpPrf.supportsSensorUrls);
 
         // update thing properties
@@ -271,7 +276,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
         }
 
-        fillDeviceStatus(getLong(status.uptime), false, getInteger(status.wifiSta.rssi));
+        fillDeviceStatus(status, false);
     }
 
     /**
@@ -321,8 +326,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             } else if (e.getMessage().contains(APIERR_NOT_CALIBRATED)) {
                 logger.warn("Device is not calibrated, use Shelly App to perform initial roller calibration.");
             } else {
-                logger.debug("{} ERROR: Unable to process command for channel {}: {} ({})", thingName,
-                        channelUID.toString(), e.getMessage(), e.getClass());
+                logger.warn("{} ERROR: Unable to process command for channel {}: {} ({})\nStack Trace: {}", thingName,
+                        channelUID.toString(), e.getMessage(), e.getClass(), e.getStackTrace());
             }
         } finally {
             lockUpdates = false;
@@ -373,7 +378,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 updated |= ShellyComponents.updateSensors(this, status);
 
                 if (scheduledUpdates <= 1) {
-                    fillDeviceStatus(getLong(status.uptime), updated, getInteger(status.wifiSta.rssi));
+                    fillDeviceStatus(status, updated);
                 }
             }
         } catch (IOException e) {
@@ -410,23 +415,13 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     }
 
-    private void fillDeviceStatus(long uptime, boolean updated, int rssi) {
-        long now = System.currentTimeMillis() / 1000L;
+    private void fillDeviceStatus(ShellySettingsStatus status, boolean updated) {
+        long now = now();
         String alarm = "";
 
-        // Check every SIGNAL_ALARM_INTERVAL_SEC WiFi signal strength and raise an alarm when it becomes weak
-        if (isLinked(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI))) {
-            updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI,
-                    toQuantityType(new DecimalType(rssi), SmartHomeUnits.DECIBEL_MILLIWATTS));
-            if ((rssi < SIGNAL_ALARM_MIN_RSSI)
-                    && ((lastRssiWarning == 0) || (now > lastRssiWarning + SIGNAL_ALARM_INTERVAL_SEC))) {
-                alarm = "Weak WiFi Signal detected, check installation!";
-                lastRssiWarning = now;
-            }
-        }
-
-        if (uptime < lastUptime) {
-            alarm = "Device was restarted (uptime < lastUptime)";
+        long uptime = getLong(status.uptime);
+        if (status.uptime < lastUptime) {
+            alarm = "Device was restarted (uptime < lastUptimeTs)";
         }
         lastUptime = uptime;
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
@@ -435,20 +430,63 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (updated) {
             updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_LAST_UPDATE,
                     new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(now), ZoneId.systemDefault())));
-            lastUpdate = now;
+            lastUpdateTs = now;
+        }
+
+        Integer rssi = getInteger(status.wifiSta.rssi);
+        // Check every SIGNAL_ALARM_INTERVAL_SEC WiFi signal strength and raise an alarm when it becomes weak
+        if (isLinked(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI))) {
+            updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI,
+                    // toQuantityType(new DecimalType(rssi), SmartHomeUnits.DECIBEL_MILLIWATTS));
+                    new DecimalType(rssi));
+        }
+
+        // Check every SIGNAL_ALARM_INTERVAL_SEC WiFi signal, overheating, overload
+        if (now > lastAlarmTs + SIGNAL_ALARM_INTERVAL_SEC) {
+            if ((rssi < SIGNAL_ALARM_MIN_RSSI) && ((lastAlarmTs == 0))) {
+                alarm = "Weak WiFi Signal detected, check installation!";
+                lastAlarmTs = now;
+            }
+
+            // Check for overheating
+            if (getBool(status.overtemperature)) {
+                alarm = "Device reports overtemperature, maybe over heating!";
+                lastAlarmTs = now;
+            }
+
+            // Check for overheating
+            if (getBool(status.overload)) {
+                alarm = "Device reports overload, reduce electrical load!";
+                lastAlarmTs = now;
+            }
         }
 
         if (updated || !alarm.isEmpty()) {
-            LocalDateTime datetime = LocalDateTime.now();
-            String time = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(datetime);
-            String payload = "\"status\" : { \"uptime\":" + uptime + ", \"lastUpdate\":\"" + time + "\", \"signal\":"
-                    + rssi + "\", alarm\":\"" + alarm + "\" }";
+            ShellyTrigger trigger = new ShellyTrigger(this, thingName, EVENT_TYPE_DEVICE);
+            Map<String, String> args = new TreeMap<String, String>();
+            args.put("uptime", status.uptime.toString());
+            args.put("lastUpdate", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+            args.put("signal", rssi.toString());
+            args.put("alarm", alarm);
+            trigger.setPayload(args);
             if (!alarm.isEmpty()) {
-                logger.warn("{}: Alarm condition: {}, payload={}", getThing().getLabel(), alarm, payload);
+                logger.warn("{}: Alarm condition: {}, payload={}", getThing().getLabel(), alarm, trigger.toJson());
             } else {
-                logger.debug("{}: Trigger device event for {}, payload={}", thingName, getThing().getLabel(), payload);
+                logger.debug("{}: Trigger device event for {}, payload={}", thingName, getThing().getLabel(),
+                        trigger.toJson());
             }
-            triggerChannel(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_EVENT_TRIGGER), payload);
+            trigger.sendEvent(CHANNEL_GROUP_DEV_STATUS, CHANNEL_EVENT_TRIGGER);
+        }
+    }
+
+    public void sendAlarm(String alarm) {
+        if (now() > lastAlarmTs + SIGNAL_ALARM_INTERVAL_SEC) {
+            logger.warn("{}: Alarm condition: {}", thingName, alarm);
+            ShellyTrigger trigger = new ShellyTrigger(this, thingName, EVENT_TYPE_DEVICE);
+            Map<String, String> args = new TreeMap<String, String>();
+            args.put("alarm", alarm);
+            trigger.setPayload(args);
+            trigger.sendEvent(CHANNEL_GROUP_DEV_STATUS, CHANNEL_EVENT_TRIGGER);
         }
     }
 
@@ -470,18 +508,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 logger.info("{}: Device is not yet initialized, event will trigger initialization", deviceName);
             }
 
-            int i = 0;
-            String payload = "{\"device\":\"" + deviceName + "\", \"class\":\"" + type + "\", \"index\":\""
-                    + deviceIndex + "\",\"parameters\":[";
-            for (String key : parameters.keySet()) {
-                if (i++ > 0) {
-                    payload = payload + ", ";
-                }
-                String value = parameters.get(key);
-                payload = payload + "{\"" + key + "\":\"" + value + "\"}";
-            }
-            payload = payload + "]}";
-
             String group = "";
             Integer rindex = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) + 1 : -1;
             if (type.equals(EVENT_TYPE_RELAY) && profile.hasRelays) {
@@ -499,13 +525,20 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (type.equals(EVENT_TYPE_SENSORDATA)) {
                 group = CHANNEL_GROUP_SENSOR;
             }
-            Validate.isTrue(!group.isEmpty(), "Unsupported event class: " + type);
-
-            String channel = mkChannelId(group, CHANNEL_EVENT_TRIGGER);
-            if (isLinked(channel)) {
-                logger.debug("Trigger {} event, channel {}, payload={}", type, channel, payload);
-                triggerChannel(channel, payload);
+            if (group.isEmpty()) {
+                logger.debug("Unsupported event class: " + type);
+                return;
             }
+
+            String channel = CHANNEL_EVENT_TRIGGER;
+            ShellyTrigger trigger = new ShellyTrigger(this, thingName, EVENT_TYPE_EVENT);
+            Map<String, String> payload = new HashMap<String, String>();
+            for (String key : parameters.keySet()) {
+                payload.put(key, parameters.get(key));
+            }
+            trigger.setPayload(payload);
+            logger.debug("Trigger {} event, channel {}, payload={}", type, channel, payload);
+            trigger.sendEvent(group, channel);
 
             requestUpdates(scheduledUpdates >= 3 ? 0 : !hasBattery ? 2 : 1, true); // request update on next interval
                                                                                    // (2x for non-battery devices)
@@ -730,6 +763,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         return channelData.get(key);
     }
 
+    public void triggerChannel(String group, String channel, String payload) {
+        triggerChannel(mkChannelId(group, channel), payload);
+    }
+
     /**
      * Shutdown thing, make sure background jobs are canceled
      */
@@ -770,5 +807,4 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     public boolean updateDeviceStatus(ShellySettingsStatus status) throws IOException {
         return false;
     }
-
 }

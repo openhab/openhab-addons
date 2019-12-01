@@ -147,19 +147,24 @@ public class ShellyApiJson {
         @SerializedName("auto_off")
         public Double  autoOff;        // Automatic flip back timer, seconds. Will engage after turning Shelly1 ON.
         @SerializedName("btn_on_url")
-        public String  btnOnUrl;       // URL to access when SW input is activated
+        public String  btnOnUrl;       // input is activated
         @SerializedName("btnOffUrl")
-        public String  btnOffUrl;      // URL to access when SW input is deactivated
+        public String  btnOffUrl;      // input is deactivated
         @SerializedName("out_on_url")
-        public String  outOnUrl;       // URL to access when output is activated
+        public String  outOnUrl;       // output is activated
         @SerializedName("out_off_url")
-        public String  outOffUrl;      // URL to access when output is deactivated
+        public String  outOffUrl;      // output is deactivated
         @SerializedName("roller_open_url")
-        public String  rollerOpenUrl;  // URL to access when roller reaches open position
+        public String  rollerOpenUrl;  // to access when roller reaches open position
         @SerializedName("roller_close_url")
-        public String  rollerCloseUrl; // URL to access when roller reaches close position
+        public String  rollerCloseUrl; // to access when roller reaches close position
         @SerializedName("roller_stop_url")
-        public String  rollerStopUrl;  // URL to access when roller stopped
+        public String  rollerStopUrl;  // to access when roller stopped
+        @SerializedName("longpush_url")
+        public String  pushLongUrl;    // to access when roller stopped
+        @SerializedName("shortpush_url")
+        public String  pushShortUrl;   // to access when roller stopped
+
         public Boolean schedule;
         // ArrayList<ShellySettingsScheduleRules> schedule_rules;
     }
@@ -185,6 +190,10 @@ public class ShellyApiJson {
         public String  outOnUrl;     // URL to access when output is activated
         @SerializedName("out_off_url")
         public String  outOffUrl;    // URL to access when output is deactivated
+        @SerializedName("longpush_url")
+        public String  pushLongUrl;  // long push button event
+        @SerializedName("shortpush_url")
+        public String  pushShortUrl; // short push button event
         @SerializedName("btn_type")
         public String  btnType;      // Accepted values: momentary, toggle, edge, detached - // see SHELLY_BTNT_xxx
         @SerializedName("swap_inputs")
@@ -199,6 +208,8 @@ public class ShellyApiJson {
     public static final String SHELLY_API_EVENTURL_BTN2_OFF     = "btn2_off_url";
     public static final String SHELLY_API_EVENTURL_OUT_ON       = "out_on_url";
     public static final String SHELLY_API_EVENTURL_OUT_OFF      = "out_off_url";
+    public static final String SHELLY_API_EVENTURL_SHORT_PUSH   = "shortpush_url";
+    public static final String SHELLY_API_EVENTURL_LONG_PUSH    = "longpush_url";
     public static final String SHELLY_API_EVENTURL_ROLLER_OPEN  = "roller_open_url";
     public static final String SHELLY_API_EVENTURL_ROLLER_CLOSE = "roller_close_url";
     public static final String SHELLY_API_EVENTURL_ROLLER_STOP  = "roller_stop_url";
@@ -327,9 +338,12 @@ public class ShellyApiJson {
         public String                          mode;
         @SerializedName("max_power")
         public Double                          maxPower;
+
         public ArrayList<ShellySettingsRelay>  relays;
         public ArrayList<ShellySettingsDimmer> dimmers;
         public ArrayList<ShellySettingsEMeter> emeters;
+        public ArrayList<ShellyInputState>     inputs;            // Firmware 1.5.6+
+
         @SerializedName("led_status_disable")
         public Boolean                         ledStatusDisable;  // PlugS only Disable LED indication for network
                                                                   // status
@@ -431,7 +445,7 @@ public class ShellyApiJson {
         public Boolean overtemperature; // Device over heated
     }
 
-    public static class ShellyShortStatusDimmer {
+    public static class ShellyShortLightStatus {
         public Boolean ison;      // Whether output channel is on or off
         public Integer brightness;
         public String  mode;
@@ -471,7 +485,7 @@ public class ShellyApiJson {
         public String                             time;           // current time
         public Integer                            serial;
         public String                             mac;            // MAC
-        public ArrayList<ShellyShortStatusDimmer> lights;         // relay status
+        public ArrayList<ShellyShortLightStatus>  lights;         // relay status
         public ArrayList<ShellySettingsMeter>     meters;         // current meter value
 
         public ShellyStatusSensor.ShellySensorTmp tmp;

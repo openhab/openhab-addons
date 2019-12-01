@@ -127,4 +127,8 @@ public class ShellyUtils {
                     "Unsupported encoding format: " + StandardCharsets.UTF_8.toString() + ", input=" + input);
         }
     }
+
+    public static Long now() {
+        return System.currentTimeMillis() / 1000L;
+    }
 }

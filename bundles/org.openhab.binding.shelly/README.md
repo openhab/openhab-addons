@@ -27,7 +27,7 @@ This supports sending commands to the devices as well as reading device status a
 
 ## Firmware
 
-To utilize all features the binding requires firmware version 1.5.0 or newer.
+To utilize all features the binding requires firmware version 1.5.2 or newer.
 This should be available for all devices.
 Older versions work in general, but have impacts to functionality (e.g. no events for battery powered devices).
 
@@ -90,16 +90,28 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 |eventsSensorReport|true: register event "posted updated sensor data"             |    no   |true for sensor devices                           |
 |eventsCoIoT       |true: Listen for CoIoT/COAP events                            |    no   |true for battery devices, false for others        |
 
+Independent from the updateInterval setting the binding will perform a settings refresh from the device once per minute.
+There is no event from the device that the settings have be changed by the Shelly App so this is kind of a fallback to get updates at least once per minute. 
+
 ## Channels
+
+### General Notes on Channels
+
+Notes:
+
+- Various channels are only visible for linking when you click Show More in the channel definition
+- input channel is only available with firmware > 1.5.6, otherwise NULL
+- use channel rollerpos only if you need the inverted value, otherwise use the control channel and Item Type Number, see example
+- See samples to see how to intercept events
 
 ### Shelly 1 (thing-type: shelly1)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |overpower    |Switch   |yes      |ON: The relay detected an overpower condition, output was turned OFF             |
-|          |event        |Trigger  |yes      |Relay #1: Triggers an event when posted by the device                            |
-|          |             |         |         |          the payload includes the event type and value as JSON string           |
+|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information (JSON)              |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 
 ### Shelly 1PM (thing-type: shelly1pm)
@@ -107,9 +119,9 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |overpower    |Switch   |yes      |ON: The relay detected an overpower condition, output was turned OFF             |
-|          |event        |Trigger  |yes      |Relay #1: Triggers an event when posted by the device                            |
-|          |             |         |         |          the payload includes the event type and value as JSON string           |
+|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information (JSON)              |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
@@ -122,8 +134,9 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |overpower    |Switch   |yes      |ON: The relay detected an overpower condition, output was turned OFF             |
-|          |event        |Trigger  |yes      |Triggers an event when posted by the device, payload in JSON format              |
+|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information (JSON               |
 |meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
@@ -142,13 +155,14 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 |Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay1    |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |overpower    |Switch   |yes      |Relay #1: ON: The relay detected an overpower condition, output was turned OFF   |
 |          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
-|          |event        |Trigger  |yes      |Relay #1: Triggers an event when posted by the device                            |
-|          |             |         |         |          the payload includes the event type and value as a J                   |
+|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format        |
 |relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |overpower    |Switch   |yes      |Relay #2: ON: The relay detected an overpower condition, output was turned OFF   |
 |          |trigger      |Trigger  |yes      |Relay #2: An OH trigger channel, see description below                           |
 |          |autoOn       |Number   |r/w      |Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds|
@@ -164,20 +178,22 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 
 ### Shelly 2 - roller mode thing-type: shelly2-roller)
 
-|Group     |Channel      |Type     |read-only|Description                                                                         |
-|----------|-------------|---------|---------|------------------------------------------------------------------------------------|
-|roller    |control      |Rollershutter   |r/w      |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)|
-|          |rollerpos    |Dimmer  |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped         |
-|          |direction    |String   |yes      |Last direction: open or close                                                       |
-|          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                |
-|          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode, OFF: normal mode (no calibration)                |
-|          |event        |Trigger  |yes      |Relay #1: Triggers an event when posted by the device, e,g, btn_up or btn_down      |
-|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                  |
-|          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                       |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                       |
-|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                       |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)    |
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                   |
+|Group     |Channel      |Type     |read-only|Description                                                                           |
+|----------|-------------|---------|---------|--------------------------------------------------------------------------------------|
+|roller    |control      |Rollershutter|r/w  |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)  |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                            |
+|          |rollerpos    |Number   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stops, see Notes |
+|          |direction    |String   |yes      |Last direction: open or close                                                         |
+|          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
+|          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode                                                     |
+|          |positioning  |Switch   |yes      |ON: Roller is positioning/moving                                                      |
+|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format             |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
+|          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                         |
+|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                         |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                         |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
+|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                     |
 
 ### Shelly 2.5 - relay mode (thing-type:shelly25-relay) 
 
@@ -196,20 +212,17 @@ The Shelly 2.5 includes 2 meters, one for each channel.
 However, it doesn't make sense to differ power consumption for the roller moving up vs. moving down.
 For this the binding aggregates the power consumption of both relays and includes the values in "meter1".
 
-|Group     |Channel      |Type     |read-only|Description                                                                         |
-|----------|-------------|---------|---------|------------------------------------------------------------------------------------|
+|Group     |Channel      |Type     |read-only|Description                                                                                |
+|----------|-------------|---------|---------|-------------------------------------------------------------------------------------------|
 |roller    |control      |Rollershutter   |r/w      |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)|
-|          |rollerpos    |Dimmer  |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped         |
-|          |direction    |String   |yes      |Last direction: open or close                                                       |
-|          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                |
-|          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode, OFF: normal mode (no calibration)                |
-|          |event        |Trigger  |yes      |Relay #1: Triggers an event when posted by the device, e,g, btn_up or btn_down      |
-|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                  |
-|          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                       |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                       |
-|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                       |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)     |
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                   |
+|          |rollerpos    |Dimmer  |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                                 |
+|          |direction    |String   |yes      |Last direction: open or close                                                              |
+|          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                       |
+|          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode, OFF: normal mode (no calibration)                       |
+|          |positioning  |Switch   |yes      |ON: Roller is positioning/moving                                                           |
+|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format                  |
+|meter     |             |         |         |See group meter1 for Shelly 2                                                              |
 
 ### Shelly4 Pro (thing-type: shelly4pro)
 
@@ -230,19 +243,8 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 
 |Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
-|relay     |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
-|          |overpower    |Switch   |yes      |Relay #1: ON: The relay detected an overpower condition, output was turned OFF   |
-|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
-|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
-|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
-|          |event        |Trigger  |yes      |Relay #1: Triggers an event when posted by the device                            |
-|          |             |         |         |          the payload includes the event type and value as a J                   |
-|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
-|          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
-|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
-|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|relay     |             |         |         |See group relay1 for Shelly 2                                                    |
+|meter     |             |         |         |See group meter1 for Shelly 2                                                    |
 |led       |statusLed    |Switch   |r/w      |ON: Status LED is disabled, OFF: LED enabled                                     |
 |          |powerLed     |Switch   |r/w      |ON: Power LED is disabled, OFF: LED enabled                                      |
 
@@ -255,8 +257,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |input2       |Switch   |yes      |State of Input 2 (S2)                                                            |
 |          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds          |
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds          |
-|          |event        |Trigger  |yes      |Triggers an event when posted by the device                                      |
-|          |             |         |         |the payload includes the event type and value as a J                             |
+|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format        |
 |status    |loaderror    |Switch   |yes      |Last error, "no" if none                                                         |
 |          |overload     |Switch   |yes      |Overload condition detected, switch dimmer off or reduce load!                   |
 |          |overtemperature |Switch|yes      |Internal device temperature over maximum. Switch off, check physical installation|
@@ -344,7 +345,7 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |humidity     |Number   |yes      |Relative humidity in %                                                 |
 |          |last_update  |String   |yes      |Timestamp of the last update (values read by the binding)              |
-|          |event        |Trigger  |yes      |Trigger channel, receives JSON formatted event information             |
+|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information (JSON     |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
@@ -426,12 +427,11 @@ Number ShellyF_Sotano_Batt       "Sotano Battery"         <battery>     {channel
 Switch ShellyF_Sotano_Flood      "Sotano Flood Alarm"     <alarm>       {channel="shelly:shellyflood:764fe0:sensors#flood"}
 
 /* Dimmer */
-Switch DimmerSwitch     "Light on/off" {channel="shelly:shellydimmer:XXX:relay#brightness"}
-Dimmer DimmerBrightness "Garage Light Brightness" {channel="shelly:shellydimmer:XXX:relay#brightness"}
-Dimmer DimmerIncDec     "Garage Light +/-" {channel="shelly:shellydimmer:XXX:relay#brightness"}
+Switch DimmerSwitch     "Light on/off"                       {channel="shelly:shellydimmer:XXX:relay#brightness"}
+Dimmer DimmerBrightness "Garage Light Brightness"            {channel="shelly:shellydimmer:XXX:relay#brightness"}
+Dimmer DimmerIncDec     "Garage Light +/-"                   {channel="shelly:shellydimmer:XXX:relay#brightness"}
 
-/* Power Meter */
-Number Shelly_XXXXXX_Power       "Bath Room Light Power"                {channel="shelly:shelly1:XXXXXX:meter#currentWatts"}
+Number Shelly_Power     "Bath Room Light Power"                {channel="shelly:shelly1:XXXXXX:meter#currentWatts"} /* Power Meter */
 
 ```
 
@@ -462,6 +462,11 @@ sitemap demo label="Home"
             Switch   item=DimmerSwitch
             Slider   item=DimmerBrightness
             SetPoint item=DimmerIncDec
+
+            Number   item=ShellyHT_Dormitorio_Temp
+            Number   item=ShellyHT_Chimenea_Humid
+            Number   item=ShellyF_Sotano_Batt
+            Number   item=Shelly_Power
         }
 }
 

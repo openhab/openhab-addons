@@ -16,7 +16,7 @@
 		<description>When ON - Turn On After xx seconds; 0 disables the timer</description>
 		<state min="0" step="1" pattern="%d %unit%" readOnly="false"></state>
 	</channel-type>
-	<channel-type id="timerActive">
+	<channel-type id="timerActive" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Auto ON/OFF timer active</label>
 		<description>ON: A timer is active, OFF: no timer active</description>
@@ -35,7 +35,7 @@
 		<description>Controls the roller</description>
 		<category>Blinds</category>
 	</channel-type>
-	<channel-type id="rollerPosition">
+	<channel-type id="rollerPosition" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Roller Position (100=open, 0=closed)</label>
 		<description>Position the roller (100..0 in %, where 100%=open, 0%=closed)</description>
@@ -131,21 +131,21 @@
 		<state readOnly="true" pattern="%f %unit%">
 		</state>
 	</channel-type>
-	<channel-type id="lastPower1">
+	<channel-type id="lastPower1" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Last Power #1</label>
 		<description>Last power consumption #1 - one rounded minute</description>
 		<state readOnly="true" pattern="%f %unit%">
 		</state>
 	</channel-type>
-	<channel-type id="lastPower2">
+	<channel-type id="lastPower2" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Last Power #2</label>
 		<description>Last power consumption #2 - one rounded minute</description>
 		<state readOnly="true" pattern="%f %unit%">
 		</state>
 	</channel-type>
-	<channel-type id="lastPower3">
+	<channel-type id="lastPower3" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Last Power #3</label>
 		<description>Last power consumption #3 - one rounded minute</description>
@@ -338,7 +338,7 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="batVoltage">
+	<channel-type id="batVoltage" advanced="true" >
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery voltage</label>
 		<description>Battery voltage in V</description>

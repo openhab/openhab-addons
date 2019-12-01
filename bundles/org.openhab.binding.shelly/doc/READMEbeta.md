@@ -11,54 +11,19 @@ This includes some general comments, information how to debug and request new fe
 
 ---
 
-### 2.5-SNAPSHOT
-
-* fix: Sometimes API returns -1 or +101 for the roller position
-* change: temperature unit channel removed, temperature is now always Celsius
-* Updated to Californium 2.0.0-RC1
-* Auto-initialized thing on Coap event
-* Use Units of Measurement (channel knows the unit itself)
-* Thing definition for Plug-S fixed (no extended meter values)
-* "Enable channel cache" removed from thing config - now always active
-* Re-factoring driven by PR review process (to become part of OH 2.5)
-* README updated, parts moved to doc/READMEbeta.md
-
-### 2.4.2 release notes (stable)
-
-+ Support for Shelly Flood
-+ Support for Shelly Dimmer
-+ Support for Shelly EM
-+ Sense: read IR code list for Sense from device rather than hard coded list
-+ CoIoT/COAP support, enabled by default for battery devices
-+ Create special device (shelly-protected) when device is password protected
-+ new channel last_update for sensors = last time one of the state values have been updated
-+ Add IP address to discovered Device Name
-
-* Setting Event URLs reworked to support new Roller urls (roller_on/off/stop) and Dimmer URLs (btn1_on/off, btn2_on/off)
-* channel name meter.totalWatts changed to meter.totalKWH (returns kw/h, not Watts)
-* Roller: re-added OnOffType  (so you could send OPEN or ON / CLOSE or OFF / STOP)
-* RGBW2: adjust numMeter (doesn't report this as part of the device property) -> work around for meter.Watts missing 
-* Activation of Channel Cache is delayed for 60s to make sure that Persinstence restore is already done 
-* dynamic thing updates removed (messes the log file), time and deviceUpTime removed from properties
-* logging revised (include device name on most logs), more details about the bundle on startup
-* various bug fixes and improvements
-* refactoring started to get ready for 2.5 PR
-
-Please delete and re-discover all things!
-
 ### Alpha/Beta versions
 
 The binding is work in progress. You have to expect bugs etc. and each version might be incompatible to the existing thing definition, which means no backware compatibility.
 
 Channel definitions are subject to change with any alpha or beta release. Please make sure to **delete all Shelly things before updating*** the binding and clean out the JSON DB:
 
-- delete all Shelly things from PaperUI's Inbox and Thing list
-- stop OH
-- run openhab-cli clean-cache
-- check the JSON db files for shelly references, remove all entries
-- copy the jar to the addons/ folder
-- start OH, wait until everything is initialized
-- run the device discovery
+- **remove all shelly entries from paperui**
+- stop oh2 service
+- openhab-cli clear-cache
+- copy jar into addons (set correct permission)
+- start oh2 service
+- **re-discover things**
+- the channel/item linkage should be restored automatically
 
 If you hit a problem make sure to post a TRACE log (or send PM) so I could look into the details.
 
@@ -74,7 +39,7 @@ However, this release is not officially supported.
 
 ## General
 
-* You should use firmware version 1.5.0 or never.
+* You should use firmware version 1.5.2 or never.
 It might be that the binding is working with older versions, but this was never tested.
 List of Firmware Versions for the different devices could be found here: https://api.shelly.cloud/files/firmware
 

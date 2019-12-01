@@ -224,7 +224,7 @@ public class ShellyBindingConstants {
 
     public static final int               SHELLY_API_TIMEOUT_MS            = 2500;
 
-    public static final String            SHELLY_API_MIN_FWVERSION         = "v1.5.0";
+    public static final String            SHELLY_API_MIN_FWVERSION         = "v1.5.2";
 
     public static final String            SHELLY_NULL_URL                  = "null";
     public static final String            SHELLY_URL_DEVINFO               = "/shelly";
@@ -276,7 +276,7 @@ public class ShellyBindingConstants {
     // Minimum signal strength for basic connectivity. Packet delivery may be unreliable.
     public static final int               SIGNAL_ALARM_INTERVAL_SEC        = 600;                                       // every
                                                                                                                         // 10min
-    public static final int               SIGNAL_ALARM_MIN_RSSI            = -70;
+    public static final int               SIGNAL_ALARM_MIN_RSSI            = -80;
 
     public static final int               DIM_STEPSIZE                     = 5;
 

@@ -35,7 +35,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySenseKeyCode;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusDimmer;
+import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusSensor;
@@ -160,9 +160,9 @@ public class ShellyHttpApi {
     }
 
     @Nullable
-    public ShellyStatusDimmer getDimmerStatus(Integer index) throws IOException {
+    public ShellyShortLightStatus getLightStatus(Integer index) throws IOException {
         String result = request(SHELLY_URL_STATUS_LIGHT + "/" + index.toString());
-        return gson.fromJson(result, ShellyStatusDimmer.class);
+        return gson.fromJson(result, ShellyShortLightStatus.class);
     }
 
     @SuppressWarnings("null")
@@ -443,6 +443,12 @@ public class ShellyHttpApi {
                         profile.isDimmer ? EVENT_TYPE_LIGHT : EVENT_TYPE_RELAY, SHELLY_API_EVENTURL_OUT_ON));
                 request(buildSetEventUrl(lip, localPort, deviceName, index,
                         profile.isDimmer ? EVENT_TYPE_LIGHT : EVENT_TYPE_RELAY, SHELLY_API_EVENTURL_OUT_OFF));
+            }
+            if (profile.supportsPushUrls && config.eventsSwitch) {
+                request(buildSetEventUrl(lip, localPort, deviceName, index,
+                        profile.isDimmer ? EVENT_TYPE_LIGHT : EVENT_TYPE_RELAY, SHELLY_API_EVENTURL_SHORT_PUSH));
+                request(buildSetEventUrl(lip, localPort, deviceName, index,
+                        profile.isDimmer ? EVENT_TYPE_LIGHT : EVENT_TYPE_RELAY, SHELLY_API_EVENTURL_LONG_PUSH));
             }
         }
     }

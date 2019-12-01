@@ -35,8 +35,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyShortStatusDimmer;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusDimmer;
+import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
@@ -154,11 +153,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     break;
                 }
 
-                ShellyStatusDimmer status = api.getDimmerStatus(lightId);
-                Validate.notNull(status, "Unable to get Dimmer status for brightness");
-                ShellyShortStatusDimmer light = status.lights.get(lightId);
+                ShellyShortLightStatus light = api.getLightStatus(lightId);
                 Validate.notNull(light, "Unable to get Light status for brightness");
-
                 if (command instanceof IncreaseDecreaseType) {
                     if (((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
                         value = Math.min(light.brightness + DIM_STEPSIZE, 100);
@@ -350,7 +346,12 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, getOnOff(light.ison));
             updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(light.autoOn));
             updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(light.autoOff));
-            updated |= updateChannel(controlGroup, CHANNEL_OVERPOWER, getOnOff(light.overpower));
+            if (light.overpower != null) {
+                updated |= updateChannel(controlGroup, CHANNEL_OVERPOWER, getOnOff(light.overpower));
+                if (light.overpower) {
+                    super.sendAlarm("Light is over power, switch off!");
+                }
+            }
 
             if (profile.inColor || profile.isBulb) {
                 logger.trace("update color settings");

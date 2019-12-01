@@ -172,6 +172,7 @@
 	<thing-type id="shellydimmer">
 		<label>Shelly Dimmer (SHDM-1)</label>
 		<description>Shelly Dimmer</description>
+		<category>DimmableLight</category>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel" />
 			<channel-group id="status" typeId="dimmerStatus" />
@@ -188,6 +189,7 @@
 		<description>A Shelly relay channel</description>
 		<channels>
 			<channel id="output" typeId="system.power" />
+			<channel id="input" typeId="inputState" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />
@@ -225,6 +227,7 @@
 		<description>Controlling the roller mode</description>
 		<channels>
 			<channel id="control" typeId="rollerShutter" />
+			<channel id="input" typeId="inputState" />
 			<channel id="rollerpos" typeId="rollerPosition" />
 			<channel id="lastDirection" typeId="rollerDirection" />
 			<channel id="stopReason" typeId="rollerStop" />
