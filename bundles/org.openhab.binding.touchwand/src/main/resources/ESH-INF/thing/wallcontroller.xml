@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>TouchWand WallController Unit</label>
 		<channels>
-			<channel id="action" typeId="wallaction">
+			<channel id="wallaction" typeId="wallaction">
 				<description>WallController action</description>
 			</channel>
 		</channels>		
