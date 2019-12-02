@@ -6,3 +6,4 @@ Require-Capability: osgi.extender;
     osgi.serviceloader;
       filter:="(osgi.serviceloader=org.graalvm.polyglot.impl.AbstractPolyglotImpl)";
       cardinality:=multiple
+-fixupmessages "Classes found in the wrong directory"; restrict:=error; is:=warning

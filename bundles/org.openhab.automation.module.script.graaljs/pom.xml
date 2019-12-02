@@ -22,7 +22,7 @@
             !jdk.internal.reflect.*,
             !jdk.vm.ci.services
         </bnd.importpackage>
-        <graal.version>19.2.0.1</graal.version>
+        <graal.version>19.3.0</graal.version>
         <asm.version>6.2.1</asm.version>
     </properties>
 
