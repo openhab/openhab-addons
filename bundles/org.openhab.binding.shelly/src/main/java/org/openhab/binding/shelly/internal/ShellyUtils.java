@@ -19,6 +19,9 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import javax.measure.Unit;
 
@@ -26,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -33,6 +37,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 
 /**
  * {@link ShellyUtils} provides general utility functions
@@ -130,5 +135,35 @@ public class ShellyUtils {
 
     public static Long now() {
         return System.currentTimeMillis() / 1000L;
+    }
+
+    public static DateTimeType getTimestamp() {
+        return getTimestamp(now());
+
+        // return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
+    }
+
+    public static DateTimeType getTimestamp(long timestamo) {
+        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamo), ZoneId.systemDefault()));
+    }
+
+    public static Integer getLightIdFromGroup(@Nullable String groupName) {
+        Validate.notNull(groupName);
+        if (groupName.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
+            return Integer.parseInt(StringUtils.substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
+        }
+        return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
+    }
+
+    public static String buildControlGroupName(@Nullable ShellyDeviceProfile profile, Integer channelId) {
+        Validate.notNull(profile);
+        return profile.isBulb || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
+                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
+    }
+
+    public static String buildWhiteGroupName(@Nullable ShellyDeviceProfile profile, Integer channelId) {
+        Validate.notNull(profile);
+        return profile.isBulb && !profile.inColor ? CHANNEL_GROUP_WHITE_CONTROL
+                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
     }
 }

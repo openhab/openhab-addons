@@ -31,15 +31,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ShellyBindingConfiguration {
     // Binding Configuration Properties
     public static final String CONFIG_DEF_HTTP_USER = "defaultUserId";
-    public static final String CONFIG_DEF_HTTP_PWD = "defaultPassword";
-    public static final String CONFIG_CHANNEL_CACHE = "channelCache";
+    public static final String CONFIG_DEF_HTTP_PWD  = "defaultPassword";
 
-    public String defaultUserId = ""; // default for http basic user id
-    public String defaultPassword = ""; // default for http basic auth password
-    public Boolean channelCache = true; // false disables the channel cache (testing only!)
+    public String              defaultUserId        = "";               // default for http basic user id
+    public String              defaultPassword      = "";               // default for http basic auth password
 
-    public Integer httpPort = 0;
-    public String localIp = "";
+    public Integer             httpPort             = 0;
+    public String              localIp              = "";
 
     public void updateFromProperties(Map<String, Object> properties) {
         Validate.notNull(properties);
@@ -51,9 +49,6 @@ public class ShellyBindingConfiguration {
                     break;
                 case CONFIG_DEF_HTTP_PWD:
                     defaultPassword = (String) e.getValue();
-                    break;
-                case CONFIG_CHANNEL_CACHE:
-                    channelCache = (Boolean) e.getValue();
                     break;
             }
 

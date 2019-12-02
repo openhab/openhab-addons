@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -346,11 +345,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, getOnOff(light.ison));
             updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(light.autoOn));
             updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(light.autoOff));
-            if (light.overpower != null) {
-                updated |= updateChannel(controlGroup, CHANNEL_OVERPOWER, getOnOff(light.overpower));
-                if (light.overpower) {
-                    super.sendAlarm("Light is over power, switch off!");
-                }
+            if (getBool(light.overpower)) {
+                sendAlarm(controlGroup + ": Device is over maximum power");
             }
 
             if (profile.inColor || profile.isBulb) {
@@ -505,25 +501,4 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 factor.toString());
         return value.intValue();
     }
-
-    private static Integer getLightIdFromGroup(@Nullable String groupName) {
-        Validate.notNull(groupName);
-        if (groupName.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
-            return Integer.parseInt(StringUtils.substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
-        }
-        return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
-    }
-
-    private static String buildControlGroupName(@Nullable ShellyDeviceProfile profile, Integer channelId) {
-        Validate.notNull(profile);
-        return profile.isBulb || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
-                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
-    }
-
-    private static String buildWhiteGroupName(@Nullable ShellyDeviceProfile profile, Integer channelId) {
-        Validate.notNull(profile);
-        return profile.isBulb && !profile.inColor ? CHANNEL_GROUP_WHITE_CONTROL
-                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
-    }
-
 }

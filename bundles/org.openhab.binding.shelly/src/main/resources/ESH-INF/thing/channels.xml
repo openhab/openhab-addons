@@ -23,12 +23,6 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="eventTrigger">
-		<kind>trigger</kind>
-		<label>Event Trigger</label>
-		<description>Trigger for device or channel events</description>
-		<event />
-	</channel-type>
 	<channel-type id="rollerShutter">
 		<item-type>Rollershutter</item-type>
 		<label>Roller Control (0=open, 100=closed))</label>
@@ -62,20 +56,6 @@
 				<option value="open">open</option>
 				<option value="close">close</option>
 			</options>
-		</state>
-	</channel-type>
-	<channel-type id="deviceOverTemp" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Over temperature</label>
-		<description>Dimmer reported over temperature</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="overpower" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Overpower</label>
-		<description>ON: Device detected an over power situation</description>
-		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="dimmerOutput">
@@ -114,13 +94,6 @@
 		<item-type>Switch</item-type>
 		<label>Load Error</label>
 		<description>Error reported load error</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="dimmerOverload">
-		<item-type>Switch</item-type>
-		<label>Overload</label>
-		<description>Error reported overload condition</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -173,8 +146,8 @@
 		<state readOnly="true" pattern="%f %unit%">
 		</state>
 	</channel-type>
-	<channel-type id="meterTimestamp">
-		<item-type>String</item-type>
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Timestamp of last measurement</description>
 		<state readOnly="true">
@@ -189,27 +162,6 @@
 		<item-type>Switch</item-type>
 		<label>Disable Power LED</label>
 		<description>Disable LED indication for output status</description>
-	</channel-type>
-	<channel-type id="uptime" advanced="true">
-		<item-type>Number:Time</item-type>
-		<label>Uptime</label>
-		<description>Number of seconds since the device was powered up</description>
-		<state readOnly="true" pattern="%d %unit%">
-		</state>
-	</channel-type>
-	<channel-type id="lastUpdate" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Last Update</label>
-		<description>Timestamp of last status update</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="signalStrength" advanced="true">
-		<item-type>Number</item-type>
-		<label>WiFi Signal</label>
-		<description>WiFi signal strength, should be greater than -75 to stable communication</description>
-		<state readOnly="true" pattern="%d dBm">
-		</state>
 	</channel-type>
 
 	<channel-type id="colorMode">
@@ -320,7 +272,14 @@
 	<channel-type id="sensorFlood">
 		<item-type>Switch</item-type>
 		<label>Flood Alarm</label>
-		<description>TRUE: Indicates flood condition / water detected</description>
+		<description>ON: Indicates flood condition / water detected</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="sensorSmoke">
+		<item-type>Switch</item-type>
+		<label>Smoke Alarm</label>
+		<description>ON: Indicates smoke detection</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -349,6 +308,40 @@
 		<item-type>String</item-type>
 		<label>IR Key to send</label>
 		<description>Send a defined key code</description>
+	</channel-type>
+
+	<channel-type id="uptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Uptime</label>
+		<description>Number of seconds since the device was powered up</description>
+		<state readOnly="true" pattern="%d %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="signalStrength" advanced="true">
+		<item-type>Number</item-type>
+		<label>WiFi Signal</label>
+		<description>WiFi signal strength, should be greater than -75 to stable communication</description>
+		<state readOnly="true" pattern="%d dBm">
+		</state>
+	</channel-type>
+	<channel-type id="lastUpdate" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Timestamp of last status update</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="lastAlarm">
+		<item-type>Switch</item-type>
+		<label>Last Alarm</label>
+		<description>Last alarm (over heating, load error etc.)</description>
+		<event />
+	</channel-type>
+	<channel-type id="eventTrigger">
+		<kind>trigger</kind>
+		<label>Event</label>
+		<description>Event Trigger, e.g. button on/off, Output on/off</description>
+		<event />
 	</channel-type>
 
 </thing:thing-descriptions>

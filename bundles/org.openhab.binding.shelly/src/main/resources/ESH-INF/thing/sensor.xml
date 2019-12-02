@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="shellyht">
-		<label>Shelly HT</label>
+		<label>Shelly HT (SHHT-1)</label>
 		<description>Shelly HT sensor device (battery powered)</description>
 
 		<channel-groups>
@@ -24,7 +24,6 @@
 		<channel-groups>
 			<channel-group id="sensors" typeId="smokeSensor" />
 			<channel-group id="battery" typeId="batteryStatus" />
-			<channel-group id="device" typeId="deviceStatus" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -62,7 +61,7 @@
 		<channels>
 			<channel id="temperature" typeId="sensorTemp" />
 			<channel id="humidity" typeId="sensorHumidity" />
-			<channel id="event" typeId="eventTrigger" />
+			<channel id="lastUpdate" typeId="timestamp" />
 		</channels>
 	</channel-group-type>
 
@@ -72,7 +71,17 @@
 		<channels>
 			<channel id="temperature" typeId="sensorTemp" />
 			<channel id="flood" typeId="sensorFlood" />
-			<channel id="event" typeId="eventTrigger" />
+			<channel id="lastUpdate" typeId="timestamp" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="smokeSensor">
+		<label>Sensor Data</label>
+		<description>Data from the Flood Sensor</description>
+		<channels>
+			<channel id="temperature" typeId="sensorTemp" />
+			<channel id="skmoke" typeId="sensorSmoke" />
+			<channel id="lastUpdate" typeId="timestamp" />
 		</channels>
 	</channel-group-type>
 
@@ -85,7 +94,7 @@
 			<channel id="lux" typeId="sensorLux" />
 			<channel id="motion" typeId="system.motion" />
 			<channel id="charger" typeId="sensorCharger" />
-			<channel id="event" typeId="eventTrigger" />
+			<channel id="lastUpdate" typeId="timestamp" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="batteryStatus">

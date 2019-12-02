@@ -34,10 +34,10 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
+import org.openhab.binding.shelly.internal.api.ShellyApiJson;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyControlRoller;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyInputState;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsDimmer;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsRoller;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
@@ -49,6 +49,8 @@ import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /***
  * The{@link ShellyRelayHandler} handles light (bulb+rgbw2) specific commands and status. All other commands will be
@@ -179,11 +181,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             }
             logger.debug("{}: Change brightness from {} to {}", thingName, light.brightness, value);
         }
-        if ((value > 0) && !getBool(light.ison)) {
-            logger.debug("{}: Switch light ON to set brightness", thingName);
-            api.setRelayTurn(index, SHELLY_API_ON);
-            requestUpdates(1, false);
-        }
 
         validateRange("brightness", value, 0, 100);
         logger.debug("{}: Setting dimmer brightness to {}", thingName, value);
@@ -201,6 +198,15 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         return updated;
     }
 
+    /**
+     * Handle Roller Commands
+     *
+     * @param command from handleCommand()
+     * @param groupName relay, roller...
+     * @param index relay number
+     * @param isControl true: is the Rollershutter channel, false: rollerpos channel
+     * @throws IOException
+     */
     @SuppressWarnings("null")
     private void handleRoller(Command command, String groupName, Integer index, boolean isControl) throws IOException {
         Integer position = -1;
@@ -287,6 +293,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         boolean updated = false;
         if (profile.hasRelays && !profile.isRoller && !profile.isDimmer) {
             logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays.toString());
+
             int i = 0;
             ShellyStatusRelay rstatus = api.getRelayStatus(i);
             if (rstatus != null) {
@@ -295,6 +302,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                         Integer r = i + 1;
                         String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                                 : CHANNEL_GROUP_RELAY_CONTROL + r.toString();
+
+                        if (getBool(relay.overpower)) {
+                            sendAlarm(groupName + ": Over power detected!");
+                        }
 
                         updated |= updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
                         updated |= updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(relay.hasTimer));
@@ -305,20 +316,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                             updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
                                     toQuantityType(getDouble(rsettings.autoOff), SmartHomeUnits.SECOND));
                         }
-                        updated |= updateChannel(groupName, CHANNEL_OVERPOWER, getOnOff(relay.overpower));
-                        if (status.overtemperature != null) {
-                            updated |= updateChannel(groupName, CHANNEL_OVERTEMP, getOnOff(status.overtemperature));
-                            if (status.overtemperature) {
-                                super.sendAlarm(groupName + " is overheating");
-                            }
-                        }
-                        if (getBool(status.overload)) {
-                            super.sendAlarm("Overload for " + groupName + ", reduce load!");
-                        }
-                        if (getBool(status.loaderror)) {
-                            super.sendAlarm("Load error detected for " + groupName);
-                        }
-
                         updated |= updateInputs(groupName, status);
                         i++;
                     }
@@ -335,6 +332,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     Integer relayIndex = i + 1;
                     String groupName = profile.numRollers > 1 ? CHANNEL_GROUP_ROL_CONTROL + relayIndex.toString()
                             : CHANNEL_GROUP_ROL_CONTROL;
+
                     if (getString(control.state).equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
                         Integer pos = Math.max(SHELLY_MIN_ROLLER_POS,
                                 Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
@@ -344,12 +342,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                                 toQuantityType(new Double(pos), SmartHomeUnits.PERCENT));
                         scheduledUpdates = 1; // one more poll and then stop
                     }
+
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_DIR, getStringType(control.lastDirection));
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STOPR, getStringType(control.stopReason));
-                    if (status.overtemperature != null) {
-                        updated |= updateChannel(groupName, CHANNEL_OVERTEMP, getOnOff(status.overtemperature));
-                    }
-
                     updated |= updateInputs(groupName, status);
 
                     i++;
@@ -369,30 +364,32 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @throws IOException
      */
     @SuppressWarnings("null")
-    public boolean updateDimmers(ShellySettingsStatus status) throws IOException {
+    public boolean updateDimmers(ShellySettingsStatus orgStatus) throws IOException {
         ShellyDeviceProfile profile = getProfile();
 
         boolean updated = false;
         if (profile.isDimmer) {
-            Validate.notNull(status, "status must not be null!");
-            Validate.notNull(status.lights, "status.lights must not be null!");
-            Validate.notNull(status.tmp, "status.tmp must not be null!");
+            Validate.notNull(orgStatus, "orgStatus must not be null!");
 
-            logger.trace("{}: Updating {} dimmers(s)", thingName, status.lights.size());
-            updated |= updateChannel(CHANNEL_GROUP_DIMMER_STATUS, CHANNEL_DIMMER_LOAD_ERROR,
-                    getOnOff(status.loaderror));
-            updated |= updateChannel(CHANNEL_GROUP_DIMMER_STATUS, CHANNEL_DIMMER_OVERLOAD, getOnOff(status.overload));
-            if (status.overtemperature != null) {
-                updated |= updateChannel(CHANNEL_GROUP_DIMMER_STATUS, CHANNEL_OVERTEMP,
-                        getOnOff(status.overtemperature));
-            }
+            // We need to fixup the returned Json: The dimmer returns light[] element, which is ok, but it doesn't have
+            // the same structure as lights[] from Bulb and RGBW2. The tag gets replaced by dimmers[] so that Gson maps
+            // to a different structure (ShellyShortLight).
+            Gson gson = new Gson();
+            ShellySettingsStatus dstatus = gson.fromJson(ShellyApiJson.fixDimmerJson(orgStatus.json),
+                    ShellySettingsStatus.class);
+            Validate.notNull(dstatus.dimmers, "dstatus.dimmers must not be null!");
+            Validate.notNull(dstatus.tmp, "dstatus.tmp must not be null!");
+
+            logger.trace("{}: Updating {} dimmers(s)", thingName, dstatus.dimmers.size());
 
             int l = 0;
-            for (ShellySettingsLight dimmer : status.lights) {
+            logger.trace("{}: Updating dimmers {}", thingName, dstatus.dimmers.size());
+            for (ShellyShortLightStatus dimmer : dstatus.dimmers) {
                 Integer r = l + 1;
                 String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL
                         : CHANNEL_GROUP_DIMMER_CONTROL + r.toString();
                 updated |= updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(dimmer.ison));
+                updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, getOnOff(dimmer.ison));
                 updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS,
                         toQuantityType(new Double(getInteger(dimmer.brightness)), SmartHomeUnits.PERCENT));
 
@@ -405,13 +402,21 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
                 }
 
-                updated |= updateInputs(groupName, status);
+                updated |= updateInputs(groupName, orgStatus);
                 l++;
             }
         }
         return updated;
     }
 
+    /**
+     * Map input states to channels
+     *
+     * @param groupName Channel Group (relay / relay1...)
+     *
+     * @param status Shelly device status
+     * @return true: one or more inputs were updated
+     */
     @SuppressWarnings("null")
     private boolean updateInputs(String groupName, ShellySettingsStatus status) {
         boolean updated = false;
@@ -420,8 +425,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             logger.trace("{}: Updating {} input state(s)", thingName, count);
             for (int input = 0; input < count; input++) {
                 ShellyInputState state = status.inputs.get(input);
-                String channel = count > 1 ? CHANNEL_INPUT + Integer.toString(input + 1) : CHANNEL_INPUT;
-                logger.trace("{}: Updating channel {}.{} with inputs[{}]", thingName, groupName, channel, input);
+                String channel = profile.isDimmer && count > 1 ? CHANNEL_INPUT + Integer.toString(input + 1)
+                        : CHANNEL_INPUT;
                 updated |= updateChannel(groupName, channel, state.input == 0 ? OnOffType.OFF : OnOffType.ON);
             }
         }

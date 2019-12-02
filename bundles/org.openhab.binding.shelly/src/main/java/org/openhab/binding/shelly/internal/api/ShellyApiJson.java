@@ -397,6 +397,7 @@ public class ShellyApiJson {
         public ArrayList<ShellySettingsRoller>    rollers;
         public ArrayList<ShellyInputState>        inputs;
         public ArrayList<ShellySettingsLight>     lights;
+        public ArrayList<ShellyShortLightStatus>  dimmers;
         public ArrayList<ShellySettingsMeter>     meters;
         public ArrayList<ShellySettingsEMeter>    emeters;
 
@@ -446,9 +447,9 @@ public class ShellyApiJson {
     }
 
     public static class ShellyShortLightStatus {
-        public Boolean ison;      // Whether output channel is on or off
-        public Integer brightness;
-        public String  mode;
+        public Boolean ison;       // Whether output channel is on or off
+        public String  mode;       // color or white - valid only for Bulb and RGBW2 even Dimmer returns it also
+        public Integer brightness; // brightness: 0.100%
     }
 
     public static class ShellyStatusRelay {
@@ -716,4 +717,20 @@ public class ShellyApiJson {
     public static final double SATURATION_FACTOR       = 2.55;
     public static final double GAIN_FACTOR             = SHELLY_MAX_GAIN / 100;
     public static final double BRIGHTNESS_FACTOR       = SHELLY_MAX_BRIGHTNESS / 100;
+
+    /**
+     * Shelly Dimmer returns light[]. However, the structure doesn't match the lights[] of a Bulb/RGBW2.
+     * The tag lights[] will be replaced with dimmers[] so this could be mapped to a different Gson structure.
+     * The function requires that it's only called when the device is a dimmer - on get settings and get status
+     *
+     * @param json Input Json as received by the API
+     * @return Modified Json
+     */
+    public static String fixDimmerJson(String json) {
+        //
+        //
+        return !json.contains("\"lights\":[") ? json
+                : json.replaceFirst(java.util.regex.Pattern.quote("\"lights\":["), "\"dimmers\":[");
+    }
+
 }

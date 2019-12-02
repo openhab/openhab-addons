@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -124,7 +123,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 logger.debug("Shelly device discovered: IP address={}, name={}", address, name);
                 return null;
             }
-            logger.info("Shelly device discovered: IP-Adress={}, name={}", address, name);
+            logger.debug("Shelly device discovered: IP-Adress={}, name={}", address, name);
 
             ShellyThingConfiguration config = new ShellyThingConfiguration();
             if (handlerFactory != null) {
@@ -150,37 +149,31 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 properties = ShellyBaseHandler.fillDeviceProperties(profile);
                 logger.trace("name={}, thingType={}, deviceType={}, mode={}", name, thingType, profile.deviceType,
                         mode.isEmpty() ? "<standard>" : mode);
+
+                // get thing type from device name
+                thingUID = ShellyThingCreator.getThingUID(name, mode, false);
             } catch (IOException e) {
                 if (e.getMessage().contains(APIERR_HTTP_401_UNAUTHORIZED)) {
                     logger.warn("Device {} ({}) reported 'Access defined' (userid/password mismatch).", name, address);
-                    logger.info(
-                            "You could set a default userid and passowrd in the binding config and re-discover devices");
-                    logger.info(
-                            "or you need to disable device protection (userid/password) in the Shelly App for device discovery.");
-                    logger.info(
-                            "Once the device is discoverd you could set the userid/password and re-enable device protection in the Shelly App.");
-                    name = (name + "-" + address).replace('.', '-');
-                    thingUID = new ThingUID(THING_TYPE_SHELLYPROTECTED, name);
+
+                    // create shellyunknown thing - will be changed during thing initialization with valid credentials
+                    thingUID = ShellyThingCreator.getThingUID(name, mode, true);
                 } else {
                     logger.warn("Device discovery failed for device {}, IP {}: {} ({})", name, address, e.getMessage(),
                             e.getClass());
                 }
             }
 
-            if (thingUID == null) {
-                // get thing type from device name
-                thingUID = this.getThingUID(name, mode);
+            if (thingUID != null) {
+                addProperty(properties, PROPERTY_MODEL_ID, model);
+                addProperty(properties, PROPERTY_THINGTYPE, thingUID.getId());
+                addProperty(properties, CONFIG_DEVICEIP, address);
+                addProperty(properties, PROPERTY_SERVICE_NAME, service.getName());
+
+                logger.debug("Adding Shelly thing, UID={}", thingUID.getAsString());
+                return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withLabel(name + " - " + address).withRepresentationProperty(name).build();
             }
-            Validate.notNull(thingUID, "Discovery: thingUID must not be null!");
-
-            addProperty(properties, PROPERTY_MODEL_ID, model);
-            addProperty(properties, PROPERTY_THINGTYPE, thingUID.getId());
-            addProperty(properties, CONFIG_DEVICEIP, address);
-            addProperty(properties, PROPERTY_SERVICE_NAME, service.getName());
-
-            logger.debug("Adding Shelly thing, UID={}", thingUID.getAsString());
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(name + " - " + address)
-                    .withRepresentationProperty(name).build();
         } catch (RuntimeException e) {
             logger.warn("Device discovery failed for device {}, IP {}, service={}: {} ({})", name, address, name,
                     e.getMessage(), e.getClass());
@@ -197,77 +190,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
     public ThingUID getThingUID(@Nullable ServiceInfo service) {
         logger.debug("ServiceInfo {}", service);
         Validate.notNull(service);
-        return getThingUID(service.getName().toLowerCase(), "");
-    }
-
-    @Nullable
-    public ThingUID getThingUID(String name, String mode) {
-        String devid = StringUtils.substringAfterLast(name, "-");
-
-        if (name.startsWith("shelly1pm")) {
-            return new ThingUID(THING_TYPE_SHELLY1PM, devid);
-        }
-        if (name.startsWith("shellyem")) {
-            return new ThingUID(THING_TYPE_SHELLYEM, devid);
-        }
-        if (name.startsWith("shelly1")) {
-            return new ThingUID(THING_TYPE_SHELLY1, devid);
-        }
-        if (name.startsWith("shellyswitch25")) { // Shelly v2.5
-            if (mode.equals(SHELLY_MODE_RELAY)) {
-                return new ThingUID(THING_TYPE_SHELLY25_RELAY, devid);
-            }
-            if (mode.equals(SHELLY_MODE_ROLLER)) {
-                return new ThingUID(THING_TYPE_SHELLY25_ROLLER, devid);
-            }
-        }
-        if (name.startsWith("shellyswitch")) { // Shelly v2
-            if (mode.equals(SHELLY_MODE_RELAY)) {
-                return new ThingUID(THING_TYPE_SHELLY2_RELAY, devid);
-            }
-            if (mode.equals(SHELLY_MODE_ROLLER)) {
-                return new ThingUID(THING_TYPE_SHELLY2_ROLLER, devid);
-            }
-        }
-        if (name.startsWith("shelly4pro")) {
-            return new ThingUID(THING_TYPE_SHELLY4PRO, devid);
-        }
-        if (name.startsWith("shellyplug-s")) {
-            return new ThingUID(THING_TYPE_SHELLYPLUGS, devid);
-        }
-        if (name.startsWith("shellyplug")) {
-            return new ThingUID(THING_TYPE_SHELLYPLUG, devid);
-        }
-        if (name.startsWith("shellybulb")) {
-            return new ThingUID(THING_TYPE_SHELLYBULB, devid);
-        }
-        if (name.startsWith("shellysense")) {
-            return new ThingUID(THING_TYPE_SHELLYSENSE, devid);
-        }
-        if (name.startsWith("shellyht")) {
-            return new ThingUID(THING_TYPE_SHELLYHT, devid);
-        }
-        if (name.startsWith("shellysmoke")) {
-            return new ThingUID(THING_TYPE_SHELLYSMOKE, devid);
-        }
-        if (name.startsWith("shellyflood")) {
-            return new ThingUID(THING_TYPE_SHELLYFLOOD, devid);
-        }
-        if (name.startsWith("shellyrgbw2")) {
-            if (mode.equals(SHELLY_MODE_COLOR)) {
-                return new ThingUID(THING_TYPE_SHELLYRGBW2_COLOR, devid);
-            }
-            if (mode.equals(SHELLY_MODE_WHITE)) {
-                return new ThingUID(THING_TYPE_SHELLYRGBW2_WHITE, devid);
-            }
-        }
-        if (name.startsWith("shellydimmer")) {
-            return new ThingUID(THING_TYPE_SHELLYDIMMER, devid);
-        }
-
-        logger.info("Unsupported Shelly Device discovered: {} (mode {})", name, mode);
-        return null;
-
+        return ShellyThingCreator.getThingUID(service.getName().toLowerCase(), "", false);
     }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)

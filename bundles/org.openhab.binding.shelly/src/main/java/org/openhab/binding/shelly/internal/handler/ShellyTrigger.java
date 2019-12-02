@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -49,11 +51,11 @@ public class ShellyTrigger {
     }
 
     @SuppressWarnings("null")
-    public void sendEvent(String group, String channel) {
+    public void sendEvent() {
         Validate.notNull(thingHandler);
         Date date = new Date(); // this object contains the current date value
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         event.timestamp = formatter.format(date);
-        thingHandler.triggerChannel(group, channel, toJson());
+        thingHandler.triggerChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_EVENT_TRIGGER, toJson());
     }
 }

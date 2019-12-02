@@ -394,7 +394,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
                         break;
                     case "o": // Overtemp
-                        updateChannel(updates, rGroup, CHANNEL_OVERTEMP, s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                        // will be handled by status update
                         break;
 
                     case "tc": /* Temp Celsius */

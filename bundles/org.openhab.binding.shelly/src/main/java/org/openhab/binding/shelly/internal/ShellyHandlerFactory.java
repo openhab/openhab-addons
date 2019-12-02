@@ -14,8 +14,6 @@ package org.openhab.binding.shelly.internal;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -105,6 +103,9 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
                     || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_WHITE.getId())) {
                 logger.debug("Create new thing of type {} using ShellyLightHandler", thingTypeUID.getId());
                 return new ShellyLightHandler(thing, this, bindingConfig, coapServer);
+            } else if (thingTypeUID.getId().equals(THING_TYPE_SHELLYUNKNOWN_STR)) {
+                logger.debug("Create new thing of type {} using ShellyUnknownHandler", thingTypeUID.getId());
+                return new ShellyRelayHandler(thing, this, bindingConfig, coapServer);
             } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
                 logger.debug("Create new thing of type {} using ShellyRelayHandler", thingTypeUID.getId());
                 return new ShellyRelayHandler(thing, this, bindingConfig, coapServer);
@@ -117,15 +118,27 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    public void onEvent(String deviceName, String deviceIndex, String eventType, Map<String, String> parameters) {
-        try {
-            logger.trace("Dispatch event to device handler {}", deviceName);
-            deviceListeners.forEach(listener -> listener.onEvent(deviceName, deviceIndex, eventType, parameters));
-        } catch (RuntimeException e) {
-            logger.warn(
-                    "ERROR: Exception processing callback: {} ({}), deviceName={}, type={}, index={}, parameters={}",
-                    e.getMessage(), e.getClass(), deviceName, eventType, deviceIndex, parameters.toString());
-
+    /**
+     * Dispatch event to registered devices.
+     *
+     * @param deviceName
+     * @param componentIndex Index of component, e.g. 2 for relay2
+     * @param eventType Type of event, e.g. light
+     * @param parameters Input parameters from URL, e.g. on sensor reports
+     */
+    public void onEvent(String deviceName, String componentIndex, String eventType, Map<String, String> parameters) {
+        logger.trace("Dispatch event to device handler {}", deviceName);
+        for (ShellyDeviceListener l : deviceListeners) {
+            try {
+                if (l.onEvent(deviceName, componentIndex, eventType, parameters)) {
+                    // event processed
+                    break;
+                }
+            } catch (RuntimeException e) {
+                logger.warn("Unable to process callback: {} ({}), deviceName={}, type={}, index={}, parameters={}",
+                        e.getMessage(), e.getClass(), deviceName, eventType, componentIndex, parameters.toString());
+                // continue with next listener
+            }
         }
     }
 
@@ -145,14 +158,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
      */
     public void unregisterDeviceListener(ShellyDeviceListener listener) {
         this.deviceListeners.remove(listener);
-    }
-
-    public static String convertTimestamp(Long timestamp) {
-        Date date = new Date(timestamp * 1000L);
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-        String result = sdf.format(date);
-        return !result.contains("1970-01-01") ? result : "n/a";
     }
 
     @Nullable

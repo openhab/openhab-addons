@@ -83,10 +83,9 @@ public class ShellyHttpApi {
     @Nullable
     public ShellyDeviceProfile getDeviceProfile(String thingType) throws IOException {
         String json = request(SHELLY_URL_SETTINGS);
-        // Shelly Dimmer returns light[]. However, the structure doesn't match the lights[] of a Bulb/RGBW2
-        if (json.contains("\"type\":\"SHDM-1\"") && json.contains("\"lights\":[")) {
-            logger.debug("Detected a Shelly Dimmer: replace lights[] tag with dimmers[]");
-            json = json.replaceFirst(java.util.regex.Pattern.quote("\"lights\":["), "\"dimmers\":[");
+        if (json.contains("\"type\":\"SHDM-1\"")) {
+            logger.trace("Detected a Shelly Dimmer: fix Json (replace lights[] tag with dimmers[]");
+            json = fixDimmerJson(json);
         }
 
         // Map settings to device profile for Light and Sense
@@ -102,6 +101,7 @@ public class ShellyHttpApi {
         }
         if (profile.isSense) {
             profile.irCodes = getIRCodeList();
+            logger.debug("{}: Sense stored key list loaded, {} entries.", thingName, profile.irCodes.size());
         }
 
         return profile;
@@ -113,9 +113,9 @@ public class ShellyHttpApi {
      * @return Device settings/status as ShellySettingsStatus object
      * @throws IOException
      */
+    @SuppressWarnings("null")
     public ShellySettingsStatus getStatus() throws IOException {
         String json = request(SHELLY_URL_STATUS);
-
         ShellySettingsStatus status = gson.fromJson(json, ShellySettingsStatus.class);
         Validate.notNull(status);
         status.json = json;
@@ -444,7 +444,7 @@ public class ShellyHttpApi {
                 request(buildSetEventUrl(lip, localPort, deviceName, index,
                         profile.isDimmer ? EVENT_TYPE_LIGHT : EVENT_TYPE_RELAY, SHELLY_API_EVENTURL_OUT_OFF));
             }
-            if (profile.supportsPushUrls && config.eventsSwitch) {
+            if (profile.supportsPushUrls && config.eventsPush) {
                 request(buildSetEventUrl(lip, localPort, deviceName, index,
                         profile.isDimmer ? EVENT_TYPE_LIGHT : EVENT_TYPE_RELAY, SHELLY_API_EVENTURL_SHORT_PUSH));
                 request(buildSetEventUrl(lip, localPort, deviceName, index,
@@ -490,11 +490,9 @@ public class ShellyHttpApi {
         } catch (IOException e) {
             if (e.getMessage().contains("Timeout")) {
                 throw new IOException("Shelly API call failed: Timeout (" + SHELLY_API_TIMEOUT_MS + " ms)");
-
             } else {
                 throw new IOException("Shelly API call failed: " + e.getMessage() + ", url=" + url);
             }
         }
     }
-
 }

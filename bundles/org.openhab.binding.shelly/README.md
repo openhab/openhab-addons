@@ -21,9 +21,10 @@ This supports sending commands to the devices as well as reading device status a
 | shellyrgbw2        | Shelly RGB Controller                                  |
 | shellybulb         | Shelly Bulb in Color or WHite Mode                     |
 | shellyht           | Shelly Sensor (temp+humidity)                          |
-| shellysense        | Shelly Motion and IR Controller                        |
-| shellysmoke        | Shelly Sensor                                          |
 | shellyflood        | Shelly Flood Sensor                                    |
+| shellysmoke        | Shelly Smoke Sensor                                    |
+| shellysense        | Shelly Motion and IR Controller                        |
+| shellyunknown      | Marks password protected or unknown devices            |
 
 ## Firmware
 
@@ -39,53 +40,46 @@ Use the device's web ui or the Shelly App to perform the update.
 
 The binding uses mDNS to discovery the Shelly devices.
 They periodically announce their presence, which can be used by the binding to find them on the local network and fetch their IP address.
-The binding will then use the Shelly REST api (http) to discover device capabilities, read status and control the device.
+The binding will then use the Shelly REST API (HTTP) to discover device capabilities, read status and control the device.
 In addition event callbacks will be used to support battery powered devices.
-The binding also support the CoIoT Spec, which is based on Coap. 
 
-### Password protected devices
+Make sure to wake-up battery powered devices (press the button inside the device) so they show up on the network.
+Sometime you need to run the manual discovery multiple times until you see all your devices.
 
-The Shelly Apps allow to protect device configuration by userid+password, which is  supported by the binding.
-If you are using password protected Shelly devices you need to configure userid and password, otherwise a thing is created (shelly-protected) to indicate that a password protected device was discovered (rthe dicovered information includes the device type and IP address).
-
-Change the binding configuration and re-discover the device.
-
-1. Global Default: Go to PaperUI:Configuration:Addons:Shelly Binding and edit the configuration.
-Those will be used when now settings are given on the thing level.
-2. Edit the thing configuration. 
-
-Important: The IP address shouldn't change after the device is added as a new thing in openHAB. This could be achieved by
+Important: The IP address shouldn't change after the device is added as a new thing in openHAB.
+This could be achieved by
 
 - assigning a static IP address or
 - use DHCP and setup the router to assign always the same ip address to the device
 
-You need to re-discover the device if there is a reason why the ip address changed.
+### Password protected devices
 
-New devices could be discovered an added to the openHAB system by using Paper UI's Inbox.
-Running a manual discovery should show up all devices on your local network. 
-Sometime you need to run the manual discovery multiple times until you see all your devices.
-Make sure to wake-up battery powered devices (press the button inside the device) so they show up on the network.
+The Shelly Apps allow to protect device configuration by user id+password, which is  supported by the binding.
+If you are using password protected  devices you need to configure user id and password. 
+A special thing is created if the access to the device's APU cannot be initialized.
+You need to edit the Thing configuration and setup user id and password (same as in the Shelly App) to activate this Thing.
+The Thing will be re-initialized and the Thing type adjusted and this was successful.
 
 ## Binding Configuration
 
 The binding has some global configuration options.
-Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 
-| Parameter      |Description                                                    |Mandatory|Default                                         |
-|----------------|---------------------------------------------------------------|---------|------------------------------------------------|
-| defaultUserId  |Default userid for http authentication when not set in thing   |    no   |admin                                           |
-| defaultPassword|Default password for http authentication when not set in thing |    no   |admin                                           |
+| Parameter      |Description                                                       |Mandatory|Default                                         |
+|----------------|------------------------------------------------------------------|---------|------------------------------------------------|
+| defaultUserId  |Default user id for HTTP authentication when not set in the Thing |    no   |admin                                           |
+| defaultPassword|Default password for HTTP authentication when not set in the Thing|    no   |admin                                           |
 
 ## Thing Configuration
 
 |Parameter         |Description                                                   |Mandatory|Default                                           |
 |------------------|--------------------------------------------------------------|---------|--------------------------------------------------|
-|deviceIp          |IP address of the Shelly device, usually auto-discovered      |    yes  |none                                              |
-|userId            |The user id used for http authentication                      |    no   |none                                              |
-|password          |Password for http authentication*                             |    no   |none                                              |
+|deviceIp          |IP address of the Shelly device                               |    yes  |none                                              |
+|userId            |The user id used for HTTP authentication                      |    no   |none                                              |
+|password          |Password for HTTP authentication*                             |    no   |none                                              |
 |lowBattery        |Threshold for battery level. Set alert when level is below.   |    no   |20 (=20%), only for battery powered devices       |
 |updateInterval    |Interval for the background status check in seconds.          |    no   |1h for battery powered devices, 60s for all others|
 |eventsButton      |true: register event "trigger when a button is pushed"        |    no   |false                                             |
+|eventsPush        |true: register event "trigger on short and long push"         |    no   |false                                             |
 |eventsSwitch      |true: register event "trigger of switching the relay output"  |    no   |true                                              |
 |eventsSensorReport|true: register event "posted updated sensor data"             |    no   |true for sensor devices                           |
 |eventsCoIoT       |true: Listen for CoIoT/COAP events                            |    no   |true for battery devices, false for others        |
@@ -93,16 +87,63 @@ Go to PaperUI:Configuration:Addons:Shelly Binding to edit those.
 Independent from the updateInterval setting the binding will perform a settings refresh from the device once per minute.
 There is no event from the device that the settings have be changed by the Shelly App so this is kind of a fallback to get updates at least once per minute. 
 
+
+
 ## Channels
 
-### General Notes on Channels
-
-Notes:
+### General Notes
 
 - Various channels are only visible for linking when you click Show More in the channel definition
 - input channel is only available with firmware > 1.5.6, otherwise NULL
 - use channel rollerpos only if you need the inverted value, otherwise use the control channel and Item Type Number, see example
-- See samples to see how to intercept events
+- Short push and long push events require firmware version 1.5.6+.
+- The different devices have different types of power meters = different set of channels.
+
+Every device has a channel group "device" with the following channels:
+
+|Group     |Channel      |Type     |read-only|Desciption                                                                       |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|device    |uptime       |Number   |yes      |Number of seconds since the device was powered up                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of last update on any of the device's channel                          |
+|          |signal       |Number   |yes      |WiFi signal strength (RSSI)                                                      |
+|          |lastAlarm    |String   |yes      |Most recent alarm for health check                                               |
+
+
+
+### Event Channel
+
+The binding maps the inbound http events into trigger events when enabled in the Thing Configuration
+
+|Event Type|Description|
+|----------|-------------------------------------------------------------------------------------------------------------------|
+|BTN_ON    |The Button was pressed                                                                                             |
+|BTN_OFF   |The Button was released                                                                                            |
+|SHORTPUSH |A short push to the button was detected  (requires FW 1.5.6)                                                       |
+|SHORTPUSH |A long push to the button was detected   (requires FW 1.5.6)                                                       |
+|OUT_ON    |Relais output is on                                                                                                |
+|OUT_OFF   |Relais output is off                                                                                               |
+
+The channel is implemented as a Trigger and could be used in a Rule:
+```
+rule "Shelly Events"
+when
+    Channel "shelly:shelly2-relay:XXXXXX:device#event" triggered
+then
+    logInfo("Shelly", "A Shelly device event was triggered, payload="+receivedEvent.toString())
+end
+```
+
+See Rule examples for information how to process the event payload.
+
+### Alarm Events
+
+The binding does some health checking on the device
+
+- The RSSI signal is monitored every 10 minutes. A alarm is send to the event channel when RSSI is < -80, which indicates an instable connection.
+- An alarm is send to the event channel when over heating, overload or a load error is reported by the device
+
+Those alarms could be received through the event channel as a trigger.
+
 
 ### Shelly 1 (thing-type: shelly1)
 
@@ -111,8 +152,6 @@ Notes:
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |overpower    |Switch   |yes      |ON: The relay detected an overpower condition, output was turned OFF             |
-|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information (JSON)              |
-|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 
 ### Shelly 1PM (thing-type: shelly1pm)
 
@@ -121,7 +160,6 @@ Notes:
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |overpower    |Switch   |yes      |ON: The relay detected an overpower condition, output was turned OFF             |
-|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information (JSON)              |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |

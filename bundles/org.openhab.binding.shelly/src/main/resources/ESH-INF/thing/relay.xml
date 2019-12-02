@@ -175,7 +175,6 @@
 		<category>DimmableLight</category>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel" />
-			<channel-group id="status" typeId="dimmerStatus" />
 			<channel-group id="meter" typeId="meter" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
@@ -193,8 +192,6 @@
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />
-			<channel id="overtemperature" typeId="deviceOverTemp" />
-			<channel id="overpower" typeId="overpower" />
 			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
@@ -212,15 +209,6 @@
 			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="dimmerStatus">
-		<label>Dimmer Status</label>
-		<description>Status of the Dimmer</description>
-		<channels>
-			<channel id="loaderror" typeId="dimmerLoadError" />
-			<channel id="overload" typeId="dimmerOverload" />
-			<channel id="overtemperature" typeId="deviceOverTemp" />
-		</channels>
-	</channel-group-type>
 
 	<channel-group-type id="rollerControl">
 		<label>Roller Control</label>
@@ -231,7 +219,6 @@
 			<channel id="rollerpos" typeId="rollerPosition" />
 			<channel id="lastDirection" typeId="rollerDirection" />
 			<channel id="stopReason" typeId="rollerStop" />
-			<channel id="overtemperature" typeId="deviceOverTemp" />
 			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
@@ -244,7 +231,7 @@
 			<channel id="lastPower2" typeId="lastPower2" />
 			<channel id="lastPower3" typeId="lastPower3" />
 			<channel id="totalKWH" typeId="meterTotal" />
-			<channel id="timestamp" typeId="meterTimestamp" />
+			<channel id="lastUpdate" typeId="timestamp" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="emeter">
@@ -256,7 +243,7 @@
 			<channel id="returnedKWH" typeId="meterReturned" />
 			<channel id="reactiveWatts" typeId="meterReactive" />
 			<channel id="voltage" typeId="meterVoltage" />
-			<channel id="timestamp" typeId="meterTimestamp" />
+			<channel id="lastUpdate" typeId="timestamp" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="basicMeter">
@@ -282,14 +269,15 @@
 			<channel id="powerLed" typeId="ledPowerDisable" />
 		</channels>
 	</channel-group-type>
+
+
 	<channel-group-type id="deviceStatus" advanced="true">
 		<label>Device Status</label>
 		<description>Some details on the device status</description>
 		<channels>
 			<channel id="uptime" typeId="uptime" />
-			<channel id="lastUpdate" typeId="lastUpdate" />
 			<channel id="signal" typeId="signalStrength" />
-			<channel id="event" typeId="eventTrigger" />
+			<channel id="alarm" typeId="lastAlarm" />
 		</channels>
 	</channel-group-type>
 
