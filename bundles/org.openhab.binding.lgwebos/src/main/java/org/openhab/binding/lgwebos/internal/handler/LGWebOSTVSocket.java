@@ -806,6 +806,14 @@ public class LGWebOSTVSocket {
 
     }
 
+    // IR CODE
+
+    public void sendIRCode(String irCode, ResponseListener<CommandConfirmation> listener) {
+        executeMouse(s -> s.button(irCode));
+    }
+
+    //
+
     public interface ConfigProvider {
         void storeKey(@Nullable String key);
 

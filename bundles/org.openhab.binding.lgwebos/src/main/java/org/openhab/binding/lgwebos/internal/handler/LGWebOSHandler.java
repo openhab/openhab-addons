@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.lgwebos.action.LGWebOSActions;
 import org.openhab.binding.lgwebos.internal.ChannelHandler;
+import org.openhab.binding.lgwebos.internal.IRCodeControlCode;
 import org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants;
 import org.openhab.binding.lgwebos.internal.LauncherApplication;
 import org.openhab.binding.lgwebos.internal.MediaControlPlayer;
@@ -98,6 +99,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         handlers.put(CHANNEL_MEDIA_STOP, new MediaControlStop());
         handlers.put(CHANNEL_TOAST, new ToastControlToast());
         handlers.put(CHANNEL_MEDIA_PLAYER, new MediaControlPlayer());
+        handlers.put(CHANNEL_IRCODE, new IRCodeControlCode());
         channelHandlers = Collections.unmodifiableMap(handlers);
     }
 

@@ -53,6 +53,33 @@ Please note that at least one channel must be bound to an item before the bindin
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
 | appLauncher     | String    | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel.                                                                 | RW         |
+| irCode          | String    | Simulates pressing of a button on the TV's infrared remote control. See below for a list of control strings.                                                                                                            | W          |
+
+### IR Remote Control Codes
+The IRCode channel has only been tested on an LGUJ657A TV. and this is a list of IR codes that are known to work with this device.
+This list has been compiled mostly through trial and error. Your mileage may vary.
+
+| Code String | Description                                              |
+|-------------|----------------------------------------------------------|
+| LEFT        | Left button in cursor control group                      |
+| RIGHT       | Right button in cursor control group                     |
+| UP          | Up button in cursor control group                        |
+| DOWN        | Down button in cursor control group                      |
+| ENTER       | "OK" button in the center of the cursor control group    |
+| BACK        | "BACK" button                                            |
+| EXIT        | "EXIT" button                                            |
+| 0-9         | Number buttons                                           |
+| HOME        | "HOME" button                                            |
+| RED         | "RED"  button                                            |
+| GREEN       | "GREEN" button                                           |
+| YELLOW      | "YELLOW" button                                          |
+| BLUE        | "BLUE" button                                            |
+| PLAY        | "PLAY" button                                            |
+| PAUSE       | "PAUSE" button                                           |
+| STOP        | "STOP" button                                            |
+
+
+A sample HABPanel remote control widget can be found [in this github repository.](https://github.com/bbrodt/openhab2-misc)
 
 ## Example
 
@@ -66,7 +93,7 @@ You could also specify an alternate ThingID using a .things file, specifying the
 Thing lgwebos:WebOSTV:tv1 [ deviceId="3aab9eea-953b-4272-bdbd-f0cd0ecf4a46" ]
 ```
 
-However, for the next steps of this example we will assumes you are using automatic discovery and the default ThingID.
+However, for the next steps of this example we will assume you are using automatic discovery and the default ThingID.
 
 
 demo.items:

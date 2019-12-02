@@ -18,6 +18,7 @@
 			<channel id="mediaPlayer" typeId="mediaPlayerType" />
 			<channel id="mediaStop" typeId="mediaStopType" />
 			<channel id="appLauncher" typeId="appLauncherChannelType" />
+			<channel id="irCode" typeId="irCodeType" />
 		</channels>
 
 		<properties>
@@ -84,6 +85,11 @@
 		<item-type>String</item-type>
 		<label>Application</label>
 		<description>Start application and monitor running applications.</description>
+	</channel-type>
+	<channel-type id="irCodeType">
+		<item-type>String</item-type>
+		<label>IRCode</label>
+		<description>IR Remote Code</description>
 	</channel-type>
 
 </thing:thing-descriptions>
