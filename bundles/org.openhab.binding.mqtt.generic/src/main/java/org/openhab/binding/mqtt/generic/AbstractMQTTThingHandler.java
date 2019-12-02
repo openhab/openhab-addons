@@ -129,8 +129,8 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         future.handle((v, ex) -> {
             if (ex != null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getLocalizedMessage());
-                logger.debug("Failed publishing value {} to topic {}: {}", command, data.getCommandTopic(), ex
-                        .getMessage());
+                logger.debug("Failed publishing value {} to topic {}: {}", command, data.getCommandTopic(),
+                        ex.getMessage());
             } else {
                 logger.debug("Successfully published value {} to topic {}", command, data.getCommandTopic());
             }
