@@ -17,6 +17,7 @@ import static org.openhab.binding.innogysmarthome.internal.client.Constants.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,7 +153,7 @@ public class InnogyClient {
      */
     private <T> List<T> executeGetList(final String url, final Class<T[]> clazz)
             throws IOException, AuthenticationException, ApiException {
-        return executeGetList(url, clazz);
+        return Arrays.asList(executeGet(url, clazz));
     }
 
     /**
