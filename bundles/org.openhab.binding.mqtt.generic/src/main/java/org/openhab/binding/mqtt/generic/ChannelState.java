@@ -53,8 +53,7 @@ public class ChannelState implements MqttMessageSubscriber {
     protected final Value cachedValue;
 
     // Runtime variables
-    @Nullable
-    private MqttBrokerConnection connection;
+    private @Nullable MqttBrokerConnection connection;
     protected final List<ChannelStateTransformation> transformationsIn = new ArrayList<>();
     protected final List<ChannelStateTransformation> transformationsOut = new ArrayList<>();
     private @Nullable ChannelStateUpdateListener channelStateUpdateListener;
@@ -288,8 +287,11 @@ public class ChannelState implements MqttMessageSubscriber {
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        if (hasSubscribed) {
+        // if the connection is still the same, the subscription is still present, otherwise we need to renew
+        if (hasSubscribed && connection.equals(this.connection)) {
             return CompletableFuture.completedFuture(null);
+        } else {
+            hasSubscribed = false;
         }
 
         this.connection = connection;
