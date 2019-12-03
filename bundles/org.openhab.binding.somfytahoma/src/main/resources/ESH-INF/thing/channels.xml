@@ -241,19 +241,19 @@
 
 	<channel-type id="short_check">
 		<item-type>Switch</item-type>
-		<label>Smoke Sensor Short Check Trigger</label>
+		<label>Short Check Trigger</label>
 		<description>A channel for triggering the smoke sensor's short check</description>
 	</channel-type>
 
 	<channel-type id="long_check">
 		<item-type>Switch</item-type>
-		<label>Smoke Sensor Long Check Trigger</label>
+		<label>Long Check Trigger</label>
 		<description>A channel for triggering the smoke sensor's long check</description>
 	</channel-type>
 
 	<channel-type id="rocker">
 		<item-type>Switch</item-type>
-		<label>Rocker position</label>
+		<label>Rocker Position</label>
 		<description>A channel for controlling the rocker position</description>
 	</channel-type>
 </thing:thing-descriptions>

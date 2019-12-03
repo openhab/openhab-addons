@@ -187,9 +187,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
-        } catch (Exception e) {
-            logger.debug("Cannot start http client", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot start http client");
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("Cannot login due to unsupported encoding", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unsupported encoding");
         }
 
     }

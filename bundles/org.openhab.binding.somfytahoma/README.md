@@ -24,7 +24,7 @@ home automation systems.
 - light switches (similar to on/off)
 - light sensors (luminance value)
 - occupancy sensors (OPEN/CLOSE contact)
-- smoke sensors (OPEN/CLOSE contact)
+- smoke sensors (OPEN/CLOSE contact, alarm check)
 - contact sensors (OPEN/CLOSE contact)
 - temperature sensors (get temperature)
 - electricity sensors (get energy consumption)
@@ -72,6 +72,8 @@ Please see the example below.
 | action group                                                                  |     execute_action    | switch which reacts to ON command and triggers the predefined Tahoma action                                      |
 | onoff, light                                                                  |         switch        | reacts to standard ON/OFF commands                                                                               |
 | smoke sensor, occupancy sensor & contact sensor                               |        contact        | normal value is CLOSE, changes to OPEN when detection triggered                                                  |
+| smoke sensor                                                                  |      short_check      | triggering the smoke sensor's short check                                                                        |
+| smoke sensor                                                                  |       long_check      | triggering the smoke sensor's long check                                                                         |
 | light sensor                                                                  |       luminance       | light luminance value in luxes                                                                                   |
 | electricity sensor                                                            |   energy_consumption  | energy consumption value in watts                                                                                |
 | dock                                                                          |     battery_status    | indicates running on battery (yes/no)                                                                            |
