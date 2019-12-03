@@ -12,27 +12,9 @@
   <artifactId>org.openhab.binding.dlinksmarthome</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: D-Link Smart Home Binding</name>
-
-  <dependencies>
-    <!-- JAX-WS -->
-    <dependency>
-      <groupId>javax.xml.soap</groupId>
-      <artifactId>javax.xml.soap-api</artifactId>
-      <version>1.4.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.ws</groupId>
-      <artifactId>jaxws-rt</artifactId>
-      <version>2.2.10</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.messaging.saaj</groupId>
-      <artifactId>saaj-impl</artifactId>
-      <version>1.5.1</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
+  
+  <properties>
+    <bnd.importpackage>!javax.xml.soap, com.sun.xml.messaging.saaj.soap</bnd.importpackage>
+  </properties>
 
 </project>
