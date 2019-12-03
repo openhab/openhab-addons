@@ -157,7 +157,8 @@ public class TouchWandWebSockets {
             Gson gson = new Gson();
             try {
                 JsonObject unitObj = jsonParser.parse(msg).getAsJsonObject();
-                if (unitObj.get("type").getAsString().equals("UNIT_CHANGED")) {
+                if (unitObj.get("type").getAsString().equals("UNIT_CHANGED")
+                        && unitObj.get("unit").getAsJsonObject().get("status").getAsString().equals("ALIVE")) {
                     if (unitObj.get("unit").getAsJsonObject().get("type").getAsString().equals("WallController")) {
                         touchWandUnit = gson.fromJson(unitObj.get("unit").getAsJsonObject(),
                                 TouchWandUnitDataWallController.class);
