@@ -31,7 +31,6 @@ import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
 import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.model.DataResponse;
 import org.openhab.binding.nibeuplink.internal.model.DataResponseTransformer;
-import org.openhab.binding.nibeuplink.internal.model.GenericDataResponse;
 
 /**
  * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
@@ -94,10 +93,12 @@ public class GenericStatusUpdate extends AbstractUplinkCommandCallback implement
         } else {
 
             String json = getContentAsString(StandardCharsets.UTF_8);
-            if (json != null) {
+            if (json != null && !json.isEmpty()) {
                 logger.debug("JSON String: {}", json);
-                DataResponse jsonObject = gson.fromJson(json, GenericDataResponse.class);
-                handler.updateChannelStatus(transformer.transform(jsonObject));
+                DataResponse jsonObject = fromJson(json);
+                if (jsonObject != null) {
+                    handler.updateChannelStatus(transformer.transform(jsonObject));
+                }
             }
         }
     }

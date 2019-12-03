@@ -30,6 +30,7 @@ import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
 import org.openhab.binding.nibeuplink.internal.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
+import org.openhab.binding.nibeuplink.internal.model.GenericDataResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     /**
      * JSON deserializer
      */
-    protected final Gson gson;
+    private final Gson gson;
 
     /**
      * the constructor
@@ -134,6 +135,17 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
             Request request = asyncclient.newRequest(getURL()).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS);
             prepareRequest(request).send(this);
         }
+    }
+
+    /**
+     * @Nullable wrapper of gson which does not 'understand' nonnull annotations
+     *
+     * @param json
+     * @return
+     */
+    protected @Nullable GenericDataResponse fromJson(String json) {
+        // gson is not able to handle @NonNull annotation, thus the return value can be null.
+        return gson.fromJson(json, GenericDataResponse.class);
     }
 
     /**

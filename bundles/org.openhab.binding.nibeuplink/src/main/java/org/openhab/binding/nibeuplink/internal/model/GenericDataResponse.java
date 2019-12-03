@@ -33,6 +33,7 @@ import com.google.gson.annotations.SerializedName;
 public class GenericDataResponse implements DataResponse {
     private final Logger logger = LoggerFactory.getLogger(GenericDataResponse.class);
 
+    @NonNullByDefault
     public static class Value {
         @SerializedName("VariableId")
         @Nullable

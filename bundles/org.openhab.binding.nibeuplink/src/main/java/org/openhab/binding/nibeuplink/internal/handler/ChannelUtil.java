@@ -109,7 +109,7 @@ public final class ChannelUtil {
     public static String getValidationExpression(Channel channel) {
         String expr = getPropertyOrParameter(channel, NibeUplinkBindingConstants.PARAMETER_NAME_VALIDATION_REGEXP);
         if (expr == null) {
-            logger.info("Channel {} does not have a validation expression configured", channel.getUID().getId(), expr);
+            logger.info("Channel {} does not have a validation expression configured", channel.getUID().getId());
             throw new ConfigurationException(
                     "channel (" + channel.getUID().getId() + ") does not have a validation expression configured");
         }

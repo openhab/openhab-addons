@@ -90,12 +90,13 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      *
      * @author afriese - initial contribution
      */
+    @NonNullByDefault
     private class WebRequestExecutor implements Runnable {
 
         /**
          * queue which holds the commands to execute
          */
-        private final Queue<NibeUplinkCommand> commandQueue;
+        private final Queue<@Nullable NibeUplinkCommand> commandQueue;
 
         /**
          * constructor
@@ -159,8 +160,10 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
                 };
 
                 NibeUplinkCommand command = commandQueue.poll();
-                command.setListener(statusUpdater);
-                command.performAction(httpClient);
+                if (command != null) {
+                    command.setListener(statusUpdater);
+                    command.performAction(httpClient);
+                }
             }
         }
 
