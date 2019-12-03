@@ -167,14 +167,16 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      * @param values map containing the data updates
      */
     @Override
-    public void updateChannelStatus(Map<Channel, State> values) {
+    public void updateChannelStatus(Map<Channel, @Nullable State> values) {
         logger.debug("Handling channel update. ({} Channels)", values.size());
 
         for (Channel channel : values.keySet()) {
             if (getChannels().contains(channel)) {
                 State value = values.get(channel);
-                logger.debug("Channel is to be updated: {}: {}", channel.getUID().getAsString(), value);
-                updateState(channel.getUID(), value);
+                if (value != null) {
+                    logger.debug("Channel is to be updated: {}: {}", channel.getUID().getAsString(), value);
+                    updateState(channel.getUID(), value);
+                }
             } else {
                 logger.debug("Could not identify channel: {} for model {}", channel.getUID().getAsString(),
                         getThing().getThingTypeUID().getAsString());

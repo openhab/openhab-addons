@@ -34,12 +34,12 @@
 		<state min="1" max="48" step="1" pattern="%d h" readOnly="false">
 		</state>
 	</channel-type>
-    <channel-type id="rwtype-room-sensor-factor">
-        <item-type>Number</item-type>
-        <label>Room Sensor Factor</label>
-        <state min="0" max="6" step="1" pattern="%.1f" readOnly="false">
-        </state>
-    </channel-type>
+	<channel-type id="rwtype-room-sensor-factor">
+		<item-type>Number</item-type>
+		<label>Room Sensor Factor</label>
+		<state min="0" max="6" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
 	<channel-type id="rwtype-switch">
 		<item-type>Switch</item-type>
 		<label>Unnamed Switch</label>
