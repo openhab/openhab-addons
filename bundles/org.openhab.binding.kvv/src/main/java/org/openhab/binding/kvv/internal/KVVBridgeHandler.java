@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.kvv.internal;
 
 import java.io.BufferedReader;
@@ -18,6 +30,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * KVVBridgeHandler encapsulates the communication with the KVV API.
+ *
+ * @author Maximilian Hess - Initial contribution
+ */
 @NonNullByDefault
 public class KVVBridgeHandler extends BaseBridgeHandler {
 
@@ -36,7 +53,6 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     /**
@@ -60,7 +76,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
 
             return new Gson().fromJson(json.toString(), DepartureResult.class);
         } catch (IOException e) {
-            logger.error("Failed to connect to '" + url + "'", e);
+            logger.error("Failed to connect to '{}'", url, e);
             return null;
         }
     }

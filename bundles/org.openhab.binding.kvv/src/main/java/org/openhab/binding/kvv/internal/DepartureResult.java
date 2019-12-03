@@ -1,14 +1,21 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.kvv.internal;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Represents the result of a call to the KVV api to fetch the next departures at a specific stop.
@@ -16,16 +23,17 @@ import java.util.List;
  * @author Maximilian Hess - Initial contribution
  *
  */
+@NonNullByDefault
 public class DepartureResult {
 
     /** timestamp */
-    private String timestamp;
+    private String timestamp = "";
 
     /** name of the stop */
-    private String stopName;
+    private String stopName = "";
 
     /** Ordered list of departures */
-    private List<Departure> departures;
+    private List<Departure> departures = new ArrayList<Departure>();
 
     /**
      * Creates a new and empty {@link DepartureResult}
@@ -99,22 +107,23 @@ public class DepartureResult {
      * @author Maximilian Hess - Initial contribution
      *
      */
+    @NonNullByDefault
     public class Departure {
 
         /** the route (the 'name' of the train), e.g. 'S5' */
-        private String route;
+        private String route = "";
 
         /** the destination of the train */
-        private String destination;
+        private String destination = "";
 
         /** the direction of the train */
-        private String direction;
+        private String direction = "";
 
         /** the estimated time available */
-        private String time;
+        private String time = "";
 
         /** the type of the train */
-        private String vehicleType;
+        private String vehicleType = "";
 
         /** is the train a low-floor train 'niederfluhrbahn'? */
         private boolean lowfloor;
@@ -126,7 +135,7 @@ public class DepartureResult {
         private int traction;
 
         /** the position of the stop */
-        private String stopPosition;
+        private String stopPosition = "";
 
         /**
          * Creates a new, empty {@link Departure}.
