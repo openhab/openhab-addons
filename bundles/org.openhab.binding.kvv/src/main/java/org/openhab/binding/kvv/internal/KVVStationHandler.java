@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -66,14 +67,21 @@ public class KVVStationHandler extends BaseThingHandler {
             this.updateThing(this.editThing().withChannels(channels).build());
 
             logger.info("Starting inital fetch");
-            final KVVBridgeHandler bridge = (KVVBridgeHandler) getBridge().getHandler();
+            final Bridge bridge = getBridge();
             if (bridge == null) {
                 logger.warn("Failed to get bridge (is null)");
                 updateStatus(ThingStatus.OFFLINE);
                 return;
             }
 
-            final DepartureResult departures = bridge.queryKVV(this.config);
+            final KVVBridgeHandler handler = (KVVBridgeHandler)  bridge.getHandler();
+            if (handler == null) {
+                logger.warn("Failed to get bridge handler (is null)");
+                updateStatus(ThingStatus.OFFLINE);
+                return;
+            }
+
+            final DepartureResult departures = handler.queryKVV(this.config);
             if (departures == null) {
                 logger.warn("Failed to get departures for '{}'", this.thing.getUID().getAsString());
                 updateStatus(ThingStatus.OFFLINE);
@@ -99,10 +107,6 @@ public class KVVStationHandler extends BaseThingHandler {
      * @param departures the new list of departures
      */
     private synchronized void setDepartures(final DepartureResult departures) {
-        if (departures == null) {
-            return;
-        }
-
         for (int i = 0; i < this.config.maxTrains; i++) {
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"),
                     new StringType(departures.getDepartures().get(i).getRoute()));
@@ -128,13 +132,19 @@ public class KVVStationHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-            final KVVBridgeHandler bridge = (KVVBridgeHandler) getBridge().getHandler();
+            final Bridge bridge = getBridge();
             if (bridge == null) {
                 logger.warn("Failed to get bridge (is null)");
                 return;
             }
 
-            final DepartureResult departures = bridge.queryKVV(config);
+            final KVVBridgeHandler handler = (KVVBridgeHandler)  bridge.getHandler();
+            if (handler == null) {
+                logger.warn("Failed to get bridge handler (is null)");
+                return;
+            }
+
+            final DepartureResult departures = handler.queryKVV(config);
             if (departures != null) {
                 setDepartures(departures);
             }
