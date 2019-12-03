@@ -45,7 +45,9 @@ public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(int status) {
-        if ((Instant.now().toEpochMilli() - timeSinceLastEvent) < ajdustentEventFilterTime) {
+        long timeDiff = Instant.now().toEpochMilli() - timeSinceLastEvent;
+        if ((timeDiff) > ajdustentEventFilterTime) {
+            logger.debug("Instant.now().toEpochMilli() - timeSinceLastEvent {}", timeDiff);
             String action = status <= 100 ? "SHORT" : "LONG";
             triggerChannel(CHANNEL_WALLCONTROLER_ACTION, action);
         }

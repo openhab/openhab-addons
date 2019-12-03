@@ -56,7 +56,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     @NonNullByDefault({})
     protected String unitId;
-    private final Logger logger = LoggerFactory.getLogger(TouchWandBaseUnitHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(TouchWandBaseUnitHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob;
 
     @NonNullByDefault({})
