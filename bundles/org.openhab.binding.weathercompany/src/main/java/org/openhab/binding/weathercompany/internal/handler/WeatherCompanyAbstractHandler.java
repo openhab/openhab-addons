@@ -282,18 +282,15 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
      * Convert UTC time string to local time
      * Input string is of form 2018-12-02T10:47:00.000Z
      */
-    protected DateTimeType getLocalDateTimeType(String dateTimeString) {
-        DateTimeType dateTimeType;
+    protected State getLocalDateTimeType(String dateTimeString) {
+        State dateTimeType;
         try {
             Instant instant = Instant.parse(dateTimeString);
             ZonedDateTime localDateTime = instant.atZone(getZoneId());
             dateTimeType = new DateTimeType(localDateTime);
         } catch (DateTimeParseException e) {
             logger.debug("Error parsing date/time string: {}", e.getMessage());
-            dateTimeType = new DateTimeType();
-        } catch (IllegalArgumentException e) {
-            logger.debug("Error converting to DateTimeType: {}", e.getMessage());
-            dateTimeType = new DateTimeType();
+            dateTimeType = UnDefType.UNDEF;
         }
         return dateTimeType;
     }
