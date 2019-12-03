@@ -13,6 +13,7 @@
   <name>openHAB Add-ons :: Bundles :: Mail Binding</name>
 
   <properties>
+    <dep.noembedding>javax.mail</dep.noembedding>
     <bnd.importpackage>sun.security.util;resolution:=optional</bnd.importpackage>
   </properties>
 
