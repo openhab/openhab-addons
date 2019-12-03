@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions
+	bindingId="philipsair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="pwr">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Device power</description>
+	</channel-type>
+	<channel-type id="om">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<description>Fan speed</description>
+		<state pattern="%s">
+			<options>
+				<option value="S">Sleep</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="T">Turbo</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Filter mode</description>
+		<state pattern="%s">
+			<options>
+				<option value="P">Auto</option>
+				<option value="A">Allergen</option>
+				<option value="S">Sleep</option>
+				<option value="M">Manual</option>
+				<option value="B">Bacteria</option>
+				<option value="N">Night</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="uil">
+		<item-type>Switch</item-type>
+		<label>Buttons</label>
+		<description>Buttons light</description>
+		<state pattern="%s" />
+	</channel-type>
+	<channel-type id="ddp">
+		<item-type>Switch</item-type>
+		<label>Used index</label>
+		<description>USe PM2.5 index</description>
+	</channel-type>
+	<channel-type id="aqil">
+		<item-type>Number</item-type>
+		<label>LED light level</label>
+		<description>Level 100, 75, 50, 25, 0</description>
+		<state pattern="%d" min="0" max="100" step="25" />
+	</channel-type>
+	<channel-type id="cl">
+		<item-type>Switch</item-type>
+		<label>Child lock</label>
+	</channel-type>
+
+	<channel-type id="dtrs">
+		<item-type>Number</item-type>
+		<label>Timer left</label>
+		<description>Timer minutes lefts</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="dt">
+		<item-type>Number</item-type>
+		<label>Timer</label>
+		<description>Timer in hours (0-5)</description>
+		<state min="0" max="5" pattern="%d" step="1" />
+	</channel-type>
+
+	<channel-type id="pm25">
+		<item-type>Number</item-type>
+		<label>PM2.5</label>
+		<description>PM 2.5 particles pollution level</description>
+		<state readOnly="true" pattern="%d" min="0" max="5000" />
+	</channel-type>
+	<channel-type id="iaql">
+		<item-type>Number</item-type>
+		<label>IAQL</label>
+		<description>Allergen index</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="aqit">
+		<item-type>Number</item-type>
+		<label>AQIT</label>
+		<description>AQI</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="err">
+		<item-type>Number</item-type>
+		<label>Error Number</label>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="fltsts0">
+		<item-type>Number</item-type>
+		<label>Pre-filter</label>
+		<description>Pre-filter estimated clean up</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="wicksts">
+		<item-type>Number</item-type>
+		<label>Wick</label>
+		<description>Wick filter estimated lifetime</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="fltsts2">
+		<item-type>Number</item-type>
+		<label>Carbon</label>
+		<description>Active carbon filter estimated lifetime</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="fltsts1">
+		<item-type>Number</item-type>
+		<label>HEPA filter</label>
+		<description>HEPA filter estimated lifetime</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="rh">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Current humidity</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="rhset">
+		<item-type>Number</item-type>
+		<label>Humidity setpoint</label>
+		<description>Humidity setpoint</description>
+		<state readOnly="false" pattern="%d" min="40" max="70"
+			step="10" />
+	</channel-type>
+	<channel-type id="temp">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+	<channel-type id="func">
+		<item-type>String</item-type>
+		<label>Function</label>
+		<description>P: Purification, PH: Purification and Humidification</description>
+		<state readOnly="false" pattern="%s">
+			<options>
+				<option value="P">Purification</option>
+				<option value="PH">Purification and Humidity</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="wl">
+		<item-type>Number</item-type>
+		<label>Water level</label>
+		<description>water level</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="swversion">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Firmware Version of the thing</description>
+		<state readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>
