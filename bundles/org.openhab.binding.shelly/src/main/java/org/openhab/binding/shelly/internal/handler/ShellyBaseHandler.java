@@ -91,6 +91,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private boolean                          channelCache     = false;
     private Map<String, Object>              channelData      = new HashMap<>();
 
+    String                                   localIP          = "";
+    int                                      httpPort         = -1;
+
     /**
      *
      * Initialize instance
@@ -103,12 +106,14 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      * @param networkAddressService Network service to get local ip
      */
     public ShellyBaseHandler(Thing thing, ShellyHandlerFactory handlerFactory, ShellyBindingConfiguration bindingConfig,
-            @Nullable ShellyCoapServer coapServer) {
+            @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
         super(thing);
 
         this.handlerFactory = handlerFactory;
         this.bindingConfig = bindingConfig;
         this.coapServer = coapServer;
+        this.localIP = localIP;
+        this.httpPort = httpPort;
     }
 
     /**
@@ -128,7 +133,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
                 handlerFactory.registerDeviceListener(this);
                 initializeThing();
-            } catch (RuntimeException | IOException e) {
+            } catch (NullPointerException | IOException e) {
                 if (authorizationFailed(e.getMessage())) {
                     start = false;
                     return;
@@ -292,7 +297,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (update) {
                 requestUpdates(1, false);
             }
-        } catch (RuntimeException | IOException e) {
+        } catch (NullPointerException | IOException e) {
             if (authorizationFailed(e.getMessage())) {
                 return;
             }
@@ -370,7 +375,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (e.getMessage().contains(APIERR_HTTP_401_UNAUTHORIZED) || (profile != null && !profile.isSensor)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        } catch (RuntimeException e) {
+        } catch (NullPointerException e) {
             logger.warn("{}: Unable to update status: {} ({})", thingName, e.getMessage(), e.getClass());
         } finally {
             if (scheduledUpdates > 0) {
@@ -440,7 +445,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      *
      * @param event type of event, e.g. btn_on, out_off, longpush
      */
-    @SuppressWarnings("null")
     public void sendEvent(String event) {
         triggerChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_EVENT_TRIGGER, event);
     }
@@ -497,7 +501,11 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
 
             // Pass event to trigger channel
-            sendEvent(type.toUpperCase());
+            String eventName = type;
+            if (parameters.containsKey("type")) {
+                eventName = parameters.get("type");
+            }
+            sendEvent(eventName.toUpperCase());
 
             // request update on next interval (2x for non-battery devices)
             requestUpdates(scheduledUpdates >= 3 ? 0 : !hasBattery ? 2 : 1, true);
@@ -511,8 +519,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
     protected void initializeThingConfig() {
         config = getConfigAs(ShellyThingConfiguration.class);
-        config.localIp = bindingConfig.localIp;
-        config.httpPort = bindingConfig.httpPort;
+        config.localIp = localIP;
+        config.httpPort = httpPort;
         if (config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
@@ -631,7 +639,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     return true;
                 }
             }
-        } catch (RuntimeException e) {
+        } catch (NullPointerException e) {
             logger.debug("Unable to update channel {}.{} with {} (type {}): {} ({})", thingName, channelId, value,
                     value.getClass(), e.getMessage(), e.getClass());
         }

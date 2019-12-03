@@ -61,8 +61,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
      * @param networkAddressService instance of NetworkAddressService to get access to the OH default ip settings
      */
     public ShellyLightHandler(Thing thing, ShellyHandlerFactory handlerFactory,
-            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer) {
-        super(thing, handlerFactory, bindingConfig, coapServer);
+            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
+            int httpPort) {
+        super(thing, handlerFactory, bindingConfig, coapServer, localIP, httpPort);
         channelColors = new HashMap<Integer, ShellyColorUtils>();
     }
 
@@ -133,6 +134,13 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 break;
             case CHANNEL_BRIGHTNESS: // only in white mode
                 Integer value = -1;
+                if (command instanceof OnOffType) { // Switch
+                    logger.debug("Switch light {}", command.toString());
+                    api.setRelayTurn(lightId, (OnOffType) command == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
+                    updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER, (OnOffType) command);
+                    break;
+                }
+
                 if (command instanceof PercentType) {
                     Float percent = ((PercentType) command).floatValue();
                     value = percent.intValue(); // 0..100% = 0..100
@@ -140,36 +148,30 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 } else if (command instanceof DecimalType) {
                     value = ((DecimalType) command).intValue();
                     logger.debug("{}: Set brightness to {} (Integer)", thingName, value);
-                } else if (command instanceof OnOffType) { // Switch
-                    logger.debug("Switch light {}", command.toString());
-                    api.setRelayTurn(lightId, (OnOffType) command == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
-                    break;
-                }
-
-                if (value == 0) {
+                } else if (value == 0) {
                     logger.debug("{}: Brightness=0 -> switch light OFF", thingName);
                     api.setRelayTurn(lightId, SHELLY_API_OFF);
+                    updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER, OnOffType.OFF);
                     break;
                 }
 
-                ShellyShortLightStatus light = api.getLightStatus(lightId);
-                Validate.notNull(light, "Unable to get Light status for brightness");
                 if (command instanceof IncreaseDecreaseType) {
+                    ShellyShortLightStatus light = api.getLightStatus(lightId);
+                    Validate.notNull(light, "Unable to get Light status for brightness");
+
                     if (((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
                         value = Math.min(light.brightness + DIM_STEPSIZE, 100);
                     } else {
                         value = Math.max(light.brightness - DIM_STEPSIZE, 0);
                     }
-                    logger.debug("{}: Change brightness from {} to {}", thingName, light.brightness, value);
+                    logger.trace("{}: Change brightness from {} to {}", thingName, light.brightness, value);
                 }
 
-                if (!light.ison) {
-                    logger.debug("{}: Switch light ON to set brightness", thingName);
-                    api.setRelayTurn(lightId, SHELLY_API_ON);
-                }
                 validateRange("brightness", value, 0, 100);
+                logger.debug("{}: Set brightness to", value);
                 col.setBrightness(value);
                 break;
+
             case CHANNEL_COLOR_TEMP:
                 Integer temp = -1;
                 if (command instanceof PercentType) {

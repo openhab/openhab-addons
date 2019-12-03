@@ -77,25 +77,17 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
      */
     @Activate
     protected void activate(ComponentContext componentContext) {
-        try {
-            logger.debug("Shelly Discovery service activated");
-            Validate.notNull(componentContext);
-            Validate.notNull(bindingConfig);
-            bindingConfig.updateFromProperties(componentContext.getProperties());
-        } catch (RuntimeException e) {
-            logger.warn("Exception on ShellyDiscoveryParticipant(): {} ({})", e.getClass(), e.getMessage());
-        }
+        logger.debug("Shelly Discovery service activated");
+        Validate.notNull(componentContext);
+        Validate.notNull(bindingConfig);
+        bindingConfig.updateFromProperties(componentContext.getProperties());
     }
 
     @Modified
     @SuppressWarnings("null")
     protected void modified(ComponentContext componentContext) {
-        try {
-            logger.debug("Shelly Binding Configuration refreshed");
-            bindingConfig.updateFromProperties(componentContext.getProperties());
-        } catch (RuntimeException e) {
-            logger.warn("Exception on ShellyDiscoveryParticipant.modified(): {} ({})", e.getClass(), e.getMessage());
-        }
+        logger.debug("Shelly Binding Configuration refreshed");
+        bindingConfig.updateFromProperties(componentContext.getProperties());
     }
 
     @SuppressWarnings("null")
@@ -174,7 +166,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withLabel(name + " - " + address).withRepresentationProperty(name).build();
             }
-        } catch (RuntimeException e) {
+        } catch (NullPointerException e) {
             logger.warn("Device discovery failed for device {}, IP {}, service={}: {} ({})", name, address, name,
                     e.getMessage(), e.getClass());
         }

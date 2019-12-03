@@ -223,7 +223,6 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Brightness: 0..100%</description>
-		<category>DimmableLight</category>
 	</channel-type>
 	<channel-type id="colorEffectBulb">
 		<item-type>Number</item-type>

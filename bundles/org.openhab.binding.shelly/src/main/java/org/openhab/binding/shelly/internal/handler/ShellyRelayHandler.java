@@ -69,8 +69,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @param networkAddressService instance of NetworkAddressService to get access to the OH default ip settings
      */
     public ShellyRelayHandler(Thing thing, ShellyHandlerFactory handlerFactory,
-            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer) {
-        super(thing, handlerFactory, bindingConfig, coapServer);
+            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
+            int httpPort) {
+        super(thing, handlerFactory, bindingConfig, coapServer, localIP, httpPort);
     }
 
     @Override
@@ -149,6 +150,18 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         return true;
     }
 
+    /**
+     * PaperUI Control has a combined Slider for Brightness combined with On/Off
+     * Brightness channel has 2 functions: Switch On/Off (OnOnType) and setting brightness (PercentType)
+     * There is some more logic in the control
+     * When brightness is set to 0 the control sends also an OFF command
+     * When current brightness is 0 and slider will be moved the new brightness will be set, but also a ON command is
+     * send.
+     *
+     * @param command
+     * @param index
+     * @throws IOException
+     */
     @SuppressWarnings("null")
     private void handleBrightness(Command command, Integer index) throws IOException {
         Integer value = -1;
@@ -388,10 +401,20 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 Integer r = l + 1;
                 String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL
                         : CHANNEL_GROUP_DIMMER_CONTROL + r.toString();
-                updated |= updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(dimmer.ison));
-                updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, getOnOff(dimmer.ison));
-                updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS,
-                        toQuantityType(new Double(getInteger(dimmer.brightness)), SmartHomeUnits.PERCENT));
+                // updated |= updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(dimmer.ison));
+
+                // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's brightness
+                // and send a OFF status to the same channel.
+                // When the device's brightness is > 0 we send the new value to the channel and a ON command
+                if (dimmer.ison) {
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, toQuantityType(
+                            new Double(getInteger(dimmer.brightness)), DIGITS_NONE, SmartHomeUnits.PERCENT));
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, OnOffType.ON);
+                } else {
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS,
+                            toQuantityType(new Double(0), DIGITS_NONE, SmartHomeUnits.PERCENT));
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, OnOffType.OFF);
+                }
 
                 ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
                 if (dsettings != null) {

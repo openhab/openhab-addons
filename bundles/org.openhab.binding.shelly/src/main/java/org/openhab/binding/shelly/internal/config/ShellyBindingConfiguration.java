@@ -36,9 +36,6 @@ public class ShellyBindingConfiguration {
     public String              defaultUserId        = "";               // default for http basic user id
     public String              defaultPassword      = "";               // default for http basic auth password
 
-    public Integer             httpPort             = 0;
-    public String              localIp              = "";
-
     public void updateFromProperties(Map<String, Object> properties) {
         Validate.notNull(properties);
 

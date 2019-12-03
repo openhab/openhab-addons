@@ -246,7 +246,7 @@ public class ShellyBindingConstants {
 
     public static final byte[]            EMPTY_BYTE                       = new byte[0];
 
-    public static final int               SHELLY_API_TIMEOUT_MS            = 2500;
+    public static final int               SHELLY_API_TIMEOUT_MS            = 5000;
 
     public static final String            SHELLY_API_MIN_FWVERSION         = "v1.5.2";
 
@@ -304,6 +304,7 @@ public class ShellyBindingConstants {
     public static final int               DIM_STEPSIZE                     = 5;
 
     // Formatting: Number of scaling digits
+    public static final int               DIGITS_NONE                      = 0;
     public static final int               DIGITS_WATT                      = 3;
     public static final int               DIGITS_KWH                       = 4;
     public static final int               DIGITS_VOLT                      = 2;

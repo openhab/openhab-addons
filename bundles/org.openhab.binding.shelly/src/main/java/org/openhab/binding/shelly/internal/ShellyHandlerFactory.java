@@ -56,6 +56,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID>  SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
     private ShellyBindingConfiguration      bindingConfig              = new ShellyBindingConfiguration();
+    private String                          localIP                    = "";
+    private int                             httpPort                   = -1;
 
     /**
      * Activate the bundle: save properties
@@ -75,18 +77,15 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
 
         Validate.notNull(configProperties);
         bindingConfig.updateFromProperties(configProperties);
-        if (bindingConfig.httpPort == 0) {
-            bindingConfig.httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
-            if (bindingConfig.httpPort == -1) {
-                bindingConfig.httpPort = 8080;
-            }
-            Validate.isTrue(bindingConfig.httpPort > 0, "Unable to get OH HTTP port");
-            logger.debug("Using OH HTTP port {}", bindingConfig.httpPort);
+        httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
+        if (httpPort == -1) {
+            httpPort = 8080;
         }
-        if (bindingConfig.localIp.isEmpty()) {
-            String lip = networkAddressService.getPrimaryIpv4HostAddress();
-            bindingConfig.localIp = lip != null ? lip : "";
-        }
+        Validate.isTrue(httpPort > 0, "Unable to get OH HTTP port");
+        logger.debug("Using OH HTTP port {}", httpPort);
+
+        String lip = networkAddressService.getPrimaryIpv4HostAddress();
+        localIP = lip != null ? lip : "";
     }
 
     @Override
@@ -96,25 +95,19 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        try {
-            ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-            if (thingTypeUID.getId().equals(THING_TYPE_SHELLYBULB.getId())
-                    || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_COLOR.getId())
-                    || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_WHITE.getId())) {
-                logger.debug("Create new thing of type {} using ShellyLightHandler", thingTypeUID.getId());
-                return new ShellyLightHandler(thing, this, bindingConfig, coapServer);
-            } else if (thingTypeUID.getId().equals(THING_TYPE_SHELLYUNKNOWN_STR)) {
-                logger.debug("Create new thing of type {} using ShellyUnknownHandler", thingTypeUID.getId());
-                return new ShellyRelayHandler(thing, this, bindingConfig, coapServer);
-            } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                logger.debug("Create new thing of type {} using ShellyRelayHandler", thingTypeUID.getId());
-                return new ShellyRelayHandler(thing, this, bindingConfig, coapServer);
-            }
-        } catch (RuntimeException e) {
-            logger.debug("Shelly Binding: Exception in ShellyHandlerFactory.createHandler(): {} - {}", e.getMessage(),
-                    e.getClass());
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (thingTypeUID.getId().equals(THING_TYPE_SHELLYBULB.getId())
+                || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_COLOR.getId())
+                || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_WHITE.getId())) {
+            logger.debug("Create new thing of type {} using ShellyLightHandler", thingTypeUID.getId());
+            return new ShellyLightHandler(thing, this, bindingConfig, coapServer, localIP, httpPort);
+        } else if (thingTypeUID.getId().equals(THING_TYPE_SHELLYUNKNOWN_STR)) {
+            logger.debug("Create new thing of type {} using ShellyUnknownHandler", thingTypeUID.getId());
+            return new ShellyRelayHandler(thing, this, bindingConfig, coapServer, localIP, httpPort);
+        } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            logger.debug("Create new thing of type {} using ShellyRelayHandler", thingTypeUID.getId());
+            return new ShellyRelayHandler(thing, this, bindingConfig, coapServer, localIP, httpPort);
         }
-
         return null;
     }
 

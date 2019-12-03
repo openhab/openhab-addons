@@ -200,7 +200,6 @@
 		<label>Dimmer</label>
 		<description>A Shelly dimmer channel</description>
 		<channels>
-			<channel id="output" typeId="dimmerOutput" />
 			<channel id="brightness" typeId="dimmerBrightness" />
 			<channel id="input1" typeId="inputState1" />
 			<channel id="input2" typeId="inputState2" />

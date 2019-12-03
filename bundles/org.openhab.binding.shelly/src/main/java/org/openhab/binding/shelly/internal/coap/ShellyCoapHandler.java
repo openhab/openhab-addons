@@ -214,7 +214,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                  */
                 reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
             }
-        } catch (RuntimeException | IOException e) {
+        } catch (NullPointerException | IOException e) {
             logger.debug("{}: Unable to process CoIoT Message: {} ({}); payload={}", thingName, e.getMessage(),
                     e.getClass(), payload);
             resetSerial();
@@ -291,7 +291,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 sensorMap.replace(sen.id, fixed);
             }
             logger.trace("sensor fixed");
-        } catch (RuntimeException e) {
+        } catch (NullPointerException e) {
             logger.debug("{}:    Unable to decode sensor definition -> skip ({})", thingName, e.getMessage());
         }
     }

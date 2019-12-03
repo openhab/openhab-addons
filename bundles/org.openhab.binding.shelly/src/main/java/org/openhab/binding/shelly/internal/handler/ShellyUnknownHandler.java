@@ -33,8 +33,9 @@ public class ShellyUnknownHandler extends ShellyBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(ShellyUnknownHandler.class);
 
     public ShellyUnknownHandler(Thing thing, ShellyHandlerFactory handlerFactory,
-            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer) {
-        super(thing, handlerFactory, bindingConfig, coapServer);
+            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
+            int httpPort) {
+        super(thing, handlerFactory, bindingConfig, coapServer, localIP, httpPort);
     }
 
     @Override
