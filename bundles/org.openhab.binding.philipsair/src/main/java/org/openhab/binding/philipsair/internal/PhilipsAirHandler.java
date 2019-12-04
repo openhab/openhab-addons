@@ -204,7 +204,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     protected boolean requestData(PhilipsAirAPIConnection connection) throws PhilipsAirAPIException {
-
         try {
             PhilipsAirPurifierDevice info = connection.getAirPurifierDevice(config.getHost());
             PhilipsAirPurifierData data = connection.getAirPurifierStatus(config.getHost());
@@ -254,7 +253,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
     protected void updateChannel(ChannelUID channelUID, @Nullable PhilipsAirPurifierData data,
             @Nullable PhilipsAirPurifierDevice deviceInfo, @Nullable PhilipsAirPurifierFilters filters) {
         if (getCallback() != null && isLinked(channelUID)) {
-
             Object value;
             try {
                 value = getValue(channelUID.getAsString(), data, deviceInfo, filters);
@@ -297,13 +295,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
         if (data != null) {
             switch (field) {
-
-            // TODO : might be convenient calculate AQI values based on PM2.5 value
-            // case AQI:
-            // return data.getData().getAqi();
-            // case AQIDESCRIPTION:
-            // return data.getData().getAqiDescription();
-
             case AQIL:
                 return data.getLightLevel();
             case DDP:

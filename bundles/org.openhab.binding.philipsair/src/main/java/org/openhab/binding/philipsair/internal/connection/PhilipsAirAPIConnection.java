@@ -79,12 +79,12 @@ public class PhilipsAirAPIConnection {
 
     private final ExpiringCacheMap<String, String> cache;
 
-    private final static Random rand = new Random();
+    private static final Random RAND = new Random();
 
-    private final static BigInteger G = new BigInteger(
+    private static final BigInteger G = new BigInteger(
             "A4D1CBD5C3FD34126765A442EFB99905F8104DD258AC507FD6406CFF14266D31266FEA1E5C41564B777E690F5504F213160217B4B01B886A5E91547F9E2749F4D7FBD7D3B9A92EE1909D0D2263F80A76A6A24C087A091F531DBF0A0169B6A28AD662A4D18E73AFA32D779D5918D08BC8858F4DCEF97C2A24855E6EEB22B3B2E5",
             16);
-    private final static BigInteger P = new BigInteger(
+    private static final BigInteger P = new BigInteger(
             "B10B8F96A080E01DDE92DE5EAE5D54EC52C99FBCFB06A3C69A6A9DCA52D23B616073E28675A23D189838EF1E2EE652C013ECB4AEA906112324975C3CD49B83BFACCBDD7D90C4BD7098488E9C219A73724EFFD6FAE5644738FAA31A4FF55BCCC0A151AF5F0DC8B4BD45BF37DF365C1A65E68CFDA76D4DA708DF1FB2BC2E4A4371",
             16);
 
@@ -118,7 +118,6 @@ public class PhilipsAirAPIConnection {
             logger.error("An exception occured", e);
             decipher = null;
         }
-
     }
 
     public synchronized @Nullable String getAirPurifierInfo(String host)
@@ -243,26 +242,26 @@ public class PhilipsAirAPIConnection {
     public String exchangeKeys() throws GeneralSecurityException, InterruptedException, TimeoutException,
             ExecutionException, InvalidAlgorithmParameterException {
         String url = buildURL(KEY_URL, config.getHost());
-        BigInteger a = randomForBitsNonZero(256, PhilipsAirAPIConnection.rand);
-        BigInteger A = G.modPow(a, P);
-        String data = "{\"diffie\":\"" + A.toString(16) + "\"}";
+        BigInteger a = randomForBitsNonZero(256, PhilipsAirAPIConnection.RAND);
+        BigInteger aPow = G.modPow(a, P);
+        String data = "{\"diffie\":\"" + aPow.toString(16) + "\"}";
 
         String encodedContent = getResponse(url, PUT, data, false);
         JsonObject encodedJson = gson.fromJson(encodedContent, JsonObject.class);
         String key = encodedJson.get("key").getAsString();
-        BigInteger B = new BigInteger(encodedJson.get("hellman").getAsString(), 16);
-        BigInteger s = B.modPow(a, P);
-        byte[] s_byte = s.toByteArray();
+        BigInteger b = new BigInteger(encodedJson.get("hellman").getAsString(), 16);
+        BigInteger s = b.modPow(a, P);
+        byte[] sByteArray = s.toByteArray();
         // remove trailing 0
-        if (s_byte.length > 128 && s_byte[0] == 0) {
-            s_byte = Arrays.copyOfRange(s_byte, 1, 128);
+        if (sByteArray.length > 128 && sByteArray[0] == 0) {
+            sByteArray = Arrays.copyOfRange(sByteArray, 1, 128);
         }
 
-        byte[] s_byte_trunc = Arrays.copyOfRange(s_byte, 0, 16);
+        byte[] sByteArrayTrunc = Arrays.copyOfRange(sByteArray, 0, 16);
         byte[] hexKey = HexUtils.hexToBytes(key);
 
         Cipher ciph = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        ciph.init(Cipher.DECRYPT_MODE, new SecretKeySpec(s_byte_trunc, "AES"), new IvParameterSpec(new byte[16]));
+        ciph.init(Cipher.DECRYPT_MODE, new SecretKeySpec(sByteArrayTrunc, "AES"), new IvParameterSpec(new byte[16]));
 
         byte[] keyDecoded = ciph.doFinal(hexKey);
         String aesKey = HexUtils.bytesToHex(keyDecoded).substring(0, 32);

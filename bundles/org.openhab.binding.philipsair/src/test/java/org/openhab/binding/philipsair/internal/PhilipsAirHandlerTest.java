@@ -141,7 +141,6 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     private void initChannels(ThingHandlerCallback callback, String... ids) {
-
         List<Channel> channels = new ArrayList<Channel>();
 
         for (int i = 0; i < ids.length; i++) {
@@ -152,7 +151,6 @@ public class PhilipsAirHandlerTest extends JavaTest {
             channels.add(channel);
         }
         when(thing.getChannels()).thenReturn(channels);
-
     }
 
     @Test
@@ -359,7 +357,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @Test
-    public void testSendCommandOM_1() throws Exception {
+    public void testSendCommandOM1() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:om");
         Channel channel = ChannelBuilder.create(channelUIDpwr, "String").build();
         sendCommandTemplate(channel, new StringType("1"), new StringType("s"), new StringType("1"), content2,
@@ -367,7 +365,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @Test
-    public void testSendCommandOM_s() throws Exception {
+    public void testSendCommandOMs() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:om");
         Channel channel = ChannelBuilder.create(channelUIDpwr, "String").build();
         sendCommandTemplate(channel, new StringType("s"), new StringType("1"), new StringType("s"),
@@ -376,7 +374,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @Test
-    public void testSendCommand_aqil() throws Exception {
+    public void testSendCommandAqil() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:aqil");
         Channel channel = ChannelBuilder.create(channelUIDpwr, "Number").build();
         sendCommandTemplate(channel, new DecimalType("25"), new DecimalType("75"), new DecimalType("25"), content2,
@@ -384,7 +382,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @Test
-    public void testSendCommand_dt() throws Exception {
+    public void testSendCommandDt() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:dt");
         Channel channel = ChannelBuilder.create(channelUIDpwr, "Number").build();
         sendCommandTemplate(channel, new DecimalType("1"), new DecimalType("0"), new DecimalType("1"), content2,
@@ -392,7 +390,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @Test
-    public void testSendCommand_mode() throws Exception {
+    public void testSendCommandMode() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:mode");
         Channel channel = ChannelBuilder.create(channelUIDpwr, "Number").build();
         sendCommandTemplate(channel, new StringType("A"), new StringType("P"), new StringType("A"), content2,

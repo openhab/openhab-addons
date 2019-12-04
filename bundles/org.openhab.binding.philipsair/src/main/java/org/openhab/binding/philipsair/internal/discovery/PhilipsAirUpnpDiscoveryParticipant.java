@@ -114,7 +114,6 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
         if (details == null || (modelDetails = details.getModelDetails()) == null
                 || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL
                         .equalsIgnoreCase(modelName = modelDetails.getModelName())) {
-
             logger.info("Device not recognized {}", device.toString());
             return null;
         }
