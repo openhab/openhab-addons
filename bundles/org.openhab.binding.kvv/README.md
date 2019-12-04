@@ -20,12 +20,26 @@ curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=377d840e54b59adb
 
 ## Full Example
 
-The configuration files can be found in `/openhab2-addons/addons/binding/org.openhab.binding.kvv/cfg`.
+### demo.things
 
-1. Install *KVV Binding* as a new binding via *Paper UI*
-1. Add one new thing per street car station:
-    1. Station id: the id of the station found via the API call
-    1. Update interval: update interval in milliseconds
-    1. Name of the station: give the station a human-readable name
-1. Define the iteams. `/openhab2-addons/addons/binding/org.openhab.binding.kvv/cfg/kvv.items` contains a complete example.
-1. Add a new template to *habpanel*. See `/openhab2-addons/addons/binding/org.openhab.binding.kvv/cfg/kvv.template.txt` for an example.
+```
+Bridge kvv:bridge:1 {
+	station gottesauerplatz		"Gottesauer Platz/BGV"		[ commonName="Gottesauer Platz/BGV", stationId="de:8212:6", maxTrains="3", updateInterval="10000" ]
+}
+```
+
+### demo.items
+
+```
+String kvv_gottesauerplatz_train0_name      	{channel="kvv:station:1:gottesauerplatz:train0-name"}
+String kvv_gottesauerplatz_train0_destination	{channel="kvv:station:1:gottesauerplatz:train0-destination"}
+String kvv_gottesauerplatz_train0_eta      		{channel="kvv:station:1:gottesauerplatz:train0-eta"}
+
+String kvv_gottesauerplatz_train1_name      	{channel="kvv:station:1:gottesauerplatz:train1-name"}
+String kvv_gottesauerplatz_train1_destination   {channel="kvv:station:1:gottesauerplatz:train1-destination"}
+String kvv_gottesauerplatz_train1_eta      		{channel="kvv:station:1:gottesauerplatz:train1-eta"}
+
+String kvv_gottesauerplatz_train2_name      	{channel="kvv:station:1:gottesauerplatz:train2-name"}
+String kvv_gottesauerplatz_train2_destination   {channel="kvv:station:1:gottesauerplatz:train2-destination"}
+String kvv_gottesauerplatz_train2_eta      		{channel="kvv:station:1:gottesauerplatz:train2-eta"}
+```
