@@ -39,7 +39,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
@@ -62,7 +61,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     public String                            thingName        = "";
     protected ShellyBindingConfiguration     bindingConfig    = new ShellyBindingConfiguration();
-    protected final ShellyHandlerFactory     handlerFactory;
     protected ShellyThingConfiguration       config           = new ShellyThingConfiguration();
     protected @Nullable ShellyHttpApi        api;
     private @Nullable ShellyCoapHandler      coap;
@@ -99,17 +97,16 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      * Initialize instance
      *
      * @param thing The Thing object
-     * @param handlerFactory Handler Factory instance (will be used for event
-     *            handler registration)
      * @param bindingConfig The binding configuration (beside thing
      *            configuration)
      * @param networkAddressService Network service to get local ip
+     * @param localIP local IP address from networkAddressService
+     * @param httpPort from httpService
      */
-    public ShellyBaseHandler(Thing thing, ShellyHandlerFactory handlerFactory, ShellyBindingConfiguration bindingConfig,
+    public ShellyBaseHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
             @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
         super(thing);
 
-        this.handlerFactory = handlerFactory;
         this.bindingConfig = bindingConfig;
         this.coapServer = coapServer;
         this.localIP = localIP;
@@ -130,8 +127,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 logger.info("{}: Device config: ipAddress={}, http user/password={}/{}, update interval={}",
                         getThing().getLabel(), config.deviceIp, config.userId.isEmpty() ? "<non>" : config.userId,
                         config.password.isEmpty() ? "<none>" : "***", config.updateInterval);
-
-                handlerFactory.registerDeviceListener(this);
                 initializeThing();
             } catch (NullPointerException | IOException e) {
                 if (authorizationFailed(e.getMessage())) {
@@ -470,6 +465,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     @SuppressWarnings({ "null" })
     @Override
     public boolean onEvent(String deviceName, String deviceIndex, String type, Map<String, String> parameters) {
+        if (profile == null) {
+            logger.debug("OnEvent: Thing not yet initialized, skip event");
+        }
         if (thingName.equalsIgnoreCase(deviceName) || config.deviceIp.equals(deviceName)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters.toString());
@@ -501,14 +499,14 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
 
             // Pass event to trigger channel
-            String eventName = type;
+            String eventName = type + deviceIndex.toString();
             if (parameters.containsKey("type")) {
-                eventName = parameters.get("type");
+                eventName = eventName + "_" + parameters.get("type");
             }
             sendEvent(eventName.toUpperCase());
 
             // request update on next interval (2x for non-battery devices)
-            requestUpdates(scheduledUpdates >= 3 ? 0 : !hasBattery ? 2 : 1, true);
+            requestUpdates(scheduledUpdates >= 2 ? 0 : !hasBattery ? 2 : 1, true);
             return true;
         }
         return false;

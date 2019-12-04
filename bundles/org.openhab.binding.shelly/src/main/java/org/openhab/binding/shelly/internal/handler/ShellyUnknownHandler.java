@@ -17,7 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.slf4j.Logger;
@@ -32,10 +31,9 @@ import org.slf4j.LoggerFactory;
 public class ShellyUnknownHandler extends ShellyBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(ShellyUnknownHandler.class);
 
-    public ShellyUnknownHandler(Thing thing, ShellyHandlerFactory handlerFactory,
-            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
-            int httpPort) {
-        super(thing, handlerFactory, bindingConfig, coapServer, localIP, httpPort);
+    public ShellyUnknownHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
+            @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
+        super(thing, bindingConfig, coapServer, localIP, httpPort);
     }
 
     @Override

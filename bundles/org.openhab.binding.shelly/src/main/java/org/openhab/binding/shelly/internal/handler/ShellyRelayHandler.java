@@ -33,7 +33,6 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyControlRoller;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyInputState;
@@ -68,10 +67,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @param handlerFactory Handler Factory instance (will be used for event handler registration)
      * @param networkAddressService instance of NetworkAddressService to get access to the OH default ip settings
      */
-    public ShellyRelayHandler(Thing thing, ShellyHandlerFactory handlerFactory,
-            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
-            int httpPort) {
-        super(thing, handlerFactory, bindingConfig, coapServer, localIP, httpPort);
+    public ShellyRelayHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
+            @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
+        super(thing, bindingConfig, coapServer, localIP, httpPort);
     }
 
     @Override
@@ -407,13 +405,13 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 // and send a OFF status to the same channel.
                 // When the device's brightness is > 0 we send the new value to the channel and a ON command
                 if (dimmer.ison) {
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, OnOffType.ON);
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, toQuantityType(
                             new Double(getInteger(dimmer.brightness)), DIGITS_NONE, SmartHomeUnits.PERCENT));
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, OnOffType.ON);
                 } else {
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, OnOffType.OFF);
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS,
                             toQuantityType(new Double(0), DIGITS_NONE, SmartHomeUnits.PERCENT));
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, OnOffType.OFF);
                 }
 
                 ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);

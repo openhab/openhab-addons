@@ -32,7 +32,6 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusLight;
@@ -60,10 +59,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
      * @param handlerFactory Handler Factory instance (will be used for event handler registration)
      * @param networkAddressService instance of NetworkAddressService to get access to the OH default ip settings
      */
-    public ShellyLightHandler(Thing thing, ShellyHandlerFactory handlerFactory,
-            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
-            int httpPort) {
-        super(thing, handlerFactory, bindingConfig, coapServer, localIP, httpPort);
+    public ShellyLightHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
+            @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
+        super(thing, bindingConfig, coapServer, localIP, httpPort);
         channelColors = new HashMap<Integer, ShellyColorUtils>();
     }
 
@@ -137,7 +135,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 if (command instanceof OnOffType) { // Switch
                     logger.debug("Switch light {}", command.toString());
                     api.setRelayTurn(lightId, (OnOffType) command == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
-                    updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER, (OnOffType) command);
+                    requestUpdates(1, false);
                     break;
                 }
 
@@ -148,10 +146,11 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 } else if (command instanceof DecimalType) {
                     value = ((DecimalType) command).intValue();
                     logger.debug("{}: Set brightness to {} (Integer)", thingName, value);
-                } else if (value == 0) {
+                }
+                if (value == 0) {
                     logger.debug("{}: Brightness=0 -> switch light OFF", thingName);
                     api.setRelayTurn(lightId, SHELLY_API_OFF);
-                    updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER, OnOffType.OFF);
+                    requestUpdates(1, false);
                     break;
                 }
 

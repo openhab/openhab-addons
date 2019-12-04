@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
+import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceListener;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyRelayHandler;
@@ -96,18 +97,27 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        ShellyBaseHandler handler = null;
+
         if (thingTypeUID.getId().equals(THING_TYPE_SHELLYBULB.getId())
                 || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_COLOR.getId())
                 || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_WHITE.getId())) {
             logger.debug("Create new thing of type {} using ShellyLightHandler", thingTypeUID.getId());
-            return new ShellyLightHandler(thing, this, bindingConfig, coapServer, localIP, httpPort);
+            handler = new ShellyLightHandler(thing, bindingConfig, coapServer, localIP, httpPort);
         } else if (thingTypeUID.getId().equals(THING_TYPE_SHELLYUNKNOWN_STR)) {
             logger.debug("Create new thing of type {} using ShellyUnknownHandler", thingTypeUID.getId());
-            return new ShellyRelayHandler(thing, this, bindingConfig, coapServer, localIP, httpPort);
+            handler = new ShellyRelayHandler(thing, bindingConfig, coapServer, localIP, httpPort);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("Create new thing of type {} using ShellyRelayHandler", thingTypeUID.getId());
-            return new ShellyRelayHandler(thing, this, bindingConfig, coapServer, localIP, httpPort);
+            handler = new ShellyRelayHandler(thing, bindingConfig, coapServer, localIP, httpPort);
         }
+
+        if (handler != null) {
+            registerDeviceListener(handler);
+            return handler;
+        }
+
+        logger.debug("Unable to create Thing Handler instance!");
         return null;
     }
 
