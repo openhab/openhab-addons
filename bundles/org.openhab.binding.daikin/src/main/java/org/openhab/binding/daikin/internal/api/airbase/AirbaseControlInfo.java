@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanMovement;
-import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanSpeed;
+// import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanSpeed;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,9 @@ public class AirbaseControlInfo {
     public AirbaseMode mode = AirbaseMode.AUTO;
     /** Degrees in Celsius. */
     public Optional<Double> temp = Optional.empty();
-    public AirbaseFanSpeed fanSpeed = AirbaseFanSpeed.AUTO;
+    public Integer f_rate = 1;
+    public boolean f_auto = false;
+    public boolean f_airside = false;
     public AirbaseFanMovement fanMovement = AirbaseFanMovement.STOPPED;
     /* Not supported by all units. Sets the target humidity for dehumidifying. */
     public Optional<Integer> targetHumidity = Optional.empty();
@@ -64,8 +66,9 @@ public class AirbaseControlInfo {
         info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> parseInt(value))
                 .map(value -> AirbaseMode.fromValue(value)).orElse(AirbaseMode.AUTO);
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> parseDouble(value));
-        info.fanSpeed = Optional.ofNullable(responseMap.get("f_rate")).map(value -> AirbaseFanSpeed.fromValue(value))
-                .orElse(AirbaseFanSpeed.AUTO);
+        info.f_rate = Optional.ofNullable(responseMap.get("f_rate")).flatMap(value -> parseInt(value)).orElse(1);
+        info.f_auto = "1".equals(responseMap.get("f_auto"));
+        info.f_airside = "1".equals(responseMap.get("f_airside"));
         info.fanMovement = Optional.ofNullable(responseMap.get("f_dir")).flatMap(value -> parseInt(value))
                 .map(value -> AirbaseFanMovement.fromValue(value)).orElse(AirbaseFanMovement.STOPPED);
         info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(value -> parseInt(value));
@@ -76,7 +79,9 @@ public class AirbaseControlInfo {
         Map<String, String> params = new HashMap<>();
         params.put("pow", power ? "1" : "0");
         params.put("mode", Integer.toString(mode.getValue()));
-        params.put("f_rate", fanSpeed.getValue());
+        params.put("f_rate", f_rate.toString());
+        params.put("f_auto", f_auto ? "1" : "0");
+        params.put("f_airside", f_airside ? "1" : "0");
         params.put("f_dir", Integer.toString(fanMovement.getValue()));
         params.put("stemp", temp.orElse(20.0).toString());
         params.put("shum", targetHumidity.map(value -> value.toString()).orElse(""));
