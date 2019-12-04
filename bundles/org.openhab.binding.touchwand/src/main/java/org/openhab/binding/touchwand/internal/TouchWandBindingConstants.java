@@ -63,4 +63,6 @@ public class TouchWandBindingConstants {
         // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SCENARIO); // not implemented yet
     }
 
+    public static final String[] SUPPORTED_TOCUHWAND_TYPES = { "Switch", "WallController", "shutter" };
+
 }

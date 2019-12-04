@@ -98,6 +98,10 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                         JsonObject unitObj = unit.getAsJsonObject();
                         TouchWandUnitData touchWandUnit;
                         String type = unitObj.get("type").getAsString();
+                        if (!Arrays.asList(SUPPORTED_TOCUHWAND_TYPES).contains(type)) {
+                            logger.debug("Unit discovery skipping unsupported unit type : {} ", type);
+                            continue;
+                        }
                         if (type.equals("WallController")) {
                             touchWandUnit = gson.fromJson(unitObj, TouchWandUnitDataWallController.class);
                         } else {

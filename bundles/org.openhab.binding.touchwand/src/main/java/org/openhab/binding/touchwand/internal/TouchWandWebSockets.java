@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.touchwand.internal;
 
+import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.SUPPORTED_TOCUHWAND_TYPES;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -157,20 +160,33 @@ public class TouchWandWebSockets {
             Gson gson = new Gson();
             try {
                 JsonObject unitObj = jsonParser.parse(msg).getAsJsonObject();
-                if (unitObj.get("type").getAsString().equals("UNIT_CHANGED")
-                        && unitObj.get("unit").getAsJsonObject().get("status").getAsString().equals("ALIVE")) {
-                    if (unitObj.get("unit").getAsJsonObject().get("type").getAsString().equals("WallController")) {
-                        touchWandUnit = gson.fromJson(unitObj.get("unit").getAsJsonObject(),
-                                TouchWandUnitDataWallController.class);
-                    } else {
-                        touchWandUnit = gson.fromJson(unitObj.get("unit").getAsJsonObject(),
-                                TouchWandShutterSwitchUnitData.class);
-                    }
-                    logger.debug("UNIT_CHANGED: name {} id {} status {}", touchWandUnit.getName(),
-                            touchWandUnit.getId(), touchWandUnit.getCurrStatus());
-                    for (TouchWandWebSocketListener listener : listeners) {
-                        listener.onDataReceived(touchWandUnit);
-                    }
+                boolean eventUnitChanged = unitObj.get("type").getAsString().equals("UNIT_CHANGED");
+                if (!eventUnitChanged) {
+                    return;
+                }
+                boolean isUnitAlive = unitObj.get("unit").getAsJsonObject().get("status").getAsString().equals("ALIVE");
+                if (!isUnitAlive) {
+                    return;
+                }
+                boolean supportedUnitType = Arrays.asList(SUPPORTED_TOCUHWAND_TYPES)
+                        .contains(unitObj.get("unit").getAsJsonObject().get("type").getAsString());
+                if (!supportedUnitType) {
+                    logger.debug("UNIT_CHANGED for unsupported unit type {}",
+                            unitObj.get("unit").getAsJsonObject().get("type").getAsString());
+                    return;
+                }
+
+                if (unitObj.get("unit").getAsJsonObject().get("type").getAsString().equals("WallController")) {
+                    touchWandUnit = gson.fromJson(unitObj.get("unit").getAsJsonObject(),
+                            TouchWandUnitDataWallController.class);
+                } else {
+                    touchWandUnit = gson.fromJson(unitObj.get("unit").getAsJsonObject(),
+                            TouchWandShutterSwitchUnitData.class);
+                }
+                logger.debug("UNIT_CHANGED: name {} id {} status {}", touchWandUnit.getName(), touchWandUnit.getId(),
+                        touchWandUnit.getCurrStatus());
+                for (TouchWandWebSocketListener listener : listeners) {
+                    listener.onDataReceived(touchWandUnit);
                 }
             } catch (JsonSyntaxException e) {
                 logger.warn("jsonParser.parse {} ", e.getMessage());
