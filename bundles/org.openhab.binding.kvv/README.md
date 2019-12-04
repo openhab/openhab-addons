@@ -5,17 +5,21 @@ Enables the user to show the latest departure times for specific street car stat
 
 ## Supported Things
 
-Every street car station is represented by one thing. Each thing contains channels for the information referred to the next ten trains.
+Every street car station is represented by one thing. Each thing contains channels for the information referred to the next n trains.
 This includes the name of the train, the final destination and the estimated time available (eta).
-
 
 ## Thing Configuration
 
-Since every station is represented by a KVV-provided id, the initially has to find out the corresponding id of the station in questions.
-The binding does not include an interface, but this can easily done per API call:
+Since every station is represented by a KVV-provided id, this id has to be figured out via an API call.
+
+### Example Call for Station 'Karlsruhe Volkswohnung'
 
 ```
+# Request
 curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=377d840e54b59adbe53608ba1aad70e8
+
+# Response
+{"stops":[{"id":"de:8212:72","name":"Karlsruhe Volkswohnung","lat":49.00381654,"lon":8.40393026}]}
 ```
 
 ## Full Example
