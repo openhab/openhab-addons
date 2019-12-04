@@ -32,6 +32,7 @@ By default the pairing mode disables itself after 1 minute (can be configured).
 
 It is important to note that you are exposing *Items* not *Things* or *Channels*.
 Only Color, Dimmer, Rollershutter, Switch and Group type *Items* are supported.
+Group type items require the "Huelight" tag to be exposed as devices instead of Groups.
 
 This service can emulate 3 different devices:
 
