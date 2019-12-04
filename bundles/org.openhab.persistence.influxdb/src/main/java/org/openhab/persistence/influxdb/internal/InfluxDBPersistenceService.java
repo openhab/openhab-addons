@@ -60,6 +60,7 @@ import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.persistence.FilterCriteria;
+import org.eclipse.smarthome.core.persistence.FilterCriteria.Operator;
 import org.eclipse.smarthome.core.persistence.FilterCriteria.Ordering;
 import org.eclipse.smarthome.core.persistence.HistoricItem;
 import org.eclipse.smarthome.core.persistence.PersistenceItemInfo;
@@ -444,7 +445,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                     query.append(" ");
                     query.append(COLUMN_VALUE_NAME);
                     query.append(" ");
-                    query.append(filter.getOperator().toString());
+                    query.append(operatorToString(filter.getOperator()));
                     query.append(" ");
                     query.append(value);
                 }
@@ -524,6 +525,25 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
 
         logger.debug("Returning query() with {} items", historicItems.size());
         return historicItems;
+    }
+
+    private String operatorToString(Operator operator) {
+        switch (operator) {
+            case EQ:
+                return "=";
+            case NEQ:
+                return "!=";
+            case GT:
+                return ">";
+            case LT:
+                return "<";
+            case GTE:
+                return ">=";
+            case LTE:
+                return "<=";
+            default:
+                return "";
+        }
     }
 
     private String getTimeFilter(ZonedDateTime time) {
