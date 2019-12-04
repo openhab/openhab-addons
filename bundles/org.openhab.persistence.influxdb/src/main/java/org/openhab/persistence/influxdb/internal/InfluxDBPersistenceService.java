@@ -32,7 +32,6 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigurableService;
@@ -130,8 +129,9 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     private static final String TAG_TYPE_NAME = "type";
     private static final String TAG_LABEL_NAME = "label";
 
-    private static final TimeUnit timeUnit = TimeUnit.MILLISECONDS;
-    private static final Logger logger = LoggerFactory.getLogger(InfluxDBPersistenceService.class);
+    private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
+
+    private final Logger logger = LoggerFactory.getLogger(InfluxDBPersistenceService.class);
 
     private String dbName = DEFAULT_DB;
     private String url = DEFAULT_URL;
@@ -220,8 +220,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         }
     }
 
-    private Boolean getConfigBooleanValue(@NonNull Map<String, Object> config, @NonNull String key,
-            @NonNull Boolean defaultValue) {
+    private Boolean getConfigBooleanValue(Map<String, Object> config, String key, Boolean defaultValue) {
         Object object = config.get(key);
 
         if (object == null) {
@@ -302,7 +301,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         Set<PersistenceItemInfo> historicItems = new HashSet<PersistenceItemInfo>();
 
         if (influxDB != null) {
-            QueryResult queryResult = influxDB.query(influxdbQuery, timeUnit);
+            QueryResult queryResult = influxDB.query(influxdbQuery, TIME_UNIT);
 
             forAllDo(queryResult.getResults(), result -> {
                 if (result.hasError()) {
@@ -364,7 +363,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
 
         Object value = stateToObject(state);
 
-        Builder measurement = Point.measurement(measurementName).time(System.currentTimeMillis(), timeUnit);
+        Builder measurement = Point.measurement(measurementName).time(System.currentTimeMillis(), TIME_UNIT);
 
         measurement.field(COLUMN_VALUE_NAME, value);
         measurement.tag(TAG_ITEM_NAME, itemName);
@@ -473,7 +472,6 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                 query.append(getTimeFilter(filter.getEndDateZoned()));
                 query.append(" ");
             }
-
         }
 
         if (filter.getOrdering() == Ordering.DESCENDING) {
@@ -490,7 +488,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         List<HistoricItem> historicItems = new ArrayList<HistoricItem>();
 
         if (influxDB != null) {
-            QueryResult queryResult = influxDB.query(influxdbQuery, timeUnit);
+            QueryResult queryResult = influxDB.query(influxdbQuery, TIME_UNIT);
 
             forAllDo(queryResult.getResults(), result -> {
                 if (result.hasError()) {
@@ -560,7 +558,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
      * @return integer or double value for DecimalType, 0 or 1 for OnOffType and OpenClosedType,
      *         integer for DateTimeType, String for all others
      */
-    private Object stateToObject(@NonNull State state) {
+    private Object stateToObject(State state) {
         Object value;
         if (state instanceof HSBType) {
             value = ((HSBType) state).toString();
