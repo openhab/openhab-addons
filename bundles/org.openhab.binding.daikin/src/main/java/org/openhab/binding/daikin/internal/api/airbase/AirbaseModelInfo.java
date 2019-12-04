@@ -15,9 +15,12 @@ package org.openhab.binding.daikin.internal.api.airbase;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.EnumSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeature;
 
 /**
  * Class for holding the set of parameters used by get model info.
@@ -31,8 +34,11 @@ public class AirbaseModelInfo {
     public String ret;
     public Integer zonespresent;
     public Integer commonzone;
+    public Integer frate_steps; // fan rate steps
+    public EnumSet<AirbaseFeature> features;
 
     private AirbaseModelInfo() {
+        features = EnumSet.noneOf(AirbaseFeature.class);
     }
 
     public static AirbaseModelInfo parse(String response) {
@@ -49,7 +55,13 @@ public class AirbaseModelInfo {
         AirbaseModelInfo info = new AirbaseModelInfo();
         info.ret = responseMap.get("ret");
         info.zonespresent = Integer.parseInt(responseMap.get("en_zone"));
-        info.commonzone = Integer.parseInt(responseMap.get("en_common_zone"));
+        info.commonzone = Integer.parseInt(responseMap.get("en_common_zone"));  
+        info.frate_steps = Integer.parseInt(responseMap.get("frate_steps"));      
+        for (AirbaseFeature f: AirbaseFeature.values()) {
+            if ("1".equals(responseMap.get(f.getValue()))) {
+                info.features.add(f);
+            }
+        }
         return info;
     }
 

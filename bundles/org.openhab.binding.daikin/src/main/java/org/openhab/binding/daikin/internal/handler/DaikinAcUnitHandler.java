@@ -17,6 +17,9 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.measure.quantity.Temperature;
 
@@ -33,10 +36,12 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
+import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
@@ -44,6 +49,7 @@ import org.openhab.binding.daikin.internal.api.Enums.Mode;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanSpeed;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseMode;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFeature;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseModelInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseZoneInfo;
@@ -67,17 +73,18 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
 
     private DaikinWebTargets webTargets;
     private ScheduledFuture<?> pollFuture;
+    private AirbaseModelInfo airbaseModelInfo;
+    private final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
 
-    public DaikinAcUnitHandler(Thing thing) {
+    public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             handleCommandInternal(channelUID, command);
-
-            poll();
         } catch (DaikinCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
@@ -170,7 +177,7 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
         if (pollFuture != null) {
             pollFuture.cancel(false);
         }
-        logger.debug("Scheduling poll for 500ms out, then every {} s", refreshInterval);
+        logger.debug("Scheduling poll for 1s out, then every {} s", refreshInterval);
         pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, refreshInterval, TimeUnit.SECONDS);
     }
 
@@ -230,11 +237,17 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
     private void pollAirbaseStatus() throws IOException {
         AirbaseControlInfo controlInfo = webTargets.getAirbaseControlInfo();
         updateStatus(ThingStatus.ONLINE);
+
+        if (airbaseModelInfo == null || !"OK".equals(airbaseModelInfo.ret)) {
+            airbaseModelInfo = webTargets.getAirbaseModelInfo();
+            updateChannelStateDescriptions();
+        }
+
         if (controlInfo != null) {
             updateState(DaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
             updateTemperatureChannel(DaikinBindingConstants.CHANNEL_AC_TEMP, controlInfo.temp);
             updateState(DaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
+            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED, new StringType(AirbaseFanSpeed.fromValue(controlInfo.f_rate, controlInfo.f_auto, controlInfo.f_airside).name()));
         }
 
         SensorInfo sensorInfo = webTargets.getAirbaseSensorInfo();
@@ -243,6 +256,7 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
 
             updateTemperatureChannel(DaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
         }
+
         AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
         if (zoneInfo != null) {
             IntStream.range(0, zoneInfo.zone.length).forEach(
@@ -326,7 +340,9 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
 
     private void changeAirbaseFanSpeed(AirbaseFanSpeed fanSpeed) throws DaikinCommunicationException {
         AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
-        info.fanSpeed = fanSpeed;
+        info.f_rate = fanSpeed.getLevel();
+        info.f_auto = fanSpeed.getAuto();
+        info.f_airside = fanSpeed.getAirside();
         webTargets.setAirbaseControlInfo(info);
     }
 
@@ -340,11 +356,46 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
     // Zones only supported on Airbase, so don't need to detect what kind of thing we have
     private void changeZone(int zone, boolean command) throws DaikinCommunicationException {
         AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone[zone] = command;
-        if (modelInfo.zonespresent >=zone) {
-            webTargets.setAirbaseZoneInfo(info, modelInfo);
+        if (airbaseModelInfo.zonespresent >=zone) {
+            webTargets.setAirbaseZoneInfo(info, airbaseModelInfo);
         }
     }
 
+    private void updateChannelStateDescriptions() {
+        updateAirbaseFanSpeedChannelStateDescription();
+        updateAirbaseModeChannelStateDescription();
+    }
+
+    private void updateAirbaseFanSpeedChannelStateDescription() {
+        List<StateOption> options = new ArrayList<>();
+        if (airbaseModelInfo.features.contains(AirbaseFeature.AIRSIDE)) {
+            options.add(new StateOption(AirbaseFanSpeed.AIRSIDE.name(), AirbaseFanSpeed.AIRSIDE.getLabel()));
+        }
+        for (AirbaseFanSpeed f : EnumSet.range(AirbaseFanSpeed.LEVEL_1, AirbaseFanSpeed.LEVEL_5)) {
+            options.add(new StateOption(f.name(), f.getLabel()));
+        }
+        if (airbaseModelInfo.features.contains(AirbaseFeature.FRATE_AUTO)) {
+            for (AirbaseFanSpeed f : EnumSet.range(AirbaseFanSpeed.AUTO_LEVEL_1, AirbaseFanSpeed.AUTO_LEVEL_5)) {
+                options.add(new StateOption(f.name(), f.getLabel()));
+            }
+        }
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED),
+                options);
+    }
+
+    private void updateAirbaseModeChannelStateDescription() {
+        List<StateOption> options = new ArrayList<>();
+        if (airbaseModelInfo.features.contains(AirbaseFeature.AUTO)) {
+            options.add(new StateOption(AirbaseMode.AUTO.name(), AirbaseMode.AUTO.getLabel()));
+        }
+        for (AirbaseMode f : EnumSet.complementOf(EnumSet.of(AirbaseMode.AUTO, AirbaseMode.DRY))) {
+            options.add(new StateOption(f.name(), f.getLabel()));
+        }
+        if (airbaseModelInfo.features.contains(AirbaseFeature.DRY)) {
+            options.add(new StateOption(AirbaseMode.DRY.name(), AirbaseMode.DRY.getLabel()));
+        }
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), DaikinBindingConstants.CHANNEL_AC_MODE),
+                options);
+    }
 }

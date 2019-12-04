@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.daikin.internal.handler.DaikinAcUnitHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link DaikinHandlerFactory} is responsible for creating things and thing
@@ -34,6 +35,8 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 
+    private @Nullable DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return DaikinBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -44,9 +47,18 @@ public class DaikinHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT) || thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT)) {
-            return new DaikinAcUnitHandler(thing);
+            return new DaikinAcUnitHandler(thing, stateDescriptionProvider);
         }
 
         return null;
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
+
+    protected  void unsetDynamicStateDescriptionProvider(DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = null;
     }
 }
