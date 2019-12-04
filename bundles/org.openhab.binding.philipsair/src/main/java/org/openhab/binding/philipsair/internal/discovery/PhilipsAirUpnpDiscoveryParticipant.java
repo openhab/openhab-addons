@@ -15,6 +15,7 @@ package org.openhab.binding.philipsair.internal.discovery;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC1214_10;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729_10;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_UNIVERSAL;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2729_50;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.THING_TYPE_AC2889_10;
 
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = UpnpDiscoveryParticipant.class, immediate = true)
 public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirUpnpDiscoveryParticipant.class);
-    private boolean isAutoDiscoveryEnabled = false;
+    private boolean isAutoDiscoveryEnabled = true;
 
     @Activate
     protected void activate(ComponentContext componentContext) {
@@ -66,7 +67,7 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
 
     private void activateOrModifyService(ComponentContext componentContext) {
         Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
-        String autoDiscoveryPropertyValue = (String) properties.get("background");
+        String autoDiscoveryPropertyValue = (String) properties.get("enableAutoDiscovery");
         if (autoDiscoveryPropertyValue != null && autoDiscoveryPropertyValue.length() != 0) {
             isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
         }
@@ -122,21 +123,9 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
                 .startsWith(modelDetails.getModelNumber().toLowerCase())) {
             logger.info("Attempt to create Philips Air things {} {}", modelName, modelDetails.getModelNumber());
             return new ThingUID(THING_TYPE_AC2889_10, device.getIdentity().getUdn().getIdentifierString());
-        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2729_10
-                .startsWith(modelDetails.getModelNumber().toLowerCase())) {
+        } else {
             logger.info("Attempt to create Philips Air things {} {}", modelName, modelDetails.getModelNumber());
-            return new ThingUID(THING_TYPE_AC2729_10, device.getIdentity().getUdn().getIdentifierString());
-        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2729_50
-                .startsWith(modelDetails.getModelNumber().toLowerCase())) {
-            logger.info("Attempt to create Philips Air things {} {}", modelName, modelDetails.getModelNumber());
-            return new ThingUID(THING_TYPE_AC2729_50, device.getIdentity().getUdn().getIdentifierString());
-        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC1214_10
-                .startsWith(modelDetails.getModelNumber().toLowerCase())) {
-            logger.info("Attempt to create Philips Air things {} {}", modelName, modelDetails.getModelNumber());
-            return new ThingUID(THING_TYPE_AC1214_10, device.getIdentity().getUdn().getIdentifierString());
+            return new ThingUID(THING_TYPE_UNIVERSAL, device.getIdentity().getUdn().getIdentifierString());
         }
-
-        return null;
-
     }
 }

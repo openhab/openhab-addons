@@ -17,6 +17,15 @@ Supported Philips Air Purifiers (hardware testes) devices are
 
 You are welcome to provide any information about compatibility with other versions.
 
+**Features**
+* first OpenHAB 2 binding poviding support for Phlips Air Purifiers devices
+* auto discovery via UPNP
+* power off/on,
+* fan speed control,
+* purification mode control,
+* lights control,
+* sensor readings (air quality, temperature, humidity)
+
 ## Discovery
 
 Via UPNP protocol

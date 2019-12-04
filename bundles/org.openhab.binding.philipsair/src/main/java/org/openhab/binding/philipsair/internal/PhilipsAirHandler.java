@@ -58,7 +58,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -76,9 +75,6 @@ import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDevice;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFilters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.netty.channel.group.ChannelGroup;
-import io.netty.channel.internal.ChannelUtils;
 
 /**
  * The {@link PhilipsAirHandler} is responsible for handling commands, which are

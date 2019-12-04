@@ -20,4 +20,21 @@
 		<config-description-ref
 			uri="thing-type:philipsair:config" />
 	</thing-type>
+
+	<thing-type id="universal">
+		<label>Philips Air Purifier</label>
+		<description>Philips Air Purifier</description>
+		<channel-groups>
+			<channel-group typeId="controls-basic"
+			id="controls" />
+			<channel-group typeId="controls-ui"
+			id="controls-ui" />
+			<channel-group typeId="sensors-basic"
+			id="sensors" />
+			<channel-group typeId="filters" id="filters" />
+		</channel-groups>
+		<config-description-ref
+			uri="thing-type:philipsair:config" />
+	</thing-type>
+
 </thing:thing-descriptions>
