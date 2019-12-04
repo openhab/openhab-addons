@@ -138,12 +138,12 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
         }
 
         if (melCloudHandler == null) {
-            logger.warn("No connection to MELCloud available, ignore command");
+            logger.warn("No connection to MELCloud available, ignoring command");
             return;
         }
 
         if (heatpumpDeviceStatus == null) {
-            logger.info("No initial data available, bridge is probably offline. Ignore command");
+            logger.info("No initial data available, bridge is probably offline. Ignoring command");
             return;
         }
 
@@ -178,7 +178,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
                 cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_HOTWATER);
                 break;
             default:
-                logger.debug("Read only or unknown channel {}, skip update", channelUID);
+                logger.debug("Read-only or unknown channel {}, skipping update", channelUID);
         }
 
         if (cmdtoSend.getEffectiveFlags() > 0) {
@@ -233,7 +233,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
                         e.getMessage(), e);
             }
         } else {
-            logger.debug("Connection to MELCloud is not open, skip periodic update");
+            logger.debug("Connection to MELCloud is not open, skipping periodic update");
         }
     }
 

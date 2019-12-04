@@ -98,7 +98,7 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
 
     private void connect() throws MelCloudCommException, MelCloudLoginException {
         if (loginCredentialError) {
-            throw new MelCloudLoginException("Connection to MELCloud can't be open because of wrong credentials");
+            throw new MelCloudLoginException("Connection to MELCloud can't be opened because of wrong credentials");
         }
         logger.debug("Initializing connection to MELCloud");
         updateStatus(ThingStatus.OFFLINE);
@@ -202,7 +202,7 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
                     } catch (MelCloudCommException e) {
                         logger.debug("Connection to MELCloud down, reason: {}.", e.getMessage());
                     } catch (RuntimeException e) {
-                        logger.warn("Unknown error occured during connection check, reason: {}.", e.getMessage(), e);
+                        logger.warn("Unknown error occurred during connection check, reason: {}.", e.getMessage(), e);
                     }
                 }
             };

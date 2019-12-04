@@ -21,7 +21,7 @@ public class MelCloudLoginException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public MelCloudLoginException(Throwable cause) {
-        super("Error occured during login to MELCloud", cause);
+        super("Error occurred during login to MELCloud", cause);
     }
 
     public MelCloudLoginException(String message) {

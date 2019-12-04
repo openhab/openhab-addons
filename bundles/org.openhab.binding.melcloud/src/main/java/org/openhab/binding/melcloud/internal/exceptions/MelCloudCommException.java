@@ -21,7 +21,7 @@ public class MelCloudCommException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public MelCloudCommException(Throwable cause) {
-        super("Error occured when communicating with MELCloud", cause);
+        super("Error occurred when communicating with MELCloud", cause);
     }
 
     public MelCloudCommException(String message) {

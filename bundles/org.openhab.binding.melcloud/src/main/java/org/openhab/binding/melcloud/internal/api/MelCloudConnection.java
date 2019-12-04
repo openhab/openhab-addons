@@ -122,7 +122,7 @@ public class MelCloudConnection {
                 return devices;
             } catch (IOException | JsonSyntaxException e) {
                 setConnected(false);
-                throw new MelCloudCommException("Error occured during device list poll", e);
+                throw new MelCloudCommException("Error occurred during device list poll", e);
             }
         }
         throw new MelCloudCommException("Not connected to MELCloud");
@@ -139,7 +139,7 @@ public class MelCloudConnection {
                 return deviceStatus;
             } catch (IOException | JsonSyntaxException e) {
                 setConnected(false);
-                throw new MelCloudCommException("Error occured during device status fetch", e);
+                throw new MelCloudCommException("Error occurred during device status fetch", e);
             }
         }
         throw new MelCloudCommException("Not connected to MELCloud");
@@ -157,7 +157,7 @@ public class MelCloudConnection {
                 return gson.fromJson(response, DeviceStatus.class);
             } catch (IOException | JsonSyntaxException e) {
                 setConnected(false);
-                throw new MelCloudCommException("Error occured during device command sending", e);
+                throw new MelCloudCommException("Error occurred during device command sending", e);
             }
         }
         throw new MelCloudCommException("Not connected to MELCloud");
@@ -174,7 +174,7 @@ public class MelCloudConnection {
                 return heatpumpDeviceStatus;
             } catch (IOException | JsonSyntaxException e) {
                 setConnected(false);
-                throw new MelCloudCommException("Error occured during heatpump device status fetch", e);
+                throw new MelCloudCommException("Error occurred during heatpump device status fetch", e);
             }
         }
         throw new MelCloudCommException("Not connected to MELCloud");
@@ -193,7 +193,7 @@ public class MelCloudConnection {
                 return gson.fromJson(response, HeatpumpDeviceStatus.class);
             } catch (IOException | JsonSyntaxException e) {
                 setConnected(false);
-                throw new MelCloudCommException("Error occured during heatpump device command sending", e);
+                throw new MelCloudCommException("Error occurred during heatpump device command sending", e);
             }
         }
         throw new MelCloudCommException("Not connected to MELCloud");
