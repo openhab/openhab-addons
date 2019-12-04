@@ -112,10 +112,6 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         if (bridge != null) {
             initializeBridge(bridge.getHandler(), bridgeStatusInfo.getStatus());
         }
-
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            startAutomaticRefresh();
-        }
     }
 
     private void initializeBridge(ThingHandler thingHandler, ThingStatus bridgeStatus) {
@@ -126,6 +122,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
 
             if (bridgeStatus == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
+                startAutomaticRefresh();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }

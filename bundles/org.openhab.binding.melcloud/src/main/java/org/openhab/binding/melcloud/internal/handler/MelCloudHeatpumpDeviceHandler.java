@@ -105,10 +105,6 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
         if (bridge != null) {
             initializeBridge(bridge.getHandler(), bridgeStatusInfo.getStatus());
         }
-
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            startAutomaticRefresh();
-        }
     }
 
     private void initializeBridge(ThingHandler thingHandler, ThingStatus bridgeStatus) {
