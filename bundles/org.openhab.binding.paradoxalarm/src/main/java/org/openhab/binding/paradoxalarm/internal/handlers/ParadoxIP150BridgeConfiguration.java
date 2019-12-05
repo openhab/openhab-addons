@@ -26,6 +26,8 @@ public class ParadoxIP150BridgeConfiguration {
     private int port;
     private String panelType;
     private int reconnectWaitTime;
+    private Integer maxZones;
+    private Integer maxPartitions;
 
     public int getRefresh() {
         return refresh;
@@ -81,6 +83,22 @@ public class ParadoxIP150BridgeConfiguration {
 
     public void setReconnectWaitTime(int reconnectWaitTime) {
         this.reconnectWaitTime = reconnectWaitTime;
+    }
+
+    public Integer getMaxZones() {
+        return maxZones;
+    }
+
+    public void setMaxZones(Integer maxZones) {
+        this.maxZones = maxZones;
+    }
+
+    public Integer getMaxPartitions() {
+        return maxPartitions;
+    }
+
+    public void setMaxPartitions(Integer maxPartitions) {
+        this.maxPartitions = maxPartitions;
     }
 
 }

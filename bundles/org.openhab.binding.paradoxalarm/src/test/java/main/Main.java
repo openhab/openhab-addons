@@ -21,9 +21,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.paradoxalarm.internal.communication.ICommunicatorBuilder;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
-import org.openhab.binding.paradoxalarm.internal.communication.ParadoxCommunicatorFactory;
+import org.openhab.binding.paradoxalarm.internal.communication.ParadoxBuilderFactory;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
+import org.openhab.binding.paradoxalarm.internal.model.PanelType;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.openhab.binding.paradoxalarm.internal.model.Zone;
@@ -50,8 +52,6 @@ public class Main {
 
     private static ScheduledExecutorService scheduler;
 
-    private static final String PANEL_TYPE = "EVO192";
-
     private static final String LOG_LEVEL = "DEBUG";
 
     private static IParadoxCommunicator communicator;
@@ -63,17 +63,21 @@ public class Main {
 
         try {
             scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+
+            ParadoxBuilderFactory factory = new ParadoxBuilderFactory();
+            ICommunicatorBuilder builder = factory.createBuilder(PanelType.EVO192);
+            communicator = builder.withIp150Password(ip150Password).withPcPassword(pcPassword).withIpAddress(ipAddress)
+                    .withTcpPort(port).withMaxPartitions(4).withMaxZones(60).withScheduler(scheduler).build();
+
             ParadoxPanel panel = ParadoxPanel.getInstance();
-            ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, port, ip150Password,
-                pcPassword, scheduler);
-            communicator = factory.createCommunicator(PANEL_TYPE);
+            panel.setCommunicator(communicator);
+
             communicator.setListeners(Arrays.asList(panel));
 
             panel.setCommunicator(communicator);
 
             // scheduler.schedule(communicator::initializeEpromData, 2, TimeUnit.SECONDS);
             // scheduler.schedule(communicator::refreshMemoryMap, 2, TimeUnit.SECONDS);
-            logger.debug("Phase1 - Identify communicator");
 
             scheduler.scheduleWithFixedDelay(() -> {
                 updateDataCache(communicator, false);
@@ -113,10 +117,12 @@ public class Main {
     }
 
     private static void readArguments(String[] args) {
-        if (args == null || args.length < 8 || !"--password".equals(args[0]) || args[1] == null || args[1].isEmpty() || args[2] == null || !"--pc_password".equals(args[2]) || args[3] == null ||
-                args[3].isEmpty() || !"--ip_address".equals(args[4]) || args[5] == null || args[5].isEmpty() || !"--port".equals(args[6]) || args[7] == null || args[7].isEmpty()) {
+        if (args == null || args.length < 8 || !"--password".equals(args[0]) || args[1] == null || args[1].isEmpty()
+                || args[2] == null || !"--pc_password".equals(args[2]) || args[3] == null || args[3].isEmpty()
+                || !"--ip_address".equals(args[4]) || args[5] == null || args[5].isEmpty() || !"--port".equals(args[6])
+                || args[7] == null || args[7].isEmpty()) {
             logger.error(
-                "Usage: application --password <YOUR_PASSWORD_FOR_IP150> --pc_password <your PC_password> --ip_address <address of IP150> --port <port of Paradox>\n (pc password default is 0000, can be obtained by checking section 3012), default port is 10000");
+                    "Usage: application --password <YOUR_PASSWORD_FOR_IP150> --pc_password <your PC_password> --ip_address <address of IP150> --port <port of Paradox>\n (pc password default is 0000, can be obtained by checking section 3012), default port is 10000");
             System.exit(0);
         } else {
             logger.info("Arguments retrieved successfully from CLI.");
