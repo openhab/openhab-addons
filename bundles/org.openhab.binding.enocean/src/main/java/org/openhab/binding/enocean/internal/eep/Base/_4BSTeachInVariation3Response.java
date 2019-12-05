@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.eep.Base;
 
+import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
+
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 
@@ -22,7 +24,7 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 public class _4BSTeachInVariation3Response extends _4BSMessage {
 
     public _4BSTeachInVariation3Response(ERP1Message packet) {
-        byte[] payload = packet.getPayload(RORGLength, RORG._4BS.getDataLength());
+        byte[] payload = packet.getPayload(ESP3_RORG_LENGTH, RORG._4BS.getDataLength());
 
         payload[3] = (byte) 0xF0; // telegram with EEP number and Manufacturer ID,
                                   // EEP supported, Sender ID stored, Response

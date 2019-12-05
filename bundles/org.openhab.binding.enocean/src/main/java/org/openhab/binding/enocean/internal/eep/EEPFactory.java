@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.eep;
 
+import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
+
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.smarthome.core.util.HexUtils;
@@ -147,14 +149,15 @@ public class EEPFactory {
             case UTE: {
                 byte[] payload = msg.getPayload();
 
-                byte rorg = payload[payload.length - 1 - EEP.StatusLength - EEP.SenderIdLength];
-                byte func = payload[payload.length - 1 - EEP.StatusLength - EEP.SenderIdLength - EEP.RORGLength];
-                byte type = payload[payload.length - 1 - EEP.StatusLength - EEP.SenderIdLength - EEP.RORGLength - 1];
+                byte rorg = payload[payload.length - 1 - ESP3_STATUS_LENGTH - ESP3_SENDERID_LENGTH];
+                byte func = payload[payload.length - 1 - ESP3_STATUS_LENGTH - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH];
+                byte type = payload[payload.length - 1 - ESP3_STATUS_LENGTH - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH
+                        - 1];
 
-                byte manufIdMSB = payload[payload.length - 1 - EEP.StatusLength - EEP.SenderIdLength - EEP.RORGLength
-                        - 2];
-                byte manufIdLSB = payload[payload.length - 1 - EEP.StatusLength - EEP.SenderIdLength - EEP.RORGLength
-                        - 3];
+                byte manufIdMSB = payload[payload.length - 1 - ESP3_STATUS_LENGTH - ESP3_SENDERID_LENGTH
+                        - ESP3_RORG_LENGTH - 2];
+                byte manufIdLSB = payload[payload.length - 1 - ESP3_STATUS_LENGTH - ESP3_SENDERID_LENGTH
+                        - ESP3_RORG_LENGTH - 3];
                 int manufId = ((manufIdMSB & 0b111) << 8) + (manufIdLSB & 0xff);
 
                 EEPType eepType = EEPType.getType(RORG.getRORG(rorg), func, type, manufId);

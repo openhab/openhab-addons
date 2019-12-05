@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.eep.Base;
 
+import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
+
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
@@ -27,9 +29,9 @@ public class UTEResponse extends _VLDMessage {
 
     public UTEResponse(ERP1Message packet) {
 
-        int dataLength = packet.getPayload().length - SenderIdLength - RORGLength - StatusLength;
+        int dataLength = packet.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;
 
-        setData(packet.getPayload(RORGLength, dataLength));
+        setData(packet.getPayload(ESP3_RORG_LENGTH, dataLength));
         bytes[0] = (byte) 0x91; // bidirectional communication, teach in accepted, teach in response
 
         setStatus((byte) 0x80);

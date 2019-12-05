@@ -14,7 +14,8 @@ package org.openhab.binding.enocean.internal.messages;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet.ESPPacketType;
+import org.openhab.binding.enocean.internal.messages.BasePacket.ESPPacketType;
+import org.openhab.binding.enocean.internal.messages.CCMessage.CCMessageType;
 
 /**
  *
@@ -22,34 +23,26 @@ import org.openhab.binding.enocean.internal.messages.ESP3Packet.ESPPacketType;
  */
 public class ESP3PacketFactory {
 
-    public final static ESP3Packet CO_RD_VERSION = new CCMessage(1, 0, new byte[] { 3 });
-    public final static ESP3Packet CO_RD_IDBASE = new CCMessage(1, 0, new byte[] { 8 });
-    public final static ESP3Packet CO_RD_REPEATER = new CCMessage(1, 0, new byte[] { 10 });
+    public final static BasePacket CO_RD_VERSION = new CCMessage(CCMessageType.CO_RD_VERSION);
+    public final static BasePacket CO_RD_IDBASE = new CCMessage(CCMessageType.CO_RD_IDBASE);
+    public final static BasePacket CO_RD_REPEATER = new CCMessage(CCMessageType.CO_RD_REPEATER);
 
-    public static ESP3Packet CO_WR_IDBASE(byte[] newId) {
-        return new CCMessage(5, 0, new byte[] { 7, newId[0], newId[1], newId[2], newId[3] });
+    public static BasePacket CO_WR_IDBASE(byte[] newId) {
+        return new CCMessage(CCMessageType.CO_WR_IDBASE, new byte[] { 7, newId[0], newId[1], newId[2], newId[3] });
     }
 
-    public static ESP3Packet CO_WR_REPEATER(StringType level) {
+    public static BasePacket CO_WR_REPEATER(StringType level) {
         switch (level.toString()) {
             case EnOceanBindingConstants.REPEATERMODE_OFF:
-                return new CCMessage(3, 0, new byte[] { 9, 0, 0 });
+                return new CCMessage(CCMessageType.CO_WR_REPEATER, new byte[] { 9, 0, 0 });
             case EnOceanBindingConstants.REPEATERMODE_LEVEL_1:
-                return new CCMessage(3, 0, new byte[] { 9, 1, 1 });
+                return new CCMessage(CCMessageType.CO_WR_REPEATER, new byte[] { 9, 1, 1 });
             default:
-                return new CCMessage(3, 0, new byte[] { 9, 1, 2 });
+                return new CCMessage(CCMessageType.CO_WR_REPEATER, new byte[] { 9, 1, 2 });
         }
     }
 
-    public static ESP3Packet CO_WR_SUBTEL(boolean enable) {
-        if (enable) {
-            return new CCMessage(2, 0, new byte[] { 17, 1 });
-        } else {
-            return new CCMessage(2, 0, new byte[] { 17, 0 });
-        }
-    }
-
-    public static ESP3Packet BuildPacket(int dataLength, int optionalDataLength, byte packetType, byte[] payload) {
+    public static BasePacket BuildPacket(int dataLength, int optionalDataLength, byte packetType, byte[] payload) {
         ESPPacketType type = ESPPacketType.getPacketType(packetType);
 
         switch (type) {

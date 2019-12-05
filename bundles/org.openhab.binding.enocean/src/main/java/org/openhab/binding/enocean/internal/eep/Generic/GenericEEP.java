@@ -13,6 +13,7 @@
 package org.openhab.binding.enocean.internal.eep.Generic;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.PARAMETER_EEPID;
+import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -149,7 +150,7 @@ public class GenericEEP extends EEP {
     @Override
     protected int getDataLength() {
         if (packet != null) {
-            return packet.getPayload().length - SenderIdLength - RORGLength - StatusLength;
+            return packet.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;
         } else {
             return bytes.length;
         }

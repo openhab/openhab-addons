@@ -13,6 +13,7 @@
 package org.openhab.binding.enocean.internal.eep;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
 import java.util.Arrays;
 import java.util.function.Function;
@@ -26,9 +27,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
-import org.openhab.binding.enocean.internal.transceiver.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,11 +38,6 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Weber - Initial contribution
  */
 public abstract class EEP {
-
-    public static final byte Zero = 0x00;
-    protected static final int SenderIdLength = 4;
-    protected static final int StatusLength = 1;
-    protected static final int RORGLength = 1;
 
     protected RORG newRORG = RORG.Unknown;
     protected byte[] bytes;
@@ -71,9 +67,9 @@ public abstract class EEP {
 
         // Todo validation??
         this.packet = packet;
-        setData(packet.getPayload(RORGLength, getDataLength()));
-        setSenderId(packet.getPayload(RORGLength + getDataLength(), SenderIdLength));
-        setStatus(packet.getPayload(RORGLength + getDataLength() + SenderIdLength, 1)[0]);
+        setData(packet.getPayload(ESP3_RORG_LENGTH, getDataLength()));
+        setSenderId(packet.getPayload(ESP3_RORG_LENGTH + getDataLength(), ESP3_SENDERID_LENGTH));
+        setStatus(packet.getPayload(ESP3_RORG_LENGTH + getDataLength() + ESP3_SENDERID_LENGTH, 1)[0]);
         setOptionalData(packet.getOptionalPayload());
     }
 
@@ -154,7 +150,7 @@ public abstract class EEP {
     }
 
     public EEP setSenderId(byte[] senderId) {
-        if (senderId == null || senderId.length != SenderIdLength) {
+        if (senderId == null || senderId.length != ESP3_SENDERID_LENGTH) {
             throw new IllegalArgumentException();
         }
 
@@ -180,25 +176,20 @@ public abstract class EEP {
                 optionalDataLength = optionalData.length;
             }
 
-            byte[] payLoad = new byte[RORGLength + getDataLength() + SenderIdLength + StatusLength
+            byte[] payLoad = new byte[ESP3_RORG_LENGTH + getDataLength() + ESP3_SENDERID_LENGTH + ESP3_STATUS_LENGTH
                     + optionalDataLength];
-            Arrays.fill(payLoad, Zero);
+            Arrays.fill(payLoad, ZERO);
 
             byte rorgValue = getEEPType().getRORG().getValue();
             if (newRORG != RORG.Unknown) {
                 rorgValue = newRORG.getValue();
             }
 
-            payLoad[0] = rorgValue;
-            ERP1Message message = new ERP1Message(payLoad.length - optionalDataLength, optionalDataLength, payLoad);
+            // set repeater count to max if suppressRepeating
+            payLoad = Helper.concatAll(new byte[] { rorgValue }, bytes, senderId,
+                    new byte[] { (byte) (status | (suppressRepeating ? 0b1111 : 0)) }, optionalData);
 
-            message.setPayload(Helper.concatAll(new byte[] { rorgValue }, bytes, senderId,
-                    new byte[] { (byte) (status | (suppressRepeating ? 0b1111 : 0)) })); // set repeater count to max if
-            // suppressRepeating
-
-            message.setOptionalPayload(optionalData);
-
-            return message;
+            return new ERP1Message(payLoad.length - optionalDataLength, optionalDataLength, payLoad);
         } else {
             logger.warn("ERP1Message for EEP {} is not valid!", this.getClass().getName());
         }
@@ -211,7 +202,7 @@ public abstract class EEP {
     }
 
     public boolean isValid() {
-        return validateData(bytes) && senderId != null && senderId.length == SenderIdLength;
+        return validateData(bytes) && senderId != null && senderId.length == ESP3_SENDERID_LENGTH;
     }
 
     protected EEPType getEEPType() {

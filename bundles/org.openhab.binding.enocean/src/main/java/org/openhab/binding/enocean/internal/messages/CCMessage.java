@@ -16,10 +16,48 @@ package org.openhab.binding.enocean.internal.messages;
  *
  * @author Daniel Weber - Initial contribution
  */
-public class CCMessage extends ESP3Packet {
+class CCMessage extends BasePacket {
 
-    public CCMessage(int dataLength, int optionalDataLength, byte[] payload) {
-        super(dataLength, optionalDataLength, ESPPacketType.COMMON_COMMAND, payload);
+    public enum CCMessageType {
+        CO_RD_VERSION((byte) 3, 1),
+        CO_WR_IDBASE((byte) 7, 5),
+        CO_RD_IDBASE((byte) 8, 1),
+        CO_WR_REPEATER((byte) 9, 3),
+        CO_RD_REPEATER((byte) 10, 1),
+        CO_RD_SECUREDEVICE_PSK((byte) 0x22, 1),
+        CO_RD_DUTYCYCLE_LIMIT((byte) 0x23, 1),
+        CO_GET_FREQUENCY_INFO((byte) 0x25, 1);
 
+        private byte value;
+        private int dataLength;
+
+        CCMessageType(byte value, int dataLength) {
+            this.value = value;
+            this.dataLength = dataLength;
+        }
+
+        public byte getValue() {
+            return this.value;
+        }
+
+        public int getDataLength() {
+            return dataLength;
+        }
+    }
+
+    private CCMessageType type;
+
+    public CCMessage(CCMessageType type) {
+        this(type, new byte[] { type.getValue() });
+    }
+
+    public CCMessage(CCMessageType type, byte[] payload) {
+        super(type.getDataLength(), 0, ESPPacketType.COMMON_COMMAND, payload);
+
+        this.type = type;
+    }
+
+    public CCMessageType getCCMessageType() {
+        return type;
     }
 }

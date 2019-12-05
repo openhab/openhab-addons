@@ -23,8 +23,9 @@ import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
  *
  * @author Daniel Weber - Initial contribution
  */
-public class ERP1Message extends ESP3Packet {
+public class ERP1Message extends BasePacket {
 
+    // these are just ESP3 RORGs, ESP2 ORGs are converted by ESP2PacketConverter
     public enum RORG {
         Unknown((byte) 0x00, 0),
         RPS((byte) 0xF6, 1),
@@ -62,14 +63,10 @@ public class ERP1Message extends ESP3Packet {
         }
     }
 
-    protected RORG rorg;
+    RORG rorg;
 
     byte[] senderId;
     boolean teachIn;
-
-    public ERP1Message() {
-        super.setPacketType(ESPPacketType.RADIO_ERP1);
-    }
 
     public ERP1Message(int dataLength, int optionalDataLength, byte[] payload) {
         super(dataLength, optionalDataLength, ESPPacketType.RADIO_ERP1, payload);
@@ -123,7 +120,7 @@ public class ERP1Message extends ESP3Packet {
         return rorg;
     }
 
-    public final byte[] getSenderId() {
+    public byte[] getSenderId() {
         return senderId;
     }
 

@@ -13,6 +13,7 @@
 package org.openhab.binding.enocean.internal.eep.A5_38;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_DIMMER;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
 
 import java.util.function.Function;
 
@@ -62,20 +63,20 @@ public class A5_38_08_Dimming extends _4BSMessage {
                 if (outputCommand instanceof DecimalType) {
                     dimmValue = ((DecimalType) outputCommand).byteValue();
                 } else if (outputCommand instanceof OnOffType) {
-                    dimmValue = ((OnOffType) outputCommand == OnOffType.ON) ? Switch100Percent : Zero;
+                    dimmValue = ((OnOffType) outputCommand == OnOffType.ON) ? Switch100Percent : ZERO;
                 } else if (outputCommand instanceof IncreaseDecreaseType) {
                     dimmValue = ((IncreaseDecreaseType) outputCommand == IncreaseDecreaseType.INCREASE)
                             ? Switch100Percent
-                            : Zero;
+                            : ZERO;
                 } else if (outputCommand instanceof UpDownType) {
-                    dimmValue = ((UpDownType) outputCommand == UpDownType.UP) ? Switch100Percent : Zero;
+                    dimmValue = ((UpDownType) outputCommand == UpDownType.UP) ? Switch100Percent : ZERO;
                 } else {
                     throw new IllegalArgumentException(outputCommand.toFullString() + " is no valid dimming command.");
                 }
 
                 EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
 
-                byte storeByte = 0x00; // "Store final value" (standard) vs. "block value" (Eltako)
+                byte storeByte = ZERO; // "Store final value" (standard) vs. "block value" (Eltako)
 
                 if (!c.eltakoDimmer) {
                     dimmValue *= 2.55; // 0-100% = 0-255
@@ -90,7 +91,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
                 }
 
                 byte rampingTime = Integer.valueOf(c.rampingTime).byteValue();
-                byte switchingCommand = (dimmValue == Zero) ? SwitchOff : SwitchOn;
+                byte switchingCommand = (dimmValue == ZERO) ? SwitchOff : SwitchOn;
 
                 setData(CommandId, dimmValue, rampingTime, (byte) (TeachInBit | storeByte | switchingCommand));
 
