@@ -416,6 +416,8 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
                 DatagramChannel channelV4 = createBoundDataGramChannelOrNull(StandardProtocolFamily.INET);
                 DatagramChannel channelV6 = createBoundDataGramChannelOrNull(StandardProtocolFamily.INET6)) {
 
+            // Set global config to thread local config. Otherwise upnpAnnouncementThreadRunning() will report wrong results.
+            config = threadContext;
             threadContext.asyncIOselector = selector;
 
             for (InetAddress address : cs.getDiscoveryIps()) {
