@@ -298,7 +298,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
             case AQIL:
                 return data.getLightLevel();
             case DDP:
-                return data.getDisplayIndex() == 0 ? OnOffType.OFF : OnOffType.ON;
+                return Integer.toString(data.getDisplayIndex());
             case UIL:
                 return data.getButtons() == 0 ? OnOffType.OFF : OnOffType.ON;
             case POWER:

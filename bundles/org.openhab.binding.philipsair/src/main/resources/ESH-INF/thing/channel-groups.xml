@@ -23,7 +23,7 @@
 			<channel id="dtrs" typeId="dtrs" />
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="controls-hum">
+	<channel-group-type id="controls-adv">
 		<label>Controls</label>
 		<channels>
 			<channel id="pwr" typeId="pwr" />

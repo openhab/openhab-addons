@@ -46,9 +46,15 @@
 		<state pattern="%s" />
 	</channel-type>
 	<channel-type id="ddp">
-		<item-type>Switch</item-type>
-		<label>Used index</label>
-		<description>USe PM2.5 index</description>
+		<item-type>String</item-type>
+		<label>Displayed index</label>
+		<description>Display PM2.5 index or Allergen Index</description>
+		<state readOnly="false" pattern="%s">
+			<options>
+				<option value="1">PM2.5</option>
+				<option value="0">Allergen</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="aqil">
 		<item-type>Number</item-type>
