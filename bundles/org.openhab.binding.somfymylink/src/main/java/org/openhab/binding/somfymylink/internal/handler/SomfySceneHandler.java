@@ -66,12 +66,14 @@ public class SomfySceneHandler extends BaseThingHandler {
 
     protected SomfyMyLinkBridgeHandler getBridgeHandler() {
         Bridge bridge = this.getBridge();
-        if (bridge == null)
+        if (bridge == null) {
             throw new SomfyMyLinkException("No bridge was found");
+        }
 
         BridgeHandler handler = bridge.getHandler();
-        if (handler == null)
+        if (handler == null) {
             throw new SomfyMyLinkException("No handler was found");
+        }
 
         return (SomfyMyLinkBridgeHandler) handler;
     }

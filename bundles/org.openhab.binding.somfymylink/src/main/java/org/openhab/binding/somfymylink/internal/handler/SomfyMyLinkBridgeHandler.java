@@ -446,8 +446,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private Socket getConnection() throws UnknownHostException, IOException {
-        if (config == null)
+        if (config == null) {
             throw new SomfyMyLinkException("Config not setup correctly");
+        }
 
         logger.debug("Getting connection to mylink on:" + config.ipAddress + " Post: " + MYLINK_PORT);
         String myLinkAddress = config.ipAddress;
@@ -457,8 +458,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private String buildShadeCommand(String method, String targetId) {
-        if (config == null && StringUtils.isEmpty(config.systemId))
+        if (config == null && StringUtils.isEmpty(config.systemId)) {
             throw new SomfyMyLinkException("Config not setup correctly");
+        }
 
         int randomNum = ThreadLocalRandom.current().nextInt(1, 1000);
 
@@ -472,8 +474,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private String buildSceneCommand(String method, Integer sceneId) {
-        if (config == null && StringUtils.isEmpty(config.systemId))
+        if (config == null && StringUtils.isEmpty(config.systemId)) {
             throw new SomfyMyLinkException("Config not setup correctly");
+        }
 
         int randomNum = ThreadLocalRandom.current().nextInt(1, 1000);
 
