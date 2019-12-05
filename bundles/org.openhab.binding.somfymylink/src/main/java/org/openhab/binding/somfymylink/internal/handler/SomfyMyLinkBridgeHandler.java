@@ -53,6 +53,7 @@ import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkScene;
 import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkScenesResponse;
 import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkShade;
 import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkShadesResponse;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +134,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
 
         if (validConfiguration(config)) {
-            this.discoveryServiceRegistration = this.bundleContext.registerService(DiscoveryService.class, this.discovery, null);
+            this.discoveryServiceRegistration = FrameworkUtil.getBundle(SomfyMyLinkBridgeHandler.class).getBundleContext().registerService(DiscoveryService.class, this.discovery, null);
             this.discovery.activate(null);
 
             // kick off the bridge connection process
