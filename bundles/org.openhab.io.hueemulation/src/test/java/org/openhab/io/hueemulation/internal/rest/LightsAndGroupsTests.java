@@ -127,6 +127,17 @@ public class LightsAndGroupsTests {
     }
 
     @Test
+    public void addDeviceAsGroupSwitchableByTag() {
+        GroupItem item = new GroupItem("group1", new SwitchItem("switch1"));
+        item.addTag("Switchable");
+        item.addTag("Huelight");
+        itemRegistry.add(item);
+        HueLightEntry device = cs.ds.lights.get(cs.mapItemUIDtoHueID(item));
+        assertThat(device.item, is(item));
+        assertThat(device.state, is(instanceOf(HueStatePlug.class)));
+    }
+
+    @Test
     public void addGroupWithoutTypeByTag() {
         GroupItem item = new GroupItem("group1", null);
         item.addTag("Switchable");
