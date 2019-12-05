@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.telegram.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -19,24 +22,26 @@ import java.util.List;
  *
  * @author Jens Runge - Initial contribution
  */
+@NonNullByDefault
 public class TelegramConfiguration {
 
     /**
      * Sample configuration parameter. Replace with your own.
      */
-    private String botUsername, botToken;
-    private List<String> chatIds;
-    private String parseMode;
+    private @Nullable String botUsername;
+    private @Nullable String botToken;
+    private @Nullable List<String> chatIds;
+    private String parseMode = "";
 
-    public String getBotUsername() {
+    public @Nullable String getBotUsername() {
         return botUsername;
     }
 
-    public String getBotToken() {
+    public @Nullable String getBotToken() {
         return botToken;
     }
 
-    public List<String> getChatIds() {
+    public @Nullable List<String> getChatIds() {
         return chatIds;
     }
 
