@@ -163,7 +163,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         initChannels(callback, "sensors#pm25:Number", "control#pwr:Switch", "control#om:String", "control#cl:Switch",
                 "control-ui#aqil:Number", "control-ui#uil:Switch", "control#dt:Number", "control#dtrs:Number",
-                "control#mode:String", "sensors#iaql:Number", "sensors#aqit:Number", "control-ui#ddp:Switch",
+                "control#mode:String", "sensors#iaql:Number", "sensors#aqit:Number", "control-ui#ddp:String",
                 "err:Number");
         when(thing.getConfiguration()).thenReturn(config);
         ThingUID thingUID = new ThingUID("philipsair:ac2889_10:1");
@@ -223,7 +223,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         assertThat(stateCaptor.getAllValues().get(8), instanceOf(StringType.class)); // mode
         assertThat(stateCaptor.getAllValues().get(9), instanceOf(DecimalType.class)); // iaql
         assertThat(stateCaptor.getAllValues().get(10), instanceOf(DecimalType.class)); // aqit
-        assertThat(stateCaptor.getAllValues().get(11), instanceOf(OnOffType.class)); // ddp
+        assertThat(stateCaptor.getAllValues().get(11), instanceOf(StringType.class)); // ddp
         assertThat(stateCaptor.getAllValues().get(12), instanceOf(DecimalType.class)); // err
 
         DecimalType pm25State = (DecimalType) stateCaptor.getAllValues().get(0);
@@ -238,7 +238,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         StringType modeState = (StringType) stateCaptor.getAllValues().get(8);
         DecimalType iaqlState = (DecimalType) stateCaptor.getAllValues().get(9);
         DecimalType aqitState = (DecimalType) stateCaptor.getAllValues().get(10);
-        OnOffType ddpState = (OnOffType) stateCaptor.getAllValues().get(11);
+        StringType ddpState = (StringType) stateCaptor.getAllValues().get(11);
         DecimalType errState = (DecimalType) stateCaptor.getAllValues().get(12);
 
         assertThat(pm25State.intValue(), is(8));
@@ -252,7 +252,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         assertThat(modeState, equalTo("P"));
         assertThat(iaqlState.intValue(), is(2));
         assertThat(aqitState.intValue(), is(4));
-        assertThat(ddpState, is(OnOffType.ON));
+        assertThat(ddpState, is("1"));
         assertThat(errState.intValue(), is(0));
     }
 
@@ -351,8 +351,8 @@ public class PhilipsAirHandlerTest extends JavaTest {
     @Test
     public void testSendCommandDDP() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:ddp");
-        Channel channel = ChannelBuilder.create(channelUIDpwr, "Switch").build();
-        sendCommandTemplate(channel, OnOffType.OFF, OnOffType.ON, OnOffType.OFF, content2,
+        Channel channel = ChannelBuilder.create(channelUIDpwr, "String").build();
+        sendCommandTemplate(channel, new StringType("0"), new StringType("1"), new StringType("0"), content2,
                 "NSunLG88Rv4F29ePgZXESF0Cu90yrWvFoOn5uD2TwNYHDR47mEfhfzFJsIMnvsKz3yHUZewYZZ2ZCHf3hn7B/skyGWNy5j4r0JikJg4sVfrwKFNrsGX4BXi/EDX0qXbmwnVMa5mgUAo/t5c6H2UkkChssPrXkbWuLxf3wm4QU80=");
     }
 
