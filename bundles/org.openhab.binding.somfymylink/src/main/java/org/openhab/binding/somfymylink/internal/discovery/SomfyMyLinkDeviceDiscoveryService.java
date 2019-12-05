@@ -104,7 +104,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
                     try {
                         discoverDevices();
                     } catch (SomfyMyLinkException e) {
-                        logger.info("Error scanning for devices: " + e.getMessage(), e);
+                        logger.info("Error scanning for devices: {}", e.getMessage(), e);
 
                         if (scanListener != null) {
                             scanListener.onErrorOccurred(e);
