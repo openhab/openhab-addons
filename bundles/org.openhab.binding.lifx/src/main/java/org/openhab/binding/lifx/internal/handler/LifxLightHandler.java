@@ -407,6 +407,9 @@ public class LifxLightHandler extends BaseThingHandler {
 
     private Product getProduct() {
         Object propertyValue = getThing().getProperties().get(LifxBindingConstants.PROPERTY_PRODUCT_ID);
+        if (propertyValue == null) {
+            return Product.getLikelyProduct(getThing().getThingTypeUID());
+        }
         try {
             // Without first conversion to double, on a very first thing creation from discovery inbox,
             // the product type is incorrectly parsed, as framework passed it as a floating point number
