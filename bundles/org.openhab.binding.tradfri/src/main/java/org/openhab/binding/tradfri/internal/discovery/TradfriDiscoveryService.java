@@ -57,7 +57,7 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
             "FLOALT panel WS 30x30", "FLOALT panel WS 60x60", "FLOALT panel WS 30x90",
             "TRADFRI bulb E12 WS opal 400lm" };
 
-    private static final String COLOR_MODELS_IDENTIFIER = "CWS";
+    private static final String[] COLOR_MODEL_IDENTIFIER_HINTS = new String[] { "CWS", " C/WS " };
 
     public TradfriDiscoveryService(TradfriGatewayHandler bridgeHandler) {
         super(Stream.concat(SUPPORTED_LIGHT_TYPES_UIDS.stream(), SUPPORTED_CONTROLLER_TYPES_UIDS.stream())
@@ -108,7 +108,7 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
                     // As the protocol does not distinguishes between color and full-color lights,
                     // we check if the "CWS" identifier is given in the model name
                     ThingTypeUID thingType = null;
-                    if (model != null && model.contains(COLOR_MODELS_IDENTIFIER)) {
+                    if (model != null && Arrays.stream(COLOR_MODEL_IDENTIFIER_HINTS).anyMatch(model::contains)) {
                         thingType = THING_TYPE_COLOR_LIGHT;
                     }
                     if (thingType == null && //
