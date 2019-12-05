@@ -5,9 +5,5 @@
     <feature name="openhab-binding-telegram" description="Telegram Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.telegram/${project.version}</bundle>
-        <bundle start-level="80">wrap:mvn:com.github.pengrad/java-telegram-bot-api/4.4.0</bundle>
-        <bundle start-level="80">wrap:mvn:com.squareup.okhttp3/okhttp/3.12.3</bundle>
-        <bundle start-level="80">wrap:mvn:com.squareup.okio/okio/1.15.0</bundle>
-        <bundle start-level="80">wrap:mvn:com.squareup.okhttp3/logging-interceptor/3.12.3</bundle>        
     </feature>
 </features>

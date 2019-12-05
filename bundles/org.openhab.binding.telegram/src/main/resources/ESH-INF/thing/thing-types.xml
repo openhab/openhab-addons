@@ -23,8 +23,8 @@
 				<description>Enter the bot token you received from the "BotFather".</description>
 			</parameter>
 			<parameter name="chatIds" type="text" required="true" multiple="true">
-				<label>Chat Ids</label>
-				<description>Enter your chat id. Only messages from this id will be send to openHAB.</description>
+				<label>Chat Id(s)</label>
+				<description>Enter your chat id(s). Only messages from this id(s) will be send to openHAB.</description>
 			</parameter>
 			<parameter name="parseMode" type="text" required="false">
 				<label>Parse Mode</label>
@@ -33,10 +33,10 @@
 					<option value="HTML">HTML</option>
 					<option value="Markdown">Markdown</option>
 				</options>
+				<default></default>
 				<description>Support for formatted messages, values: Markdown or HTML. Default: no formatting is used.</description>
 			</parameter>
 		</config-description>
-
 	</thing-type>
 
 	<channel-type id="lastMessageText">
