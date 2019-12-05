@@ -34,10 +34,12 @@ public class BroadlinkBindingConstants {
 
     // List of all Channel ids
     public static final String ROOM_TEMPERATURE = "roomtemperature";
+    public static final String ROOM_TEMPERATURE_EXTERNAL_SENSOR = "roomtemperatureexternalsensor";
     public static final String SETPOINT = "setpoint";
     public static final String POWER = "power";
     public static final String MODE = "mode";
-    public static final String TEMPTERATURE_OFFSET = "temperatureoffset";
+    public static final String SENSOR = "sensor";
+    public static final String TEMPERATURE_OFFSET = "temperatureoffset";
     public static final String ACTIVE = "active";
 
     public static final String AIR_QUALITY = "airquality";
@@ -53,5 +55,7 @@ public class BroadlinkBindingConstants {
 
     public static final String MODE_AUTO = "auto";
     public static final String MODE_MANUAL = "manual";
+    public static final String SENSOR_INTERNAL = "internal";
+    public static final String SENSOR_EXTERNAL = "external";
 
 }

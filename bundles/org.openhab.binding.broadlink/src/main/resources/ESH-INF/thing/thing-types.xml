@@ -12,7 +12,9 @@
 		<channels>
 			<channel id="power" typeId="power" />
 			<channel id="mode" typeId="mode" />
+			<channel id="sensor" typeId="sensor" />
 			<channel id="roomtemperature" typeId="roomtemperature" />
+			<channel id="roomtemperatureexternalsensor" typeId="roomtemperatureexternalsensor" />
 			<channel id="active" typeId="active" />
 			<channel id="setpoint" typeId="setpoint" />
 			<channel id="temperatureoffset" typeId="temperatureoffset" />
@@ -29,7 +31,9 @@
 		<channels>
 			<channel id="power" typeId="power" />
 			<channel id="mode" typeId="mode" />
+			<channel id="sensor" typeId="sensor" />
 			<channel id="roomtemperature" typeId="roomtemperature" />
+			<channel id="roomtemperatureexternalsensor" typeId="roomtemperatureexternalsensor" />
 			<channel id="active" typeId="active" />
 			<channel id="setpoint" typeId="setpoint" />
 			<channel id="temperatureoffset" typeId="temperatureoffset" />
@@ -73,6 +77,17 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="sensor">
+		<item-type>String</item-type>
+		<label>Sensor</label>
+		<description>The sensor (internal/external) used for triggering the thermostat</description>
+		<state>
+			<options>
+				<option value="INTERNAL">internal</option>
+				<option value="EXTERNAL">external</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="active">
 		<item-type>Switch</item-type>
 		<label>Active</label>
@@ -83,6 +98,13 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Room Temperature</label>
 		<description>Room temperature, measured directly at the device</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="roomtemperatureexternalsensor">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temperature external sensor</label>
+		<description>Room temperature, measured by the external sensor</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
