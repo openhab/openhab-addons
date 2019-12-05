@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -124,7 +124,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     }
 
     private void discoverDevices() throws SomfyMyLinkException {
-        if(this.mylinkHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+        if (this.mylinkHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("Skipping device discover as bridge is {}", this.mylinkHandler.getThing().getStatus());
             return;
         }
@@ -136,7 +136,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
             String id = shade.getTargetID();
             String label = "Somfy Shade " + shade.getName();
 
-            if(id != null) {
+            if (id != null) {
                 logger.info("Adding device {}", id);
                 notifyShadeDiscovery(THING_TYPE_SHADE, id, label);
             }
@@ -148,7 +148,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
             String id = scene.getTargetID();
             String label = "Somfy Scene " + scene.getName();
 
-            if(id != null) {
+            if (id != null) {
                 logger.info("Adding device {}", id);
                 notifySceneDiscovery(THING_TYPE_SCENE, id, label);
             }

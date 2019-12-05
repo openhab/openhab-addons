@@ -31,4 +31,3 @@ public class SomfyMyLinkErrorResponse extends SomfyMyLinkResponseBase {
         return error;
     }
 }
-

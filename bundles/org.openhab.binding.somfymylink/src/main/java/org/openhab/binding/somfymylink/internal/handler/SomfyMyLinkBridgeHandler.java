@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.somfymylink.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +31,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -57,8 +58,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -101,7 +100,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     // Gson & parser
     private final Gson gson = new Gson();
 
-    public SomfyMyLinkBridgeHandler(Bridge bridge, @Nullable SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider) {
+    public SomfyMyLinkBridgeHandler(Bridge bridge,
+            @Nullable SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider) {
         super(bridge);
 
         this.discovery = new SomfyMyLinkDeviceDiscoveryService(this);
@@ -134,7 +134,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
 
         if (validConfiguration(config)) {
-            this.discoveryServiceRegistration = FrameworkUtil.getBundle(SomfyMyLinkBridgeHandler.class).getBundleContext().registerService(DiscoveryService.class, this.discovery, null);
+            this.discoveryServiceRegistration = FrameworkUtil.getBundle(SomfyMyLinkBridgeHandler.class)
+                    .getBundleContext().registerService(DiscoveryService.class, this.discovery, null);
             this.discovery.activate(null);
 
             // kick off the bridge connection process
@@ -163,7 +164,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private void connect() {
         try {
-            if(config == null) {
+            if (config == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink config not specified");
                 return;
             }
@@ -175,9 +176,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
             // start the keepalive process
             ensureKeepAlive();
-            
+
             logger.debug("Connecting to mylink at {}", config.ipAddress);
-            
+
             // send a ping
             sendPing();
 
@@ -190,11 +191,11 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void ensureKeepAlive()
-    {
-        if(heartbeat == null) {
+    private void ensureKeepAlive() {
+        if (heartbeat == null) {
             logger.debug("Starting keepalive job in {} min, every {} min", HEARTBEAT_MINUTES, HEARTBEAT_MINUTES);
-            //heartbeat = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, HEARTBEAT_MINUTES, HEARTBEAT_MINUTES, TimeUnit.MINUTES);
+            // heartbeat = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, HEARTBEAT_MINUTES, HEARTBEAT_MINUTES,
+            // TimeUnit.MINUTES);
 
             heartbeat = this.scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
@@ -220,7 +221,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         try {
             logger.debug("Keep alive triggered");
 
-            if(getThing().getStatus() != ThingStatus.ONLINE) {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
                 // try connecting
                 logger.debug("Bridge offline, trying to connect");
                 connect();
@@ -238,7 +239,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     public SomfyMyLinkShade[] getShadeList() throws SomfyMyLinkException {
         String command = buildShadeCommand("mylink.status.info", "*.*");
 
-        SomfyMyLinkShadesResponse response = (SomfyMyLinkShadesResponse) sendCommandWithResponse(command, SomfyMyLinkShadesResponse.class);
+        SomfyMyLinkShadesResponse response = (SomfyMyLinkShadesResponse) sendCommandWithResponse(command,
+                SomfyMyLinkShadesResponse.class);
 
         if (response != null) {
             return response.getResult();
@@ -250,7 +252,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     public void sendPing() throws SomfyMyLinkException {
         String command = buildShadeCommand("mylink.status.ping", "*.*");
 
-        SomfyMyLinkPingResponse response = (SomfyMyLinkPingResponse) sendCommandWithResponse(command, SomfyMyLinkPingResponse.class);
+        SomfyMyLinkPingResponse response = (SomfyMyLinkPingResponse) sendCommandWithResponse(command,
+                SomfyMyLinkPingResponse.class);
 
         if (response != null) {
             return;
@@ -262,7 +265,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     public SomfyMyLinkScene[] getSceneList() throws SomfyMyLinkException {
         String command = buildShadeCommand("mylink.scene.list", "*.*");
 
-        SomfyMyLinkScenesResponse response = (SomfyMyLinkScenesResponse) sendCommandWithResponse(command, SomfyMyLinkScenesResponse.class);
+        SomfyMyLinkScenesResponse response = (SomfyMyLinkScenesResponse) sendCommandWithResponse(command,
+                SomfyMyLinkScenesResponse.class);
 
         if (response != null) {
             List<StateOption> options = new ArrayList<>();
@@ -272,7 +276,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
             logger.debug("Setting {} options on bridge", options.size());
 
-            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), SomfyMyLinkBindingConstants.CHANNEL_SCENES), options);
+            stateDescriptionProvider.setStateOptions(
+                    new ChannelUID(getThing().getUID(), SomfyMyLinkBindingConstants.CHANNEL_SCENES), options);
 
             return response.getResult();
         }
@@ -321,7 +326,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private void sendCommand(String command) throws SomfyMyLinkException {
-        synchronized(CONNECTION_LOCK) {
+        synchronized (CONNECTION_LOCK) {
             try {
                 logger.debug("Sending: {}", command);
                 Socket socket = getConnection();
@@ -356,14 +361,16 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 logger.warn("Problem sending command to mylink: {} Message: {}", command, e.getMessage());
                 throw new SomfyMyLinkException("Problem sending command to mylink", e);
             } catch (InterruptedException e) {
-                logger.debug("Interrupted while waiting after sending command to mylink: {} Message: {}", command, e.getMessage());
+                logger.debug("Interrupted while waiting after sending command to mylink: {} Message: {}", command,
+                        e.getMessage());
             }
         }
     }
-    
+
     @Nullable
-    private SomfyMyLinkResponseBase sendCommandWithResponse(String command, Type responseType) throws SomfyMyLinkException {
-        synchronized(CONNECTION_LOCK) {
+    private SomfyMyLinkResponseBase sendCommandWithResponse(String command, Type responseType)
+            throws SomfyMyLinkException {
+        synchronized (CONNECTION_LOCK) {
             try {
                 logger.debug("Sending: {}", command);
                 Socket socket = getConnection();
@@ -385,20 +392,22 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     while (((readCount = in.read(readBuff)) != -1)) {
                         logger.debug("Got response. Len: " + readCount);
                         message += new String(readBuff, 0, readCount);
-                        
+
                         try {
                             logger.debug("Got message: " + message);
-                            
+
                             JsonParser parser = new JsonParser();
                             JsonObject o = parser.parse(message).getAsJsonObject();
 
-                            if(o.has("error")) {
-                                SomfyMyLinkErrorResponse errorResponse = gson.fromJson(message, SomfyMyLinkErrorResponse.class);
+                            if (o.has("error")) {
+                                SomfyMyLinkErrorResponse errorResponse = gson.fromJson(message,
+                                        SomfyMyLinkErrorResponse.class);
 
                                 logger.info("Error communicating with mylink: {}", errorResponse.error.message);
-                                throw new SomfyMyLinkException("Error communicating with mylink: " + errorResponse.error.message);
+                                throw new SomfyMyLinkException(
+                                        "Error communicating with mylink: " + errorResponse.error.message);
                             }
-                            
+
                             SomfyMyLinkResponseBase data = gson.fromJson(message, responseType);
 
                             return data;
@@ -434,14 +443,16 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 logger.info("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
                 throw new SomfyMyLinkException("Problem sending command to mylink", e);
             } catch (InterruptedException e) {
-                logger.debug("Interrupted while waiting after sending command to mylink: " + command + "Message: " + e.getMessage());
+                logger.debug("Interrupted while waiting after sending command to mylink: " + command + "Message: "
+                        + e.getMessage());
                 return null;
             }
         }
     }
 
     private Socket getConnection() throws UnknownHostException, IOException {
-        if(config == null) throw new SomfyMyLinkException("Config not setup correctly");
+        if (config == null)
+            throw new SomfyMyLinkException("Config not setup correctly");
 
         logger.debug("Getting connection to mylink on:" + config.ipAddress + " Post: " + MYLINK_PORT);
         String myLinkAddress = config.ipAddress;
@@ -451,24 +462,28 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private String buildShadeCommand(String method, String targetId) {
-        if(config == null && StringUtils.isEmpty(config.systemId)) throw new SomfyMyLinkException("Config not setup correctly");
+        if (config == null && StringUtils.isEmpty(config.systemId))
+            throw new SomfyMyLinkException("Config not setup correctly");
 
         int randomNum = ThreadLocalRandom.current().nextInt(1, 1000);
 
         // quote and fix '-' back to '.'
         String tId = String.format("\"%1$s\"", targetId).replace('-', '.');
 
-        String myLinkCommand = String.format(MYLINK_COMMAND_TEMPLATE, randomNum, method, "targetID", tId, config.systemId); 
+        String myLinkCommand = String.format(MYLINK_COMMAND_TEMPLATE, randomNum, method, "targetID", tId,
+                config.systemId);
 
         return myLinkCommand;
     }
 
     private String buildSceneCommand(String method, Integer sceneId) {
-        if(config == null && StringUtils.isEmpty(config.systemId)) throw new SomfyMyLinkException("Config not setup correctly");
+        if (config == null && StringUtils.isEmpty(config.systemId))
+            throw new SomfyMyLinkException("Config not setup correctly");
 
         int randomNum = ThreadLocalRandom.current().nextInt(1, 1000);
 
-        String myLinkCommand = String.format(MYLINK_COMMAND_TEMPLATE, randomNum, method, "sceneId", sceneId, config.systemId); 
+        String myLinkCommand = String.format(MYLINK_COMMAND_TEMPLATE, randomNum, method, "sceneId", sceneId,
+                config.systemId);
 
         return myLinkCommand;
     }

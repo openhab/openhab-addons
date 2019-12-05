@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyMyLinkException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
-    
+
     public SomfyMyLinkException() {
         super();
     }
