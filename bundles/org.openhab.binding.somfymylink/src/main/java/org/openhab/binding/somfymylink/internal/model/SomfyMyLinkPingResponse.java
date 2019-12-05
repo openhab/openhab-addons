@@ -14,12 +14,6 @@ package org.openhab.binding.somfymylink.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/**
- * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are
- * used across the whole binding.
- *
- * @author Chris Johnson - Initial contribution
- */
 @NonNullByDefault
 public class SomfyMyLinkPingResponse extends SomfyMyLinkResponseBase {
 

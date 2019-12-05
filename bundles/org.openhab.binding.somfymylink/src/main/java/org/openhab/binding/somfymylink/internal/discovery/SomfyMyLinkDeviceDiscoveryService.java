@@ -39,12 +39,6 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are
- * used across the whole binding.
- *
- * @author Chris Johnson - Initial contribution
- */
 @NonNullByDefault
 public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService {
 

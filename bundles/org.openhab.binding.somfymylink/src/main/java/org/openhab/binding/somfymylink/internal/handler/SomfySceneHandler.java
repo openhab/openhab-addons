@@ -26,12 +26,6 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 
-/**
- * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are
- * used across the whole binding.
- *
- * @author Chris Johnson - Initial contribution
- */
 @NonNullByDefault
 public class SomfySceneHandler extends BaseThingHandler {
 

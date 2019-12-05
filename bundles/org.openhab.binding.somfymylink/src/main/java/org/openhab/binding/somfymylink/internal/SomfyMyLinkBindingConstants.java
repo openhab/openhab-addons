@@ -15,12 +15,6 @@ package org.openhab.binding.somfymylink.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
-/**
- * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are
- * used across the whole binding.
- *
- * @author Chris Johnson - Initial contribution
- */
 @NonNullByDefault
 public class SomfyMyLinkBindingConstants {
 
