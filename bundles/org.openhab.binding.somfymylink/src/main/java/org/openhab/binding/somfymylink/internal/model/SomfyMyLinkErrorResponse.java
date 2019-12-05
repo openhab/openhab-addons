@@ -26,8 +26,7 @@ public class SomfyMyLinkErrorResponse extends SomfyMyLinkResponseBase {
 
     public SomfyMyLinkError error = new SomfyMyLinkError();
 
-    @Nullable
-    public SomfyMyLinkError getError() {
+    public @Nullable SomfyMyLinkError getError() {
         return error;
     }
 }

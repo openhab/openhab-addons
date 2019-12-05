@@ -52,13 +52,11 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
 
     private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkDeviceDiscoveryService.class);
 
-    @Nullable
-    private ScheduledFuture<?> scanTask;
+    private @Nullable ScheduledFuture<?> scanTask;
 
     private SomfyMyLinkBridgeHandler mylinkHandler;
 
-    @Nullable
-    private ScheduledFuture<?> discoveryJob;
+    private @Nullable ScheduledFuture<?> discoveryJob;
 
     public SomfyMyLinkDeviceDiscoveryService(SomfyMyLinkBridgeHandler mylinkHandler) throws IllegalArgumentException {
         super(SomfyMyLinkHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, 10);

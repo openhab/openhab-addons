@@ -24,19 +24,15 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class SomfyMyLinkShade {
 
-    @Nullable
-    private String targetID;
+    private @Nullable String targetID;
 
-    @Nullable
-    private String name;
+    private @Nullable String name;
 
-    @Nullable
-    public String getTargetID() {
+    public @Nullable String getTargetID() {
         return targetID != null ? targetID.replace('.', '-') : null;
     }
 
-    @Nullable
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 }

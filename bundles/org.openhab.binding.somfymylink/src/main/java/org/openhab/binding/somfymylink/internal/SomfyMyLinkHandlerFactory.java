@@ -49,8 +49,7 @@ public class SomfyMyLinkHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_SHADE, THING_TYPE_SCENE));
 
-    @Nullable
-    private SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider;
+    private @Nullable SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

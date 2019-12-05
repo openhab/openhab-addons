@@ -75,8 +75,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkBridgeHandler.class);
 
-    @Nullable
-    private SomfyMyLinkConfiguration config;
+    private @Nullable SomfyMyLinkConfiguration config;
 
     private static final int HEARTBEAT_MINUTES = 2;
     private static final int MYLINK_PORT = 44100;
@@ -86,16 +85,13 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private static final String MYLINK_COMMAND_TEMPLATE = "{\"id\": %1$s, \"method\": \"%2$s\",\"params\": {\"%3$s\": %4$s,\"auth\": \"%5$s\"}}";
 
-    @Nullable
-    private ScheduledFuture<?> heartbeat;
+    private @Nullable ScheduledFuture<?> heartbeat;
 
-    @Nullable
-    private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
+    private @Nullable ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
 
     private SomfyMyLinkDeviceDiscoveryService discovery;
 
-    @Nullable
-    private SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider;
+    private @Nullable SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider;
 
     // Gson & parser
     private final Gson gson = new Gson();
@@ -367,8 +363,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    @Nullable
-    private SomfyMyLinkResponseBase sendCommandWithResponse(String command, Type responseType)
+    private @Nullable SomfyMyLinkResponseBase sendCommandWithResponse(String command, Type responseType)
             throws SomfyMyLinkException {
         synchronized (CONNECTION_LOCK) {
             try {

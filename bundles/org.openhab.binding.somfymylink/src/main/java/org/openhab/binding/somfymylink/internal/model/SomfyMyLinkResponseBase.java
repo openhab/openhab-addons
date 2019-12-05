@@ -24,19 +24,15 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class SomfyMyLinkResponseBase {
 
-    @Nullable
-    public String jsonrpc;
+    public @Nullable String jsonrpc;
 
-    @Nullable
-    public String id;
+    public @Nullable String id;
 
-    @Nullable
-    public String getId() {
+    public @Nullable String getId() {
         return id;
     }
 
-    @Nullable
-    public String getJsonRpc() {
+    public @Nullable String getJsonRpc() {
         return jsonrpc;
     }
 }
