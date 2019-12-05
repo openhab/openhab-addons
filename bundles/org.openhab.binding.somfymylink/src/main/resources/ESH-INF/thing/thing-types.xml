@@ -14,8 +14,8 @@
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
-				<label>IP or Host Name</label>
-				<description>The IP or host name of the Somfy MyLink</description>
+				<label>IP or Hostname</label>
+				<description>The IP or hostname of the Somfy MyLink</description>
 			</parameter>
 			<parameter name="systemId" type="text">
 				<label>System Id</label>
@@ -66,7 +66,7 @@
 		<item-type>String</item-type>
 		<label>Scene List</label>
 		<description>Comma-separated list of scenes of form sceneId=sceneName</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="shadeControl">
