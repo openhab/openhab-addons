@@ -70,7 +70,7 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        // LGWebOS TVs only uses WEAK cipher suites, thus not using SSL.
+        // LGWebOS TVs only support WEAK cipher suites, thus not using SSL.
         // SslContextFactory sslContextFactory = new SslContextFactory(true);
         // sslContextFactory.addExcludeProtocols("tls/1.3");
 

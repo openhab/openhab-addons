@@ -54,18 +54,20 @@ public class NUTBindingConstants {
         SimpleUnitFormat.getInstance().label(VOLT_AMPERE, "VA");
     }
 
+    private static final String PARAMETER_PREFIX_UPS = "ups.";
+
     /**
      * Enum with nut names which value will be set a parameter on the thing.
      * These are values that don't change at all (e.g. type of ups) or not very often (e.g. firmware version).
      */
     public enum Parameters {
-        UPS_FIRMWARE("ups.firmware"),
-        UPS_FIRMWARE_AUX("ups.firmware.aux"),
-        UPS_ID("ups.id"),
-        UPS_MFR("ups.mfr"),
-        UPS_MFR_DATE("ups.mfr.date"),
-        UPS_MODEL("ups.model"),
-        UPS_SERIAL("usp.serial");
+        UPS_FIRMWARE(PARAMETER_PREFIX_UPS + "firmware"),
+        UPS_FIRMWARE_AUX(PARAMETER_PREFIX_UPS + "firmware.aux"),
+        UPS_ID(PARAMETER_PREFIX_UPS + "id"),
+        UPS_MFR(PARAMETER_PREFIX_UPS + "mfr"),
+        UPS_MFR_DATE(PARAMETER_PREFIX_UPS + "mfr.date"),
+        UPS_MODEL(PARAMETER_PREFIX_UPS + "model"),
+        UPS_SERIAL(PARAMETER_PREFIX_UPS + "serial");
 
         private final String nutName;
 

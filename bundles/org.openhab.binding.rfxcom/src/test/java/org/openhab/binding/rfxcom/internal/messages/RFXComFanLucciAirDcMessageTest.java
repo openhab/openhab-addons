@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN_LUCCI_DC;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.LUCCI_AIR_DC;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
@@ -20,15 +26,12 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
-import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN_LUCCI_DC;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.LUCCI_AIR_DC;
-
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComFanLucciAirDcMessageTest {
 
     @Test
@@ -48,16 +51,25 @@ public class RFXComFanLucciAirDcMessageTest {
 
     @Test
     public void testCommandString() throws RFXComException {
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("POWER"), UnDefType.UNDEF, null, StringType.valueOf("POWER"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("UP"), UnDefType.UNDEF, UpDownType.UP, StringType.valueOf("UP"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("DOWN"), UnDefType.UNDEF, UpDownType.DOWN, StringType.valueOf("DOWN"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("LIGHT"), OnOffType.ON, null, StringType.valueOf("LIGHT"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("REVERSE"), UnDefType.UNDEF, null, StringType.valueOf("REVERSE"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("NATURAL_FLOW"), UnDefType.UNDEF, null, StringType.valueOf("NATURAL_FLOW"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("PAIR"), UnDefType.UNDEF, null, StringType.valueOf("PAIR"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("POWER"), UnDefType.UNDEF, null,
+                StringType.valueOf("POWER"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("UP"), UnDefType.UNDEF, UpDownType.UP,
+                StringType.valueOf("UP"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("DOWN"), UnDefType.UNDEF, UpDownType.DOWN,
+                StringType.valueOf("DOWN"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("LIGHT"), OnOffType.ON, null,
+                StringType.valueOf("LIGHT"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("REVERSE"), UnDefType.UNDEF, null,
+                StringType.valueOf("REVERSE"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("NATURAL_FLOW"), UnDefType.UNDEF, null,
+                StringType.valueOf("NATURAL_FLOW"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("PAIR"), UnDefType.UNDEF, null,
+                StringType.valueOf("PAIR"));
     }
 
-    private void testCommand(String channel, State inputValue, State expectedLightCommand, State expectedFanSpeed, State expectedCommandString) throws RFXComException {
-        RFXComFanMessageTest.testCommand(LUCCI_AIR_DC, channel, inputValue, null, expectedLightCommand, expectedFanSpeed, expectedCommandString, FAN_LUCCI_DC);
+    private void testCommand(String channel, State inputValue, State expectedLightCommand,
+            @Nullable State expectedFanSpeed, State expectedCommandString) throws RFXComException {
+        RFXComFanMessageTest.testCommand(LUCCI_AIR_DC, channel, inputValue, null, expectedLightCommand,
+                expectedFanSpeed, expectedCommandString, FAN_LUCCI_DC);
     }
 }

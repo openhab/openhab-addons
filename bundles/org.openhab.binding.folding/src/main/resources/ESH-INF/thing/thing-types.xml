@@ -29,8 +29,8 @@
 				<description>Authentication password (leave empty for no p/w).</description>
 				<context>password</context>
 			</parameter>
-			<parameter name="polling" type="integer">
-				<label>Polling interval (s)</label>
+			<parameter name="polling" type="integer" unit="s">
+				<label>Polling Interval</label>
 				<description>Polling interval in seconds (0=polling disabled).</description>
 				<default>120</default>
 			</parameter>

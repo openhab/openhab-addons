@@ -22,6 +22,9 @@ import java.util.Collections;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.junit.Test;
 
+/**
+ * @author Jochen Klein - Initial contribution
+ */
 public class HaIDTests {
 
     @Test

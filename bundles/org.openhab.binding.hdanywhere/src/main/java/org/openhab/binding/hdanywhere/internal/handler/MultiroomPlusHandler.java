@@ -127,7 +127,7 @@ public class MultiroomPlusHandler extends BaseThingHandler {
                 try {
                     HttpUtil.executeUrl(httpMethod, url, null, null, null, timeout);
                 } catch (IOException e) {
-                    logger.error("Communication with device failed: {}", e);
+                    logger.error("Communication with device failed", e);
                 }
             }
         }

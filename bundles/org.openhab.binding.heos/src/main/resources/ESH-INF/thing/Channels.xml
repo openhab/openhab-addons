@@ -36,14 +36,14 @@
 	</channel-type>
 	<channel-type id="currentPosition" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Track position</label>
+		<label>Track Position</label>
 		<description>The current track position</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="duration" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Track duration</label>
+		<label>Track Duration</label>
 		<description>The overall duration of the track</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%.0f"></state>

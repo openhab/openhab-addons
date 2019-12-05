@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="RFXtrx315">
 		<label>RFXtrx315 USB 315MHz Transceiver</label>
@@ -8,28 +8,28 @@
 
 		<config-description>
 			<parameter name="bridgeId" type="text" required="true">
-				<label>Serial number</label>
+				<label>Serial Number</label>
 				<description>Serial number of the RFXCOM (FTDI) device</description>
 			</parameter>
 			<parameter name="disableDiscovery" type="boolean" required="true">
-				<label>Disable discovery of unknown devices</label>
+				<label>Disable Discovery of Unknown Devices</label>
 				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox enabling this will stop devices being added to your inbox.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="ignoreConfig" type="boolean">
-				<label>Skip transceiver configuration</label>
+				<label>Skip Transceiver Configuration</label>
 				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is
 					preconfigured e.g. via RFXcom Manager. When this is enabled, both set mode command and individual message
 					configurations are ignored.</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="setMode" type="text">
-				<label>RFXCOM transceiver mode</label>
+				<label>RFXCOM Transceiver Mode</label>
 				<description>RFXCOM transceiver set mode command. Command should be in hexadecimal string format and 28 characters
 					(14 bytes) long. If set mode command is given, individual message configurations are ignored.</description>
 			</parameter>
 			<parameter name="transceiverType" type="text">
-				<label>RFXCOM transceiver type</label>
+				<label>RFXCOM Transceiver Type</label>
 				<description>RFXCOM transceiver type.</description>
 				<default>315MHz</default>
 				<options>
@@ -38,22 +38,22 @@
 				</options>
 			</parameter>
 			<parameter name="transmitPower" type="integer" min="-18" max="10">
-				<label>Transmit power</label>
+				<label>Transmit Power</label>
 				<description>Transmit power in dBm, between -18dBm and +10dBm.</description>
 				<default>-18</default>
 			</parameter>
 			<parameter name="enableUndecoded" type="boolean">
-				<label>Undecoded messages</label>
+				<label>Undecoded Messages</label>
 				<description>Enable display of unencoded messages to RFXCOM transceiver.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableVisonic" type="boolean">
-				<label>Visonic messages</label>
+				<label>Visonic Messages</label>
 				<description>Enable Visonic messages to RFXCOM transceiver.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableX10" type="boolean">
-				<label>X10 messages</label>
+				<label>X10 Messages</label>
 				<description>Enable X10 messages to RFXCOM transceiver.</description>
 				<default>false</default>
 			</parameter>

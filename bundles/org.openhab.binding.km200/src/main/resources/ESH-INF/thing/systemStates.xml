@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="kmdevice" />
 		</supported-bridge-type-refs>
-		<label>System states</label>
+		<label>System States</label>
 		<description>This thing is representing the systems states.</description>
 		<properties>
 			<property name="root">#systemStates</property>

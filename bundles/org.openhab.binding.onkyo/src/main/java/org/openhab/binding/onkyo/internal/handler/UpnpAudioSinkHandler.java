@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
@@ -169,8 +170,13 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
     }
 
     @Override
-    public void process(AudioStream audioStream)
+    public void process(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
+        if (audioStream == null) {
+            stop();
+            return;
+        }
+
         String url = null;
         if (audioStream instanceof URLAudioStream) {
             // it is an external URL, the speaker can access it itself and play it.
@@ -191,6 +197,7 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
                 return;
             }
         }
+
         playMedia(url);
     }
 

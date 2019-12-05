@@ -23,12 +23,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.AbstractUID;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nikobus.internal.protocol.NikobusCommand;
 import org.openhab.binding.nikobus.internal.protocol.SwitchModuleGroup;
@@ -44,16 +48,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
     private static class ImpactedModule {
-        private final String address;
+        private final ThingUID thingUID;
         private final SwitchModuleGroup group;
 
-        ImpactedModule(String address, SwitchModuleGroup group) {
-            this.address = address;
+        ImpactedModule(ThingUID thingUID, SwitchModuleGroup group) {
+            this.thingUID = thingUID;
             this.group = group;
         }
 
-        public String getAddress() {
-            return address;
+        public ThingUID getThingUID() {
+            return thingUID;
         }
 
         public SwitchModuleGroup getGroup() {
@@ -62,12 +66,41 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
 
         @Override
         public String toString() {
-            return "'" + address + "'-" + group;
+            return "'" + thingUID + "'-" + group;
         }
     }
 
+    private static class ImpactedModuleUID extends AbstractUID {
+        ImpactedModuleUID(String uid) {
+            super(uid);
+        }
+
+        String getThingTypeId() {
+            return getSegment(0);
+        }
+
+        String getThingId() {
+            return getSegment(1);
+        }
+
+        SwitchModuleGroup getGroup() {
+            if (getSegment(2).equals("1")) {
+                return FIRST;
+            }
+            if (getSegment(2).equals("2")) {
+                return SECOND;
+            }
+            throw new IllegalArgumentException("Unexpected group found " + getSegment(2));
+        }
+
+        @Override
+        protected int getMinimalNumberOfSegments() {
+            return 3;
+        }
+
+    }
+
     private static final String END_OF_TRANSMISSION = "\r#E1";
-    private static final String MODULE_CHANNEL_PATTERN = "^[A-Z0-9]{4}-[12]$";
     private final Logger logger = LoggerFactory.getLogger(NikobusPushButtonHandler.class);
     private final List<ImpactedModule> impactedModules = Collections.synchronizedList(new ArrayList<>());
     private @Nullable Future<?> requestUpdateFuture;
@@ -78,26 +111,34 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
+
+        if (thing.getStatus() == ThingStatus.OFFLINE) {
+            return;
+        }
+
         impactedModules.clear();
 
-        String[] impactedModulesString = getConfig().get(CONFIG_IMPACTED_MODULES).toString().split(",");
-        for (String impactedModuleString : impactedModulesString) {
-            impactedModuleString = impactedModuleString.trim();
-            if (!impactedModuleString.matches(MODULE_CHANNEL_PATTERN)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unexpected impactedModules format found '" + impactedModuleString + "'");
-                return;
+        try {
+            ThingUID bridgeUID = thing.getBridgeUID();
+            if (bridgeUID == null) {
+                throw new IllegalArgumentException("Bridge does not exist!");
             }
 
-            String[] moduleInfo = impactedModuleString.split("-");
-            SwitchModuleGroup group = moduleInfo[1].equals("1") ? FIRST : SECOND;
-
-            impactedModules.add(new ImpactedModule(moduleInfo[0], group));
+            String[] impactedModulesString = getConfig().get(CONFIG_IMPACTED_MODULES).toString().split(",");
+            for (String impactedModuleString : impactedModulesString) {
+                ImpactedModuleUID impactedModuleUID = new ImpactedModuleUID(impactedModuleString.trim());
+                ThingTypeUID thingTypeUID = new ThingTypeUID(bridgeUID.getBindingId(),
+                        impactedModuleUID.getThingTypeId());
+                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, impactedModuleUID.getThingId());
+                impactedModules.add(new ImpactedModule(thingUID, impactedModuleUID.getGroup()));
+            }
+        } catch (RuntimeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
         }
 
         logger.debug("Impacted modules for {} = {}", thing.getUID(), impactedModules);
-
-        updateStatus(ThingStatus.UNKNOWN);
 
         NikobusPcLinkHandler pcLink = getPcLink();
         if (pcLink != null) {
@@ -149,25 +190,28 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
 
     private void update() {
         for (ImpactedModule module : impactedModules) {
-            NikobusSwitchModuleHandler switchModule = getSwitchModuleWithId(module.getAddress());
+            NikobusModuleHandler switchModule = getModuleWithId(module.getThingUID());
             if (switchModule != null) {
                 switchModule.requestStatus(module.getGroup());
             }
         }
     }
 
-    private @Nullable NikobusSwitchModuleHandler getSwitchModuleWithId(String id) {
+    private @Nullable NikobusModuleHandler getModuleWithId(ThingUID thingUID) {
         Bridge bridge = getBridge();
         if (bridge == null) {
             return null;
         }
 
-        for (Thing thing : bridge.getThings()) {
-            if (thing.getUID().getId().equals(id)) {
-                return (NikobusSwitchModuleHandler) thing.getHandler();
-            }
+        Thing thing = bridge.getThing(thingUID);
+        if (thing == null) {
+            return null;
         }
 
+        ThingHandler thingHandler = thing.getHandler();
+        if (thingHandler instanceof NikobusModuleHandler) {
+            return (NikobusModuleHandler) thingHandler;
+        }
         return null;
     }
 

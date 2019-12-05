@@ -12,7 +12,46 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.handler;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC_TRACK_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_ASCENDING_ALARM;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH_DEVICE_NAME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH_MAC;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_BASS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_MIDRANGE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_TREBLE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_IMAGE_URL;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_LAST_VOICE_COMMAND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_LENGTH;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_PROGRESS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_PROGRESS_TIME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MUSIC_PROVIDER_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_ALARM;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_MUSIC_ALARM;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_REMINDER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_TIMER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NOTIFICATION_VOLUME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAYER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_ALARM_SOUND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_MUSIC_VOICE_COMMAND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_ON_DEVICE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PROVIDER_DISPLAY_NAME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_RADIO;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_RADIO_STATION_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_REMIND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SHUFFLE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_START_COMMAND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_START_ROUTINE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SUBTITLE1;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SUBTITLE2;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TEXT_TO_SPEECH;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TEXT_TO_SPEECH_VOLUME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TITLE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_VOLUME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_SERIAL_NUMBER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.FLASH_BRIEFING_COMMAND_PREFIX;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -63,7 +102,7 @@ import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandler;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerAnnouncement;
-import org.openhab.binding.amazonechocontrol.internal.channelhandler.IAmazonThingHandler;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.IEchoThingHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.Description;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
@@ -99,7 +138,7 @@ import com.google.gson.Gson;
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler {
+public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private Gson gson;
@@ -686,10 +725,8 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             } else {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
-        } catch (IOException |
-
-                URISyntaxException e) {
-            logger.info("handleCommand fails: {}", e);
+        } catch (IOException | URISyntaxException e) {
+            logger.info("handleCommand fails", e);
         }
     }
 
@@ -719,7 +756,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                     connection.SetEqualizer(device, newEqualizerSetting);
                     return true;
                 } catch (HttpException | IOException | ConnectionException e) {
-                    logger.debug("Update equalizer failed {}", e);
+                    logger.debug("Update equalizer failed", e);
                     this.lastKnownEqualizer = null;
                 }
 
@@ -730,20 +767,36 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
 
     private void startTextToSpeech(Connection connection, Device device, String text)
             throws IOException, URISyntaxException {
+        Integer volume = null;
         if (textToSpeechVolume != 0) {
-            @Nullable
-            ScheduledFuture<?> oldIgnoreVolumeChange = this.ignoreVolumeChange;
-            if (oldIgnoreVolumeChange != null) {
-                oldIgnoreVolumeChange.cancel(false);
-            }
-            this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 2000, TimeUnit.MILLISECONDS);
+            startIgnoreVolumeChange();
+            volume = textToSpeechVolume;
         }
         if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
             String bodyText = text.replaceAll("<[^>]+>", "");
-            connection.sendAnnouncement(device, text, bodyText, null, textToSpeechVolume, lastKnownVolume);
+            connection.sendAnnouncement(device, text, bodyText, null, volume, lastKnownVolume);
         } else {
-            connection.textToSpeech(device, text, textToSpeechVolume, lastKnownVolume);
+            connection.textToSpeech(device, text, volume, lastKnownVolume);
         }
+    }
+
+    @Override
+    public void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
+            @Nullable Integer volume) throws IOException, URISyntaxException {
+        Connection connection = this.findConnection();
+        if (connection == null) {
+            return;
+        }
+        if (volume == null && textToSpeechVolume != 0) {
+            volume = textToSpeechVolume;
+        }
+        if (volume != null && volume < 0) {
+            volume = null; // the meaning of negative values is 'do not use'. The api requires null in this case.
+        }
+        if (volume != null) {
+            startIgnoreVolumeChange();
+        }
+        connection.sendAnnouncement(device, speak, bodyText, title, volume, lastKnownVolume);
     }
 
     private void stopCurrentNotification() {
@@ -760,7 +813,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                 try {
                     currentConnection.stopNotification(currentNotification);
                 } catch (IOException | URISyntaxException e) {
-                    logger.warn("Stop notification failed: {}", e);
+                    logger.warn("Stop notification failed", e);
                 }
             }
         }
@@ -780,7 +833,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                 }
             }
         } catch (IOException | URISyntaxException e) {
-            logger.warn("update notification state fails: {}", e);
+            logger.warn("update notification state fails", e);
         }
         if (stopCurrentNotifcation) {
             if (currentNotification != null) {
@@ -891,10 +944,10 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                 if (e.getCode() == 400) {
                     // Ignore
                 } else {
-                    logger.info("getPlayer fails: {}", e);
+                    logger.info("getPlayer fails", e);
                 }
             } catch (IOException | URISyntaxException e) {
-                logger.info("getPlayer fails: {}", e);
+                logger.info("getPlayer fails", e);
             }
             // check playing
             isPlaying = (playerInfo != null && StringUtils.equals(playerInfo.state, "PLAYING"));
@@ -947,10 +1000,10 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                     updateState(CHANNEL_RADIO_STATION_ID, new StringType(""));
 
                 } else {
-                    logger.info("getMediaState fails: {}", e);
+                    logger.info("getMediaState fails", e);
                 }
             } catch (IOException | URISyntaxException e) {
-                logger.info("getMediaState fails: {}", e);
+                logger.info("getMediaState fails", e);
             }
 
             // handle music provider id
@@ -1175,7 +1228,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             treble = equalizer.treble;
             this.lastKnownEqualizer = equalizer;
         } catch (IOException | URISyntaxException | HttpException | ConnectionException e) {
-            logger.debug("Get equalizer failes {}", e);
+            logger.debug("Get equalizer failes", e);
             return;
         }
         if (bass != null) {
@@ -1251,6 +1304,15 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             lastSpokenText = spokenText;
             updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(spokenText));
         }
+    }
+
+    private void startIgnoreVolumeChange() {
+        @Nullable
+        ScheduledFuture<?> oldIgnoreVolumeChange = this.ignoreVolumeChange;
+        if (oldIgnoreVolumeChange != null) {
+            oldIgnoreVolumeChange.cancel(false);
+        }
+        this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 2000, TimeUnit.MILLISECONDS);
     }
 
     private void stopIgnoreVolumeChange() {

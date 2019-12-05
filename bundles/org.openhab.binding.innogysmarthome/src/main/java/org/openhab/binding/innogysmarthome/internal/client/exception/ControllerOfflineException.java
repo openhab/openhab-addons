@@ -14,14 +14,18 @@ package org.openhab.binding.innogysmarthome.internal.client.exception;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown, if the innogy SmartHome controller (SHC) is offline.
  *
  * @author Oliver Kuhl - Initial contribution
  *
  */
-@SuppressWarnings("serial")
+@NonNullByDefault
 public class ControllerOfflineException extends IOException {
+
+    private static final long serialVersionUID = 1L;
 
     public ControllerOfflineException() {
     }

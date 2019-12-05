@@ -56,7 +56,7 @@
 		<category>Blinds</category>
 		<config-description>
 			<parameter name="shutTime" type="integer">
-				<label>Shut time</label>
+				<label>Shut Time</label>
 				<description>Time (in seconds) to completely close the rollershutter</description>
 			</parameter>
 		</config-description>
@@ -70,7 +70,7 @@
 		<category>DimmableLight</category>
 		<config-description>
 			<parameter name="rampingTime" type="integer">
-				<label>Ramping time</label>
+				<label>Ramping Time</label>
 				<description>A5-38-08: Ramping Time (in seconds), 0 = no ramping, 1..255 = seconds to 100%; D2-01-01: 0 = switch, 1-3 = timer 1-3, 4 = stop</description>
 			</parameter>
 			<parameter name="eltakoDimmer" type="boolean">
@@ -79,7 +79,7 @@
 				<default>true</default>
 			</parameter>
 			<parameter name="storeValue" type="boolean">
-				<label>Store value</label>
+				<label>Store Value</label>
 				<description>Store final value</description>
 				<default>false</default>
 			</parameter>
@@ -104,7 +104,7 @@
 
 	<channel-type id="setPoint">
 		<item-type>Number</item-type>
-		<label>Set point</label>
+		<label>Set Point</label>
 		<description>linear set point</description>
 		<state readOnly="true" min="0" max="255" />
 	</channel-type>
@@ -171,7 +171,7 @@
 		<state pattern="%d %unit%" readOnly="true" />
 		<config-description>
 			<parameter name="validateValue" type="boolean">
-				<label>Validate value</label>
+				<label>Validate Value</label>
 				<description>Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh</description>
 				<default>false</default>
 			</parameter>
@@ -207,7 +207,7 @@
 				<description>Id is used for 4BS teach in with EEP</description>
 			</parameter>
 			<parameter name="teachInMSG" type="text">
-				<label>Teach in message</label>
+				<label>Teach in Message</label>
 				<description>Use this message if teach in type and/or manufacturer id are unknown</description>
 			</parameter>
 		</config-description>
@@ -257,6 +257,27 @@
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
+	<channel-type id="illuminationWest">
+		<item-type>Number:Illuminance</item-type>
+		<label>Sun West</label>
+		<description>Illumination in lux</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="illuminationSouthNorth">
+		<item-type>Number:Illuminance</item-type>
+		<label>Sun South/North</label>
+		<description>Illumination in lux</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="illuminationEast">
+		<item-type>Number:Illuminance</item-type>
+		<label>Sun East</label>
+		<description>Illumination in lux</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
 	<channel-type id="autoOFF" advanced="true">
 		<item-type>Number:Duration</item-type>
 		<label>Auto Off</label>
@@ -301,20 +322,20 @@
 	<channel-type id="angle">
 		<item-type>Number:Angle</item-type>
 		<label>Angle</label>
-		<description>Blind angle</description>
+		<description>Blind Angle</description>
 		<category>Blinds</category>
 		<state pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="currentFlow">
 		<item-type>Number:VolumetricFlowRate</item-type>
-		<label>Current flow</label>
+		<label>Current Flow</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="cumulativeValue">
 		<item-type>Number:Volume</item-type>
-		<label>Cumulative value</label>
+		<label>Cumulative Value</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
@@ -332,9 +353,24 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<channel-type id="windspeed">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed</label>
+		<description>Current wind speed</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="rainStatus">
+		<item-type>Switch</item-type>
+		<label>Rain</label>
+		<description>Rain indicator</description>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
 	<channel-type id="valvePosition">
 		<item-type>Number</item-type>
-		<label>Valve position</label>
+		<label>Valve Position</label>
 		<description>Indicates the actual percent position of the valve.</description>
 		<category>thermostat</category>
 		<state min="0" max="100" step="1" pattern="%d %%" />
@@ -342,21 +378,21 @@
 
 	<channel-type id="buttonLock">
 		<item-type>Switch</item-type>
-		<label>Button lock</label>
+		<label>Button Lock</label>
 		<description>Enables or disables buttons on the device.</description>
 		<category>thermostat</category>
 	</channel-type>
 
 	<channel-type id="measurementControl" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Measurement control</label>
+		<label>Measurement Control</label>
 		<description>Enables or disables temperature measurement on the device.</description>
 		<category>thermostat</category>
 	</channel-type>
 
 	<channel-type id="displayOrientation" advanced="true">
 		<item-type>Number</item-type>
-		<label>Display orientation</label>
+		<label>Display Orientation</label>
 		<description>Orientation of the display.</description>
 		<category>thermostat</category>
 		<state>
@@ -371,21 +407,21 @@
 
 	<channel-type id="temperatureSetPoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Set point</label>
+		<label>Set Point</label>
 		<description>Desired temperature</description>
 		<state min="10" max="30" />
 	</channel-type>
 
 	<channel-type id="feedTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Feed temperature</label>
+		<label>Feed Temperature</label>
 		<description>Water temperature in the radiator input</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="failureCode">
 		<item-type>Number</item-type>
-		<label>Failure code</label>
+		<label>Failure Code</label>
 		<description>Failure code</description>
 		<category>thermostat</category>
 		<state readOnly="true" />
@@ -393,7 +429,7 @@
 
 	<channel-type id="wakeUpCycle">
 		<item-type>Number</item-type>
-		<label>Wakeup cycle</label>
+		<label>Wakeup Cycle</label>
 		<description>Defines the cyclic wake-up time. The time corresponding to the number has to be looked up.</description>
 		<category>thermostat</category>
 		<state min="0" max="63" />
@@ -401,7 +437,7 @@
 
 	<channel-type id="serviceCommand" advanced="true">
 		<item-type>Number</item-type>
-		<label>Service command</label>
+		<label>Service Command</label>
 		<description>Command to be sent to actuator</description>
 		<category>thermostat</category>
 		<state>
@@ -423,7 +459,7 @@
 
 	<channel-type id="sendCommand">
 		<item-type>Switch</item-type>
-		<label>Send command</label>
+		<label>Send Command</label>
 		<description>You can send telegrams to the device by switching this channel on</description>
 		<category>thermostat</category>
 	</channel-type>

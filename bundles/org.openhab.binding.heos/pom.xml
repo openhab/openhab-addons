@@ -13,13 +13,4 @@
 
   <name>openHAB Add-ons :: Bundles :: Heos Binding</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>commons-net</groupId>
-      <artifactId>commons-net</artifactId>
-      <version>3.6</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-
 </project>

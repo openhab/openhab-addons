@@ -46,8 +46,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.moquette.broker.RetainedMessage;
 import io.moquette.broker.subscriptions.Topic;
@@ -59,7 +57,6 @@ import io.moquette.broker.subscriptions.Topic;
  * @author David Graeff - Initial contribution
  */
 public class MqttEmbeddedBrokerServiceTest extends JavaTest {
-    private final Logger logger = LoggerFactory.getLogger(MqttEmbeddedBrokerServiceTest.class);
 
     private EmbeddedBrokerService subject;
     private Map<String, Object> config = new HashMap<>();
@@ -69,11 +66,11 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
     public void setUp() throws ConfigurationException, MqttException, GeneralSecurityException, IOException {
         MockitoAnnotations.initMocks(this);
 
-        config.put("username","username");
+        config.put("username", "username");
         config.put("password", "password");
-        config.put("port",12345);
-        config.put("secure",false);
-        config.put("persistenceFile","");
+        config.put("port", 12345);
+        config.put("secure", false);
+        config.put("persistenceFile", "");
 
         subject = new EmbeddedBrokerService(service, config);
     }
@@ -102,7 +99,6 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
         semaphore.tryAcquire(3000, TimeUnit.MILLISECONDS);
 
         c.removeConnectionObserver(mqttConnectionObserver);
-
     }
 
     @Test
@@ -121,12 +117,9 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
         MqttBrokerConnection wrongCredentials = new MqttBrokerConnection(Protocol.TCP, c.getHost(), c.getPort(), false,
                 "wrongCred");
         wrongCredentials.setCredentials("someUser", "somePassword");
-        try {
-            if (wrongCredentials.start().get()) {
-                fail("Wrong credentials accepted!");
-            }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+
+        if (wrongCredentials.start().get()) {
+            fail("Wrong credentials accepted!");
         }
 
         wrongCredentials.stop().get();
@@ -135,12 +128,9 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
         MqttBrokerConnection correctCredentials = new MqttBrokerConnection(Protocol.TCP, c.getHost(), c.getPort(),
                 false, "correctCred");
         correctCredentials.setCredentials(c.getUser(), c.getPassword());
-        try {
-            if (!correctCredentials.start().get()) {
-                fail("Couldn't connect although correct credentials");
-            }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+
+        if (!correctCredentials.start().get()) {
+            fail("Couldn't connect although correct credentials");
         }
 
         correctCredentials.stop().get();
@@ -165,7 +155,7 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
 
     @Test
     public void testPersistence() throws InterruptedException, IOException, ExecutionException {
-        config.put("persistenceFile","persist.mqtt");
+        config.put("persistenceFile", "persist.mqtt");
         Path path = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath();
         File jksFile = path.resolve("persist.mqtt").toFile();
 

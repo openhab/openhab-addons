@@ -53,8 +53,7 @@ public class ChannelState implements MqttMessageSubscriber {
     protected final Value cachedValue;
 
     // Runtime variables
-    @Nullable
-    private MqttBrokerConnection connection;
+    private @Nullable MqttBrokerConnection connection;
     protected final List<ChannelStateTransformation> transformationsIn = new ArrayList<>();
     protected final List<ChannelStateTransformation> transformationsOut = new ArrayList<>();
     private @Nullable ChannelStateUpdateListener channelStateUpdateListener;
@@ -159,7 +158,7 @@ public class ChannelState implements MqttMessageSubscriber {
             if (transformedValue != null) {
                 strValue = transformedValue;
             } else {
-                logger.info("Transformation '{}' returned null on '{}', discarding message", strValue,
+                logger.debug("Transformation '{}' returned null on '{}', discarding message", strValue,
                         t.serviceName);
                 receivedOrTimeout();
                 return;
@@ -288,8 +287,11 @@ public class ChannelState implements MqttMessageSubscriber {
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        if (hasSubscribed) {
+        // if the connection is still the same, the subscription is still present, otherwise we need to renew
+        if (hasSubscribed && connection.equals(this.connection)) {
             return CompletableFuture.completedFuture(null);
+        } else {
+            hasSubscribed = false;
         }
 
         this.connection = connection;
@@ -350,7 +352,14 @@ public class ChannelState implements MqttMessageSubscriber {
 
         // Outgoing transformations
         for (ChannelStateTransformation t : transformationsOut) {
-            mqttCommandValue = t.processValue(mqttCommandValue);
+            String transformedValue = t.processValue(mqttCommandValue);
+            if (transformedValue != null) {
+                mqttCommandValue = transformedValue;
+            } else {
+                logger.debug("Transformation '{}' returned null on '{}', discarding message", mqttCommandValue,
+                        t.serviceName);
+                return CompletableFuture.completedFuture(false);
+            }
         }
 
         // Formatter: Applied before the channel state value is published to the MQTT broker.
@@ -363,8 +372,9 @@ public class ChannelState implements MqttMessageSubscriber {
             }
         }
 
-        // Send retained messages if this is a stateful channel
-        return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), 1, config.retained);
+        int qos = (config.qos != null) ? config.qos : connection.getQos();
+
+        return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), qos, config.retained);
     }
 
     /**

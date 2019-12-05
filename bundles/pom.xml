@@ -100,6 +100,7 @@
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.hue</module>
+    <module>org.openhab.binding.hydrawise</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.iaqualink</module>
     <module>org.openhab.binding.icloud</module>
@@ -116,6 +117,7 @@
     <module>org.openhab.binding.kostalinverter</module>
     <module>org.openhab.binding.lametrictime</module>
     <module>org.openhab.binding.leapmotion</module>
+    <module>org.openhab.binding.lghombot</module>
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.lifx</module>
@@ -168,6 +170,7 @@
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.pioneeravr</module>
+    <module>org.openhab.binding.pixometer</module>
     <module>org.openhab.binding.pjlinkdevice</module>
     <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.plugwise</module>
@@ -205,6 +208,7 @@
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tankerkoenig</module>
+    <module>org.openhab.binding.telegram</module>    
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>
@@ -217,6 +221,7 @@
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.volvooncall</module>
+    <module>org.openhab.binding.weathercompany</module>
     <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.binding.wemo</module>
     <module>org.openhab.binding.wifiled</module>

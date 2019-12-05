@@ -13,4 +13,12 @@
 
   <name>openHAB Add-ons :: Bundles :: Leap Motion Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.leapmotion.leap</groupId>
+      <artifactId>leap-java</artifactId>
+      <version>2.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 </project>

@@ -99,13 +99,14 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
     public void dispose() {
         // Remove all state descriptions of this handler
         channelStateByChannelUID.forEach((uid, state) -> stateDescProvider.remove(uid));
-        channelStateByChannelUID.clear();
         super.dispose();
+        // there is a design flaw, we can't clean up our stuff because it is needed by the super-class on disposal for unsubscribing
+        channelStateByChannelUID.clear();
     }
 
     @Override
     public CompletableFuture<Void> unsubscribeAll() {
-        return CompletableFuture.allOf(channelStateByChannelUID.values().stream().map(channel -> channel.stop())
+        return CompletableFuture.allOf(channelStateByChannelUID.values().stream().map(ChannelState::stop)
                 .toArray(CompletableFuture[]::new));
     }
 

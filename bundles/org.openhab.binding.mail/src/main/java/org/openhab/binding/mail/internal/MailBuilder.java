@@ -164,10 +164,8 @@ public class MailBuilder {
                 multipartMail.attach(file);
             }
             for (URL url : attachmentURLs) {
-                EmailAttachment attachment = new EmailAttachment();
-                attachment.setURL(url);
-                attachment.setDisposition(EmailAttachment.ATTACHMENT);
-                multipartMail.attach(attachment);
+                String fileName = url.toString().replaceFirst(".*/([^/?]+).*", "$1");
+                multipartMail.attach(url, fileName, fileName, EmailAttachment.ATTACHMENT);
             }
             mail = multipartMail;
         } else {

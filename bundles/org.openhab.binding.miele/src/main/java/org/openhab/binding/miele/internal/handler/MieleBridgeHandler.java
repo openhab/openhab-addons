@@ -126,7 +126,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
         public String getApplianceId() {
             return ProtocolAdapterName.equals(PROTOCOL_LAN) ? StringUtils.right(UID, UID.length() - HDM_LAN.length())
-                : StringUtils.right(UID, UID.length() - HDM_ZIGBEE.length());
+                    : StringUtils.right(UID, UID.length() - HDM_ZIGBEE.length());
         }
     }
 
@@ -191,7 +191,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 headers = new HashMap<>();
 
                 onUpdate();
-                updateStatus(ThingStatus.ONLINE);
+                updateStatus(ThingStatus.UNKNOWN);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Invalid IP address for the Miele@Home gateway or multicast interface:" + getConfig().get(HOST)
@@ -204,7 +204,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     private Runnable pollingRunnable = new Runnable() {
-
         @Override
         public void run() {
             if (IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()) {
@@ -213,10 +212,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                         currentBridgeConnectionState = true;
                     } else {
                         currentBridgeConnectionState = false;
-                        if (lastBridgeConnectionState) {
-                            lastBridgeConnectionState = false;
-                            onConnectionLost();
-                        }
+                        lastBridgeConnectionState = false;
+                        onConnectionLost();
                     }
 
                     if (!lastBridgeConnectionState && currentBridgeConnectionState) {
@@ -237,7 +234,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                     }
                                 }
                                 if (!isExisting) {
-                                    logger.info("A new appliance with ID '{}' has been added", hd.UID);
+                                    logger.debug("A new appliance with ID '{}' has been added", hd.UID);
                                     for (ApplianceStatusListener listener : applianceStatusListeners) {
                                         listener.onApplianceAdded(hd);
                                     }
@@ -253,7 +250,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                     }
                                 }
                                 if (!isCurrent) {
-                                    logger.info("The appliance with ID '{}' has been removed", hd);
+                                    logger.debug("The appliance with ID '{}' has been removed", hd);
                                     for (ApplianceStatusListener listener : applianceStatusListeners) {
                                         listener.onApplianceRemoved(hd);
                                     }
@@ -446,7 +443,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-
     protected JsonElement invokeRPC(String methodName, Object[] args) {
         int id = rand.nextInt(Integer.MAX_VALUE);
 
@@ -581,7 +577,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
      *
      */
     public void onConnectionLost() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
     }
 
     /**

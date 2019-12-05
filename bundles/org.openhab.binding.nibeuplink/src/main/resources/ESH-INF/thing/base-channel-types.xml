@@ -5,13 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="base-type-10012">
 		<item-type>Switch</item-type>
-		<label>Compressor blocked</label>
+		<label>Compressor Blocked</label>
 		<description>states if the compressor is blocked</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="base-type-10033">
 		<item-type>Switch</item-type>
-		<label>Int. el.add. blocked</label>
+		<label>Int. El.add. Blocked</label>
 		<description>states if internal electric additional heater is blocked</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -24,14 +24,14 @@
 	</channel-type>
 	<channel-type id="base-type-40008">
 		<item-type>Number:Temperature</item-type>
-		<label>BT2 Supply temp S1</label>
+		<label>BT2 Supply Temp S1</label>
 		<description>Supply temperature for system 1</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40012">
 		<item-type>Number:Temperature</item-type>
-		<label>EB100-EP14-BT3 Return temp</label>
+		<label>EB100-EP14-BT3 Return Temp</label>
 		<description>Return temperature</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -101,7 +101,7 @@
 	</channel-type>
 	<channel-type id="base-type-43005">
 		<item-type>Number</item-type>
-		<label>Degree Minutes (16 bit)</label>
+		<label>Degree Minutes (16 Bit)</label>
 		<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the closest valid value.</description>
 		<state min="-30000" max="30000" step="1" pattern="%d °*min" readOnly="false">
 		</state>
@@ -115,21 +115,21 @@
 	</channel-type>
 	<channel-type id="base-type-43081">
 		<item-type>Number:Time</item-type>
-		<label>Tot. op.time add.</label>
+		<label>Tot. Op.time Add.</label>
 		<description>Total electric additive operation time</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-43084">
 		<item-type>Number:Power</item-type>
-		<label>Int. el.add. Power</label>
+		<label>Int. El.add. Power</label>
 		<description>Current power from the internal electrical addition</description>
 		<state pattern="%.2f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-43161">
 		<item-type>Switch</item-type>
-		<label>External adjustment activated via input S1</label>
+		<label>External Adjustment Activated Via Input S1</label>
 		<description></description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -177,7 +177,7 @@
 	</channel-type>
 	<channel-type id="base-type-47041">
 		<item-type>Number</item-type>
-		<label>Hot water mode</label>
+		<label>Hot Water Mode</label>
 		<description>The currently active hotwater mode</description>
 		<state readOnly="false">
 			<options>
@@ -189,56 +189,56 @@
 	</channel-type>
 	<channel-type id="base-type-47043">
 		<item-type>Number:Temperature</item-type>
-		<label>Start temperature HW Luxury</label>
+		<label>Start Temperature HW Luxury</label>
 		<description>Start temperature for heating water in Luxury mode</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-47044">
 		<item-type>Number:Temperature</item-type>
-		<label>Start temperature HW Normal</label>
+		<label>Start Temperature HW Normal</label>
 		<description>Start temperature for heating water in Normal mode</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-47045">
 		<item-type>Number:Temperature</item-type>
-		<label>Start temperature HW Economy</label>
+		<label>Start Temperature HW Economy</label>
 		<description>Start temperature for heating water in Economy mode</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-47046">
 		<item-type>Number:Temperature</item-type>
-		<label>Stop temperature Periodic HW</label>
+		<label>Stop Temperature Periodic HW</label>
 		<description>Stop temperature for heating water in periodic heating</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-47047">
 		<item-type>Number:Temperature</item-type>
-		<label>Stop temperature HW Luxury</label>
+		<label>Stop Temperature HW Luxury</label>
 		<description>Stop temperature for heating water in Luxory mode</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-47048">
 		<item-type>Number:Temperature</item-type>
-		<label>Stop temperature HW Normal</label>
+		<label>Stop Temperature HW Normal</label>
 		<description>Stop temperature for heating water in Normal mode</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-47049">
 		<item-type>Number:Temperature</item-type>
-		<label>Stop temperature HW Economy</label>
+		<label>Stop Temperature HW Economy</label>
 		<description>Stop temperature for heating water in Economy mode</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-47212">
 		<item-type>Number:Power</item-type>
-		<label>Max int add. power</label>
+		<label>Max Int Add. Power</label>
 		<description></description>
 		<state min="0" max="4500" step="1" pattern="%.2f %unit%" readOnly="false">
 		</state>
@@ -264,7 +264,7 @@
 	</channel-type>
 	<channel-type id="base-type-48914">
 		<item-type>Number:Power</item-type>
-		<label>Max int add. power, SG Ready</label>
+		<label>Max Int Add. Power, SG Ready</label>
 		<description></description>
 		<state min="0" max="4500" step="1" pattern="%.2f %unit%" readOnly="false">
 		</state>

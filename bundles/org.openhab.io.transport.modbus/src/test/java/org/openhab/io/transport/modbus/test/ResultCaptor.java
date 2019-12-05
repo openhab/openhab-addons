@@ -19,8 +19,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 /**
- *
- * @author Sami Salonen
+ * @author Sami Salonen - Initial contribution
  *
  * @param <T>
  */

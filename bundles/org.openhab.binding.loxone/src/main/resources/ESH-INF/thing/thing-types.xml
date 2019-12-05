@@ -12,23 +12,23 @@
 		<config-description>
 
 			<parameter-group name="miniserver">
-				<label>Miniserver settings</label>
+				<label>Miniserver Settings</label>
 				<description>Connection to Miniserver</description>
 			</parameter-group>
 
 			<parameter-group name="security">
-				<label>Security settings</label>
+				<label>Security Settings</label>
 				<description>Authentication and encryption parameters</description>
 			</parameter-group>
 
 			<parameter-group name="timeouts">
-				<label>Timeout settings</label>
+				<label>Timeout Settings</label>
 				<description>Various timeout parameters</description>
 				<advanced>true</advanced>
 			</parameter-group>
 
 			<parameter-group name="sizes">
-				<label>Size settings</label>
+				<label>Size Settings</label>
 				<description>Various sizing parameters</description>
 				<advanced>true</advanced>
 			</parameter-group>
@@ -38,14 +38,14 @@
 				<context>network-address</context>
 				<description>Host address or IP of the Loxone Miniserver</description>
 			</parameter>
-			<parameter name="port" type="integer" min="0" groupName="miniserver">
+			<parameter name="port" type="integer" min="1" max="65535" groupName="miniserver">
 				<label>Port</label>
 				<description>Web interface port of the Loxone Miniserver</description>
 				<default>80</default>
 			</parameter>
 
 			<parameter name="authMethod" type="integer" min="0" max="2" groupName="security">
-				<label>Authorization method</label>
+				<label>Authorization Method</label>
 				<description>Method used to authorize user in the Miniserver</description>
 				<default>0</default>
 				<options>
@@ -71,42 +71,42 @@
 			</parameter>
 
 			<parameter name="firstConDelay" type="integer" min="0" max="120" groupName="timeouts">
-				<label>First connection delay</label>
+				<label>First Connection Delay</label>
 				<description>Time between binding initialization and first connection attempt (seconds, 0-120)</description>
 				<default>1</default>
 			</parameter>
 			<parameter name="keepAlivePeriod" type="integer" min="1" max="600" groupName="timeouts">
-				<label>Period between connection keep-alive messages</label>
+				<label>Period Between Connection Keep-alive Messages</label>
 				<description>Time between sending two consecutive keep-alive messages (seconds, 1-600)</description>
 				<default>240</default>
 			</parameter>
 			<parameter name="connectErrDelay" type="integer" min="0" max="600" groupName="timeouts">
-				<label>Connect error delay</label>
+				<label>Connect Error Delay</label>
 				<description>Time between failed websocket connect attempts (seconds, 0-600)</description>
 				<default>10</default>
 			</parameter>
 			<parameter name="responseTimeout" type="integer" min="0" max="60" groupName="timeouts">
-				<label>Miniserver response timeout</label>
+				<label>Miniserver Response Timeout</label>
 				<description>Time to wait for a response from Miniserver to a request sent from the binding (seconds, 0-60)</description>
 				<default>4</default>
 			</parameter>
 			<parameter name="userErrorDelay" type="integer" min="0" max="3600" groupName="timeouts">
-				<label>Authentication error delay</label>
+				<label>Authentication Error Delay</label>
 				<description>Time in seconds between user login error as a result of wrong name/password or no authority and next connection attempt (seconds, 0-3600)</description>
 				<default>60</default>
 			</parameter>
 			<parameter name="comErrorDelay" type="integer" min="0" max="3600" groupName="timeouts">
-				<label>Communication error delay</label>
+				<label>Communication Error Delay</label>
 				<description>Time between connection close (as a result of some communication error) and next connection attempt (seconds, 0-3600)</description>
 				<default>30</default>
 			</parameter>
 			<parameter name="maxBinMsgSize" type="integer" min="0" max="102400" groupName="sizes">
-				<label>Maximum binary message size (kB)</label>
+				<label>Maximum Binary Message Size (kB)</label>
 				<description>Websocket client's maximum binary message size in kB</description>
 				<default>3072</default>
 			</parameter>
 			<parameter name="maxTextMsgSize" type="integer" min="0" max="102400" groupName="sizes">
-				<label>Maximum text message size (kB)</label>
+				<label>Maximum Text Message Size (kB)</label>
 				<description>Websocket client's maximum text message size in kB</description>
 				<default>512</default>
 			</parameter>

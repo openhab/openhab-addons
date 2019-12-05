@@ -5,8 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="models">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
 		<label>Tesla Model S</label>
-		<description>Thing for the Tesla Model S</description>
+		<description>A Tesla Model S Vehicle</description>
 
 		<channels>
 			<channel id="allowwakeup" typeId="allowwakeup" />
@@ -27,7 +32,7 @@
 			<channel id="chargecurrent" typeId="chargecurrent" />
 			<channel id="chargeenablerequest" typeId="chargeenablerequest" />
 			<channel id="chargeenergyadded" typeId="chargeenergyadded" />
-			<channel id="chargeidealmilesadded" typeId="chargeidealmilesadded" />
+			<channel id="chargeidealdistanceadded" typeId="chargeidealdistanceadded" />
 			<channel id="chargelimit" typeId="chargelimit" />
 			<channel id="chargelimitmaximum" typeId="chargelimitmaximum" />
 			<channel id="chargelimitminimum" typeId="chargelimitminimum" />
@@ -35,7 +40,7 @@
 			<channel id="chargemaxcurrent" typeId="chargemaxcurrent" />
 			<channel id="chargeport" typeId="chargeport" />
 			<channel id="chargerate" typeId="chargerate" />
-			<channel id="chargeratedmilesadded" typeId="chargeratedmilesadded" />
+			<channel id="chargerateddistanceadded" typeId="chargerateddistanceadded" />
 			<channel id="chargercurrent" typeId="chargercurrent" />
 			<channel id="chargermaxcurrent" typeId="chargermaxcurrent" />
 			<channel id="chargerphases" typeId="chargerphases" />
@@ -50,13 +55,11 @@
 			<channel id="driverfrontdoor" typeId="driverfrontdoor" />
 			<channel id="driverreardoor" typeId="driverreardoor" />
 			<channel id="drivertemp" typeId="drivertemp" />
-			<channel id="enableevents" typeId="enableevents" />
 			<channel id="estimatedbatteryrange" typeId="estimatedbatteryrange" />
 			<channel id="estimatedrange" typeId="estimatedrange" />
 			<channel id="eventstamp" typeId="eventstamp" />
 			<channel id="fan" typeId="fan" />
 			<channel id="flashlights" typeId="flashlights" />
-			<channel id="forcerefresh" typeId="forcerefresh" />
 			<channel id="frontdefroster" typeId="frontdefroster" />
 			<channel id="fronttrunk" typeId="fronttrunk" />
 			<channel id="gpstimestamp" typeId="gpstimestamp" />
@@ -66,8 +69,6 @@
 			<channel id="honkhorn" typeId="honkhorn" />
 			<channel id="idealbatteryrange" typeId="idealbatteryrange" />
 			<channel id="insidetemp" typeId="insidetemp" />
-			<channel id="ispreconditioning" typeId="ispreconditioning" />
-			<channel id="lastautopartkerror" typeId="lastautopartkerror" />
 			<channel id="leftrearbackseatheater" typeId="leftrearbackseatheater" />
 			<channel id="leftrearseatheater" typeId="leftrearseatheater" />
 			<channel id="leftseatheater" typeId="leftseatheater" />
@@ -80,9 +81,7 @@
 			<channel id="maxcharges" typeId="maxcharges" />
 			<channel id="mobileenabled" typeId="mobileenabled" />
 			<channel id="minavailabletemp" typeId="minavailabletemp" />
-			<channel id="nativelocationsupported" typeId="nativelocationsupported" />
 			<channel id="nativelocation" typeId="location" />
-			<channel id="nativetype" typeId="nativelocationsupported" />
 			<channel id="notenoughpower" typeId="notenoughpower" />
 			<channel id="notificationsenabled" typeId="notificationsenabled" />
 			<channel id="notificationssupported" typeId="notificationssupported" />
@@ -100,11 +99,9 @@
 			<channel id="remotestart" typeId="remotestart" />
 			<channel id="remotestartenabled" typeId="remotestartenabled" />
 			<channel id="remotestartsupported" typeId="remotestartsupported" />
-			<channel id="resetvaletpin" typeId="resetvaletpin" />
 			<channel id="rightrearbackseatheater" typeId="rightrearbackseatheater" />
 			<channel id="rightrearseatheater" typeId="rightrearseatheater" />
 			<channel id="rightseatheater" typeId="rightseatheater" />
-			<channel id="righttempdirection" typeId="rightempdirection" />
 			<channel id="scheduledchargingpending" typeId="scheduledchargingpending" />
 			<channel id="scheduledchargingstart" typeId="scheduledchargingstart" />
 			<channel id="shiftstate" typeId="shiftstate" />
@@ -116,7 +113,7 @@
 			<channel id="steeringwheelheater" typeId="steeringwheelheater" />
 			<channel id="sunroof" typeId="sunroof" />
 			<channel id="sunroofstate" typeId="sunroofstate" />
-			<channel id="temperature" typeId="temperature" />
+			<channel id="combinedtemp" typeId="combinedtemp" />
 			<channel id="timetofullcharge" typeId="timetofullcharge" />
 			<channel id="tripcharging" typeId="tripcharging" />
 			<channel id="usablebatterylevel" typeId="usablebatterylevel" />
@@ -128,673 +125,22 @@
 		</channels>
 
 		<config-description>
-			<parameter name="username" type="text" required="false">
-				<label>Username</label>
-				<description>Username for the Tesla Remote Service, e.g email address</description>
-			</parameter>
-			<parameter name="password" type="text" required="false">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password for the Tesla Remote Service</description>
-			</parameter>
 			<parameter name="vin" type="text" required="true">
 				<label>Vehicle Identification Number</label>
-				<description>VIN of the vehicle associated with this Thing</description>
+				<description>VIN of the vehicle</description>
 			</parameter>
 			<parameter name="valetpin" type="integer" min="0" max="9999" required="false">
 				<context>password</context>
 				<label>Valet PIN</label>
 				<description>PIN to use when enabling Valet Mode</description>
 			</parameter>
+			<parameter name="allowWakeup" type="boolean" required="false">
+				<default>false</default>
+				<label>Allow Wake-Up</label>
+				<description>Allows waking up the vehicle. Caution: This can result in huge vampire drain!</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<channel-type id="allowwakeup" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Allow Wake Up</label>
-		<description>Allow the vehicle to be waken up</description>
-	</channel-type>
-	<channel-type id="autoconditioning">
-		<item-type>Switch</item-type>
-		<label>Auto Conditioning</label>
-		<description>Indicates if the auto conditioning (A/C only) is switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="autoparkstate" advanced="true">
-		<item-type>String</item-type>
-		<label>Autopark State</label>
-		<description>Undocumented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="autoparkstyle" advanced="true">
-		<item-type>String</item-type>
-		<label>Autopark Style</label>
-		<description>Undocumented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="batterycurrent" advanced="true">
-		<item-type>Number</item-type>
-		<label>Battery Current</label>
-		<description>Current (Ampere) floating into (+) or out (-) of the battery</description>
-		<state pattern="%.1f A" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="batteryheater" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Battery Heater</label>
-		<description>Indicates if the battery heater is switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="batteryheaternopower" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Battery Heater Power</label>
-		<description>Indicates if there is enough power to use the battery heater</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="batterylevel">
-		<item-type>Number</item-type>
-		<label>Battery Level</label>
-		<description>State of the battery in %</description>
-		<state pattern="%.1f %%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="batteryrange" advanced="true">
-		<item-type>Number</item-type>
-		<label>Battery Range</label>
-		<description>Range, in km or miles, of the battery</description>
-		<state pattern="%d km|miles" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="calendarenabled" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Calendar Enabled</label>
-		<description>Indicates if access to a remote calendar is enabled</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="centerdisplay" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Central Display State</label>
-		<description>Indicates the state of the central display in the vehicle</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="centerrearseatheater" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Center Rear Seat Heater</label>
-		<description>Indicates if the center rear seat heater is switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="charge">
-		<item-type>Switch</item-type>
-		<label>Charge</label>
-		<description>Start (ON) or stop (OFF) charging</description>
-	</channel-type>
-	<channel-type id="chargecable">
-		<item-type>String</item-type>
-		<label>Charge Cable</label>
-		<description>Undocumented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargecurrent" advanced="true">
-		<item-type>Number</item-type>
-		<label>Charge Current</label>
-		<description>Current (Ampere) requested from the charger</description>
-		<state pattern="%.1f A" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargeenablerequest" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Charge Enable Request</label>
-		<description>Undocumented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargeenergyadded" advanced="true">
-		<item-type>Number</item-type>
-		<label>Charge Energy Added</label>
-		<description>Energy added, in kWh, during the last charging session</description>
-		<state pattern="%d kWh" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargelimit" advanced="true">
-		<item-type>Dimmer</item-type>
-		<label>Charge Limit</label>
-		<description>Limit charging of the vehicle to the given %</description>
-		<state pattern="%.1f %%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargelimitmaximum" advanced="true">
-		<item-type>Dimmer</item-type>
-		<label>Charge Limit Maximum</label>
-		<description>Maximum charging limit of the vehicle, as %</description>
-		<state pattern="%.1f %%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargelimitminimum" advanced="true">
-		<item-type>Dimmer</item-type>
-		<label>Charge Limit Minimum</label>
-		<description>Minimum charging limit of the vehicle, as %</description>
-		<state pattern="%.1f %%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargelimitsocstandard" advanced="true">
-		<item-type>Dimmer</item-type>
-		<label>Charge Limit SOC Standard</label>
-		<description>Standard charging limity of the vehicle, in %</description>
-		<state pattern="%.1f %%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargeidealmilesadded" advanced="true">
-		<item-type>Number</item-type>
-		<label>"Ideal" Charge Miles Added</label>
-		<description>"Ideal" range added, in miles or km, during the last charging session</description>
-		<state pattern="%d km|miles" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargemaxcurrent" advanced="true">
-		<item-type>Number</item-type>
-		<label>Charge Max Current</label>
-		<description>Maximum current (Ampere) that can be requested from the charger</description>
-		<state pattern="%.1f A" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargeratedmilesadded" advanced="true">
-		<item-type>Number</item-type>
-		<label>"Rated" Charge Miles Added</label>
-		<description>"Rated" range added, in miles or km, during the last charging session</description>
-		<state pattern="%d km|miles" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargerate" advanced="true">
-		<item-type>Number</item-type>
-		<label>Charge Rate</label>
-		<description>Not documented / To be defined (-1 if not charging)</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargestartingrange" advanced="true">
-		<item-type>String</item-type>
-		<label>Charge Starting Range</label>
-		<description>Undocumented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargestartingsoc" advanced="true">
-		<item-type>String</item-type>
-		<label>Charge Starting SOC</label>
-		<description>Undocumented / To be defined</description>
-		<state pattern="%.1f %%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargingstate">
-		<item-type>String</item-type>
-		<label>Charging State</label>
-		<description>“Starting”, “Complete”, “Charging”, “Disconnected”, “Stopped”, “NoPower”</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargetomax" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Charge To Max Range</label>
-		<description>Indicates if the charging to the maximum range is enabled</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargeport">
-		<item-type>Switch</item-type>
-		<label>Charge Port</label>
-		<description>Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)</description>
-	</channel-type>
-	<channel-type id="chargercurrent" advanced="true">
-		<item-type>Number</item-type>
-		<label>Charge Current</label>
-		<description>Current (Ampere) actually being drawn from the charger</description>
-		<state pattern="%.1f A" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargerphases" advanced="true">
-		<item-type>Number</item-type>
-		<label>Charger Phases</label>
-		<description>Indicates the number of phases (1 to 3) used for charging</description>
-		<state pattern="%d" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargermaxcurrent" advanced="true">
-		<item-type>Number</item-type>
-		<label>Charger Maximum Current</label>
-		<description>Maximum current (Ampere) that can be delivered by the charger</description>
-		<state pattern="%.1f A" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargerpower" advanced="true">
-		<item-type>Number</item-type>
-		<label>Charger Power</label>
-		<description>Power actually delivered by the charger</description>
-		<state pattern="%.1f kW" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="chargervoltage" advanced="true">
-		<item-type>Number</item-type>
-		<label>Charger Voltage</label>
-		<description>Voltage (V) actually presented by the charger</description>
-		<state pattern="%.1f V" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="climate">
-		<item-type>Switch</item-type>
-		<label>Climate</label>
-		<description>Climate status indicator</description>
-	</channel-type>
-	<channel-type id="driverfrontdoor" advanced="true">
-		<item-type>Contact</item-type>
-		<label>Driver Front Door</label>
-		<description>Indicates if the front door at the driver's side is opened</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="doorlock">
-		<item-type>Switch</item-type>
-		<label>Door Lock</label>
-		<description>Lock or unlock the car</description>
-	</channel-type>
-	<channel-type id="driverreardoor" advanced="true">
-		<item-type>Contact</item-type>
-		<label>Driver Rear Door</label>
-		<description>Indicates if the rear door at the driver's side is opened</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="drivertemp" advanced="true">
-		<item-type>Number</item-type>
-		<label>Driver Temperature</label>
-		<description>Indicates the auto conditioning temperature set at the driver's side in Celsius or Fahrenheit</description>
-		<state pattern="%.1f°" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="enableevents" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Enable Events</label>
-		<description>Enable the event stream from the vehicle</description>
-	</channel-type>
-	<channel-type id="eventstamp" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Event Timestamp</label>
-		<description>Timestamp of the last event received from the Tesla streaming service</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="estimatedbatteryrange" advanced="true">
-		<item-type>Number</item-type>
-		<label>Estimated Battery Range</label>
-		<description>Estimated battery range, in km or miles</description>
-		<state pattern="%d km|miles" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="estimatedrange" advanced="true">
-		<item-type>Number</item-type>
-		<label>Estimated Range</label>
-		<description>Estimated range of the vehicle</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="fan" advanced="true">
-		<item-type>Number</item-type>
-		<label>Fan</label>
-		<description>Indicates the speed (0-7) of the fan</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="flashlights">
-		<item-type>Switch</item-type>
-		<label>Flash Lights</label>
-		<description>Flash the lights of the car (when ON is received)</description>
-	</channel-type>
-	<channel-type id="forcerefresh">
-		<item-type>Switch</item-type>
-		<label>Force refresh</label>
-		<description>Forcefully refreshes all data from the car (when ON is received), possibly waking up the car in the process.</description>
-	</channel-type>
-	<channel-type id="frontdefroster" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Front Defroster</label>
-		<description>Indicates if the front defroster is enabled</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="fronttrunk" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Front Trunk</label>
-		<description>Indicates if the front trunk is opened, or open the front trunk when ON is received</description>
-	</channel-type>
-	<channel-type id="gpstimestamp" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>GPS Time Stamp</label>
-		<description>Time stamp of the most recent GPS location of the vehicle</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="heading" advanced="true">
-		<item-type>Number</item-type>
-		<label>Heading</label>
-		<description>Indicates the (compass) heading of the car, in 0-360 degrees</description>
-		<state pattern="%d degrees" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="headingestimation" advanced="true">
-		<item-type>Number</item-type>
-		<label>Estimated Heading</label>
-		<description>Estimated (compass) heading of the car, in 0 to 360 degrees</description>
-		<state pattern="%d degrees" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="honkhorn">
-		<item-type>Switch</item-type>
-		<label>Honk the Horn</label>
-		<description>Honk the horn of the vehicle, when ON is received</description>
-	</channel-type>
-	<channel-type id="homelink">
-		<item-type>Switch</item-type>
-		<label>Homelink Nearby</label>
-		<description>Indicates if the Home Link is nearby</description>
-	</channel-type>
-	<channel-type id="idealbatteryrange" advanced="true">
-		<item-type>Number</item-type>
-		<label>Ideal Battery Range</label>
-		<description>Indicates the Batter Range, expressed in Ideal km or miles</description>
-		<state pattern="%d km|miles" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="insidetemp">
-		<item-type>Number</item-type>
-		<label>Inside Temperature</label>
-		<description>Indicates the inside temperature of the vehicle in Celsius or Fahrenheit</description>
-		<state pattern="%.1f°" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="lefttempdirection" advanced="true">
-		<item-type>Number</item-type>
-		<label>Left Temperature Direction</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="lastautoparkerror" advanced="true">
-		<item-type>String</item-type>
-		<label>Last Autopark Error</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="location" advanced="false">
-		<item-type>Location</item-type>
-		<label>Location</label>
-		<description>The actual position of the vehicle</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="leftseatheater" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Left Seat Heater</label>
-		<description>Indicates if the left seat heater is switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="leftrearseatheater" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Left Rear Seat Heater</label>
-		<description>Indicates if the left rear seat heater is switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="leftrearbackseatheater" advanced="true">
-		<item-type>Number</item-type>
-		<label>Left Rear Backseat Heater</label>
-		<description>Indicates the level (0,1,2 or 3) of the left rear backseat heater</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="managedcharging" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Managed Charging</label>
-		<description>Indicates managed charging is active</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="managedchargingcancelled" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Managed Charging Cancelled</label>
-		<description>Indicates managed charging is cancelled by the user</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="managedchargingstart" advanced="true">
-		<item-type>String</item-type>
-		<label>Managed Charging Start Time</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="maxcharges" advanced="true">
-		<item-type>Number</item-type>
-		<label>Max Charges</label>
-		<description>Indicates the number of consecutive "Max Range Charges" performed by the vehicle</description>
-		<state pattern="%d" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="minavailabletemp">
-		<item-type>Number</item-type>
-		<label>Minimum Temperature</label>
-		<description>Indicates the minimal inside temperature of the vehicle in Celsius or Fahrenheit</description>
-		<state pattern="%.1f°" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="maxavailabletemp">
-		<item-type>Number</item-type>
-		<label>Maximum Temperature</label>
-		<description>Indicates the maximum inside temperature of the vehicle in Celsius or Fahrenheit</description>
-		<state pattern="%.1f°" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="mobileenabled" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Mobile Enabled</label>
-		<description>Indicates whether the vehicle can be remotely controlled</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="notenoughpower" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Not Enought Power </label>
-		<description>Indicates if not enough power (ON) is available to heat the vehicle</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="notificationsenabled" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Notifications Enabled</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="notificationssupported" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Notifications Supported</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="odometer">
-		<item-type>Number</item-type>
-		<label>Odometer</label>
-		<description>Odometer of the vehicle, in km or miles</description>
-		<state pattern="%.1f km|miles" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="outsidetemp" advanced="true">
-		<item-type>Number</item-type>
-		<label>Outside Temperature</label>
-		<description>Indicates the outside temperature of the vehicle in Celsius or Fahrenheit</description>
-		<state pattern="%.1f°" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="parsedcalendar" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Parsed Calendar Supported</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="passengertemp" advanced="true">
-		<item-type>Number</item-type>
-		<label>Passenger Temperature</label>
-		<description>Indicates the auto conditioning temperature set at the passenger's side</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="passengerfrontdoor" advanced="true">
-		<item-type>Contact</item-type>
-		<label>Passenger Front Door</label>
-		<description>Indicates if the front door at the passenger's side is opened</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="passengerreardoor" advanced="true">
-		<item-type>Contact</item-type>
-		<label>Passenger Rear Door</label>
-		<description>Indicates if the rear door at the passenger's side is opened</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="power" advanced="true">
-		<item-type>Number</item-type>
-		<label>Power</label>
-		<description>Net kW flowing in (+) or out (-) of the battery</description>
-		<state pattern="%.1f kW" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="preconditioning" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Preconditioning</label>
-		<description>Indicates if preconditioning is activated</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="range" advanced="true">
-		<item-type>Number</item-type>
-		<label>Range</label>
-		<description>Vehicle range - Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="reardefroster" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Rear Defroster</label>
-		<description>Indicates if the rear defroster is enabled</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="remotestartenabled" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Remote Start</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="reartrunk" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Rear Trunk</label>
-		<description>Indicates if the rear trunk is opened, or open/close the rear trunk when ON/OFF is received</description>
-	</channel-type>
-	<channel-type id="remotestart" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Remote Start</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="remotestartsupported" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Remote Start Supported</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="rightseatheater" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Right Seat Heater</label>
-		<description>Indicates if the right seat heater is switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="rightrearseatheater" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Right Rear Seat Heater</label>
-		<description>Indicates if the right rear seat heater is switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="rightrearbackseatheater" advanced="true">
-		<item-type>Number</item-type>
-		<label>Right Rear Backseat Heater</label>
-		<description>Indicates the level (0,1,2 or 3) of the right rear backseat heater</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="righttempdirection" advanced="true">
-		<item-type>Number</item-type>
-		<label>Right Temperature Direction</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="scheduledchargingpending" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Scheduled Charging Pending</label>
-		<description>Indicates if a scheduled charging session is still pending</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="scheduledchargingstart" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Scheduled Charging Start</label>
-		<description>Indicates when the scheduled charging session will start, in yyyy-MM-dd'T'HH:mm:ss format</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="shiftstate" advanced="true">
-		<item-type>String</item-type>
-		<label>Shift State</label>
-		<description>Indicates the state of the transmission, “P”, “D”, “R”, or “N”</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="sidemirrorheaters" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Side Mirror Heaters</label>
-		<description>Indicates if the side mirror heaters are switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="smartpreconditioning" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Smart Preconditioning</label>
-		<description>Indicates if smart preconditioning is switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="soc" advanced="true">
-		<item-type>Dimmer</item-type>
-		<label>State of Charge</label>
-		<description>State of Charge, in %</description>
-		<state pattern="%.1f %%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="speed">
-		<item-type>Number</item-type>
-		<label>Speed</label>
-		<description>Vehicle speed, in km/hr or miles/hr</description>
-		<state pattern="%d km|miles/h" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="state" advanced="true">
-		<item-type>String</item-type>
-		<label>State</label>
-		<description>“online”, “asleep”, “waking”</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="steeringwheelheater" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Steering Wheel Heater</label>
-		<description>Indicates if the steering wheel heater is switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="sunroofstate" advanced="true">
-		<item-type>String</item-type>
-		<label>Sunroof State</label>
-		<description>“unknown”, “open”, “closed”, “vent”, “comfort”</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="sunroof">
-		<item-type>Dimmer</item-type>
-		<label>Sunroof</label>
-		<description>Open or close the sunroof to provided % (0 closed, 100 fully open)</description>
-		<state pattern="%d %%"></state>
-	</channel-type>
-	<channel-type id="temperature" advanced="true">
-		<item-type>Number</item-type>
-		<label>Temperature</label>
-		<description>Set the temperature of the autoconditioning system in Celsius or Fahrenheit. The temperature for the
-				driver and passenger will be synced</description>
-		<state pattern="%.1f°"></state>
-	</channel-type>
-	<channel-type id="timetofullcharge" advanced="true">
-		<item-type>Number</item-type>
-		<label>Time To Full Charge</label>
-		<description>Number of hours to fully charge the battery</description>
-		<state pattern="%.1f h" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="tripcharging" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Trip Charging</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="usablebatterylevel" advanced="true">
-		<item-type>Number</item-type>
-		<label>Usable Battery Level</label>
-		<description>Indicates the % of battery that can be used for vehicle functions like driving</description>
-		<state pattern="%.1f %%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="userchargeenablerequest" advanced="true">
-		<item-type>String</item-type>
-		<label>User Charge Enable Request</label>
-		<description>Not documented / To be defined</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="valetmode" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Valet Mode</label>
-		<description>Enable or disable Valet Mode</description>
-	</channel-type>
-	<channel-type id="valetpin" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Valet PIN Required</label>
-		<description>Indicates if a PIN code is required to disable valet mode</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="wakeup" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Wake Up</label>
-		<description>Wake up the vehicle from a (deep) sleep</description>
-	</channel-type>
-	<channel-type id="wiperbladeheater" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Wiperblade Heater</label>
-		<description>Indicates if the wiperblade heater is switched on</description>
-		<state readOnly="true"></state>
-	</channel-type>
 </thing:thing-descriptions>

@@ -13,7 +13,7 @@
 package org.openhab.binding.rfxcom.internal.config;
 
 /**
- * Configuration class for {@link RfxcomBinding} device.
+ * Configuration class for RfxcomBinding device.
  *
  * @author Pauli Anttila - Initial contribution
  */

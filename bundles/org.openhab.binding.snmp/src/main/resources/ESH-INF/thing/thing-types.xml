@@ -16,7 +16,7 @@
 			</parameter>
 			<!-- optional -->
 			<parameter name="protocol" type="text">
-				<label>SNMP version</label>
+				<label>SNMP Version</label>
 				<options>
 					<option value="v1">V1</option>
 					<option value="v2c">V2c</option>
