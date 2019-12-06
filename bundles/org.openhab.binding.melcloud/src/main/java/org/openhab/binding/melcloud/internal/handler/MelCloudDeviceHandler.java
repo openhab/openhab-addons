@@ -112,10 +112,6 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         if (bridge != null) {
             initializeBridge(bridge.getHandler(), bridgeStatusInfo.getStatus());
         }
-
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            startAutomaticRefresh();
-        }
     }
 
     private void initializeBridge(ThingHandler thingHandler, ThingStatus bridgeStatus) {
@@ -126,6 +122,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
 
             if (bridgeStatus == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
+                startAutomaticRefresh();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
@@ -144,12 +141,12 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         }
 
         if (melCloudHandler == null) {
-            logger.warn("No connection to MELCloud available, ignore command");
+            logger.warn("No connection to MELCloud available, ignoring command");
             return;
         }
 
         if (deviceStatus == null) {
-            logger.info("No initial data available, bridge is probably offline. Ignore command");
+            logger.info("No initial data available, bridge is probably offline. Ignoring command");
             return;
         }
 
@@ -172,14 +169,13 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
                             .toUnit(CELSIUS);
                     if (quantity != null) {
                         val = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
+                        // round nearest .5
+                        double v = Math.round(val.doubleValue() * 2) / 2.0;
+                        cmdtoSend.setSetTemperature(v);
+                        cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_TEMPERATURE);
                     }
                 }
-                if (val != null) {
-                    // round nearest .5
-                    double v = Math.round(val.doubleValue() * 2) / 2.0;
-                    cmdtoSend.setSetTemperature(v);
-                    cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_TEMPERATURE);
-                } else {
+                if (val == null) {
                     logger.debug("Can't convert '{}' to set temperature", command);
                 }
                 break;
@@ -196,7 +192,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
                 cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_VANE_HORIZONTAL);
                 break;
             default:
-                logger.debug("Read only or unknown channel {}, skip update", channelUID);
+                logger.debug("Read-only or unknown channel {}, skipping update", channelUID);
         }
 
         if (cmdtoSend.getEffectiveFlags() > 0) {
@@ -254,7 +250,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
                         e.getMessage(), e);
             }
         } else {
-            logger.debug("Connection to MELCloud is not open, skip periodic update");
+            logger.debug("Connection to MELCloud is not open, skipping periodic update");
         }
     }
 

@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -51,7 +50,7 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
 
-    private @NonNullByDefault({}) MelCloudAccountHandler melCloudHandler;
+    private MelCloudAccountHandler melCloudHandler;
     private ScheduledFuture<?> scanTask;
 
     /**
