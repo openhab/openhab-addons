@@ -309,8 +309,12 @@ public abstract class EnOceanTransceiver {
                                             logger.debug("{} with RORG {} for {} payload {} received",
                                                     packet.getPacketType().name(), msg.getRORG().name(),
                                                     HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(d));
-
-                                            informListeners(msg);
+                                            
+                                            if(msg.getRORG() != RORG.Unknown) {
+                                                informListeners(msg);
+                                            } else {
+                                                logger.info("Received unknown RORG, payload {}", HexUtils.bytesToHex(d));
+                                            }
                                         }
                                             break;
                                         case RADIO_ERP2:
