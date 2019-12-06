@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.weathercompany.internal;
+package org.openhab.binding.weathercompany.internal.handler;
 
 import java.io.IOException;
 import java.util.concurrent.Future;
