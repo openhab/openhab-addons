@@ -95,108 +95,97 @@ public class MelCloudConnection {
     }
 
     public List<Device> fetchDeviceList() throws MelCloudCommException {
-        if (isConnected()) {
-            try {
-                String response = HttpUtil.executeUrl("GET", DEVICE_LIST_URL, getHeaderProperties(), null, null,
-                        TIMEOUT_MILLISECONDS);
-                logger.debug("Device list response: {}", response);
-                List<Device> devices = new ArrayList<Device>();
-                ListDevicesResponse[] buildings = gson.fromJson(response, ListDevicesResponse[].class);
-                Arrays.asList(buildings).forEach(building -> {
-                    if (building.getStructure().getDevices() != null) {
-                        devices.addAll(building.getStructure().getDevices());
+        assertConnected();
+        try {
+            String response = HttpUtil.executeUrl("GET", DEVICE_LIST_URL, getHeaderProperties(), null, null,
+                    TIMEOUT_MILLISECONDS);
+            logger.debug("Device list response: {}", response);
+            List<Device> devices = new ArrayList<Device>();
+            ListDevicesResponse[] buildings = gson.fromJson(response, ListDevicesResponse[].class);
+            Arrays.asList(buildings).forEach(building -> {
+                if (building.getStructure().getDevices() != null) {
+                    devices.addAll(building.getStructure().getDevices());
+                }
+                building.getStructure().getFloors().forEach(floor -> {
+                    if (floor.getDevices() != null) {
+                        devices.addAll(floor.getDevices());
                     }
-                    building.getStructure().getFloors().forEach(floor -> {
-                        if (floor.getDevices() != null) {
-                            devices.addAll(floor.getDevices());
+                    floor.getAreas().forEach(area -> {
+                        if (area.getDevices() != null) {
+                            devices.addAll(area.getDevices());
                         }
-                        floor.getAreas().forEach(area -> {
-                            if (area.getDevices() != null) {
-                                devices.addAll(area.getDevices());
-                            }
-                        });
                     });
                 });
-                logger.debug("Found {} devices", devices.size());
+            });
+            logger.debug("Found {} devices", devices.size());
 
-                return devices;
-            } catch (IOException | JsonSyntaxException e) {
-                setConnected(false);
-                throw new MelCloudCommException("Error occurred during device list poll", e);
-            }
+            return devices;
+        } catch (IOException | JsonSyntaxException e) {
+            setConnected(false);
+            throw new MelCloudCommException("Error occurred during device list poll", e);
         }
-        throw new MelCloudCommException("Not connected to MELCloud");
     }
 
     public DeviceStatus fetchDeviceStatus(int deviceId, int buildingId) throws MelCloudCommException {
-        if (isConnected()) {
-            String url = DEVICE_URL + String.format("/Get?id=%d&buildingID=%d", deviceId, buildingId);
-            try {
-                String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null,
-                        TIMEOUT_MILLISECONDS);
-                logger.debug("Device status response: {}", response);
-                DeviceStatus deviceStatus = gson.fromJson(response, DeviceStatus.class);
-                return deviceStatus;
-            } catch (IOException | JsonSyntaxException e) {
-                setConnected(false);
-                throw new MelCloudCommException("Error occurred during device status fetch", e);
-            }
+        assertConnected();
+        String url = DEVICE_URL + String.format("/Get?id=%d&buildingID=%d", deviceId, buildingId);
+        try {
+            String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null, TIMEOUT_MILLISECONDS);
+            logger.debug("Device status response: {}", response);
+            DeviceStatus deviceStatus = gson.fromJson(response, DeviceStatus.class);
+            return deviceStatus;
+        } catch (IOException | JsonSyntaxException e) {
+            setConnected(false);
+            throw new MelCloudCommException("Error occurred during device status fetch", e);
         }
-        throw new MelCloudCommException("Not connected to MELCloud");
     }
 
     public DeviceStatus sendDeviceStatus(DeviceStatus deviceStatus) throws MelCloudCommException {
-        if (isConnected()) {
-            String content = gson.toJson(deviceStatus, DeviceStatus.class);
-            logger.debug("Sending device status: {}", content);
-            InputStream data = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-            try {
-                String response = HttpUtil.executeUrl("POST", DEVICE_URL + "/SetAta", getHeaderProperties(), data,
-                        "application/json", TIMEOUT_MILLISECONDS);
-                logger.debug("Device status sending response: {}", response);
-                return gson.fromJson(response, DeviceStatus.class);
-            } catch (IOException | JsonSyntaxException e) {
-                setConnected(false);
-                throw new MelCloudCommException("Error occurred during device command sending", e);
-            }
+        assertConnected();
+        String content = gson.toJson(deviceStatus, DeviceStatus.class);
+        logger.debug("Sending device status: {}", content);
+        InputStream data = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+        try {
+            String response = HttpUtil.executeUrl("POST", DEVICE_URL + "/SetAta", getHeaderProperties(), data,
+                    "application/json", TIMEOUT_MILLISECONDS);
+            logger.debug("Device status sending response: {}", response);
+            return gson.fromJson(response, DeviceStatus.class);
+        } catch (IOException | JsonSyntaxException e) {
+            setConnected(false);
+            throw new MelCloudCommException("Error occurred during device command sending", e);
         }
-        throw new MelCloudCommException("Not connected to MELCloud");
     }
 
     public HeatpumpDeviceStatus fetchHeatpumpDeviceStatus(int deviceId, int buildingId) throws MelCloudCommException {
-        if (isConnected()) {
-            String url = DEVICE_URL + String.format("/Get?id=%d&buildingID=%d", deviceId, buildingId);
-            try {
-                String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null,
-                        TIMEOUT_MILLISECONDS);
-                logger.debug("Device heatpump status response: {}", response);
-                HeatpumpDeviceStatus heatpumpDeviceStatus = gson.fromJson(response, HeatpumpDeviceStatus.class);
-                return heatpumpDeviceStatus;
-            } catch (IOException | JsonSyntaxException e) {
-                setConnected(false);
-                throw new MelCloudCommException("Error occurred during heatpump device status fetch", e);
-            }
+        assertConnected();
+        String url = DEVICE_URL + String.format("/Get?id=%d&buildingID=%d", deviceId, buildingId);
+        try {
+            String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null, TIMEOUT_MILLISECONDS);
+            logger.debug("Device heatpump status response: {}", response);
+            HeatpumpDeviceStatus heatpumpDeviceStatus = gson.fromJson(response, HeatpumpDeviceStatus.class);
+            return heatpumpDeviceStatus;
+        } catch (IOException | JsonSyntaxException e) {
+            setConnected(false);
+            throw new MelCloudCommException("Error occurred during heatpump device status fetch", e);
         }
-        throw new MelCloudCommException("Not connected to MELCloud");
     }
 
     public HeatpumpDeviceStatus sendHeatpumpDeviceStatus(HeatpumpDeviceStatus heatpumpDeviceStatus)
             throws MelCloudCommException {
-        if (isConnected()) {
-            String content = gson.toJson(heatpumpDeviceStatus, HeatpumpDeviceStatus.class);
-            logger.debug("Sending heatpump device status: {}", content);
-            InputStream data = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-            try {
-                String response = HttpUtil.executeUrl("POST", DEVICE_URL + "/SetAtw", getHeaderProperties(), data,
-                        "application/json", TIMEOUT_MILLISECONDS);
-                logger.debug("Device heatpump status sending response: {}", response);
-                return gson.fromJson(response, HeatpumpDeviceStatus.class);
-            } catch (IOException | JsonSyntaxException e) {
-                setConnected(false);
-                throw new MelCloudCommException("Error occurred during heatpump device command sending", e);
-            }
+        assertConnected();
+        String content = gson.toJson(heatpumpDeviceStatus, HeatpumpDeviceStatus.class);
+        logger.debug("Sending heatpump device status: {}", content);
+        InputStream data = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+        try {
+            String response = HttpUtil.executeUrl("POST", DEVICE_URL + "/SetAtw", getHeaderProperties(), data,
+                    "application/json", TIMEOUT_MILLISECONDS);
+            logger.debug("Device heatpump status sending response: {}", response);
+            return gson.fromJson(response, HeatpumpDeviceStatus.class);
+        } catch (IOException | JsonSyntaxException e) {
+            setConnected(false);
+            throw new MelCloudCommException("Error occurred during heatpump device command sending", e);
         }
-        throw new MelCloudCommException("Not connected to MELCloud");
+
     }
 
     public synchronized boolean isConnected() {
@@ -211,5 +200,11 @@ public class MelCloudConnection {
         Properties headers = new Properties();
         headers.put("X-MitsContextKey", sessionKey);
         return headers;
+    }
+
+    private void assertConnected() throws MelCloudCommException {
+        if (!isConnected) {
+            throw new MelCloudCommException("Not connected to MELCloud");
+        }
     }
 }
