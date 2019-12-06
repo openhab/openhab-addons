@@ -182,6 +182,12 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
         super.dispose();
     }
 
+    /**
+     * register a discovery listener to a specified topic on this broker (used by the handler factory)
+     *
+     * @param listener the discovery participant that wishes to be notified about this topic
+     * @param topic the topic (wildcards supported)
+     */
     public final void registerDiscoveryListener(MQTTTopicDiscoveryParticipant listener, String topic) {
         Map<MQTTTopicDiscoveryParticipant, @Nullable TopicSubscribe> topicListeners = discoveryTopics
                 .computeIfAbsent(topic, t -> new HashMap<>());
@@ -206,6 +212,12 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
         });
     }
 
+    /**
+     * unregisters a discovery listener from a specified topic on this broker (used by the handler factory)
+     *      *
+     * @param listener the discovery participant that wishes no notifications about this topic
+     * @param topic the topic (as specified during registration)
+     */
     public final void unregisterDiscoveryListener(MQTTTopicDiscoveryParticipant listener, String topic) {
         Map<MQTTTopicDiscoveryParticipant, @Nullable TopicSubscribe> topicListeners = discoveryTopics
                 .compute(topic, (k, v) -> {
