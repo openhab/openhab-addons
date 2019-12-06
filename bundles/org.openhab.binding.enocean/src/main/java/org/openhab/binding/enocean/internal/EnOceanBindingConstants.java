@@ -24,6 +24,7 @@ import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Power;
+import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Volume;
 
@@ -192,20 +193,19 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_FANSPEEDSTAGE), CoreItemFactory.STRING));
                     put(CHANNEL_OCCUPANCY, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_OCCUPANCY), CoreItemFactory.SWITCH));
-                    put(CHANNEL_MOTIONDETECTION, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_MOTIONDETECTION), CoreItemFactory.SWITCH));
+                    put(CHANNEL_MOTIONDETECTION, new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_MOTION.getUID(), CoreItemFactory.SWITCH));
                     put(CHANNEL_VIBRATION, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_VIBRATION), CoreItemFactory.SWITCH));
                     put(CHANNEL_ILLUMINATION, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATION), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
                     put(CHANNEL_ILLUMINATIONWEST, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONWEST), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONWEST), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
                     put(CHANNEL_ILLUMINATIONSOUTHNORTH, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONSOUTHNORTH), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONSOUTHNORTH), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
                     put(CHANNEL_ILLUMINATIONEAST, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONEAST), CoreItemFactory.NUMBER));
-                    put(CHANNEL_WINDSPEED, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_WINDSPEED), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONEAST), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
+                    put(CHANNEL_WINDSPEED, new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_WIND_SPEED.getUID(), 
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Speed.class.getSimpleName()));
                     put(CHANNEL_RAINSTATUS, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_RAINSTATUS), CoreItemFactory.SWITCH));
                     put(CHANNEL_COUNTER, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_COUNTER),
