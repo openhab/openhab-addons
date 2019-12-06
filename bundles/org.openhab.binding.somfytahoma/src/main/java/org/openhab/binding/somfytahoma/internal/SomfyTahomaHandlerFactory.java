@@ -53,7 +53,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Activate
     public SomfyTahomaHandlerFactory(@Reference HttpClientFactory httpClientFactory) {

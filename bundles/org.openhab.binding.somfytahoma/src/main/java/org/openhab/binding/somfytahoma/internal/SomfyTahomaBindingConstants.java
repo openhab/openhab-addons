@@ -156,8 +156,7 @@ public class SomfyTahomaBindingConstants {
     public static final String CONTACT = "contact";
 
     // Smoke sensor
-    public static final String SHORT_CHECK = "short_check";
-    public static final String LONG_CHECK = "long_check";
+    public static final String ALARM_CHECK = "alarm_check";
 
     // Light sensor
     public static final String LUMINANCE = "luminance";
@@ -243,38 +242,38 @@ public class SomfyTahomaBindingConstants {
     public static final int SUSPEND_TIME = 120;
 
     // supported uiClasses
-    public static final String ROLLERSHUTTER = "RollerShutter";
-    public static final String SCREEN = "Screen";
-    public static final String VENETIANBLIND = "VenetianBlind";
-    public static final String EXTERIORSCREEN = "ExteriorScreen";
-    public static final String EXTERIORVENETIANBLIND = "ExteriorVenetianBlind";
-    public static final String GARAGEDOOR = "GarageDoor";
-    public static final String AWNING = "Awning";
-    public static final String ONOFF = "OnOff";
-    public static final String LIGHT = "Light";
-    public static final String LIGHTSENSOR = "LightSensor";
-    public static final String SMOKESENSOR = "SmokeSensor";
-    public static final String CONTACTSENSOR = "ContactSensor";
-    public static final String OCCUPANCYSENSOR = "OccupancySensor";
-    public static final String WINDOW = "Window";
-    public static final String ALARM = "Alarm";
-    public static final String POD = "Pod";
-    public static final String HEATINGSYSTEM = "HeatingSystem";
-    public static final String DOORLOCK = "DoorLock";
-    public static final String PERGOLA = "Pergola";
-    public static final String WINDOWHANDLE = "WindowHandle";
-    public static final String TEMPERATURESENSOR = "TemperatureSensor";
-    public static final String GATE = "Gate";
-    public static final String CURTAIN = "Curtain";
-    public static final String ELECTRICITYSENSOR = "ElectricitySensor";
-    public static final String DOCK = "Dock";
-    public static final String SIREN = "Siren";
-    public static final String ADJUSTABLESLATSROLLERSHUTTER = "AdjustableSlatsRollerShutter";
+    public static final String THING_ROLLER_SHUTTER = "RollerShutter";
+    public static final String THING_SCREEN = "Screen";
+    public static final String THING_VENETIAN_BLIND = "VenetianBlind";
+    public static final String THING_EXTERIOR_SCREEN = "ExteriorScreen";
+    public static final String THING_EXTERIOR_VENETIAN_BLIND = "ExteriorVenetianBlind";
+    public static final String THING_GARAGE_DOOR = "GarageDoor";
+    public static final String THING_AWNING = "Awning";
+    public static final String THING_ON_OFF = "OnOff";
+    public static final String THING_LIGHT = "Light";
+    public static final String THING_LIGHT_SENSOR = "LightSensor";
+    public static final String THING_SMOKE_SENSOR = "SmokeSensor";
+    public static final String THING_CONTACT_SENSOR = "ContactSensor";
+    public static final String THING_OCCUPANCY_SENSOR = "OccupancySensor";
+    public static final String THING_WINDOW = "Window";
+    public static final String THING_ALARM = "Alarm";
+    public static final String THING_POD = "Pod";
+    public static final String THING_HEATING_SYSTEM = "HeatingSystem";
+    public static final String THING_DOOR_LOCK = "DoorLock";
+    public static final String THING_PERGOLA = "Pergola";
+    public static final String THING_WINDOW_HANDLE = "WindowHandle";
+    public static final String THING_TEMPERATURE_SENSOR = "TemperatureSensor";
+    public static final String THING_GATE = "Gate";
+    public static final String THING_CURTAIN = "Curtain";
+    public static final String THING_ELECTRICITY_SENSOR = "ElectricitySensor";
+    public static final String THING_DOCK = "Dock";
+    public static final String THING_SIREN = "Siren";
+    public static final String THING_ADJUSTABLE_SLATS_ROLLER_SHUTTER = "AdjustableSlatsRollerShutter";
 
     // unsupported uiClasses
-    public static final String PROTOCOLGATEWAY = "ProtocolGateway";
-    public static final String REMOTECONTROLLER = "RemoteController";
-    public static final String NETWORKCOMPONENT = "NetworkComponent";
+    public static final String THING_PROTOCOL_GATEWAY = "ProtocolGateway";
+    public static final String THING_REMOTE_CONTROLLER = "RemoteController";
+    public static final String THING_NETWORK_COMPONENT = "NetworkComponent";
 
     // cache timeout
     public static final int CACHE_EXPIRY = 10000;
