@@ -158,14 +158,13 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
                             .toUnit(CELSIUS);
                     if (quantity != null) {
                         val = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
+                        // round nearest .5
+                        double v = Math.round(val.doubleValue() * 2) / 2.0;
+                        cmdtoSend.setSetTemperatureZone1(v);
+                        cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_TEMPERATURE_ZONE1);
                     }
                 }
-                if (val != null) {
-                    // round nearest .5
-                    double v = Math.round(val.doubleValue() * 2) / 2.0;
-                    cmdtoSend.setSetTemperatureZone1(v);
-                    cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_TEMPERATURE_ZONE1);
-                } else {
+                if (val == null) {
                     logger.debug("Can't convert '{}' to set temperature", command);
                 }
                 break;

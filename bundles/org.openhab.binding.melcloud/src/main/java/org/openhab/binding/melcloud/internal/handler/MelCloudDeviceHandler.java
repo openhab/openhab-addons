@@ -169,14 +169,13 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
                             .toUnit(CELSIUS);
                     if (quantity != null) {
                         val = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
+                        // round nearest .5
+                        double v = Math.round(val.doubleValue() * 2) / 2.0;
+                        cmdtoSend.setSetTemperature(v);
+                        cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_TEMPERATURE);
                     }
                 }
-                if (val != null) {
-                    // round nearest .5
-                    double v = Math.round(val.doubleValue() * 2) / 2.0;
-                    cmdtoSend.setSetTemperature(v);
-                    cmdtoSend.setEffectiveFlags(EFFECTIVE_FLAG_TEMPERATURE);
-                } else {
+                if (val == null) {
                     logger.debug("Can't convert '{}' to set temperature", command);
                 }
                 break;
