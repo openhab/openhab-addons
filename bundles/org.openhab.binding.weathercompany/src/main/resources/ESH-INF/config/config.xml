@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:weathercompany:account">
+		<parameter name="apiKey" type="text" required="true">
+			<label>API Key</label>
+			<description>Enter the API key</description>
+			<context>password</context>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:weathercompany:weather-observations">
+		<parameter name="pwsStationId" type="text" required="true">
+			<label>PWS Station ID</label>
+			<description>ID of your Personal Weather Station (e.g. KILCHICA52)</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="2" required="false" unit="min">
+			<label>Refresh interval</label>
+			<description>Specifies the refresh interval in minutes</description>
+			<default>30</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:weathercompany:weather-forecast">
+		<parameter name="locationType" type="text" required="true">
+			<label>Location Type</label>
+			<description>Location type (Postal Code, Geocode)</description>
+			<default>postal</default>
+			<options>
+				<option value="postalCode">Postal Code</option>
+				<option value="geocode">Geocode</option>
+				<option value="iataCode">IATA Code</option>
+			</options>
+		</parameter>
+		<parameter name="postalCode" type="text" required="false">
+			<label>Postal code</label>
+			<description>Postal code of form postal:country (e.g. 10001:US)</description>
+		</parameter>
+		<parameter name="geocode" type="text" required="false">
+			<context>location</context>
+			<label>Location</label>
+			<description><![CDATA[
+<p>The location of this weather forecast.</p>
+<p>Coordinates as &lt;latitude&gt;,&lt;longitude&gt;[&lt;altitude&gt;]</p>
+<p>Example: "52.5200066,13.4049540" (Berlin)</p>
+]]>
+			</description>
+		</parameter>
+		<parameter name="iataCode" type="text" required="false">
+			<label>IATA Code</label>
+			<description>IATA airport code (e.g. BWI)</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="2" required="false" unit="min">
+			<label>Refresh interval</label>
+			<description>Specifies the refresh interval in minutes</description>
+			<default>30</default>
+		</parameter>
+		<parameter name="language" type="text" required="false">
+			<label>Language</label>
+			<description>Language to be used by the Weather Company service</description>
+			<options>
+				<option value="sq-AL">Albanian - (Albania)</option>
+				<option value="ar-AE">Arabic - (United Arab Emirates)</option>
+				<option value="az-AZ">Azerbaijani - (Azerbaijan)</option>
+				<option value="bn-BD">Bengali, Bangla - (Bangladesh)</option>
+				<option value="bn-IN">Bengali, Bangla - (India)</option>
+				<option value="bs-BA">Bosnian - (Bosnia and Herzegovina)</option>
+				<option value="bg-BG">Bulgarian - (Bulgaria)</option>
+				<option value="ca-ES">Catalan - (Spain)</option>
+				<option value="zh-CN">Chinese - (China)</option>
+				<option value="zh-HK">Chinese - (Hong Kong)</option>
+				<option value="zh-TW">Chinese - (Taiwan)</option>
+				<option value="hr-HR">Croatian - (Croatia)</option>
+				<option value="cs-CZ">Czech - (Czechia)</option>
+				<option value="da-DK">Danish - (Denmark)</option>
+				<option value="nl-NL">Dutch - (Netherlands)</option>
+				<option value="en-GB">English (Great Britain)</option>
+				<option value="en-IN">English - (India)</option>
+				<option value="en-US">English - (United States of America)</option>
+				<option value="et-EE">Estonian - (Estonia)</option>
+				<option value="fi-FI">Finnish - (Finland)</option>
+				<option value="fr-CA">French - (Canada)</option>
+				<option value="fr-FR">French - (France)</option>
+				<option value="ka-GE">Georgian - (Georgia)</option>
+				<option value="de-DE">German - (Germany)</option>
+				<option value="el-GR">Greek (modern) - (Greece)</option>
+				<option value="gu-IN">Gujarati - (India)</option>
+				<option value="he-IL">Hebrew (modern) - (Israel)</option>
+				<option value="iw-IL">Hebrew - (Israel)</option>
+				<option value="hi-IN">Hindi - (India)</option>
+				<option value="hu-HU">Hungarian - (Hungary)</option>
+				<option value="is-IS">Icelandic - (Iceland)</option>
+				<option value="in-ID">Indonesian - (Indonesia)</option>
+				<option value="it-IT">Italian - (Italy)</option>
+				<option value="ja-JP">Japanese - (Japan)</option>
+				<option value="jv-ID">Javanese - (Indonesia)</option>
+				<option value="kn-IN">Kannada - (India)</option>
+				<option value="kk-KZ">Kazakh - (Kazakhstan)</option>
+				<option value="ko-KR">Korean - (South Korea)</option>
+				<option value="lv-LV">Latvian - (Latvia)</option>
+				<option value="lt-LT">Lithuanian - (Lithuania)</option>
+				<option value="mk-MK">Macedonian - (Macedonia)</option>
+				<option value="ms-MY">Malay - (Malaysia)</option>
+				<option value="mn-MN">Mongolian - (Mongolia)</option>
+				<option value="no-NO">Norwegian - (Norway)</option>
+				<option value="fa-IR">Persian (Farsi) - (Iran)</option>
+				<option value="pl-PL">Polish - (Poland)</option>
+				<option value="pt-BR">Portuguese - (Brazil)</option>
+				<option value="pt-PT">Portuguese - (Portugal)</option>
+				<option value="ro-RO">Romanian - (Romania)</option>
+				<option value="ru-RU">Russian - (Russia)</option>
+				<option value="sr-BA">Serbian - (Bosnia and Herzegovina)</option>
+				<option value="sr-ME">Serbian - (Montenegro)</option>
+				<option value="sr-RS">Serbian - (Serbia)</option>
+				<option value="si-LK">Sinhalese, Sinhala - (Sri Lanka)</option>
+				<option value="sk-SK">Slovak - (Slovakia)</option>
+				<option value="sl-SI">Slovenian - (Slovenia)</option>
+				<option value="es-AR">Spanish - (Argentina)</option>
+				<option value="es-ES">Spanish - (Spain)</option>
+				<option value="es-LA">Spanish - (Latin America)</option>
+				<option value="es-MX">Spanish - (Mexico)</option>
+				<option value="es-UN">Spanish - (International)</option>
+				<option value="es-US">Spanish - (United States of America)</option>
+				<option value="sw-KE">Swahili - (Kenya)</option>
+				<option value="sv-SE">Swedish - (Sweden)</option>
+				<option value="tl-PH">Tagalog - (Philippines)</option>
+				<option value="tg-TJ">Tajik - (Tajikistan)</option>
+				<option value="ta-IN">Tamil - (India)</option>
+				<option value="ta-LK">Tamil - (Sri Lanka)</option>
+				<option value="te-IN">Telugu - (India)</option>
+				<option value="th-TH">Thai - (Thailand)</option>
+				<option value="tr-TR">Turkish - (Turkey)</option>
+				<option value="tk-TM">Turkmen - (Turkmenistan)</option>
+				<option value="uk-UA">Ukrainian - (Ukraine)</option>
+				<option value="ur-PK">Urdu - (Pakistan)</option>
+				<option value="uz-UZ">Uzbek - (Uzbekistan)</option>
+				<option value="vi-VN">Vietnamese - (Viet Nam)</option>
+			</options>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

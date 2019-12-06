@@ -75,6 +75,7 @@ public class TelegramActions implements ThingActions {
         return true;
     }
 
+    @NonNullByDefault
     private static class BasicResult implements Authentication.Result {
 
         private final HttpHeader header;
@@ -142,7 +143,6 @@ public class TelegramActions implements ThingActions {
                 return false;
             }
             return message != null ? sendTelegram(chatId, message) : true;
-
         }
         return false;
     }

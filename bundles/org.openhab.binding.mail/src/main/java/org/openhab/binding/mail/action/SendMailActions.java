@@ -70,7 +70,7 @@ public class SendMailActions implements ThingActions {
             @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "text") @Nullable String text,
             @ActionInput(name = "urlList") @Nullable List<String> urlStringList) {
         if (recipient == null) {
-            logger.info("can't send to missing recipient");
+            logger.warn("Cannot send mail as recipient is missing.");
             return false;
         }
 
@@ -90,19 +90,19 @@ public class SendMailActions implements ThingActions {
             }
 
             if (handler == null) {
-                logger.info("handler is null, can't send mail");
+                logger.info("Handler is null, cannot send mail.");
                 return false;
             } else {
                 return handler.sendMail(builder.build());
             }
         } catch (AddressException e) {
-            logger.info("could not send mail: {}", e.getMessage());
+            logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         } catch (MalformedURLException e) {
-            logger.info("could not send mail: {}", e.getMessage());
+            logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         } catch (EmailException e) {
-            logger.info("could not send mail: {}", e.getMessage());
+            logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }
     }
@@ -126,7 +126,7 @@ public class SendMailActions implements ThingActions {
         if (actions instanceof SendMailActions) {
             return ((SendMailActions) actions).sendMail(recipient, subject, text, urlStringList);
         } else {
-            throw new IllegalArgumentException("Instance is not SendMailActions class.");
+            throw new IllegalArgumentException("Instance is not of class SendMailActions.");
         }
     }
 
@@ -156,7 +156,7 @@ public class SendMailActions implements ThingActions {
             @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "html") @Nullable String html,
             @ActionInput(name = "urlList") @Nullable List<String> urlStringList) {
         if (recipient == null) {
-            logger.info("can't send to missing recipient");
+            logger.warn("Cannot send mail as recipient is missing.");
             return false;
         }
 
@@ -176,19 +176,19 @@ public class SendMailActions implements ThingActions {
             }
 
             if (handler == null) {
-                logger.info("handler is null, can't send mail");
+                logger.warn("Handler is null, cannot send mail.");
                 return false;
             } else {
                 return handler.sendMail(builder.build());
             }
         } catch (AddressException e) {
-            logger.info("could not send mail: {}", e.getMessage());
+            logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         } catch (MalformedURLException e) {
-            logger.info("could not send mail: {}", e.getMessage());
+            logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         } catch (EmailException e) {
-            logger.info("could not send mail: {}", e.getMessage());
+            logger.warn("could not send mail: {}", e.getMessage());
             return false;
         }
     }
@@ -198,7 +198,7 @@ public class SendMailActions implements ThingActions {
         return SendMailActions.sendHtmlMail(actions, recipient, subject, html, new ArrayList<String>());
     }
 
-    public static boolean sendHtmMail(@Nullable ThingActions actions, @Nullable String recipient,
+    public static boolean sendHtmlMail(@Nullable ThingActions actions, @Nullable String recipient,
             @Nullable String subject, @Nullable String html, @Nullable String urlString) {
         List<String> urlList = new ArrayList<>();
         if (urlString != null) {
@@ -212,7 +212,7 @@ public class SendMailActions implements ThingActions {
         if (actions instanceof SendMailActions) {
             return ((SendMailActions) actions).sendHtmlMail(recipient, subject, html, urlStringList);
         } else {
-            throw new IllegalArgumentException("Instance is not SendMailActions class.");
+            throw new IllegalArgumentException("Instance is not of class SendMailActions.");
         }
     }
 

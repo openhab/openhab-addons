@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown, when a session already exists while initializing a new session.
  *
  * @author Oliver Kuhl - Initial contribution
  *
  */
-@SuppressWarnings("serial")
+@NonNullByDefault
 public class SessionExistsException extends ApiException {
+
+    private static final long serialVersionUID = 1L;
 
     public SessionExistsException() {
     }
