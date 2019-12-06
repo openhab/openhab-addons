@@ -223,7 +223,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                     baseId = HexUtils.hexToBytes(c.rs485BaseId);
                     if (baseId.length != 4) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "RS485 BaseId has wrong format");
+                                "RS485 BaseId has the wrong format. It is expected to be an 8 digit hex code, for example 01000000");
                     }
                 } else {
                     baseId = new byte[4];

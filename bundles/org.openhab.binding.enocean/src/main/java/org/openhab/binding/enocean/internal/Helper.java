@@ -21,6 +21,10 @@ import java.util.Arrays;
 public class Helper {
 
     public static byte[] concatAll(byte[] a, byte[]... rest) {
+        if(rest == null) {
+            return a;
+        }        
+        
         int totalLength = a.length;
         for (byte[] b : rest) {
             if (b != null) {
