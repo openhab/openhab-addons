@@ -95,7 +95,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 
 ² These are just examples of supported devices
 
-Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status) and 0x04 (extended light status).
+Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status), 0x04 (extended light status) and D0-06 (battery level indication).
 
 A `rockerSwitch` is used to receive messages from a physical EnOcean Rocker Switch.
 A `classicDevice` is used for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
@@ -160,19 +160,19 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 | rockerSwitch                    | receivingEEPId    |                             | F6_02_01, F6_02_02 |
 |                                 | enoceanId         | | |
-| mechanicalHandle                | receivingEEPId    |                             | F6_10_00, F6_10_01, A5_14_09 |
+| mechanicalHandle                | receivingEEPId    |                             | F6_10_00, F6_10_01, A5_14_09, D0_06_00 |
 |                                 | enoceanId         | | |
-| contact                         | receivingEEPId    |                             | D5_00_01, A5_14_01_ELTAKO |
+| contact                         | receivingEEPId    |                             | D5_00_01, A5_14_01_ELTAKO, D0_06_00 |
 |                                 | enoceanId         | | |
-| temperatureSensor               | receivingEEPId    |                             | A5_02_01-0B, A5_02_10-1B, A5_02_20, A5_02_30 |
+| temperatureSensor               | receivingEEPId    |                             | A5_02_01-0B, A5_02_10-1B, A5_02_20, A5_02_30, D0_06_00 |
 |                                 | enoceanId         | | |
-| temperatureHumiditySensor       | receivingEEPId    |                             | A5_04_01-03 |
+| temperatureHumiditySensor       | receivingEEPId    |                             | A5_04_01-03, D0_06_00 |
 |                                 | enoceanId         | | |
-| occupancySensor                 | receivingEEPId    |                             | A5_07_01-03 |
+| occupancySensor                 | receivingEEPId    |                             | A5_07_01-03, D0_06_00 |
 |                                 | enoceanId         | | |
-| lightTemperatureOccupancySensor | receivingEEPId    |                             | A5_08_01-03, A5_08_01_FXBH |
+| lightTemperatureOccupancySensor | receivingEEPId    |                             | A5_08_01-03, A5_08_01_FXBH, D0_06_00 |
 |                                 | enoceanId         | | |
-| lightSensor                     | receivingEEPId    |                             | A5_06_01, A5_06_01_ELTAKO |
+| lightSensor                     | receivingEEPId    |                             | A5_06_01, A5_06_01_ELTAKO, D0_06_00 |
 |                                 | enoceanId         | | |
 | roomOperatingPanel              | receivingEEPId    |                             | A5_10_01-0D, A5_10_10-1F, A5_10_20-23 |
 |                                 | enoceanId         | | |

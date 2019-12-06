@@ -26,6 +26,7 @@
 					<option value="A5_14_01">A5-14-01 Single input contact, supply voltage monitor</option>
 					<option value="A5_14_01_ELTAKO">Eltako battery status</option>
 					<option value="F6_10_00_EltakoFPE">F6-10-00 Eltako FPE-X</option>
+					<option value="D0_06_00">D0-06 signal message for battery status</option>
 				</options>
 				<default>D5_00_01</default>
 				<multipleLimit>2</multipleLimit>

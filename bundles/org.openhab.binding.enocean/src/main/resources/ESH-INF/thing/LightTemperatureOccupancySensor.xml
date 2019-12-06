@@ -18,7 +18,7 @@
 				<description>EnOceanId of device this thing belongs to</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text">
+			<parameter name="receivingEEPId" type="text" multiple="true">
 				<label>EEP</label>
 				<description>EEP which is used by sensor</description>
 				<options>
@@ -26,7 +26,9 @@
 					<option value="A5_08_02">A5-08-02 temperature range [0;51], lux range [0;1020]</option>
 					<option value="A5_08_03">A5-08-03 temperature range [-30;50], lux range [0;1530]</option>
 					<option value="A5_08_01_FXBH">Eltako FxBH lux range [0;2048]</option>
+					<option value="D0_06_00">D0-06 signal message for battery status</option>
 				</options>
+				<multipleLimit>2</multipleLimit>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>
 			</parameter>
