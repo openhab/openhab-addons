@@ -48,7 +48,7 @@ public class InnogyBindingConstants {
     public static final String CONFIG_WEBSOCKET_IDLE_TIMEOUT = "websocketidletimeout";
 
     public static final long REINITIALIZE_DELAY_SECONDS = 30;
-    public static final long REINITIALIZE_DELAY_LONG_SECONDS = 120;
+    public static final long REINITIALIZE_RETRY_SECONDS = 60;
 
     // API URLs
     public static final String API_VERSION = "1.1";
