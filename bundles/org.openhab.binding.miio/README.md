@@ -86,6 +86,9 @@ The following things types are available:
 | Mi Toothbrush                | miio:unsupported | soocare.toothbrush.x3  | No        |           |
 | Mi Robot Vacuum              | miio:vacuum      | [rockrobo.vacuum.v1](#rockrobo-vacuum-v1) | Yes       |           |
 | Mi Robot Vacuum v2           | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-s5) | Yes       |           |
+| Mi Robot Vacuum 1S           | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes       |           |
+| Roborock Vacuum S5 Max       | miio:vacuum      | [roborock.vacuum.s5e](#roborock-vacuum-s5e) | Yes       |           |
+| Roborock Vacuum S6           | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes       |           |
 | Rockrobo Xiaowa Vacuum v2    | miio:unsupported | roborock.vacuum.e2     | No        |           |
 | roborock.vacuum.c1           | miio:unsupported | roborock.vacuum.c1     | No        |           |
 | Rockrobo Xiaowa Sweeper v2   | miio:unsupported | roborock.sweeper.e2v2  | No        |           |
