@@ -10,10 +10,6 @@ bin/
 target/
 src-gen/
 xtend-gen/
-bin/
-bundles/io/org.openhab.io.multimedia.tts.marytts/lib/
-.antlr*
-.metadata/
 .history
 */plugin.xml_gen
 **/.settings/org.eclipse.*
