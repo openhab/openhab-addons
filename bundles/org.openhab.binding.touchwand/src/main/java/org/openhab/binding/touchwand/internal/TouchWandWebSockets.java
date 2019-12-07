@@ -20,6 +20,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,16 +59,23 @@ public class TouchWandWebSockets {
     private boolean isShutDown = false;
 
     private final Logger logger = LoggerFactory.getLogger(TouchWandWebSockets.class);
-    private List<TouchWandWebSocketListener> listeners = new ArrayList<>();
+    private List<TouchWandUnitStatusUpdateListener> listeners = new ArrayList<>();
+    @Nullable
+    private ScheduledFuture<?> SocketReconnt;
 
     private static final String WS_ENDPOINT_TOUCHWAND = "/async";
     private @Nullable URI uri;
     private static final int CONNECT_TIMEOUT = 10000; // 10 seconds
+    private static final int WEBSOCKET_RECONNECT_INTERVAL = CONNECT_TIMEOUT * 2;
+    private static final int WEBSOCKET_IDLE_TIMEOUT = CONNECT_TIMEOUT * 10;
+    ScheduledExecutorService scheduler;
 
-    public TouchWandWebSockets(String ipAddress) {
+    public TouchWandWebSockets(String ipAddress, ScheduledExecutorService scheduler) {
         client = new WebSocketClient();
         touchWandSocket = new TouchWandSocket();
         this.controllerAddress = ipAddress;
+        this.scheduler = scheduler;
+        SocketReconnt = null;
     }
 
     public void connect() {
@@ -98,19 +108,19 @@ public class TouchWandWebSockets {
         }
     }
 
-    public synchronized void registerListener(TouchWandWebSocketListener listener) {
+    public synchronized void registerListener(TouchWandUnitStatusUpdateListener listener) {
         if (!listeners.contains(listener)) {
-            logger.info("Adding TouchWandWebSocket listener {}", listener);
+            logger.debug("Adding TouchWandWebSocket listener {}", listener);
             listeners.add(listener);
         }
     }
 
-    public synchronized void unregisterListener(TouchWandWebSocketListener listener) {
-        logger.info("Removing TouchWandWebSocket listener {}", listener);
+    public synchronized void unregisterListener(TouchWandUnitStatusUpdateListener listener) {
+        logger.debug("Removing TouchWandWebSocket listener {}", listener);
         listeners.remove(listener);
     }
 
-    @WebSocket(maxIdleTime = CONNECT_TIMEOUT * 12)
+    @WebSocket(maxIdleTime = WEBSOCKET_IDLE_TIMEOUT)
     public class TouchWandSocket {
 
         @SuppressWarnings("unused")
@@ -121,30 +131,18 @@ public class TouchWandWebSockets {
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
-            logger.info("Connection closed: {} - {}", statusCode, reason);
+            logger.debug("Connection closed: {} - {}", statusCode, reason);
             if (!isShutDown) {
-                logger.info("weSocket Closed - reconnecting");
-                WebSocketReconnect reconnect = new WebSocketReconnect();
-                setTimeOut(reconnect, CONNECT_TIMEOUT * 2);
+                logger.debug("weSocket Closed - reconnecting");
+                AsyncWebSocketReconnect();
             } else {
                 this.session = null;
             }
         }
 
-        private synchronized void setTimeOut(WebSocketReconnect reconnect, int delay) {
-            new Thread(() -> {
-                try {
-                    Thread.sleep(delay);
-                    reconnect.run();
-                } catch (Exception e) {
-                    logger.warn("Error open setTimeout thread {} ", e.getMessage());
-                }
-            }).start();
-        }
-
         @OnWebSocketConnect
         public void onConnect(Session session) {
-            logger.info("TouchWandWebSockets connected to {}", session.getRemoteAddress().toString());
+            logger.debug("TouchWandWebSockets connected to {}", session.getRemoteAddress().toString());
             this.session = session;
             try {
                 session.getRemote().sendString("{\"myopenhab\": \"myopenhab\"}");
@@ -185,7 +183,7 @@ public class TouchWandWebSockets {
                 }
                 logger.debug("UNIT_CHANGED: name {} id {} status {}", touchWandUnit.getName(), touchWandUnit.getId(),
                         touchWandUnit.getCurrStatus());
-                for (TouchWandWebSocketListener listener : listeners) {
+                for (TouchWandUnitStatusUpdateListener listener : listeners) {
                     listener.onDataReceived(touchWandUnit);
                 }
             } catch (JsonSyntaxException e) {
@@ -197,11 +195,18 @@ public class TouchWandWebSockets {
         public void onError(Throwable cause) {
             logger.warn("WebSocket Error: {}", cause.getMessage());
             if (!isShutDown) {
-                logger.warn("WebSocket onError - reconnecting");
-                WebSocketReconnect reconnect = new WebSocketReconnect();
-                setTimeOut(reconnect, CONNECT_TIMEOUT);
+                logger.debug("WebSocket onError - reconnecting");
+                AsyncWebSocketReconnect();
             } else {
                 this.session = null;
+            }
+        }
+
+        @SuppressWarnings("null")
+        private void AsyncWebSocketReconnect() {
+            if (SocketReconnt == null || SocketReconnt.isDone()) {
+                WebSocketReconnect reconnect = new WebSocketReconnect();
+                SocketReconnt = scheduler.schedule(reconnect, WEBSOCKET_RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
             }
         }
 

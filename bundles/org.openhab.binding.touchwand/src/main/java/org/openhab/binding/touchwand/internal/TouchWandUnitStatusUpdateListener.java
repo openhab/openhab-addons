@@ -21,7 +21,7 @@ import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
  *
  * @author Roie Geron - Initial contribution
  */
-public interface TouchWandWebSocketListener {
+public interface TouchWandUnitStatusUpdateListener {
 
     void onDataReceived(TouchWandUnitData unitData);
 }
