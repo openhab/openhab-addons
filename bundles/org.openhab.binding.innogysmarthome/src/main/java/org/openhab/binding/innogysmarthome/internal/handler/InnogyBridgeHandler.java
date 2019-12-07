@@ -357,7 +357,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
         if (reinitJob != null) {
             reinitJob.cancel(true);
-            reinitJob = null;
+            this.reinitJob = null;
         }
     }
 
