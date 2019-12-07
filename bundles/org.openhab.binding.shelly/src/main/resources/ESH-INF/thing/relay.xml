@@ -147,7 +147,7 @@
 		<label>Shelly Plug</label>
 		<description>Shelly Plug device with relay and power meter</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel" />
+			<channel-group id="relay" typeId="relayChannelPlug" />
 			<channel-group id="meter" typeId="simpleMeter" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
@@ -160,7 +160,7 @@
 		<description>Shelly Plug-S with relay, meter and LED control</description>
 
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel" />
+			<channel-group id="relay" typeId="relayChannelPlug" />
 			<channel-group id="meter" typeId="simpleMeter" />
 			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
@@ -189,6 +189,18 @@
 		<channels>
 			<channel id="output" typeId="system.power" />
 			<channel id="input" typeId="inputState" />
+			<channel id="autoOn" typeId="timerAutoOn" />
+			<channel id="autoOff" typeId="timerAutoOff" />
+			<channel id="timerActive" typeId="timerActive" />
+			<channel id="event" typeId="eventTrigger" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="relayChannelPlug">
+		<label>Relay</label>
+		<description>A Shelly relay channel</description>
+		<channels>
+			<channel id="output" typeId="system.power" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />

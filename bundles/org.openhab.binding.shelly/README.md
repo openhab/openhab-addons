@@ -19,7 +19,7 @@ This supports sending commands to the devices as well as reading device status a
 | shellyplugs        | Shelly Plug-S                                          |
 | shellyplug         | Shelly Plug                                            |
 | shellyrgbw2        | Shelly RGB Controller                                  |
-| shellybulb         | Shelly Bulb in Color or WHite Mode                     |
+| shellybulb         | Shelly Bulb in Color or White Mode                     |
 | shellyht           | Shelly Sensor (temp+humidity)                          |
 | shellyflood        | Shelly Flood Sensor                                    |
 | shellysmoke        | Shelly Smoke Sensor                                    |
@@ -112,24 +112,29 @@ Every device has a channel group "device" with the following channels:
 
 ### Event Channel
 
-The binding maps the inbound http events into trigger events when enabled in the Thing Configuration
+The binding maps the inbound HTTP events from the device into trigger events for those enabled in the Thing Configuration (see above).
 
 |Event Type|Description|
-|----------|-------------------------------------------------------------------------------------------------------------------|
-|BTN_ON    |The Button was pressed                                                                                             |
-|BTN_OFF   |The Button was released                                                                                            |
-|SHORTPUSH |A short push to the button was detected  (requires FW 1.5.6)                                                       |
-|SHORTPUSH |A long push to the button was detected   (requires FW 1.5.6)                                                       |
-|OUT_ON    |Relais output is on                                                                                                |
-|OUT_OFF   |Relais output is off                                                                                               |
+|------------|-----------------------------------------------------------------------------------------------------------------|
+|BTN_ON      |The Button was pressed                                                                                           |
+|BTN_OFF     |The Button was released                                                                                          |
+|SHORTPUSH   |A short push to the button was detected  (requires FW 1.5.6)                                                     |
+|SHORTPUSH   |A long push to the button was detected   (requires FW 1.5.6)                                                     |
+|OUT_ON      |Relais output is on                                                                                              |
+|OUT_OFF     |Relais output is off                                                                                             |
+|ROLLER_OPEN |Roller has reached the OPEN position and stopped.                                                                |
+|ROLLER_CLOSE|Roller has reached the CLOSED position and stopped.                                                              |
+|ROLLER_SRTOP|Roller was STOPped while moving (not in the OPEN or CLOSE position)                                              |
+|ALARM       |The health monitoring detected a alarm condition, check "Alarm Events" details.                                  |
+                                                                                                                               |
 
 The channel is implemented as a Trigger and could be used in a Rule:
 ```
 rule "Shelly Events"
 when
-    Channel "shelly:shelly2-relay:XXXXXX:device#event" triggered
+    Channel "shelly:shelly1:XXXXXX:device#event" triggered
 then
-    logInfo("Shelly", "A Shelly device event was triggered, payload="+receivedEvent.toString())
+    logInfo("Shelly", "A Shelly device event of type "+receivedEvent.toString()+"was triggered")
 end
 ```
 
@@ -140,9 +145,12 @@ See Rule examples for information how to process the event payload.
 The binding does some health checking on the device
 
 - The RSSI signal is monitored every 10 minutes. A alarm is send to the event channel when RSSI is < -80, which indicates an instable connection.
-- An alarm is send to the event channel when over heating, overload or a load error is reported by the device
+- An alarm is send to the event channel when over heating, overload or a load error is reported by the device.
+- Device reports over temperature, over load, over load.
 
-Those alarms could be received through the event channel as a trigger.
+Those alarms could be received through the event channel as a trigger. 
+Channel lastAlarm provides a textial description.
+A new alarm will be triggered after 10 minutes or when the condition has changed.
 
 
 ### Shelly 1 (thing-type: shelly1)
@@ -151,7 +159,6 @@ Those alarms could be received through the event channel as a trigger.
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
-|          |overpower    |Switch   |yes      |ON: The relay detected an overpower condition, output was turned OFF             |
 
 ### Shelly 1PM (thing-type: shelly1pm)
 
@@ -159,7 +166,6 @@ Those alarms could be received through the event channel as a trigger.
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
-|          |overpower    |Switch   |yes      |ON: The relay detected an overpower condition, output was turned OFF             |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
@@ -173,7 +179,6 @@ Those alarms could be received through the event channel as a trigger.
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
-|          |overpower    |Switch   |yes      |ON: The relay detected an overpower condition, output was turned OFF             |
 |          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information (JSON               |
 |meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
@@ -194,14 +199,12 @@ Those alarms could be received through the event channel as a trigger.
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay1    |output       |Switch   |r/w      |Relay #1: Controls the relay's output channel (on/off)                           |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
-|          |overpower    |Switch   |yes      |Relay #1: ON: The relay detected an overpower condition, output was turned OFF   |
 |          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 |          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format        |
 |relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
-|          |overpower    |Switch   |yes      |Relay #2: ON: The relay detected an overpower condition, output was turned OFF   |
 |          |trigger      |Trigger  |yes      |Relay #2: An OH trigger channel, see description below                           |
 |          |autoOn       |Number   |r/w      |Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds|
@@ -221,7 +224,7 @@ Those alarms could be received through the event channel as a trigger.
 |roller    |control      |Rollershutter|r/w  |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)  |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                            |
 |          |rollerpos    |Number   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stops, see Notes |
-|          |direction    |String   |yes      |Last direction: open or close                                                         |
+|          |lastDirection|String   |yes      |Last direction: open or close                                                         |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
 |          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format             |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
@@ -253,7 +256,7 @@ For this the binding aggregates the power consumption of both relays and include
 |roller    |control      |Rollershutter   |r/w      |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)|
 |          |rollerpos    |Dimmer  |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped                |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                                 |
-|          |direction    |String   |yes      |Last direction: open or close                                                              |
+|          |lastDirection|String   |yes      |Last direction: open or close                                                              |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                       |
 |          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode, OFF: normal mode (no calibration)                       |
 |          |positioning  |Switch   |yes      |ON: Roller is positioning/moving                                                           |
@@ -507,3 +510,5 @@ sitemap demo label="Home"
 }
 
 ```
+
+Tip: Formatting timestamps could be done by adding this pattern: [%1$tA, %1$td.%1$tm.%1$tY %1$tH:%1$tM]

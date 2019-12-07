@@ -104,6 +104,13 @@
 		<state readOnly="true" pattern="%f %unit%">
 		</state>
 	</channel-type>
+	<channel-type id="meterReactive">
+		<item-type>Number:Power</item-type>
+		<label>Reactive Watt</label>
+		<description>Reactive power consumption in Watt</description>
+		<state readOnly="true" pattern="%f %unit%">
+		</state>
+	</channel-type>
 	<channel-type id="lastPower1" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Last Power #1</label>
@@ -331,7 +338,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="lastAlarm">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Last Alarm</label>
 		<description>Last alarm (over heating, load error etc.)</description>
 		<event />
