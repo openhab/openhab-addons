@@ -653,6 +653,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         updateStateForEnergyChannel(CHANNEL_ENERGY_MONTH_EURO,
                                 c.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInEuroState(),
                                 c);
+                        updateStateForEnergyChannel(CHANNEL_ENERGY_DAY_EURO,
+                                c.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerDayInEuroState(),
+                                c);
                         updateStateForEnergyChannel(CHANNEL_ENERGY_DAY_KWH,
                                 c.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerDayInKWhState(),
                                 c);
