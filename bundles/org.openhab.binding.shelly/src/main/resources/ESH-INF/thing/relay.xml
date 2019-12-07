@@ -281,7 +281,7 @@
 		<channels>
 			<channel id="uptime" typeId="uptime" />
 			<channel id="signal" typeId="signalStrength" />
-			<channel id="alarm" typeId="lastAlarm" />
+			<channel id="alarm" typeId="alarmTrigger" />
 		</channels>
 	</channel-group-type>
 

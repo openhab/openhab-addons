@@ -236,12 +236,12 @@ public class ShellyBindingConstants {
 
     // Alarm types/messages
     public static final String            ALARM_TYPE_NONE                  = "NONE";
-    public static final String            ALARM_TYPE_WEAKSIGNAL            = "A01: Weak WiFi Signal detected, check installation!";
-    public static final String            ALARM_TYPE_RESTARTED             = "A02: Device was restarted (uptime < lastUptime)";
-    public static final String            ALARM_TYPE_OVERTEMP              = "A11: Device is overheating, check installation!";
-    public static final String            ALARM_TYPE_OVERPOWER             = "A12: Device is over maximum power!";
-    public static final String            ALARM_TYPE_OVERLOAD              = "A13: Overload detected!";
-    public static final String            ALARM_TYPE_LOADERR               = "A14: Load error detected!";
+    public static final String            ALARM_TYPE_WEAKSIGNAL            = "WEAK_SIGNAL";
+    public static final String            ALARM_TYPE_RESTARTED             = "RESTARTED";
+    public static final String            ALARM_TYPE_OVERTEMP              = "OVERTEMP";
+    public static final String            ALARM_TYPE_OVERPOWER             = "OVERPOWER";
+    public static final String            ALARM_TYPE_OVERLOAD              = "OVERLOAD";
+    public static final String            ALARM_TYPE_LOADERR               = "LOAD_ERROR";
 
     // Coap
     public static final int               COIOT_PORT                       = 5683;

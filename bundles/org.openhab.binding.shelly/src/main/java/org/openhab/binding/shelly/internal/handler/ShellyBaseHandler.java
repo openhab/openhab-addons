@@ -251,8 +251,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         logger.info("{}: Thing successfully initialized.", thingName);
         updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
         requestUpdates(3, false); // request 3 updates in a row (during the first 2+3*3 sec)
-
-        sendAlarm(ALARM_TYPE_NONE);
     }
 
     /**
@@ -392,9 +390,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private void fillDeviceStatus(ShellySettingsStatus status, boolean updated) {
         String alarm = "";
 
+        // Update uptime and WiFi
         long uptime = getLong(status.uptime);
+        Integer rssi = getInteger(status.wifiSta.rssi);
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
                 toQuantityType(new DecimalType(uptime), SmartHomeUnits.SECOND));
+        updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, new DecimalType(rssi));
 
         if ((status.uptime < lastUptime) && (profile != null) && !profile.hasBattery) {
             alarm = ALARM_TYPE_RESTARTED;
@@ -405,13 +406,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             lastUpdateTs = now();
         }
 
-        // Check every SIGNAL_ALARM_INTERVAL_SEC WiFi signal, overheating, overload
+        // Check every SIGNAL_ALARM_INTERVAL_SEC WiFi signal, overheating, overload...
         if (now() > lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC) {
-            Integer rssi = getInteger(status.wifiSta.rssi);
-            // Check every SIGNAL_ALARM_INTERVAL_SEC WiFi signal strength and raise an alarm when it becomes weak
-            updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, new DecimalType(rssi));
-
             // Check various device indicators like overheating
+            if ((rssi < SIGNAL_ALARM_MIN_RSSI) && ((lastAlarmTs == 0))) {
+                alarm = ALARM_TYPE_WEAKSIGNAL;
+            }
             if (getBool(status.overtemperature)) {
                 alarm = ALARM_TYPE_OVERTEMP;
             }
@@ -420,10 +420,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
             if (getBool(status.loaderror)) {
                 alarm = ALARM_TYPE_LOADERR;
-            }
-
-            if ((rssi < SIGNAL_ALARM_MIN_RSSI) && ((lastAlarmTs == 0))) {
-                alarm = ALARM_TYPE_WEAKSIGNAL;
             }
         }
 
@@ -452,8 +448,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if ((now() > (lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC))
                 || ((lastAlarm != null) && !lastAlarm.toString().equals(alarm))) {
             logger.warn("{}: Alarm condition: {}", thingName, alarm);
-            updateChannel(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM), new StringType(alarm), true);
-            sendEvent("ALARM");
+            triggerChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM, alarm);
             lastAlarmTs = now();
         }
     }

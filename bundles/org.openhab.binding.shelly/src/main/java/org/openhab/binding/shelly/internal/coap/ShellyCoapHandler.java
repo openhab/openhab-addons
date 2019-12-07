@@ -111,7 +111,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 coapServer.start();
             }
         } catch (IOException e) {
-            logger.warn("{}: Coap Exception: {} ({})", thingName, e.getMessage(), e.getClass());
+            logger.warn("{}: Unable to start CoIoT: ", thingName, e.getMessage());
+        } catch (NullPointerException e) {
+            logger.debug("{}: Coap Exception: {} ({})\n{}", thingName, e.getMessage(), e.getClass(), e.getStackTrace());
         }
     }
 
@@ -215,8 +217,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
             }
         } catch (NullPointerException | IOException e) {
-            logger.debug("{}: Unable to process CoIoT Message: {} ({}); payload={}", thingName, e.getMessage(),
-                    e.getClass(), payload);
+            logger.debug("{}: Unable to process CoIoT Message: {} ({}); payload={}\n{}", thingName, e.getMessage(),
+                    e.getClass(), payload, e.getStackTrace());
             resetSerial();
         }
     }
@@ -279,20 +281,15 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         logger.debug("{}:    id {}: {}, Type={}, Range={}, Links={}", thingName, sen.id, sen.desc, sen.type, sen.range,
                 sen.links);
         try {
-            logger.trace("before fixDescription()");
             CoIotDescrSen fixed = fixDescription(sen);
-            logger.trace("after fixDescription()");
-            logger.trace("insert to map, id={}", fixed.id);
             if (!sensorMap.containsKey(fixed.id)) {
-                logger.trace("put to map, id={}", fixed.id);
                 sensorMap.put(sen.id, fixed);
             } else {
-                logger.trace("replace in map, id={}", fixed.id);
                 sensorMap.replace(sen.id, fixed);
             }
-            logger.trace("sensor fixed");
         } catch (NullPointerException e) {
-            logger.debug("{}:    Unable to decode sensor definition -> skip ({})", thingName, e.getMessage());
+            logger.debug("{}:    Unable to decode sensor definition -> skip ({})\n{}", thingName, e.getMessage(),
+                    e.getStackTrace());
         }
     }
 
@@ -549,6 +546,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // Shelly Sense: Battery is reported with Desc "battery", but type "H" instead of "B"
         // Shelly Sense: Motion is reported with Desc "battery", but type "H" instead of "B"
         // Shelly Bulb: Colors are coded with Type="Red" etc. rather than Type="S" and color as Descr
+        if (sen.desc == null) {
+            sen.desc = "";
+        }
+
         switch (sen.desc.toLowerCase()) {
             case "motion": // fix acc to spec it's T=M
                 sen.type = "M";
@@ -560,7 +561,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 break;
         }
 
-        if ((sen.desc == null) || sen.desc.isEmpty()) {
+        if (sen.desc.isEmpty()) {
             switch (sen.type.toLowerCase()) {
                 case "w":
                     sen.desc = "Power";

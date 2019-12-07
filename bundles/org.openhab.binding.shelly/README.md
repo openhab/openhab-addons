@@ -24,7 +24,7 @@ This supports sending commands to the devices as well as reading device status a
 | shellyflood        | Shelly Flood Sensor                                    |
 | shellysmoke        | Shelly Smoke Sensor                                    |
 | shellysense        | Shelly Motion and IR Controller                        |
-| shellyunknown      | Marks password protected or unknown devices            |
+| shellydevice       | A password protected or unknown device type            |
 
 ## Firmware
 
@@ -52,17 +52,22 @@ This could be achieved by
 - assigning a static IP address or
 - use DHCP and setup the router to assign always the same ip address to the device
 
-### Password protected devices
+### Password Protected Devices
 
-The Shelly Apps allow to protect device configuration by user id+password, which is  supported by the binding.
-If you are using password protected  devices you need to configure user id and password. 
-A special thing is created if the access to the device's APU cannot be initialized.
-You need to edit the Thing configuration and setup user id and password (same as in the Shelly App) to activate this Thing.
-The Thing will be re-initialized and the Thing type adjusted and this was successful.
+The Shelly Apps allow to protect device configuration by user id and password.
+In this case you need to configure user id and password in the Thing Configuation. 
+Proceed the following steps
+
+- Accept the discovered device from the Inbox
+- You'll be prompted for credentials, set user id and password, accept
+- The Thing gets re-initialized and the Thing Type is adjusted
+- On success the channels are updated, otherwise you need to change credentials.
+
+For those devices the Thing Type "shellydevice" is used. 
 
 ## Binding Configuration
 
-The binding has some global configuration options.
+The binding has the following configuration options:
 
 | Parameter      |Description                                                       |Mandatory|Default                                         |
 |----------------|------------------------------------------------------------------|---------|------------------------------------------------|
@@ -94,64 +99,77 @@ There is no event from the device that the settings have be changed by the Shell
 ### General Notes
 
 - Various channels are only visible for linking when you click Show More in the channel definition
-- input channel is only available with firmware > 1.5.6, otherwise NULL
-- use channel rollerpos only if you need the inverted value, otherwise use the control channel and Item Type Number, see example
+- The channels `input` and `input1`/`input2` are only updated with firmware 1.5.6+, otherwise the value will be NULL.
+- Use the channel `rollerpos` only if you need the inverted value, otherwise use the control channel with item type `Number`, see example below.
 - Short push and long push events require firmware version 1.5.6+.
-- The different devices have different types of power meters = different set of channels.
+- The different devices have different types of power meters, i.e. different sets of channels.
 
 Every device has a channel group "device" with the following channels:
 
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |device    |uptime       |Number   |yes      |Number of seconds since the device was powered up                                |
-|          |lastUpdate   |DateTime |yes      |Timestamp of last update on any of the device's channel                          |
 |          |signal       |Number   |yes      |WiFi signal strength (RSSI)                                                      |
-|          |lastAlarm    |String   |yes      |Most recent alarm for health check                                               |
+|          |alarm        |Trigger  |yes      |Most recent alarm for health check                                               |
 
+### Events
 
+The binding maps the reported device events into the event channel.
+Availability of the various events depend on the device type and thing configuration.
 
-### Event Channel
-
-The binding maps the inbound HTTP events from the device into trigger events for those enabled in the Thing Configuration (see above).
+Relay, Dimmer:
 
 |Event Type|Description|
 |------------|-----------------------------------------------------------------------------------------------------------------|
 |BTN_ON      |The Button was pressed                                                                                           |
 |BTN_OFF     |The Button was released                                                                                          |
-|SHORTPUSH   |A short push to the button was detected  (requires FW 1.5.6)                                                     |
-|SHORTPUSH   |A long push to the button was detected   (requires FW 1.5.6)                                                     |
-|OUT_ON      |Relais output is on                                                                                              |
-|OUT_OFF     |Relais output is off                                                                                             |
+|SHORTPUSH   |A short push to the button was detected  (requires firmware V1.5.6+)                                             |
+|LONGPUSH    |A long push to the button was detected   (requires firmware V1.5.6+)                                             |
+|OUT_ON      |Relays output is on                                                                                              |
+|OUT_OFF     |Relays output is off                                                                                             |
+
+Roller:
+
+|Event Type|Description|
+|------------|-----------------------------------------------------------------------------------------------------------------|
 |ROLLER_OPEN |Roller has reached the OPEN position and stopped.                                                                |
 |ROLLER_CLOSE|Roller has reached the CLOSED position and stopped.                                                              |
 |ROLLER_SRTOP|Roller was STOPped while moving (not in the OPEN or CLOSE position)                                              |
-|ALARM       |The health monitoring detected a alarm condition, check "Alarm Events" details.                                  |
-                                                                                                                               |
 
-The channel is implemented as a Trigger and could be used in a Rule:
+The channel is implemented as a Trigger provided for each component (relay1, relay2...) and could be used in a Rule:
 ```
 rule "Shelly Events"
 when
     Channel "shelly:shelly1:XXXXXX:device#event" triggered
 then
-    logInfo("Shelly", "A Shelly device event of type "+receivedEvent.toString()+"was triggered")
+    logInfo("Shelly", "A Shelly device event of type "+receivedEvent.toString() + "has been triggered")
 end
 ```
 
-See Rule examples for information how to process the event payload.
-
 ### Alarm Events
 
-The binding does some health checking on the device
+The binding provides health monitoring functions for the device.
+When an alarm condition is detected the channel alarm gets triggered and provides one of the following alarm types:
 
-- The RSSI signal is monitored every 10 minutes. A alarm is send to the event channel when RSSI is < -80, which indicates an instable connection.
-- An alarm is send to the event channel when over heating, overload or a load error is reported by the device.
-- Device reports over temperature, over load, over load.
+|Event Type|Description|
+|------------|-----------------------------------------------------------------------------------------------------------------|
+|WEAK_SIGNAL |The RSSI signal is monitored every 10 minutes. An alarm is triggered when RSSI is < -80, which indicates an unstable connection. |
+|RESTARTED   |The device has been restarted. This could be an indicator for a firmware problem.                                |
+|OVER_TEMP   |The device is over heating, check installation and housing.                                                      |
+|OVER_LOAD   |An over load condition has been detected, e.g. from the roller motor.                                            |
+|OVER_POWER  |Maximum allowed power was exceeded. The relay was turned off.                                                    |
+|LOAD_ERROR  |Device reported a load problem.                                                                                  |
 
-Those alarms could be received through the event channel as a trigger. 
-Channel lastAlarm provides a textial description.
-A new alarm will be triggered after 10 minutes or when the condition has changed.
+A new alarm will be triggered on a new condition or every 10 minutes if the condition persists.
 
+```
+rule "Shelly Alarm"
+when
+    Channel "shelly:shelly1:XXXXXX:device#alarm" triggered
+then
+    logInfo("Shelly", "n alarm condition was detected:" + receivedEvent.toString())
+end
+```
 
 ### Shelly 1 (thing-type: shelly1)
 
@@ -179,7 +197,7 @@ A new alarm will be triggered after 10 minutes or when the condition has changed
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
-|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information (JSON               |
+|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details                 |
 |meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
@@ -202,14 +220,13 @@ A new alarm will be triggered after 10 minutes or when the condition has changed
 |          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
-|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format        |
+|          |event        |Trigger  |yes      |Relay #1: Triggers an event from the device, see general notes for details       |
 |relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
-|          |trigger      |Trigger  |yes      |Relay #2: An OH trigger channel, see description below                           |
 |          |autoOn       |Number   |r/w      |Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #2: ON: An auto-on/off timer is active                                     |
-|          |event        |Trigger  |yes      |Relay #2: Triggers an event when posted by the device                            |
+|          |event        |Trigger  |yes      |Relay #2: Triggers an event from the device, see general notes for details       |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
@@ -226,7 +243,7 @@ A new alarm will be triggered after 10 minutes or when the condition has changed
 |          |rollerpos    |Number   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stops, see Notes |
 |          |lastDirection|String   |yes      |Last direction: open or close                                                         |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
-|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format             |
+|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details                      |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                         |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                         |
@@ -260,7 +277,7 @@ For this the binding aggregates the power consumption of both relays and include
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                       |
 |          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode, OFF: normal mode (no calibration)                       |
 |          |positioning  |Switch   |yes      |ON: Roller is positioning/moving                                                           |
-|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format                  |
+|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details                           |
 |meter     |             |         |         |See group meter1 for Shelly 2                                                              |
 
 ### Shelly4 Pro (thing-type: shelly4pro)
@@ -296,7 +313,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |input2       |Switch   |yes      |State of Input 2 (S2)                                                            |
 |          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds          |
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds          |
-|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information, JSON format        |
+|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details                 |
 |status    |loaderror    |Switch   |yes      |Last error, "no" if none                                                         |
 |          |overload     |Switch   |yes      |Overload condition detected, switch dimmer off or reduce load!                   |
 |          |overtemperature |Switch|yes      |Internal device temperature over maximum. Switch off, check physical installation|
@@ -384,7 +401,7 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |humidity     |Number   |yes      |Relative humidity in %                                                 |
 |          |last_update  |String   |yes      |Timestamp of the last update (values read by the binding)              |
-|          |event        |Trigger  |yes      |Triggers an event with a payload provinding more information (JSON     |
+|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details       |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
@@ -396,7 +413,7 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |flood        |Switch   |yes      |ON: Flooding condition detected, OFF: no flooding                      |
 |          |last_update  |String   |yes      |Timestamp of the last update (values read by the binding)              |
-|          |event        |Trigger  |yes      |Trigger channel, receives JSON formatted event information             |
+|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details       |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
@@ -417,7 +434,7 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |          |lux          |Number   |yes      |Brightness in Lux                                                      |
 |          |motion       |Switch   |yes      |ON: Motion detected, OFF: No motion (check also motionTimer)           |
 |          |last_update  |String   |yes      |Timestamp of the last update (values read by the binding)              |
-|          |event        |Trigger  |yes      |Trigger channel, receives JSON formatted event information             |
+|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details       |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |batteryAlert |Switch   |yes      |Low battery alert                                                      |
 
@@ -474,7 +491,7 @@ Number Shelly_Power     "Bath Room Light Power"                {channel="shelly:
 
 ```
 
-###shelly.rules
+### shelly.rules
 
 ```
 reading colors from color picker:

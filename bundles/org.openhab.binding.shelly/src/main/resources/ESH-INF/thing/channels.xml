@@ -337,16 +337,16 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="lastAlarm">
-		<item-type>String</item-type>
-		<label>Last Alarm</label>
-		<description>Last alarm (over heating, load error etc.)</description>
-	</channel-type>
 	<channel-type id="eventTrigger">
 		<kind>trigger</kind>
 		<label>Event</label>
 		<description>Event Trigger, e.g. button on/off, Output on/off</description>
 		<event />
 	</channel-type>
-
+	<channel-type id="alarmTrigger">
+		<kind>trigger</kind>
+		<label>Alarm</label>
+		<description>Alarm Trigger, e.g. weak WiFi Signal detected or over heating.</description>
+		<event />
+	</channel-type>
 </thing:thing-descriptions>
