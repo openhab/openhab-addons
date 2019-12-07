@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.weathercompany.internal.discovery.WeatherCompanyDiscoveryService;
+import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyBridgeHandler;
 import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyForecastHandler;
 import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyObservationsHandler;
 import org.osgi.framework.ServiceRegistration;

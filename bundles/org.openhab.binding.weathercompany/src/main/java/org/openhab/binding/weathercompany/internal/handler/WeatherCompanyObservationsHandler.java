@@ -122,8 +122,9 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
     }
 
     private synchronized void refreshPwsObservations() {
-        if (thing.getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Handler: Can't refresh PWS observations because thing is not online");
+        if (!isBridgeOnline()) {
+            // If bridge is not online, API has not been validated yet
+            logger.debug("Handler: Can't refresh PWS observations because bridge is not online");
             return;
         }
         logger.debug("Handler: Requesting PWS observations from The Weather Company API");
@@ -135,6 +136,7 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
             logger.debug("Handler: Parsing PWS observations response: {}", response);
             PwsObservations pwsObservations = gson.fromJson(response, PwsObservations.class);
             logger.debug("Handler: Successfully parsed PWS observations response object");
+            updateStatus(ThingStatus.ONLINE);
             updatePwsObservations(pwsObservations);
         } catch (JsonSyntaxException e) {
             logger.debug("Handler: Error parsing pws observations response object: {}", e.getMessage(), e);
