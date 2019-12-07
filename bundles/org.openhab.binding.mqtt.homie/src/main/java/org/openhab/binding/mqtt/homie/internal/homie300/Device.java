@@ -159,11 +159,15 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      */
     @SuppressWarnings({ "null", "unused" })
     public @Nullable Property getProperty(ChannelUID channelUID) {
-        Node node = nodes.get(channelUID.getGroupId());
+        final String groupId = channelUID.getGroupId();
+        if (groupId == null) {
+            return null;
+        }
+        Node node = nodes.get(UIDUtils.decode(groupId));
         if (node == null) {
             return null;
         }
-        return node.properties.get(channelUID.getIdWithoutGroup());
+        return node.properties.get(UIDUtils.decode(channelUID.getIdWithoutGroup()));
     }
 
     /**
