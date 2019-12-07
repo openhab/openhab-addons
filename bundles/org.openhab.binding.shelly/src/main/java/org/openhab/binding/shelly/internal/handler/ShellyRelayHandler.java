@@ -317,7 +317,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                                 : CHANNEL_GROUP_RELAY_CONTROL + r.toString();
 
                         if (getBool(relay.overpower)) {
-                            sendAlarm(groupName + ": Over power detected!");
+                            sendAlarm(ALARM_TYPE_OVERPOWER + ": " + groupName);
                         }
 
                         updated |= updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
@@ -443,12 +443,13 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     @SuppressWarnings("null")
     private boolean updateInputs(String groupName, ShellySettingsStatus status) {
         boolean updated = false;
-        if (status.inputs != null && !getProfile().isRoller) {
+        if (status.inputs != null) {
             int count = status.inputs.size();
             logger.trace("{}: Updating {} input state(s)", thingName, count);
             for (int input = 0; input < count; input++) {
                 ShellyInputState state = status.inputs.get(input);
-                String channel = profile.isDimmer && count > 1 ? CHANNEL_INPUT + Integer.toString(input + 1)
+                String channel = (profile.isDimmer || profile.isRoller) && count > 1
+                        ? CHANNEL_INPUT + Integer.toString(input + 1)
                         : CHANNEL_INPUT;
                 updated |= updateChannel(groupName, channel, state.input == 0 ? OnOffType.OFF : OnOffType.ON);
             }

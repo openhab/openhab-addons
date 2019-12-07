@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="shellydevice">
-		<label>Password protected Shelly device</label>
-		<description>A password protected device was detected. Add Thing and set credentials.</description>
+		<label>Password protected or unknown Shelly device</label>
+		<description>A password protected or unknown device was detected. Add Thing and set credentials.</description>
 
 		<config-description>
 			<parameter name="userId" type="text" required="true">

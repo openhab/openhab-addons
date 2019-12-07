@@ -224,13 +224,24 @@ public class ShellyBindingConstants {
     public static final String            CHANNEL_GROUP_DEV_STATUS         = "device";
     public static final String            CHANNEL_DEVST_UPTIME             = "uptime";
     public static final String            CHANNEL_DEVST_RSSI               = "signal";
-    public static final String            CHANNEL_DEVST_ALARM              = "lastAlarm";
+    public static final String            CHANNEL_DEVST_ALARM              = "alarm";
 
     // General
     public static final String            CHANNEL_LAST_UPDATE              = "lastUpdate";
     public static final String            CHANNEL_EVENT_TRIGGER            = "event";
 
     public static final String            SERVICE_TYPE                     = "_http._tcp.local.";
+    public static final String            SHELLY_API_MIN_FWVERSION         = "v1.5.2";
+    public static final int               SHELLY_API_TIMEOUT_MS            = 6000;
+
+    // Alarm types/messages
+    public static final String            ALARM_TYPE_NONE                  = "NONE";
+    public static final String            ALARM_TYPE_WEAKSIGNAL            = "A01: Weak WiFi Signal detected, check installation!";
+    public static final String            ALARM_TYPE_RESTARTED             = "A02: Device was restarted (uptime < lastUptime)";
+    public static final String            ALARM_TYPE_OVERTEMP              = "A11: Device is overheating, check installation!";
+    public static final String            ALARM_TYPE_OVERPOWER             = "A12: Device is over maximum power!";
+    public static final String            ALARM_TYPE_OVERLOAD              = "A13: Overload detected!";
+    public static final String            ALARM_TYPE_LOADERR               = "A14: Load error detected!";
 
     // Coap
     public static final int               COIOT_PORT                       = 5683;
@@ -245,10 +256,6 @@ public class ShellyBindingConstants {
     public static final int               COIOT_OPTION_STATUS_SERIAL       = 3420;
 
     public static final byte[]            EMPTY_BYTE                       = new byte[0];
-
-    public static final int               SHELLY_API_TIMEOUT_MS            = 6000;
-
-    public static final String            SHELLY_API_MIN_FWVERSION         = "v1.5.2";
 
     public static final String            SHELLY_NULL_URL                  = "null";
     public static final String            SHELLY_URL_DEVINFO               = "/shelly";

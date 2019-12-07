@@ -250,10 +250,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
         logger.info("{}: Thing successfully initialized.", thingName);
         updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
-        requestUpdates(2, false); // request 2 updates in a row (during the first 2+2*3 sec)
+        requestUpdates(3, false); // request 3 updates in a row (during the first 2+3*3 sec)
 
-        sendAlarm("-");
-        sendAlarm("Hi there");
+        sendAlarm(ALARM_TYPE_NONE);
     }
 
     /**
@@ -398,7 +397,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 toQuantityType(new DecimalType(uptime), SmartHomeUnits.SECOND));
 
         if ((status.uptime < lastUptime) && (profile != null) && !profile.hasBattery) {
-            alarm = "Device was restarted (uptime < lastUptimeTs)";
+            alarm = ALARM_TYPE_RESTARTED;
         }
         lastUptime = uptime;
 
@@ -414,17 +413,17 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
             // Check various device indicators like overheating
             if (getBool(status.overtemperature)) {
-                alarm = "Device is overheating!";
+                alarm = ALARM_TYPE_OVERTEMP;
             }
             if (getBool(status.overload)) {
-                alarm = "Overload detected!";
+                alarm = ALARM_TYPE_OVERLOAD;
             }
             if (getBool(status.loaderror)) {
-                alarm = "Load error detected!";
+                alarm = ALARM_TYPE_LOADERR;
             }
 
             if ((rssi < SIGNAL_ALARM_MIN_RSSI) && ((lastAlarmTs == 0))) {
-                alarm = "Weak WiFi Signal detected, check installation!";
+                alarm = ALARM_TYPE_WEAKSIGNAL;
             }
         }
 

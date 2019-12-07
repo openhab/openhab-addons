@@ -148,7 +148,7 @@
 		<description>Shelly Plug device with relay and power meter</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug" />
-			<channel-group id="meter" typeId="simpleMeter" />
+			<channel-group id="meter" typeId="basicMeter" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -161,7 +161,7 @@
 
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug" />
-			<channel-group id="meter" typeId="simpleMeter" />
+			<channel-group id="meter" typeId="meter" />
 			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
@@ -226,10 +226,11 @@
 		<description>Controlling the roller mode</description>
 		<channels>
 			<channel id="control" typeId="rollerShutter" />
-			<channel id="input" typeId="inputState" />
 			<channel id="rollerpos" typeId="rollerPosition" />
 			<channel id="lastDirection" typeId="rollerDirection" />
 			<channel id="stopReason" typeId="rollerStop" />
+			<channel id="input1" typeId="inputState1" />
+			<channel id="input2" typeId="inputState2" />
 			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
@@ -262,14 +263,6 @@
 		<description>Power consumption</description>
 		<channels>
 			<channel id="currentWatts" typeId="meterWatts" />
-		</channels>
-	</channel-group-type>
-	<channel-group-type id="simpleMeter">
-		<label>Power Meter</label>
-		<description>Power consumption</description>
-		<channels>
-			<channel id="currentWatts" typeId="meterWatts" />
-			<channel id="totalKWH" typeId="meterTotal" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="ledControl">
