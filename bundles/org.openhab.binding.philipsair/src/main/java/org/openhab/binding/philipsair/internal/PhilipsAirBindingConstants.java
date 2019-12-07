@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class PhilipsAirBindingConstants {
 
     private static final String BINDING_ID = "philipsair";
-    
+
     public static final String SUPPORTED_MODEL_UNIVERSAL = "universal";
     public static final String SUPPORTED_MODEL_NUMBER_AC2889_10 = "ac2889_10";
     public static final String SUPPORTED_MODEL_NUMBER_AC2729_10 = "ac2729_10";
@@ -38,8 +38,7 @@ public class PhilipsAirBindingConstants {
     public static final String SUPPORTED_MODEL_NUMBER_AC1214_10 = "ac1214_10";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_UNIVERSAL = new ThingTypeUID(BINDING_ID,
-            SUPPORTED_MODEL_UNIVERSAL);
+    public static final ThingTypeUID THING_TYPE_UNIVERSAL = new ThingTypeUID(BINDING_ID, SUPPORTED_MODEL_UNIVERSAL);
     public static final ThingTypeUID THING_TYPE_AC2889_10 = new ThingTypeUID(BINDING_ID,
             SUPPORTED_MODEL_NUMBER_AC2889_10);
     public static final ThingTypeUID THING_TYPE_AC2729_10 = new ThingTypeUID(BINDING_ID,
@@ -49,9 +48,9 @@ public class PhilipsAirBindingConstants {
     public static final ThingTypeUID THING_TYPE_AC1214_10 = new ThingTypeUID(BINDING_ID,
             SUPPORTED_MODEL_NUMBER_AC1214_10);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_UNIVERSAL, THING_TYPE_AC2889_10, THING_TYPE_AC2889_10, THING_TYPE_AC2729_50, THING_TYPE_AC1214_10)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_UNIVERSAL, THING_TYPE_AC2889_10, THING_TYPE_AC2889_10,
+                    THING_TYPE_AC2729_50, THING_TYPE_AC1214_10).collect(Collectors.toSet()));
 
     public static final String DISCOVERY_UPNP_MODEL = "AirPurifier";
 
@@ -59,7 +58,7 @@ public class PhilipsAirBindingConstants {
 
     // List of all Channel groups
     public static final String FILTERS = "filters";
-    
+
     // List of all Channel id's
     /**
      * PM2.5 particles amount

@@ -54,9 +54,9 @@ public class PhilipsAirHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_UNIVERSAL.equals(thingTypeUID) ||  THING_TYPE_AC2889_10.equals(thingTypeUID) || THING_TYPE_AC2729_10.equals(thingTypeUID)
-                || THING_TYPE_AC2889_10.equals(thingTypeUID) || THING_TYPE_AC2729_50.equals(thingTypeUID)
-                || THING_TYPE_AC1214_10.equals(thingTypeUID)) {
+        if (THING_TYPE_UNIVERSAL.equals(thingTypeUID) || THING_TYPE_AC2889_10.equals(thingTypeUID)
+                || THING_TYPE_AC2729_10.equals(thingTypeUID) || THING_TYPE_AC2889_10.equals(thingTypeUID)
+                || THING_TYPE_AC2729_50.equals(thingTypeUID) || THING_TYPE_AC1214_10.equals(thingTypeUID)) {
             return new PhilipsAirHandler(thing, httpClientFactory.getCommonHttpClient());
         }
 

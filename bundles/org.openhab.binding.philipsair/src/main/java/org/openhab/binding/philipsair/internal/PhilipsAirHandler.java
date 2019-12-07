@@ -209,7 +209,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
             PhilipsAirPurifierData data = connection.getAirPurifierStatus(config.getHost());
             PhilipsAirPurifierFilters filters = null;
             List<Channel> filterGroup = thing.getChannelsOfGroup(PhilipsAirBindingConstants.FILTERS);
-            if(filterGroup != null && filterGroup.stream().anyMatch( fg -> isLinked(fg.getUID()))) {
+            if (filterGroup != null && filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
                 filters = connection.getAirPurifierFiltersStatus(config.getHost());
             }
 
@@ -246,7 +246,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 if (ChannelKind.STATE.equals(channel.getKind()) && isLinked(channelUID)) {
                     updateChannel(channelUID, currentData, deviceInfo, filters);
                 }
-            }   
+            }
         }
     }
 
@@ -320,7 +320,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
             case AQIT:
                 return data.getAqit();
             case ERR:
-                return data.getErrorCode();
+                return String.valueOf(data.getErrorCode());
             case RH:
                 return data.getHumidity();
             case RHSET:

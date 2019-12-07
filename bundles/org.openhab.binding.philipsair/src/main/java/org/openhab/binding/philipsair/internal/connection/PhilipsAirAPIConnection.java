@@ -20,24 +20,17 @@ import static org.eclipse.jetty.http.HttpStatus.TOO_MANY_REQUESTS_429;
 import static org.eclipse.jetty.http.HttpStatus.UNAUTHORIZED_401;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,7 +40,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
-import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierData;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDevice;
@@ -79,20 +71,10 @@ public class PhilipsAirAPIConnection {
 
     private final ExpiringCacheMap<String, String> cache;
 
-    private static final Random RAND = new Random();
-
-    private static final BigInteger G = new BigInteger(
-            "A4D1CBD5C3FD34126765A442EFB99905F8104DD258AC507FD6406CFF14266D31266FEA1E5C41564B777E690F5504F213160217B4B01B886A5E91547F9E2749F4D7FBD7D3B9A92EE1909D0D2263F80A76A6A24C087A091F531DBF0A0169B6A28AD662A4D18E73AFA32D779D5918D08BC8858F4DCEF97C2A24855E6EEB22B3B2E5",
-            16);
-    private static final BigInteger P = new BigInteger(
-            "B10B8F96A080E01DDE92DE5EAE5D54EC52C99FBCFB06A3C69A6A9DCA52D23B616073E28675A23D189838EF1E2EE652C013ECB4AEA906112324975C3CD49B83BFACCBDD7D90C4BD7098488E9C219A73724EFFD6FAE5644738FAA31A4FF55BCCC0A151AF5F0DC8B4BD45BF37DF365C1A65E68CFDA76D4DA708DF1FB2BC2E4A4371",
-            16);
-
     private final Gson gson = new Gson();
     private long cooldownTimer = 0;
+    private PhilipsAirCipher cipher;
 
-    private Cipher decipher;
-    private Cipher cipher;
     private PhilipsAirConfiguration config;
 
     public PhilipsAirAPIConnection(PhilipsAirConfiguration config, HttpClient httpClient) {
@@ -104,19 +86,15 @@ public class PhilipsAirAPIConnection {
 
     private void initCipher() {
         try {
+            this.cipher = new PhilipsAirCipher();
             if (StringUtils.isEmpty(config.getKey())) {
                 exchangeKeys();
             }
 
-            decipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            decipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(HexUtils.hexToBytes(config.getKey()), "AES"),
-                    new IvParameterSpec(new byte[16]));
-            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(HexUtils.hexToBytes(config.getKey()), "AES"),
-                    new IvParameterSpec(new byte[16]));
-        } catch (GeneralSecurityException | InterruptedException | TimeoutException | ExecutionException e) {
+            this.cipher.initKey(config.getKey());
+        } catch (GeneralSecurityException | ExecutionException | TimeoutException | InterruptedException e) {
             logger.error("An exception occured", e);
-            decipher = null;
+            this.cipher = null;
         }
     }
 
@@ -165,7 +143,7 @@ public class PhilipsAirAPIConnection {
 
     private String getResponse(String url, HttpMethod method, String content, boolean decode) {
         try {
-            if (decode && decipher == null) {
+            if (decode && cipher == null) {
                 logger.error("Cipher not initialized");
                 config.setKey("");
                 initCipher();
@@ -188,12 +166,12 @@ public class PhilipsAirAPIConnection {
             String finalcontent = contentResponse.getContentAsString();
             if (decode) {
                 try {
-                    finalcontent = decode(finalcontent);
+                    finalcontent = this.cipher.decrypt(finalcontent);
                 } catch (BadPaddingException bexp) {
                     // retry for once with a new key
                     config.setKey("");
                     initCipher();
-                    finalcontent = decode(finalcontent);
+                    finalcontent = this.cipher.decrypt(finalcontent);
                 }
             }
 
@@ -225,58 +203,22 @@ public class PhilipsAirAPIConnection {
         }
     }
 
-    private String decode(String encodedContent) throws IllegalBlockSizeException, BadPaddingException {
-        byte[] decoded = decipher.doFinal(Base64.getDecoder().decode(encodedContent));
-        byte[] unpaded = Arrays.copyOfRange(decoded, 2, decoded.length);
-        return new String(unpaded);
-    }
-
-    public static BigInteger randomForBitsNonZero(int numBits, Random r) {
-        BigInteger candidate = new BigInteger(numBits, r);
-        while (candidate.equals(BigInteger.ZERO)) {
-            candidate = new BigInteger(numBits, r);
-        }
-        return candidate;
-    }
-
     public String exchangeKeys() throws GeneralSecurityException, InterruptedException, TimeoutException,
             ExecutionException, InvalidAlgorithmParameterException {
+        if (this.cipher == null) {
+            return null;
+        }
+
         String url = buildURL(KEY_URL, config.getHost());
-        BigInteger a = randomForBitsNonZero(256, PhilipsAirAPIConnection.RAND);
-        BigInteger aPow = G.modPow(a, P);
-        String data = "{\"diffie\":\"" + aPow.toString(16) + "\"}";
+        String data = "{\"diffie\":\"" + this.cipher.getApow() + "\"}";
 
         String encodedContent = getResponse(url, PUT, data, false);
         JsonObject encodedJson = gson.fromJson(encodedContent, JsonObject.class);
         String key = encodedJson.get("key").getAsString();
-        BigInteger b = new BigInteger(encodedJson.get("hellman").getAsString(), 16);
-        BigInteger s = b.modPow(a, P);
-        byte[] sByteArray = s.toByteArray();
-        // remove trailing 0
-        if (sByteArray.length > 128 && sByteArray[0] == 0) {
-            sByteArray = Arrays.copyOfRange(sByteArray, 1, 128);
-        }
-
-        byte[] sByteArrayTrunc = Arrays.copyOfRange(sByteArray, 0, 16);
-        byte[] hexKey = HexUtils.hexToBytes(key);
-
-        Cipher ciph = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        ciph.init(Cipher.DECRYPT_MODE, new SecretKeySpec(sByteArrayTrunc, "AES"), new IvParameterSpec(new byte[16]));
-
-        byte[] keyDecoded = ciph.doFinal(hexKey);
-        String aesKey = HexUtils.bytesToHex(keyDecoded).substring(0, 32);
+        String hellman = encodedJson.get("hellman").getAsString();
+        String aesKey = this.cipher.calculateKey(hellman, key);
         config.setKey(aesKey);
         return aesKey;
-    }
-
-    private String encrypt(String data, String key)
-            throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException,
-            NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-        String encodedData = "AA" + data;
-
-        byte[] encryptedBytes = cipher.doFinal(encodedData.getBytes("ascii"));
-
-        return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
     public PhilipsAirPurifierData sendCommand(String parameter, Object value)
@@ -292,7 +234,7 @@ public class PhilipsAirAPIConnection {
         }
 
         logger.info("{}", commandValue.toString());
-        commandValue = encrypt(commandValue.toString(), null);
+        commandValue = this.cipher.encrypt(commandValue.toString());
         String response = getResponse(buildURL(STATUS_URL, config.getHost()), PUT, commandValue.toString(), true);
         logger.info("{}", response);
         return gson.fromJson(response, PhilipsAirPurifierData.class);

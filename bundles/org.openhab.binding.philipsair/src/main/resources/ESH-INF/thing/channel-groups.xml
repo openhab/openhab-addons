@@ -42,6 +42,7 @@
 			<channel id="pm25" typeId="pm25" />
 			<channel id="iaql" typeId="iaql" />
 			<channel id="aqit" typeId="aqit" />
+			<channel id="err" typeId="err" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="sensors-adv">
@@ -53,6 +54,7 @@
 			<channel id="wl" typeId="wl" />
 			<channel id="iaql" typeId="iaql" />
 			<channel id="aqit" typeId="aqit" />
+			<channel id="err" typeId="err" />
 		</channels>
 	</channel-group-type>
 

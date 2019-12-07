@@ -84,4 +84,21 @@
 		<config-description-ref
 			uri="thing-type:philipsair:config" />
 	</thing-type>
+	
+	<thing-type id="ac3829_10">
+		<label>Philips Air Purifier AC3829/10 Binding Thing</label>
+		<description>Philips Air Purifier Ac3829/10 Binding Thing</description>
+		<channel-groups>
+			<channel-group typeId="controls-adv"
+			id="controls" />
+			<channel-group typeId="controls-ui"
+			id="controls-ui" />
+			<channel-group typeId="sensors-adv"
+			id="sensors" />
+			<channel-group typeId="filters-wicks" id="filters" />
+		</channel-groups>
+		<config-description-ref
+			uri="thing-type:philipsair:config" />
+	</thing-type>
+	
 </thing:thing-descriptions>

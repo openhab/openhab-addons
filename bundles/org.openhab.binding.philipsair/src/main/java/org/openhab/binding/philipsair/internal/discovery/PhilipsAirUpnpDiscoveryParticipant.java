@@ -77,11 +77,10 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
-        if(!isAutoDiscoveryEnabled) {
+        if (!isAutoDiscoveryEnabled) {
             return null;
         }
-        
-        logger.info("Attempt to create things");
+
         ThingUID uid = getThingUID(device);
         if (uid != null) {
             logger.info("Creating with uid {}", uid.getAsString());
@@ -107,11 +106,11 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
         DeviceDetails details = device.getDetails();
         ModelDetails modelDetails = null;
         String modelName = null;
-        logger.info("Attempt to create things {}", device.toString());
+
         if (details == null || (modelDetails = details.getModelDetails()) == null
                 || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL
                         .equalsIgnoreCase(modelName = modelDetails.getModelName())) {
-            logger.info("Device not recognized {}", device.toString());
+            logger.debug("Device not recognized {}", device.toString());
             return null;
         }
 

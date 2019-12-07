@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.philipsair.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -21,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Michał Boroński - Initial contribution
  *
  */
+@NonNullByDefault
 public class PhilipsAirPurifierFilters {
 
     @SerializedName("fltsts0")

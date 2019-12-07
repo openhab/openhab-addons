@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.philipsair.internal.model;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -19,7 +21,8 @@ import com.google.gson.annotations.SerializedName;
  * Holds status of particular features of the Air Purifier thing
  *
  * @author Michał Boroński - Initial contribution
- *
+ *@Nullable
+    
  */
 public class PhilipsAirPurifierData {
     @SerializedName("om")
@@ -76,6 +79,7 @@ public class PhilipsAirPurifierData {
 
     @SerializedName("func")
     @Expose
+    @Nullable
     private String function;
 
     @SerializedName("wl")
