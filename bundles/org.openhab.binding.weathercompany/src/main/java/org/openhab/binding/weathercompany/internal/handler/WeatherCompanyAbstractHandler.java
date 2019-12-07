@@ -55,7 +55,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.weathercompany.internal.WeatherCompanyBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +72,7 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
-    protected static final int WEATHER_COMPANY_API_TIMEOUT_SECONDS = 10;
+    protected static final int WEATHER_COMPANY_API_TIMEOUT_SECONDS = 15;
     protected static final int REFRESH_JOB_INITIAL_DELAY_SECONDS = 6;
 
     private final Logger logger = LoggerFactory.getLogger(WeatherCompanyAbstractHandler.class);

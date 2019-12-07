@@ -195,8 +195,9 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
     }
 
     private synchronized void refreshForecast() {
-        if (thing.getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Handler: Can't refresh forecast because thing is not online");
+        if (!isBridgeOnline()) {
+            // If bridge is not online, API has not been validated yet
+            logger.debug("Handler: Can't refresh forecast because bridge is not online");
             return;
         }
         logger.debug("Handler: Requesting forecast from The Weather Company API");
