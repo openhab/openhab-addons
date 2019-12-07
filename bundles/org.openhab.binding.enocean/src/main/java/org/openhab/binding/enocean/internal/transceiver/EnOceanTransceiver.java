@@ -313,7 +313,7 @@ public abstract class EnOceanTransceiver {
                                             if(msg.getRORG() != RORG.Unknown) {
                                                 informListeners(msg);
                                             } else {
-                                                logger.info("Received unknown RORG, payload {}", HexUtils.bytesToHex(d));
+                                                logger.debug("Received unknown RORG, payload {}", HexUtils.bytesToHex(d));
                                             }
                                         }
                                             break;
