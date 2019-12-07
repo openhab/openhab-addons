@@ -251,6 +251,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         logger.info("{}: Thing successfully initialized.", thingName);
         updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
         requestUpdates(3, false); // request 3 updates in a row (during the first 2+3*3 sec)
+
+        sendAlarm(ALARM_TYPE_NONE);
     }
 
     /**

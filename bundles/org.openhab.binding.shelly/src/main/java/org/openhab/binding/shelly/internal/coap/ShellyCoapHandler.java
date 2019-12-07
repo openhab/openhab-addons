@@ -111,7 +111,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 coapServer.start();
             }
         } catch (IOException e) {
-            logger.warn("{}: Unable to start CoIoT: ", thingName, e.getMessage());
+            logger.warn("{}: Unable to start CoIoT: {}", thingName, e.getMessage());
         } catch (NullPointerException e) {
             logger.debug("{}: Coap Exception: {} ({})\n{}", thingName, e.getMessage(), e.getClass(), e.getStackTrace());
         }
