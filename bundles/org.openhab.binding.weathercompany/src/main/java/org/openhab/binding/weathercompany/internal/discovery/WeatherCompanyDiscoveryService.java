@@ -27,8 +27,8 @@ import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.weathercompany.internal.WeatherCompanyBridgeHandler;
 import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyAbstractHandler;
+import org.openhab.binding.weathercompany.internal.handler.WeatherCompanyBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
