@@ -62,7 +62,7 @@ public class MetadataUtils {
     private static void loadBundle(String filename) {
         descriptionsBundle = ResourceBundle.getBundle(filename, Locale.getDefault());
         for (String key : descriptionsBundle.keySet()) {
-            descriptions.put(key, descriptionsBundle.getString(key));
+            descriptions.put(key.toUpperCase(), descriptionsBundle.getString(key));
         }
         ResourceBundle.clearCache();
         descriptionsBundle = null;
@@ -200,7 +200,7 @@ public class MetadataUtils {
             if (key.endsWith("|")) {
                 key = key.substring(0, key.length() - 1);
             }
-            String description = descriptions.get(key);
+            String description = descriptions.get(key.toUpperCase());
             if (description != null) {
                 return description;
             }
