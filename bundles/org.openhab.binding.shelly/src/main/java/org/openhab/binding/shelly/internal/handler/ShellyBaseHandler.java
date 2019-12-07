@@ -131,11 +131,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             } catch (NullPointerException | IOException e) {
                 if (authorizationFailed(e.getMessage())) {
                     start = false;
-                    return;
                 }
-
-                logger.warn("{}: Unable to initialize: {} ({}), retrying later", getThing().getLabel(), e.getMessage(),
-                        e.getClass());
+                logger.debug("{}: Unable to initialize: {} ({}), retrying later\n{}", getThing().getLabel(),
+                        e.getMessage(), e.getClass(), e.getStackTrace());
             } finally {
                 // even this initialization failed we start the status update
                 // the updateJob will then try to auto-initialize the thing
@@ -240,10 +238,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             return;
         }
 
-        requestUpdates(3, false); // request 3 updates in a row (during the furst 2+3*3 sec)
-        logger.info("{}: Thing successfully initialized.", thingName);
-        updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
-
         if (config.eventsCoIoT && (coap == null)) {
             Validate.notNull(coapServer, "coapServer must not be null!");
             coap = new ShellyCoapHandler(config, this, coapServer);
@@ -253,6 +247,13 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
 
         fillDeviceStatus(status, false);
+
+        logger.info("{}: Thing successfully initialized.", thingName);
+        updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
+        requestUpdates(2, false); // request 2 updates in a row (during the first 2+2*3 sec)
+
+        sendAlarm("-");
+        sendAlarm("Hi there");
     }
 
     /**
@@ -409,24 +410,21 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (now() > lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC) {
             Integer rssi = getInteger(status.wifiSta.rssi);
             // Check every SIGNAL_ALARM_INTERVAL_SEC WiFi signal strength and raise an alarm when it becomes weak
-            if (isLinked(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI))) {
-                updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, new DecimalType(rssi));
-            }
+            updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, new DecimalType(rssi));
 
             // Check various device indicators like overheating
             if (getBool(status.overtemperature)) {
-                sendAlarm("Device is overheating!");
+                alarm = "Device is overheating!";
             }
             if (getBool(status.overload)) {
-                sendAlarm("Overload detected!");
+                alarm = "Overload detected!";
             }
             if (getBool(status.loaderror)) {
-                sendAlarm("Load error detected!");
+                alarm = "Load error detected!";
             }
 
             if ((rssi < SIGNAL_ALARM_MIN_RSSI) && ((lastAlarmTs == 0))) {
                 alarm = "Weak WiFi Signal detected, check installation!";
-                lastAlarmTs = now();
             }
         }
 
@@ -450,8 +448,15 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      * @param alarm Alarm Message
      */
     public void sendAlarm(String alarm) {
-        logger.warn("{}: Alarm condition: {}", thingName, alarm);
-        updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM, new StringType(alarm));
+        State lastAlarm = (StringType) getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM);
+
+        if ((now() > (lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC))
+                || ((lastAlarm != null) && !lastAlarm.toString().equals(alarm))) {
+            logger.warn("{}: Alarm condition: {}", thingName, alarm);
+            updateChannel(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM), new StringType(alarm), true);
+            sendEvent("ALARM");
+            lastAlarmTs = now();
+        }
     }
 
     /**
@@ -560,10 +565,13 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      * @param serviceName mDNS service name from thing discovery - will be used to build the Thing type name
      * @param mode
      */
-    private void changeThingType(String serviceName, String mode) {
-        ThingTypeUID thingTypeUID = getThingTypeUID(serviceName, mode);
+    private void changeThingType(String thingType, String mode) {
+        ThingTypeUID thingTypeUID = getThingTypeUID(thingType, mode);
         if (!thingTypeUID.equals(THING_TYPE_SHELLYUNKNOWN)) {
             logger.info("{}: Changing thing type to {}", getThing().getLabel(), thingTypeUID.toString());
+            Map<String, String> properties = editProperties();
+            properties.replace(PROPERTY_DEV_TYPE, thingType);
+            updateProperties(properties);
             changeThingType(thingTypeUID, getConfig());
         }
     }
@@ -625,17 +633,15 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             // logger.trace("{}: Predict channel {}.{} to become {} (type {}).", thingName,
             // group, channel, value, value.getClass());
             if (!channelCache || forceUpdate || (current == null) || !current.equals(value)) {
-                if (isLinked(channelId)) {
-                    updateState(channelId, value);
-                    if (current == null) {
-                        channelData.put(channelId, value);
-                    } else {
-                        channelData.replace(channelId, value);
-                    }
-                    logger.trace("{}: Channel {} updated with {} (type {}).", thingName, channelId, value,
-                            value.getClass());
-                    return true;
+                updateState(channelId, value);
+                if (current == null) {
+                    channelData.put(channelId, value);
+                } else {
+                    channelData.replace(channelId, value);
                 }
+                logger.trace("{}: Channel {} updated with {} (type {}).", thingName, channelId, value,
+                        value.getClass());
+                return true;
             }
         } catch (NullPointerException e) {
             logger.debug("Unable to update channel {}.{} with {} (type {}): {} ({})", thingName, channelId, value,
@@ -718,9 +724,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     @SuppressWarnings("null")
     public static Map<String, Object> fillDeviceProperties(ShellyDeviceProfile profile) {
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(PROPERTY_VENDOR, VENDOR);
 
+        properties.put(PROPERTY_VENDOR, VENDOR);
         if (profile != null) {
+            properties.put(PROPERTY_MODEL_ID, getString(profile.settings.device.type));
             properties.put(PROPERTY_MAC_ADDRESS, profile.mac);
             properties.put(PROPERTY_FIRMWARE_VERSION,
                     profile.fwVersion + "/" + profile.fwDate + "(" + profile.fwId + ")");

@@ -55,7 +55,7 @@ public class ShellyBindingConstants {
     public static final String            THING_TYPE_SHELLYFLOOD_STR       = "shellyflood";
     public static final String            THING_TYPE_SHELLYEYE_STR         = "shellyseye";
     public static final String            THING_TYPE_SHELLYSENSE_STR       = "shellysense";
-    public static final String            THING_TYPE_SHELLYUNKNOWN_STR     = "shellyunknown";
+    public static final String            THING_TYPE_SHELLYUNKNOWN_STR     = "shellydevice";
 
     // Device Types
     public static final String            SHELLYDT_DIMMER                  = "SHDM-1";
@@ -126,9 +126,9 @@ public class ShellyBindingConstants {
     public static final String            CONFIG_UPDATE_INTERVAL           = "updateInterval";
 
     public static final String            PROPERTY_SERVICE_NAME            = "serviceName";
-    public static final String            PROPERTY_THINGTYPE               = "thingType";
-    public static final String            PROPERTY_HWBATCH                 = "hardwareBatch";
+    public static final String            PROPERTY_DEV_TYPE                = "deviceType";
     public static final String            PROPERTY_DEV_MODE                = "deviceMode";
+    public static final String            PROPERTY_HWBATCH                 = "hardwareBatch";
     public static final String            PROPERTY_HWREV                   = "devHwRev";
     public static final String            PROPERTY_NUM_RELAYS              = "numberRelays";
     public static final String            PROPERTY_NUM_ROLLERS             = "numberRollers";
@@ -246,7 +246,7 @@ public class ShellyBindingConstants {
 
     public static final byte[]            EMPTY_BYTE                       = new byte[0];
 
-    public static final int               SHELLY_API_TIMEOUT_MS            = 5000;
+    public static final int               SHELLY_API_TIMEOUT_MS            = 6000;
 
     public static final String            SHELLY_API_MIN_FWVERSION         = "v1.5.2";
 

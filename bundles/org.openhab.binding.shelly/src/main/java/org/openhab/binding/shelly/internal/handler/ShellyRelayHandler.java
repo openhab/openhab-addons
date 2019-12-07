@@ -167,10 +167,12 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             value = ((PercentType) command).intValue();
         } else if (command instanceof DecimalType) { // Number
             value = ((DecimalType) command).intValue();
-        } else if (command instanceof OnOffType) { // Switch
+        }
+
+        if (command instanceof OnOffType) { // Switch
             logger.debug("Switch output {}", command.toString());
             api.setRelayTurn(index, (OnOffType) command == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
-            requestUpdates(1, false);
+            requestUpdates(2, false);
             return;
         }
 

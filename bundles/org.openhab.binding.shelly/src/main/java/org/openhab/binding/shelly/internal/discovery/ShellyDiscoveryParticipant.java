@@ -112,7 +112,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             name = service.getName().toLowerCase();
             address = StringUtils.substringBetween(service.toString(), "/", ":80");
             if (address == null) {
-                logger.debug("Shelly device discovered: IP address={}, name={}", address, name);
+                logger.debug("Shelly device {} discovered with empty IP address", name);
                 return null;
             }
             logger.debug("Shelly device discovered: IP-Adress={}, name={}", address, name);
@@ -120,15 +120,14 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             ShellyThingConfiguration config = new ShellyThingConfiguration();
             if (handlerFactory != null) {
                 bindingConfig = handlerFactory.getBindingConfig();
-                Validate.notNull(bindingConfig);
             }
+
+            // Get device settings
+            Validate.notNull(bindingConfig);
             config.deviceIp = address;
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
-
-            // Get device settings
             ShellyHttpApi api = new ShellyHttpApi(config);
-            thingType = StringUtils.substringBeforeLast(name, "-");
 
             try {
                 profile = api.getDeviceProfile(thingType);
@@ -151,24 +150,25 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     // create shellyunknown thing - will be changed during thing initialization with valid credentials
                     thingUID = ShellyThingCreator.getThingUID(name, mode, true);
                 } else {
-                    logger.warn("Device discovery failed for device {}, IP {}: {} ({})", name, address, e.getMessage(),
-                            e.getClass());
+                    logger.warn("Device discovery failed for device {}, IP {}: {} ({})\n{}", name, address,
+                            e.getMessage(), e.getClass(), e.getStackTrace());
                 }
             }
 
             if (thingUID != null) {
-                addProperty(properties, PROPERTY_MODEL_ID, model);
-                addProperty(properties, PROPERTY_THINGTYPE, thingUID.getId());
                 addProperty(properties, CONFIG_DEVICEIP, address);
-                addProperty(properties, PROPERTY_SERVICE_NAME, service.getName());
+                addProperty(properties, PROPERTY_MODEL_ID, model);
+                addProperty(properties, PROPERTY_SERVICE_NAME, name);
+                addProperty(properties, PROPERTY_DEV_TYPE, thingType);
+                addProperty(properties, PROPERTY_DEV_MODE, mode);
 
                 logger.debug("Adding Shelly thing, UID={}", thingUID.getAsString());
                 return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withLabel(name + " - " + address).withRepresentationProperty(name).build();
             }
         } catch (NullPointerException e) {
-            logger.warn("Device discovery failed for device {}, IP {}, service={}: {} ({})", name, address, name,
-                    e.getMessage(), e.getClass());
+            logger.warn("Device discovery failed for device {}, IP {}, service={}: {} ({})\n,{}", name, address, name,
+                    e.getMessage(), e.getClass(), e.getStackTrace());
         }
         return null;
     }

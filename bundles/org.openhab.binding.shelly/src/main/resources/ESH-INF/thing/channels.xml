@@ -341,7 +341,6 @@
 		<item-type>String</item-type>
 		<label>Last Alarm</label>
 		<description>Last alarm (over heating, load error etc.)</description>
-		<event />
 	</channel-type>
 	<channel-type id="eventTrigger">
 		<kind>trigger</kind>

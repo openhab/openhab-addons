@@ -62,10 +62,12 @@ public class ShellyThingCreator {
         if (name.startsWith(THING_TYPE_SHELLY4PRO_STR)) {
             return THING_TYPE_SHELLY4PRO_STR;
         }
-        if (name.startsWith(THING_TYPE_SHELLYPLUGS_STR)) {
-            return THING_TYPE_SHELLYPLUGS_STR;
-        }
         if (name.startsWith(THING_TYPE_SHELLYPLUG_STR)) {
+            // shellyplug-s needs to be mapped to shellyplugs to follow the schema
+            // for the thing types: <thing type>-<mode>
+            if (name.startsWith(THING_TYPE_SHELLYPLUGS_STR) || name.contains("-s")) {
+                return THING_TYPE_SHELLYPLUGS_STR;
+            }
             return THING_TYPE_SHELLYPLUG_STR;
         }
         if (name.startsWith(THING_TYPE_SHELLYDIMMER_STR)) {

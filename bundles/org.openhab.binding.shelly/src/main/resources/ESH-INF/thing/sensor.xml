@@ -43,7 +43,7 @@
 	</thing-type>
 
 	<thing-type id="shellysense">
-		<label>Shelly Sense</label>
+		<label>Shelly Sense (SHSEN-1)</label>
 		<description>Shelly Sense Remote IR controller</description>
 		<channel-groups>
 			<channel-group id="control" typeId="senseControl" />

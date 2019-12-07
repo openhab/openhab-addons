@@ -77,7 +77,7 @@ public class ShellyComponents {
                             // convert Watt/Min to kw/h
                             if (meter.total != null) {
                                 updated |= th.updateChannel(groupName, CHANNEL_METER_TOTALKWH, toQuantityType(
-                                        getDouble(meter.total) / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                                        getDouble(meter.total) / 60 / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
                             }
                             if (meter.counters != null) {
                                 updated |= th.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
@@ -102,7 +102,7 @@ public class ShellyComponents {
                             updated |= th.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
                                     toQuantityType(getDouble(emeter.power), DIGITS_WATT, SmartHomeUnits.WATT));
                             updated |= th.updateChannel(groupName, CHANNEL_METER_TOTALKWH, toQuantityType(
-                                    getDouble(emeter.total) / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                                    getDouble(emeter.total) / 60 / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
                             updated |= th.updateChannel(groupName, CHANNEL_EMETER_TOTALRET, toQuantityType(
                                     getDouble(emeter.totalReturned) / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
                             updated |= th.updateChannel(groupName, CHANNEL_EMETER_REACTWATTS,

@@ -28,7 +28,7 @@
 	</thing-type>
 
 	<thing-type id="shellyem">
-		<label>ShellyEM</label>
+		<label>ShellyEM (SHEM)</label>
 		<description>ShellyEM device with single relay and power meter</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel" />
