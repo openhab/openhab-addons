@@ -73,14 +73,14 @@ public class XmlRpcResponse implements RpcResponse {
      * @author Gerhard Riegler
      */
     private class XmlRpcHandler extends DefaultHandler {
-        private List<Object> result = new ArrayList<Object>();
-        private LinkedList<List<Object>> currentDataObject = new LinkedList<List<Object>>();
+        private List<Object> result = new ArrayList<>();
+        private LinkedList<List<Object>> currentDataObject = new LinkedList<>();
         private StringBuilder tagValue;
         private boolean isValueTag;
 
         @Override
         public void startDocument() throws SAXException {
-            currentDataObject.addLast(new ArrayList<Object>());
+            currentDataObject.addLast(new ArrayList<>());
         }
 
         @Override
@@ -94,7 +94,7 @@ public class XmlRpcResponse implements RpcResponse {
                 throws SAXException {
             String tag = qName.toLowerCase();
             if (tag.equals("array") || tag.equals("struct")) {
-                currentDataObject.addLast(new ArrayList<Object>());
+                currentDataObject.addLast(new ArrayList<>());
             }
             isValueTag = tag.equals("value");
             tagValue = new StringBuilder();
@@ -112,10 +112,10 @@ public class XmlRpcResponse implements RpcResponse {
                     break;
                 case "int":
                 case "i4":
-                    data.add(currentValue);
+                    data.add(new Integer(currentValue));
                     break;
                 case "double":
-                    data.add(currentValue);
+                    data.add(new Double(currentValue));
                     break;
                 case "string":
                 case "name":
@@ -133,7 +133,7 @@ public class XmlRpcResponse implements RpcResponse {
                     break;
                 case "struct":
                     List<Object> mapData = currentDataObject.removeLast();
-                    Map<Object, Object> resultMap = new HashMap<Object, Object>();
+                    Map<Object, Object> resultMap = new HashMap<>();
 
                     for (int i = 0; i < mapData.size(); i += 2) {
                         resultMap.put(mapData.get(i), mapData.get(i + 1));

@@ -76,7 +76,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     private HomematicChannelTypeProvider channelTypeProvider;
     private HomematicChannelGroupTypeProvider channelGroupTypeProvider;
     private HomematicConfigDescriptionProvider configDescriptionProvider;
-    private final Map<String, Set<String>> firmwaresByType = new HashMap<String, Set<String>>();
+    private final Map<String, Set<String>> firmwaresByType = new HashMap<>();
 
     private static final String[] IGNORE_DATAPOINT_NAMES = new String[] { DATAPOINT_NAME_AES_KEY,
             VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY };
@@ -142,9 +142,9 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 logger.debug("Generating ThingType for device '{}' with {} datapoints", device.getType(),
                         device.getDatapointCount());
 
-                List<ChannelGroupType> groupTypes = new ArrayList<ChannelGroupType>();
+                List<ChannelGroupType> groupTypes = new ArrayList<>();
                 for (HmChannel channel : device.getChannels()) {
-                    List<ChannelDefinition> channelDefinitions = new ArrayList<ChannelDefinition>();
+                    List<ChannelDefinition> channelDefinitions = new ArrayList<>();
                     // Omit thing channel definitions for reconfigurable channels;
                     // those will be populated dynamically during thing initialization
                     if (!channel.isReconfigurable()) {
@@ -207,7 +207,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 && !DEVICE_TYPE_VIRTUAL_WIRED.equals(device.getType())) {
             Set<String> firmwares = firmwaresByType.get(device.getType());
             if (firmwares == null) {
-                firmwares = new HashSet<String>();
+                firmwares = new HashSet<>();
                 firmwaresByType.put(device.getType(), firmwares);
             }
             firmwares.add(device.getFirmware());
@@ -221,11 +221,11 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         String label = MetadataUtils.getDeviceName(device);
         String description = String.format("%s (%s)", label, device.getType());
 
-        List<String> supportedBridgeTypeUids = new ArrayList<String>();
+        List<String> supportedBridgeTypeUids = new ArrayList<>();
         supportedBridgeTypeUids.add(THING_TYPE_BRIDGE.toString());
         ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
         properties.put(Thing.PROPERTY_MODEL_ID, device.getType());
 
@@ -234,7 +234,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             generateConfigDescription(device, configDescriptionURI);
         }
 
-        List<ChannelGroupDefinition> groupDefinitions = new ArrayList<ChannelGroupDefinition>();
+        List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
         for (ChannelGroupType groupType : groupTypes) {
             String id = StringUtils.substringAfterLast(groupType.getUID().getId(), "_");
             groupDefinitions.add(new ChannelGroupDefinition(id, groupType.getUID()));
@@ -280,7 +280,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
                 BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
                 if (step == null) {
-                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? 0.1 : 1L);
+                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : new Long(1L));
                 }
                 state = new StateDescription(min, max, step, MetadataUtils.getStatePattern(dp), dp.isReadOnly(),
                         options);
@@ -311,8 +311,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     }
 
     private void generateConfigDescription(HmDevice device, URI configDescriptionURI) {
-        List<ConfigDescriptionParameter> parms = new ArrayList<ConfigDescriptionParameter>();
-        List<ConfigDescriptionParameterGroup> groups = new ArrayList<ConfigDescriptionParameterGroup>();
+        List<ConfigDescriptionParameter> parms = new ArrayList<>();
+        List<ConfigDescriptionParameterGroup> groups = new ArrayList<>();
 
         for (HmChannel channel : device.getChannels()) {
             String groupName = "HMG_" + channel.getNumber();
@@ -343,7 +343,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     if (dp.isNumberType()) {
                         builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
                         builder.withMaximum(MetadataUtils.createBigDecimal(dp.getMaxValue()));
-                        builder.withStepSize(MetadataUtils.createBigDecimal(dp.isFloatType() ? 0.1 : 1L));
+                        builder.withStepSize(
+                                MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : new Long(1L)));
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 

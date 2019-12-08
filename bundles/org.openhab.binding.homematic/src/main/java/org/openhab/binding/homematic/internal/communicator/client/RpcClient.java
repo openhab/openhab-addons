@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.parser.GetAllScriptsParser;
@@ -86,7 +87,7 @@ public abstract class RpcClient<T> {
         request.addArg(getRpcCallbackUrl());
         request.addArg(clientId);
         if (config.getGatewayInfo().isHomegear()) {
-            request.addArg(0x22);
+            request.addArg(new Integer(0x22));
         }
         sendMessage(config.getRpcPort(hmInterface), request);
     }
@@ -175,7 +176,6 @@ public abstract class RpcClient<T> {
             // The configuration channel only has a MASTER Paramset, so there is nothing to load
             return;
         }
-
         RpcRequest<T> request = createRpcRequest("getParamsetDescription");
         request.addArg(getRpcAddress(channel.getDevice().getAddress()) + getChannelSuffix(channel));
         request.addArg(paramsetType.toString());
@@ -326,7 +326,7 @@ public abstract class RpcClient<T> {
             request = createRpcRequest("putParamset");
             request.addArg(getRpcAddress(dp.getChannel().getDevice().getAddress()) + getChannelSuffix(dp.getChannel()));
             request.addArg(HmParamsetType.MASTER.toString());
-            Map<String, Object> paramSet = new HashMap<String, Object>();
+            Map<String, Object> paramSet = new HashMap<>();
             paramSet.put(dp.getName(), value);
             request.addArg(paramSet);
             configureRxMode(request, rxMode);
