@@ -29,6 +29,15 @@ import org.slf4j.LoggerFactory;
 public class ShellyProtectedHandler extends ShellyBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(ShellyProtectedHandler.class);
 
+    /**
+     * Constructor
+     *
+     * @param thing The thing passed by the HandlerFactory
+     * @param bindingConfig configuration of the binding
+     * @param coapServer coap server instance
+     * @param localIP local IP of the openHAB host
+     * @param httpPort port of the openHAB HTTP API
+     */
     public ShellyProtectedHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
             @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
         super(thing, bindingConfig, coapServer, localIP, httpPort);

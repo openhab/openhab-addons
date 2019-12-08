@@ -54,9 +54,13 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     private @Nullable Map<Integer, ShellyColorUtils> channelColors;
 
     /**
+     * Constructor
+     *
      * @param thing The thing passed by the HandlerFactory
-     * @param handlerFactory Handler Factory instance (will be used for event handler registration)
-     * @param networkAddressService instance of NetworkAddressService to get access to the OH default ip settings
+     * @param bindingConfig configuration of the binding
+     * @param coapServer coap server instance
+     * @param localIP local IP of the openHAB host
+     * @param httpPort port of the openHAB HTTP API
      */
     public ShellyLightHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
             @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {

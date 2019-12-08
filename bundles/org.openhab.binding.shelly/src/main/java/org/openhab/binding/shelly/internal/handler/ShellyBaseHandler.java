@@ -90,13 +90,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     int httpPort = -1;
 
     /**
-     *
-     * Initialize instance
+     * Constructor
      *
      * @param thing The Thing object
      * @param bindingConfig The binding configuration (beside thing
      *            configuration)
-     * @param networkAddressService Network service to get local ip
+     * @param coapServer coap server instance
      * @param localIP local IP address from networkAddressService
      * @param httpPort from httpService
      */
@@ -603,14 +602,13 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     }
 
     /**
-     * Update one channel. Use Channel Cache to avoid unessesary updates (and avoid
+     * Update one channel. Use Channel Cache to avoid unnecessary updates (and avoid
      * messing up the log with those updates)
      *
-     * @param channelId Channel Name
+     * @param channelId Channel id
      * @param value Value (State)
-     * @param forceUpdate true: ignore cached data, force update; false check cache
-     *            of changed data
-     * @return
+     * @param forceUpdate true: ignore cached data, force update; false check cache of changed data
+     * @return true, if successful
      */
     @SuppressWarnings("null")
     public boolean updateChannel(String channelId, State value, Boolean forceUpdate) {

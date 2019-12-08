@@ -53,8 +53,7 @@ import com.google.gson.Gson;
 
 /***
  * The{@link ShellyRelayHandler} handles light (bulb+rgbw2) specific commands and status. All other commands will be
- * routet of the generic thing
- * handler.
+ * handled by the generic thing handler.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -63,9 +62,13 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(ShellyRelayHandler.class);
 
     /**
+     * Constructor
+     *
      * @param thing The thing passed by the HandlerFactory
-     * @param handlerFactory Handler Factory instance (will be used for event handler registration)
-     * @param networkAddressService instance of NetworkAddressService to get access to the OH default ip settings
+     * @param bindingConfig configuration of the binding
+     * @param coapServer coap server instance
+     * @param localIP local IP of the openHAB host
+     * @param httpPort port of the openHAB HTTP API
      */
     public ShellyRelayHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
             @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
@@ -440,7 +443,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @param status Shelly device status
      * @return true: one or more inputs were updated
      */
-    @SuppressWarnings("null")
     private boolean updateInputs(String groupName, ShellySettingsStatus status) {
         boolean updated = false;
         if (status.inputs != null) {
