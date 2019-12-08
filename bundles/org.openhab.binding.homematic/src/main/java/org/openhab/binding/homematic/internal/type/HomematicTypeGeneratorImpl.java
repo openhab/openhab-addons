@@ -78,9 +78,6 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     private HomematicConfigDescriptionProvider configDescriptionProvider;
     private final Map<String, Set<String>> firmwaresByType = new HashMap<String, Set<String>>();
 
-    private static final String[] STATUS_DATAPOINT_NAMES = new String[] { DATAPOINT_NAME_UNREACH,
-            DATAPOINT_NAME_CONFIG_PENDING, DATAPOINT_NAME_DEVICE_IN_BOOTLOADER, DATAPOINT_NAME_UPDATE_PENDING };
-
     private static final String[] IGNORE_DATAPOINT_NAMES = new String[] { DATAPOINT_NAME_AES_KEY,
             VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY };
 
@@ -283,7 +280,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
                 BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
                 if (step == null) {
-                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L);
+                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? 0.1 : 1L);
                 }
                 state = new StateDescription(min, max, step, MetadataUtils.getStatePattern(dp), dp.isReadOnly(),
                         options);
@@ -346,7 +343,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     if (dp.isNumberType()) {
                         builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
                         builder.withMaximum(MetadataUtils.createBigDecimal(dp.getMaxValue()));
-                        builder.withStepSize(MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L));
+                        builder.withStepSize(MetadataUtils.createBigDecimal(dp.isFloatType() ? 0.1 : 1L));
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 

@@ -16,7 +16,6 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIR
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
-import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;

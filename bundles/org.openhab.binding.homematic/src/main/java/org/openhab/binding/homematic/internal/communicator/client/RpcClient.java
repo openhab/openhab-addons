@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.parser.GetAllScriptsParser;
@@ -87,7 +86,7 @@ public abstract class RpcClient<T> {
         request.addArg(getRpcCallbackUrl());
         request.addArg(clientId);
         if (config.getGatewayInfo().isHomegear()) {
-            request.addArg(new Integer(0x22));
+            request.addArg(0x22);
         }
         sendMessage(config.getRpcPort(hmInterface), request);
     }

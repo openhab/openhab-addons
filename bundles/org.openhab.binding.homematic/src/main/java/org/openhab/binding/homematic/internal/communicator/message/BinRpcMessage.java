@@ -215,7 +215,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         int type = readInt();
         switch (type) {
             case 1:
-                return new Integer(readInt());
+                return readInt();
             case 2:
                 return binRpcData[offset++] != 0 ? Boolean.TRUE : Boolean.FALSE;
             case 3:
