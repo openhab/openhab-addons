@@ -128,6 +128,7 @@
     <module>org.openhab.binding.mail</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.mcp23017</module>
+    <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miele</module>
@@ -221,6 +222,7 @@
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.volvooncall</module>
+    <module>org.openhab.binding.weathercompany</module>
     <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.binding.wemo</module>
     <module>org.openhab.binding.wifiled</module>
@@ -291,7 +293,7 @@
   </dependencies>
 
   <properties>
-    <dep.noembedding/>
+    <dep.noembedding></dep.noembedding>
   </properties>
 
   <build>
