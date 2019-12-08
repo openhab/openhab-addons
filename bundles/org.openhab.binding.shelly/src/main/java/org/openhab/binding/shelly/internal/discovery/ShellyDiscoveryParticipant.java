@@ -166,8 +166,8 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                         .withLabel(name + " - " + address).withRepresentationProperty(name).build();
             }
         } catch (NullPointerException e) {
-            logger.warn("Device discovery failed for device {}, IP {}, service={}: {} ({})\n,{}", name, address, name,
-                    e.getMessage(), e.getClass(), e.getStackTrace());
+            logger.warn("Device discovery failed for device {}, IP {}, service={}: {}", name, address, name,
+                    e.getMessage(), e);
         }
         return null;
     }
