@@ -163,11 +163,13 @@ public class FloureonThermostatHandler extends BroadlinkHandler {
             logger.debug("Updating channel {} with value {}", ROOM_TEMPERATURE, new DecimalType(baseStatusInfo.getRoomTemp()));
             logger.debug("Mode {}",StringType.valueOf(baseStatusInfo.getAutoMode() ? "auto" : "manual"));
             updateState(ROOM_TEMPERATURE, new DecimalType(baseStatusInfo.getRoomTemp()));
+            logger.debug("Updating channel {} with value {}", ROOM_TEMPERATURE_EXTERNAL_SENSOR, new DecimalType(baseStatusInfo.getExternalTemp()));
             updateState(ROOM_TEMPERATURE_EXTERNAL_SENSOR, new DecimalType(baseStatusInfo.getExternalTemp()));
             updateState(SETPOINT, new DecimalType(baseStatusInfo.getThermostatTemp()));
             updateState(POWER, OnOffType.from(baseStatusInfo.getPower()));
             updateState(MODE, StringType.valueOf(baseStatusInfo.getAutoMode() ? "auto" : "manual"));
             updateState(SENSOR,StringType.valueOf(baseStatusInfo.getSensorControl().name()));
+            logger.debug("Updating channel {} with value {}", SENSOR, new DecimalType(baseStatusInfo.getSensorControl().name()));
             updateState(TEMPERATURE_OFFSET, new DecimalType(baseStatusInfo.getDif()));
             updateState(ACTIVE, OnOffType.from(baseStatusInfo.getActive()));
         } catch (Exception e) {
