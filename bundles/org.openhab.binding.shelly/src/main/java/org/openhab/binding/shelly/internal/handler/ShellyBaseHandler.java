@@ -28,7 +28,6 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -252,7 +251,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
         requestUpdates(3, false); // request 3 updates in a row (during the first 2+3*3 sec)
 
-        sendAlarm(ALARM_TYPE_NONE);
+        postAlarm(ALARM_TYPE_NONE, false);
     }
 
     /**
@@ -391,52 +390,41 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     @SuppressWarnings("null")
     private void fillDeviceStatus(ShellySettingsStatus status, boolean updated) {
         String alarm = "";
+        boolean force = false;
 
         // Update uptime and WiFi
+        if (updated) {
+            lastUpdateTs = now();
+        }
         long uptime = getLong(status.uptime);
         Integer rssi = getInteger(status.wifiSta.rssi);
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
                 toQuantityType(new DecimalType(uptime), SmartHomeUnits.SECOND));
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, new DecimalType(rssi));
 
+        // Check various device indicators like overheating
         if ((status.uptime < lastUptime) && (profile != null) && !profile.hasBattery) {
             alarm = ALARM_TYPE_RESTARTED;
+            force = true;
         }
         lastUptime = uptime;
 
-        if (updated) {
-            lastUpdateTs = now();
+        if ((rssi < SIGNAL_ALARM_MIN_RSSI) && ((lastAlarmTs == 0))) {
+            alarm = ALARM_TYPE_WEAKSIGNAL;
         }
-
-        // Check every SIGNAL_ALARM_INTERVAL_SEC WiFi signal, overheating, overload...
-        if (now() > lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC) {
-            // Check various device indicators like overheating
-            if ((rssi < SIGNAL_ALARM_MIN_RSSI) && ((lastAlarmTs == 0))) {
-                alarm = ALARM_TYPE_WEAKSIGNAL;
-            }
-            if (getBool(status.overtemperature)) {
-                alarm = ALARM_TYPE_OVERTEMP;
-            }
-            if (getBool(status.overload)) {
-                alarm = ALARM_TYPE_OVERLOAD;
-            }
-            if (getBool(status.loaderror)) {
-                alarm = ALARM_TYPE_LOADERR;
-            }
+        if (getBool(status.overtemperature)) {
+            alarm = ALARM_TYPE_OVERTEMP;
+        }
+        if (getBool(status.overload)) {
+            alarm = ALARM_TYPE_OVERLOAD;
+        }
+        if (getBool(status.loaderror)) {
+            alarm = ALARM_TYPE_LOADERR;
         }
 
         if (!alarm.isEmpty()) {
-            sendAlarm(alarm);
+            postAlarm(alarm, force);
         }
-    }
-
-    /**
-     * Send event to the trigger channel
-     *
-     * @param event type of event, e.g. btn_on, out_off, longpush
-     */
-    public void sendEvent(String event) {
-        triggerChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_EVENT_TRIGGER, event);
     }
 
     /**
@@ -444,14 +432,21 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      *
      * @param alarm Alarm Message
      */
-    public void sendAlarm(String alarm) {
-        State lastAlarm = (StringType) getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM);
+    public void postAlarm(String alarm, boolean force) {
+        String channelId = mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM);
+        Object value = getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM);
+        String lastAlarm = value != null ? value.toString() : null;
 
-        if ((now() > (lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC))
-                || ((lastAlarm != null) && !lastAlarm.toString().equals(alarm))) {
-            logger.warn("{}: Alarm condition: {}", thingName, alarm);
-            triggerChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM, alarm);
-            lastAlarmTs = now();
+        if (force || ((lastAlarm != null) && !lastAlarm.equals(alarm))
+                || (now() > (lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC))) {
+            if (alarm.equals(ALARM_TYPE_NONE)) {
+                channelData.put(channelId, alarm); // init channel
+            } else {
+                logger.warn("{}: Alarm condition: {}", thingName, alarm);
+                triggerChannel(channelId, alarm);
+                channelData.replace(channelId, alarm);
+                lastAlarmTs = now();
+            }
         }
     }
 
@@ -474,25 +469,27 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     parameters.toString());
             boolean hasBattery = profile != null && profile.hasBattery ? true : false;
             if (profile == null) {
-                logger.info("{}: Device is not yet initialized, event will trigger initialization", deviceName);
+                logger.info("{}: Device is not yet initialized, event triggers initialization", deviceName);
             }
 
             String group = "";
             Integer rindex = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) + 1 : -1;
-            if (type.equals(EVENT_TYPE_RELAY) && profile.hasRelays) {
+            String payload = parameters.get("type");
+            if (type.equals(EVENT_TYPE_RELAY)) {
                 group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                         : CHANNEL_GROUP_RELAY_CONTROL + rindex.toString();
             }
-            if (type.equals(EVENT_TYPE_ROLLER) && profile.isRoller) {
+            if (type.equals(EVENT_TYPE_ROLLER)) {
                 group = profile.numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL
                         : CHANNEL_GROUP_ROL_CONTROL + rindex.toString();
             }
-            if (type.equals(EVENT_TYPE_LIGHT) && (profile.isLight || profile.isDimmer)) {
+            if (type.equals(EVENT_TYPE_LIGHT)) {
                 group = profile.numRelays <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
                         : CHANNEL_GROUP_LIGHT_CONTROL + rindex.toString();
             }
             if (type.equals(EVENT_TYPE_SENSORDATA)) {
                 group = CHANNEL_GROUP_SENSOR;
+                payload = type;
             }
             if (group.isEmpty()) {
                 logger.debug("Unsupported event class: {}", type);
@@ -500,11 +497,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
 
             // Pass event to trigger channel
-            String eventName = type + deviceIndex.toString();
-            if (parameters.containsKey("type")) {
-                eventName = eventName + "_" + parameters.get("type");
-            }
-            sendEvent(eventName.toUpperCase());
+            payload = payload.toUpperCase();
+            logger.debug("{}: Post event {}", thingName, payload);
+            triggerChannel(mkChannelId(group, CHANNEL_EVENT_TRIGGER), payload.toUpperCase());
 
             // request update on next interval (2x for non-battery devices)
             requestUpdates(scheduledUpdates >= 2 ? 0 : !hasBattery ? 2 : 1, true);

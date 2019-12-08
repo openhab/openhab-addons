@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -138,13 +139,14 @@ public class ShellyUtils {
     }
 
     public static DateTimeType getTimestamp() {
-        return getTimestamp(now());
-
-        // return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
+        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(now()), ZoneId.systemDefault()));
     }
 
-    public static DateTimeType getTimestamp(long timestamo) {
-        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamo), ZoneId.systemDefault()));
+    public static DateTimeType getTimestamp(String zone, long timestamp) {
+        ZoneId zoneId = ZoneId.of(zone);
+        ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
+        int delta = zdt.getOffset().getTotalSeconds();
+        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamp - delta), zoneId));
     }
 
     public static Integer getLightIdFromGroup(@Nullable String groupName) {

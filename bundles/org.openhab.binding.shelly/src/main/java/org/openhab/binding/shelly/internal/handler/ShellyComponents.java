@@ -87,8 +87,8 @@ public class ShellyComponents {
                                 updated |= th.updateChannel(groupName, CHANNEL_METER_LASTMIN3,
                                         toQuantityType(getDouble(meter.counters[2]), DIGITS_WATT, SmartHomeUnits.WATT));
                             }
-                            updated |= th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
-                                    getTimestamp(getLong(meter.timestamp)));
+                            th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
+                                    getTimestamp(getString(profile.settings.timezone), getLong(meter.timestamp)));
                             m++;
                         }
                     }
@@ -109,8 +109,8 @@ public class ShellyComponents {
                                     toQuantityType(getDouble(emeter.reactive), DIGITS_WATT, SmartHomeUnits.WATT));
                             updated |= th.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
-                            updated |= th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
-                                    getTimestamp(getLong(emeter.timestamp)));
+                            th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
+                                    getTimestamp(getString(profile.settings.timezone), getLong(emeter.timestamp)));
                             m++;
                         }
                     }
@@ -153,7 +153,8 @@ public class ShellyComponents {
                 updated |= th.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
                         toQuantityType(getDouble(totalWatts), DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
 
-                updated |= th.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp(timestamp));
+                updated |= th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
+                        getTimestamp(getString(profile.settings.timezone), timestamp));
             }
         }
         return updated;

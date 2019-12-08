@@ -137,9 +137,10 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
                     // event processed
                     break;
                 }
-            } catch (RuntimeException e) {
-                logger.warn("Unable to process callback: {} ({}), deviceName={}, type={}, index={}, parameters={}",
-                        e.getMessage(), e.getClass(), deviceName, eventType, componentIndex, parameters.toString());
+            } catch (NullPointerException e) {
+                logger.debug("Unable to process callback: {} ({}), deviceName={}, type={}, index={}, parameters={}\n{}",
+                        e.getMessage(), e.getClass(), deviceName, eventType, componentIndex, parameters.toString(),
+                        e.getStackTrace());
                 // continue with next listener
             }
         }

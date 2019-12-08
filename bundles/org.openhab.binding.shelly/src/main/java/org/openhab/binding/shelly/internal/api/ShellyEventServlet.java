@@ -120,11 +120,11 @@ public class ShellyEventServlet extends HttpServlet {
             }
             handlerFactory.onEvent(deviceName, index, type, parms);
 
-        } catch (RuntimeException e) {
-            logger.info(
-                    "ERROR: Exception processing callback: {} ({}), path={}, data='{}'; deviceName={}, index={}, type={}, parameters={}",
+        } catch (NullPointerException e) {
+            logger.debug(
+                    "ERROR: Exception processing callback: {} ({}), path={}, data='{}'; deviceName={}, index={}, type={}, parameters={}\n{}",
                     e.getMessage(), e.getClass(), path, data, deviceName, index, type,
-                    request.getParameterMap().toString());
+                    request.getParameterMap().toString(), e.getStackTrace());
         } finally {
             resp.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             resp.getWriter().write("");

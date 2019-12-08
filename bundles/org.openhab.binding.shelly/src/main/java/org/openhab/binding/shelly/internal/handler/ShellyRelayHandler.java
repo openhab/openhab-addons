@@ -317,7 +317,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                                 : CHANNEL_GROUP_RELAY_CONTROL + r.toString();
 
                         if (getBool(relay.overpower)) {
-                            sendAlarm(ALARM_TYPE_OVERPOWER);
+                            postAlarm(ALARM_TYPE_OVERPOWER, false);
                         }
 
                         updated |= updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
