@@ -15,8 +15,6 @@ package org.openhab.binding.shelly.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.slf4j.Logger;
@@ -39,7 +37,6 @@ public class ShellyProtectedHandler extends ShellyBaseHandler {
     @Override
     public void initialize() {
         logger.debug("Thing is using class {}", this.getClass());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "User id / password missing, check thing configuration!");
+        super.initialize();
     }
 }

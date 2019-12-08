@@ -33,6 +33,7 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceListener;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyProtectedHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyRelayHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -97,16 +98,17 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        String thingType = thingTypeUID.getId();
         ShellyBaseHandler handler = null;
 
-        if (thingTypeUID.getId().equals(THING_TYPE_SHELLYBULB.getId())
-                || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_COLOR.getId())
-                || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_WHITE.getId())) {
+        if (thingType.equals(THING_TYPE_SHELLYPROTECTED_STR)) {
+            logger.debug("Create new thing of type {} using ShellyRelayHandler", thingTypeUID.getId());
+            handler = new ShellyProtectedHandler(thing, bindingConfig, coapServer, localIP, httpPort);
+        } else if (thingType.equals(THING_TYPE_SHELLYBULB.getId())
+                || thingType.equals(THING_TYPE_SHELLYRGBW2_COLOR.getId())
+                || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE.getId())) {
             logger.debug("Create new thing of type {} using ShellyLightHandler", thingTypeUID.getId());
             handler = new ShellyLightHandler(thing, bindingConfig, coapServer, localIP, httpPort);
-        } else if (thingTypeUID.getId().equals(THING_TYPE_SHELLYPROTECTED_STR)) {
-            logger.debug("Create new thing of type {} using ShellyUnknownHandler", thingTypeUID.getId());
-            handler = new ShellyRelayHandler(thing, bindingConfig, coapServer, localIP, httpPort);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("Create new thing of type {} using ShellyRelayHandler", thingTypeUID.getId());
             handler = new ShellyRelayHandler(thing, bindingConfig, coapServer, localIP, httpPort);
