@@ -189,6 +189,7 @@
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.serialbutton</module>
+    <module>org.openhab.binding.shelly</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.siemensrds</module>
     <module>org.openhab.binding.sinope</module>
@@ -293,7 +294,7 @@
   </dependencies>
 
   <properties>
-    <dep.noembedding></dep.noembedding>
+    <dep.noembedding/>
   </properties>
 
   <build>
