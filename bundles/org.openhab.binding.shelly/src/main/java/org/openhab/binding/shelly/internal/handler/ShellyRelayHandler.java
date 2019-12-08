@@ -232,7 +232,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 boolean down = command instanceof UpDownType && (UpDownType) command == UpDownType.DOWN;
                 if ((up && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_OPEN))
                         || (down && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_CLOSE))) {
-                    logger.info("{}: Roller is already moving ({}), ignore command {}", thingName,
+                    logger.debug("{}: Roller is already moving ({}), ignore command {}", thingName,
                             getString(rstatus.state), command.toString());
                     requestUpdates(1, false);
                     return;

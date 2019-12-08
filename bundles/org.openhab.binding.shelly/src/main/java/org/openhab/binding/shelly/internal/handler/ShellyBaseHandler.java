@@ -121,7 +121,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             try {
                 initializeThingConfig();
                 Validate.notNull(config);
-                logger.info("{}: Device config: ipAddress={}, http user/password={}/{}, update interval={}",
+                logger.debug("{}: Device config: ipAddress={}, http user/password={}/{}, update interval={}",
                         getThing().getLabel(), config.deviceIp, config.userId.isEmpty() ? "<non>" : config.userId,
                         config.password.isEmpty() ? "<none>" : "***", config.updateInterval);
                 initializeThing();
@@ -207,7 +207,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         updateProperties(tmpPrf, status);
         if (tmpPrf.fwVersion.compareTo(SHELLY_API_MIN_FWVERSION) < 0) {
             logger.warn(
-                    "{}: WARNING: Firmware might be too old (or beta release), installed: {}/{} ({}), required minimal {}. The binding was tested with Version 1.50+ only. Older versions might work, but doesn't support all features or lead into technical issues. You should consider to upgrade the device to v1.5.0 or newer!",
+                    "{}: WARNING: Firmware might be too old (or beta release), installed: {}/{} ({}), required minimal {}. The binding was tested with version 1.50+ only. Older versions might work, but do not support all features or show technical issues. Please consider upgrading to v1.5.0 or newer!",
                     thingName, tmpPrf.fwVersion, tmpPrf.fwDate, tmpPrf.fwId, SHELLY_API_MIN_FWVERSION);
         }
         if (status.update.hasUpdate) {
@@ -245,7 +245,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
         fillDeviceStatus(status, false);
 
-        logger.info("{}: Thing successfully initialized.", thingName);
+        logger.debug("{}: Thing successfully initialized.", thingName);
         updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
         requestUpdates(3, false); // request 3 updates in a row (during the first 2+3*3 sec)
 
@@ -264,7 +264,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
 
             if (profile == null) {
-                logger.info("{}: Thing not yet initialized, command {} triggers initialization", thingName,
+                logger.debug("{}: Thing not yet initialized, command {} triggers initialization", thingName,
                         command.toString());
                 initializeThing();
             } else {
@@ -276,7 +276,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
             switch (channelUID.getIdWithoutGroup()) {
                 case CHANNEL_SENSE_KEY: // Shelly Sense: Send Key
-                    logger.info("{}: Send key {}", thingName, command.toString());
+                    logger.debug("{}: Send key {}", thingName, command.toString());
                     api.sendIRKey(command.toString());
                     update = true;
                     break;
@@ -326,7 +326,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
                 if ((profile == null) || ((getThing().getStatus() == ThingStatus.OFFLINE)
                         && (getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR))) {
-                    logger.info("{}: Status update triggered thing initialization", thingName);
+                    logger.debug("{}: Status update triggered thing initialization", thingName);
                     initializeThing(); // may fire an exception if initialization failed
                 }
 
@@ -338,7 +338,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
                 // If status update was successful the thing must be online
                 if (getThing().getStatus() != ThingStatus.ONLINE) {
-                    logger.info("{}: Thing {} is now online", thingName, getThing().getLabel());
+                    logger.debug("{}: Thing {} is now online", thingName, getThing().getLabel());
                     updateStatus(ThingStatus.ONLINE); // if API call was successful the thing must be online
                 }
 
@@ -359,7 +359,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 logger.debug("Device {} is not reachable, update canceled ({} skips, {} scheduledUpdates)!", thingName,
                         skipCount, scheduledUpdates);
             } else if (e.getMessage().contains("Not calibrated!")) {
-                logger.info("{}: Roller is not calibrated! Use the Shelly App or Web UI to run calibration.",
+                logger.debug("{}: Roller is not calibrated! Use the Shelly App or Web UI to run calibration.",
                         thingName);
             } else {
                 logger.debug("{}: Unable to update status: {} ({})", thingName, e.getMessage(), e.getClass());
@@ -467,7 +467,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     parameters.toString());
             boolean hasBattery = profile != null && profile.hasBattery ? true : false;
             if (profile == null) {
-                logger.info("{}: Device is not yet initialized, event triggers initialization", deviceName);
+                logger.debug("{}: Device is not yet initialized, event triggers initialization", deviceName);
             }
 
             String group = "";
@@ -557,7 +557,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private void changeThingType(String thingType, String mode) {
         ThingTypeUID thingTypeUID = getThingTypeUID(thingType, mode);
         if (!thingTypeUID.equals(THING_TYPE_SHELLYUNKNOWN)) {
-            logger.info("{}: Changing thing type to {}", getThing().getLabel(), thingTypeUID.toString());
+            logger.debug("{}: Changing thing type to {}", getThing().getLabel(), thingTypeUID.toString());
             Map<String, String> properties = editProperties();
             properties.replace(PROPERTY_DEV_TYPE, thingType);
             updateProperties(properties);

@@ -44,8 +44,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ShellyLightHandler} handles light (bulb+rgbw2) specific commands and status. All other commands will be
- * routet of the generic thing
- * handler.
+ * routet of the generic thing handler.
  *
  * @author Markus Michels - Initial contribution
  */
