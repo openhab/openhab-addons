@@ -101,16 +101,18 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        if (!bridgeStatus.equals(ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
-
         logger.trace("initializeThing Thing {} Bridge status {}", getThing().getUID(), bridgeStatus);
 
         Thing thing = getThing();
         Map<String, String> properties = thing.getProperties();
         unitId = properties.get("id");
         bridgeHandler.registerUpdateListener(this);
+
+        if (!bridgeStatus.equals(ThingStatus.ONLINE)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("UpdateStatus OFFLINE BRIDGE_OFFLINE {}", getThing().getLabel());
+            return;
+        }
 
         scheduler.execute(() -> {
             boolean thingReachable = false;
@@ -157,15 +159,14 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     abstract void updateTouchWandUnitState(int status);
 
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            updateTouchWandUnitState(getUnitState(unitId));
-        }
-    };
-
     @Override
     public void onItemStatusUpdate(TouchWandUnitData unitData) {
+        if (unitData.getStatus().equals("ALIVE")) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
+            logger.debug("UpdateStatus OFFLINE {}", getThing().getLabel());
+        }
         updateTouchWandUnitState(unitData.getCurrStatus());
     }
 
