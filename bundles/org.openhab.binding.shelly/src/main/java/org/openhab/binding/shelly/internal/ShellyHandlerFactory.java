@@ -50,16 +50,15 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class, ShellyHandlerFactory.class }, configurationPid = "binding.shelly")
 public class ShellyHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger                    logger                     = LoggerFactory
-            .getLogger(ShellyHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyHandlerFactory.class);
 
-    private final ShellyCoapServer          coapServer;
-    private final Set<ShellyDeviceListener> deviceListeners            = new CopyOnWriteArraySet<>();
+    private final ShellyCoapServer coapServer;
+    private final Set<ShellyDeviceListener> deviceListeners = new CopyOnWriteArraySet<>();
 
-    private static final Set<ThingTypeUID>  SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-    private ShellyBindingConfiguration      bindingConfig              = new ShellyBindingConfiguration();
-    private String                          localIP                    = "";
-    private int                             httpPort                   = -1;
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+    private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
+    private String localIP = "";
+    private int httpPort = -1;
 
     /**
      * Activate the bundle: save properties

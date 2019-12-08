@@ -42,15 +42,15 @@ public class ShellyColorUtils {
         setTemp(col.temp);
     }
 
-    OnOffType   power        = OnOffType.OFF;
-    String      mode         = "";
-    Integer     red          = 0;
-    Integer     green        = 0;
-    Integer     blue         = 0;
-    Integer     white        = 0;
-    PercentType percentRed   = new PercentType(0);
+    OnOffType power = OnOffType.OFF;
+    String mode = "";
+    Integer red = 0;
+    Integer green = 0;
+    Integer blue = 0;
+    Integer white = 0;
+    PercentType percentRed = new PercentType(0);
     PercentType percentGreen = new PercentType(0);
-    PercentType percentBlue  = new PercentType(0);
+    PercentType percentBlue = new PercentType(0);
     PercentType percentWhite = new PercentType(0);
 
     void setMode(String mode) {
@@ -93,12 +93,12 @@ public class ShellyColorUtils {
         return changed;
     }
 
-    Integer     gain              = 0;
-    Integer     brightness        = 0;
-    Integer     temp              = 0;
-    PercentType percentGain       = new PercentType(0);
+    Integer gain = 0;
+    Integer brightness = 0;
+    Integer temp = 0;
+    PercentType percentGain = new PercentType(0);
     PercentType percentBrightness = new PercentType(0);
-    PercentType percentTemp       = new PercentType(0);
+    PercentType percentTemp = new PercentType(0);
 
     boolean setBrightness(int value) {
         boolean changed = brightness != value;

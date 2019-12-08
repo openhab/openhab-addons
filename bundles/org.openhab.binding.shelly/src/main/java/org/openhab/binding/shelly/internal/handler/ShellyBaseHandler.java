@@ -56,40 +56,38 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceListener {
-    protected final Logger                   logger           = LoggerFactory.getLogger(ShellyBaseHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(ShellyBaseHandler.class);
 
-    public String                            thingName        = "";
-    protected ShellyBindingConfiguration     bindingConfig    = new ShellyBindingConfiguration();
-    protected ShellyThingConfiguration       config           = new ShellyThingConfiguration();
-    protected @Nullable ShellyHttpApi        api;
-    private @Nullable ShellyCoapHandler      coap;
-    protected @Nullable ShellyDeviceProfile  profile;
+    public String thingName = "";
+    protected ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
+    protected ShellyThingConfiguration config = new ShellyThingConfiguration();
+    protected @Nullable ShellyHttpApi api;
+    private @Nullable ShellyCoapHandler coap;
+    protected @Nullable ShellyDeviceProfile profile;
     private final @Nullable ShellyCoapServer coapServer;
-    protected boolean                        lockUpdates      = false;
+    protected boolean lockUpdates = false;
 
     @SuppressWarnings("unused")
-    private long                             lastUpdateTs     = 0;
-    private long                             lastUptime       = 0;
-    private long                             lastAlarmTs      = 0;
+    private long lastUpdateTs = 0;
+    private long lastUptime = 0;
+    private long lastAlarmTs = 0;
 
-    private @Nullable ScheduledFuture<?>     statusJob;
-    private int                              skipUpdate       = 0;
-    public int                               scheduledUpdates = 0;
-    private int                              skipCount        = UPDATE_SKIP_COUNT;
+    private @Nullable ScheduledFuture<?> statusJob;
+    private int skipUpdate = 0;
+    public int scheduledUpdates = 0;
+    private int skipCount = UPDATE_SKIP_COUNT;
 
     // force settings refresh every x seconds
-    private int                              refreshCount     = UPDATE_SETTINGS_INTERVAL_SECONDS
-            / UPDATE_STATUS_INTERVAL_SECONDS;
-    private boolean                          refreshSettings  = false;
+    private int refreshCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
+    private boolean refreshSettings = false;
 
     // delay before enabling channel
-    private final int                        cacheCount       = UPDATE_SETTINGS_INTERVAL_SECONDS
-            / UPDATE_STATUS_INTERVAL_SECONDS;
-    private boolean                          channelCache     = false;
-    private Map<String, Object>              channelData      = new HashMap<>();
+    private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
+    private boolean channelCache = false;
+    private Map<String, Object> channelData = new HashMap<>();
 
-    String                                   localIP          = "";
-    int                                      httpPort         = -1;
+    String localIP = "";
+    int httpPort = -1;
 
     /**
      *

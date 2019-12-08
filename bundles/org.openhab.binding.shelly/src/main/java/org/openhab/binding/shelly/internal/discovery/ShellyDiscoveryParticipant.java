@@ -55,10 +55,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
-    private final Logger                         logger        = LoggerFactory
-            .getLogger(ShellyDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyDiscoveryParticipant.class);
     private @Nullable ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
-    private @Nullable ShellyHandlerFactory       handlerFactory;
+    private @Nullable ShellyHandlerFactory handlerFactory;
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {

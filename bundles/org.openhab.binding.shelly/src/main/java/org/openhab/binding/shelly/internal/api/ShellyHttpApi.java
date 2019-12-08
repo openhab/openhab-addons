@@ -53,12 +53,12 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ShellyHttpApi {
-    private final Logger                   logger    = LoggerFactory.getLogger(ShellyHttpApi.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyHttpApi.class);
     private final ShellyThingConfiguration config;
-    private final String                   thingName = "";
-    private Gson                           gson      = new Gson();
+    private final String thingName = "";
+    private Gson gson = new Gson();
 
-    private @Nullable ShellyDeviceProfile  profile;
+    private @Nullable ShellyDeviceProfile profile;
 
     public ShellyHttpApi(ShellyThingConfiguration config) {
         Validate.notNull(config, "Shelly Http Api: Config must not be null!");

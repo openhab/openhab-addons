@@ -31,10 +31,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ShellyBindingConfiguration {
     // Binding Configuration Properties
     public static final String CONFIG_DEF_HTTP_USER = "defaultUserId";
-    public static final String CONFIG_DEF_HTTP_PWD  = "defaultPassword";
+    public static final String CONFIG_DEF_HTTP_PWD = "defaultPassword";
 
-    public String              defaultUserId        = "";               // default for http basic user id
-    public String              defaultPassword      = "";               // default for http basic auth password
+    public String defaultUserId = ""; // default for http basic user id
+    public String defaultPassword = ""; // default for http basic auth password
 
     public void updateFromProperties(Map<String, Object> properties) {
         Validate.notNull(properties);

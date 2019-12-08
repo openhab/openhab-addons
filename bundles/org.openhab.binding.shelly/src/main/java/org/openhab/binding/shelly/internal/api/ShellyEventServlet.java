@@ -51,10 +51,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 public class ShellyEventServlet extends HttpServlet {
-    private static final long              serialVersionUID = 549582869577534569L;
-    private final Logger                   logger           = LoggerFactory.getLogger(ShellyEventServlet.class);
+    private static final long serialVersionUID = 549582869577534569L;
+    private final Logger logger = LoggerFactory.getLogger(ShellyEventServlet.class);
 
-    private @Nullable HttpService          httpService;
+    private @Nullable HttpService httpService;
     private @Nullable ShellyHandlerFactory handlerFactory;
 
     @SuppressWarnings("null")

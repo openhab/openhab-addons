@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyLightHandler extends ShellyBaseHandler {
-    private final Logger                             logger = LoggerFactory.getLogger(ShellyLightHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyLightHandler.class);
     private @Nullable Map<Integer, ShellyColorUtils> channelColors;
 
     /**

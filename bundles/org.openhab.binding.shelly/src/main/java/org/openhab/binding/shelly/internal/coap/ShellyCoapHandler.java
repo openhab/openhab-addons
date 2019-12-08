@@ -61,23 +61,23 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class ShellyCoapHandler implements ShellyCoapListener {
-    private final Logger                   logger      = LoggerFactory.getLogger(ShellyCoapHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyCoapHandler.class);
 
-    private final ShellyBaseHandler        thingHandler;
+    private final ShellyBaseHandler thingHandler;
     private final ShellyThingConfiguration config;
-    private final GsonBuilder              gsonBuilder;
-    private final Gson                     gson;
-    private String                         thingName;
+    private final GsonBuilder gsonBuilder;
+    private final Gson gson;
+    private String thingName;
 
-    private @Nullable ShellyCoapServer     coapServer;
-    private @Nullable CoapClient           statusClient;
-    private @Nullable Request              reqDescription;
-    private @Nullable Request              reqStatus;
+    private @Nullable ShellyCoapServer coapServer;
+    private @Nullable CoapClient statusClient;
+    private @Nullable Request reqDescription;
+    private @Nullable Request reqStatus;
 
-    private int                            lastSerial  = -1;
-    private String                         lastPayload = "";
-    private Map<String, CoIotDescrBlk>     blockMap    = new HashMap<String, CoIotDescrBlk>();
-    private Map<String, CoIotDescrSen>     sensorMap   = new HashMap<String, CoIotDescrSen>();
+    private int lastSerial = -1;
+    private String lastPayload = "";
+    private Map<String, CoIotDescrBlk> blockMap = new HashMap<String, CoIotDescrBlk>();
+    private Map<String, CoIotDescrSen> sensorMap = new HashMap<String, CoIotDescrSen>();
 
     public ShellyCoapHandler(ShellyThingConfiguration config, ShellyBaseHandler thingHandler,
             @Nullable ShellyCoapServer coapServer) {
