@@ -114,6 +114,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         // start background initialization:
         scheduler.schedule(() -> {
             boolean start = true;
