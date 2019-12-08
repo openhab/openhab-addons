@@ -36,6 +36,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  * @author Michael Reitler - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ConvertToBindingTest extends BaseConverterTest {
 
     @Test

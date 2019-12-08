@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DelayedExecuter {
     private final Logger logger = LoggerFactory.getLogger(DelayedExecuter.class);
 

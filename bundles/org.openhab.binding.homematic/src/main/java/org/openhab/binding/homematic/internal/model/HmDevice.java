@@ -28,6 +28,7 @@ import org.openhab.binding.homematic.internal.misc.MiscUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDevice {
     public static final String TYPE_GATEWAY_EXTRAS = "GATEWAY-EXTRAS";
     public static final String ADDRESS_GATEWAY_EXTRAS = "GWE00000000";

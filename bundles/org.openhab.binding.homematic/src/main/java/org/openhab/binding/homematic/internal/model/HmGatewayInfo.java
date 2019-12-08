@@ -20,6 +20,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmGatewayInfo {
     public static final String ID_HOMEGEAR = "HOMEGEAR";
     public static final String ID_CCU = "CCU";

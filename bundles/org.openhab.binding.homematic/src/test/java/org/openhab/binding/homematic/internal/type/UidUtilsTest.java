@@ -37,6 +37,7 @@ import org.openhab.binding.homematic.internal.type.UidUtils;
  * @author Florian Stolte - Initial Contribution
  *
  */
+@NonNullByDefault
 public class UidUtilsTest {
 
     @Test

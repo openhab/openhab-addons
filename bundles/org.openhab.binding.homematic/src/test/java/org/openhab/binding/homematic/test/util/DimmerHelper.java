@@ -28,6 +28,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
  * @author Florian Stolte - Initial Contribution
  * 
  */
+@NonNullByDefault
 public class DimmerHelper {
 
     public static HmDevice createDimmerHmDevice() {

@@ -17,6 +17,7 @@ package org.openhab.binding.homematic.internal.handler;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GatewayNotAvailableException extends Exception {
     private static final long serialVersionUID = 95628391238530L;
 

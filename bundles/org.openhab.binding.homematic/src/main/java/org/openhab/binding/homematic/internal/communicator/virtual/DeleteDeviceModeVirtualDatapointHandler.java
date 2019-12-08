@@ -30,6 +30,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DeleteDeviceModeVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     protected static final String MODE_LOCKED = "LOCKED";
     protected static final String MODE_RESET = "RESET";

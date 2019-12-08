@@ -25,7 +25,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointHandler {
     private static final int RSSI_START = 40;
     private static final int RSSI_STEP = 25;

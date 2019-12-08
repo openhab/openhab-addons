@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DeleteDevicesParser extends CommonRpcParser<Object[], List<String>> {
     @Override
     public List<String> parse(Object[] message) throws IOException {

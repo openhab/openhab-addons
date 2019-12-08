@@ -24,6 +24,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DecimalTypeConverter extends AbstractTypeConverter<DecimalType> {
     @Override
     protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {

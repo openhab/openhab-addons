@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  * @author Michael Reitler - QuantityType support
  */
-
+@NonNullByDefault
 public class MetadataUtils {
     private static final Logger logger = LoggerFactory.getLogger(MetadataUtils.class);
     private static ResourceBundle descriptionsBundle;

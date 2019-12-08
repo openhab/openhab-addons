@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractTypeConverter<T extends State> implements TypeConverter<T> {
     private final Logger logger = LoggerFactory.getLogger(AbstractTypeConverter.class);
 

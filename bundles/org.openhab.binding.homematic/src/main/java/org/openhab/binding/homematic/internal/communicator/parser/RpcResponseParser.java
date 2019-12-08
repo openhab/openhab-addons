@@ -25,6 +25,7 @@ import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
     private RpcRequest<?> request;
 

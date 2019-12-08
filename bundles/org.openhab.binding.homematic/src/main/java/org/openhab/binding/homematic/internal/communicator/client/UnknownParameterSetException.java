@@ -19,7 +19,7 @@ import java.io.IOException;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public class UnknownParameterSetException extends IOException {
     private static final long serialVersionUID = -246970996431236583L;
 

@@ -17,6 +17,7 @@ package org.openhab.binding.homematic.internal.converter;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class ConverterTypeException extends ConverterException {
     private static final long serialVersionUID = 7114173349077221055L;
 

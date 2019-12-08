@@ -36,6 +36,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class XmlRpcResponse implements RpcResponse {
     private String methodName;
     private Object[] responseData;

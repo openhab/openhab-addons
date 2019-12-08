@@ -24,6 +24,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 @XStreamAlias("scripts")
 public class TclScriptList {
 

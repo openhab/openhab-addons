@@ -24,6 +24,7 @@ import org.openhab.binding.homematic.internal.communicator.client.XmlRpcClient;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicGatewayFactory {
 
     /**

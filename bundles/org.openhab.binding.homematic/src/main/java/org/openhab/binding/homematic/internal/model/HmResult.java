@@ -19,6 +19,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 @XStreamAlias("result")
 public class HmResult {
 

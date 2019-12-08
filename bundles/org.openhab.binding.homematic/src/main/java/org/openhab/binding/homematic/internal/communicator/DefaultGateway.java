@@ -26,6 +26,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DefaultGateway extends AbstractHomematicGateway {
 
     protected DefaultGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter,

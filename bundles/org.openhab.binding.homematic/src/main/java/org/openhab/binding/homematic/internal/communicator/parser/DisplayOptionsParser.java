@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     private final Logger logger = LoggerFactory.getLogger(DisplayOptionsParser.class);
     private static final String[] onOff = new String[] { "ON", "OFF" };

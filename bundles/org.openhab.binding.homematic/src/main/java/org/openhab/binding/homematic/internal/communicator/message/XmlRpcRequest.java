@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringEscapeUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class XmlRpcRequest implements RpcRequest<String> {
 
     public enum TYPE {

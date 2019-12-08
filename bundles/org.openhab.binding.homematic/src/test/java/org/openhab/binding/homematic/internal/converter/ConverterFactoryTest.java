@@ -31,6 +31,7 @@ import org.openhab.binding.homematic.internal.converter.type.StringTypeConverter
  * @author Michael Reitler - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ConverterFactoryTest {
 
     @Test

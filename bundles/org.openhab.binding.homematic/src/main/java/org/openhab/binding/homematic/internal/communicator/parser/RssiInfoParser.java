@@ -25,6 +25,7 @@ import org.openhab.binding.homematic.internal.model.HmRssiInfo;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class RssiInfoParser extends CommonRpcParser<Object[], List<HmRssiInfo>> {
     private HomematicConfig config;
 

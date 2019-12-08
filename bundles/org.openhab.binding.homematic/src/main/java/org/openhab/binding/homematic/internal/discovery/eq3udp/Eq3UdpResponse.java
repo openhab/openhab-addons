@@ -20,7 +20,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public class Eq3UdpResponse {
     private int senderId;
     private String deviceTypeId;

@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class BinRpcResponseHandler implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(BinRpcResponseHandler.class);
 

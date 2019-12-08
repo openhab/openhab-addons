@@ -19,6 +19,7 @@ import java.net.Socket;
  * 
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class SocketInfo {
     private Socket socket;
     private long created;

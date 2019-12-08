@@ -17,6 +17,7 @@ package org.openhab.binding.homematic.internal.communicator.message;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface RpcRequest<T> {
 
     /**

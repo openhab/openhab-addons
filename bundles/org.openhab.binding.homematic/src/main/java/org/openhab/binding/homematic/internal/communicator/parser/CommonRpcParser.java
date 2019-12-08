@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
 
     private final Logger logger = LoggerFactory.getLogger(CommonRpcParser.class);

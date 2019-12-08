@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class CcuMetadataExtractor {
     private static final String CCU_URL = "http://ccu";
 

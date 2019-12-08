@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class SocketHandler {
     private final Logger logger = LoggerFactory.getLogger(SocketHandler.class);
 

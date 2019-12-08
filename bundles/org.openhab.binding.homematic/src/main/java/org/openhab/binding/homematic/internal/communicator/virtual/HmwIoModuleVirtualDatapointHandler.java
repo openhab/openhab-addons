@@ -28,6 +28,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmwIoModuleVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     @Override
     public String getName() {

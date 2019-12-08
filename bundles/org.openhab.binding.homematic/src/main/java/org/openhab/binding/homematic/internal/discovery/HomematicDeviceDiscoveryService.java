@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(HomematicDeviceDiscoveryService.class);

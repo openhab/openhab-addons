@@ -23,6 +23,7 @@ import org.openhab.binding.homematic.internal.model.HmInterface;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicConfig {
     private static final String ISO_ENCODING = "ISO-8859-1";
     private static final String UTF_ENCODING = "UTF-8";

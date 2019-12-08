@@ -32,6 +32,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.homematic")
 public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
 

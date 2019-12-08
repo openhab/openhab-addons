@@ -24,6 +24,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], Void> {
     private Collection<HmDevice> devices;
 

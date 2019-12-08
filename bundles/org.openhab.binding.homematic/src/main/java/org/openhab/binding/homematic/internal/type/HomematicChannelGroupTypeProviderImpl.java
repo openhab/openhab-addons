@@ -34,6 +34,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  *
  * @author Michael Reitler - Initial contribution
  */
+@NonNullByDefault
 @Component(service = { HomematicChannelGroupTypeProvider.class, ChannelGroupTypeProvider.class }, immediate = true)
 public class HomematicChannelGroupTypeProviderImpl implements HomematicChannelGroupTypeProvider {
     private final Map<ChannelGroupTypeUID, ChannelGroupType> channelGroupTypesByUID = new HashMap<ChannelGroupTypeUID, ChannelGroupType>();

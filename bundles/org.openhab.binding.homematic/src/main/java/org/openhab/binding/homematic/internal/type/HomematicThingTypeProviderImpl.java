@@ -37,6 +37,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Gerhard Riegler - Initial contribution
  * @author Michael Reitler - Added HomematicThingTypeExcluder
  */
+@NonNullByDefault
 @Component(service = { HomematicThingTypeProvider.class, ThingTypeProvider.class }, immediate = true)
 public class HomematicThingTypeProviderImpl implements HomematicThingTypeProvider {
     private Map<ThingTypeUID, ThingType> thingTypesByUID = new HashMap<ThingTypeUID, ThingType>();

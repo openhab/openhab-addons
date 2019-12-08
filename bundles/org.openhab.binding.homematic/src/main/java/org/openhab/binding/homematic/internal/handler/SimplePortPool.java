@@ -21,6 +21,7 @@ import java.util.List;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class SimplePortPool {
     private static int START_PORT = 9125;
 

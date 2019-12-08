@@ -34,6 +34,7 @@ import org.openhab.binding.homematic.internal.model.HmParamsetType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class UidUtils {
 
     /**

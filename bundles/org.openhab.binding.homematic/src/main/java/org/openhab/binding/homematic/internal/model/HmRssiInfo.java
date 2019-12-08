@@ -20,7 +20,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public class HmRssiInfo {
     private String address;
     private Integer device;

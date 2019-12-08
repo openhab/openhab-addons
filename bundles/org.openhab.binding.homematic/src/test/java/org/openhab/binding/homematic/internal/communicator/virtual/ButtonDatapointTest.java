@@ -38,6 +38,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  * @author Michael Reitler - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ButtonDatapointTest extends JavaTest {
 
     private static final int DISABLE_DATAPOINT_DELAY = 50;
@@ -53,6 +54,7 @@ public class ButtonDatapointTest extends JavaTest {
     @Test
     public void testShortPress() throws IOException, HomematicClientException {
         HmDatapoint shortPressDp = createPressDatapoint("PRESS_SHORT", Boolean.TRUE);
+        @NonNullByDefault
         HmDatapoint buttonVirtualDatapoint = getButtonVirtualDatapoint(shortPressDp);
 
         mockEventReceiver.eventReceived(shortPressDp);
@@ -135,6 +137,7 @@ public class ButtonDatapointTest extends JavaTest {
     /**
      * Mock parts of {@linkplain org.openhab.binding.homematic.internal.communicator.AbstractHomematicGateway}
      */
+    @NonNullByDefault
     private class MockEventReceiver {
 
         public void eventReceived(HmDatapoint dp) throws IOException, HomematicClientException {

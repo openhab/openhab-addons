@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class NewDevicesParser extends CommonRpcParser<Object[], List<String>> {
     @Override
     @SuppressWarnings("unchecked")

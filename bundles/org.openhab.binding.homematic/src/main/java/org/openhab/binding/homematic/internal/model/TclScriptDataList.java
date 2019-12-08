@@ -23,6 +23,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 @XStreamAlias("list")
 public class TclScriptDataList {
 

@@ -30,6 +30,7 @@ import org.openhab.binding.homematic.internal.converter.type.StringTypeConverter
  * @author Gerhard Riegler - Initial contribution
  * @author Michael Reitler - QuantityType support
  */
+@NonNullByDefault
 public class ConverterFactory {
     private static Map<String, TypeConverter<?>> converterCache = new HashMap<String, TypeConverter<?>>();
 

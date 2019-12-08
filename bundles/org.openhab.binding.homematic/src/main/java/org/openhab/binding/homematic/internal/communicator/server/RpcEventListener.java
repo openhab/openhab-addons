@@ -21,6 +21,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface RpcEventListener {
 
     /**

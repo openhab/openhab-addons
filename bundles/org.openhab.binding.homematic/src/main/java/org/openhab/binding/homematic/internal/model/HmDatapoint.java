@@ -22,6 +22,7 @@ import org.openhab.binding.homematic.internal.misc.MiscUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDatapoint implements Cloneable {
 
     private HmChannel channel;

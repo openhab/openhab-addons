@@ -32,6 +32,7 @@ import tec.uom.se.quantity.QuantityDimension;
  * @author Michael Reitler - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ConvertFromBindingTest extends BaseConverterTest {
 
     @Test

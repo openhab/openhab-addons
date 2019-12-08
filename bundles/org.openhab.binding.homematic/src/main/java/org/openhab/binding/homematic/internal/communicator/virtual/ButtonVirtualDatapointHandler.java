@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Reitler - Initial contribution
  */
+@NonNullByDefault
 public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     private final Logger logger = LoggerFactory.getLogger(ButtonVirtualDatapointHandler.class);
 

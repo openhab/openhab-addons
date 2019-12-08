@@ -20,6 +20,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDatapointConfig {
     private Double delay;
     private Double receiveDelay;

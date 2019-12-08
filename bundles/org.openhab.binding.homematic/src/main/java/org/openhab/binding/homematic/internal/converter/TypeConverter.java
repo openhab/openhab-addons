@@ -21,6 +21,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface TypeConverter<T extends State> {
 
     /**

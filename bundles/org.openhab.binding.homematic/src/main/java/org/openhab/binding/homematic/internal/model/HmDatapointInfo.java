@@ -20,6 +20,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDatapointInfo {
     private String address;
     private Integer channel;

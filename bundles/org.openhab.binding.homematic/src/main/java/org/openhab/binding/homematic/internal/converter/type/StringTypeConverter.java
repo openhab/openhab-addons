@@ -23,6 +23,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class StringTypeConverter extends AbstractTypeConverter<StringType> {
     @Override
     protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {

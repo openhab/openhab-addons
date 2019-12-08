@@ -20,6 +20,7 @@ import java.util.Map;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBidcosInterfacesParser> {
     private String type;
     private String gatewayAddress;

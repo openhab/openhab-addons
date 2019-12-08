@@ -19,6 +19,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class StateInvertInfo {
     private String deviceType;
     private int minChannel;

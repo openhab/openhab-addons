@@ -26,6 +26,7 @@ import org.openhab.binding.homematic.internal.model.HmParamsetType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class EventParser extends CommonRpcParser<Object[], HmDatapointInfo> {
     private Object value;
 

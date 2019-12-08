@@ -20,6 +20,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 @XStreamAlias("script")
 public class TclScript {
 

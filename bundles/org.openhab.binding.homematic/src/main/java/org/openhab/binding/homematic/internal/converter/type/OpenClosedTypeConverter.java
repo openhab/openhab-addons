@@ -24,6 +24,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class OpenClosedTypeConverter extends AbstractTypeConverter<OpenClosedType> {
     @Override
     protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {

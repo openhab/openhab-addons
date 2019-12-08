@@ -32,6 +32,7 @@ import org.openhab.binding.homematic.test.util.RpcClientMockImpl;
 /**
  * @author Florian Stolte - Initial contribution
  */
+@NonNullByDefault
 public class RpcClientTest extends JavaTest {
 
     private RpcClientMockImpl rpcClient;

@@ -17,6 +17,7 @@ package org.openhab.binding.homematic.internal.misc;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicClientException extends Exception {
     private static final long serialVersionUID = 76348991234346L;
 

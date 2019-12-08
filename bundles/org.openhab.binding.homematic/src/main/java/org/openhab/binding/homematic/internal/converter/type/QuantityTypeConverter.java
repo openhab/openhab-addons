@@ -41,6 +41,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  *
  * @author Michael Reitler - Initial contribution
  */
+@NonNullByDefault
 public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? extends Quantity<?>>> {
 
     // this literal is required because some gateway types are mixing up encodings in their XML-RPC responses

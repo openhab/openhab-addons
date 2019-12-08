@@ -29,6 +29,7 @@ import org.openhab.binding.homematic.internal.handler.SimplePortPool;
  * @author Florian Stolte - Initial Contribution
  *
  */
+@NonNullByDefault
 public class SimplePortPoolTest {
 
     private SimplePortPool simplePortPool;

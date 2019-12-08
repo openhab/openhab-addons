@@ -54,6 +54,7 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class CcuGateway extends AbstractHomematicGateway {
     private final Logger logger = LoggerFactory.getLogger(CcuGateway.class);
 

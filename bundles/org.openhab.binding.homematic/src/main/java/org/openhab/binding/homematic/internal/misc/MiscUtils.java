@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class MiscUtils {
     private static final Logger logger = LoggerFactory.getLogger(MiscUtils.class);
 

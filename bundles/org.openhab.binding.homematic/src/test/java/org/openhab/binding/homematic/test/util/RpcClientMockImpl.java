@@ -24,6 +24,7 @@ import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 /**
  * @author Florian Stolte - Initial contribution
  */
+@NonNullByDefault
 public class RpcClientMockImpl extends RpcClient<String> {
 
     public static final String GET_PARAMSET_DESCRIPTION_NAME = "getParamsetDescription";

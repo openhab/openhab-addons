@@ -19,6 +19,7 @@ import java.io.IOException;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface RpcParser<M, R> {
 
     /**

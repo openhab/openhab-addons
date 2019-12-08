@@ -31,6 +31,7 @@ import org.openhab.binding.homematic.internal.model.HmInterface;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDevice>> {
     private HmInterface hmInterface;
     private HomematicConfig config;

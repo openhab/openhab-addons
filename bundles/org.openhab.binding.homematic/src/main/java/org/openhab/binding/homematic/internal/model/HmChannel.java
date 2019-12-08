@@ -27,6 +27,7 @@ import org.openhab.binding.homematic.internal.misc.HomematicConstants;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmChannel {
     public static final String TYPE_GATEWAY_EXTRAS = "GATEWAY-EXTRAS";
     public static final String TYPE_GATEWAY_VARIABLE = "GATEWAY-VARIABLE";

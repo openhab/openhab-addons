@@ -40,7 +40,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler {
 
     private static final String DATAPOINT_NAME_DISPLAY_LINE = "DISPLAY_LINE_";

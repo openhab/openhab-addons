@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface HomematicChannelTypeProvider extends ChannelTypeProvider {
 
     /**

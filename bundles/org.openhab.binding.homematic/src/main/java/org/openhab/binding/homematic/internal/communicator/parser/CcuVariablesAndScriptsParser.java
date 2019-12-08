@@ -27,6 +27,7 @@ import org.openhab.binding.homematic.internal.model.TclScriptDataList;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataList, Void> {
     private HmChannel channel;
 

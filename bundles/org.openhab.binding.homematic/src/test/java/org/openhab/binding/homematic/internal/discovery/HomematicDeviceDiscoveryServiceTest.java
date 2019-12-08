@@ -41,6 +41,7 @@ import org.openhab.binding.homematic.test.util.SimpleDiscoveryListener;
  * @author Florian Stolte - Initial Contribution
  *
  */
+@NonNullByDefault
 public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
 
     private HomematicDeviceDiscoveryService homematicDeviceDiscoveryService;

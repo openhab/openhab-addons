@@ -26,6 +26,7 @@ import org.openhab.binding.homematic.internal.model.TclScriptDataList;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList, Void> {
     private Collection<HmDevice> devices;
 

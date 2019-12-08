@@ -37,6 +37,7 @@ import org.xml.sax.SAXException;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class XmlRpcServer implements RpcServer {
     private final Logger logger = LoggerFactory.getLogger(XmlRpcServer.class);
 

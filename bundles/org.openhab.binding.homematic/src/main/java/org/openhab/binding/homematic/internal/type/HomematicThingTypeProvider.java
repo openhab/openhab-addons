@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.type.ThingType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface HomematicThingTypeProvider extends ThingTypeProvider {
 
     /**

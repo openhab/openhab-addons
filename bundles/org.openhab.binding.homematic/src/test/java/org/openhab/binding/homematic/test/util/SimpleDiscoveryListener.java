@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
  * @author Florian Stolte - Initial Contribution
  *
  */
+@NonNullByDefault
 public class SimpleDiscoveryListener implements DiscoveryListener {
 
     public Queue<DiscoveryResult> discoveredResults = new ConcurrentLinkedQueue<DiscoveryResult>();

@@ -85,6 +85,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractHomematicGateway implements RpcEventListener, HomematicGateway, VirtualGateway {
     private final Logger logger = LoggerFactory.getLogger(AbstractHomematicGateway.class);
     public static final double DEFAULT_DISABLE_DELAY = 2.0;
@@ -898,6 +899,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * Thread which validates the connection to the gateway and restarts the RPC client if necessary.
      * It also polls for the current duty cycle ratio of the gateway after every successful connection validation.
      */
+    @NonNullByDefault
     private class ConnectionTrackerThread implements Runnable {
         private boolean connectionLost;
         private boolean ping;

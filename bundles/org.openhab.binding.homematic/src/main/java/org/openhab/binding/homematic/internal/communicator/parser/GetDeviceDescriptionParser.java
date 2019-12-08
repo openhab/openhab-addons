@@ -20,6 +20,7 @@ import java.util.Map;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GetDeviceDescriptionParser extends CommonRpcParser<Object[], GetDeviceDescriptionParser> {
     private String type;
     private String firmware;

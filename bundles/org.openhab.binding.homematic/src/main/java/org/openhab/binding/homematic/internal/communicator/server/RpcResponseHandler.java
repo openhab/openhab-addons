@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public abstract class RpcResponseHandler<T> {
     private final Logger logger = LoggerFactory.getLogger(RpcResponseHandler.class);
 

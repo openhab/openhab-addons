@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
  * @author Florian Stolte - Initial Contribution
  * 
  */
+@NonNullByDefault
 public class BridgeHelper {
 
     public static Bridge createHomematicBridge() {

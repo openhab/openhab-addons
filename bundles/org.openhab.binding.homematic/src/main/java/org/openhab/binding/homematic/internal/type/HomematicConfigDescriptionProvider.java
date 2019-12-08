@@ -24,6 +24,7 @@ import org.eclipse.smarthome.config.core.ConfigDescriptionProvider;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface HomematicConfigDescriptionProvider extends ConfigDescriptionProvider {
 
     /**
