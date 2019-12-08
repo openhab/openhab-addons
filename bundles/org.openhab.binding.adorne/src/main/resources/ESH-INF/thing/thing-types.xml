@@ -13,7 +13,7 @@
 		<description>Controls an Adorne switch or outlet.</description>
 
 		<channels>
-			<channel id="switch" typeId="switch"/>
+			<channel id="power" typeId="system.power"/>
 		</channels>
 		
 		<config-description>
@@ -35,32 +35,18 @@
 		<description>Controls an Adorne dimmer switch.</description>
 
 		<channels>
-            <channel id="switch" typeId="switch"/>
-			<channel id="brightness" typeId="brightness"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 		
 		<config-description>
-            <parameter name="zoneId" type="integer" required="true">
-                <label>Zone ID</label>
-                <description>
-                    Zone ID 
-                </description>
-            </parameter>
+			<parameter name="zoneId" type="integer" required="true">
+				<label>Zone ID</label>
+				<description>
+					Zone ID 
+				</description>
+			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="switch">
-		<item-type>Switch</item-type>
-		<label>Switch Channel</label>
-		<description>Channel to control switch</description>
-		<category>Switch</category>
-	</channel-type>
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness Channel</label>
-		<description>Channel to control brightness of dimmer.</description>
-		<category>Dimmer</category>
-		<state min="1" max="100"/>
-	</channel-type>
 
 </thing:thing-descriptions>

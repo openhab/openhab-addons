@@ -1,56 +1,96 @@
-# adorne Binding
+# Adorne Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+The Adorne Binding integrates [Adorne Wi-Fi ready devices](https://www.legrand.us/adorne/products/wireless-whole-house-lighting-controls.aspx) (switches, dimmers, outlets) from [Legrand](legrand.com).
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+Legrand attempted to provide a public API based on Samsung's ARTIK Cloud and the initial version of this binding was based on that API. However, Samsung shut down ARTIK Cloud shortly after the release and Legrand has not offered a public API replacement since. That leaves direct interaction with the Adorne Hub as the only control option. Consequently the OpenHAB server and the Adorne Hub must be located on the same network.
+
+The Adorne Hub supports a REST API, but unfortunately there is no documentation or official support from Legrand. This binding's implementation of the REST API is motivated by the great work of [sbozarth](https://github.com/sbozarth/homebridge-lc7001) who figured out the API details.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+| Thing Type|Description|
+|-|-|
+|hub|The Adorne [Hub LC7001](https://www.legrand.us/adorne/products/wireless-whole-house-lighting-controls/lc7001.aspx) serves as the bridge to control all Adorne devices|
+|switch|All Adorne switches and outlets|
+|dimmer|All Adorne dimmers|
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Auto-discovery is supported as long as the hub can be discovered using the default host and port. If the hub requires custom host and/or port configuration then setup through a .things file is needed. 
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Background discovery is not supported.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+### Hub
+The hub offers two optional configuration parameters:
+|Parameter|Description|
+|-|-|
+|Host|The URL to reach the hub. The hub makes itself known through mDNS as `LCM1.local` and the host parameter defaults to this value. As long as the OpenHAB server and the hub are on the same broadcast domain for mDNS the host parameter doesn't need to be specified. |
+|Port|The port the hub communicates on. By default the hub answers on port 2112 and the port parameter defaults to this value. As long as the hub configuration hasn't been changed the port parameter doesn't need to be specified.|
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+Example if specific configuration values need to be provided:
+```
+Bridge adorne:hub:home "Adorne Hub" [host="192.160.1.111", port=2113] {
+	switch bathroom "Bathroom" [zoneId=0]
+}
+```
+
+### Devices
+All devices share one required paramenter:
+|Parameter|Description|
+|-|-|
+|zoneId|The zone ID that is assigned by the hub to each device as a unique identifier.|
+
+Legrand does not provide an easy way to look up a zone ID for a device. However, zone IDs are simply assigned sequentially starting with 0 in the order devices are added to the hub. So the first device will have zone ID 0, the next 1 and so on. 
+
+For an example see below.
 
 ## Channels
+|Channel Type ID|Item Type|Commands|Description|Thing Types Supporting This Channel|
+|-|-|-|-|-|
+|power|Switch|ON, OFF|Turn device on and off|switch, dimmer|
+|brightness|Dimmer|1-100|Set device's brightness|dimmer|
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Note that the brightness channel is limited to values from 1 to 100. All other commands are ignored. That means in particular that a dimmer can't be turned off by sending 0 to the brightness channel. Also, if a dimmer is turned off (via the power channel) and the brightness is updated the dimmer will remain off. Once the dimmer is turned on it will turn on with the updated brightness setting. Consequently when a dimmer is turned on it always returns to the most recent brightness setting. In other words power and brightness states are controlled independently. This matches how power and brightness are managed on the physical dimmer itself. 
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+To avoid confusion for the user any UI must ensure that only values from 1 to 100 are passed to the brightness channel. A default slider allows a 0 value and should not be used. Common UI choices are Sliders or Setpoints with a minimum value of 1 and a maximum value of 100 (min/max values in Sliders are only supported as of OpenHAB 2.5).
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+## Example
+This is a simple example that uses an Adorne switch and two dimmers. As discussed above care is taken that the brightness channel only allows values from 1 to 100 by specifying a min and max value in the sitemap for the dimmers. For this example to run on an OpenHAB version older than 2.5 Bedroom 1's Slider must be removed in the sitemap. 
 
-## Full Example
+## demo.things
+```
+Bridge adorne:hub:home "Adorne Hub" {
+	switch bathroom "Bathroom" [zoneId=0]
+	dimmer bedroom1 "Bedroom1" [zoneId=1]
+	dimmer bedroom2 "Bedroom2" [zoneId=2]
+}
+```
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+## demo.items
+```
+Switch LightBathroom {channel="adorne:switch:home:bathroom:power"}
+Switch LightBedroomSwitch1 {channel="adorne:dimmer:home:bedroom1:power"}
+Dimmer LightBedroomDimmer1 {channel="adorne:dimmer:home:bedroom1:brightness"}
+Switch LightBedroomSwitch2 {channel="adorne:dimmer:home:bedroom2:power"}
+Dimmer LightBedroomDimmer2 {channel="adorne:dimmer:home:bedroom2:brightness"}
+```
 
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+## demo.sitemap
+```
+sitemap demo label="Adorne Binding Demo"
+{
+	Frame label="Adorne Switch" {
+		Switch item=LightBathroom label="Bathroom" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
+	}
+	Frame label="Adorne Dimmer using Slider" {
+		Switch item=LightBedroomSwitch1 label="Bedroom 1" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
+		Slider item=LightBedroomDimmer1 label="Bedroom 1" icon="light-on" minValue=1 maxValue=100 step=1 // Requires OpenHAB 2.5
+	}
+	Frame label="Adorne Dimmer using Setpoint" {
+		Switch item=LightBedroomSwitch2 label="Bedroom 2" mappings=["ON"="On", "OFF"="Off"] icon="light-on"
+		Setpoint item=LightBedroomDimmer2 label="Bedroom 2" icon="light-on" minValue=1 maxValue=100 step=5
+	}
+}
+```

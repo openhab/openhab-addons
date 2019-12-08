@@ -15,9 +15,9 @@ package org.openhab.binding.adorne.internal.hub;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AdorneHubStateChangeHandler} interface is used by the {@link AdorneHubController} to notify listeners
+ * The {@link AdorneHubChangeNotify} interface is used by the {@link AdorneHubController} to notify listeners
  * about
- * Adorne device status and state changes.
+ * Adorne device status and hub connection changes.
  *
  * @author Mark Theiding - Initial contribution
  */
@@ -25,11 +25,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface AdorneHubChangeNotify {
     /**
      * Notify listener about state change of on/off and brightness state
+     *
+     * @param zoneID zone ID for which change occurred
+     * @param onOff new on/off state
+     * @param brightness new brightness
      */
     public void stateChangeNotify(int zoneId, boolean onOff, int brightness);
 
     /**
-     * Notify listener about connection status change
+     * Notify listener about hub connection change
+     *
+     * @param connected new connection state
      */
-    public void statusChangeNotify(boolean connected);
+    public void connectionChangeNotify(boolean connected);
 }

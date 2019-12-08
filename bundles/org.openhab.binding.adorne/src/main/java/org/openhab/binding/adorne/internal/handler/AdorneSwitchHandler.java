@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.adorne.internal.handler;
 
-import static org.openhab.binding.adorne.internal.AdorneBindingConstants.CHANNEL_SWITCH;
+import static org.openhab.binding.adorne.internal.AdorneBindingConstants.CHANNEL_POWER;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -53,24 +53,18 @@ public class AdorneSwitchHandler extends BaseThingHandler {
 
     /**
      * Handles refresh and on/off commands for channel
-     * {@link org.openhab.binding.adorne.internal.AdorneBindingConstants#CHANNEL_SWITCH}
+     * {@link org.openhab.binding.adorne.internal.AdorneBindingConstants#CHANNEL_POWER}
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("handleCommand (channelUID:{} command:{}", channelUID, command);
         try {
-            if (channelUID.getId().equals(CHANNEL_SWITCH)) {
+            if (channelUID.getId().equals(CHANNEL_POWER)) {
                 if (command.equals(OnOffType.ON) || command.equals(OnOffType.OFF) || command instanceof RefreshType) {
-                    AdorneHubController adorneHubController = getAdorneHubController();
                     if (command instanceof RefreshType) {
-                        // Asynchronously get our onOff state from the hub controller and update our state accordingly
-                        adorneHubController.getState(zoneId).thenApply(state -> {
-                            OnOffType onOffState = state.onOff ? OnOffType.ON : OnOffType.OFF;
-                            updateState(CHANNEL_SWITCH, onOffState);
-                            logger.debug("Refreshed switch {} with switch state {}", getThing().getLabel(), onOffState);
-                            return null;
-                        });
+                        refreshOnOff();
                     } else {
+                        AdorneHubController adorneHubController = getAdorneHubController();
                         adorneHubController.setOnOff(zoneId, command.equals(OnOffType.ON));
                     }
                 }
@@ -93,8 +87,9 @@ public class AdorneSwitchHandler extends BaseThingHandler {
         logger.debug("Initializing switch {}", getThing().getLabel());
 
         AdorneSwitchConfiguration config = getConfigAs(AdorneSwitchConfiguration.class);
-        if (config.zoneId != null) {
-            zoneId = config.zoneId;
+        Integer configZoneId = config.zoneId;
+        if (configZoneId != null) {
+            zoneId = configZoneId;
         } else {
             throw new IllegalStateException("zoneId must not be null as it is a required configuration parameter");
         }
@@ -132,16 +127,50 @@ public class AdorneSwitchHandler extends BaseThingHandler {
             }
         }
         if (adorneHubController == null) {
-            throw new IllegalStateException(); // This should not happen - we should always have a hub controller
+            throw new IllegalStateException("Hub Controller not available yet.");
         }
         return adorneHubController;
     }
 
     /**
      * Returns the zone ID that represents this {@link AdorneSwitchHandler}'s thing
+     *
+     * @return zone ID
      */
     public int getZoneId() {
         return zoneId;
+    }
+
+    /**
+     * Refreshes the on/off state of our thing to the actual state of the device.
+     *
+     */
+    public void refreshOnOff() {
+        // Asynchronously get our onOff state from the hub controller and update our state accordingly
+        AdorneHubController adorneHubController = getAdorneHubController();
+        adorneHubController.getState(zoneId).thenApply(state -> {
+            OnOffType onOffState = state.onOff ? OnOffType.ON : OnOffType.OFF;
+            updateState(CHANNEL_POWER, onOffState);
+            // Working around an Adorne Hub bug: the first command sent from a new connection
+            // intermittently updates the hub state but doesn't forward the command to the device. For
+            // example as a result a light might remain off, but shows as on in the Adorne app and is
+            // reported to this binding as on. Sending more on commands doesn't fix the problem. Turning
+            // the device off and back on resyncs state and things work again.
+            // To work around this we get this fragile first command out of the way here, by setting the
+            // device to the state it already is in. So we are just sending a NOOP and if this triggers
+            // the bug no harm is done.
+            adorneHubController.setOnOff(zoneId, state.onOff);
+            logger.debug("Refreshed switch {} with switch state {}", getThing().getLabel(), onOffState);
+            return null;
+        });
+    }
+
+    /**
+     * Refreshes all supported channels.
+     *
+     */
+    public void refresh() {
+        refreshOnOff();
     }
 
     /**

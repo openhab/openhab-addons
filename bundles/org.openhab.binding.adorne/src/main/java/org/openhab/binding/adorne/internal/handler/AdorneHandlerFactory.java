@@ -14,6 +14,7 @@ package org.openhab.binding.adorne.internal.handler;
 
 import static org.openhab.binding.adorne.internal.AdorneBindingConstants.*;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,8 +41,8 @@ import org.slf4j.LoggerFactory;
 public class AdorneHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(AdorneHandlerFactory.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_HUB, THING_TYPE_SWITCH, THING_TYPE_DIMMER).collect(Collectors.toSet());
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_HUB, THING_TYPE_SWITCH, THING_TYPE_DIMMER).collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

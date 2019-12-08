@@ -69,20 +69,20 @@ public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChan
         AdorneHubConfiguration config = getConfigAs(AdorneHubConfiguration.class);
         logger.debug("Configuration host:{} port:{}", config.host, config.port);
 
-        adorneHubController = new AdorneHubController(config.host, config.port, scheduler);
+        AdorneHubController adorneHubController = this.adorneHubController = new AdorneHubController(config.host,
+                config.port, scheduler);
         // We want to know about changes from the hub so we can update devices as needed
         adorneHubController.setChangeListener(this);
-        if (adorneHubController != null) {
-            // Kick off the hub controller that handles all interactions with the hub for us
-            adorneHubController.start();
-        }
+        // Kick off the hub controller that handles all interactions with the hub for us
+        adorneHubController.start();
     }
 
     /**
-     * Stops the hub controller.
+     * Disposes resources by stopping the hub controller.
      */
     @Override
     public void dispose() {
+        AdorneHubController adorneHubController = this.adorneHubController;
         if (adorneHubController != null) {
             adorneHubController.stop();
         }
@@ -90,6 +90,8 @@ public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChan
 
     /**
      * Returns the hub controller. Returns <code>null</code> if hub controller has not been created yet.
+     *
+     * @return hub controller
      */
     public @Nullable AdorneHubController getAdorneHubController() {
         return adorneHubController;
@@ -107,11 +109,10 @@ public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChan
         for (Thing thing : bridge.getThings()) {
             thingHandler = (AdorneSwitchHandler) thing.getHandler();
             if (thingHandler != null && thingHandler.getZoneId() == zoneId) {
-                thingHandler.updateState(CHANNEL_SWITCH, onOff ? OnOffType.ON : OnOffType.OFF);
+                thingHandler.updateState(CHANNEL_POWER, onOff ? OnOffType.ON : OnOffType.OFF);
                 if (thing.getThingTypeUID().equals(THING_TYPE_DIMMER)) {
                     thingHandler.updateState(CHANNEL_BRIGHTNESS, new PercentType(brightness));
                 }
-                break;
             }
         }
     }
@@ -121,9 +122,18 @@ public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChan
      *
      */
     @Override
-    public void statusChangeNotify(boolean connected) {
+    public void connectionChangeNotify(boolean connected) {
         logger.debug("Status changed (connected:{})", connected);
+
         if (connected) {
+            // Refresh all of our things in case thing states changed while we were disconnected
+            AdorneSwitchHandler thingHandler;
+            for (Thing thing : bridge.getThings()) {
+                thingHandler = (AdorneSwitchHandler) thing.getHandler();
+                if (thingHandler != null) {
+                    thingHandler.refresh();
+                }
+            }
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

@@ -32,6 +32,6 @@ public class AdorneBindingConstants {
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
 
     // List of all Channel ids
-    public static final String CHANNEL_SWITCH = "switch";
+    public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
 }

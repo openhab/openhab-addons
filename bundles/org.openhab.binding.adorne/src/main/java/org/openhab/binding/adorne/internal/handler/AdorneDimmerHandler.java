@@ -49,18 +49,17 @@ public class AdorneDimmerHandler extends AdorneSwitchHandler {
         logger.trace("handleCommand (channelUID:{} command:{}", channelUID, command);
         try {
             if (channelUID.getId().equals(CHANNEL_BRIGHTNESS)) {
-                AdorneHubController adorneHubController = getAdorneHubController();
                 if (command instanceof RefreshType) {
-                    // Asynchronously get our brightness from the hub controller and update our state accordingly
-                    adorneHubController.getState(zoneId).thenApply(state -> {
-                        updateState(CHANNEL_BRIGHTNESS, new PercentType(state.brightness));
-                        logger.debug("Refreshed dimmer {} with brightness {}", getThing().getLabel(), state.brightness);
-                        return null;
-                    });
+                    refreshBrightness();
                 } else if (command instanceof PercentType) {
                     // Change the brightness through the hub controller
+                    AdorneHubController adorneHubController = getAdorneHubController();
                     int level = ((PercentType) command).intValue();
-                    adorneHubController.setBrightness(zoneId, level);
+                    if (level >= 1 && level <= 100) { // Ignore commands outside of the supported 1-100 range
+                        adorneHubController.setBrightness(zoneId, level);
+                    } else {
+                        logger.debug("Ignored command to set brightness to level {}", level);
+                    }
                 }
             } else {
                 super.handleCommand(channelUID, command); // Parent can handle everything else
@@ -74,4 +73,29 @@ public class AdorneDimmerHandler extends AdorneSwitchHandler {
                     getThing().getLabel(), e.getMessage());
         }
     }
+
+    /**
+     * Refreshes the brightness of our thing to the actual state of the device.
+     *
+     */
+    public void refreshBrightness() {
+        // Asynchronously get our brightness from the hub controller and update our state accordingly
+        AdorneHubController adorneHubController = getAdorneHubController();
+        adorneHubController.getState(zoneId).thenApply(state -> {
+            updateState(CHANNEL_BRIGHTNESS, new PercentType(state.brightness));
+            logger.debug("Refreshed dimmer {} with brightness {}", getThing().getLabel(), state.brightness);
+            return null;
+        });
+    }
+
+    /**
+     * Refreshes all supported channels.
+     *
+     */
+    @Override
+    public void refresh() {
+        super.refresh();
+        refreshBrightness();
+    }
+
 }

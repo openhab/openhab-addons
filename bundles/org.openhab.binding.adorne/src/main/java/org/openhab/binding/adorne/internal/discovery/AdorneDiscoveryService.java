@@ -39,14 +39,16 @@ import org.slf4j.LoggerFactory;
 public class AdorneDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(AdorneDiscoveryService.class);
-    private static final int DISCOVER_TIMEOUT_SECONDS = 5;
+    private static final int DISCOVERY_TIMEOUT_SECONDS = 5;
+    private static final String DISCOVERY_HUB_LABEL = "Adorne Hub";
+    private static final String DISCOVERY_ZONE_ID = "zoneId";
 
     /**
      * Creates a AdorneDiscoveryService with disabled auto-discovery.
      */
     public AdorneDiscoveryService() {
         // Passing false as last argument to super constructor turns off background discovery
-        super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVER_TIMEOUT_SECONDS, false);
+        super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVERY_TIMEOUT_SECONDS, false);
     }
 
     /**
@@ -61,7 +63,7 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
         AdorneHubController adorneHubController = new AdorneHubController(null, null, scheduler);
 
         // Limit life of hub controller to the duration of discovery
-        adorneHubController.stopBy(System.currentTimeMillis() + DISCOVER_TIMEOUT_SECONDS * 1000);
+        adorneHubController.stopBy(System.currentTimeMillis() + DISCOVERY_TIMEOUT_SECONDS * 1000);
 
         // Hack - we wrap the ThingUID in an array to make it appear effectively final to the compiler throughout the
         // chain of futures. Passing it through the chain as context would bloat the code.
@@ -76,7 +78,7 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
             String macAddressNoColon = macAddress.replace(':', '-'); // Colons are not allowed in ThingUIDs
             bridgeUID[0] = new ThingUID(THING_TYPE_HUB, macAddressNoColon);
             // We have fully discovered the hub
-            thingDiscovered(DiscoveryResultBuilder.create(bridgeUID[0]).withLabel("Adorne Hub").build());
+            thingDiscovered(DiscoveryResultBuilder.create(bridgeUID[0]).withLabel(DISCOVERY_HUB_LABEL).build());
             return adorneHubController.getZones();
         }).thenApply(zoneIds -> {
             for (int zoneId : zoneIds) {
@@ -92,8 +94,8 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
                     // We have fully discovered a new zone ID
                     thingDiscovered(DiscoveryResultBuilder
                             .create(new ThingUID(state.deviceType, bridgeUID[0], id.toString().toLowerCase()))
-                            .withLabel(state.name).withBridge(bridgeUID[0]).withProperty("zoneId", state.zoneId)
-                            .build());
+                            .withLabel(state.name).withBridge(bridgeUID[0])
+                            .withProperty(DISCOVERY_ZONE_ID, state.zoneId).build());
                     return null;
                 }).exceptionally(e -> {
                     logger.warn("Discovery of zone ID {} failed ({})", zoneId, e.getMessage());
