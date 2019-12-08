@@ -1,7 +1,6 @@
 # Shelly Binding
 
-This Binding implements control for the Shelly series of devices.
-This supports sending commands to the devices as well as reading device status and sensor data.
+This Binding integrated Shelly devices.
 
 ## Supported Devices
 
@@ -24,7 +23,7 @@ This supports sending commands to the devices as well as reading device status a
 | shellyflood        | Shelly Flood Sensor                                    |
 | shellysmoke        | Shelly Smoke Sensor                                    |
 | shellysense        | Shelly Motion and IR Controller                        |
-| shellydevice       | A password protected Shelly device or unknown type     |
+| shellydevice       | A password protected Shelly device or anunknown type   |
 
 ## Firmware
 
@@ -32,38 +31,28 @@ To utilize all features the binding requires firmware version 1.5.2 or newer.
 This should be available for all devices.
 Older versions work in general, but have impacts to functionality (e.g. no events for battery powered devices).
 
-The binding displays a WARNING if the firmware is older.
+The binding displays a WARNING in the log if the firmware is older.
 It also informs you when an update is available.
-Use the device's web ui or the Shelly App to perform the update.
+Use the device' web ui or the Shelly App to perform the update.
 
 ## Discovery
 
-The binding uses mDNS to discovery the Shelly devices.
-They periodically announce their presence, which can be used by the binding to find them on the local network and fetch their IP address.
-The binding will then use the Shelly REST API (HTTP) to discover device capabilities, read status and control the device.
-In addition event callbacks will be used to support battery powered devices.
+The binding uses mDNS to discover the Shelly devices.
+They periodically announce their presence, which is used by the binding to find them on the local network.
 
-Make sure to wake-up battery powered devices (press the button inside the device) so they show up on the network.
-Sometime you need to run the manual discovery multiple times until you see all your devices.
+Make sure to wake-up battery powered devices (press the button inside the device), so that they show up on the network.
+Sometimes you need to run the manual discovery multiple times until you see all your devices.
 
-Important: The IP address shouldn't change after the device is added as a new thing in openHAB.
-This could be achieved by
+Important: The IP address should not be changed after the device is added to openHAB.
+This can be achieved by
 
 - assigning a static IP address or
-- use DHCP and setup the router to assign always the same ip address to the device
+- using DHCP and setup the router to always assign the same IP address to the device
 
 ### Password Protected Devices
 
-The Shelly Apps allow to protect device configuration by user id and password.
-In this case you need to configure user id and password in the Thing Configuation. 
-Proceed the following steps
-
-- Accept the discovered device from the Inbox
-- You'll be prompted for credentials, set user id and password, accept
-- The Thing gets re-initialized and the Thing Type is adjusted
-- On success the channels are updated, otherwise you need to change credentials.
-
-For those devices the Thing Type "shellydevice" is used. 
+The Shelly devices can be configured to require authentication through a user id and password.
+In this case you need to set these values in the Thing configuration after approving the Inbox entry.
 
 ## Binding Configuration
 
@@ -89,22 +78,17 @@ The binding has the following configuration options:
 |eventsSensorReport|true: register event "posted updated sensor data"             |    no   |true for sensor devices                           |
 |eventsCoIoT       |true: Listen for CoIoT/COAP events                            |    no   |true for battery devices, false for others        |
 
-Independent from the updateInterval setting the binding will perform a settings refresh from the device once per minute.
-There is no event from the device that the settings have be changed by the Shelly App so this is kind of a fallback to get updates at least once per minute. 
-
-
 
 ## Channels
 
 ### General Notes
 
-- Various channels are only visible for linking when you click Show More in the channel definition
-- The channels `input` and `input1`/`input2` are only updated with firmware 1.5.6+, otherwise the value will be NULL.
+- The channels `input` and `input1`/`input2` are only updated with firmware 1.5.6+.
 - Use the channel `rollerpos` only if you need the inverted value, otherwise use the control channel with item type `Number`, see example below.
 - Short push and long push events require firmware version 1.5.6+.
 - The different devices have different types of power meters, i.e. different sets of channels.
 
-Every device has a channel group "device" with the following channels:
+Every device has a channel group `device` with the following channels:
 
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
@@ -112,44 +96,6 @@ Every device has a channel group "device" with the following channels:
 |          |signal       |Number   |yes      |WiFi signal strength (RSSI)                                                      |
 |          |alarm        |Trigger  |yes      |Most recent alarm for health check                                               |
 
-### Events
-
-The binding maps the reported device events into the event channel.
-Availability of the various events depend on the device type and thing configuration.
-
-#### Relay, Dimmer
-
-|Event Type|Description|
-|------------|-----------------------------------------------------------------------------------------------------------------|
-|BTN_ON      |The Button was pressed                                                                                           |
-|BTN_OFF     |The Button was released                                                                                          |
-|SHORTPUSH   |A short push to the button was detected                                                                          |
-|LONGPUSH    |A long push to the button was detected                                                                           |
-|OUT_ON      |Relays output is on                                                                                              |
-|OUT_OFF     |Relays output is off                                                                                             |
-
-Note: SHORTPUSH and LONGPUSH requires firmware 1.5.6+ and is not available on all devices.
-
-#### Roller
-
-|Event Type|Description|
-|------------|-----------------------------------------------------------------------------------------------------------------|
-|ROLLER_OPEN |Roller has reached the OPEN position and stopped.                                                                |
-|ROLLER_CLOSE|Roller has reached the CLOSED position and stopped.                                                              |
-|ROLLER_SRTOP|Roller was STOPped while moving (not in the OPEN or CLOSE position)                                              |
-
-Note: Roller events require firmware 1.5.6+
-
-The channel is implemented as a Trigger provided for each component (relay1, relay2...) and could be used in a Rule:
-
-```
-rule "Shelly Events"
-when
-    Channel "shelly:shelly1:XXXXXX:device#event" triggered
-then
-    logInfo("Shelly", "A Shelly device event of type "+receivedEvent.toString() + "has been triggered")
-end
-```
 
 ### Alarm Events
 
@@ -498,8 +444,9 @@ Number Shelly_Power     "Bath Room Light Power"                {channel="shelly:
 
 ### shelly.rules
 
-```
 reading colors from color picker:
+
+```
 import org.openhab.core.library.types.*
 
 rule "color" 
@@ -532,5 +479,3 @@ sitemap demo label="Home"
 }
 
 ```
-
-Tip: Formatting timestamps could be done by adding this pattern: [%1$tA, %1$td.%1$tm.%1$tY %1$tH:%1$tM]
