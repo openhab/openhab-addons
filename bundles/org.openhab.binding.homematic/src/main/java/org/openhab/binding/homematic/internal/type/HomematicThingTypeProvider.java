@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.homematic.internal.type;
 
-import java.util.Locale;
-
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ThingTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ThingType;
-import org.openhab.binding.homematic.type.HomematicThingTypeExcluder;
 
 /**
  * Extends the ThingTypeProvider to manually add a ThingType.

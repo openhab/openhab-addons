@@ -112,10 +112,10 @@ public class XmlRpcResponse implements RpcResponse {
                     break;
                 case "int":
                 case "i4":
-                    data.add(new Integer(currentValue));
+                    data.add(currentValue);
                     break;
                 case "double":
-                    data.add(new Double(currentValue));
+                    data.add(currentValue);
                     break;
                 case "string":
                 case "name":
