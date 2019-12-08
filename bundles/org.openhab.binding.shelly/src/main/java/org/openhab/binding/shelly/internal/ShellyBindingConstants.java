@@ -55,7 +55,8 @@ public class ShellyBindingConstants {
     public static final String            THING_TYPE_SHELLYFLOOD_STR       = "shellyflood";
     public static final String            THING_TYPE_SHELLYEYE_STR         = "shellyseye";
     public static final String            THING_TYPE_SHELLYSENSE_STR       = "shellysense";
-    public static final String            THING_TYPE_SHELLYUNKNOWN_STR     = "shellydevice";
+    public static final String            THING_TYPE_SHELLYPROTECTED_STR   = "shellydevice";
+    public static final String            THING_TYPE_UNKNOWN_STR           = "unknown";
 
     // Device Types
     public static final String            SHELLYDT_DIMMER                  = "SHDM-1";
@@ -100,7 +101,7 @@ public class ShellyBindingConstants {
     public static final ThingTypeUID      THING_TYPE_SHELLYRGBW2_WHITE     = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYRGBW2_WHITE_STR);
     public static final ThingTypeUID      THING_TYPE_SHELLYUNKNOWN         = new ThingTypeUID(BINDING_ID,
-            THING_TYPE_SHELLYUNKNOWN_STR);
+            THING_TYPE_SHELLYPROTECTED_STR);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS       = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_SHELLY1, THING_TYPE_SHELLY1PM, THING_TYPE_SHELLYEM, THING_TYPE_SHELLY2_RELAY,
@@ -305,7 +306,7 @@ public class ShellyBindingConstants {
     public static final String            APIERR_NOT_CALIBRATED            = "Not calibrated!";
 
     // Minimum signal strength for basic connectivity. Packet delivery may be unreliable.
-    public static final int               HEALTH_CHECK_INTERVAL_SEC        = 600;
+    public static final int               HEALTH_CHECK_INTERVAL_SEC        = 300;
     public static final int               SIGNAL_ALARM_MIN_RSSI            = -80;
 
     public static final int               DIM_STEPSIZE                     = 5;

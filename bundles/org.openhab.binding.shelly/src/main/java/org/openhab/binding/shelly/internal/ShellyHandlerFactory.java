@@ -104,7 +104,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
                 || thingTypeUID.getId().equals(THING_TYPE_SHELLYRGBW2_WHITE.getId())) {
             logger.debug("Create new thing of type {} using ShellyLightHandler", thingTypeUID.getId());
             handler = new ShellyLightHandler(thing, bindingConfig, coapServer, localIP, httpPort);
-        } else if (thingTypeUID.getId().equals(THING_TYPE_SHELLYUNKNOWN_STR)) {
+        } else if (thingTypeUID.getId().equals(THING_TYPE_SHELLYPROTECTED_STR)) {
             logger.debug("Create new thing of type {} using ShellyUnknownHandler", thingTypeUID.getId());
             handler = new ShellyRelayHandler(thing, bindingConfig, coapServer, localIP, httpPort);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {

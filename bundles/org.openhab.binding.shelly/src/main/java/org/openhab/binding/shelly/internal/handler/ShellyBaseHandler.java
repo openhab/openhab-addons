@@ -544,7 +544,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     config.deviceIp);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Access denied, configure user id and password");
-            changeThingType(THING_TYPE_SHELLYUNKNOWN_STR, "");
+            changeThingType(THING_TYPE_SHELLYPROTECTED_STR, "");
             return true;
         }
         return false;

@@ -24,7 +24,7 @@ This supports sending commands to the devices as well as reading device status a
 | shellyflood        | Shelly Flood Sensor                                    |
 | shellysmoke        | Shelly Smoke Sensor                                    |
 | shellysense        | Shelly Motion and IR Controller                        |
-| shellydevice       | A password protected or unknown device type            |
+| shellydevice       | A password protected Shelly device or unknown type     |
 
 ## Firmware
 
@@ -117,18 +117,20 @@ Every device has a channel group "device" with the following channels:
 The binding maps the reported device events into the event channel.
 Availability of the various events depend on the device type and thing configuration.
 
-Relay, Dimmer:
+#### Relay, Dimmer
 
 |Event Type|Description|
 |------------|-----------------------------------------------------------------------------------------------------------------|
 |BTN_ON      |The Button was pressed                                                                                           |
 |BTN_OFF     |The Button was released                                                                                          |
-|SHORTPUSH   |A short push to the button was detected  (requires firmware V1.5.6+)                                             |
-|LONGPUSH    |A long push to the button was detected   (requires firmware V1.5.6+)                                             |
+|SHORTPUSH   |A short push to the button was detected                                                                          |
+|LONGPUSH    |A long push to the button was detected                                                                           |
 |OUT_ON      |Relays output is on                                                                                              |
 |OUT_OFF     |Relays output is off                                                                                             |
 
-Roller:
+Note: SHORTPUSH and LONGPUSH requires firmware 1.5.6+ and is not available on all devices.
+
+#### Roller
 
 |Event Type|Description|
 |------------|-----------------------------------------------------------------------------------------------------------------|
@@ -136,7 +138,10 @@ Roller:
 |ROLLER_CLOSE|Roller has reached the CLOSED position and stopped.                                                              |
 |ROLLER_SRTOP|Roller was STOPped while moving (not in the OPEN or CLOSE position)                                              |
 
+Note: Roller events require firmware 1.5.6+
+
 The channel is implemented as a Trigger provided for each component (relay1, relay2...) and could be used in a Rule:
+
 ```
 rule "Shelly Events"
 when
@@ -153,14 +158,14 @@ When an alarm condition is detected the channel alarm gets triggered and provide
 
 |Event Type|Description|
 |------------|-----------------------------------------------------------------------------------------------------------------|
-|WEAK_SIGNAL |The RSSI signal is monitored every 10 minutes. An alarm is triggered when RSSI is < -80, which indicates an unstable connection. |
+|WEAK_SIGNAL |An alarm is triggered when RSSI is < -80, which indicates an unstable connection.                                |
 |RESTARTED   |The device has been restarted. This could be an indicator for a firmware problem.                                |
 |OVER_TEMP   |The device is over heating, check installation and housing.                                                      |
 |OVER_LOAD   |An over load condition has been detected, e.g. from the roller motor.                                            |
 |OVER_POWER  |Maximum allowed power was exceeded. The relay was turned off.                                                    |
 |LOAD_ERROR  |Device reported a load problem.                                                                                  |
 
-A new alarm will be triggered on a new condition or every 10 minutes if the condition persists.
+A new alarm will be triggered on a new condition or every 5 minutes if the condition persists.
 
 ```
 rule "Shelly Alarm"

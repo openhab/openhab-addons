@@ -32,7 +32,7 @@ public class ShellyThingCreator {
     public static ThingUID getThingUID(String serviceName, String mode, boolean unknown) {
         String devid = StringUtils.substringAfterLast(serviceName, "-");
         return new ThingUID(!unknown ? getThingTypeUID(serviceName, mode)
-                : getThingTypeUID(THING_TYPE_SHELLYUNKNOWN_STR + "-" + devid, mode), devid);
+                : getThingTypeUID(THING_TYPE_SHELLYPROTECTED_STR + "-" + devid, mode), devid);
     }
 
     public static ThingTypeUID getThingTypeUID(String serviceName, String mode) {
@@ -40,7 +40,7 @@ public class ShellyThingCreator {
     }
 
     public static ThingTypeUID getUnknownTTUID() {
-        return new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYUNKNOWN_STR);
+        return new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPROTECTED_STR);
     }
 
     public static String getThingType(String name, String mode) {
@@ -94,8 +94,11 @@ public class ShellyThingCreator {
         if (name.startsWith(THING_TYPE_SHELLYEYE_STR)) {
             return THING_TYPE_SHELLYEYE_STR;
         }
+        if (name.startsWith(THING_TYPE_SHELLYPROTECTED_STR)) {
+            return THING_TYPE_SHELLYPROTECTED_STR;
+        }
 
-        return THING_TYPE_SHELLYUNKNOWN_STR;
+        return THING_TYPE_UNKNOWN_STR;
     }
 
 }
