@@ -97,10 +97,9 @@ public class ShellyCoapServer {
             InetAddress localAddr = InetAddress.getByName(localIp);
             InetSocketAddress localPort = new InetSocketAddress(COIOT_PORT);
 
-            // Join the Multicast group on the selected network interface
+            // Join the multicast group on the selected network interface
             statusConnector = new UdpMulticastConnector(localAddr, localPort, CoAP.MULTICAST_IPV4); // bind UDP listener
             statusEndpoint = new CoapEndpoint.Builder().setNetworkConfig(nc).setConnector(statusConnector).build();
-            // statusEndpoint.addInterceptor(this);
 
             server = new CoapServer(NetworkConfig.getStandard(), COIOT_PORT);
             Validate.notNull(server);
