@@ -1,0 +1,5 @@
+kostalinverter:kostalinverter:inverter [ url="http://inverterIp" ]
+kostalinverter:kostalinverterpiko1020:inverter [ url="http://inverterIp", username="userName", password="myPassword", refreshInterval=60]
+kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery [ url = "inverterIp", userPassword="myPassword", refreshInternalInSeconds="30"]
+
+// vim: syntax=Xtend
