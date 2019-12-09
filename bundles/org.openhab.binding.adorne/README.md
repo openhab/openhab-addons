@@ -1,4 +1,4 @@
-# Adorne Binding
+# Adorne Binding 
 
 The Adorne Binding integrates [Adorne Wi-Fi ready devices](https://www.legrand.us/adorne/products/wireless-whole-house-lighting-controls.aspx) (switches, dimmers, outlets) from [Legrand](legrand.com).
 
