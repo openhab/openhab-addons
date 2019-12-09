@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants.testHomieThing;
+import static org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants.TEST_HOMIE_THING;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -101,7 +101,7 @@ public class HomieThingHandlerTests {
 
     private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistry);
 
-    private final String deviceID = ThingChannelConstants.testHomieThing.getId();
+    private final String deviceID = ThingChannelConstants.TEST_HOMIE_THING.getId();
     private final String deviceTopic = "homie/" + deviceID;
 
     // A completed future is returned for a subscribe call to the attributes
@@ -117,7 +117,7 @@ public class HomieThingHandlerTests {
         config.put("basetopic", "homie");
         config.put("deviceid", deviceID);
 
-        thing = ThingBuilder.create(MqttBindingConstants.HOMIE300_MQTT_THING, testHomieThing.getId())
+        thing = ThingBuilder.create(MqttBindingConstants.HOMIE300_MQTT_THING, TEST_HOMIE_THING.getId())
                 .withConfiguration(config).build();
         thing.setStatusInfo(thingStatus);
 
