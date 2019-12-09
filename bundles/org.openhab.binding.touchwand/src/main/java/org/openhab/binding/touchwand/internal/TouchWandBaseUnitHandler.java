@@ -84,22 +84,22 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         ThingStatus bridgeStatus;
         logger.trace("Initializing TocuhWand Unit handler");
+        updateStatus(ThingStatus.UNKNOWN);
         Bridge bridge = getBridge();
-
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        if (bridge == null || !(bridge.getHandler() instanceof TouchWandBridgeHandler)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             logger.warn("Trying to initialize {} without a bridge", getThing().getUID());
             return;
-        } else {
-            bridgeHandler = (TouchWandBridgeHandler) bridge.getHandler();
-            bridgeStatus = bridge.getStatus();
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
+        bridgeHandler = (TouchWandBridgeHandler) getBridge().getHandler();
+
+        bridgeStatus = bridge.getStatus();
 
         logger.trace("initializeThing Thing {} Bridge status {}", getThing().getUID(), bridgeStatus);
 

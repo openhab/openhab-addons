@@ -15,9 +15,11 @@ package org.openhab.binding.touchwand.internal.discovery;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.touchwand.internal.TouchWandBridgeHandler;
+import org.openhab.binding.touchwand.internal.TouchWandUnitStatusUpdateListener;
 import org.openhab.binding.touchwand.internal.data.TouchWandShutterSwitchUnitData;
 import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
 import org.openhab.binding.touchwand.internal.data.TouchWandUnitDataWallController;
@@ -59,6 +62,8 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
     private final TouchWandUnitScan scanningRunnable;
 
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
+
+    private List<TouchWandUnitStatusUpdateListener> listeners = new ArrayList<>();
 
     private final TouchWandBridgeHandler touchWandBridgeHandler;
 
@@ -115,7 +120,9 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                         }
                         if (touchWandUnit.getType().equals("Switch")) {
                             addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SWITCH);
+                            norifyListeners(touchWandUnit);
                         } else if (touchWandUnit.getType().equals("shutter")) {
+                            norifyListeners(touchWandUnit);
                             addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
                         } else if (touchWandUnit.getType().equals("WallController")) {
                             addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_WALLCONTROLLER);
@@ -127,6 +134,12 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
             }
         } catch (JsonSyntaxException msg) {
             logger.warn("Could not parse list units response {}", msg);
+        }
+    }
+
+    private void norifyListeners(TouchWandUnitData touchWandUnit) {
+        for (TouchWandUnitStatusUpdateListener listener : listeners) {
+            listener.onDataReceived(touchWandUnit);
         }
     }
 
@@ -165,6 +178,18 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
             scanningJob.cancel(true);
             scanningJob = null;
         }
+    }
+
+    public synchronized void registerListener(TouchWandUnitStatusUpdateListener listener) {
+        if (!listeners.contains(listener)) {
+            logger.debug("Adding TouchWandWebSocket listener {}", listener);
+            listeners.add(listener);
+        }
+    }
+
+    public synchronized void unregisterListener(TouchWandUnitStatusUpdateListener listener) {
+        logger.debug("Removing TouchWandWebSocket listener {}", listener);
+        listeners.remove(listener);
     }
 
     @NonNullByDefault

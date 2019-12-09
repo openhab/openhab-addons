@@ -16,7 +16,6 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -27,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -35,7 +33,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
 import org.openhab.binding.touchwand.internal.discovery.TouchWandUnitDiscoveryService;
@@ -51,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Roie Geron - Initial contribution
  */
 
-public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements TouchWandUnitStatusUpdateListener {
+public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWandUnitStatusUpdateListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(TouchWandBridgeHandler.class);
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -111,11 +109,6 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements
     }
 
     @Override
-    public Collection<ConfigStatusMessage> getConfigStatus() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
@@ -129,10 +122,12 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements
 
     private synchronized void registerItemDiscoveryService(TouchWandBridgeHandler bridgeHandler) {
         TouchWandUnitDiscoveryService discoveryService = new TouchWandUnitDiscoveryService(bridgeHandler);
+        discoveryService.registerListener(this); // Register for Unit Status updates as well
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
+    @SuppressWarnings("null")
     @Override
     public void dispose() {
         logger.trace("Handler disposed");
@@ -141,6 +136,7 @@ public class TouchWandBridgeHandler extends ConfigStatusBridgeHandler implements
             // remove discovery service
             TouchWandUnitDiscoveryService service = (TouchWandUnitDiscoveryService) bundleContext
                     .getService(serviceReg.getReference());
+            service.unregisterListener(this); // Unregister Unit status polling
             serviceReg.unregister();
             if (service != null) {
                 service.deactivate();
