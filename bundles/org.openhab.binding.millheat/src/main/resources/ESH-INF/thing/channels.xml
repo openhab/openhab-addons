@@ -127,20 +127,20 @@
 	</channel-type>
 	<channel-type id="vacationMode">
 		<item-type>Switch</item-type>
-		<label>Vacation mode</label>
+		<label>Vacation Mode</label>
 		<description>Toggles vacation mode. Start and end time must be preset before activating</description>
 	</channel-type>
 	<channel-type id="vacationModeAdvanced">
 		<item-type>Switch</item-type>
-		<label>Advanced vacation mode</label>
+		<label>Advanced Vacation Mode</label>
 		<description>Use room Away mode temperatures instead of home global temperature</description>
 	</channel-type>
 	<channel-type id="vacationModeStart">
 		<item-type>DateTime</item-type>
-		<label>Start of vacation</label>
+		<label>Start of Vacation</label>
 	</channel-type>
 	<channel-type id="vacationModeEnd">
 		<item-type>DateTime</item-type>
-		<label>End of vacation</label>
+		<label>End of Vacation</label>
 	</channel-type>
 </thing:thing-descriptions>

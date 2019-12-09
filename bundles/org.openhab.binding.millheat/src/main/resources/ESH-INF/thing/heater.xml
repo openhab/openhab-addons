@@ -9,7 +9,7 @@
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
-		<label>Wi-Fi enabled heater</label>
+		<label>Wi-Fi Enabled Heater</label>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature" />
