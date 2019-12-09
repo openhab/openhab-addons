@@ -1,0 +1,11 @@
+astro:sun:home  [ geolocation="52.5200066,13.4049540", interval=60 ]
+astro:moon:home [ geolocation="52.5200066,13.4049540", interval=60 ]
+
+ntp:ntp:demo    [ hostname="nl.pool.ntp.org", refreshInterval=60, refreshNtp=30 ]
+
+kostalinverterpikonewgeneration:kostalinverterpikonewgeneration:inverter [ url="http://192.168.180.24", username="pvserver", password="pvwr", refreshInterval=60]
+
+kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery [ url = "192.168.180.24", userPassword="myPassword", refreshInternalInSeconds="30"]
+
+
+// vim: syntax=Xtend

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:kostalpikonewgeneration_config">
+		<parameter name="url" type="text">
+			<label>Url</label>
+			<description>URL to inverter.</description>
+			<required>true</required>
+    	</parameter>
+		<parameter name="username" type="text">
+			<label>Username</label>
+			<description>The username for the inverter.</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="password" type="text">
+            <label>Password</label>
+            <description>The password for the inverter.</description>
+            <required>false</required>
+        </parameter>
+        <parameter name="refreshInterval" type="text">
+            <label>Refreshinterval</label>
+            <description>Refreshinterval in seconds.</description>
+            <required>false</required>
+        </parameter>
+	</config-description>
+</config-description:config-descriptions>
