@@ -186,7 +186,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                     model = new MillheatModel(0); // Empty model
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "error fetching initial data " + e.getMessage());
-                    logger.info("Error initializing Millheat data", e);
+                    logger.debug("Error initializing Millheat data", e);
                     // Reschedule init
                     scheduler.schedule(() -> {
                         initialize();
@@ -390,10 +390,10 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                 try {
                     sendLoggedInRequest(req, SetRoomTempResponse.class);
                 } catch (final MillheatCommunicationException e) {
-                    logger.info("Error updating temperature for room {}", roomId, e);
+                    logger.debug("Error updating temperature for room {}", roomId, e);
                 }
             } else {
-                logger.info("Error updating temperature for room {}, expected QuantityType but got {}", roomId,
+                logger.debug("Error updating temperature for room {}, expected QuantityType but got {}", roomId,
                         command);
             }
         }
@@ -423,7 +423,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                 heater.setPowerStatus(masterOnOff);
                 heater.setFanActive(fanActive);
             } catch (final MillheatCommunicationException e) {
-                logger.info("Error updating temperature for heater {}", macAddress, e);
+                logger.debug("Error updating temperature for heater {}", macAddress, e);
             }
         });
     }
@@ -468,7 +468,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                             home.setVacationModeAdvanced((OnOffType) command);
                         }
                     } else {
-                        logger.info("Must enable vaction mode before advanced vacation mode kan be enabled");
+                        logger.debug("Must enable vaction mode before advanced vacation mode can be enabled");
                     }
                     break;
                 }
@@ -481,13 +481,13 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                             updateModelFromServerWithRetry(true);
                         }
                     } else {
-                        logger.info("Cannot enable vacation mode unless start and end time is already set");
+                        logger.debug("Cannot enable vacation mode unless start and end time is already set");
                     }
                     break;
                 }
             }
         } catch (MillheatCommunicationException e) {
-            logger.info("Failure trying to set holiday properties: {}", e.getMessage());
+            logger.debug("Failure trying to set holiday properties: {}", e.getMessage());
         }
     }
 }

@@ -116,7 +116,7 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
                             updateState(channelUID, UnDefType.UNDEF);
                         }
                     } else {
-                        logger.info(
+                        logger.debug(
                                 "Heater {} is neither connected to a room nor marked as standalone. Someting is wrong, heater data: {}",
                                 getThing().getUID(), heater);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
