@@ -103,8 +103,4 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
         }
         return THING_TYPE_CONTROLLER;
     }
-
-    private @Nullable String getThingModel(final ServiceInfo service) {
-        return service.getPropertyString("md"); // model
-    }
 }

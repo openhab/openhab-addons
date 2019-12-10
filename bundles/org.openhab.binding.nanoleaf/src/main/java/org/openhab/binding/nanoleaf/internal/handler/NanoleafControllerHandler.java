@@ -117,7 +117,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         setRefreshIntervall(config.refreshInterval);
         setAuthToken(config.authToken);
 
-        if (getThing().getProperties().get(Thing.PROPERTY_MODEL_ID).equals(MODEL_ID_CANVAS)) {
+        @Nullable String property = getThing().getProperties().get(Thing.PROPERTY_MODEL_ID);
+        if (property.equals(MODEL_ID_CANVAS)) {
             config.deviceType = DEVICE_TYPE_CANVAS;
         } else {
             config.deviceType = DEVICE_TYPE_LIGHTPANELS;
@@ -300,7 +301,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     public synchronized void startPanelDiscoveryJob() {
-        logger.debug("Starting panel discovery job {} {}", !controllerListeners.isEmpty(), panelDiscoveryJob);
+        logger.debug("Starting panel discovery job. Has Controller-Listeners: {} panelDiscoveryJob: {}", !controllerListeners.isEmpty(), panelDiscoveryJob);
         if (!controllerListeners.isEmpty() && (panelDiscoveryJob == null || panelDiscoveryJob.isCancelled())) {
             logger.debug("Start panel discovery job, interval={} sec", PANEL_DISCOVERY_INTERVAL);
             panelDiscoveryJob = scheduler.scheduleWithFixedDelay(this::runPanelDiscovery, 0, PANEL_DISCOVERY_INTERVAL,
@@ -723,7 +724,9 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         }
         Request setNewEffectRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_EFFECT,
                 HttpMethod.PUT);
-        setNewEffectRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
+        String content = gson.toJson(effects);
+        logger.debug("sending effect command from controller {}: {}", getThing().getUID(), content);
+        setNewEffectRequest.content(new StringContentProvider(content), "application/json");
         OpenAPIUtils.sendOpenAPIRequest(setNewEffectRequest);
     }
 

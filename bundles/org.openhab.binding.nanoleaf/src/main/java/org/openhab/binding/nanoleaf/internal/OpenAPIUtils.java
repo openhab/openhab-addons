@@ -16,6 +16,9 @@ import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -85,6 +88,17 @@ public class OpenAPIUtils {
             throws NanoleafException, NanoleafUnauthorizedException {
         try {
             LOGGER.trace("Sending Request {} {}",request.getURI(), request.getQuery() == null ? "no query parameters": request.getQuery());
+            LOGGER.trace("Request method:{} uri:{} params{}\n", request.getMethod(), request.getURI(), request.getParams());
+            if (request.getContent()!=null) {
+                Iterator<ByteBuffer> iter = request.getContent().iterator();
+                if (iter!=null) {
+                    while (iter.hasNext()) {
+                        @Nullable ByteBuffer buffer = iter.next();
+                        LOGGER.trace("Content {}", StandardCharsets.UTF_8.decode(buffer).toString());
+                    }
+                }
+            }
+
             ContentResponse openAPIResponse = request.send();
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("API response from Nanoleaf controller: {}", openAPIResponse.getContentAsString());

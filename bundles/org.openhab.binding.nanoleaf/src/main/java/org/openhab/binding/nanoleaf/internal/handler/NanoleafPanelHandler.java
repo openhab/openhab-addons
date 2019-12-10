@@ -231,7 +231,9 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 write.setLoop(false);
                 effects.setWrite(write);
                 Request setNewRenderedEffectRequest = OpenAPIUtils.requestBuilder(httpClient, config, API_EFFECT, HttpMethod.PUT);
-                setNewRenderedEffectRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
+                String content = gson.toJson(effects);
+                logger.debug("sending effect command from panel {}: {}", getThing().getUID(), content);
+                setNewRenderedEffectRequest.content(new StringContentProvider(content), "application/json");
                 OpenAPIUtils.sendOpenAPIRequest(setNewRenderedEffectRequest);
             } else {
                 logger.warn("Couldn't set rendering effect as Bridge-Handler {} is null", bridge.getUID());
@@ -298,51 +300,14 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 NanoleafControllerHandler handler = (NanoleafControllerHandler) bridge.getHandler();
                 if (handler!= null) {
                     NanoleafControllerConfig config = handler.getControllerConfig();
+                    logger.debug("Sending Request from Panel for getColor()");
                     Request setPanelUpdateRequest = OpenAPIUtils.requestBuilder(httpClient, config, API_EFFECT,
                             HttpMethod.PUT);
                     setPanelUpdateRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
                     ContentResponse panelData = OpenAPIUtils.sendOpenAPIRequest(setPanelUpdateRequest);
                     // parse panel data
 
-                    @Nullable Write response = gson.fromJson(panelData.getContentAsString(), Write.class);
-                    // panelData is in format (numPanels, (PanelId, 1, R, G, B, W, TransitionTime) * numPanel)
-                    if (response!=null) {
-                        String[] tokenizedData = response.getAnimData().split(" ");
-                        if (config.deviceType.equals(NanoleafBindingConstants.CONFIG_DEVICE_TYPE_LIGHTPANELS)) {
-                            // panelData is in format (numPanels (PanelId 1 R G B W TransitionTime) * numPanel)
-                            String[] panelDataPoints = Arrays.copyOfRange(tokenizedData, 1, tokenizedData.length);
-                            for (int i = 0; i < panelDataPoints.length; i++) {
-                                if ((i % 7) == 0) {
-                                    String id = panelDataPoints[i];
-                                    if (id.equals(panelID)) {
-                                        // found panel data - store it
-                                        panelInfo.put(panelID,
-                                                HSBType.fromRGB(Integer.parseInt(panelDataPoints[i + 2]),
-                                                        Integer.parseInt(panelDataPoints[i + 3]),
-                                                        Integer.parseInt(panelDataPoints[i + 4])));
-                                    }
-                                }
-                            }
-                        } else {
-                            // panelData is in format (0 numPanels (quotient(panelID) remainder(panelID) R G B W 0
-                            // quotient(TransitionTime) remainder(TransitionTime)) * numPanel)
-                            String[] panelDataPoints = Arrays.copyOfRange(tokenizedData, 2, tokenizedData.length);
-                            for (int i = 0; i < panelDataPoints.length; i++) {
-                                if ((i % 8) == 0) {
-                                    String idQuotient = panelDataPoints[i];
-                                    String idRemainder = panelDataPoints[i + 1];
-                                    Integer idNum = (Integer.valueOf(idQuotient) * 256) + Integer.valueOf(idRemainder);
-                                    if (String.valueOf(idNum).equals(panelID)) {
-                                        // found panel data - store it
-                                        panelInfo.put(panelID,
-                                                HSBType.fromRGB(Integer.parseInt(panelDataPoints[i + 3]),
-                                                        Integer.parseInt(panelDataPoints[i + 4]),
-                                                        Integer.parseInt(panelDataPoints[i + 5])));
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    parsePanelData(panelID, config, panelData);
                 }
             }
         } catch (NanoleafException nue) {
@@ -352,5 +317,48 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         }
 
         return panelInfo.get(panelID);
+    }
+
+    void parsePanelData(String panelID, NanoleafControllerConfig config, ContentResponse panelData) {
+        @Nullable Write response = gson.fromJson(panelData.getContentAsString(), Write.class);
+        // panelData is in format (numPanels, (PanelId, 1, R, G, B, W, TransitionTime) * numPanel)
+        if (response!=null) {
+            String[] tokenizedData = response.getAnimData().split(" ");
+            if (config.deviceType.equals(NanoleafBindingConstants.CONFIG_DEVICE_TYPE_LIGHTPANELS)
+                    || config.deviceType.equals(NanoleafBindingConstants.CONFIG_DEVICE_TYPE_CANVAS)) {
+                // panelData is in format (numPanels (PanelId 1 R G B W TransitionTime) * numPanel)
+                String[] panelDataPoints = Arrays.copyOfRange(tokenizedData, 1, tokenizedData.length);
+                for (int i = 0; i < panelDataPoints.length; i++) {
+                    if ((i % 7) == 0) {
+                        String id = panelDataPoints[i];
+                        if (id.equals(panelID)) {
+                            // found panel data - store it
+                            panelInfo.put(panelID,
+                                    HSBType.fromRGB(Integer.parseInt(panelDataPoints[i + 2]),
+                                            Integer.parseInt(panelDataPoints[i + 3]),
+                                            Integer.parseInt(panelDataPoints[i + 4])));
+                        }
+                    }
+                }
+            } else {
+                // panelData is in format (0 numPanels (quotient(panelID) remainder(panelID) R G B W 0
+                // quotient(TransitionTime) remainder(TransitionTime)) * numPanel)
+                String[] panelDataPoints = Arrays.copyOfRange(tokenizedData, 2, tokenizedData.length);
+                for (int i = 0; i < panelDataPoints.length; i++) {
+                    if ((i % 8) == 0) {
+                        String idQuotient = panelDataPoints[i];
+                        String idRemainder = panelDataPoints[i + 1];
+                        Integer idNum = (Integer.valueOf(idQuotient) * 256) + Integer.valueOf(idRemainder);
+                        if (String.valueOf(idNum).equals(panelID)) {
+                            // found panel data - store it
+                            panelInfo.put(panelID,
+                                    HSBType.fromRGB(Integer.parseInt(panelDataPoints[i + 3]),
+                                            Integer.parseInt(panelDataPoints[i + 4]),
+                                            Integer.parseInt(panelDataPoints[i + 5])));
+                        }
+                    }
+                }
+            }
+        }
     }
 }
