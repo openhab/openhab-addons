@@ -217,11 +217,11 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
             updateState(DaikinBindingConstants.CHANNEL_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
             updateState(DaikinBindingConstants.CHANNEL_AC_FAN_DIR, new StringType(controlInfo.fanMovement.name()));
 
-            if (controlInfo.power == false) {
+            if (!controlInfo.power) {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("off"));
-            } else if (controlInfo.mode.name() == "COLD") {
+            } else if (controlInfo.mode == Mode.COLD) {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("cool"));
-            } else if (controlInfo.mode.name() == "HEAT") {
+            } else if (controlInfo.mode == Mode.HEAT) {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("heat"));
             } else {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("auto"));
@@ -251,11 +251,11 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
             updateState(DaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
             updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
 
-            if (controlInfo.power == false) {
+            if (!controlInfo.power) {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("off"));
-            } else if (controlInfo.mode.name() == "COLD") {
+            } else if (controlInfo.mode == AirbaseMode.COLD) {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("cool"));
-            } else if (controlInfo.mode.name() == "HEAT") {
+            } else if (controlInfo.mode == AirbaseMode.HEAT) {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("heat"));
             } else {
                 updateState(DaikinBindingConstants.CHANNEL_AC_HOMEKITMODE, new StringType("auto"));
@@ -343,23 +343,23 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
            changePower(false);
         } else {
            changePower(true);
-           if (homekitmode.equals("on")) {
+           if ("on".equals(homekitmode)) {
               if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
-                changeMode(Mode.valueOf(((String) "AUTO").toString()));
+                changeMode(Mode.AUTO);
               } else {
-                changeAirbaseMode(AirbaseMode.valueOf(((String) "AUTO").toString()));
+                changeAirbaseMode(AirbaseMode.AUTO);
               }
-           } else if (homekitmode.equals("heat")) {
+           } else if ("heat".equals(homekitmode)) {
               if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
-                changeMode(Mode.valueOf(((String) "HEAT").toString()));
+                changeMode(Mode.HEAT);
               } else {
-                changeAirbaseMode(AirbaseMode.valueOf(((String) "HEAT").toString()));
+                changeAirbaseMode(AirbaseMode.HEAT);
               }
-           } else if (homekitmode.equals("cool")) {
+           } else if ("cool".equals(homekitmode)) {
               if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
-                changeMode(Mode.valueOf(((String) "COLD").toString()));
+                changeMode(Mode.COLD);
               } else {
-                changeAirbaseMode(AirbaseMode.valueOf(((String) "COLD").toString()));
+                changeAirbaseMode(AirbaseMode.COLD);
               }
            }       
         }
