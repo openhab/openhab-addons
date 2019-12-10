@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.modbus.internal;
+package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
