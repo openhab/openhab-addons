@@ -180,7 +180,8 @@ If set to true, devices are automatically unpaired from the gateway when their c
 **Warning!** The option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion completely, both options need to be set to false! (default = false)
 
 -   **factoryResetOnDeletion**
-If set to true, devices are automatically factory reset when their corresponding things are removed. Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false! (default = false)
+If set to true, devices are automatically factory reset when their corresponding things are removed.
+Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false! (default = false)
 
 The syntax for a bridge is:
 
