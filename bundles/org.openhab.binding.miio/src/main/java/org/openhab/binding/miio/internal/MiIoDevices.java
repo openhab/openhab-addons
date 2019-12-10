@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Marcel Verpaalen - Initial contribution
  */
 public enum MiIoDevices {
+    AIR_FRESH_VENTILATOR("dmaker.airfresh.t2017", "MiJia Fresh Air Ventilator", THING_TYPE_BASIC),
     AIRCONDITION_A1("aux.aircondition.v1", "AUX Air Conditioner", THING_TYPE_UNSUPPORTED),
     AIRCONDITION_I1("idelan.aircondition.v1", "Idelan Air Conditioner", THING_TYPE_UNSUPPORTED),
     AIRCONDITION_M1("midea.aircondition.v1", "Midea Air Conditioner v2", THING_TYPE_UNSUPPORTED),
