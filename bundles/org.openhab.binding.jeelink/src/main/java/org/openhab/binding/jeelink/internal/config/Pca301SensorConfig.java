@@ -17,8 +17,6 @@ package org.openhab.binding.jeelink.internal.config;
  *
  * @author Volker Bier - Initial contribution
  */
-public class Pca301SensorConfig {
-    public String sensorId;
-    public int updateInterval;
+public class Pca301SensorConfig extends JeeLinkSensorConfig {
     public int sendCount;
 }

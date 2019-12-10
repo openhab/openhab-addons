@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jeelink.internal.lacrosse;
+package org.openhab.binding.jeelink.internal.revolt;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.jeelink.internal.JeeLinkBindingConstants;
@@ -19,28 +19,27 @@ import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.SensorDefinition;
 
 /**
- * Sensor Defintion of a LaCrosse Temperature Sensor
+ * Sensor Definition of a Revolt Energy Meter.
  *
  * @author Volker Bier - Initial contribution
  */
-public class LaCrosseSensorDefinition extends SensorDefinition<LaCrosseTemperatureReading> {
-
-    public LaCrosseSensorDefinition() {
-        super(JeeLinkBindingConstants.LACROSSE_SENSOR_THING_TYPE, "LaCrosse Temperature Sensor", "9");
+public class RevoltSensorDefinition extends SensorDefinition<RevoltReading> {
+    public RevoltSensorDefinition() {
+        super(JeeLinkBindingConstants.REVOLT_SENSOR_THING_TYPE, "Revolt Power Monitor", "r");
     }
 
     @Override
-    public JeeLinkReadingConverter<LaCrosseTemperatureReading> createConverter() {
-        return new LaCrosseTemperatureReadingConverter();
+    public JeeLinkReadingConverter<RevoltReading> createConverter() {
+        return new RevoltReadingConverter();
     }
 
     @Override
-    public Class<LaCrosseTemperatureReading> getReadingClass() {
-        return LaCrosseTemperatureReading.class;
+    public Class<RevoltReading> getReadingClass() {
+        return RevoltReading.class;
     }
 
     @Override
-    public JeeLinkSensorHandler<LaCrosseTemperatureReading> createHandler(Thing thing) {
-        return new LaCrosseTemperatureSensorHandler(thing, type);
+    public JeeLinkSensorHandler<RevoltReading> createHandler(Thing thing) {
+        return new RevoltSensorHandler(thing, type);
     }
 }

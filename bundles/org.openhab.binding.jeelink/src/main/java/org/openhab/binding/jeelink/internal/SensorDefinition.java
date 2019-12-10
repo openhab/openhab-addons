@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.jeelink.internal;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -21,6 +23,7 @@ import org.openhab.binding.jeelink.internal.ec3k.Ec3kSensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.LaCrosseSensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.Tx22SensorDefinition;
 import org.openhab.binding.jeelink.internal.pca301.Pca301SensorDefinition;
+import org.openhab.binding.jeelink.internal.revolt.RevoltSensorDefinition;
 
 /**
  * Base class for sensor definitions.
@@ -31,16 +34,19 @@ import org.openhab.binding.jeelink.internal.pca301.Pca301SensorDefinition;
  */
 public abstract class SensorDefinition<R extends Reading> {
     private static final HashSet<SensorDefinition<?>> SENSOR_DEFS = new HashSet<>();
+    private static final List<JeeLinkReadingConverter<?>> CONVERTERS = new ArrayList<>();
+
+    protected final String type;
 
     final ThingTypeUID thingTypeUid;
     final String name;
-    final String type;
 
     static {
         SENSOR_DEFS.add(new LaCrosseSensorDefinition());
         SENSOR_DEFS.add(new Ec3kSensorDefinition());
         SENSOR_DEFS.add(new Pca301SensorDefinition());
         SENSOR_DEFS.add(new Tx22SensorDefinition());
+        SENSOR_DEFS.add(new RevoltSensorDefinition());
     }
 
     public SensorDefinition(ThingTypeUID thingTypeUid, String name, String type) {
@@ -94,6 +100,18 @@ public abstract class SensorDefinition<R extends Reading> {
             }
         }
         return null;
+    }
+
+    public static List<JeeLinkReadingConverter<?>> getDiscoveryConverters() {
+        synchronized (CONVERTERS) {
+            if (CONVERTERS.isEmpty()) {
+                for (SensorDefinition<?> sensor : SENSOR_DEFS) {
+                    CONVERTERS.add(sensor.createConverter());
+                }    
+            }
+        }
+        
+        return CONVERTERS;
     }
 
     private String getSensorType() {

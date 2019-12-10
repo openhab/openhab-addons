@@ -58,7 +58,7 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
             logger.debug("discovery started for bridge {}", bridge.getThing().getUID());
 
             // start listening for new sensor values
-            bridge.startDiscovery(this);
+            bridge.addReadingHandler(this);
             capture.set(true);
         }
     }
@@ -71,7 +71,7 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
     @Override
     protected synchronized void stopScan() {
         if (capture.getAndSet(false)) {
-            bridge.stopDiscovery();
+            bridge.removeReadingHandler(this);
             logger.debug("discovery stopped for bridge {}", bridge.getThing().getUID());
         }
     }
@@ -133,9 +133,16 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
             logger.debug("discovery for bridge {} found already known sensor id {}", bridge.getThing().getUID(), id);
         }
     }
+    
+    
 
     @Override
     public Class<Reading> getReadingClass() {
         return Reading.class;
+    }
+
+    @Override
+    public String getSensorType() {
+        return "ALL";
     }
 }

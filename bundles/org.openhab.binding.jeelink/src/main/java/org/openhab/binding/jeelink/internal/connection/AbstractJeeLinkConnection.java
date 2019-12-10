@@ -80,10 +80,6 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
         if (commands != null && !commands.trim().isEmpty()) {
             initCommands = commands.split(";");
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Writing to device on port {}: {} ", port, Arrays.toString(initCommands));
-            }
-
             try (OutputStream initStream = getInitStream()) {
                 if (initStream == null) {
                     throw new IOException(
@@ -94,7 +90,11 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
                 // in case of tcp connections, the underlying socket
                 OutputStreamWriter w = new OutputStreamWriter(initStream);
                 for (String cmd : initCommands) {
-                    w.write(cmd);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Writing to device on port {}: {} ", port, cmd);
+                    }
+
+                    w.write(cmd + "\n");
                 }
                 w.flush();
             } catch (IOException ex) {

@@ -13,11 +13,11 @@
 package org.openhab.binding.jeelink.internal.config;
 
 /**
- * Configuration for a JeeLinkSensorHandler.
+ * Configuration for a Handler that is able to buffer values.
  *
  * @author Volker Bier - Initial contribution
  */
-public class JeeLinkSensorConfig {
-    public String sensorId;
-    public int sensorTimeout;
+public class BufferedSensorConfig extends JeeLinkSensorConfig {
+    public int updateInterval;
+    public int bufferSize;
 }
