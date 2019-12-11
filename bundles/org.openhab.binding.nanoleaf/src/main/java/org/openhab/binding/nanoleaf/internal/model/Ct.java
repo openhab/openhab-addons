@@ -13,6 +13,7 @@
 package org.openhab.binding.nanoleaf.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Represents color temperature of the light panels
@@ -20,11 +21,27 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Martin Raepple - Initial contribution
  */
 @NonNullByDefault
-public class Ct implements IntegerState {
+public class Ct implements IntegerState  {
 
     private int value;
-    private Integer max = -1;
-    private Integer min = -1;
+    private @Nullable Integer max;
+    private @Nullable Integer min;
+
+    public @Nullable Integer getMax() {
+        return max;
+    }
+
+    public void setMax(@Nullable Integer max) {
+        this.max = max;
+    }
+
+    public @Nullable Integer getMin() {
+        return min;
+    }
+
+    public void setMin(@Nullable Integer min) {
+        this.min = min;
+    }
 
     @Override
     public int getValue() {
@@ -35,21 +52,4 @@ public class Ct implements IntegerState {
     public void setValue(int value) {
         this.value = value;
     }
-
-    public Integer getMax() {
-        return max;
-    }
-
-    public void setMax(Integer max) {
-        this.max = max;
-    }
-
-    public Integer getMin() {
-        return min;
-    }
-
-    public void setMin(Integer min) {
-        this.min = min;
-    }
-
 }

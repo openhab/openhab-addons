@@ -284,7 +284,6 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         return panelID;
     }
 
-    @SuppressWarnings("null")
     private @Nullable  HSBType getPanelColor() {
         String panelID = getPanelID();
 
@@ -320,8 +319,8 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     }
 
     void parsePanelData(String panelID, NanoleafControllerConfig config, ContentResponse panelData) {
-        @Nullable Write response = gson.fromJson(panelData.getContentAsString(), Write.class);
         // panelData is in format (numPanels, (PanelId, 1, R, G, B, W, TransitionTime) * numPanel)
+        @Nullable Write response = gson.fromJson(panelData.getContentAsString(), Write.class);
         if (response!=null) {
             String[] tokenizedData = response.getAnimData().split(" ");
             if (config.deviceType.equals(NanoleafBindingConstants.CONFIG_DEVICE_TYPE_LIGHTPANELS)

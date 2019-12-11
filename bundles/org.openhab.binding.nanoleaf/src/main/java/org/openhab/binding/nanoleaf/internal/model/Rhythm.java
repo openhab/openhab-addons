@@ -13,6 +13,7 @@
 package org.openhab.binding.nanoleaf.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Represents rhythm module settings
@@ -29,7 +30,7 @@ public class Rhythm {
     private String firmwareVersion="";
     private boolean auxAvailable;
     private int rhythmMode;
-    private RhythmPos rhythmPos = new RhythmPos();
+    private @Nullable RhythmPos rhythmPos;
 
     public boolean getRhythmConnected() {
         return rhythmConnected;
@@ -87,7 +88,7 @@ public class Rhythm {
         this.rhythmMode = rhythmMode;
     }
 
-    public RhythmPos getRhythmPos() {
+    public @Nullable RhythmPos getRhythmPos() {
         return rhythmPos;
     }
 

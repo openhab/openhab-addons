@@ -557,22 +557,40 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         this.controllerInfo = receiveControllerInfo();
         if (controllerInfo==null)
             return;
-        boolean isOn = controllerInfo.getState().getOn().getValue();
+        final State state = controllerInfo.getState();
+        @Nullable final On on = state.getOn();
+        boolean isOn = (on!=null) ? on.getValue(): false;
         updateState(CHANNEL_POWER, isOn ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_COLOR_TEMPERATURE_ABS,
-                new DecimalType(controllerInfo.getState().getColorTemperature().getValue()));
-        float colorTempPercent = (controllerInfo.getState().getColorTemperature().getValue()
-                - controllerInfo.getState().getColorTemperature().getMin())
-                / (controllerInfo.getState().getColorTemperature().getMax()
-                        - controllerInfo.getState().getColorTemperature().getMin())
-                * PercentType.HUNDRED.intValue();
+        @Nullable Ct colorTemperature = state.getColorTemperature();
+
+        float colorTempPercent=0f;
+        if (colorTemperature!=null) {
+            updateState(CHANNEL_COLOR_TEMPERATURE_ABS,
+                    new DecimalType(colorTemperature.getValue()));
+
+            @Nullable Integer min = colorTemperature.getMin();
+            int colorMin = (min == null) ? 0 : min;
+
+            @Nullable Integer max = colorTemperature.getMax();
+            int colorMax = (max == null) ? 0 : max;
+
+            colorTempPercent = (colorTemperature.getValue() - colorMin) / (colorMax - colorMin)
+                    * PercentType.HUNDRED.intValue();
+        }
+
         updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(Float.toString(colorTempPercent)));
         updateState(CHANNEL_EFFECT, new StringType(controllerInfo.getEffects().getSelect()));
+
+        @Nullable Hue stateHue = state.getHue();
+        int hue =        (stateHue !=null) ? stateHue.getValue():0;
+        @Nullable Sat stateSaturation = state.getSaturation();
+        int saturation = (stateSaturation !=null) ? stateSaturation.getValue():0;
+        @Nullable Brightness stateBrightness = state.getBrightness();
+        int brightness = (stateBrightness !=null) ? stateBrightness.getValue():0;
+
         updateState(CHANNEL_COLOR,
-                new HSBType(new DecimalType(controllerInfo.getState().getHue().getValue()),
-                        new PercentType(controllerInfo.getState().getSaturation().getValue()),
-                        new PercentType(isOn ? controllerInfo.getState().getBrightness().getValue() : 0)));
-        updateState(CHANNEL_COLOR_MODE, new StringType(controllerInfo.getState().getColorMode()));
+                new HSBType(new DecimalType(hue), new PercentType(saturation), new PercentType(isOn ? brightness : 0)));
+        updateState(CHANNEL_COLOR_MODE, new StringType(state.getColorMode()));
         updateState(CHANNEL_RHYTHM_ACTIVE,
                 controllerInfo.getRhythm().getRhythmActive() ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode()));
@@ -611,7 +629,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 panelHandler.updatePanelColorChannel();
             }
         });
-        logger.info("Panel layout and ids for controller {} \n {}", thing.getUID(), controllerInfo.getPanelLayout().getLayout().getLayoutView());
+
+        @Nullable Layout layout = controllerInfo.getPanelLayout().getLayout();
+        String layoutView = (layout!=null) ? layout.getLayoutView(): "";
+        logger.info("Panel layout and ids for controller {} \n {}", thing.getUID(), layoutView);
     }
 
     private ControllerInfo receiveControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
@@ -660,18 +681,29 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 } else if (command instanceof IncreaseDecreaseType) {
                     // increase/decrease brightness
                     if (controllerInfo != null) {
-                        Brightness brightness = controllerInfo.getState().getBrightness();
-                        if (command.equals(IncreaseDecreaseType.INCREASE)) {
-                            brightness.setValue(Math.min(brightness.getMax(),
-                                    brightness.getValue() + BRIGHTNESS_STEP_SIZE));
+                        @Nullable Brightness brightness = controllerInfo.getState().getBrightness();
+                        int brightnessMin = 0;
+                        int brightnessMax = 0;
+                        if (brightness!=null) {
+                            @Nullable Integer min = brightness.getMin();
+                            brightnessMin = (min == null) ? 0 : min;
+                            @Nullable Integer max = brightness.getMax();
+                            brightnessMax = (max == null) ? 0 : max;
+
+                            if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                                brightness.setValue(Math.min(brightnessMax,
+                                        brightness.getValue() + BRIGHTNESS_STEP_SIZE));
+                            } else {
+                                brightness.setValue(Math.max(brightnessMin,
+                                        brightness.getValue() - BRIGHTNESS_STEP_SIZE));
+                            }
+                            stateObject.setState(brightness);
+                            logger.debug("Setting controller brightness to {}", brightness.getValue());
+                            // update controller info in case new command is sent before next update job interval
+                            controllerInfo.getState().setBrightness(brightness);
                         } else {
-                            brightness.setValue(Math.max(brightness.getMin(),
-                                    brightness.getValue() - BRIGHTNESS_STEP_SIZE));
+                            logger.debug("Couldn't set brightness as it was null!");
                         }
-                        stateObject.setState(brightness);
-                        logger.debug("Setting controller brightness to {}", brightness.getValue());
-                        // update controller info in case new command is sent before next update job interval
-                        controllerInfo.getState().setBrightness(brightness);
                     }
                 } else {
                     logger.warn("Unhandled command type: {}", command.getClass().getName());
@@ -682,10 +714,21 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 if (command instanceof PercentType) {
                     // Color temperature (percent)
                     IntegerState state = new Ct();
-                    state.setValue(Math.round((controllerInfo.getState().getColorTemperature().getMax()
-                            - controllerInfo.getState().getColorTemperature().getMin())
+                    @Nullable  Ct colorTemperature = controllerInfo.getState().getColorTemperature();
+
+                    int colorMin = 0;
+                    int colorMax = 0;
+                    if (colorTemperature!=null) {
+                        @Nullable Integer min = colorTemperature.getMin();
+                        colorMin = (min == null) ? 0 : min;
+
+                        @Nullable Integer max = colorTemperature.getMax();
+                        colorMax = (max == null) ? 0 : max;
+                    }
+
+                    state.setValue(Math.round((colorMax - colorMin)
                             * ((PercentType) command).intValue() / PercentType.HUNDRED.floatValue()
-                            + controllerInfo.getState().getColorTemperature().getMin()));
+                            + colorMin));
                     stateObject.setState(state);
                 } else {
                     logger.warn("Unhandled command type: {}", command.getClass().getName());

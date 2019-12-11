@@ -14,6 +14,7 @@ package org.openhab.binding.nanoleaf.internal.model;
 
 import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Represents color temperature of the light panels
@@ -24,9 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class Command {
 
     @SerializedName("write")
-    private Write write = new Write();
+    private @Nullable Write write;
 
-    public Write getWrite() {
+    public @Nullable Write getWrite() {
         return write;
     }
 

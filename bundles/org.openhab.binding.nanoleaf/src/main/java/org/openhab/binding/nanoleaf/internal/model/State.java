@@ -14,6 +14,7 @@ package org.openhab.binding.nanoleaf.internal.model;
 
 import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Represents overall state settings of the light panels
@@ -23,17 +24,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class State {
 
-    private On on = new On();
-    private Brightness brightness = new Brightness();
-    private Hue hue = new Hue();
+    private @Nullable On on;
+    private @Nullable Brightness brightness;
+    private @Nullable Hue hue;
     @SerializedName("sat")
-    private Sat saturation = new Sat();
+    private @Nullable Sat saturation;
     @SerializedName("ct")
-    private Ct colorTemperature = new Ct();
+    private @Nullable Ct colorTemperature;
 
-    private String colorMode = "undefined" ;
+    private @Nullable String colorMode;
 
-    public On getOn() {
+    public @Nullable On getOn() {
         return on;
     }
 
@@ -41,7 +42,7 @@ public class State {
         this.on = on;
     }
 
-    public Brightness getBrightness() {
+    public @Nullable Brightness getBrightness() {
         return brightness;
     }
 
@@ -49,7 +50,7 @@ public class State {
         this.brightness = brightness;
     }
 
-    public Hue getHue() {
+    public @Nullable Hue getHue() {
         return hue;
     }
 
@@ -57,7 +58,7 @@ public class State {
         this.hue = hue;
     }
 
-    public Sat getSaturation() {
+    public @Nullable Sat getSaturation() {
         return saturation;
     }
 
@@ -65,15 +66,13 @@ public class State {
         this.saturation = sat;
     }
 
-    public Ct getColorTemperature() {
-        return colorTemperature;
-    }
+    public @Nullable Ct getColorTemperature() { return colorTemperature; }
 
     public void setColorTemperature(Ct ct) {
         this.colorTemperature = ct;
     }
 
-    public String getColorMode() {
+    public @Nullable String getColorMode() {
         return colorMode;
     }
 
