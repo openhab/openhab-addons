@@ -231,6 +231,7 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_OVERPOWER = "OVERPOWER";
     public static final String ALARM_TYPE_OVERLOAD = "OVERLOAD";
     public static final String ALARM_TYPE_LOADERR = "LOAD_ERROR";
+    public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
 
     // Coap
     public static final int COIOT_PORT = 5683;

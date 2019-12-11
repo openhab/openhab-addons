@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.shelly.internal.ShellyListenerManager;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusLight;
@@ -62,9 +63,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
      * @param localIP local IP of the openHAB host
      * @param httpPort port of the openHAB HTTP API
      */
-    public ShellyLightHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
-            @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
-        super(thing, bindingConfig, coapServer, localIP, httpPort);
+    public ShellyLightHandler(Thing thing, ShellyListenerManager listenerManager,
+            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
+            int httpPort) {
+        super(thing, listenerManager, bindingConfig, coapServer, localIP, httpPort);
         channelColors = new HashMap<Integer, ShellyColorUtils>();
     }
 
@@ -436,6 +438,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
     }
 
+    @SuppressWarnings("null")
     private void sendColors(@Nullable ShellyDeviceProfile profile, Integer lightId, ShellyColorUtils oldCol,
             ShellyColorUtils newCol) throws IOException {
         Validate.notNull(profile);

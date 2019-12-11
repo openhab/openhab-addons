@@ -93,6 +93,10 @@ public class ShellyUtils {
         return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
     }
 
+    public static OnOffType getOnOff(int value) {
+        return value == 0 ? OnOffType.OFF : OnOffType.ON;
+    }
+
     @SuppressWarnings("null")
     public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {
         BigDecimal bd = new BigDecimal(value.doubleValue());

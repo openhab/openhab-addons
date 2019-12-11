@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.handler;
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.getThingTypeUID;
 
 import java.io.IOException;
@@ -30,6 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -38,6 +40,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.shelly.internal.ShellyListenerManager;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
@@ -99,8 +102,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      * @param localIP local IP address from networkAddressService
      * @param httpPort from httpService
      */
-    public ShellyBaseHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
-            @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
+    public ShellyBaseHandler(Thing thing, ShellyListenerManager listenerManager,
+            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
+            int httpPort) {
         super(thing);
 
         this.bindingConfig = bindingConfig;
@@ -494,6 +498,26 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 return false;
             }
 
+            // map some of the events to system defined button triggers
+            switch (payload.toLowerCase()) {
+                case SHELLY_EVENT_BTN_ON:
+                case SHELLY_EVENT_BTN1_ON:
+                case SHELLY_EVENT_BTN2_ON:
+                    payload = CommonTriggerEvents.PRESSED;
+                    break;
+                case SHELLY_EVENT_BTN_OFF:
+                case SHELLY_EVENT_BTN1_OFF:
+                case SHELLY_EVENT_BTN2_OFF:
+                    payload = CommonTriggerEvents.RELEASED;
+                    break;
+                case SHELLY_EVENT_SHORTPUSH:
+                    payload = CommonTriggerEvents.SHORT_PRESSED;
+                    break;
+                case SHELLY_EVENT_LONGPUSH:
+                    payload = CommonTriggerEvents.LONG_PRESSED;
+                    break;
+            }
+
             // Pass event to trigger channel
             payload = payload.toUpperCase();
             logger.debug("{}: Post event {}", thingName, payload);
@@ -787,6 +811,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     /**
      * Shutdown thing, make sure background jobs are canceled
      */
+    @SuppressWarnings("null")
     @Override
     public void dispose() {
         logger.debug("{}: Shutdown thing", thingName);

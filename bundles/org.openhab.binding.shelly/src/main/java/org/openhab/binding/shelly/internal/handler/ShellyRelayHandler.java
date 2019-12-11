@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.shelly.internal.ShellyListenerManager;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyControlRoller;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyInputState;
@@ -70,9 +71,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @param localIP local IP of the openHAB host
      * @param httpPort port of the openHAB HTTP API
      */
-    public ShellyRelayHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
-            @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
-        super(thing, bindingConfig, coapServer, localIP, httpPort);
+    public ShellyRelayHandler(Thing thing, ShellyListenerManager listenerManager,
+            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
+            int httpPort) {
+        super(thing, listenerManager, bindingConfig, coapServer, localIP, httpPort);
     }
 
     @Override
@@ -332,7 +334,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                             updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
                                     toQuantityType(getDouble(rsettings.autoOff), SmartHomeUnits.SECOND));
                         }
-                        updated |= updateInputs(groupName, status);
+                        updated |= updateInputs(groupName, status, i);
                         i++;
                     }
 
@@ -361,7 +363,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_DIR, getStringType(control.lastDirection));
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STOPR, getStringType(control.stopReason));
-                    updated |= updateInputs(groupName, status);
+                    updated |= updateInputs(groupName, status, i);
 
                     i++;
                 }
@@ -425,10 +427,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                             toQuantityType(getDouble(dsettings.autoOn), SmartHomeUnits.SECOND));
                     updated |= updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
                             toQuantityType(getDouble(dsettings.autoOff), SmartHomeUnits.SECOND));
-
                 }
 
-                updated |= updateInputs(groupName, orgStatus);
+                updated |= updateInputs(groupName, orgStatus, l);
                 l++;
             }
         }
@@ -443,17 +444,21 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @param status Shelly device status
      * @return true: one or more inputs were updated
      */
-    private boolean updateInputs(String groupName, ShellySettingsStatus status) {
+    @SuppressWarnings("null")
+    private boolean updateInputs(String groupName, ShellySettingsStatus status, int index) {
         boolean updated = false;
         if (status.inputs != null) {
-            int count = status.inputs.size();
-            logger.trace("{}: Updating {} input state(s)", thingName, count);
-            for (int input = 0; input < count; input++) {
-                ShellyInputState state = status.inputs.get(input);
-                String channel = (profile.isDimmer || profile.isRoller) && count > 1
-                        ? CHANNEL_INPUT + Integer.toString(input + 1)
-                        : CHANNEL_INPUT;
-                updated |= updateChannel(groupName, channel, state.input == 0 ? OnOffType.OFF : OnOffType.ON);
+            if (profile.isDimmer || profile.isRoller) {
+                ShellyInputState state1 = status.inputs.get(0);
+                ShellyInputState state2 = status.inputs.get(1);
+                logger.trace("{}: Updating {}#input1 with {}, input2 with {}", thingName, groupName,
+                        getOnOff(state1.input), getOnOff(state2.input));
+                updated |= updateChannel(groupName, CHANNEL_INPUT + "1", getOnOff(state1.input));
+                updated |= updateChannel(groupName, CHANNEL_INPUT + "2", getOnOff(state2.input));
+            } else {
+                ShellyInputState state = status.inputs.get(index);
+                logger.trace("{}: Updating input[{}] with {}", thingName, index, getOnOff(state.input));
+                updated |= updateChannel(groupName, CHANNEL_INPUT, getOnOff(state.input));
             }
         }
         return updated;
