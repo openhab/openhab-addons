@@ -107,10 +107,22 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                             logger.debug("Unit discovery skipping unsupported unit type : {} ", type);
                             continue;
                         }
+
+                        if (!unitObj.has("currStatus") || (unitObj.get("currStatus") == null)) {
+                            logger.warn("Unit discovery unit currStatus is null : {}", response);
+                            continue;
+                        }
+
                         if (type.equals("WallController")) {
                             touchWandUnit = gson.fromJson(unitObj, TouchWandUnitDataWallController.class);
                         } else {
                             touchWandUnit = gson.fromJson(unitObj, TouchWandShutterSwitchUnitData.class);
+                        }
+                        /* sometimes currstatus received null */
+                        if (touchWandUnit.getCurrStatus() == null) {
+                            logger.warn("Unit id {} name {} CurrStatus is null", touchWandUnit.getId(),
+                                    touchWandUnit.getName());
+                            continue;
                         }
 
                         if (!touchWandBridgeHandler.isAddSecondaryControllerUnits()) {

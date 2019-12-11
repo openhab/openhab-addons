@@ -36,8 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link TouchWandBaseUnitHandler} is responsible for handling commands and status updates
@@ -148,9 +148,10 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
             if (!this.getThing().getStatusInfo().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.ONLINE);
             }
-        } catch (JsonSyntaxException | IllegalStateException e) {
+        } catch (JsonParseException | IllegalStateException | UnsupportedOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            logger.warn("Could not parse cmdGetUnitById response {}", getThing().getLabel());
+            logger.warn("Could not parse cmdGetUnitById response for unit id {}  label {}", unitId,
+                    getThing().getLabel());
         }
         return status;
     }
