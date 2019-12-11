@@ -157,6 +157,21 @@
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
+		<state pattern="%.1f" readOnly="true" />
+	</channel-type>
+	<channel-type id="pm25">
+		<item-type>Number</item-type>
+		<label>PM2.5</label>
+		<state pattern="%.1f" readOnly="true" />
+	</channel-type>
+	<channel-type id="co2">
+		<item-type>Number</item-type>
+		<label>CO2</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="tvoc">
+		<item-type>Number</item-type>
+		<label>tVOC</label>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="aqi">

@@ -29,6 +29,7 @@ public enum MiIoDevices {
     AIRCONDITION_MXA1("midea.aircondition.xa1", "Midea Air Conditioner xa1", THING_TYPE_UNSUPPORTED),
     AIRMONITOR1("zhimi.airmonitor.v1", "Mi Air Monitor v1", THING_TYPE_BASIC),
     AIRMONITOR_B1("cgllc.airmonitor.b1", "Mi Air Quality Monitor 2gen", THING_TYPE_BASIC),
+    AIRMONITOR_S1("cgllc.airmonitor.s1", "Mi Air Quality Monitor S1", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_V1("zhimi.humidifier.v1", "Mi Air Humidifier", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_CA1("zhimi.humidifier.ca1", "Mi Air Humidifier", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_MJJSQ("deerma.humidifier.mjjsq", "Mija Smart humidifier", THING_TYPE_BASIC),
