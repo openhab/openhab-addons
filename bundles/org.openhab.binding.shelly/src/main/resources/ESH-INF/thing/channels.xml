@@ -266,6 +266,9 @@
 		<label>Temperature</label>
 		<description>Temperature from the sensor</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%f %unit%">
 		</state>
 	</channel-type>
@@ -273,6 +276,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity in % (0..100%)</description>
+		<tags>
+			<tag>CurrentHumidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%f %unit%" />
 	</channel-type>
 	<channel-type id="sensorFlood">
@@ -341,12 +347,29 @@
 		<kind>trigger</kind>
 		<label>Event</label>
 		<description>Event Trigger, e.g. button on/off, Output on/off</description>
-		<event />
+		<event>
+			<options>
+				<option value="ROLLER_OPEN">sensor data updated</option>
+				<option value="ROLLER_CLOSE">sensor data updated</option>
+				<option value="ROLLER_STOP">sensor data updated</option>
+			</options>
+		</event>
 	</channel-type>
 	<channel-type id="alarmTrigger">
 		<kind>trigger</kind>
 		<label>Alarm</label>
 		<description>Alarm Trigger, e.g. weak WiFi Signal detected or over heating.</description>
-		<event />
+		<event>
+			<options>
+				<option value="NONE">No alarm condition</option>
+				<option value="WEAK_SIGNAL">WiFi Signal low</option>
+				<option value="RESTARTED">Device has been restarted</option>
+				<option value="OVERTEMP">Device is overheating</option>
+				<option value="OVERLOAD">Device is overloaded</option>
+				<option value="OVERPOWER">Device is over max power</option>
+				<option value="LOAD_ERROR">Load error</option>
+				<option value="LOW_BATTERY">Low battery</option>
+			</options>
+		</event>
 	</channel-type>
 </thing:thing-descriptions>

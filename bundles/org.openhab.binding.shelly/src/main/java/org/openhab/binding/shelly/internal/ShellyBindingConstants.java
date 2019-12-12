@@ -31,6 +31,7 @@ public class ShellyBindingConstants {
 
     public static final String VENDOR = "Shelly";
     public static final String BINDING_ID = "shelly";
+    public static final String SYSTEM_ID = "system";
 
     // Type names
     public static final String THING_TYPE_SHELLY1_STR = "shelly1";
@@ -218,6 +219,7 @@ public class ShellyBindingConstants {
     // General
     public static final String CHANNEL_LAST_UPDATE = "lastUpdate";
     public static final String CHANNEL_EVENT_TRIGGER = "event";
+    public static final String CHANNEL_BUTTON_TRIGGER = "button";
 
     public static final String SERVICE_TYPE = "_http._tcp.local.";
     public static final String SHELLY_API_MIN_FWVERSION = "v1.5.2";

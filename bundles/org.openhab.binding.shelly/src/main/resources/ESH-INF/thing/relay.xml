@@ -189,10 +189,10 @@
 		<channels>
 			<channel id="output" typeId="system.power" />
 			<channel id="input" typeId="inputState" />
+			<channel id="button" typeId="system.button" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />
-			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
 
@@ -204,7 +204,6 @@
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />
-			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
 
@@ -217,7 +216,6 @@
 			<channel id="input2" typeId="inputState2" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
-			<channel id="event" typeId="eventTrigger" />
 		</channels>
 	</channel-group-type>
 
@@ -273,16 +271,4 @@
 			<channel id="powerLed" typeId="ledPowerDisable" />
 		</channels>
 	</channel-group-type>
-
-
-	<channel-group-type id="deviceStatus" advanced="true">
-		<label>Device Status</label>
-		<description>Some details on the device status</description>
-		<channels>
-			<channel id="uptime" typeId="uptime" />
-			<channel id="signal" typeId="signalStrength" />
-			<channel id="alarm" typeId="alarmTrigger" />
-		</channels>
-	</channel-group-type>
-
 </thing:thing-descriptions>

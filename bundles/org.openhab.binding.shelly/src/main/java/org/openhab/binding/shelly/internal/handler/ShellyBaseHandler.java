@@ -476,7 +476,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
             String group = "";
             Integer rindex = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) + 1 : -1;
-            String payload = parameters.get("type");
             if (type.equals(EVENT_TYPE_RELAY)) {
                 group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                         : CHANNEL_GROUP_RELAY_CONTROL + rindex.toString();
@@ -491,7 +490,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
             if (type.equals(EVENT_TYPE_SENSORDATA)) {
                 group = CHANNEL_GROUP_SENSOR;
-                payload = type;
             }
             if (group.isEmpty()) {
                 logger.debug("Unsupported event class: {}", type);
@@ -499,29 +497,34 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
 
             // map some of the events to system defined button triggers
-            switch (payload.toLowerCase()) {
-                case SHELLY_EVENT_BTN_ON:
-                case SHELLY_EVENT_BTN1_ON:
-                case SHELLY_EVENT_BTN2_ON:
-                    payload = CommonTriggerEvents.PRESSED;
-                    break;
-                case SHELLY_EVENT_BTN_OFF:
-                case SHELLY_EVENT_BTN1_OFF:
-                case SHELLY_EVENT_BTN2_OFF:
-                    payload = CommonTriggerEvents.RELEASED;
-                    break;
+            String channel = "";
+            String payload = "";
+            switch (type.toUpperCase()) {
                 case SHELLY_EVENT_SHORTPUSH:
+                    channel = CHANNEL_BUTTON_TRIGGER;
                     payload = CommonTriggerEvents.SHORT_PRESSED;
                     break;
                 case SHELLY_EVENT_LONGPUSH:
+                    channel = CHANNEL_BUTTON_TRIGGER;
                     payload = CommonTriggerEvents.LONG_PRESSED;
                     break;
+
+                case SHELLY_EVENT_ROLLER_OPEN:
+                case SHELLY_EVENT_ROLLER_CLOSE:
+                case SHELLY_EVENT_ROLLER_STOP:
+                    channel = CHANNEL_EVENT_TRIGGER;
+                    payload = parameters.get("type");
+
+                default:
+                    // triggered will be provided by input/output channel or sensor channels
             }
 
-            // Pass event to trigger channel
-            payload = payload.toUpperCase();
-            logger.debug("{}: Post event {}", thingName, payload);
-            triggerChannel(mkChannelId(group, CHANNEL_EVENT_TRIGGER), payload.toUpperCase());
+            if (!payload.isEmpty()) {
+                // Pass event to trigger channel
+                payload = payload.toUpperCase();
+                logger.debug("{}: Post event {}", thingName, payload);
+                triggerChannel(mkChannelId(group, channel), payload);
+            }
 
             // request update on next interval (2x for non-battery devices)
             requestUpdates(scheduledUpdates >= 2 ? 0 : !hasBattery ? 2 : 1, true);
@@ -778,6 +781,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     @Nullable
     public ShellyDeviceProfile getProfile() {
+
         return profile;
     }
 
@@ -849,4 +853,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     public boolean updateDeviceStatus(ShellySettingsStatus status) throws IOException {
         return false;
     }
+
+    public void createChannels() {
+
+    }
+
 }
