@@ -474,58 +474,61 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             boolean hasBattery = profile != null && profile.hasBattery ? true : false;
             if (profile == null) {
                 logger.debug("{}: Device is not yet initialized, event triggers initialization", deviceName);
-            }
+            } else {
 
-            String group = "";
-            Integer rindex = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) + 1 : -1;
-            if (type.equals(EVENT_TYPE_RELAY)) {
-                group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
-                        : CHANNEL_GROUP_RELAY_CONTROL + rindex.toString();
-            }
-            if (type.equals(EVENT_TYPE_ROLLER)) {
-                group = profile.numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL
-                        : CHANNEL_GROUP_ROL_CONTROL + rindex.toString();
-            }
-            if (type.equals(EVENT_TYPE_LIGHT)) {
-                group = profile.numRelays <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
-                        : CHANNEL_GROUP_LIGHT_CONTROL + rindex.toString();
-            }
-            if (type.equals(EVENT_TYPE_SENSORDATA)) {
-                group = CHANNEL_GROUP_SENSOR;
-            }
-            if (group.isEmpty()) {
-                logger.debug("Unsupported event class: {}", type);
-                return false;
-            }
+                String group = "";
+                Integer rindex = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) + 1 : -1;
+                if (type.equals(EVENT_TYPE_RELAY)) {
+                    group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
+                            : CHANNEL_GROUP_RELAY_CONTROL + rindex.toString();
+                }
+                if (type.equals(EVENT_TYPE_ROLLER)) {
+                    group = profile.numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL
+                            : CHANNEL_GROUP_ROL_CONTROL + rindex.toString();
+                }
+                if (type.equals(EVENT_TYPE_LIGHT)) {
+                    group = profile.numRelays <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
+                            : CHANNEL_GROUP_LIGHT_CONTROL + rindex.toString();
+                }
+                if (type.equals(EVENT_TYPE_SENSORDATA)) {
+                    group = CHANNEL_GROUP_SENSOR;
+                }
+                if (group.isEmpty()) {
+                    logger.debug("Unsupported event class: {}", type);
+                    return false;
+                }
 
-            // map some of the events to system defined button triggers
-            String channel = "";
-            String payload = "";
-            switch (type.toUpperCase()) {
-                case SHELLY_EVENT_SHORTPUSH:
-                    channel = CHANNEL_BUTTON_TRIGGER;
-                    payload = CommonTriggerEvents.SHORT_PRESSED;
-                    break;
-                case SHELLY_EVENT_LONGPUSH:
-                    channel = CHANNEL_BUTTON_TRIGGER;
-                    payload = CommonTriggerEvents.LONG_PRESSED;
-                    break;
+                // map some of the events to system defined button triggers
+                String channel = "";
+                String payload = "";
+                String event = type.contentEquals(EVENT_TYPE_SENSORDATA) ? SHELLY_EVENT_SENSORDATA
+                        : parameters.get("type");
+                switch (event) {
+                    case SHELLY_EVENT_SHORTPUSH:
+                        channel = CHANNEL_BUTTON_TRIGGER;
+                        payload = CommonTriggerEvents.SHORT_PRESSED;
+                        break;
+                    case SHELLY_EVENT_LONGPUSH:
+                        channel = CHANNEL_BUTTON_TRIGGER;
+                        payload = CommonTriggerEvents.LONG_PRESSED;
+                        break;
 
-                case SHELLY_EVENT_ROLLER_OPEN:
-                case SHELLY_EVENT_ROLLER_CLOSE:
-                case SHELLY_EVENT_ROLLER_STOP:
-                    channel = CHANNEL_EVENT_TRIGGER;
-                    payload = parameters.get("type");
+                    case SHELLY_EVENT_ROLLER_OPEN:
+                    case SHELLY_EVENT_ROLLER_CLOSE:
+                    case SHELLY_EVENT_ROLLER_STOP:
+                        channel = CHANNEL_EVENT_TRIGGER;
+                        payload = event;
 
-                default:
-                    // triggered will be provided by input/output channel or sensor channels
-            }
+                    default:
+                        // triggered will be provided by input/output channel or sensor channels
+                }
 
-            if (!payload.isEmpty()) {
-                // Pass event to trigger channel
-                payload = payload.toUpperCase();
-                logger.debug("{}: Post event {}", thingName, payload);
-                triggerChannel(mkChannelId(group, channel), payload);
+                if (!payload.isEmpty()) {
+                    // Pass event to trigger channel
+                    payload = payload.toUpperCase();
+                    logger.debug("{}: Post event {}", thingName, payload);
+                    triggerChannel(mkChannelId(group, channel), payload);
+                }
             }
 
             // request update on next interval (2x for non-battery devices)
