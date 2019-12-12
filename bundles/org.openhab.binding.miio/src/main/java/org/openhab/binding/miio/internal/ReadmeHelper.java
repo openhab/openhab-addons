@@ -1,0 +1,232 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+
+package org.openhab.binding.miio.internal;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
+import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+/**
+ * Support creation of the readme
+ *
+ * @author Marcel Verpaalen - Initial contribution
+ */
+public class ReadmeHelper {
+    private final Logger logger = LoggerFactory.getLogger(ReadmeHelper.class);
+
+    public static void main(String[] args) {
+        ReadmeHelper rm = new ReadmeHelper();
+
+        System.out.println("## Creating device list\n");
+        StringWriter deviceList = rm.deviceList();
+        rm.checkDatabaseEntrys();
+        // System.out.println(deviceList);
+        System.out.println("\n## Creating channel list for basic devices\n");
+        StringWriter channelList = rm.channelList();
+        // System.out.println(channelList.toString());
+        System.out.println("\n## Creating Item Files for miio:basic devices\n");
+        StringWriter itemFileExamples = rm.itemFileExamples();
+        /// System.out.println(itemFileExamples);
+
+        System.out.println("\n## Done");
+
+        try {
+            File file = new File("./README.base.md");
+            String baseDoc = FileUtils.readFileToString(file);
+
+            String nw = baseDoc.replaceAll("!!!devices", deviceList.toString())
+                    .replaceAll("!!!channelList", channelList.toString())
+                    .replaceAll("!!!itemFileExamples", itemFileExamples.toString());
+            // System.out.println(nw);
+
+            File newDocfile = new File("README.md");
+            FileUtils.writeStringToFile(newDocfile, nw);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private StringWriter deviceList() {
+        StringWriter sw = new StringWriter();
+
+        sw.write(
+                "| Device                       | ThingType        | Device Model           | Supported | Remark     |\r\n");
+        sw.write(
+                "|------------------------------|------------------|------------------------|-----------|------------|\r\n");
+
+        Arrays.asList(MiIoDevices.values()).forEach(device -> {
+            if (!device.getModel().equals("unknown")) {
+                String link = device.getModel().replace(".", "-");
+                boolean isSupported = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED);
+                sw.write("| ");
+                sw.write(minLengthString(device.getDescription(), 28));
+                sw.write(" | ");
+                sw.write(minLengthString(device.getThingType().toString(), 16));
+                sw.write(" | ");
+                String model = isSupported ? device.getModel() : "[" + device.getModel() + "](#" + link + ")";
+                sw.write(minLengthString(model, 22));
+                sw.write(" | ");
+                sw.write(isSupported ? "No       " : "Yes      ");
+                sw.write(" |            |\r\n");
+            }
+        });
+        return sw;
+    }
+
+    private StringWriter channelList() {
+        StringWriter sw = new StringWriter();
+
+        Arrays.asList(MiIoDevices.values()).forEach(device -> {
+            if (device.getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+                MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
+                if (dev != null) {
+                    String link = device.getModel().replace(".", "-");
+                    sw.write("### " + device.getDescription() + " (" + "<a name=\"" + link + "\">" + device.getModel()
+                            + "</a>" + ") Channels\r\n" + "\r\n");
+                    sw.write("| Channel          | Type    | Description                         |\r\n");
+                    sw.write("|------------------|---------|-------------------------------------|\r\n");
+
+                    for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
+                        sw.write("| " + minLengthString(ch.getChannel(), 16) + " | " + minLengthString(ch.getType(), 7)
+                                + " | " + minLengthString(ch.getFriendlyName(), 35) + " |\r\n");
+                    }
+                    sw.write("\r\n");
+
+                } else {
+                    System.out.println("Pls check: Device not found in db " + device.toString());
+                }
+            }
+        });
+        return sw;
+    }
+
+    private StringWriter itemFileExamples() {
+        StringWriter sw = new StringWriter();
+
+        Arrays.asList(MiIoDevices.values()).forEach(device -> {
+
+            if (device.getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+
+                MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
+                if (dev != null) {
+                    sw.write("### " + device.getDescription() + " (" + device.getModel() + ") item file lines\r\n\r\n");
+                    String[] ids = device.getModel().split("\\.");
+                    String id = ids[ids.length - 2];
+                    String gr = "G_" + id;
+                    sw.write("note: Autogenerated example. Replace the id (" + id
+                            + ") in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.\r\n");
+                    sw.write("\r\n```java\r\n");
+                    sw.write("Group " + gr + " \"" + device.getDescription() + "\" <status>\r\n");
+
+                    for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
+                        // System.out.println(ch);
+                        sw.write(ch.getType() + " " + ch.getChannel() + " \"" + ch.getFriendlyName() + "\" (" + gr
+                                + ") {channel=\"miio:basic:" + id + ":" + ch.getChannel() + "\"}\r\n");
+                    }
+                    sw.write("```\r\n\r\n");
+                }
+            }
+        });
+        return sw;
+    }
+
+    private void checkDatabaseEntrys() {
+        for (MiIoBasicDevice entry : findDatabaseEntrys()) {
+            for (String id : entry.getDevice().getId()) {
+                // System.out.println("id :" + id);
+
+                if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+                    System.out.println("id :" + id + " not found");
+                }
+
+            }
+        }
+    }
+
+    private MiIoBasicDevice findDatabaseEntry(String deviceName) {
+        for (MiIoBasicDevice entry : findDatabaseEntrys()) {
+            for (String id : entry.getDevice().getId()) {
+                // System.out.println("id :" + id);
+                if (deviceName.equals(id)) {
+                    // System.out.println(" found");
+                    return entry;
+
+                }
+            }
+        }
+        return null;
+    }
+
+    private List<MiIoBasicDevice> findDatabaseEntrys() {
+
+        List<MiIoBasicDevice> arrayList = new ArrayList<MiIoBasicDevice>();
+        String path = "./src/main/resources/database/";
+
+        File dir = new File(path);
+        File[] filesList = dir.listFiles();
+        for (File file : filesList) {
+            if (file.isFile()) {
+                try {
+                    JsonObject deviceMapping = convertFileToJSON(path + file.getName());
+                    Gson gson = new GsonBuilder().serializeNulls().create();
+                    MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
+                    arrayList.add(devdb);
+
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    // not relevant
+                    logger.debug("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
+                }
+            }
+        }
+        return arrayList;
+    }
+
+    private static String minLengthString(String string, int length) {
+        return String.format("%-" + length + "s", string);
+    }
+
+    private static String fixedLengthString(String string, int length) {
+        return String.format("%1$" + length + "s", string);
+    }
+
+    JsonObject convertFileToJSON(String fileName) {
+
+        // Read from File to String
+        JsonObject jsonObject = new JsonObject();
+
+        try {
+            JsonParser parser = new JsonParser();
+            JsonElement jsonElement = parser.parse(new FileReader(fileName));
+            jsonObject = jsonElement.getAsJsonObject();
+        } catch (FileNotFoundException e) {
+            // } catch (IOException ioe) {
+        }
+
+        return jsonObject;
+    }
+}
