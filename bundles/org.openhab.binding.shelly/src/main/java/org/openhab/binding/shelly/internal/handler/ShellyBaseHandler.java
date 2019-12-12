@@ -64,6 +64,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     public String thingName = "";
     protected ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     protected ShellyThingConfiguration config = new ShellyThingConfiguration();
+    private final ShellyListenerManager listenerManager;
     protected @Nullable ShellyHttpApi api;
     private @Nullable ShellyCoapHandler coap;
     protected @Nullable ShellyDeviceProfile profile;
@@ -108,6 +109,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         super(thing);
 
         this.bindingConfig = bindingConfig;
+        this.listenerManager = listenerManager;
         this.coapServer = coapServer;
         this.localIP = localIP;
         this.httpPort = httpPort;
@@ -820,6 +822,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     public void dispose() {
         logger.debug("{}: Shutdown thing", thingName);
         try {
+            listenerManager.unregister(this);
+
             if (coap != null) {
                 coap.stop();
                 coap = null;
