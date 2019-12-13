@@ -35,38 +35,37 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Support creation of the readme
+ * Support creation of the miio readme doc
+ *
+ * Run after adding devices or changing database entries of basic devices
  *
  * @author Marcel Verpaalen - Initial contribution
  */
 public class ReadmeHelper {
-    private final static Logger logger = LoggerFactory.getLogger(ReadmeHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReadmeHelper.class);
+    private static final String BASEFILE = "./README.base.md";
 
     public static void main(String[] args) {
         ReadmeHelper rm = new ReadmeHelper();
         System.out.println("## Creating device list\n");
         StringWriter deviceList = rm.deviceList();
         rm.checkDatabaseEntrys();
-        // System.out.println(deviceList);
-        System.out.println("\n## Creating channel list for basic devices\n");
+        System.out.println("## Creating channel list for basic devices\n");
         StringWriter channelList = rm.channelList();
-        // System.out.println(channelList.toString());
-        System.out.println("\n## Creating Item Files for miio:basic devices\n");
+        System.out.println("## Creating Item Files for miio:basic devices\n");
         StringWriter itemFileExamples = rm.itemFileExamples();
-        /// System.out.println(itemFileExamples);
         System.out.println("\n## Done");
         try {
-            File file = new File("./README.base.md");
+            File file = new File(BASEFILE);
             String baseDoc = FileUtils.readFileToString(file);
-
             String nw = baseDoc.replaceAll("!!!devices", deviceList.toString())
                     .replaceAll("!!!channelList", channelList.toString())
                     .replaceAll("!!!itemFileExamples", itemFileExamples.toString());
-            // System.out.println(nw);
+
             File newDocfile = new File("README.md");
             FileUtils.writeStringToFile(newDocfile, nw);
         } catch (IOException e) {
-            logger.warn(e.getStackTrace().toString());
+            LOGGER.warn("IO exception", e);
         }
     }
 
@@ -140,7 +139,6 @@ public class ReadmeHelper {
                     sw.write("Group " + gr + " \"" + device.getDescription() + "\" <status>\r\n");
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
-                        // System.out.println(ch);
                         sw.write(ch.getType() + " " + ch.getChannel() + " \"" + ch.getFriendlyName() + "\" (" + gr
                                 + ") {channel=\"miio:basic:" + id + ":" + ch.getChannel() + "\"}\r\n");
                     }
@@ -187,7 +185,7 @@ public class ReadmeHelper {
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     // not relevant
-                    logger.debug("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
+                    LOGGER.debug("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
                 }
             }
         }
@@ -211,7 +209,7 @@ public class ReadmeHelper {
             JsonElement jsonElement = parser.parse(new FileReader(fileName));
             jsonObject = jsonElement.getAsJsonObject();
         } catch (FileNotFoundException e) {
-            // } catch (IOException ioe) {
+            //
         }
         return jsonObject;
     }
