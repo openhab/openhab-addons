@@ -244,7 +244,7 @@ public class LGWebOSTVSocket {
 
         JsonObject payload = new JsonObject();
         String key = config.getKey();
-        if (key != null && !key.isEmpty()) {
+        if (!key.isEmpty()) {
             payload.addProperty("client-key", key);
         }
         payload.addProperty("pairingType", "PROMPT"); // PIN, COMBINED
@@ -648,8 +648,12 @@ public class LGWebOSTVSocket {
             LaunchSession launchSession = new LaunchSession();
             launchSession.setService(this);
             launchSession.setAppId(appId); // note that response uses id to mean appId
-            launchSession.setSessionId(obj.get("sessionId").getAsString());
-            launchSession.setSessionType(LaunchSessionType.App);
+            if (obj.has("sessionId")) {
+                launchSession.setSessionId(obj.get("sessionId").getAsString());
+                launchSession.setSessionType(LaunchSessionType.App);
+            } else {
+                launchSession.setSessionType(LaunchSessionType.Unknown);
+            }
             return launchSession;
         }, listener);
         sendCommand(request);
@@ -664,8 +668,12 @@ public class LGWebOSTVSocket {
             LaunchSession launchSession = new LaunchSession();
             launchSession.setService(this);
             launchSession.setAppId(obj.get("id").getAsString()); // note that response uses id to mean appId
-            launchSession.setSessionId(obj.get("sessionId").getAsString());
-            launchSession.setSessionType(LaunchSessionType.App);
+            if (obj.has("sessionId")) {
+                launchSession.setSessionId(obj.get("sessionId").getAsString());
+                launchSession.setSessionType(LaunchSessionType.App);
+            } else {
+                launchSession.setSessionType(LaunchSessionType.Unknown);
+            }
             return launchSession;
         }, listener);
         sendCommand(request);
@@ -706,12 +714,10 @@ public class LGWebOSTVSocket {
 
     public void closeApp(LaunchSession launchSession, ResponseListener<CommandConfirmation> listener) {
         String uri = "ssap://system.launcher/close";
-        String appId = launchSession.getAppId();
-        String sessionId = launchSession.getSessionId();
 
         JsonObject payload = new JsonObject();
-        payload.addProperty("id", appId);
-        payload.addProperty("sessionId", sessionId);
+        payload.addProperty("id", launchSession.getAppId());
+        payload.addProperty("sessionId", launchSession.getSessionId());
 
         ServiceCommand<CommandConfirmation> request = new ServiceCommand<>(uri, payload,
                 x -> GSON.fromJson(x, CommandConfirmation.class), listener);
@@ -807,11 +813,10 @@ public class LGWebOSTVSocket {
     }
 
     public interface ConfigProvider {
-        void storeKey(@Nullable String key);
+        void storeKey(String key);
 
         void storeProperties(Map<String, String> properties);
 
-        @Nullable
         String getKey();
     }
 

@@ -62,7 +62,6 @@ public class VolumeControlMute extends BaseChannelHandler<Boolean> {
                 handler.postUpdate(channelId, OnOffType.from(value));
             }
         }));
-
     }
 
 }
