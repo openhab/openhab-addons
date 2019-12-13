@@ -72,7 +72,7 @@
 			},
 			{
 				"property": "led",
-				"friendlyName": "Led Status",
+				"friendlyName": "LED Status",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
