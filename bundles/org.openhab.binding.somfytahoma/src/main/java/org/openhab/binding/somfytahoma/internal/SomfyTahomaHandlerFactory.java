@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -28,10 +29,13 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
 import org.openhab.binding.somfytahoma.internal.handler.*;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +53,13 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    private final HttpClient httpClient;
+
+    @Activate
+    public SomfyTahomaHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return THING_TYPE_BRIDGE.equals(thingTypeUID) || SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -62,7 +73,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Creating handler for {}", thing.getThingTypeUID().getId());
 
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            SomfyTahomaBridgeHandler handler = new SomfyTahomaBridgeHandler((Bridge) thing);
+            SomfyTahomaBridgeHandler handler = new SomfyTahomaBridgeHandler((Bridge) thing, httpClient);
             registerItemDiscoveryService(handler);
             return handler;
         } else if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
@@ -123,7 +134,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaDockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SIREN)) {
             return new SomfyTahomaSirenHandler(thing);
-        } else {
+        } else if (thingTypeUID.equals(THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER)) {
+            return new SomfyTahomaAdjustableSlatsRollerShutterHandler(thing);
+        }else {
             return null;
         }
     }

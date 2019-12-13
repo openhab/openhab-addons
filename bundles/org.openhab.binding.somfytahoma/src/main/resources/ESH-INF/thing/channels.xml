@@ -238,4 +238,22 @@
 		<label>Dock Long Beep Test</label>
 		<description>A channel for testing the dock's long beeping</description>
 	</channel-type>
+
+	<channel-type id="alarm_check">
+		<item-type>String</item-type>
+		<label>Alarm Check Trigger</label>
+		<description>A channel for triggering the smoke sensor's check</description>
+		<command>
+			<options>
+				<option value="SHORT">Short check</option>
+				<option value="LONG">Long check</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="rocker">
+		<item-type>Switch</item-type>
+		<label>Rocker Position</label>
+		<description>A channel for controlling the rocker position</description>
+	</channel-type>
 </thing:thing-descriptions>

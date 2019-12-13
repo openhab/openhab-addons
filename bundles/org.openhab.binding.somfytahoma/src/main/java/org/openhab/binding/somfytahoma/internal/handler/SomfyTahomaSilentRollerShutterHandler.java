@@ -14,15 +14,11 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import java.util.HashMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaSilentRollerShutterHandler} is responsible for handling commands,
@@ -33,8 +29,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaSilentRollerShutterHandler.class);
-
     public SomfyTahomaSilentRollerShutterHandler(Thing thing) {
         super(thing);
         stateNames.put(CONTROL_SILENT, "core:ClosureState");
@@ -43,13 +37,13 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingH
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (!CONTROL.equals(channelUID.getId()) && !channelUID.getId().equals(CONTROL_SILENT)) {
             return;
         }
 
         if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+            return;
         } else {
             String cmd = getTahomaCommand(command.toString());
             if (COMMAND_MY.equals(cmd)) {
@@ -58,7 +52,7 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingH
                     //Check if the roller shutter is moving and MY is sent => STOP it
                     cancelExecution(executionId);
                 } else {
-                    sendCommand(COMMAND_MY, "[]");
+                    sendCommand(COMMAND_MY);
                 }
             } else {
                 if (CONTROL_SILENT.equals(channelUID.getId()) && COMMAND_SET_CLOSURE.equals(cmd)) {

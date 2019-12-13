@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.CONTACT;
-
-import java.util.HashMap;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.Command;
 
 /**
  * The {@link SomfyTahomaSmokeSensorHandler} is responsible for handling commands,
@@ -32,4 +33,15 @@ public class SomfyTahomaSmokeSensorHandler extends SomfyTahomaContactSensorHandl
         super(thing);
         stateNames.put(CONTACT, "core:SmokeState");
     }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+        if (OnOffType.ON.equals(command)) {
+            if (ALARM_CHECK.equals(channelUID.getId())) {
+                sendCommand(COMMAND_CHECK_TRIGGER, "[\"" + command.toString().toLowerCase() + "\"]");
+            }
+        }
+    }
 }
+
