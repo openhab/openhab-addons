@@ -15,17 +15,17 @@ package org.openhab.binding.somfytahoma.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SomfyTahomaVersionResponse} holds information about
- * response to getting gateway's firmware version.
+ * The {@link SomfyTahomaRegisterEventsResponse} holds information about register events
+ * response to your TahomaLink account.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaVersionResponse {
+public class SomfyTahomaRegisterEventsResponse {
 
-    private String result = "";
+    private String id = "";
 
-    public String getResult() {
-        return result;
+    public String getId() {
+        return id;
     }
 }

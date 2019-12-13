@@ -24,8 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyTahomaGateway {
 
     private String gatewayId = "";
+    private int type;
 
     public String getGatewayId() {
         return gatewayId;
+    }
+
+    public int getType() {
+        return type;
     }
 }

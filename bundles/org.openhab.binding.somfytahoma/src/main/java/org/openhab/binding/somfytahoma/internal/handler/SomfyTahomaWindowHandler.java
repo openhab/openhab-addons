@@ -19,8 +19,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaWindowHandler} is responsible for handling commands,
@@ -31,21 +29,19 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaWindowHandler.class);
-
     public SomfyTahomaWindowHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (!CONTROL.equals(channelUID.getId())) {
             return;
         }
 
         if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+            return;
         } else {
             String cmd = getTahomaCommand(command.toString());
             if (COMMAND_STOP.equals(cmd)) {

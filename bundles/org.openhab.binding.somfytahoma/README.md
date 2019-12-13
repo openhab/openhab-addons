@@ -24,7 +24,7 @@ home automation systems.
 - light switches (similar to on/off)
 - light sensors (luminance value)
 - occupancy sensors (OPEN/CLOSE contact)
-- smoke sensors (OPEN/CLOSE contact)
+- smoke sensors (OPEN/CLOSE contact, alarm check)
 - contact sensors (OPEN/CLOSE contact)
 - temperature sensors (get temperature)
 - electricity sensors (get energy consumption)
@@ -67,10 +67,13 @@ Please see the example below.
 | gate                                                                          |       gate_state      | get state of your gate                                                                                           |
 | roller shutter, screen, venetian blind, garage door, awning, pergola, curtain |        control        | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/MY/STOP + closure 0-100                     |
 | window                                                                        |        control        | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/STOP + closure 0-100                        |
-| venetian blind                                                                |      orientation      | percentual orientation of the blind's slats, it can have value 0-100). For IO Homecontrol devices only (non RTS) |
+| venetian blind, adjustable slats roller shutter                               |      orientation      | percentual orientation of the blind's slats, it can have value 0-100). For IO Homecontrol devices only (non RTS) |
+| adjustable slats roller shutter                                               |         rocker        | used for setting the rocker position of the roller shutter, the only position allowing the slats control         |
 | action group                                                                  |     execute_action    | switch which reacts to ON command and triggers the predefined Tahoma action                                      |
 | onoff, light                                                                  |         switch        | reacts to standard ON/OFF commands                                                                               |
 | smoke sensor, occupancy sensor & contact sensor                               |        contact        | normal value is CLOSE, changes to OPEN when detection triggered                                                  |
+| smoke sensor                                                                  |      short_check      | triggering the smoke sensor's short check                                                                        |
+| smoke sensor                                                                  |       long_check      | triggering the smoke sensor's long check                                                                         |
 | light sensor                                                                  |       luminance       | light luminance value in luxes                                                                                   |
 | electricity sensor                                                            |   energy_consumption  | energy consumption value in watts                                                                                |
 | dock                                                                          |     battery_status    | indicates running on battery (yes/no)                                                                            |
