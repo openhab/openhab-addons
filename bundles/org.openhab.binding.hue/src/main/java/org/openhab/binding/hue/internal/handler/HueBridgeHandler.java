@@ -301,7 +301,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             logger.warn("No bridge connected or selected. Cannot set sensor state.");
         }
     }
-    
+
     @Override
     public void updateSensorConfig(FullSensor sensor, ConfigUpdate configUpdate) {
         if (hueBridge != null) {
@@ -356,7 +356,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             logger.trace("Error while accessing sensor: {}", e.getMessage());
         }
     }
-    
+
     private void handleConfigUpdateException(FullSensor sensor, ConfigUpdate configUpdate, Throwable e) {
         if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -796,9 +796,5 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
 
         return configStatusMessages;
-    }
-
-    public long getSensorPollingInterval() {
-        return sensorPollingInterval;
     }
 }
