@@ -18,6 +18,7 @@
 			<channel id="active" typeId="active" />
 			<channel id="setpoint" typeId="setpoint" />
 			<channel id="temperatureoffset" typeId="temperatureoffset" />
+			<channel id="remotelock" typeId="remotelock" />
 		</channels>
 
 		<representation-property>host</representation-property>
@@ -37,6 +38,7 @@
 			<channel id="active" typeId="active" />
 			<channel id="setpoint" typeId="setpoint" />
 			<channel id="temperatureoffset" typeId="temperatureoffset" />
+			<channel id="remotelock" typeId="remotelock" />
 		</channels>
 
 		<representation-property>host</representation-property>
@@ -146,6 +148,11 @@
 		<label>Humidity</label>
 		<description>Humidity</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="remotelock">
+		<item-type>Switch</item-type>
+		<label>Remote Lock</label>
+		<description>Locks the device to only allow remote actions</description>
 	</channel-type>
 
 

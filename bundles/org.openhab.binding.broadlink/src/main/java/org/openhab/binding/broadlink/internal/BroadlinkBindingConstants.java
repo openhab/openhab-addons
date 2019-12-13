@@ -41,6 +41,8 @@ public class BroadlinkBindingConstants {
     public static final String SENSOR = "sensor";
     public static final String TEMPERATURE_OFFSET = "temperatureoffset";
     public static final String ACTIVE = "active";
+    public static final String REMOTE_LOCK = "remotelock";
+
 
     public static final String AIR_QUALITY = "airquality";
     public static final String HUMIDITY = "humidity";

@@ -84,6 +84,9 @@ public class FloureonThermostatHandler extends BroadlinkHandler {
             case SENSOR:
                 handleSensorCommand(channelUID,command);
                 break;
+            case REMOTE_LOCK:
+                handleRemoteLockCommand(channelUID,command);
+                break;
             default:
                 logger.warn("Channel {} does not support command {}", channelUID, command);
         }
@@ -146,6 +149,18 @@ public class FloureonThermostatHandler extends BroadlinkHandler {
         }
     }
 
+    private void handleRemoteLockCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof OnOffType) {
+            try {
+                floureonDevice.setLock(command == OnOffType.ON);
+            } catch (Exception e) {
+                logger.error("Error while setting remote lock of {} to {}", thing.getUID(), command, e);
+            }
+        } else {
+            logger.warn("Channel {} does not support command {}", channelUID, command);
+        }
+    }
+
     @Override
     protected void refreshData() {
         try {
@@ -169,9 +184,10 @@ public class FloureonThermostatHandler extends BroadlinkHandler {
             updateState(POWER, OnOffType.from(baseStatusInfo.getPower()));
             updateState(MODE, StringType.valueOf(baseStatusInfo.getAutoMode() ? "auto" : "manual"));
             updateState(SENSOR,StringType.valueOf(baseStatusInfo.getSensorControl().name()));
-            logger.debug("Updating channel {} with value {}", SENSOR, new DecimalType(baseStatusInfo.getSensorControl().name()));
+            logger.debug("Updating channel {} with value {}", SENSOR, new StringType(baseStatusInfo.getSensorControl().name()));
             updateState(TEMPERATURE_OFFSET, new DecimalType(baseStatusInfo.getDif()));
             updateState(ACTIVE, OnOffType.from(baseStatusInfo.getActive()));
+            updateState(REMOTE_LOCK, OnOffType.from(baseStatusInfo.getRemoteLock()));
         } catch (Exception e) {
             logger.error("Error while retrieving data for {}", thing.getUID(), e);
         }
