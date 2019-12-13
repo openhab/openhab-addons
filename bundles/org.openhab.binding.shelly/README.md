@@ -83,9 +83,9 @@ The binding has the following configuration options:
 
 ### General Notes
 
-- The channels `input` and `input1`/`input2` are only updated with firmware 1.5.6+.
-- Use the channel `rollerpos` only if you need the inverted value, otherwise use the control channel with item type `Number`, see example below.
-- Short push and long push events require firmware version 1.5.6+.
+- channels `input` and `input1`/`input2` get only updated with firmware 1.5.6+.
+- channel button: Short push and long push events require firmware version 1.5.6+.
+- Use the channel `rollerpos` only if you need the inverted roller position, otherwise use the `control` channel with item type `Number`
 - The different devices have different types of power meters, i.e. different sets of channels.
 
 Every device has a channel group `device` with the following channels:
@@ -93,7 +93,7 @@ Every device has a channel group `device` with the following channels:
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |device    |uptime       |Number   |yes      |Number of seconds since the device was powered up                                |
-|          |signal       |Number   |yes      |WiFi signal strength (RSSI)                                                      |
+|          |wifiSignal   |Number   |yes      |WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none)   |
 |          |alarm        |Trigger  |yes      |Most recent alarm for health check                                               |
 
 
@@ -419,7 +419,8 @@ Switch Shelly_XXXXX3_OverPower    "Garage Light Over Power"       {channel="shel
 Switch Shelly_XXXXX3_OverTemp     "Garage Light Over Temperature" {channel="shelly:shelly1:XXXXX3:relay#overtemperature"}
 Number Shelly_XXXXX3_AutoOnTimer  "Garage Light Auto On Timer"    {channel="shelly:shelly1:XXXXX3:relay#autoOn"}
 Number Shelly_XXXXX3_AutoOffTimer "Garage Light Auto Off Timer"   {channel="shelly:shelly1:BA2F18:relay#autoOff"}
-Switch Shelly__TimerActive        "Garage Light Timer Active"     {channel="shelly:shelly1:BA2F18:relay#timerActive"}
+Switch Shelly_XXXXX3_Relay        "Garage Light"                  {channel="shelly:shelly1:XXXXX3:relay#output"}
+Switch Shelly_XXXXX3_Input        "Garage Switch (Input)"         {channel="shelly:shelly1:XXXXX3:relay#input"}
 
 /* Sensors */
 Number ShellyHT_Dormitorio_Temp  "Dormitorio Temperature" <temperature> {channel="shelly:shellyht:e01681:sensors#temperature"}
@@ -448,7 +449,35 @@ reading colors from color picker:
 ```
 import org.openhab.core.library.types.*
 
-rule "color" 
+rule "Get input change from garage light"
+when
+    Item Shelly_XXXXX3_Input changed to ON
+then
+    logInfo("Garage", "Light input is ON")
+    BackDoorLight.sendCommand(ON)
+end
+
+rule "Momentary Switch events"
+when
+    Channel "shelly:shellydevice:XXXXXX:relay1#button" triggered SHORT_PREISSED
+then
+    logInfo("Relay", "A short push was detected")
+end
+
+
+rule "Shelly alarms"
+when
+    Channel "shelly:shellydevice:XXXXXX:device#alarm"       triggered or
+    Channel "shelly:shelly25-roller:XXXXXX:device#alarm"    triggered
+then
+    if (receivedEvent !== null) { // A (channel) event triggered the rule
+        eventSource = receivedEvent.getChannel().asString 
+        eventType = receivedEvent.getEvent()
+        ...
+    } 
+end
+
+rule "Color changed" 
 when
     Item ShellyColor changed
 then

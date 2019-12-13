@@ -9,7 +9,7 @@
 		<description>Some details on the device status</description>
 		<channels>
 			<channel id="uptime" typeId="uptime" />
-			<channel id="signal" typeId="signalStrength" />
+			<channel id="wifiSignal" typeId="system.signal-strength" />
 			<channel id="alarm" typeId="alarmTrigger" />
 		</channels>
 	</channel-group-type>

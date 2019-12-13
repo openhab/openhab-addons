@@ -404,7 +404,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         Integer rssi = getInteger(status.wifiSta.rssi);
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
                 toQuantityType(new DecimalType(uptime), SmartHomeUnits.SECOND));
-        updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, new DecimalType(rssi));
+        updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, mapSignalStrength(rssi));
 
         // Check various device indicators like overheating
         if ((status.uptime < lastUptime) && (profile != null) && !profile.hasBattery) {

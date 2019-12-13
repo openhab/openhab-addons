@@ -172,4 +172,20 @@ public class ShellyUtils {
         return profile.isBulb && !profile.inColor ? CHANNEL_GROUP_WHITE_CONTROL
                 : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
     }
+
+    public static DecimalType mapSignalStrength(int dbm) {
+        int strength = -1;
+        if (dbm > -60) {
+            strength = 4;
+        } else if (dbm > -70) {
+            strength = 3;
+        } else if (dbm > -80) {
+            strength = 2;
+        } else if (dbm > -90) {
+            strength = 1;
+        } else {
+            strength = 0;
+        }
+        return new DecimalType(strength);
+    }
 }
