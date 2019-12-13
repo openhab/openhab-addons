@@ -182,6 +182,15 @@ public class AmbientWeatherEventListener {
     }
 
     /*
+     * Attempt to reconnect to the Ambient Weather real-time API
+     */
+    private void reconnectToService() {
+        logger.debug("Listener: Attempting to reconnect to service");
+        disconnectFromService();
+        connectToService();
+    }
+
+    /*
      * Socket.io event callbacks
      */
     private Emitter.Listener onEventConnect = new Emitter.Listener() {
@@ -220,7 +229,8 @@ public class AmbientWeatherEventListener {
     private Emitter.Listener onEventReconnect = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            logger.debug("Listener: Received socket event: {}", Socket.EVENT_RECONNECT);
+            logger.debug("Listener: Received reconnect event from service");
+            reconnectToService();
         }
     };
 
