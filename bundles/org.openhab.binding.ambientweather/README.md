@@ -98,9 +98,9 @@ The following channels are supported by the binding. Note that specific weather 
 ### Things
 
 ```
-Bridge ambientweather:bridge:mybridge [ applicationKey="abcdefg", apiKey="tuvwxyz" ] {
-    Thing ambientweather:ws1400ip:ws1400ip WS-1400IP [ macAddress="00:f1:bb:00:00:01" ]
-    Thing ambientweather:ws8482:ws8482 WS-8482 [ macAddress="00:f1:bb:00:00:ab" ]
+Bridge ambientweather:bridge:account "Ambient Weather Account" [ applicationKey="bd7eb3fe87f74e9.....", apiKey="efe88d6202be43e6a40....." ] {
+    Thing ws1400ip 1400 "Ambient Weather WS-1400-IP" [ macAddress="00:ab:cd:00:00:01" ]
+    Thing ws8482 8482 "Ambient Weather WS-8482" [ macAddress="00:ab:cd:00:00:02" ]
 }
 ```
 
@@ -108,64 +108,64 @@ Bridge ambientweather:bridge:mybridge [ applicationKey="abcdefg", apiKey="tuvwxy
 
 ```
 // WS-1400-IP Weather Station
-String WS1400IP_StationName  "Station Name [%s]" { channel="ambientweather:ws1400ip:ws1400ip:station#name" }
-String WS1400IP_StationLocation "Station Location [%s]" { channel="ambientweather:ws1400ip:ws1400ip:station#location" }
+String WS1400IP_StationName  "Station Name [%s]" { channel="ambientweather:ws1400ip:account:1400:station#name" }
+String WS1400IP_StationLocation "Station Location [%s]" { channel="ambientweather:ws1400ip:account:1400:station#location" }
 
-DateTime WS1400IP_ObservationTime "Station Observation Time [%s]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#observationTime" }
-String WS1400IP_StationBattery "Station Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#batteryIndicator" }
-Number:Temperature WS1400IP_Temperature "Temperature [%.1f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#temperature" }
-Number:Temperature WS1400IP_DewPoint "Dew Point [%.1f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#dewPoint" }
-Number:Temperature WS1400IP_RealFeel "RealFeel [%.1f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#feelingTemperature" }
-Number:Dimensionless WS1400IP_Humidity "Humidity [%.1f %%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#relativeHumidity" }
-Number:Pressure WS1400IP_PressureAbsolute "Pressure Absolute [%.1f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#pressureAbsolute" }
-Number:Pressure WS1400IP_PressureRelative "Pressure Relative [%.1f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#pressureRelative" }
-String WS1400IP_PressureTrend "Pressure Trend [%s] { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#pressureTrend" }
+DateTime WS1400IP_ObservationTime "Station Observation Time [%s]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#observationTime" }
+String WS1400IP_StationBattery "Station Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#batteryIndicator" }
+Number:Temperature WS1400IP_Temperature "Temperature [%.1f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#temperature" }
+Number:Temperature WS1400IP_DewPoint "Dew Point [%.1f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#dewPoint" }
+Number:Temperature WS1400IP_RealFeel "RealFeel [%.1f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#feelingTemperature" }
+Number:Dimensionless WS1400IP_Humidity "Humidity [%.1f %%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#relativeHumidity" }
+Number:Pressure WS1400IP_PressureAbsolute "Pressure Absolute [%.1f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#pressureAbsolute" }
+Number:Pressure WS1400IP_PressureRelative "Pressure Relative [%.1f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#pressureRelative" }
+String WS1400IP_PressureTrend "Pressure Trend [%s]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#pressureTrend" }
 
-Number:Speed WS1400IP_WindSpeed "Wind Speed [%.0f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#windSpeed" }
-Number:Angle WS1400IP_WindDirectionDegrees "Wind Direction Degrees [%d %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#windDirectionDegrees" }
-String WS1400IP_WindDirection "Wind Direction [%s]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#windDirection" }
-Number:Speed WS1400IP_WindGust "Wind Gust [%.0f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#windGust" }
-Number:Speed WS1400IP_WindGustDailyMax "Wind Gust Max Daily [%.0f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#windGustMaxDaily" }
+Number:Speed WS1400IP_WindSpeed "Wind Speed [%.0f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#windSpeed" }
+Number:Angle WS1400IP_WindDirectionDegrees "Wind Direction Degrees [%d %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#windDirectionDegrees" }
+String WS1400IP_WindDirection "Wind Direction [%s]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#windDirection" }
+Number:Speed WS1400IP_WindGust "Wind Gust [%.0f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#windGust" }
+Number:Speed WS1400IP_WindGustDailyMax "Wind Gust Max Daily [%.0f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#windGustMaxDaily" }
 
 // Use this if your units are SI
-Number:Speed WS1400IP_RainHourlyRate "Rain Hourly Rate [%.1f mm/h]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainHourlyRate" }
+Number:Speed WS1400IP_RainHourlyRate "Rain Hourly Rate [%.1f mm/h]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#rainHourlyRate" }
 // Use this if your units are Imperial
-Number:Speed WS1400IP_RainHourlyRate "Rain Hourly Rate [%.2f in/h]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainHourlyRate" }
+Number:Speed WS1400IP_RainHourlyRate "Rain Hourly Rate [%.2f in/h]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#rainHourlyRate" }
 
-Number:Length WS1400IP_RainDaily "Rain Daily [%.2f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainDay" }
-Number:Length WS1400IP_RainWeekly "Rain Weekly [%.2f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainWeek" }
-Number:Length WS1400IP_RainMonthly "Rain Monthly [%.2f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainMonth" }
-Number:Length WS1400IP_RainYearly "Rain Yearly [%.2f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainYear" }
-Number:Length WS1400IP_RainTotal "Rain Total [%.2f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainTotal" }
-Number:Length WS1400IP_RainEvent "Rain Event [%.2f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainEvent" }
-DateTime WS1400IP_RainLastTime "Rain Last Time [%s]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainLastTime" }
+Number:Length WS1400IP_RainDaily "Rain Daily [%.2f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#rainDay" }
+Number:Length WS1400IP_RainWeekly "Rain Weekly [%.2f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#rainWeek" }
+Number:Length WS1400IP_RainMonthly "Rain Monthly [%.2f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#rainMonth" }
+Number:Length WS1400IP_RainYearly "Rain Yearly [%.2f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#rainYear" }
+Number:Length WS1400IP_RainTotal "Rain Total [%.2f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#rainTotal" }
+Number:Length WS1400IP_RainEvent "Rain Event [%.2f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#rainEvent" }
+DateTime WS1400IP_RainLastTime "Rain Last Time [%s]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#rainLastTime" }
 
-Number:Intensity WS1400IP_SolarRadiation "Solar Radiation [%.0f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#solarRadiation" }
-Number WS1400IP_UVIndex "UV Index [%.0f]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#uvIndex" }
-String WS1400IP_UVDanger "UV Danger Level [%s]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#uvDanger" }
+Number:Intensity WS1400IP_SolarRadiation "Solar Radiation [%.0f %unit%]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#solarRadiation" }
+Number WS1400IP_UVIndex "UV Index [%.0f]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#uvIndex" }
+String WS1400IP_UVDanger "UV Danger Level [%s]" { channel="ambientweather:ws1400ip:account:1400:weatherDataWs1400ip#uvDanger" }
 
-Number:Temperature WS1400IP_IndoorTemperature "Indoor Temperature [%.1f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:indoorSensor#temperature" }
-Number:Dimensionless WS1400IP_IndoorHumidity "Indoor Humidity [%.1f %%]" { channel="ambientweather:ws1400ip:ws1400ip:indoorSensor#relativeHumidity" }
-String WS1400IP_IndoorBattery "Indoor Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws1400ip:ws1400ip:indoorSensor#batteryIndicator" }
+Number:Temperature WS1400IP_IndoorTemperature "Indoor Temperature [%.1f %unit%]" { channel="ambientweather:ws1400ip:account:1400:indoorSensor#temperature" }
+Number:Dimensionless WS1400IP_IndoorHumidity "Indoor Humidity [%.1f %%]" { channel="ambientweather:ws1400ip:account:1400:indoorSensor#relativeHumidity" }
+String WS1400IP_IndoorBattery "Indoor Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws1400ip:account:1400:indoorSensor#batteryIndicator" }
 
 
 // WS-8482 Weather Station
 String WS8482_StationName "Station Name [%s]" { channel="ambientweather:ws8482:ws8482:station#name" }
 String WS8482_StationLocation "Station Location [%s]" { channel="ambientweather:ws8482:ws8482:station#location" }
 
-DateTime WS8482_ObservationTime "Observation Time [%s]" { channel="ambientweather:ws8482:ws8482:weatherDataWs8482#observationTime" }
-Number:Temperature WS8482_IndoorTemperature "Indoor Temperature [%.1f %unit%]" { channel="ambientweather:ws8482:ws8482:weatherDataWs8482#temperature" }
-Number:Dimensionless WS8482_IndoorHumidity "Indoor Humidity [%.1f %%]" { channel="ambientweather:ws8482:ws8482:weatherDataWs8482#relativeHumidity" }
-String WS8482_StationBattery "Station Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws8482:ws8482:weatherDataWs8482#batteryIndicator" }
+DateTime WS8482_ObservationTime "Observation Time [%s]" { channel="ambientweather:ws8482:account:8482:weatherDataWs8482#observationTime" }
+Number:Temperature WS8482_IndoorTemperature "Indoor Temperature [%.1f %unit%]" { channel="ambientweather:ws8482:account:8482:weatherDataWs8482#temperature" }
+Number:Dimensionless WS8482_IndoorHumidity "Indoor Humidity [%.1f %%]" { channel="ambientweather:ws8482:account:8482:weatherDataWs8482#relativeHumidity" }
+String WS8482_StationBattery "Station Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws8482:account:8482:weatherDataWs8482#batteryIndicator" }
 
-Number:Temperature WS8482_RemoteTemperature "Remote Temperature [%.1f %unit%]" { channel="ambientweather:ws8482:ws8482:remoteSensor1#temperature" }
-Number:Dimensionless WS8482_RemoteHumidity "Remote Humidity [%.1f %%]" { channel="ambientweather:ws8482:ws8482:remoteSensor1#relativeHumidity" }
-String WS8482_RemoteBattery "Remote Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws8482:ws8482:remoteSensor1#batteryIndicator" }
+Number:Temperature WS8482_RemoteTemperature "Remote Temperature [%.1f %unit%]" { channel="ambientweather:ws8482:account:8482:remoteSensor1#temperature" }
+Number:Dimensionless WS8482_RemoteHumidity "Remote Humidity [%.1f %%]" { channel="ambientweather:ws8482:account:8482:remoteSensor1#relativeHumidity" }
+String WS8482_RemoteBattery "Remote Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws8482:account:8482:remoteSensor1#batteryIndicator" }
 
-Number:Temperature WS8482_SoilTemperature "Soil Temperature [%.1f %unit%]" { channel="ambientweather:ws8482:ws8482:remoteSensor2#soilTemperature" }
-Number:Dimensionless WS8482_SoilMoisture "Soil Moisture [%.1f %%]" { channel="ambientweather:ws8482:ws8482:remoteSensor2#soilMoisture" }
-String WS8482_SoilMoistureLevel "Soil Moisture Level [%s]" { channel="ambientweather:ws8482:ws8482:remoteSensor2#soilMoistureLevel" }
-String WS8482_SoilSensorBattery "Remote Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws8482:ws8482:remoteSensor2#batteryIndicator" }
+Number:Temperature WS8482_SoilTemperature "Soil Temperature [%.1f %unit%]" { channel="ambientweather:ws8482:account:8482:remoteSensor2#soilTemperature" }
+Number:Dimensionless WS8482_SoilMoisture "Soil Moisture [%.1f %%]" { channel="ambientweather:ws8482:account:8482:remoteSensor2#soilMoisture" }
+String WS8482_SoilMoistureLevel "Soil Moisture Level [%s]" { channel="ambientweather:ws8482:account:8482:remoteSensor2#soilMoistureLevel" }
+String WS8482_SoilSensorBattery "Remote Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws8482:account:8482:remoteSensor2#batteryIndicator" }
 ```
 
 ### Transforms
