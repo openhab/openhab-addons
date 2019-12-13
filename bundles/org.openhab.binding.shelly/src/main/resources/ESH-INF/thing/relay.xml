@@ -214,6 +214,7 @@
 			<channel id="brightness" typeId="dimmerBrightness" />
 			<channel id="input1" typeId="inputState1" />
 			<channel id="input2" typeId="inputState2" />
+			<channel id="button" typeId="system.button" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 		</channels>
