@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 
 package org.openhab.binding.miio.internal;
@@ -36,11 +40,10 @@ import com.google.gson.JsonParser;
  * @author Marcel Verpaalen - Initial contribution
  */
 public class ReadmeHelper {
-    private final Logger logger = LoggerFactory.getLogger(ReadmeHelper.class);
+    private final static Logger logger = LoggerFactory.getLogger(ReadmeHelper.class);
 
     public static void main(String[] args) {
         ReadmeHelper rm = new ReadmeHelper();
-
         System.out.println("## Creating device list\n");
         StringWriter deviceList = rm.deviceList();
         rm.checkDatabaseEntrys();
@@ -51,9 +54,7 @@ public class ReadmeHelper {
         System.out.println("\n## Creating Item Files for miio:basic devices\n");
         StringWriter itemFileExamples = rm.itemFileExamples();
         /// System.out.println(itemFileExamples);
-
         System.out.println("\n## Done");
-
         try {
             File file = new File("./README.base.md");
             String baseDoc = FileUtils.readFileToString(file);
@@ -62,11 +63,10 @@ public class ReadmeHelper {
                     .replaceAll("!!!channelList", channelList.toString())
                     .replaceAll("!!!itemFileExamples", itemFileExamples.toString());
             // System.out.println(nw);
-
             File newDocfile = new File("README.md");
             FileUtils.writeStringToFile(newDocfile, nw);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn(e.getStackTrace().toString());
         }
     }
 
@@ -126,11 +126,8 @@ public class ReadmeHelper {
 
     private StringWriter itemFileExamples() {
         StringWriter sw = new StringWriter();
-
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
-
             if (device.getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
-
                 MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
                 if (dev != null) {
                     sw.write("### " + device.getDescription() + " (" + device.getModel() + ") item file lines\r\n\r\n");
@@ -157,12 +154,9 @@ public class ReadmeHelper {
     private void checkDatabaseEntrys() {
         for (MiIoBasicDevice entry : findDatabaseEntrys()) {
             for (String id : entry.getDevice().getId()) {
-                // System.out.println("id :" + id);
-
                 if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
                     System.out.println("id :" + id + " not found");
                 }
-
             }
         }
     }
@@ -170,11 +164,8 @@ public class ReadmeHelper {
     private MiIoBasicDevice findDatabaseEntry(String deviceName) {
         for (MiIoBasicDevice entry : findDatabaseEntrys()) {
             for (String id : entry.getDevice().getId()) {
-                // System.out.println("id :" + id);
                 if (deviceName.equals(id)) {
-                    // System.out.println(" found");
                     return entry;
-
                 }
             }
         }
@@ -182,10 +173,8 @@ public class ReadmeHelper {
     }
 
     private List<MiIoBasicDevice> findDatabaseEntrys() {
-
         List<MiIoBasicDevice> arrayList = new ArrayList<MiIoBasicDevice>();
         String path = "./src/main/resources/database/";
-
         File dir = new File(path);
         File[] filesList = dir.listFiles();
         for (File file : filesList) {
@@ -195,7 +184,6 @@ public class ReadmeHelper {
                     Gson gson = new GsonBuilder().serializeNulls().create();
                     MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
                     arrayList.add(devdb);
-
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     // not relevant
@@ -215,7 +203,6 @@ public class ReadmeHelper {
     }
 
     JsonObject convertFileToJSON(String fileName) {
-
         // Read from File to String
         JsonObject jsonObject = new JsonObject();
 
@@ -226,7 +213,6 @@ public class ReadmeHelper {
         } catch (FileNotFoundException e) {
             // } catch (IOException ioe) {
         }
-
         return jsonObject;
     }
 }
