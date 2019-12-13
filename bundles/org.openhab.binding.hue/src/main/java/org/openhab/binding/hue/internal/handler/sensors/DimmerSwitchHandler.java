@@ -76,8 +76,9 @@ public class DimmerSwitchHandler extends HueSensorHandler {
         if (buttonState != null) {
             String value = String.valueOf(buttonState);
             updateState(CHANNEL_DIMMER_SWITCH, new DecimalType(value));
+            // Avoid dispatching events if "lastupdated" is older than now minus 3 seconds (e.g. during restart)
             Instant then = timestamp.toInstant();
-            Instant someSecondsEarlier = now.minusSeconds(5).toInstant();
+            Instant someSecondsEarlier = now.minusSeconds(3).toInstant();
             if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
                 triggerChannel(EVENT_DIMMER_SWITCH, value);
             }
