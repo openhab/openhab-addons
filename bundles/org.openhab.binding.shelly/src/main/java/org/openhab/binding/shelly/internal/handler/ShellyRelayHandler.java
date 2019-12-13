@@ -33,7 +33,6 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.shelly.internal.ShellyListenerManager;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyControlRoller;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyInputState;
@@ -71,10 +70,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @param localIP local IP of the openHAB host
      * @param httpPort port of the openHAB HTTP API
      */
-    public ShellyRelayHandler(Thing thing, ShellyListenerManager listenerManager,
-            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
-            int httpPort) {
-        super(thing, listenerManager, bindingConfig, coapServer, localIP, httpPort);
+    public ShellyRelayHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
+            @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
+        super(thing, bindingConfig, coapServer, localIP, httpPort);
     }
 
     @Override

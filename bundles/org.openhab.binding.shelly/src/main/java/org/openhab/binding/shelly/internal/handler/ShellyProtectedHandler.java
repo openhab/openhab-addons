@@ -15,7 +15,6 @@ package org.openhab.binding.shelly.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.shelly.internal.ShellyListenerManager;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.slf4j.Logger;
@@ -39,10 +38,9 @@ public class ShellyProtectedHandler extends ShellyBaseHandler {
      * @param localIP local IP of the openHAB host
      * @param httpPort port of the openHAB HTTP API
      */
-    public ShellyProtectedHandler(Thing thing, ShellyListenerManager listenerManager,
-            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
-            int httpPort) {
-        super(thing, listenerManager, bindingConfig, coapServer, localIP, httpPort);
+    public ShellyProtectedHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
+            @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
+        super(thing, bindingConfig, coapServer, localIP, httpPort);
     }
 
     @Override

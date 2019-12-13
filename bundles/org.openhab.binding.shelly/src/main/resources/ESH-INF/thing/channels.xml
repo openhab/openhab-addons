@@ -329,13 +329,6 @@
 		<state readOnly="true" pattern="%d %unit%">
 		</state>
 	</channel-type>
-	<channel-type id="signalStrength" advanced="true">
-		<item-type>Number</item-type>
-		<label>WiFi Signal</label>
-		<description>WiFi signal strength, should be greater than -75 to stable communication</description>
-		<state readOnly="true" pattern="%d dBm">
-		</state>
-	</channel-type>
 	<channel-type id="lastUpdate" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>

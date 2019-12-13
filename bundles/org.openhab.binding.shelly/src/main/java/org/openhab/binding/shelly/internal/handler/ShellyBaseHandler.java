@@ -40,7 +40,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.shelly.internal.ShellyListenerManager;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
@@ -64,7 +63,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     public String thingName = "";
     protected ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     protected ShellyThingConfiguration config = new ShellyThingConfiguration();
-    private final ShellyListenerManager listenerManager;
     protected @Nullable ShellyHttpApi api;
     private @Nullable ShellyCoapHandler coap;
     protected @Nullable ShellyDeviceProfile profile;
@@ -103,13 +101,11 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      * @param localIP local IP address from networkAddressService
      * @param httpPort from httpService
      */
-    public ShellyBaseHandler(Thing thing, ShellyListenerManager listenerManager,
-            ShellyBindingConfiguration bindingConfig, @Nullable ShellyCoapServer coapServer, String localIP,
-            int httpPort) {
+    public ShellyBaseHandler(Thing thing, ShellyBindingConfiguration bindingConfig,
+            @Nullable ShellyCoapServer coapServer, String localIP, int httpPort) {
         super(thing);
 
         this.bindingConfig = bindingConfig;
-        this.listenerManager = listenerManager;
         this.coapServer = coapServer;
         this.localIP = localIP;
         this.httpPort = httpPort;
@@ -825,8 +821,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     public void dispose() {
         logger.debug("{}: Shutdown thing", thingName);
         try {
-            listenerManager.unregister(this);
-
             if (coap != null) {
                 coap.stop();
                 coap = null;

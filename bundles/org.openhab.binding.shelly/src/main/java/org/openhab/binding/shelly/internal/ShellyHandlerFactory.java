@@ -16,6 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,6 +42,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.reactivex.annotations.NonNull;
+
 /**
  * The {@link ShellyHandlerFactory} is responsible for creating things and thing handlers.
  *
@@ -50,8 +53,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = { ThingHandlerFactory.class, ShellyHandlerFactory.class }, configurationPid = "binding.shelly")
 public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ShellyHandlerFactory.class);
-    private final ShellyListenerManager listenerManager = new ShellyListenerManager();
     private final ShellyCoapServer coapServer;
+    private final Set<ShellyDeviceListener> deviceListeners = new CopyOnWriteArraySet<>();
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ShellyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
     private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
@@ -100,24 +103,35 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingType.equals(THING_TYPE_SHELLYPROTECTED_STR)) {
             logger.debug("Create new thing of type {} using ShellyRelayHandler", thingTypeUID.getId());
-            handler = new ShellyProtectedHandler(thing, listenerManager, bindingConfig, coapServer, localIP, httpPort);
+            handler = new ShellyProtectedHandler(thing, bindingConfig, coapServer, localIP, httpPort);
         } else if (thingType.equals(THING_TYPE_SHELLYBULB.getId())
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_COLOR.getId())
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE.getId())) {
             logger.debug("Create new thing of type {} using ShellyLightHandler", thingTypeUID.getId());
-            handler = new ShellyLightHandler(thing, listenerManager, bindingConfig, coapServer, localIP, httpPort);
+            handler = new ShellyLightHandler(thing, bindingConfig, coapServer, localIP, httpPort);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("Create new thing of type {} using ShellyRelayHandler", thingTypeUID.getId());
-            handler = new ShellyRelayHandler(thing, listenerManager, bindingConfig, coapServer, localIP, httpPort);
+            handler = new ShellyRelayHandler(thing, bindingConfig, coapServer, localIP, httpPort);
         }
 
         if (handler != null) {
-            listenerManager.register(handler);
+            deviceListeners.add(handler);
             return handler;
         }
 
         logger.debug("Unable to create Thing Handler instance!");
         return null;
+    }
+
+    /**
+     * Remove handler of things.
+     */
+    @SuppressWarnings("unlikely-arg-type")
+    @Override
+    protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
+        if (thingHandler instanceof ShellyBaseHandler) {
+            deviceListeners.remove(thingHandler);
+        }
     }
 
     /**
@@ -130,7 +144,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
      */
     public void onEvent(String deviceName, String componentIndex, String eventType, Map<String, String> parameters) {
         logger.trace("Dispatch event to device handler {}", deviceName);
-        for (ShellyDeviceListener listener : listenerManager.getList()) {
+        for (ShellyDeviceListener listener : deviceListeners) {
             try {
                 if (listener.onEvent(deviceName, componentIndex, eventType, parameters)) {
                     // event processed
