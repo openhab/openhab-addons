@@ -24,8 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyTahomaStatus {
 
     private String status = "N/A";
+    private String protocolVersion = "N/A";
 
     public String getStatus() {
         return status;
+    }
+
+    public String getProtocolVersion() {
+        return protocolVersion;
     }
 }
