@@ -342,9 +342,9 @@
 		<description>Event Trigger, e.g. button on/off, Output on/off</description>
 		<event>
 			<options>
-				<option value="ROLLER_OPEN">sensor data updated</option>
-				<option value="ROLLER_CLOSE">sensor data updated</option>
-				<option value="ROLLER_STOP">sensor data updated</option>
+				<option value="ROLLER_OPEN">Roller is open</option>
+				<option value="ROLLER_CLOSE">Roller is closed</option>
+				<option value="ROLLER_STOP">Roller has stopped</option>
 			</options>
 		</event>
 	</channel-type>

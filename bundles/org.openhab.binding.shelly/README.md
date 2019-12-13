@@ -459,7 +459,7 @@ end
 
 rule "Momentary Switch events"
 when
-    Channel "shelly:shellydevice:XXXXXX:relay1#button" triggered SHORT_PREISSED
+    Channel "shelly:shellydevice:XXXXXX:relay1#button" triggered SHORT_PRESSED
 then
     logInfo("Relay", "A short push was detected")
 end

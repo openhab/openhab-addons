@@ -514,6 +514,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     case SHELLY_EVENT_ROLLER_STOP:
                         channel = CHANNEL_EVENT_TRIGGER;
                         payload = event;
+                        break;
 
                     default:
                         // triggered will be provided by input/output channel or sensor channels
@@ -782,7 +783,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     @Nullable
     public ShellyDeviceProfile getProfile() {
-
         return profile;
     }
 
@@ -854,9 +854,4 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     public boolean updateDeviceStatus(ShellySettingsStatus status) throws IOException {
         return false;
     }
-
-    public void createChannels() {
-
-    }
-
 }
