@@ -82,10 +82,9 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    @Nullable
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         logger.debug("createHandler this: {}", thing);
-        ThingHandler thingHandler = null;
+        final ThingHandler thingHandler;
         if (VerisureBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("Create VerisureBridgeHandler");
             thingHandler = new VerisureBridgeHandler((Bridge) thing, httpClient);
@@ -113,13 +112,13 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
             thingHandler = new VerisureUserPresenceThingHandler(thing);
         } else {
             logger.debug("Not possible to create thing handler for thing {}", thing);
+            thingHandler = null;
         }
         return thingHandler;
     }
 
     private synchronized void registerObjectDiscoveryService(VerisureBridgeHandler bridgeHandler) {
         VerisureThingDiscoveryService discoveryService = new VerisureThingDiscoveryService(bridgeHandler);
-        discoveryService.activate();
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }

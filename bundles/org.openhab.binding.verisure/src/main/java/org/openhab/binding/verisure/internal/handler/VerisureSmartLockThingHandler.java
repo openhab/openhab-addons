@@ -15,7 +15,7 @@ package org.openhab.binding.verisure.internal.handler;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -46,10 +46,7 @@ import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
 @NonNullByDefault
 public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
-    static {
-        SUPPORTED_THING_TYPES.add(THING_TYPE_SMARTLOCK);
-    }
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SMARTLOCK);
 
     private static final int REFRESH_DELAY_SECONDS = 10;
 

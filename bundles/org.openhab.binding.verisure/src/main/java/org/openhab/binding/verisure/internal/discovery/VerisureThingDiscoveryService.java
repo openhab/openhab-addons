@@ -47,13 +47,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
 
-    private static final int SEARCH_TIME = 60;
+    private static final int SEARCH_TIME_SECONDS = 60;
     private final Logger logger = LoggerFactory.getLogger(VerisureThingDiscoveryService.class);
 
     private @Nullable VerisureBridgeHandler verisureBridgeHandler;
 
     public VerisureThingDiscoveryService(VerisureBridgeHandler bridgeHandler) throws IllegalArgumentException {
-        super(VerisureHandlerFactory.SUPPORTED_THING_TYPES, SEARCH_TIME);
+        super(VerisureHandlerFactory.SUPPORTED_THING_TYPES, SEARCH_TIME_SECONDS);
 
         this.verisureBridgeHandler = bridgeHandler;
 
@@ -71,7 +71,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
                 for (Map.Entry<String, VerisureThingJSON> entry : verisureThings.entrySet()) {
                     VerisureThingJSON thing = entry.getValue();
                     if (thing != null) {
-                        logger.info("Thing: {}", thing.toString());
+                        logger.info("Thing: {}", thing);
                         onThingAddedInternal(thing);
                     }
                 }
@@ -103,9 +103,6 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
                     thing.getDeviceId());
         }
 
-    }
-
-    public void activate() {
     }
 
     private @Nullable ThingUID getThingUID(VerisureThingJSON thing) {

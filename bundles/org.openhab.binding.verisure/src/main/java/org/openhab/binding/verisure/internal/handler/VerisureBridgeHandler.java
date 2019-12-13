@@ -15,7 +15,6 @@ package org.openhab.binding.verisure.internal.handler;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Set;
@@ -74,7 +73,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
 
     private String authstring = "";
     private @Nullable String pinCode;
-    private @Nullable BigDecimal refresh = new BigDecimal(600);
+    private int refresh = 600;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> immediateRefreshJob;
     private @Nullable VerisureSession session;
@@ -230,7 +229,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         logger.debug("Start automatic refresh {}", refreshJob);
         if (refreshJob == null || refreshJob.isCancelled()) {
             try {
-                refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, 0, refresh.intValue(),
+                refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, 0, refresh,
                         TimeUnit.SECONDS);
                 logger.debug("Scheduling at fixed delay refreshjob {}", refreshJob);
             } catch (IllegalArgumentException e) {
