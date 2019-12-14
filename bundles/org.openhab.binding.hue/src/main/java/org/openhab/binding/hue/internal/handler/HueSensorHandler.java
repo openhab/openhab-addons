@@ -59,6 +59,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
 
     private final Logger logger = LoggerFactory.getLogger(HueSensorHandler.class);
 
+    private boolean configInitializedSuccessfully;
     private boolean propertiesInitializedSuccessfully;
 
     private @Nullable HueClient hueClient;
@@ -170,7 +171,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (sensor == null) {
             logger.debug("hue sensor not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-wrong-light-id");
+                    "@text/offline.conf-error-wrong-sensor-id");
             return;
         }
 
@@ -243,7 +244,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         }
 
         // update generic sensor config
-        Configuration config = editConfiguration();
+        final Configuration config = !configInitializedSuccessfully ? editConfiguration() : getConfig();
         if (sensor.getConfig().containsKey(CONFIG_ON)) {
             config.put(CONFIG_ON, sensor.getConfig().get(CONFIG_ON));
         }
@@ -289,7 +290,10 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
             updateState(CHANNEL_BATTERY_LOW, batteryLevel.intValue() <= 10 ? OnOffType.ON : OnOffType.OFF);
         }
 
-        updateConfiguration(config);
+        if (!configInitializedSuccessfully) {
+            updateConfiguration(config);
+            configInitializedSuccessfully = true;
+        }
     }
 
     @Override
