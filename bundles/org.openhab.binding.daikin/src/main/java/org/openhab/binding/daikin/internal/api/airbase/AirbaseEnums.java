@@ -184,16 +184,5 @@ public class AirbaseEnums {
         public String getValue() {
             return value;
         }
-
-        public static AirbaseFeature fromValue(String value) {
-            for (AirbaseFeature m : AirbaseFeature.values()) {
-                if (m.getValue() == value) {
-                    return m;
-                }
-            }
-
-            LOGGER.debug("Unexpected Feature value of \"{}\"", value);
-            return null;
-        }
     }
 }

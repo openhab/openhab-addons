@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanMovement;
-// import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanSpeed;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +38,7 @@ public class AirbaseControlInfo {
     public AirbaseMode mode = AirbaseMode.AUTO;
     /** Degrees in Celsius. */
     public Optional<Double> temp = Optional.empty();
-    public Integer f_rate = 1;
+    public int f_rate = 1;
     public boolean f_auto = false;
     public boolean f_airside = false;
     public AirbaseFanMovement fanMovement = AirbaseFanMovement.STOPPED;
@@ -79,7 +78,7 @@ public class AirbaseControlInfo {
         Map<String, String> params = new HashMap<>();
         params.put("pow", power ? "1" : "0");
         params.put("mode", Integer.toString(mode.getValue()));
-        params.put("f_rate", f_rate.toString());
+        params.put("f_rate", Integer.toString(f_rate));
         params.put("f_auto", f_auto ? "1" : "0");
         params.put("f_airside", f_airside ? "1" : "0");
         params.put("f_dir", Integer.toString(fanMovement.getValue()));
