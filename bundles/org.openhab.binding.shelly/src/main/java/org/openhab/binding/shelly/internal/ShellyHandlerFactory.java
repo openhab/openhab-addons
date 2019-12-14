@@ -42,6 +42,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.reactivex.annotations.NonNull;
+
 /**
  * The {@link ShellyHandlerFactory} is responsible for creating things and thing handlers.
  *
@@ -51,7 +53,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = { ThingHandlerFactory.class, ShellyHandlerFactory.class }, configurationPid = "binding.shelly")
 public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ShellyHandlerFactory.class);
-
     private final ShellyCoapServer coapServer;
     private final Set<ShellyDeviceListener> deviceListeners = new CopyOnWriteArraySet<>();
 
@@ -69,7 +70,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
      */
     @Activate
     public ShellyHandlerFactory(@Reference NetworkAddressService networkAddressService,
-            ComponentContext componentContext, Map<String, Object> configProperties) {
+            ComponentContext componentContext, Map<String, @Nullable Object> configProperties) {
         logger.debug("Activate Shelly HandlerFactory");
         super.activate(componentContext);
 
@@ -114,12 +115,23 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (handler != null) {
-            registerDeviceListener(handler);
+            deviceListeners.add(handler);
             return handler;
         }
 
         logger.debug("Unable to create Thing Handler instance!");
         return null;
+    }
+
+    /**
+     * Remove handler of things.
+     */
+    @SuppressWarnings("unlikely-arg-type")
+    @Override
+    protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
+        if (thingHandler instanceof ShellyBaseHandler) {
+            deviceListeners.remove(thingHandler);
+        }
     }
 
     /**
@@ -132,9 +144,9 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
      */
     public void onEvent(String deviceName, String componentIndex, String eventType, Map<String, String> parameters) {
         logger.trace("Dispatch event to device handler {}", deviceName);
-        for (ShellyDeviceListener l : deviceListeners) {
+        for (ShellyDeviceListener listener : deviceListeners) {
             try {
-                if (l.onEvent(deviceName, componentIndex, eventType, parameters)) {
+                if (listener.onEvent(deviceName, componentIndex, eventType, parameters)) {
                     // event processed
                     break;
                 }
@@ -145,24 +157,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
                 // continue with next listener
             }
         }
-    }
-
-    /**
-     * Registers a listener, which is informed about device details.
-     *
-     * @param listener the listener to register
-     */
-    public void registerDeviceListener(ShellyDeviceListener listener) {
-        this.deviceListeners.add(listener);
-    }
-
-    /**
-     * Unregisters a given listener.
-     *
-     * @param listener the listener to unregister
-     */
-    public void unregisterDeviceListener(ShellyDeviceListener listener) {
-        this.deviceListeners.remove(listener);
     }
 
     @Nullable

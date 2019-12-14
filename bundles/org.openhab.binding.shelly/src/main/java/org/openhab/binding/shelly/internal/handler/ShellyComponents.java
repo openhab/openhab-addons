@@ -40,7 +40,6 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
  */
 @NonNullByDefault
 public class ShellyComponents {
-
     /**
      * Update Meter channel
      *
@@ -209,11 +208,12 @@ public class ShellyComponents {
                     th.logger.trace("{}: Updating battery", th.thingName);
                     updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
                             toQuantityType(getDouble(sdata.bat.value), DIGITS_PERCENT, SmartHomeUnits.PERCENT));
-                    updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
-                            getDouble(sdata.bat.value) < th.config.lowBattery ? OnOffType.ON : OnOffType.OFF);
                     if (sdata.bat.value != null) { // no update for Sense
+                        updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
+                                getDouble(sdata.bat.value) < th.config.lowBattery ? OnOffType.ON : OnOffType.OFF);
                         updated |= th.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_VOLT,
                                 toQuantityType(getDouble(sdata.bat.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
+                        th.postAlarm(ALARM_TYPE_LOW_BATTERY, false);
                     }
                 }
                 if (profile.isSense) {

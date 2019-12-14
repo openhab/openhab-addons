@@ -31,6 +31,7 @@ public class ShellyBindingConstants {
 
     public static final String VENDOR = "Shelly";
     public static final String BINDING_ID = "shelly";
+    public static final String SYSTEM_ID = "system";
 
     // Type names
     public static final String THING_TYPE_SHELLY1_STR = "shelly1";
@@ -212,12 +213,13 @@ public class ShellyBindingConstants {
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";
     public static final String CHANNEL_DEVST_UPTIME = "uptime";
-    public static final String CHANNEL_DEVST_RSSI = "signal";
+    public static final String CHANNEL_DEVST_RSSI = "wifiSignal";
     public static final String CHANNEL_DEVST_ALARM = "alarm";
 
     // General
     public static final String CHANNEL_LAST_UPDATE = "lastUpdate";
     public static final String CHANNEL_EVENT_TRIGGER = "event";
+    public static final String CHANNEL_BUTTON_TRIGGER = "button";
 
     public static final String SERVICE_TYPE = "_http._tcp.local.";
     public static final String SHELLY_API_MIN_FWVERSION = "v1.5.2";
@@ -231,6 +233,7 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_OVERPOWER = "OVERPOWER";
     public static final String ALARM_TYPE_OVERLOAD = "OVERLOAD";
     public static final String ALARM_TYPE_LOADERR = "LOAD_ERROR";
+    public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
 
     // Coap
     public static final int COIOT_PORT = 5683;
