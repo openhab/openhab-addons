@@ -74,6 +74,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
      *
      * @param componentContext
      */
+    @SuppressWarnings("null")
     @Activate
     protected void activate(ComponentContext componentContext) {
         logger.debug("Shelly Discovery service activated");

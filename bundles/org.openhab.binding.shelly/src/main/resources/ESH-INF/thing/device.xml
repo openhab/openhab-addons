@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shelly"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="deviceStatus" advanced="true">
+		<label>Device Status</label>
+		<description>Some details on the device status</description>
+		<channels>
+			<channel id="uptime" typeId="uptime" />
+			<channel id="wifiSignal" typeId="system.signal-strength" />
+			<channel id="alarm" typeId="alarmTrigger" />
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

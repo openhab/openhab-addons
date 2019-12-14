@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.handler;
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.getThingTypeUID;
 
 import java.io.IOException;
@@ -30,6 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -398,7 +400,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         Integer rssi = getInteger(status.wifiSta.rssi);
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
                 toQuantityType(new DecimalType(uptime), SmartHomeUnits.SECOND));
-        updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, new DecimalType(rssi));
+        updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, mapSignalStrength(rssi));
 
         // Check various device indicators like overheating
         if ((status.uptime < lastUptime) && (profile != null) && !profile.hasBattery) {
@@ -468,36 +470,63 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             boolean hasBattery = profile != null && profile.hasBattery ? true : false;
             if (profile == null) {
                 logger.debug("{}: Device is not yet initialized, event triggers initialization", deviceName);
-            }
+            } else {
 
-            String group = "";
-            Integer rindex = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) + 1 : -1;
-            String payload = parameters.get("type");
-            if (type.equals(EVENT_TYPE_RELAY)) {
-                group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
-                        : CHANNEL_GROUP_RELAY_CONTROL + rindex.toString();
-            }
-            if (type.equals(EVENT_TYPE_ROLLER)) {
-                group = profile.numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL
-                        : CHANNEL_GROUP_ROL_CONTROL + rindex.toString();
-            }
-            if (type.equals(EVENT_TYPE_LIGHT)) {
-                group = profile.numRelays <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
-                        : CHANNEL_GROUP_LIGHT_CONTROL + rindex.toString();
-            }
-            if (type.equals(EVENT_TYPE_SENSORDATA)) {
-                group = CHANNEL_GROUP_SENSOR;
-                payload = type;
-            }
-            if (group.isEmpty()) {
-                logger.debug("Unsupported event class: {}", type);
-                return false;
-            }
+                String group = "";
+                Integer rindex = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) + 1 : -1;
+                if (type.equals(EVENT_TYPE_RELAY)) {
+                    group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
+                            : CHANNEL_GROUP_RELAY_CONTROL + rindex.toString();
+                }
+                if (type.equals(EVENT_TYPE_ROLLER)) {
+                    group = profile.numRollers <= 1 ? CHANNEL_GROUP_ROL_CONTROL
+                            : CHANNEL_GROUP_ROL_CONTROL + rindex.toString();
+                }
+                if (type.equals(EVENT_TYPE_LIGHT)) {
+                    group = profile.numRelays <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
+                            : CHANNEL_GROUP_LIGHT_CONTROL + rindex.toString();
+                }
+                if (type.equals(EVENT_TYPE_SENSORDATA)) {
+                    group = CHANNEL_GROUP_SENSOR;
+                }
+                if (group.isEmpty()) {
+                    logger.debug("Unsupported event class: {}", type);
+                    return false;
+                }
 
-            // Pass event to trigger channel
-            payload = payload.toUpperCase();
-            logger.debug("{}: Post event {}", thingName, payload);
-            triggerChannel(mkChannelId(group, CHANNEL_EVENT_TRIGGER), payload.toUpperCase());
+                // map some of the events to system defined button triggers
+                String channel = "";
+                String payload = "";
+                String event = type.contentEquals(EVENT_TYPE_SENSORDATA) ? SHELLY_EVENT_SENSORDATA
+                        : parameters.get("type");
+                switch (event) {
+                    case SHELLY_EVENT_SHORTPUSH:
+                        channel = CHANNEL_BUTTON_TRIGGER;
+                        payload = CommonTriggerEvents.SHORT_PRESSED;
+                        break;
+                    case SHELLY_EVENT_LONGPUSH:
+                        channel = CHANNEL_BUTTON_TRIGGER;
+                        payload = CommonTriggerEvents.LONG_PRESSED;
+                        break;
+
+                    case SHELLY_EVENT_ROLLER_OPEN:
+                    case SHELLY_EVENT_ROLLER_CLOSE:
+                    case SHELLY_EVENT_ROLLER_STOP:
+                        channel = CHANNEL_EVENT_TRIGGER;
+                        payload = event;
+                        break;
+
+                    default:
+                        // triggered will be provided by input/output channel or sensor channels
+                }
+
+                if (!payload.isEmpty()) {
+                    // Pass event to trigger channel
+                    payload = payload.toUpperCase();
+                    logger.debug("{}: Post event {}", thingName, payload);
+                    triggerChannel(mkChannelId(group, channel), payload);
+                }
+            }
 
             // request update on next interval (2x for non-battery devices)
             requestUpdates(scheduledUpdates >= 2 ? 0 : !hasBattery ? 2 : 1, true);
@@ -787,6 +816,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     /**
      * Shutdown thing, make sure background jobs are canceled
      */
+    @SuppressWarnings("null")
     @Override
     public void dispose() {
         logger.debug("{}: Shutdown thing", thingName);

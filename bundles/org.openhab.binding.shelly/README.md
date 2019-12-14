@@ -83,9 +83,9 @@ The binding has the following configuration options:
 
 ### General Notes
 
-- The channels `input` and `input1`/`input2` are only updated with firmware 1.5.6+.
-- Use the channel `rollerpos` only if you need the inverted value, otherwise use the control channel with item type `Number`, see example below.
-- Short push and long push events require firmware version 1.5.6+.
+- channels `input` and `input1`/`input2` get only updated with firmware 1.5.6+.
+- channel button: Short push and long push events require firmware version 1.5.6+.
+- Use the channel `rollerpos` only if you need the inverted roller position, otherwise use the `control` channel with item type `Number`
 - The different devices have different types of power meters, i.e. different sets of channels.
 
 Every device has a channel group `device` with the following channels:
@@ -93,7 +93,7 @@ Every device has a channel group `device` with the following channels:
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |device    |uptime       |Number   |yes      |Number of seconds since the device was powered up                                |
-|          |signal       |Number   |yes      |WiFi signal strength (RSSI)                                                      |
+|          |wifiSignal   |Number   |yes      |WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none)   |
 |          |alarm        |Trigger  |yes      |Most recent alarm for health check                                               |
 
 
@@ -110,6 +110,7 @@ When an alarm condition is detected the channel alarm gets triggered and provide
 |OVER_LOAD   |An over load condition has been detected, e.g. from the roller motor.                                            |
 |OVER_POWER  |Maximum allowed power was exceeded. The relay was turned off.                                                    |
 |LOAD_ERROR  |Device reported a load problem.                                                                                  |
+|LOW_BATTERY |Device reported a load problem.                                                                                  |
 
 A new alarm will be triggered on a new condition or every 5 minutes if the condition persists.
 
@@ -135,6 +136,7 @@ end
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
@@ -148,7 +150,7 @@ end
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
-|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details                 |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
 |meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
@@ -171,13 +173,13 @@ end
 |          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
-|          |event        |Trigger  |yes      |Relay #1: Triggers an event from the device, see general notes for details       |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
 |relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |autoOn       |Number   |r/w      |Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #2: ON: An auto-on/off timer is active                                     |
-|          |event        |Trigger  |yes      |Relay #2: Triggers an event from the device, see general notes for details       |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
@@ -194,7 +196,7 @@ end
 |          |rollerpos    |Number   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stops, see Notes |
 |          |lastDirection|String   |yes      |Last direction: open or close                                                         |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
-|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details                      |
+|          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP                 |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                         |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                         |
@@ -228,7 +230,7 @@ For this the binding aggregates the power consumption of both relays and include
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                       |
 |          |calibrating  |Switch   |yes      |ON: Roller is in calibration mode, OFF: normal mode (no calibration)                       |
 |          |positioning  |Switch   |yes      |ON: Roller is positioning/moving                                                           |
-|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details                           |
+|          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP                 |
 |meter     |             |         |         |See group meter1 for Shelly 2                                                              |
 
 ### Shelly4 Pro (thing-type: shelly4pro)
@@ -264,7 +266,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |input2       |Switch   |yes      |State of Input 2 (S2)                                                            |
 |          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds          |
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds          |
-|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details                 |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
 |status    |loaderror    |Switch   |yes      |Last error, "no" if none                                                         |
 |          |overload     |Switch   |yes      |Overload condition detected, switch dimmer off or reduce load!                   |
 |          |overtemperature |Switch|yes      |Internal device temperature over maximum. Switch off, check physical installation|
@@ -352,7 +354,6 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |humidity     |Number   |yes      |Relative humidity in %                                                 |
 |          |last_update  |String   |yes      |Timestamp of the last update (values read by the binding)              |
-|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details       |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
@@ -364,7 +365,6 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |flood        |Switch   |yes      |ON: Flooding condition detected, OFF: no flooding                      |
 |          |last_update  |String   |yes      |Timestamp of the last update (values read by the binding)              |
-|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details       |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
@@ -385,7 +385,6 @@ Maybe an upcoming firmware release adds this attribute, then the correct value i
 |          |lux          |Number   |yes      |Brightness in Lux                                                      |
 |          |motion       |Switch   |yes      |ON: Motion detected, OFF: No motion (check also motionTimer)           |
 |          |last_update  |String   |yes      |Timestamp of the last update (values read by the binding)              |
-|          |event        |Trigger  |yes      |Triggers an event from the device, see general notes for details       |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |batteryAlert |Switch   |yes      |Low battery alert                                                      |
 
@@ -420,7 +419,8 @@ Switch Shelly_XXXXX3_OverPower    "Garage Light Over Power"       {channel="shel
 Switch Shelly_XXXXX3_OverTemp     "Garage Light Over Temperature" {channel="shelly:shelly1:XXXXX3:relay#overtemperature"}
 Number Shelly_XXXXX3_AutoOnTimer  "Garage Light Auto On Timer"    {channel="shelly:shelly1:XXXXX3:relay#autoOn"}
 Number Shelly_XXXXX3_AutoOffTimer "Garage Light Auto Off Timer"   {channel="shelly:shelly1:BA2F18:relay#autoOff"}
-Switch Shelly__TimerActive        "Garage Light Timer Active"     {channel="shelly:shelly1:BA2F18:relay#timerActive"}
+Switch Shelly_XXXXX3_Relay        "Garage Light"                  {channel="shelly:shelly1:XXXXX3:relay#output"}
+Switch Shelly_XXXXX3_Input        "Garage Switch (Input)"         {channel="shelly:shelly1:XXXXX3:relay#input"}
 
 /* Sensors */
 Number ShellyHT_Dormitorio_Temp  "Dormitorio Temperature" <temperature> {channel="shelly:shellyht:e01681:sensors#temperature"}
@@ -449,7 +449,35 @@ reading colors from color picker:
 ```
 import org.openhab.core.library.types.*
 
-rule "color" 
+rule "Get input change from garage light"
+when
+    Item Shelly_XXXXX3_Input changed to ON
+then
+    logInfo("Garage", "Light input is ON")
+    BackDoorLight.sendCommand(ON)
+end
+
+rule "Momentary Switch events"
+when
+    Channel "shelly:shellydevice:XXXXXX:relay1#button" triggered SHORT_PRESSED
+then
+    logInfo("Relay", "A short push was detected")
+end
+
+
+rule "Shelly alarms"
+when
+    Channel "shelly:shellydevice:XXXXXX:device#alarm"       triggered or
+    Channel "shelly:shelly25-roller:XXXXXX:device#alarm"    triggered
+then
+    if (receivedEvent !== null) { // A (channel) event triggered the rule
+        eventSource = receivedEvent.getChannel().asString 
+        eventType = receivedEvent.getEvent()
+        ...
+    } 
+end
+
+rule "Color changed" 
 when
     Item ShellyColor changed
 then

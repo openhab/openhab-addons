@@ -267,6 +267,7 @@ public class ShellyHttpApi {
      * @return Map of key codes
      * @throws IOException
      */
+    @SuppressWarnings("null")
     public Map<String, String> getIRCodeList() throws IOException {
         String result = request(SHELLY_URL_LIST_IR);
 
@@ -302,7 +303,6 @@ public class ShellyHttpApi {
         String json = "{\"key_codes\" : [" + keyList + "] }";
 
         ShellySendKeyList codes = gson.fromJson(json, ShellySendKeyList.class);
-        Validate.notNull(codes);
         Map<String, String> list = new HashMap<String, String>();
         for (ShellySenseKeyCode key : codes.keyCodes) {
             list.put(key.id, key.name);
