@@ -97,7 +97,7 @@ public class LGWebOSActions implements ThingActions {
     public void showToast(
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
             throws IOException {
-        getSocket().ifPresent(control -> control.showToast(text, createResponseListener()));
+        getConnectedSocket().ifPresent(control -> control.showToast(text, createResponseListener()));
     }
 
     @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconLabel")
@@ -109,22 +109,20 @@ public class LGWebOSActions implements ThingActions {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream(); OutputStream b64 = Base64.getEncoder().wrap(os)) {
             ImageIO.write(bi, "png", b64);
             String string = os.toString(StandardCharsets.UTF_8.name());
-            getSocket().ifPresent(control -> control.showToast(text, string, "png", createResponseListener()));
+            getConnectedSocket().ifPresent(control -> control.showToast(text, string, "png", createResponseListener()));
         }
     }
 
     @RuleAction(label = "@text/actionLaunchBrowserLabel", description = "@text/actionLaunchBrowserDesc")
     public void launchBrowser(
             @ActionInput(name = "url", label = "@text/actionLaunchBrowserInputUrlLabel", description = "@text/actionLaunchBrowserInputUrlDesc") String url) {
-        getSocket().ifPresent(control -> control.launchBrowser(url, createResponseListener()));
+        getConnectedSocket().ifPresent(control -> control.launchBrowser(url, createResponseListener()));
     }
 
     private List<AppInfo> getAppInfos() {
         LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
 
-        final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
-        if (!socket.isConnected()) {
-            logger.warn("Device with ThingID {} is currently not connected.", lgWebOSHandler.getThing().getUID());
+        if (!this.getConnectedSocket().isPresent()) {
             return Collections.emptyList();
         }
 
@@ -148,7 +146,8 @@ public class LGWebOSActions implements ThingActions {
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId) {
         Optional<AppInfo> appInfo = getAppInfos().stream().filter(a -> a.getId().equals(appId)).findFirst();
         if (appInfo.isPresent()) {
-            getSocket().ifPresent(control -> control.launchAppWithInfo(appInfo.get(), createResponseListener()));
+            getConnectedSocket()
+                    .ifPresent(control -> control.launchAppWithInfo(appInfo.get(), createResponseListener()));
         } else {
             logger.warn("Device with ThingID {} does not support any app with id: {}.",
                     getLGWebOSHandler().getThing().getUID(), appId);
@@ -166,7 +165,7 @@ public class LGWebOSActions implements ThingActions {
 
             Optional<AppInfo> appInfo = getAppInfos().stream().filter(a -> a.getId().equals(appId)).findFirst();
             if (appInfo.isPresent()) {
-                getSocket().ifPresent(
+                getConnectedSocket().ifPresent(
                         control -> control.launchAppWithInfo(appInfo.get(), payload, createResponseListener()));
             } else {
                 logger.warn("Device with ThingID {} does not support any app with id: {}.",
@@ -182,7 +181,7 @@ public class LGWebOSActions implements ThingActions {
     @RuleAction(label = "@text/actionSendTextLabel", description = "@text/actionSendTextDesc")
     public void sendText(
             @ActionInput(name = "text", label = "@text/actionSendTextInputTextLabel", description = "@text/actionSendTextInputTextDesc") String text) {
-        getSocket().ifPresent(control -> {
+        getConnectedSocket().ifPresent(control -> {
             ServiceSubscription<TextInputStatusInfo> subscription = control.subscribeTextInputStatus(textInputListener);
             control.sendText(text);
             control.unsubscribe(subscription);
@@ -195,31 +194,31 @@ public class LGWebOSActions implements ThingActions {
         try {
             switch (Button.valueOf(button)) {
                 case UP:
-                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.UP)));
+                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.UP)));
                     break;
                 case DOWN:
-                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.DOWN)));
+                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.DOWN)));
                     break;
                 case LEFT:
-                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.LEFT)));
+                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.LEFT)));
                     break;
                 case RIGHT:
-                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.RIGHT)));
+                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.RIGHT)));
                     break;
                 case BACK:
-                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.BACK)));
+                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(ButtonType.BACK)));
                     break;
                 case DELETE:
-                    getSocket().ifPresent(control -> control.sendDelete());
+                    getConnectedSocket().ifPresent(control -> control.sendDelete());
                     break;
                 case ENTER:
-                    getSocket().ifPresent(control -> control.sendEnter());
+                    getConnectedSocket().ifPresent(control -> control.sendEnter());
                     break;
                 case HOME:
-                    getSocket().ifPresent(control -> control.executeMouse(s -> s.button("HOME")));
+                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button("HOME")));
                     break;
                 case OK:
-                    getSocket().ifPresent(control -> control.executeMouse(s -> s.click()));
+                    getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.click()));
                     break;
             }
         } catch (IllegalArgumentException ex) {
@@ -230,17 +229,18 @@ public class LGWebOSActions implements ThingActions {
 
     @RuleAction(label = "@text/actionIncreaseChannelLabel", description = "@text/actionIncreaseChannelDesc")
     public void increaseChannel() {
-        getSocket().ifPresent(control -> control.channelUp(createResponseListener()));
+        getConnectedSocket().ifPresent(control -> control.channelUp(createResponseListener()));
     }
 
     @RuleAction(label = "@text/actionDecreaseChannelLabel", description = "@text/actionDecreaseChannelDesc")
     public void decreaseChannel() {
-        getSocket().ifPresent(control -> control.channelDown(createResponseListener()));
+        getConnectedSocket().ifPresent(control -> control.channelDown(createResponseListener()));
     }
 
-    private Optional<LGWebOSTVSocket> getSocket() {
+    private Optional<LGWebOSTVSocket> getConnectedSocket() {
         LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
         final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
+
         if (!socket.isConnected()) {
             logger.warn("Device with ThingID {} is currently not connected.", lgWebOSHandler.getThing().getUID());
             return Optional.empty();
