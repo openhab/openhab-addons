@@ -45,6 +45,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -213,7 +214,6 @@ public class HomieThingHandlerTests {
 
     @SuppressWarnings("null")
     @Test
-    @Ignore("https://github.com/openhab/openhab2-addons/issues/6408")
     public void handleCommandRefresh() {
         // Create mocked homie device tree with one node and one read-only property
         Node node = thingHandler.device.createNode("node", spy(new NodeAttributes()));
@@ -232,8 +232,10 @@ public class HomieThingHandlerTests {
         thingHandler.device.nodes.put(node.nodeID, node);
 
         ThingHandlerHelper.setConnection(thingHandler, connection);
-        thingHandler.handleCommand(property.channelUID, RefreshType.REFRESH);
+        // we need to set a channel value first, undefined values ignored on REFRESH
+        property.getChannelState().getCache().update(new StringType("testString"));
 
+        thingHandler.handleCommand(property.channelUID, RefreshType.REFRESH);
         verify(callback).stateUpdated(argThat(arg -> property.channelUID.equals(arg)),
                 argThat(arg -> property.getChannelState().getCache().getChannelState().equals(arg)));
     }
