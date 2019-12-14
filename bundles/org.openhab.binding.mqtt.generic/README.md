@@ -74,7 +74,7 @@ You can add the following channels:
 * __transformationPattern__: An optional transformation pattern like [JSONPath](http://goessner.net/articles/JsonPath/index.html#e2) that is applied to all incoming MQTT values.
 * __transformationPatternOut__: An optional transformation pattern like [JSONPath](http://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
 * __commandTopic__: The MQTT topic that commands are send to. This can be empty, the thing channel will be read-only then. Transformations are not applied for sending data.
-* __formatBeforePublish__: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". If you want to adjust the precision of a number to for example 4 digits, you would use "%.4f".
+* __formatBeforePublish__: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported.
 * __postCommand__: If `true`, the received MQTT value will not only update the state of linked items, but command it.
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor. 
