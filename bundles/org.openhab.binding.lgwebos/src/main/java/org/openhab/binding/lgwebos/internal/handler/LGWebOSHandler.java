@@ -76,12 +76,13 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     // ChannelID to CommandHandler Map
     private final Map<String, ChannelHandler> channelHandlers;
 
-    private LauncherApplication appLauncher = new LauncherApplication();
+    private final LauncherApplication appLauncher = new LauncherApplication();
     private @Nullable LGWebOSTVSocket socket;
     private final WebSocketClient webSocketClient;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> keepAliveJob;
+
     private @Nullable LGWebOSConfiguration config;
 
     public LGWebOSHandler(Thing thing, WebSocketClient webSocketClient) {
@@ -101,17 +102,28 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         channelHandlers = Collections.unmodifiableMap(handlers);
     }
 
+    private LGWebOSConfiguration getLGWebOSConfig() {
+        LGWebOSConfiguration c = config;
+        if (c == null) {
+            c = getConfigAs(LGWebOSConfiguration.class);
+            config = c;
+        }
+        return c;
+    }
+
     @Override
     public void initialize() {
-        config = getConfigAs(LGWebOSConfiguration.class);
-        logger.trace("Handler initialized with config {}", config);
-        if (config.host == null || config.host.isEmpty()) {
+        LGWebOSConfiguration c = getLGWebOSConfig();
+        logger.trace("Handler initialized with config {}", c);
+        String host = c.getHost();
+        if (host.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MSG_MISSING_PARAM);
             return;
         }
 
-        socket = new LGWebOSTVSocket(webSocketClient, this, config.host, config.port);
-        socket.setListener(this);
+        LGWebOSTVSocket s = new LGWebOSTVSocket(webSocketClient, this, host, c.getPort());
+        s.setListener(this);
+        socket = s;
 
         startReconnectJob();
     }
@@ -120,25 +132,28 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     public void dispose() {
         stopKeepAliveJob();
         stopReconnectJob();
-        if (this.socket != null) {
-            this.socket.setListener(null);
-            LGWebOSTVSocket oldSocket = this.socket;
-            this.socket = null;
-            this.scheduler.execute(() -> oldSocket.disconnect()); // dispose should be none-blocking
+
+        LGWebOSTVSocket s = socket;
+        if (s != null) {
+            s.setListener(null);
+            scheduler.execute(() -> s.disconnect()); // dispose should be none-blocking
         }
+        socket = null;
         super.dispose();
     }
 
     private void startReconnectJob() {
-        if (reconnectJob == null || reconnectJob.isCancelled()) {
-            reconnectJob = scheduler.scheduleWithFixedDelay(() -> socket.connect(), RECONNECT_START_UP_DELAY_SECONDS,
-                    RECONNECT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        ScheduledFuture<?> job = reconnectJob;
+        if (job == null || job.isCancelled()) {
+            reconnectJob = scheduler.scheduleWithFixedDelay(() -> getSocket().connect(),
+                    RECONNECT_START_UP_DELAY_SECONDS, RECONNECT_INTERVAL_SECONDS, TimeUnit.SECONDS);
         }
     }
 
     private void stopReconnectJob() {
-        if (reconnectJob != null && !reconnectJob.isCancelled()) {
-            reconnectJob.cancel(true);
+        ScheduledFuture<?> job = reconnectJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
         }
         reconnectJob = null;
     }
@@ -147,35 +162,44 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
      * Keep alive ensures that the web socket connection is used and does not time out.
      */
     private void startKeepAliveJob() {
-        if (keepAliveJob == null || keepAliveJob.isCancelled()) {
+        ScheduledFuture<?> job = keepAliveJob;
+        if (job == null || job.isCancelled()) {
             // half of idle time out setting
             long keepAliveInterval = this.webSocketClient.getMaxIdleTimeout() / 2;
 
             // it is irrelevant which service is queried. Only need to send some packets over the wire
-            keepAliveJob = scheduler.scheduleWithFixedDelay(() -> socket.getRunningApp(new ResponseListener<AppInfo>() {
 
-                @Override
-                public void onSuccess(AppInfo responseObject) {
-                    // ignore - actual response is not relevant here
-                }
+            keepAliveJob = scheduler
+                    .scheduleWithFixedDelay(() -> getSocket().getRunningApp(new ResponseListener<AppInfo>() {
 
-                @Override
-                public void onError(String message) {
-                    // ignore
-                }
-            }), keepAliveInterval, keepAliveInterval, TimeUnit.MILLISECONDS);
+                        @Override
+                        public void onSuccess(AppInfo responseObject) {
+                            // ignore - actual response is not relevant here
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            // ignore
+                        }
+                    }), keepAliveInterval, keepAliveInterval, TimeUnit.MILLISECONDS);
+
         }
     }
 
     private void stopKeepAliveJob() {
-        if (keepAliveJob != null && !keepAliveJob.isCancelled()) {
-            keepAliveJob.cancel(true);
+        ScheduledFuture<?> job = keepAliveJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
         }
         keepAliveJob = null;
     }
 
-    public @Nullable LGWebOSTVSocket getSocket() {
-        return socket;
+    public LGWebOSTVSocket getSocket() {
+        LGWebOSTVSocket s = this.socket;
+        if (s == null) {
+            throw new IllegalStateException("Component called before it was initialized or already disposed.");
+        }
+        return s;
     }
 
     public LauncherApplication getLauncherApplication() {
@@ -197,14 +221,14 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     }
 
     @Override
-    public @Nullable String getKey() {
-        return config.key;
+    public String getKey() {
+        return getLGWebOSConfig().getKey();
     }
 
     @Override
     public void storeKey(@Nullable String key) {
         // store it current configuration and avoiding complete re-initialization via handleConfigurationUpdate
-        config.key = key;
+        getLGWebOSConfig().key = key;
 
         // persist the configuration change
         Configuration configuration = editConfiguration();
@@ -254,7 +278,8 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
     @Override
     public void onError(String error) {
         logger.debug("Connection failed - error: {}", error);
-        switch (socket.getState()) {
+
+        switch (getSocket().getState()) {
             case DISCONNECTED:
                 break;
             case REGISTERING:
@@ -291,8 +316,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
      */
     private void refreshChannelSubscription(ChannelUID channelUID) {
         String channelId = channelUID.getId();
-
-        if (socket != null && socket.isConnected()) {
+        if (getSocket().isConnected()) {
             channelHandlers.get(channelId).refreshSubscription(channelId, this);
         }
 
