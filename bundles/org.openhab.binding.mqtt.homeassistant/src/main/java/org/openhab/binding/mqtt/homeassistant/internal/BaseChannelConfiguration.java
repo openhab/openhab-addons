@@ -108,6 +108,7 @@ public abstract class BaseChannelConfiguration {
         }
     }
 
+    @JsonAdapter(ConnectionDeserializer.class)
     static class Connection {
         protected @Nullable String type;
         protected @Nullable String identifier;
