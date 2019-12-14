@@ -93,6 +93,10 @@ public class ShellyUtils {
         return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
     }
 
+    public static OnOffType getOnOff(int value) {
+        return value == 0 ? OnOffType.OFF : OnOffType.ON;
+    }
+
     @SuppressWarnings("null")
     public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {
         BigDecimal bd = new BigDecimal(value.doubleValue());
@@ -167,5 +171,21 @@ public class ShellyUtils {
         Validate.notNull(profile);
         return profile.isBulb && !profile.inColor ? CHANNEL_GROUP_WHITE_CONTROL
                 : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
+    }
+
+    public static DecimalType mapSignalStrength(int dbm) {
+        int strength = -1;
+        if (dbm > -60) {
+            strength = 4;
+        } else if (dbm > -70) {
+            strength = 3;
+        } else if (dbm > -80) {
+            strength = 2;
+        } else if (dbm > -90) {
+            strength = 1;
+        } else {
+            strength = 0;
+        }
+        return new DecimalType(strength);
     }
 }

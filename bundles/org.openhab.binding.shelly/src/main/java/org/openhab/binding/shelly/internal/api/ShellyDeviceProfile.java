@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.ShellyBindingConstants;
 import org.openhab.binding.shelly.internal.ShellyUtils;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsGlobal;
@@ -34,51 +36,51 @@ import com.google.gson.Gson;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class ShellyDeviceProfile {
     public String thingName = "";
-    public String deviceType;
+    public String deviceType = "";
 
-    public String settingsJson;
-    public ShellySettingsGlobal settings;
+    public String settingsJson = "";
+    public @Nullable ShellySettingsGlobal settings;
 
-    public String hostname;
-    public String mode;
+    public String hostname = "";
+    public String mode = "";
 
-    public String hwRev;
-    public String hwBatchId;
-    public String mac;
-    public String fwId;
-    public String fwVersion;
-    public String fwDate;
+    public String hwRev = "";
+    public String hwBatchId = "";
+    public String mac = "";
+    public String fwId = "";
+    public String fwVersion = "";
+    public String fwDate = "";
 
-    public Boolean hasRelays; // true if it has at least 1 power meter
-    public Integer numRelays; // number of relays/outputs
-    public Integer numRollers; // number of Rollers, usually 1
-    public Boolean isRoller; // true for Shelly2 in roller mode
-    public Boolean isDimmer; // true for a Shelly Dimmer (SHDM-1)
+    public Boolean hasRelays = false; // true if it has at least 1 power meter
+    public Integer numRelays = 0; // number of relays/outputs
+    public Integer numRollers = 9; // number of Rollers, usually 1
+    public Boolean isRoller = false; // true for Shelly2 in roller mode
+    public Boolean isDimmer = false; // true for a Shelly Dimmer (SHDM-1)
 
-    public Boolean hasMeter; // true if it has at least 1 power meter
-    public Integer numMeters;
-    public Boolean isEMeter; // true for ShellyEM
-    public Double maxPower;
+    public Boolean hasMeter = false; // true if it has at least 1 power meter
+    public Integer numMeters = 0;
+    public Boolean isEMeter = false; // true for ShellyEM
 
-    public Boolean hasBattery; // true if battery device
-    public Boolean hasLed; // true if battery device
-    public Boolean isPlugS; // true if it is a Shelly Plug S
-    public Boolean isLight; // true if it is a Shelly Bulb/RGBW2
-    public Boolean isBulb; // true pnly if it is a Bulb
-    public Boolean isSense; // true if thing is a Shelly Sense
-    public Boolean inColor; // true if bulb/rgbw2 is in color mode
-    public Boolean isSensor; // true for HT & Smoke
-    public Boolean isSmoke; // true for Smoke
+    public Boolean hasBattery = false; // true if battery device
+    public Boolean hasLed = false; // true if battery device
+    public Boolean isPlugS = false; // true if it is a Shelly Plug S
+    public Boolean isLight = false; // true if it is a Shelly Bulb/RGBW2
+    public Boolean isBulb = false; // true pnly if it is a Bulb
+    public Boolean isSense = false; // true if thing is a Shelly Sense
+    public Boolean inColor = false; // true if bulb/rgbw2 is in color mode
+    public Boolean isSensor = false; // true for HT & Smoke
+    public Boolean isSmoke = false; // true for Smoke
 
     public Map<String, String> irCodes = new HashMap<String, String>(); // Sense: list of stored IR codes
 
-    public Boolean supportsButtonUrls; // true if the btn_xxx urls are supported
-    public Boolean supportsOutUrls; // true if the out_xxx urls are supported
-    public Boolean supportsPushUrls; // true if sensor report_url is supported
-    public Boolean supportsRollerUrls; // true if the roller_xxx urls are supported
-    public Boolean supportsSensorUrls; // true if sensor report_url is supported
+    public Boolean supportsButtonUrls = false; // true if the btn_xxx urls are supported
+    public Boolean supportsOutUrls = false; // true if the out_xxx urls are supported
+    public Boolean supportsPushUrls = false; // true if sensor report_url is supported
+    public Boolean supportsRollerUrls = false; // true if the roller_xxx urls are supported
+    public Boolean supportsSensorUrls = false; // true if sensor report_url is supported
 
     @SuppressWarnings("null")
     public static ShellyDeviceProfile initialize(String thingType, String json) {
@@ -141,7 +143,6 @@ public class ShellyDeviceProfile {
             profile.numMeters = profile.inColor ? 1 : getInteger(profile.settings.device.numOutputs);
         }
         profile.hasMeter = (profile.numMeters > 0);
-        profile.maxPower = profile.settings.maxPower != null ? profile.settings.maxPower : 0;
 
         profile.supportsButtonUrls = profile.settingsJson.contains(SHELLY_API_EVENTURL_BTN_ON)
                 || profile.settingsJson.contains(SHELLY_API_EVENTURL_BTN1_ON)
@@ -153,5 +154,4 @@ public class ShellyDeviceProfile {
 
         return profile;
     }
-
 }

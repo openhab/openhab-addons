@@ -69,6 +69,7 @@ public class ShellyEventServlet extends HttpServlet {
     }
 
     @Deactivate
+    @SuppressWarnings("null")
     protected void deactivate() {
         if (httpService != null) {
             httpService.unregister(SHELLY_CALLBACK_URI);

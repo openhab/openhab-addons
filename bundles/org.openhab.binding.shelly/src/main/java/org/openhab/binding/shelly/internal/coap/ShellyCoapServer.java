@@ -140,6 +140,7 @@ public class ShellyCoapServer {
     /**
      * Cancel pending requests and shutdown the client
      */
+    @SuppressWarnings("null")
     public void stop() {
         if (started) {
             if (server != null) {

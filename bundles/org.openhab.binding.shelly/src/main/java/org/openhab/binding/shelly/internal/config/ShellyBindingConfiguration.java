@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ShellyBindingConfiguration} class contains fields mapping binding configuration parameters.
@@ -36,16 +37,18 @@ public class ShellyBindingConfiguration {
     public String defaultUserId = ""; // default for http basic user id
     public String defaultPassword = ""; // default for http basic auth password
 
-    public void updateFromProperties(Map<String, Object> properties) {
+    public void updateFromProperties(Map<String, @Nullable Object> properties) {
         Validate.notNull(properties);
 
-        for (Map.Entry<String, Object> e : properties.entrySet()) {
+        for (Map.Entry<String, @Nullable Object> e : properties.entrySet()) {
             switch (e.getKey()) {
                 case CONFIG_DEF_HTTP_USER:
-                    defaultUserId = (String) e.getValue();
+                    String v = (String) e.getValue();
+                    defaultUserId = v != null ? v : "";
                     break;
                 case CONFIG_DEF_HTTP_PWD:
-                    defaultPassword = (String) e.getValue();
+                    v = (String) e.getValue();
+                    defaultPassword = v != null ? v : "";
                     break;
             }
 
@@ -55,7 +58,8 @@ public class ShellyBindingConfiguration {
     public void updateFromProperties(Dictionary<String, Object> properties) {
         Validate.notNull(properties);
         List<String> keys = Collections.list(properties.keys());
-        Map<String, Object> dictCopy = keys.stream().collect(Collectors.toMap(Function.identity(), properties::get));
+        Map<String, @Nullable Object> dictCopy = keys.stream()
+                .collect(Collectors.toMap(Function.identity(), properties::get));
         updateFromProperties(dictCopy);
     }
 }
