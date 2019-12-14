@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.mqtt.discovery;
 
-import java.util.Date;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import java.util.Date;
+import java.util.Set;
 
 /**
  * Base MQTT discovery class. Responsible for connecting to the {@link MQTTTopicDiscoveryService}.
@@ -36,7 +36,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public abstract class AbstractMQTTDiscovery extends AbstractDiscoveryService implements MQTTTopicDiscoveryParticipant {
-    final protected String subscribeTopic;
+    protected final String subscribeTopic;
 
     public AbstractMQTTDiscovery(@Nullable Set<ThingTypeUID> supportedThingTypes, int timeout,
             boolean backgroundDiscoveryEnabledByDefault, String baseTopic) {
