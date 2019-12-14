@@ -43,12 +43,10 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream
-                    .of(TouchWandSwitchHandler.SUPPORTED_THING_TYPES.stream(),
-                            TouchWandShutterHandler.SUPPORTED_THING_TYPES.stream(),
-                            TouchWandBridgeHandler.SUPPORTED_THING_TYPES.stream())
-                    .flatMap(i -> i).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(TouchWandBridgeHandler.SUPPORTED_THING_TYPES.stream(),
+                    TouchWandBaseUnitHandler.SUPPORTED_THING_TYPES.stream())
+            .flatMap(i -> i).collect(Collectors.toSet()));
 
     private @Nullable HttpClient httpClient;
 
@@ -69,6 +67,8 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
             return new TouchWandShutterHandler(thing);
         } else if (THING_TYPE_WALLCONTROLLER.equals(thingTypeUID)) {
             return new TouchWandWallControllerHandler(thing);
+        } else if (THING_TYPE_DIMMER.equals(thingTypeUID)) {
+            return new TouchWandDimmerHandler(thing);
         }
 
         return null;

@@ -62,7 +62,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     @NonNullByDefault({})
     protected TouchWandBridgeHandler bridgeHandler;
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_SHUTTER, THING_TYPE_SWITCH, THING_TYPE_WALLCONTROLLER));
+            Arrays.asList(THING_TYPE_SHUTTER, THING_TYPE_SWITCH, THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER));
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -165,7 +165,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
         if (unitData.getStatus().equals("ALIVE")) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            // updateStatus(ThingStatus.OFFLINE); // comment if for now , it seems we are missing commands
             logger.debug("UpdateStatus OFFLINE {}", getThing().getLabel());
         }
         updateTouchWandUnitState(unitData.getCurrStatus());

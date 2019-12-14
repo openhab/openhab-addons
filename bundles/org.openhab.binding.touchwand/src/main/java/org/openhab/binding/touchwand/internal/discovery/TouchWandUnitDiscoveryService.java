@@ -118,26 +118,34 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                         } else {
                             touchWandUnit = gson.fromJson(unitObj, TouchWandShutterSwitchUnitData.class);
                         }
-                        /* sometimes currstatus received null */
-                        if (touchWandUnit.getCurrStatus() == null) {
-                            logger.warn("Unit id {} name {} CurrStatus is null", touchWandUnit.getId(),
-                                    touchWandUnit.getName());
-                            continue;
-                        }
 
                         if (!touchWandBridgeHandler.isAddSecondaryControllerUnits()) {
                             if (!Arrays.asList(CONNECTIVITY_OPTIONS).contains(touchWandUnit.getConnectivity())) {
                                 continue;
                             }
                         }
-                        if (touchWandUnit.getType().equals("Switch")) {
+
+                        String unitType = touchWandUnit.getType();
+
+                        if (unitType.equals("Switch")) {
                             addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SWITCH);
-                            norifyListeners(touchWandUnit);
-                        } else if (touchWandUnit.getType().equals("shutter")) {
-                            norifyListeners(touchWandUnit);
+                        } else if (unitType.equals("shutter")) {
                             addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
-                        } else if (touchWandUnit.getType().equals("WallController")) {
+                        } else if (unitType.equals("WallController")) {
                             addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_WALLCONTROLLER);
+                        } else if (unitType.equals("dimmer")) {
+                            addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_DIMMER);
+                        }
+
+                        /* sometimes current status received null , no point update listeners */
+                        if (touchWandUnit.getCurrStatus() == null) {
+                            // logger.warn("Unit id {} name {} CurrStatus is null", touchWandUnit.getId(),
+                            // touchWandUnit.getName());
+                            continue;
+                        }
+
+                        if (unitType.equals("Switch") || unitType.equals("shutter") || unitType.equals("dimmer")) {
+                            norifyListeners(touchWandUnit);
                         }
                     }
                 } catch (JsonSyntaxException e) {

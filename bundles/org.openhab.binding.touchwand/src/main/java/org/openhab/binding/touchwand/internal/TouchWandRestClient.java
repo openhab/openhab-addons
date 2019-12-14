@@ -68,6 +68,7 @@ public class TouchWandRestClient {
     private static final String ACTION_SHUTTER_UP = "{\"id\":%s,\"value\":255,\"type\":\"height\"}";
     private static final String ACTION_SHUTTER_STOP = "{\"id\":%s,\"value\":0,\"type\":\"stop\"}";
     private static final String ACTION_SHUTTER_POSITION = "{\"id\":%s,\"value\":%s}";
+    private static final String ACTION_DIMMER_POSITION = "{\"id\":%s,\"value\":%s}";
 
     private static final String CONTENT_TYPE_APPLICATION_JSON = MimeTypes.Type.APPLICATION_JSON.asString();
 
@@ -145,6 +146,11 @@ public class TouchWandRestClient {
 
     public void cmdShutterStop(String id) {
         String action = String.format(ACTION_SHUTTER_STOP, id);
+        cmdUnitAction(action);
+    }
+
+    public void cmdDimmerPosition(String id, String position) {
+        String action = String.format(ACTION_DIMMER_POSITION, id, position);
         cmdUnitAction(action);
     }
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="touchwand"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"></bridge-type-ref>
+		</supported-bridge-type-refs>
+		<label>TouchWand Dimmer Unit</label>
+		<channels>
+			<channel id="brightness" typeId="brightness">
+				<description>light brightness control</description>
+			</channel>
+		</channels>		
+	</thing-type>
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>The dimmer channel allows to switch the light on and off and set brightness.
+		</description>
+		<category>Device control (ON / OFF , brightess 0-100%)</category>
+	</channel-type>
+</thing:thing-descriptions>

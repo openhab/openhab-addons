@@ -34,11 +34,14 @@ public class TouchWandBindingConstants {
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public static final ThingTypeUID THING_TYPE_SHUTTER = new ThingTypeUID(BINDING_ID, "shutter");
     public static final ThingTypeUID THING_TYPE_WALLCONTROLLER = new ThingTypeUID(BINDING_ID, "wallcontroller");
-    public static final ThingTypeUID THING_TYPE_SCENARIO = new ThingTypeUID(BINDING_ID, "scenario"); // TBD
+    public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
+    public static final ThingTypeUID THING_TYPE_ALARMSENSOR = new ThingTypeUID(BINDING_ID, "AlarmSensor");
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SHUTTER = "shutter";
+    public static final String CHANNEL_DIMMER = "brightness";
+    public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_WALLCONTROLER_ACTION = "wallaction";
 
     // List of configuration parameters
@@ -60,9 +63,10 @@ public class TouchWandBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SWITCH);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHUTTER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WALLCONTROLLER);
-        // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SCENARIO); // not implemented yet
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DIMMER); // not implemented yet
+        // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ALARMSENSOR); // not implemented yet
     }
 
-    public static final String[] SUPPORTED_TOCUHWAND_TYPES = { "Switch", "WallController", "shutter" };
+    public static final String[] SUPPORTED_TOCUHWAND_TYPES = { "Switch", "WallController", "shutter", "dimmer" };
 
 }
