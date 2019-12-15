@@ -19,6 +19,7 @@
 			<channel id="setpoint" typeId="setpoint" />
 			<channel id="temperatureoffset" typeId="temperatureoffset" />
 			<channel id="remotelock" typeId="remotelock" />
+			<channel id="time" typeId="time" />
 		</channels>
 
 		<representation-property>host</representation-property>
@@ -39,6 +40,7 @@
 			<channel id="setpoint" typeId="setpoint" />
 			<channel id="temperatureoffset" typeId="temperatureoffset" />
 			<channel id="remotelock" typeId="remotelock" />
+			<channel id="time" typeId="time" />
 		</channels>
 
 		<representation-property>host</representation-property>
@@ -153,6 +155,11 @@
 		<item-type>Switch</item-type>
 		<label>Remote Lock</label>
 		<description>Locks the device to only allow remote actions</description>
+	</channel-type>
+	<channel-type id="time">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>The time and day of week</description>
 	</channel-type>
 
 
