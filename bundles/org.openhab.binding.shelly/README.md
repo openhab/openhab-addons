@@ -1,6 +1,6 @@
 # Shelly Binding
 
-This Binding integrated Shelly devices.
+This Binding integrates [Shelly devices](https://shelly.cloud/).
 
 ## Supported Devices
 
@@ -25,9 +25,9 @@ This Binding integrated Shelly devices.
 | shellysense        | Shelly Motion and IR Controller                        |
 | shellydevice       | A password protected Shelly device or anunknown type   |
 
-## Firmware
+### Firmware
 
-To utilize all features the binding requires firmware version 1.5.2 or newer.
+To utilize all features, the binding requires firmware version 1.5.2 or newer.
 This should be available for all devices.
 Older versions work in general, but have impacts to functionality (e.g. no events for battery powered devices).
 
