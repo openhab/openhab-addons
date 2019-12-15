@@ -85,6 +85,8 @@
 		<description>Control your light channels</description>
 		<channels>
 			<channel id="power" typeId="system.power" />
+			<channel id="input" typeId="inputState" />
+			<channel id="button" typeId="system.button" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />
@@ -131,6 +133,8 @@
 		<description>Switch channel and adjust settings</description>
 		<channels>
 			<channel id="power" typeId="system.power" />
+			<channel id="input" typeId="inputState" />
+			<channel id="button" typeId="system.button" />
 			<channel id="autoOn" typeId="timerAutoOn" />
 			<channel id="autoOff" typeId="timerAutoOff" />
 			<channel id="timerActive" typeId="timerActive" />
