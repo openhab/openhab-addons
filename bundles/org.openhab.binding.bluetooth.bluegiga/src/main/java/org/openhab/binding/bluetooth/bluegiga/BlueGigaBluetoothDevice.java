@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga;
 
+import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -193,10 +194,16 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
                         case EIR_FLAGS:
                             break;
                         case EIR_MANUFACTURER_SPECIFIC:
-                            manufacturerData = (byte[]) eir.getRecord(EirDataType.EIR_MANUFACTURER_SPECIFIC);
-                            if (manufacturerData.length > 2) {
-                                int id = manufacturerData[0] + (manufacturerData[1] << 8);
-                                manufacturer = id;
+                            Map<Short, int[]> eirRecord = (Map<Short, int[]>) eir.getRecord(EirDataType.EIR_MANUFACTURER_SPECIFIC);
+                            if (eirRecord != null) {
+                                Map.Entry<Short, int[]> eirEntry = eirRecord.entrySet().iterator().next();
+                                int[] manufacturerInt = eirEntry.getValue();
+                                manufacturerData = new byte[manufacturerInt.length];
+                                for (int i = 0; i < manufacturerInt.length; i++) {
+                                    manufacturerData[i] = (byte) manufacturerInt[i];
+                                }
+
+                                manufacturer = (int) eirEntry.getKey();
                             }
                             break;
                         case EIR_NAME_LONG:
@@ -229,27 +236,18 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             }
 
             if (connectionState == ConnectionState.DISCOVERING) {
-                // We want to wait for an advertisement and a scan response before we call this discovered.
-                // The intention is to gather a reasonable amount of data about the device given devices send
-                // different data in different packets...
-                // Note that this is possible a bit arbitrary and may be refined later.
                 scanResponses.add(scanEvent.getPacketType());
 
-                if ((scanResponses.contains(ScanResponseType.CONNECTABLE_ADVERTISEMENT)
-                        || scanResponses.contains(ScanResponseType.DISCOVERABLE_ADVERTISEMENT)
-                        || scanResponses.contains(ScanResponseType.NON_CONNECTABLE_ADVERTISEMENT))
-                        && scanResponses.contains(ScanResponseType.SCAN_RESPONSE)) {
-                    // Set our state to disconnected
-                    connectionState = ConnectionState.DISCONNECTED;
-                    connection = -1;
+                // Set our state to disconnected
+                connectionState = ConnectionState.DISCONNECTED;
+                connection = -1;
 
-                    // But notify listeners that the state is now DISCOVERED
-                    notifyListeners(BluetoothEventType.CONNECTION_STATE,
-                            new BluetoothConnectionStatusNotification(ConnectionState.DISCOVERED));
+                // But notify listeners that the state is now DISCOVERED
+                notifyListeners(BluetoothEventType.CONNECTION_STATE,
+                new BluetoothConnectionStatusNotification(ConnectionState.DISCOVERED));
 
-                    // Notify the bridge - for inbox notifications
-                    bgHandler.deviceDiscovered(this);
-                }
+                // Notify the bridge - for inbox notifications
+                bgHandler.deviceDiscovered(this);
             }
 
             // Notify listeners of all scan records - for RSSI, beacon processing (etc)
@@ -270,7 +268,6 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
             }
 
             if (manufacturerData != null) {
-
                 scanNotification.setManufacturerData(manufacturerData);
             }
 
