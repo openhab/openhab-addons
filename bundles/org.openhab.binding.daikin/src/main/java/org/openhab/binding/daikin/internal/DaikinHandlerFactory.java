@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.daikin.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -21,6 +23,7 @@ import org.openhab.binding.daikin.internal.handler.DaikinAcUnitHandler;
 import org.openhab.binding.daikin.internal.handler.DaikinAirbaseUnitHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.Activate;
 
 /**
  * The {@link DaikinHandlerFactory} is responsible for creating things and thing
@@ -31,9 +34,15 @@ import org.osgi.service.component.annotations.Reference;
 
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.daikin")
+@NonNullByDefault
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 
-    private DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
+    final private DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
+
+    @Activate
+    public DaikinHandlerFactory(@Reference DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -41,7 +50,7 @@ public class DaikinHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
@@ -50,14 +59,5 @@ public class DaikinHandlerFactory extends BaseThingHandlerFactory {
             return new DaikinAirbaseUnitHandler(thing, stateDescriptionProvider);
         }
         return null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = stateDescriptionProvider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = null;
     }
 }

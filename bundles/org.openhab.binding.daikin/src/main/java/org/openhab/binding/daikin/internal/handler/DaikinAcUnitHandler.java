@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -59,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
  *
  */
+@NonNullByDefault
 public class DaikinAcUnitHandler extends DaikinBaseHandler {
     public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing, stateDescriptionProvider);

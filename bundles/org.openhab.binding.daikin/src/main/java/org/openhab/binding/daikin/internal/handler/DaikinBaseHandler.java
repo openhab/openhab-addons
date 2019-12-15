@@ -23,6 +23,8 @@ import java.util.ArrayList;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -55,14 +57,14 @@ import org.slf4j.LoggerFactory;
  * @author Jimmy Tanagra - Split handler classes, support Airside and DynamicStateDescription
  *
  */
+@NonNullByDefault
 public abstract class DaikinBaseHandler extends BaseThingHandler {
-
-    protected final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(DaikinBaseHandler.class);
 
     private long refreshInterval;
 
-    protected DaikinWebTargets webTargets;
-    private ScheduledFuture<?> pollFuture;
+    protected @Nullable DaikinWebTargets webTargets;
+    private @Nullable ScheduledFuture<?> pollFuture;
     protected final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
 
     // Abstract methods to be overridden by specific Daikin implementation class
@@ -79,7 +81,6 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
-        logger = LoggerFactory.getLogger(getClass());
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -137,14 +138,14 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     @Override
     public void handleRemoval() {
-        super.handleRemoval();
         stopPoll();
+        super.handleRemoval();
     }
 
     @Override
     public void dispose() {
-        super.dispose();
         stopPoll();
+        super.dispose();
     }
 
     protected void schedulePoll() {
@@ -167,10 +168,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             logger.debug("Polling for state");
             pollStatus();
         } catch (IOException e) {
-            logger.debug("Could not connect to Daikin controller", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
-            logger.warn("Unexpected error connecting to Daikin controller", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
