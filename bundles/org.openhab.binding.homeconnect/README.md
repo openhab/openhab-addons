@@ -161,7 +161,7 @@ Number:Dimensionless   DishwasherSimulator_ProgramProgressState        "Progress
 
 ## Log view
 
-The binding comes with a build in logging service. The user interface is reachable through the web browser http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnectlog (e.g. http://192.168.178.100:8080/homeconnectlog). The logging UI allows to download a pseudominysed log file. Credentials and appliance IDs will be replaced. For example, the exported file can be used to ask for help in the community forum.
+The binding comes with a build in logging service. The user interface is reachable through the web browser http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnectlogs (e.g. http://192.168.178.100:8080/homeconnectlogs). The logging UI allows to download a pseudominysed log file. Credentials and appliance IDs will be replaced. For example, the exported file can be used to ask for help in the community forum.
 
 Log entries older than 49h will be automatically earased. To disable file logging you can switch it off in the bindings settings. 
 
@@ -218,7 +218,7 @@ curl -X POST --header "Content-Type: text/plain" --header "Accept: application/j
         ```  
 *Please replace `item` and `server URL`* 
 
-3. Open the log UI in your browser (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnectlog) and search for the latest occurence of the string `/programs/selected`. Click on the log line and expand the entry. It should look like the following screenshot.
+3. Open the log UI in your browser (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnectlogs) and search for the latest occurence of the string `/programs/selected`. Click on the log line and expand the entry. It should look like the following screenshot.
 ![Screenshot Home Connect log view](doc/homeconnect_log_selected.png "Screenshot Home Connect log view")
 
 4. Copy the JSON payload. In a further step, this payload will be used to start the program.  
@@ -270,7 +270,7 @@ The channel of type `remote_start_allowance_state` is read only. You can only en
 
 ### In case of error...
 
-Please check log UI (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnectlog) and ask for help in the community forum or on github. Please download a pseudonymised log file and attach it to your question.
+Please check log UI (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnectlogs) and ask for help in the community forum or on github. Please download a pseudonymised log file and attach it to your question.
 
 ### Rate limit reached
 
