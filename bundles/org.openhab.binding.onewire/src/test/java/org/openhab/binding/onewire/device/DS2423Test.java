@@ -19,14 +19,17 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
+import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.DS2423;
 
 /**
@@ -34,6 +37,7 @@ import org.openhab.binding.onewire.internal.device.DS2423;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class DS2423Test extends DeviceTestParent {
 
     @Before
@@ -53,6 +57,13 @@ public class DS2423Test extends DeviceTestParent {
         List<State> returnValue = new ArrayList<>();
         returnValue.add(new DecimalType(1408));
         returnValue.add(new DecimalType(3105));
+
+        final AbstractOwDevice testDevice = this.testDevice;
+        final InOrder inOrder = this.inOrder;
+        if (testDevice==null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);

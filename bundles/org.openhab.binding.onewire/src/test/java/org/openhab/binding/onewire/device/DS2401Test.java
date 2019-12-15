@@ -14,6 +14,7 @@ package org.openhab.binding.onewire.device;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_BASIC;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import org.openhab.binding.onewire.internal.device.DS2401;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class DS2401Test extends DeviceTestParent {
 
     @Before

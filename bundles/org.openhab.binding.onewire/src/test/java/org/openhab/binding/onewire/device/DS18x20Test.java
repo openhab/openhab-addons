@@ -19,6 +19,7 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -26,8 +27,10 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
+import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.DS18x20;
 
 /**
@@ -35,6 +38,7 @@ import org.openhab.binding.onewire.internal.device.DS18x20;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class DS18x20Test extends DeviceTestParent {
 
     @Before
@@ -50,6 +54,13 @@ public class DS18x20Test extends DeviceTestParent {
     @Test
     public void temperatureTest() {
         instantiateDevice();
+
+        final AbstractOwDevice testDevice = this.testDevice;
+        final InOrder inOrder = this.inOrder;
+        if (testDevice==null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -69,6 +80,13 @@ public class DS18x20Test extends DeviceTestParent {
     @Test
     public void temperatureIgnorePORTest() {
         instantiateDevice();
+
+        final AbstractOwDevice testDevice = this.testDevice;
+        final InOrder inOrder = this.inOrder;
+        if (testDevice==null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);

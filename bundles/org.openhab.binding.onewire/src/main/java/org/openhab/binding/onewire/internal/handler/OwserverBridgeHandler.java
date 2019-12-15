@@ -12,32 +12,12 @@
  */
 package org.openhab.binding.onewire.internal.handler;
 
-import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -52,6 +32,14 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
+
 /**
  * The {@link OwserverBridgeHandler} class implements the refresher and the interface for reading from the bridge
  *
@@ -64,8 +52,8 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OwserverBridgeHandler.class);
     protected boolean refreshable = false;
 
-    protected ScheduledFuture<?> refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 1, 1000,
-            TimeUnit.MILLISECONDS);
+    protected ScheduledFuture<?> refreshTask = scheduler
+            .scheduleWithFixedDelay(this::refresh, 1, 1000, TimeUnit.MILLISECONDS);
 
     // thing update
     private final Queue<@Nullable Thing> thingPropertiesUpdateQueue = new ConcurrentLinkedQueue<>();
@@ -101,8 +89,8 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
         }
 
         for (Channel channel : thing.getChannels()) {
-            if (CHANNEL_TYPE_UID_OWFS_NUMBER.equals(channel.getChannelTypeUID())
-                    || CHANNEL_TYPE_UID_OWFS_STRING.equals(channel.getChannelTypeUID())) {
+            if (CHANNEL_TYPE_UID_OWFS_NUMBER.equals(channel.getChannelTypeUID()) || CHANNEL_TYPE_UID_OWFS_STRING
+                    .equals(channel.getChannelTypeUID())) {
                 final OwfsDirectChannelConfig channelConfig = channel.getConfiguration()
                         .as(OwfsDirectChannelConfig.class);
                 if (channelConfig.initialize(channel.getUID(), channel.getAcceptedItemType())) {
@@ -395,7 +383,11 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
                         }
                     }
 
-                    updateState(channelConfig.channelUID, value);
+                    final ChannelUID channelUID = channelConfig.channelUID;
+                    if (channelUID == null) {
+                        throw new OwException("channelUID is null");
+                    }
+                    updateState(channelUID, value);
                     logger.trace("updated {} to {}", channelConfig.channelUID, value);
 
                     channelConfig.lastRefresh = now;

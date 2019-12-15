@@ -12,12 +12,6 @@
  */
 package org.openhab.binding.onewire.internal.device;
 
-import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -26,6 +20,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.binding.onewire.internal.DigitalIoConfig;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
@@ -36,6 +31,13 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIGITAL_LOGIC;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIGITAL_MODE;
+
 /**
  * The {@link AbstractDigitalOwDevice} class defines an abstract digital I/O device
  *
@@ -45,8 +47,10 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
     private final Logger logger = LoggerFactory.getLogger(AbstractDigitalOwDevice.class);
 
-    protected @NonNullByDefault({}) OwserverDeviceParameter fullInParam;
-    protected @NonNullByDefault({}) OwserverDeviceParameter fullOutParam;
+    protected @NonNullByDefault({})
+    OwserverDeviceParameter fullInParam;
+    protected @NonNullByDefault({})
+    OwserverDeviceParameter fullOutParam;
 
     protected final List<DigitalIoConfig> ioConfig = new ArrayList<DigitalIoConfig>();
 
@@ -79,8 +83,14 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
                 }
 
                 if (dynamicStateDescriptionProvider != null) {
-                    dynamicStateDescriptionProvider.setDescription(ioConfig.get(i).getChannelUID(),
-                            new StateDescription(null, null, null, null, ioConfig.get(i).isInput(), null));
+                    StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
+                            .withReadOnly(ioConfig.get(i).isInput()).build().toStateDescription();
+                    if (stateDescription != null) {
+                        dynamicStateDescriptionProvider
+                                .setDescription(ioConfig.get(i).getChannelUID(), stateDescription);
+                    } else {
+                        logger.warn("Failed to create state description in thing {}", thing.getUID());
+                    }
                 } else {
                     logger.debug(
                             "state description may be inaccurate, state description provider not available in thing {}",

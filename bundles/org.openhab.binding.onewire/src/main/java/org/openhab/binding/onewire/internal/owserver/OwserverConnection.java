@@ -12,16 +12,6 @@
  */
 package org.openhab.binding.onewire.internal.owserver;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -34,6 +24,16 @@ import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The {@link OwserverConnection} defines the protocol for connections to owservers
@@ -270,8 +270,8 @@ public class OwserverConnection {
         try {
             write(requestPacket);
             do {
-                if (requestPacket.getMessageType() == OwserverMessageType.PRESENT
-                        || requestPacket.getMessageType() == OwserverMessageType.NOP) {
+                if (requestPacket.getMessageType() == OwserverMessageType.PRESENT || requestPacket
+                        .getMessageType() == OwserverMessageType.NOP) {
                     returnPacket = read(true);
                 } else {
                     returnPacket = read(false);
@@ -300,31 +300,12 @@ public class OwserverConnection {
         try {
             if (owserverConnectionState == OwserverConnectionState.CLOSED) {
                 // open socket & set timeout to 3000ms
-                owserverSocket = new Socket(owserverAddress, owserverPort);
+                final Socket owserverSocket = new Socket(owserverAddress, owserverPort);
                 owserverSocket.setSoTimeout(3000);
+                this.owserverSocket = owserverSocket;
 
-                if (owserverSocket != null) {
-                    owserverInputStream = new DataInputStream(owserverSocket.getInputStream());
-                    if (owserverInputStream == null) {
-                        logger.warn("could not get input stream after opening connection");
-                        closeOnError();
-                        return false;
-                    }
-                } else {
-                    closeOnError();
-                    return false;
-                }
-                if (owserverSocket != null) {
-                    owserverOutputStream = new DataOutputStream(owserverSocket.getOutputStream());
-                    if (owserverOutputStream == null) {
-                        logger.warn("could not get output stream after opening connection");
-                        closeOnError();
-                        return false;
-                    }
-                } else {
-                    closeOnError();
-                    return false;
-                }
+                owserverInputStream = new DataInputStream(owserverSocket.getInputStream());
+                owserverOutputStream = new DataOutputStream(owserverSocket.getOutputStream());
 
                 owserverConnectionState = OwserverConnectionState.OPENED;
                 thingHandlerCallback.reportConnectionState(owserverConnectionState);
@@ -334,6 +315,7 @@ public class OwserverConnection {
             } else if (owserverConnectionState == OwserverConnectionState.OPENED) {
                 // socket already open, clear input buffer
                 logger.trace("owServerConnection already open, skipping input buffer");
+                final DataInputStream owserverInputStream = this.owserverInputStream;
                 while (owserverInputStream != null) {
                     if (owserverInputStream.skip(owserverInputStream.available()) == 0) {
                         return true;
@@ -357,6 +339,7 @@ public class OwserverConnection {
      * close the connection to the owserver instance
      */
     private void close() {
+        final Socket owserverSocket = this.owserverSocket;
         if (owserverSocket != null) {
             try {
                 owserverSocket.close();
@@ -366,9 +349,9 @@ public class OwserverConnection {
             }
         }
 
-        owserverSocket = null;
-        owserverInputStream = null;
-        owserverOutputStream = null;
+        this.owserverSocket = null;
+        this.owserverInputStream = null;
+        this.owserverOutputStream = null;
 
         logger.debug("closed connection");
         owserverConnectionState = OwserverConnectionState.CLOSED;
@@ -411,6 +394,7 @@ public class OwserverConnection {
         try {
             if (open()) {
                 requestPacket.setControlFlags(OwserverControlFlag.PERSISTENCE);
+                final DataOutputStream owserverOutputStream = this.owserverOutputStream;
                 if (owserverOutputStream != null) {
                     owserverOutputStream.write(requestPacket.toBytes());
                     logger.trace("wrote: {}", requestPacket);
@@ -437,6 +421,7 @@ public class OwserverConnection {
     private OwserverPacket read(boolean noTimeoutException) throws OwException {
         OwserverPacket returnPacket = new OwserverPacket(OwserverPacketType.RETURN);
         try {
+            final DataInputStream owserverInputStream = this.owserverInputStream;
             if (owserverInputStream != null) {
                 DataInputStream inputStream = owserverInputStream;
                 returnPacket = new OwserverPacket(inputStream, OwserverPacketType.RETURN);

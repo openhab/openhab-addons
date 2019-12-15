@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.onewire.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.OwBindingConstants;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.onewire.internal.OwBindingConstants;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class BAE091xHandlerConfiguration extends BaseHandlerConfiguration {
     public String pin1 = OwBindingConstants.CONFIG_BAE_PIN_DISABLED;
     public String pin2 = OwBindingConstants.CONFIG_BAE_PIN_DISABLED;

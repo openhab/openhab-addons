@@ -16,14 +16,17 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
+import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.DS1923;
 
 /**
@@ -32,6 +35,7 @@ import org.openhab.binding.onewire.internal.device.DS1923;
  * @author Jan N. Klug - Initial contribution
  * @author Michał Wójcik - Adapted to DS1923
  */
+@NonNullByDefault
 public class DS1923Test extends DeviceTestParent {
     @Before
     public void setupMocks() {
@@ -47,6 +51,13 @@ public class DS1923Test extends DeviceTestParent {
     @Test
     public void temperatureChannel() {
         instantiateDevice();
+
+        final AbstractOwDevice testDevice = this.testDevice;
+        final InOrder inOrder = this.inOrder;
+        if (testDevice==null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -68,6 +79,13 @@ public class DS1923Test extends DeviceTestParent {
     @Test
     public void humidityChannel() {
         instantiateDevice();
+
+        final AbstractOwDevice testDevice = this.testDevice;
+        final InOrder inOrder = this.inOrder;
+        if (testDevice==null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);

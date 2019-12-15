@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -34,19 +36,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OneWireDiscoveryService} implements the discovery service for the OneWire binding.
+ * The {@link OwDiscoveryService} implements the discovery service for the OneWire binding.
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class OwDiscoveryService extends AbstractDiscoveryService {
-
     private final Logger logger = LoggerFactory.getLogger(OwDiscoveryService.class);
 
     private final OwserverBridgeHandler owBridgeHandler;
 
     Map<SensorId, OwDiscoveryItem> owDiscoveryItems = new HashMap<>();
     Set<SensorId> associatedSensors = new HashSet<>();
-    ThingUID bridgeUID;
+    @Nullable ThingUID bridgeUID;
 
     public OwDiscoveryService(OwserverBridgeHandler owBridgeHandler) {
         super(SUPPORTED_THING_TYPES, 60, false);

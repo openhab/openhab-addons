@@ -16,14 +16,17 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
+import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.EDS006x;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 
@@ -32,6 +35,7 @@ import org.openhab.binding.onewire.internal.device.OwSensorType;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class EDS006xTest extends DeviceTestParent {
 
     @Before
@@ -50,6 +54,13 @@ public class EDS006xTest extends DeviceTestParent {
     @Test
     public void temperatureChannel() {
         instantiateDevice(OwSensorType.EDS0068);
+
+        final AbstractOwDevice testDevice = this.testDevice;
+        final InOrder inOrder = this.inOrder;
+        if (testDevice==null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -71,6 +82,13 @@ public class EDS006xTest extends DeviceTestParent {
     @Test
     public void humidityChannel() {
         instantiateDevice(OwSensorType.EDS0068);
+
+        final AbstractOwDevice testDevice = this.testDevice;
+        final InOrder inOrder = this.inOrder;
+        if (testDevice==null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -99,6 +117,13 @@ public class EDS006xTest extends DeviceTestParent {
     public void pressureChannel() {
         instantiateDevice(OwSensorType.EDS0068);
 
+        final AbstractOwDevice testDevice = this.testDevice;
+        final InOrder inOrder = this.inOrder;
+        if (testDevice==null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
+
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
             Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(2.0));
@@ -120,6 +145,13 @@ public class EDS006xTest extends DeviceTestParent {
     public void lightChannel() {
         instantiateDevice(OwSensorType.EDS0068);
 
+        final AbstractOwDevice testDevice = this.testDevice;
+        final InOrder inOrder = this.inOrder;
+        if (testDevice==null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
+
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
             Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(100));
@@ -140,6 +172,13 @@ public class EDS006xTest extends DeviceTestParent {
     @Test
     public void noChannel() {
         instantiateDevice(OwSensorType.EDS0068);
+
+        final AbstractOwDevice testDevice = this.testDevice;
+        final InOrder inOrder = this.inOrder;
+        if (testDevice==null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);

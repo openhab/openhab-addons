@@ -12,14 +12,8 @@
  */
 package org.openhab.binding.onewire.owserver;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
@@ -39,19 +33,30 @@ import org.openhab.binding.onewire.internal.owserver.OwserverConnection;
 import org.openhab.binding.onewire.internal.owserver.OwserverConnectionState;
 import org.openhab.binding.onewire.test.OwserverTestServer;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 /**
  * Tests cases for {@link OwserverConnection}.
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class OwserverConnectionTest extends JavaTest {
+    private static final String TEST_HOST = "127.0.0.1";
 
-    private final String TEST_HOST = "127.0.0.1";
-
-    OwserverTestServer testServer;
-    OwserverConnection owserverConnection;
+    private @Nullable OwserverTestServer testServer;
+    private @Nullable OwserverConnection owserverConnection;
 
     @Mock
+    private @NonNullByDefault({})
     OwserverBridgeHandler bridgeHandler;
 
     private int testPort;
@@ -63,15 +68,17 @@ public class OwserverConnectionTest extends JavaTest {
         CompletableFuture<Boolean> serverStarted = new CompletableFuture<>();
         testPort = TestPortUtil.findFreePort();
         try {
-            testServer = new OwserverTestServer(testPort);
+            final OwserverTestServer testServer = new OwserverTestServer(testPort);
             testServer.startServer(serverStarted);
+            this.testServer = testServer;
         } catch (IOException e) {
             fail("could not start test server");
         }
 
-        owserverConnection = new OwserverConnection(bridgeHandler);
+        final OwserverConnection owserverConnection = new OwserverConnection(bridgeHandler);
         owserverConnection.setHost(TEST_HOST);
         owserverConnection.setPort(testPort);
+        this.owserverConnection = owserverConnection;
 
         serverStarted.get(); // wait for the server thread to start
     }
@@ -79,7 +86,10 @@ public class OwserverConnectionTest extends JavaTest {
     @After
     public void tearDown() {
         try {
-            testServer.stopServer();
+            final OwserverTestServer testServer = this.testServer;
+            if (testServer != null) {
+                testServer.stopServer();
+            }
         } catch (IOException e) {
             fail("could not stop test server");
         }
@@ -87,6 +97,11 @@ public class OwserverConnectionTest extends JavaTest {
 
     @Test
     public void successfullConnectionReportedToBridgeHandler() {
+        final OwserverConnection owserverConnection = this.owserverConnection;
+        if (owserverConnection == null) {
+            Assert.fail("connection is null");
+            return;
+        }
         owserverConnection.start();
 
         Mockito.verify(bridgeHandler).reportConnectionState(OwserverConnectionState.OPENED);
@@ -94,6 +109,11 @@ public class OwserverConnectionTest extends JavaTest {
 
     @Test
     public void failedConnectionReportedToBridgeHandler() {
+        final OwserverConnection owserverConnection = this.owserverConnection;
+        if (owserverConnection == null) {
+            Assert.fail("connection is null");
+            return;
+        }
         owserverConnection.setPort(1);
 
         owserverConnection.start();
@@ -103,6 +123,11 @@ public class OwserverConnectionTest extends JavaTest {
 
     @Test
     public void testGetDirectory() {
+        final OwserverConnection owserverConnection = this.owserverConnection;
+        if (owserverConnection == null) {
+            Assert.fail("connection is null");
+            return;
+        }
         owserverConnection.start();
         try {
             List<SensorId> directory = owserverConnection.getDirectory("/");
@@ -118,6 +143,11 @@ public class OwserverConnectionTest extends JavaTest {
 
     @Test
     public void testCheckPresence() {
+        final OwserverConnection owserverConnection = this.owserverConnection;
+        if (owserverConnection == null) {
+            Assert.fail("connection is null");
+            return;
+        }
         owserverConnection.start();
         try {
             State presence = owserverConnection.checkPresence("present");
@@ -132,6 +162,11 @@ public class OwserverConnectionTest extends JavaTest {
 
     @Test
     public void testReadDecimalType() {
+        final OwserverConnection owserverConnection = this.owserverConnection;
+        if (owserverConnection == null) {
+            Assert.fail("connection is null");
+            return;
+        }
         owserverConnection.start();
         try {
             DecimalType number = (DecimalType) owserverConnection.readDecimalType("testsensor/decimal");
@@ -144,6 +179,11 @@ public class OwserverConnectionTest extends JavaTest {
 
     @Test
     public void testReadDecimalTypeArray() {
+        final OwserverConnection owserverConnection = this.owserverConnection;
+        if (owserverConnection == null) {
+            Assert.fail("connection is null");
+            return;
+        }
         owserverConnection.start();
         try {
             List<State> numbers = owserverConnection.readDecimalTypeArray("testsensor/decimalarray");
@@ -157,6 +197,11 @@ public class OwserverConnectionTest extends JavaTest {
 
     @Test
     public void testGetPages() {
+        final OwserverConnection owserverConnection = this.owserverConnection;
+        if (owserverConnection == null) {
+            Assert.fail("connection is null");
+            return;
+        }
         owserverConnection.start();
         try {
             OwPageBuffer pageBuffer = owserverConnection.readPages("testsensor");
@@ -169,6 +214,11 @@ public class OwserverConnectionTest extends JavaTest {
 
     @Test
     public void testWriteDecimalType() {
+        final OwserverConnection owserverConnection = this.owserverConnection;
+        if (owserverConnection == null) {
+            Assert.fail("connection is null");
+            return;
+        }
         owserverConnection.start();
         try {
             owserverConnection.writeDecimalType("testsensor/decimal", new DecimalType(2009));
