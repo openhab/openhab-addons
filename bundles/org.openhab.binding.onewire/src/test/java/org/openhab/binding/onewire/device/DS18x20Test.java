@@ -39,7 +39,7 @@ public class DS18x20Test extends DeviceTestParent {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_TEMPERATURE);
+        setupMocks(THING_TYPE_BASIC);
         deviceTestClazz = DS18x20.class;
 
         Map<String, Object> channelConfig = new HashMap<>();

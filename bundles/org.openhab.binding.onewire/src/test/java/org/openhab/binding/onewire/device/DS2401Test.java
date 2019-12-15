@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.onewire.device;
 
-import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_IBUTTON;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_BASIC;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.junit.Before;
@@ -28,7 +28,7 @@ public class DS2401Test extends DeviceTestParent {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_IBUTTON);
+        setupMocks(THING_TYPE_BASIC);
         deviceTestClazz = DS2401.class;
     }
 

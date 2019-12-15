@@ -12,18 +12,18 @@
  */
 package org.openhab.binding.onewire.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.openhab.binding.onewire.internal.device.OwChannelConfig;
+import org.openhab.binding.onewire.internal.device.OwSensorType;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.onewire.internal.device.OwChannelConfig;
-import org.openhab.binding.onewire.internal.device.OwSensorType;
 
 /**
  * The {@link OneWireBinding} class defines common constants, which are
@@ -44,24 +44,9 @@ public class OwBindingConstants {
     public static final ThingTypeUID THING_TYPE_EDS_ENV = new ThingTypeUID(BINDING_ID, "edsenv");
     public static final ThingTypeUID THING_TYPE_BAE091X = new ThingTypeUID(BINDING_ID, "bae091x");
 
-    // TODO: remove after 2.5.0 release & cleanup
-    public static final ThingTypeUID THING_TYPE_MS_TH = new ThingTypeUID(BINDING_ID, "ms-th");
-    public static final ThingTypeUID THING_TYPE_MS_TV = new ThingTypeUID(BINDING_ID, "ms-tv");
-    public static final ThingTypeUID THING_TYPE_COUNTER = new ThingTypeUID(BINDING_ID, "counter");
-    public static final ThingTypeUID THING_TYPE_COUNTER2 = new ThingTypeUID(BINDING_ID, "counter2");
-    public static final ThingTypeUID THING_TYPE_DIGITALIO = new ThingTypeUID(BINDING_ID, "digitalio");
-    public static final ThingTypeUID THING_TYPE_DIGITALIO2 = new ThingTypeUID(BINDING_ID, "digitalio2");
-    public static final ThingTypeUID THING_TYPE_DIGITALIO8 = new ThingTypeUID(BINDING_ID, "digitalio8");
-    public static final ThingTypeUID THING_TYPE_IBUTTON = new ThingTypeUID(BINDING_ID, "ibutton");
-    public static final ThingTypeUID THING_TYPE_TEMPERATURE = new ThingTypeUID(BINDING_ID, "temperature");
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream
-                    .of(THING_TYPE_OWSERVER, THING_TYPE_TEMPERATURE, THING_TYPE_IBUTTON, THING_TYPE_DIGITALIO,
-                            THING_TYPE_DIGITALIO2, THING_TYPE_DIGITALIO8, THING_TYPE_AMS, THING_TYPE_BMS,
-                            THING_TYPE_MS_TH, THING_TYPE_MS_TX, THING_TYPE_MS_TV, THING_TYPE_EDS_ENV,
-                            THING_TYPE_COUNTER, THING_TYPE_COUNTER2, THING_TYPE_BASIC, THING_TYPE_BAE091X)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_OWSERVER, THING_TYPE_AMS, THING_TYPE_BMS, THING_TYPE_MS_TX, THING_TYPE_EDS_ENV,
+                    THING_TYPE_BASIC, THING_TYPE_BAE091X).collect(Collectors.toSet()));
 
     // List of all config options
     public static final String CONFIG_ADDRESS = "network-address";
@@ -163,14 +148,15 @@ public class OwBindingConstants {
 
     static {
         Map<String, String> properties = Util.readPropertiesFile("sensor.properties");
-        THING_TYPE_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".thingtype"))
-                .collect(Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]),
+        THING_TYPE_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".thingtype")).collect(
+                Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]),
                         e -> new ThingTypeUID(BINDING_ID, e.getValue())));
-        SENSOR_TYPE_CHANNEL_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".channels"))
-                .collect(Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]),
-                        e -> !e.getValue().isEmpty() ? Stream.of(e.getValue().split(","))
-                                .map(c -> OwChannelConfig.fromString(c)).collect(Collectors.toSet())
-                                : new HashSet<>()));
+        SENSOR_TYPE_CHANNEL_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".channels")).collect(
+                Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]),
+                        e -> !e.getValue().isEmpty() ?
+                                Stream.of(e.getValue().split(",")).map(c -> OwChannelConfig.fromString(c))
+                                        .collect(Collectors.toSet()) :
+                                new HashSet<>()));
         THING_LABEL_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".label")).collect(
                 Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]), e -> e.getValue()));
     }

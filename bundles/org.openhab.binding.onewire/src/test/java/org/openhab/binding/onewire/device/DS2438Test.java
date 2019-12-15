@@ -36,7 +36,7 @@ public class DS2438Test extends DeviceTestParent {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_MS_TH);
+        setupMocks(THING_TYPE_MS_TX);
         deviceTestClazz = DS2438.class;
 
         addChannel(CHANNEL_TEMPERATURE, "Number:Temperature");

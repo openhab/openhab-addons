@@ -35,7 +35,7 @@ public class DS2405Test extends DeviceTestParent {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_DIGITALIO);
+        setupMocks(THING_TYPE_BASIC);
         deviceTestClazz = DS2405.class;
 
         addChannel(channelName(0), "Switch");

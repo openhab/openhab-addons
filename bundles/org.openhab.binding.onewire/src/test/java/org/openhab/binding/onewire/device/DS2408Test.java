@@ -35,7 +35,7 @@ public class DS2408Test extends DeviceTestParent {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_DIGITALIO8);
+        setupMocks(THING_TYPE_BASIC);
         deviceTestClazz = DS2408.class;
 
         for (int i = 0; i < 8; i++) {

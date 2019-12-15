@@ -49,13 +49,7 @@ public class CompletenessTest {
                     EDSSensorThingHandler.SUPPORTED_SENSOR_TYPES, BAE091xSensorThingHandler.SUPPORTED_SENSOR_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet()));
 
-    private static final Set<ThingTypeUID> DEPRECATED_THING_TYPES = Collections.unmodifiableSet(Stream
-            .of(OwBindingConstants.THING_TYPE_MS_TH, OwBindingConstants.THING_TYPE_MS_TV,
-                    OwBindingConstants.THING_TYPE_COUNTER2, OwBindingConstants.THING_TYPE_DIGITALIO,
-                    OwBindingConstants.THING_TYPE_DIGITALIO2, OwBindingConstants.THING_TYPE_DIGITALIO8,
-                    OwBindingConstants.THING_TYPE_COUNTER2, OwBindingConstants.THING_TYPE_COUNTER,
-                    OwBindingConstants.THING_TYPE_IBUTTON, OwBindingConstants.THING_TYPE_TEMPERATURE)
-            .collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> DEPRECATED_THING_TYPES = Collections.EMPTY_SET;
 
     @Test
     public void allSupportedTypesInThingHandlerMap() {

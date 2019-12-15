@@ -27,7 +27,7 @@ import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.device.DS2406_DS2413;
 
 /**
- * Tests cases for {@link DS2406_DS1413}.
+ * Tests cases for {@link DS2406_DS2413}.
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -35,7 +35,7 @@ public class DS2406_DS2413Test extends DeviceTestParent {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_DIGITALIO2);
+        setupMocks(THING_TYPE_BASIC);
         deviceTestClazz = DS2406_DS2413.class;
 
         for (int i = 0; i < 2; i++) {

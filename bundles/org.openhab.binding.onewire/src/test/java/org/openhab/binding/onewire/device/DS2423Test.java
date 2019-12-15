@@ -38,7 +38,7 @@ public class DS2423Test extends DeviceTestParent {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_COUNTER2);
+        setupMocks(THING_TYPE_BASIC);
         deviceTestClazz = DS2423.class;
 
         for (int i = 0; i < 2; i++) {
