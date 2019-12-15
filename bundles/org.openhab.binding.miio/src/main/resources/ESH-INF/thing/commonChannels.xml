@@ -162,16 +162,19 @@
 	<channel-type id="pm25">
 		<item-type>Number</item-type>
 		<label>PM2.5</label>
+		<description>Particulate Matter 2.5</description>
 		<state pattern="%.1f" readOnly="true" />
 	</channel-type>
 	<channel-type id="co2">
 		<item-type>Number</item-type>
 		<label>CO2</label>
+		<description>Carbon Dioxide</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="tvoc">
 		<item-type>Number</item-type>
 		<label>tVOC</label>
+		<description>Total Volatile Organic Compounds</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="aqi">
