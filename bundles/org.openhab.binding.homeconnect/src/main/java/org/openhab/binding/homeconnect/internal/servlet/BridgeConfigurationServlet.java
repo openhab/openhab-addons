@@ -208,23 +208,28 @@ public class BridgeConfigurationServlet extends AbstractServlet {
             if (bridgeHandler == null) {
                 response.sendError(HttpStatus.SC_BAD_REQUEST, "unknown bridge");
             } else {
-                try {
-                    if ("authorize".equals(task)) {
+                if ("authorize".equals(task)) {
+                    try {
                         String authorizationUrl = bridgeHandler.getOAuthClientService().getAuthorizationUrl(null, null,
                                 bridgeHandler.getThing().getUID().getAsString());
                         logger.debug("Generated authorization url: {}", authorizationUrl);
 
                         response.sendRedirect(authorizationUrl);
-                    } else {
-                        bridgeHandler.getOAuthClientService().remove();
-                        bridgeHandler.dispose();
-                        bridgeHandler.initialize();
-
-                        doGet(request, response);
+                    } catch (OAuthException e) {
+                        logger.error("Could not create authorization url!", e);
+                        response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Could not create authorization url!");
                     }
-                } catch (OAuthException e) {
-                    logger.error("Could not create authorization url!", e);
-                    response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Could not create authorization url!");
+                } else {
+                    logger.info("Remove access token for '{}' bridge.", bridgeHandler.getThing().getLabel());
+                    try {
+                        bridgeHandler.getOAuthClientService().remove();
+                    } catch (OAuthException e) {
+                        logger.error("Could not clear oAuth credentials.", e);
+                    }
+                    bridgeHandler.dispose();
+                    bridgeHandler.initialize();
+
+                    doGet(request, response);
                 }
             }
         }

@@ -190,6 +190,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             logger.infoWithHaId(getThingHaId(), "Received DISCONNECTED event. Set {} to OFFLINE.",
                     getThing().getLabel());
             updateStatus(ThingStatus.OFFLINE);
+            resetChannelsOnOfflineEvent();
+            resetProgramStateChannels();
         } else if (EVENT_CONNECTED.equals(event.getKey()) && ThingStatus.ONLINE.equals(getThing().getStatus())) {
             logger.infoWithHaId(getThingHaId(), "Received CONNECTED event. Update power state channel.");
             getThingChannel(CHANNEL_POWER_STATE).ifPresent(c -> updateChannel(c.getUID()));
@@ -416,6 +418,24 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      */
     protected void resetProgramStateChannels() {
         logger.debugWithHaId(getThingHaId(), "Resetting active program channel states");
+    }
+
+    /**
+     * Reset all channels on OFFLINE event.
+     */
+    protected void resetChannelsOnOfflineEvent() {
+        logger.debugWithHaId(getThingHaId(), "Resetting channel states due to OFFLINE event.");
+        getThingChannel(CHANNEL_POWER_STATE).ifPresent(channel -> updateState(channel.getUID(), OnOffType.OFF));
+        getThingChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(), UnDefType.NULL));
+        getThingChannel(CHANNEL_DOOR_STATE).ifPresent(channel -> updateState(channel.getUID(), UnDefType.NULL));
+        getThingChannel(CHANNEL_LOCAL_CONTROL_ACTIVE_STATE)
+                .ifPresent(channel -> updateState(channel.getUID(), UnDefType.NULL));
+        getThingChannel(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE)
+                .ifPresent(channel -> updateState(channel.getUID(), UnDefType.NULL));
+        getThingChannel(CHANNEL_REMOTE_START_ALLOWANCE_STATE)
+                .ifPresent(channel -> updateState(channel.getUID(), UnDefType.NULL));
+        getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE)
+                .ifPresent(channel -> updateState(channel.getUID(), UnDefType.NULL));
     }
 
     /**

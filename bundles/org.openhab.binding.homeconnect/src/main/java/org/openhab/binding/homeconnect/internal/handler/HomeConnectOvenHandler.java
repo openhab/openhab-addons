@@ -59,7 +59,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
 
     private static final List<String> INACTIVE_STATE = Arrays.asList(OPERATION_STATE_INACTIVE, OPERATION_STATE_READY);
     private static final int CAVITY_TEMPERATURE_SCHEDULER_INITIAL_DELAY = 30;
-    private static final int CAVITY_TEMPERATURE_SCHEDULER_PERIOD = 30;
+    private static final int CAVITY_TEMPERATURE_SCHEDULER_PERIOD = 90;
 
     private final LogWriter logger;
     private final ScheduledExecutorService scheduler;
