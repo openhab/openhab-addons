@@ -41,9 +41,6 @@ Fragment-Host: org.openhab.binding.max
 	osgi.enroute.junit.wrapper;version='[4.12.0,4.12.1)',\
 	slf4j.api;version='[1.7.25,1.7.26)',\
 	org.apache.servicemix.bundles.xstream;version='[1.4.7,1.4.8)',\
-	org.openhab.core.binding.xml;version='[2.5.0,2.5.1)',\
-	org.openhab.core.config.xml;version='[2.5.0,2.5.1)',\
-	org.openhab.core.thing.xml;version='[2.5.0,2.5.1)',\
 	org.apache.servicemix.specs.activation-api-1.1;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.specs.jaxb-api-2.2;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.specs.stax-api-1.2;version='[2.9.0,2.9.1)',\
