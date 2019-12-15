@@ -39,10 +39,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants;
-import org.openhab.binding.nanoleaf.internal.NanoleafException;
-import org.openhab.binding.nanoleaf.internal.NanoleafUnauthorizedException;
-import org.openhab.binding.nanoleaf.internal.OpenAPIUtils;
+import org.openhab.binding.nanoleaf.internal.*;
 import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
 import org.openhab.binding.nanoleaf.internal.model.Effects;
 import org.openhab.binding.nanoleaf.internal.model.Write;
@@ -309,6 +306,8 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                     parsePanelData(panelID, config, panelData);
                 }
             }
+        } catch (NanoleafNotFoundException nfe) {
+            logger.warn("Panel data could not be retrieved as no data was returned (static type missing?) : {}", nfe.getMessage());
         } catch (NanoleafException nue) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.panel.communication");

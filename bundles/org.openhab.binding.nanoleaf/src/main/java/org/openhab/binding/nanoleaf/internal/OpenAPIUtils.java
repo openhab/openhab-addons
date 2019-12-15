@@ -53,6 +53,8 @@ public class OpenAPIUtils {
     public static Request requestBuilder(HttpClient httpClient, NanoleafControllerConfig controllerConfig,
             String apiOperation, HttpMethod method) throws NanoleafException, NanoleafUnauthorizedException {
         URI requestURI = getUri(controllerConfig, apiOperation, null);
+        LOGGER.trace("RequestBuilder: Sending Request {}:{} {} ",requestURI.getHost(), requestURI.getPort(), requestURI.getPath());
+
         return httpClient.newRequest(requestURI).method(method);
     }
 
@@ -110,6 +112,8 @@ public class OpenAPIUtils {
             } else {
                 if (openAPIResponse.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     throw new NanoleafUnauthorizedException("OpenAPI request unauthorized");
+                }else if (openAPIResponse.getStatus() == HttpStatus.NOT_FOUND_404) {
+                    throw new NanoleafNotFoundException("OpenAPI request did not get any result back");
                 } else {
                     throw new NanoleafException(String.format("OpenAPI request failed. HTTP response code %s",
                             openAPIResponse.getStatus()));
@@ -124,7 +128,7 @@ public class OpenAPIUtils {
                 }
             }
             throw new NanoleafException(
-                    String.format("Failed to send OpenAPI request: %s", clientException.getMessage()));
+                    String.format("Failed to send OpenAPI request: %s exception class: %s", clientException.getMessage(), clientException.getClass()));
         }
     }
 
