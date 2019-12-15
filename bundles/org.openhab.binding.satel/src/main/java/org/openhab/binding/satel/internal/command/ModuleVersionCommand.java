@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,63 +13,48 @@
 package org.openhab.binding.satel.internal.command;
 
 import org.openhab.binding.satel.internal.event.EventDispatcher;
-import org.openhab.binding.satel.internal.event.IntegraVersionEvent;
+import org.openhab.binding.satel.internal.event.ModuleVersionEvent;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Command class for command that returns Integra version and type.
+ * Command class for command that returns communication module version.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
-public class IntegraVersionCommand extends SatelCommandBase {
+public class ModuleVersionCommand extends SatelCommandBase {
 
-    private final Logger logger = LoggerFactory.getLogger(IntegraVersionCommand.class);
+    private final Logger logger = LoggerFactory.getLogger(ModuleVersionCommand.class);
 
-    public static final byte COMMAND_CODE = 0x7e;
+    public static final byte COMMAND_CODE = 0x7c;
 
     /**
      * Creates new command class instance.
      */
-    public IntegraVersionCommand() {
+    public ModuleVersionCommand() {
         super(COMMAND_CODE, false);
     }
 
     /**
-     * @return Integra firmware version and release date
+     * @return communication module firmware version and release date
      */
     public String getVersion() {
-        return getVersion(1);
+        return getVersion(0);
     }
 
     /**
-     * @return Integra type
+     * @return <code>true</code> if the module supports extended (32-bit) payload for zones/outputs
      */
-    public byte getType() {
-        return response.getPayload()[0];
-    }
-
-    /**
-     * @return firmware language
-     */
-    public byte getLanguage() {
-        return response.getPayload()[12];
-    }
-
-    /**
-     * @return <code>true</code> if alarm settings are stored in flash memory
-     */
-    public boolean areSettingsInFlash() {
-        return response.getPayload()[13] == (byte) 0xFF;
+    public boolean isExtPayloadSupported() {
+        return (response.getPayload()[11] & 0x01) != 0;
     }
 
     @Override
     public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
         if (super.handleResponse(eventDispatcher, response)) {
             // dispatch version event
-            eventDispatcher.dispatchEvent(
-                    new IntegraVersionEvent(getType(), getVersion(), getLanguage(), areSettingsInFlash()));
+            eventDispatcher.dispatchEvent(new ModuleVersionEvent(getVersion(), isExtPayloadSupported()));
             return true;
         } else {
             return false;
@@ -83,7 +68,7 @@ public class IntegraVersionCommand extends SatelCommandBase {
             logger.debug("Invalid response code: {}", response.getCommand());
             return false;
         }
-        if (response.getPayload().length != 14) {
+        if (response.getPayload().length != 12) {
             logger.debug("Invalid payload length: {}", response.getPayload().length);
             return false;
         }

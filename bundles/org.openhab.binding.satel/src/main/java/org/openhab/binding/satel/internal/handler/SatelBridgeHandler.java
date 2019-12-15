@@ -61,7 +61,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
             // update bridge status and get new states from the system
             if (statusEvent.isConnected()) {
                 updateStatus(ThingStatus.ONLINE);
-                satelModule.sendCommand(new NewStatesCommand(satelModule.getIntegraType().hasExtPayload()));
+                satelModule.sendCommand(new NewStatesCommand(satelModule.hasExtPayloadSupport()));
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         statusEvent.getReason());
@@ -94,7 +94,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
 
                     // get list of states that have changed
                     logger.trace("Sending 'get new states' command");
-                    satelModule.sendCommand(new NewStatesCommand(satelModule.getIntegraType().hasExtPayload()));
+                    satelModule.sendCommand(new NewStatesCommand(satelModule.hasExtPayloadSupport()));
                 };
                 pollingJob = scheduler.scheduleWithFixedDelay(pollingCommand, 0, config.getRefresh(),
                         TimeUnit.MILLISECONDS);
