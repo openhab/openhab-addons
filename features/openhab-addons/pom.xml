@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.features.karaf</groupId>
     <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.addons.features.karaf.openhab-addons</artifactId>
@@ -42,20 +41,20 @@
             <configuration>
               <target>
                 <concat destfile="src/main/feature/feature.xml">
-                  <header file="src/main/resources/header.xml" filtering="no"></header>
+                  <header file="src/main/resources/header.xml" filtering="no"/>
                   <fileset dir="${basedirRoot}/bundles">
-                    <include name="*/src/main/feature/feature.xml"></include>
-                    <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"></exclude>
-                    <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"></exclude>
+                    <include name="*/src/main/feature/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
                     <!-- temporarily disabled due to malfunction -->
-                    <exclude name="**/org.openhab.io.azureiothub/**/feature.xml"></exclude>
+                    <exclude name="**/org.openhab.io.azureiothub/**/feature.xml"/>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>
-                      <regexp pattern="(feature&gt;)|(feature\s)|(bundle&gt;)|(bundle\s)"></regexp>
+                      <regexp pattern="(feature&gt;)|(feature\s)|(bundle&gt;)|(bundle\s)"/>
                     </linecontainsRegExp>
                   </filterchain>
-                  <footer file="src/main/resources/footer.xml" filtering="no"></footer>
+                  <footer file="src/main/resources/footer.xml" filtering="no"/>
                 </concat>
               </target>
             </configuration>
