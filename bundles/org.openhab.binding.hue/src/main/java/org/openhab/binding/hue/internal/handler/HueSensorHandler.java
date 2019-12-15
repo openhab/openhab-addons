@@ -59,6 +59,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
 
     private final Logger logger = LoggerFactory.getLogger(HueSensorHandler.class);
 
+    private boolean configInitializedSuccessfully;
     private boolean propertiesInitializedSuccessfully;
 
     private @Nullable HueClient hueClient;
@@ -162,18 +163,18 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         handleCommand(channelUID.getId(), command);
-    }    
-    
+    }
+
     public void handleCommand(String channel, Command command) {
-        //updateSensorState
+        // updateSensorState
         FullSensor sensor = getSensor();
-        if (  sensor == null) {
+        if (sensor == null) {
             logger.debug("hue sensor not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-wrong-light-id");
+                    "@text/offline.conf-error-wrong-sensor-id");
             return;
         }
-        
+
         HueClient hueBridge = getHueClient();
         if (hueBridge == null) {
             logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
@@ -181,24 +182,22 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         }
 
         StateUpdate sensorState = new StateUpdate();
-        switch (channel)
-        {
-        case  STATE_STATUS: 
-            sensorState = sensorState.setStatus(((DecimalType) command).intValue());
-            break;   
-        case STATE_FLAG:
-            sensorState = sensorState.setFlag(OnOffType.ON.equals(command));
-            break;
+        switch (channel) {
+            case STATE_STATUS:
+                sensorState = sensorState.setStatus(((DecimalType) command).intValue());
+                break;
+            case STATE_FLAG:
+                sensorState = sensorState.setFlag(OnOffType.ON.equals(command));
+                break;
         }
-   
+
         if (sensorState != null) {
             hueBridge.updateSensorState(sensor, sensorState);
-        } 
-        else {
-          logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+        } else {
+            logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
     }
-    
+
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         SensorConfigUpdate configUpdate = doConfigurationUpdate(configurationParameters);
@@ -245,7 +244,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         }
 
         // update generic sensor config
-        Configuration config = editConfiguration();
+        final Configuration config = !configInitializedSuccessfully ? editConfiguration() : getConfig();
         if (sensor.getConfig().containsKey(CONFIG_ON)) {
             config.put(CONFIG_ON, sensor.getConfig().get(CONFIG_ON));
         }
@@ -264,21 +263,25 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                 // do nothing
             }
         }
-        
+
         Object status = sensor.getState().get(STATE_STATUS);
         if (status != null) {
-            try { DecimalType value = new DecimalType(String.valueOf(status));
-            updateState(STATE_STATUS, value);} catch (DateTimeParseException e) {
+            try {
+                DecimalType value = new DecimalType(String.valueOf(status));
+                updateState(STATE_STATUS, value);
+            } catch (DateTimeParseException e) {
                 // do nothing
             }
         }
         Object flag = sensor.getState().get(STATE_FLAG);
         if (flag != null) {
-            try {boolean value = Boolean.parseBoolean(String.valueOf(flag));
-            updateState(CHANNEL_FLAG, value ? OnOffType.ON : OnOffType.OFF);} catch (DateTimeParseException e) {
+            try {
+                boolean value = Boolean.parseBoolean(String.valueOf(flag));
+                updateState(CHANNEL_FLAG, value ? OnOffType.ON : OnOffType.OFF);
+            } catch (DateTimeParseException e) {
                 // do nothing
             }
-        }  
+        }
 
         Object battery = sensor.getConfig().get(CONFIG_BATTERY);
         if (battery != null) {
@@ -287,7 +290,10 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
             updateState(CHANNEL_BATTERY_LOW, batteryLevel.intValue() <= 10 ? OnOffType.ON : OnOffType.OFF);
         }
 
-        updateConfiguration(config);
+        if (!configInitializedSuccessfully) {
+            updateConfiguration(config);
+            configInitializedSuccessfully = true;
+        }
     }
 
     @Override
