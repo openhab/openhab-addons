@@ -53,11 +53,7 @@ public class AirbaseEnums {
                     return m;
                 }
             }
-
-            LOGGER.debug("Unexpected Mode value of \"{}\"", value);
-
-            // Default to cold
-            return COLD;
+            throw new IllegalArgumentException(String.format("Unexpected Mode value of \"%d\"", value));
         }
     }
 
@@ -118,11 +114,7 @@ public class AirbaseEnums {
                     return m;
                 }
             }
-
-            LOGGER.debug("Unexpected FanSpeed value from rate={}, auto={}, airside={}", rate, auto, airside);
-
-            // Default to Level 1
-            return LEVEL_1;
+            throw new IllegalArgumentException(String.format("Unexpected FanSpeed value from rate=%d, auto=%d, airside=%d", rate, auto?1:0, airside?1:0));
         }
     }
 
@@ -150,11 +142,7 @@ public class AirbaseEnums {
                     return m;
                 }
             }
-
-            LOGGER.debug("Unexpected FanMovement value of \"{}\"", value);
-
-            // Default to stopped
-            return STOPPED;
+            throw new IllegalArgumentException(String.format("Unexpected FanMovement value of \"%d\"", value));
         }
     }
 

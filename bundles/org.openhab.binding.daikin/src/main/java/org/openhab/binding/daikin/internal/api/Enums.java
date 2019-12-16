@@ -47,11 +47,7 @@ public class Enums {
                     return m;
                 }
             }
-
-            LOGGER.debug("Unexpected Mode value of \"{}\"", value);
-
-            // Default to auto
-            return AUTO;
+            throw new IllegalArgumentException(String.format("Unexpected Mode value of \"%d\"", value));
         }
     }
 
@@ -81,11 +77,7 @@ public class Enums {
                     return m;
                 }
             }
-
-            LOGGER.debug("Unexpected FanSpeed value of \"{}\"", value);
-
-            // Default to auto
-            return AUTO;
+            throw new IllegalArgumentException(String.format("Unexpected FanSpeed value of \"%s\"", value));
         }
     }
 
@@ -113,11 +105,7 @@ public class Enums {
                     return m;
                 }
             }
-
-            LOGGER.debug("Unexpected FanMovement value of \"{}\"", value);
-
-            // Default to stopped
-            return STOPPED;
+            throw new IllegalArgumentException(String.format("Unexpected FanMovement value of \"%d\"", value));
         }
     }
 }
