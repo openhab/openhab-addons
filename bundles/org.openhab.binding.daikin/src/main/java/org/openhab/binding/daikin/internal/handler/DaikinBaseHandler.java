@@ -86,37 +86,37 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        boolean handled = false;
         try {
+            if (handleCommandInternal(channelUID, command)) {
+                return;
+            }
             switch (channelUID.getId()) {
                 case DaikinBindingConstants.CHANNEL_AC_POWER:
                     if (command instanceof OnOffType) {
                         changePower(((OnOffType) command).equals(OnOffType.ON));
-                        handled = true;
+                        return;
                     }
                     break;
                 case DaikinBindingConstants.CHANNEL_AC_TEMP:
                     if (changeSetPoint(command)) {
-                        handled = true;
+                        return;
                     }
                     break;
                 case DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED:
                 case DaikinBindingConstants.CHANNEL_AC_FAN_SPEED:
                     if (command instanceof StringType) {
                         changeFanSpeed(((StringType) command).toString());
-                        handled = true;
+                        return;
                     }
                     break;
                 case DaikinBindingConstants.CHANNEL_AC_MODE:
                     if (command instanceof StringType) {
                         changeMode(((StringType) command).toString());
-                        handled = true;
+                        return;
                     }
                     break;
             }
-            if (!handled && !handleCommandInternal(channelUID, command)) {
-                logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(), channelUID.getId());
-            }
+            logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(), channelUID.getId());
         } catch (DaikinCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
