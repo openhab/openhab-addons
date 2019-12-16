@@ -83,7 +83,7 @@ public class SomfyShadeHandler extends BaseThingHandler {
                     return;
                 }
 
-                if (CHANNEL_SHADELEVEL.equals(channelUID.getId()) && command instanceof UpDownType) {
+                if (command instanceof UpDownType) {
                     if (command.equals(UpDownType.DOWN)) {
                         getBridgeHandler().commandShadeDown(targetId);
                     } else {
@@ -91,7 +91,7 @@ public class SomfyShadeHandler extends BaseThingHandler {
                     }
                 }
 
-                if (CHANNEL_SHADELEVEL.equals(channelUID.getId()) && command instanceof StopMoveType) {
+                if (command instanceof StopMoveType) {
                     getBridgeHandler().commandShadeStop(targetId);
                 }
             }
