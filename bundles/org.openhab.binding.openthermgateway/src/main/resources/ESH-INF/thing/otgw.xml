@@ -25,6 +25,7 @@
             <channel id="flame" typeId="flame" />
             <channel id="modulevel" typeId="modulevel" />
             <channel id="maxrelmdulevel" typeId="maxrelmdulevel" />
+			<channel id="fault" typeId="fault" />
             <channel id="sendcommand" typeId="sendcommand" />
         </channels>
         <properties>

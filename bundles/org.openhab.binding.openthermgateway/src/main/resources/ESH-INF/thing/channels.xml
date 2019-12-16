@@ -146,6 +146,13 @@
         <description>Maximum relative modulation level</description>
         <state readOnly="true" pattern="%.1f %%"></state>
     </channel-type>
+
+    <channel-type id="fault">
+        <item-type>Switch</item-type>
+        <label>Fault indication</label>
+        <description>Fault indication</description>
+        <state readOnly="true"></state>
+    </channel-type>
     
     <channel-type id="sendcommand">
         <item-type>String</item-type>
