@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openthermgateway" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="otgw">
+		<label>OpenTherm Gateway</label>
+		<description>OpenTherm Gateway binding</description>
+		<channels>
+            <channel id="roomtemp" typeId="roomtemp" />
+            <channel id="roomsetpoint" typeId="roomsetpoint" />            
+            <channel id="temperaturetemporary" typeId="temperaturetemporary" />
+            <channel id="temperatureconstant" typeId="temperatureconstant" />
+            <channel id="controlsetpoint" typeId="controlsetpoint" />            
+            <channel id="dhwtemp" typeId="dhwtemp" />
+            <channel id="tdhwset" typeId="tdhwset" />
+            <channel id="overridedhwsetpoint" typeId="overridedhwsetpoint" />
+            <channel id="flowtemp" typeId="flowtemp" />
+            <channel id="returntemp" typeId="returntemp" />
+            <channel id="outsidetemp" typeId="outsidetemp" />
+            <channel id="waterpressure" typeId="waterpressure" />
+            <channel id="ch_enable" typeId="ch_enable" />
+            <channel id="ch_mode" typeId="ch_mode" />
+            <channel id="dhw_enable" typeId="dhw_enable" />
+            <channel id="dhw_mode" typeId="dhw_mode" />
+            <channel id="flame" typeId="flame" />
+            <channel id="modulevel" typeId="modulevel" />
+            <channel id="maxrelmdulevel" typeId="maxrelmdulevel" />
+            <channel id="sendcommand" typeId="sendcommand" />
+        </channels>
+        <properties>
+             <property name="version">0.8.0</property>
+        </properties>
+		<config-description-ref uri="thing-type:openthermgateway:otgw" />
+	</thing-type>
+
+</thing:thing-descriptions>
