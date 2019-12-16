@@ -164,6 +164,7 @@
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opengarage</module>
     <module>org.openhab.binding.opensprinkler</module>
+    <module>org.openhab.binding.openthermgateway</module>
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.openweathermap</module>
     <module>org.openhab.binding.orvibo</module>
