@@ -52,6 +52,7 @@ The OpenTherm Gateway supports the following channels:
 - Burner active
 - Relative modulation level
 - Maximum relative modulation level
+- Fault indication
 - Send command channel
 
 
@@ -83,6 +84,7 @@ Switch DomesticHotWaterActive "Domestic hot water active" <switch> {channel="ope
 Switch BurnerActive "Burner active" <switch> {channel="openthermgateway:otgw:1:flame"}
 Number RelativeModulationLevel "Relative modulation level [%.1f %%]" {channel="openthermgateway:otgw:1:modulevel"}
 Number MaximumRelativeModulationLevel "Maximum relative modulation level [%.1f %%]" {channel="openthermgateway:otgw:1:maxrelmdulevel"}
+Switch Fault "Fault indication" <switch> {channel="openthermgateway:otgw:1:fault"}
 Text SendCommand "Send command channel" {channel="openthermgateway:otgw:1:sendcommand"}
 ```
 
@@ -109,6 +111,7 @@ sitemap demo label="Main Menu" {
         Switch item="BurnerActive" icon="switch" label="Burner active"
         Text item="RelativeModulationLevel" icon="" label="Relative modulation level [%.1f %%]"
         Text item="MaximumRelativeModulationLevel" icon="" label="Maximum relative modulation level [%.1f %%]"        
+		Switch item="Fault" icon="switch" label="Fault indication"
     }
 }
 
