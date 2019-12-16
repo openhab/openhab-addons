@@ -128,14 +128,25 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
 
     @Override
     protected void changeMode(String mode) throws DaikinCommunicationException {
+        AirbaseMode newMode = AirbaseMode.valueOf(mode);
+        if ((newMode == AirbaseMode.AUTO && !airbaseModelInfo.features.contains(AirbaseFeature.AUTO)) ||
+            (newMode == AirbaseMode.DRY  && !airbaseModelInfo.features.contains(AirbaseFeature.DRY))) {
+            throw new IllegalArgumentException("The " + mode + " mode is not supported by your controller");
+        }
         AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
-        info.mode = AirbaseMode.valueOf(mode);
+        info.mode = newMode;
         webTargets.setAirbaseControlInfo(info);
     }
 
     @Override
     protected void changeFanSpeed(String speed) throws DaikinCommunicationException {
         AirbaseFanSpeed fanSpeed = AirbaseFanSpeed.valueOf(speed);
+        if (EnumSet.range(AirbaseFanSpeed.AUTO_LEVEL_1, AirbaseFanSpeed.AUTO_LEVEL_5).contains(fanSpeed) && !airbaseModelInfo.features.contains(AirbaseFeature.FRATE_AUTO)) {
+            throw new IllegalArgumentException("Auto fan levels are not supported by your controller");
+        }
+        if (fanSpeed == AirbaseFanSpeed.AIRSIDE && !airbaseModelInfo.features.contains(AirbaseFeature.AIRSIDE)) {
+            throw new IllegalArgumentException("The Airside fan option is not supported by your controller");
+        }
         AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
         info.f_rate = fanSpeed.getLevel();
         info.f_auto = fanSpeed.getAuto();
@@ -146,9 +157,11 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     protected void changeZone(int zone, boolean command) throws DaikinCommunicationException {
         AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
         info.zone[zone] = command;
-        if (airbaseModelInfo.zonespresent >=zone) {
+        if (airbaseModelInfo.zonespresent >= zone) {
             webTargets.setAirbaseZoneInfo(info, airbaseModelInfo);
+            return;
         }
+        throw new IllegalArgumentException("The given zone number is outside the number of zones supported by the controller: " + airbaseModelInfo.zonespresent.toString());
     }
 
     protected void updateChannelStateDescriptions() {
