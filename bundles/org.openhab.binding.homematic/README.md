@@ -43,6 +43,7 @@ All gateways which provides the Homematic BIN- or XML-RPC API:
 The Homematic IP Access Point **does not support** this API and and can't be used with this binding.
 
 Homematic IP support:
+
 - CCU2 with at least firmware 2.17.15
 - [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic) with the [HM-MOD-RPI-PCB](https://www.elv.de/homematic-funkmodul-fuer-raspberry-pi-bausatz.html) or [RPI-RF-MOD](https://www.elv.de/homematic-funk-modulplatine-fuer-raspberry-pi-3-rpi-rf-mod-komplettbausatz.html) RF module
 - [piVCCU](https://github.com/alexreinert/piVCCU)
@@ -63,6 +64,7 @@ And **FROM** the gateway to the binding:
 - BIN-RPC: 9126
 
 CCU Autodiscovery:
+
 * UDP 43439
 
 **Note:** The binding tries to identify the gateway with XML-RPC and uses henceforth:
@@ -89,6 +91,7 @@ With Homegear or a CCU, variables and scripts are supported too.
 ## Discovery
 
 Gateway discovery is available:
+
 * CCU
 * RaspberryMatic >= 2.29.23.20171022
 * Homegear >= 0.6.x
@@ -266,6 +269,7 @@ Note that, for Homegear devices, in contrast to the specification of the Rhing a
 The channel configs are optional.
 
 Example without channel configs
+
 ```java
   Thing HM-LC-Dim1T-Pl-2    JEQ0999999 "Name"  @  "Location" {
       Channels:
@@ -460,6 +464,7 @@ end
 A virtual datapoint (String) to simulate a key press, available on all channels that contains PRESS_ datapoints.
 
 Available values:
+
 * `SHORT_PRESS`: triggered on a short key press
 * `LONG_PRESS`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
 * `DOUBLE_PRESS`: triggered on a short key press but only if the latest `SHORT_PRESS` or `DOUBLE_PRESS` event is not older than 2.0 s (not related to `DBL_PRESS_TIME` configuration, which is more like a key lock because if it is other than `0.0` single presses are not notified anymore)
