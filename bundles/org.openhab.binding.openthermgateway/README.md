@@ -26,13 +26,10 @@ The binding is designed to support various ways of connecting to the OpenTherm G
 
 Future types of connections may require other settings, such as a COM port.
 
-
-
-
-
-
 ## Channels
+
 The OpenTherm Gateway supports the following channels:
+
 - Room temperature
 - Room setpoint
 - Temporary room setpoint override
@@ -59,11 +56,13 @@ The OpenTherm Gateway supports the following channels:
 ## Full Example
 
 ### demo.things
+
 ```
 Thing openthermgateway:otgw:1 [ipaddress="192.168.1.100", port="8000"]
 ```
 
 ### demo.items
+
 ```
 Number RoomTemperature "Room temperature [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:roomtemp" }
 Number RoomSetpoint "Room setpoint [%.1f °C]" <temperature> { channel="openthermgateway:otgw:1:roomsetpoint" }
@@ -89,6 +88,7 @@ Text SendCommand "Send command channel" { channel="openthermgateway:otgw:1:sendc
 ```
 
 ### demo.sitemap
+
 ```
 sitemap demo label="Main Menu" {
     Frame label="OpenTherm Gateway" {

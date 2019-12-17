@@ -1,8 +1,8 @@
 /**
- * Copyright (c) 2018,2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -15,7 +15,7 @@ package org.openhab.binding.openthermgateway.internal;
 /**
  * The {@link OpenThermGatewayConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Arjen Korevaar
+ * @author Arjen Korevaar - Initial contribution
  */
 public class OpenThermGatewayConfiguration {
 

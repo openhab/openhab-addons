@@ -1,8 +1,8 @@
 /**
- * Copyright (c) 2018,2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -13,7 +13,6 @@
 package org.openhab.binding.openthermgateway.handler;
 
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -41,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * The {@link OpenThermGatewayHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Arjen Korevaar
+ * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
 public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThermGatewayCallback {
@@ -188,18 +187,18 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     public void log(LogLevel loglevel, String message, Throwable t) {
         switch (loglevel) {
             case Trace:
-                logger.trace(message, t);
+                logger.trace("{}", message, t);
             case Debug:
-                logger.debug(message, t);
+                logger.debug("{}", message, t);
                 break;
             case Info:
-                logger.info(message, t);
+                logger.info("{}", message, t);
                 break;
             case Warning:
-                logger.warn(message, t);
+                logger.warn("{}", message, t);
                 break;
             case Error:
-                logger.error(message, t);
+                logger.error("{}", message, t);
                 break;
             default:
                 break;
@@ -210,19 +209,19 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     public void log(LogLevel loglevel, String message) {
         switch (loglevel) {
             case Trace:
-                logger.trace(message);
+                logger.trace("{}", message);
                 break;
             case Debug:
-                logger.debug(message);
+                logger.debug("{}", message);
                 break;
             case Info:
-                logger.info(message);
+                logger.info("{}", message);
                 break;
             case Warning:
-                logger.warn(message);
+                logger.warn("{}", message);
                 break;
             case Error:
-                logger.error(message);
+                logger.error("{}", message);
                 break;
             default:
                 break;

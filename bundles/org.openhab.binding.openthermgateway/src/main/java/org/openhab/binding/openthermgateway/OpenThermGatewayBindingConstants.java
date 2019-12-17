@@ -1,8 +1,8 @@
 /**
- * Copyright (c) 2018,2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -12,18 +12,16 @@
  */
 package org.openhab.binding.openthermgateway;
 
-import java.util.Set;
-
+import java.util.Arrays;
+import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link OpenThermGatewayBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Arjen Korevaar
+ * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
 public class OpenThermGatewayBindingConstants {
@@ -56,8 +54,8 @@ public class OpenThermGatewayBindingConstants {
     public static final String CHANNEL_RELATIVE_MODULATION_LEVEL = "modulevel";
     public static final String CHANNEL_MAXIMUM_MODULATION_LEVEL = "maxrelmdulevel";
     public static final String CHANNEL_FAULT = "fault";
-	
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = ImmutableSet.of(CHANNEL_ROOM_TEMPERATURE,
+
+    public static final List<String> SUPPORTED_CHANNEL_IDS = Arrays.asList(CHANNEL_ROOM_TEMPERATURE,
             CHANNEL_ROOM_SETPOINT, CHANNEL_FLOW_TEMPERATURE, CHANNEL_RETURN_TEMPERATURE, CHANNEL_OUTSIDE_TEMPERATURE,
             CHANNEL_CENTRAL_HEATING_WATER_PRESSURE, CHANNEL_CENTRAL_HEATING_ENABLED, CHANNEL_CENTRAL_HEATING_MODE,
             CHANNEL_CENTRAL_HEATING_WATER_SETPOINT, CHANNEL_DOMESTIC_HOT_WATER_TEMPERATURE,
