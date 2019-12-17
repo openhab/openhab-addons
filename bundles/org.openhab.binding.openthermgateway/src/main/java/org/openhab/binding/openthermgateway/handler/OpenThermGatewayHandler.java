@@ -188,6 +188,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         switch (loglevel) {
             case Trace:
                 logger.trace("{}", message, t);
+                break;
             case Debug:
                 logger.debug("{}", message, t);
                 break;
