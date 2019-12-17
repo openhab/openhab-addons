@@ -26,6 +26,7 @@
 			<channel id="modulevel" typeId="modulevel" />
 			<channel id="maxrelmdulevel" typeId="maxrelmdulevel" />
 			<channel id="fault" typeId="fault" />
+			<channel id="oemfaultcode" typeId="oemfaultcode" />			
 			<channel id="sendcommand" typeId="sendcommand" />
 		</channels>
 		<properties>
