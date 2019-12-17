@@ -30,7 +30,7 @@
 			<channel id="sendcommand" typeId="sendcommand" />
 		</channels>
 		<properties>
-			<property name="version">0.8.0</property>
+			<property name="version">0.9.0</property>
 		</properties>
 		<config-description-ref uri="thing-type:openthermgateway:otgw" />
 	</thing-type>
