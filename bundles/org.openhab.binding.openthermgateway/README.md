@@ -84,6 +84,7 @@ Switch BurnerActive "Burner active" <switch> { channel="openthermgateway:otgw:1:
 Number RelativeModulationLevel "Relative modulation level [%.1f %%]" { channel="openthermgateway:otgw:1:modulevel" }
 Number MaximumRelativeModulationLevel "Maximum relative modulation level [%.1f %%]" { channel="openthermgateway:otgw:1:maxrelmdulevel" }
 Switch Fault "Fault indication" <switch> { channel="openthermgateway:otgw:1:fault" }
+Number OemFaultCode "OEM fault code" { channel="openthermgateway:otgw:1:oemfaultcode" }
 Text SendCommand "Send command channel" { channel="openthermgateway:otgw:1:sendcommand" }
 ```
 
@@ -112,6 +113,7 @@ sitemap demo label="Main Menu" {
         Text item="RelativeModulationLevel" icon="" label="Relative modulation level [%.1f %%]"
         Text item="MaximumRelativeModulationLevel" icon="" label="Maximum relative modulation level [%.1f %%]"        
         Switch item="Fault" icon="switch" label="Fault indication"
+        Text item="OemFaultCode" icon="" label="OEM fault code"
     }
 }
 
