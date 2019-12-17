@@ -44,7 +44,7 @@ public class GatewayCommand {
         this.validationSet = validationSet;
 
         if (!validate()) {
-            throw new Exception(String.format("Invalid value '%s' for code '%s'", this.message, this.code));
+            throw new IllegalArgumentException(String.format("Invalid value '%s' for code '%s'", this.message, this.code));
         }
     }
 
@@ -76,11 +76,11 @@ public class GatewayCommand {
                 String validateSet = supportedCommands.get(codeUpperCase);
                 return new GatewayCommand(codeUpperCase, message, validateSet);
             } else {
-                throw new Exception(String.format("Unsupported gateway code '%s'", code.toUpperCase()));
+                throw new IllegalArgumentException(String.format("Unsupported gateway code '%s'", code.toUpperCase()));
             }
         }
 
-        throw new Exception(
+        throw new IllegalArgumentException(
                 String.format("Unable to parse gateway command with code '%s' and message '%s'", code, message));
     }
 

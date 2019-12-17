@@ -299,7 +299,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             case OpenThermGatewayBindingConstants.CHANNEL_SEND_COMMAND:
                 return "";
             default:
-                throw new Exception(String.format("Unknown channel %s", channel));
+                throw new IllegalArgumentException(String.format("Unknown channel %s", channel));
         }
     }
 }
