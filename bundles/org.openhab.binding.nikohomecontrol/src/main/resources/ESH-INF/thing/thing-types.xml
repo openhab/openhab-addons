@@ -48,17 +48,19 @@
 			</parameter>
 			<parameter name="port" type="integer" required="false">
 				<label>Bridge Port</label>
-				<description>Port for secure MQTT communication with Connected Controller, default 8883</description>
-				<default>8883</default>
+				<description>Port for secure MQTT communication with Connected Controller, default 8884</description>
+				<default>8884</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="profile" type="text" required="true">
+			<parameter name="profile" type="text" required="false">
 				<label>Profile</label>
-				<description>Touch profile for Niko Home Control II</description>
+				<description>Profile used in Niko Home Control II for hobby API</description>
+				<default>hobby</default>
+				<advanced>true</advanced>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<label>Password</label>
-				<description>Password for Niko Home Control II touch profile, should not be empty</description>
+			<parameter name="token" type="text" required="true">
+				<label>API Token</label>
+				<description>Token for Niko Home Control II hobby API, should not be empty. This token will have to be renewed after expiration (1 year after creation)</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">

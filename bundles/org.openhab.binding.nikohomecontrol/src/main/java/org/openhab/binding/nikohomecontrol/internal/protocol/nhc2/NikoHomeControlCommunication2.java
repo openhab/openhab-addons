@@ -73,10 +73,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     private final List<NhcProfile2> profiles = new CopyOnWriteArrayList<>();
     private final List<NhcService2> services = new CopyOnWriteArrayList<>();
 
+    private volatile String profile = "";
+
     private volatile @Nullable NhcSystemInfo2 nhcSystemInfo;
     private volatile @Nullable NhcTimeInfo2 nhcTimeInfo;
-
-    private volatile String profileUuid = "";
 
     private volatile @Nullable CompletableFuture<Boolean> communicationStarted;
 
@@ -103,14 +103,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     public synchronized void startCommunication() {
         communicationStarted = new CompletableFuture<>();
 
-        startPublicCommunication();
-    }
-
-    /**
-     * This method executes the first part of the communication start. A public connection (no username or password, but
-     * secured with SSL) will be started and the controller will be queried for existing capabilities and profiles.
-     */
-    private void startPublicCommunication() {
         InetAddress addr = handler.getAddr();
         if (addr == null) {
             logger.warn("Niko Home Control: IP address cannot be empty");
@@ -121,47 +113,18 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         int port = handler.getPort();
         logger.debug("Niko Home Control: initializing for mqtt connection to CoCo on {}:{}", addrString, port);
 
-        try {
-            mqttConnection.startPublicConnection(addrString, port);
-            initializePublic();
-        } catch (MqttException e) {
-            logger.debug("Niko Home Control: error in mqtt communication");
-            stopCommunication();
-        }
-    }
+        profile = handler.getProfile();
 
-    /**
-     * This method executes the second part of the communication start. After the list of profiles are received on the
-     * public MQTT connection, this method should be called to stop the general connection and start a touch profile
-     * specific MQTT connection. This will allow receiving state information and updating state of devices.
-     */
-    private void startProfileCommunication() {
-        String profile = handler.getProfile();
-        String password = handler.getPassword();
-
-        if (profile.isEmpty()) {
-            logger.warn("Niko Home Control: no profile set");
-            stopCommunication();
-            return;
-        }
-        try {
-            profileUuid = profiles.stream().filter(p -> profile.equals(p.name)).findFirst().get().uuid;
-        } catch (NoSuchElementException e) {
-            logger.warn("Niko Home Control: profile '{}' does not match a profile in the controller", profile);
+        String token = handler.getToken();
+        if (token.isEmpty()) {
+            logger.warn("Niko Home Control: JWT token cannot be empty");
             stopCommunication();
             return;
         }
 
-        if (password.isEmpty()) {
-            logger.warn("Niko Home Control: password for profile cannot be empty");
-            stopCommunication();
-            return;
-        }
-
-        mqttConnection.stopPublicConnection();
         try {
-            mqttConnection.startProfileConnection(profileUuid, password);
-            initializeProfile();
+            mqttConnection.startConnection(addrString, port, profile, token);
+            initialize();
         } catch (MqttException e) {
             logger.warn("Niko Home Control: error in mqtt communication");
             stopCommunication();
@@ -175,8 +138,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             started.complete(false);
         }
         communicationStarted = null;
-        mqttConnection.stopPublicConnection();
-        mqttConnection.stopProfileConnection();
+        mqttConnection.stopConnection();
     }
 
     @Override
@@ -199,32 +161,23 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      * messages.
      *
      */
-    private void initializePublic() throws MqttException {
+    private void initialize() throws MqttException {
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "systeminfo.publish";
-        mqttConnection.publicConnectionPublish("public/system/cmd", gson.toJson(message));
+        mqttConnection.connectionPublish("public/system/cmd", gson.toJson(message));
 
         message.method = "profiles.list";
-        mqttConnection.publicConnectionPublish("public/authentication/cmd", gson.toJson(message));
-    }
-
-    /**
-     * After setting up the profile communication with the Niko Home Control Connected Controller, send all profile
-     * specific initialization messages.
-     *
-     */
-    private void initializeProfile() throws MqttException {
-        NhcMessage2 message = new NhcMessage2();
+        mqttConnection.connectionPublish("public/authentication/cmd", gson.toJson(message));
 
         message.method = "services.list";
-        mqttConnection.profileConnectionPublish(profileUuid + "/authentication/cmd", gson.toJson(message));
+        mqttConnection.connectionPublish(profile + "/authentication/cmd", gson.toJson(message));
 
         message.method = "devices.list";
-        mqttConnection.profileConnectionPublish(profileUuid + "/control/devices/cmd", gson.toJson(message));
+        mqttConnection.connectionPublish(profile + "/control/devices/cmd", gson.toJson(message));
 
         message.method = "notifications.list";
-        mqttConnection.profileConnectionPublish(profileUuid + "/notification/cmd", gson.toJson(message));
+        mqttConnection.connectionPublish(profile + "/notification/cmd", gson.toJson(message));
     }
 
     private void connectionLost() {
@@ -441,7 +394,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             if (!actions.containsKey(device.uuid)) {
                 logger.debug("Niko Home Control: adding action device {}, {}", device.uuid, device.name);
 
-                ActionType actionType = ActionType.GENERIC;
+                ActionType actionType;
                 switch (device.model) {
                     case "generic":
                     case "pir":
@@ -468,6 +421,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     case "gate":
                         actionType = ActionType.ROLLERSHUTTER;
                         break;
+                    default:
+                        actionType = ActionType.GENERIC;
+                        logger.debug("Niko Home Control: device type {} not recognised, default to GENERIC action",
+                                device.type);
                 }
 
                 NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
@@ -705,7 +662,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 break;
         }
 
-        String topic = profileUuid + "/control/devices/cmd";
+        String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
         sendDeviceMessage(topic, gsonMessage);
     }
@@ -734,7 +691,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         device.properties.add(program);
         program.program = mode;
 
-        String topic = profileUuid + "/control/devices/cmd";
+        String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
         sendDeviceMessage(topic, gsonMessage);
     }
@@ -773,7 +730,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             device.properties.add(overruleActiveProp);
         }
 
-        String topic = profileUuid + "/control/devices/cmd";
+        String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
         sendDeviceMessage(topic, gsonMessage);
     }
@@ -798,7 +755,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         device.properties.add(reportInstantUsageProp);
         reportInstantUsageProp.reportInstantUsage = "True";
 
-        String topic = profileUuid + "/control/devices/cmd";
+        String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
 
         ((NhcEnergyMeter2) energyMeters.get(energyMeterId)).startEnergyMeter(topic, gsonMessage);
@@ -821,7 +778,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     private void sendDeviceMessage(String topic, String gsonMessage) {
         try {
-            mqttConnection.profileConnectionPublish(topic, gsonMessage);
+            mqttConnection.connectionPublish(topic, gsonMessage);
 
         } catch (MqttException e) {
             logger.warn("Niko Home Control: sending command failed, trying to restart communication");
@@ -829,7 +786,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             // retry sending after restart
             try {
                 if (communicationActive()) {
-                    mqttConnection.profileConnectionPublish(topic, gsonMessage);
+                    mqttConnection.connectionPublish(topic, gsonMessage);
                 } else {
                     logger.warn("Niko Home Control: failed to restart communication");
                     connectionLost();
@@ -844,7 +801,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     @Override
     public void processMessage(String topic, byte[] payload) {
         String message = new String(payload);
-        if ("public/system/evt".equals(topic) || (profileUuid + "/system/evt").equals(topic)) {
+        if ("public/system/evt".equals(topic) || (profile + "/system/evt").equals(topic)) {
             systemEvt(message);
         } else if ("public/system/rsp".equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
@@ -852,21 +809,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         } else if ("public/authentication/rsp".equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             profilesListRsp(message);
-            startProfileCommunication();
-        } else if ((profileUuid + "/notification/evt").equals(topic)) {
+        } else if ((profile + "/notification/evt").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             notificationEvt(message);
-        } else if ((profileUuid + "/control/devices/evt").equals(topic)) {
+        } else if ((profile + "/control/devices/evt").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             devicesEvt(message);
-        } else if ((profileUuid + "/control/devices/rsp").equals(topic)) {
+        } else if ((profile + "/control/devices/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             devicesListRsp(message);
-        } else if ((profileUuid + "/authentication/rsp").equals(topic)) {
+        } else if ((profile + "/authentication/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             servicesListRsp(message);
-        } else if ("public/control/devices.error".equals(topic)
-                || (profileUuid + "/control/devices.error").equals(topic)) {
+        } else if ("public/control/devices.error".equals(topic) || (profile + "/control/devices.error").equals(topic)) {
             logger.warn("Niko Home Control: received error {}", message);
         } else {
             logger.trace("Niko Home Control: not acted on received message topic {}, payload {}", topic, message);
@@ -893,6 +848,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             timeInfo = new NhcTimeInfo2();
         }
         return timeInfo;
+    }
+
+    /**
+     * @return comma separated list of profiles retrieved from Connected Controller
+     */
+    public String getProfiles() {
+        return profiles.stream().map(NhcProfile2::name).collect(Collectors.joining(", "));
     }
 
     /**
