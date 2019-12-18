@@ -23,7 +23,7 @@ This Binding integrates [Shelly devices](https://shelly.cloud/).
 | shellyflood        | Shelly Flood Sensor                                    |
 | shellysmoke        | Shelly Smoke Sensor                                    |
 | shellysense        | Shelly Motion and IR Controller                        |
-| shellydevice       | A password protected Shelly device or anunknown type   |
+| shellydevice       | A password protected Shelly device or an unknown type  |
 
 ### Firmware
 
