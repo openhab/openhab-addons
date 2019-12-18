@@ -2,6 +2,7 @@
     "deviceMapping": {
         "id": [
             "yeelink.light.ceiling4",
+            "yeelink.light.ceiling10",
             "yeelink.light.ceiling4.ambi"
         ],
         "channels": [
