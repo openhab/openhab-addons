@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
@@ -211,13 +212,21 @@ public class TelegramHandler extends BaseThingHandler {
                 return UpdatesListener.CONFIRMED_UPDATES_ALL;
         }, exception -> {
                 if (exception != null) {
-                    logger.warn("Telegram exception: {}", exception.getMessage());
+                    logger.debug("Telegram exception: {}", exception.getMessage());
                     if (exception.response() != null) {
                         BaseResponse localResponse = exception.response();
-                        if (localResponse.errorCode() == 401) {
-                            logger.error("Bot token invalid, disable thing {}", getThing().getUID());
-                            localBot.removeGetUpdatesListener();
-                            updateStatus(ThingStatus.OFFLINE);
+                        switch(localResponse.errorCode()) {
+                            case 401: {
+                                logger.error("Bot token invalid, disable thing {}", getThing().getUID());
+                                localBot.removeGetUpdatesListener();
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Bot token invalid.");
+                                break;
+                            }
+                            default: {
+                                logger.error("Unknown error {}", getThing().getUID());
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Unknown error " + localResponse.errorCode());
+                                break;
+                            }
                         }
                     }
             }
