@@ -652,7 +652,7 @@ public class Connection {
                 if (connection != null) {
                     connection.disconnect();
                 }
-                logger.warn("Request to url '{}' fails with unkown error", url, e);
+                logger.warn("Request to url '{}' fails with unknown error", url, e);
                 throw e;
             } catch (Exception e) {
                 if (connection != null) {
