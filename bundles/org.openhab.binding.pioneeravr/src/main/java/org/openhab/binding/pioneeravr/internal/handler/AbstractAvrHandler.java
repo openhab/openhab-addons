@@ -227,11 +227,11 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
                     break;
 
                 default:
-                    logger.debug("Unkown response type from AVR @{}. Response discarded: {}", event.getData(),
+                    logger.debug("Unknown response type from AVR @{}. Response discarded: {}", event.getData(),
                             event.getConnection());
             }
         } catch (AvrConnectionException e) {
-            logger.debug("Unkown response type from AVR @{}. Response discarded: {}", event.getData(),
+            logger.debug("Unknown response type from AVR @{}. Response discarded: {}", event.getData(),
                     event.getConnection());
         }
     }
