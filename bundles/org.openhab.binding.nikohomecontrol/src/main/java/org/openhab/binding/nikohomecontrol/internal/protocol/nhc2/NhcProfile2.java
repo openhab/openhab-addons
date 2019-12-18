@@ -23,4 +23,8 @@ class NhcProfile2 {
     String name;
     String type;
     String uuid;
+
+    String name() {
+        return name;
+    }
 }

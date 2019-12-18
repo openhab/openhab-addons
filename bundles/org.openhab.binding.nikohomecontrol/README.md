@@ -4,15 +4,16 @@ The Niko Home Control binding integrates with a [Niko Home Control](https://www.
 
 The binding supports both Niko Home Control I and Niko Home Control II.
 
-For Niko Home Control I, the binding has been tested with a Niko Home Control IP-interface (550-00508). This IP-interface provides access on the LAN.
-The binding does not require a Niko Home Control Gateway (550-00580), but does work with it in the LAN. It will not make a remote connection.
+For Niko Home Control I, the binding has been tested with a Niko Home Control IP-interface (550-00508).
+This IP-interface provides access on the LAN.
+The binding does not require a Niko Home Control Gateway (550-00580), but does work with it in the LAN.
 It has also been confirmed to work with the Niko Home Control Connected Controller (550-00003) in a Niko Home Control I installation.
 
-For Niko Home Control II, the binding requires the Niko Home Control Connected Controller (550-00003). The installation does not need to be 'connected' (registered on the Niko Home Control website), and will work stricly in the LAN.
+For Niko Home Control II, the binding requires the Niko Home Control Connected Controller (550-00003).
+The installation only needs to be 'connected' (registered on the Niko Home Control website) when first connecting to validate the authentication, and will work strictly in the LAN thereafter.
 
 For Niko Home Control I, the binding exposes all actions from the Niko Home Control System that can be triggered from the smartphone/tablet interface, as defined in the Niko Home Control I programming software.
-For Niko Home Control II, the binding exposes all actions made visible in a touch profile, as configured in the Niko Home Control II programming software.
-No actual Niko Touchscreen is required in the installation.
+For Niko Home Control II, the binding exposes all devices in the system.
 
 Supported device types are switches, dimmers and rollershutters or blinds, thermostats and energy meters (Niko Home Control II only).
 Niko Home Control alarm and notice messages are retrieved and made available in the binding.
@@ -35,16 +36,18 @@ If the IP-address is set on a manually created bridge, no attempt will be made t
 You are responsible to force a fixed IP address on the Niko Home Control IP-interface through settings in your DHCP server.
 
 For Niko Home Control I, the port is set to 8000 by default and should match the port used by the Niko Home Control I IP-interface or Niko Home Control I Connected Controller.
-For Niko Home Control II, the port is set to 8883 by default and should match the secure MQTT port used by the Niko Home Control II Connected Controller.
+For Niko Home Control II, the port is set to 8884 by default and should match the secure MQTT port used by the Niko Home Control II Connected Controller.
 
 For Niko Home Control I, no further bridge configuration is required when using auto-discovery.
 
-The Niko Home Control II bridge has extra required parameters for the touch profile and password.
-Note that the password cannot be empty.
-Therefore, a password needs to be set in the Niko Home Control II programming software for the used touch profile.
+The Niko Home Control II bridge has an extra required parameter for the API token.
+The API token can be retrieved from your Niko Home Control profile page on the Niko Home Control website.
+For that, you will need to add the Hobby API as a connected service on your profile.
+Note that the API token is only valid for one year after creation.
 
 An optional refresh interval will be used to restart the bridge at regular intervals (every 300 minutes by default).
-Restarting the bridge at regular times improves the connection stability and avoids loss of connection. It can be turned off completely by setting the parameter to 0.
+Restarting the bridge at regular times improves the connection stability and avoids loss of connection.
+It can be turned off completely by setting the parameter to 0.
 
 ## Discovery
 
@@ -54,9 +57,9 @@ Note that this may fail to find the correct Niko Home Control IP-interface when 
 
 When the Niko Home Control bridge is added as a thing, from the discovery inbox or manually, system information will be read from the Niko Home Control Controller and will be put in the bridge properties, visible through Paper UI.
 
-Subsequently, all defined actions that can be triggered from a smartphone/tablet in the Niko Home Control I system, respectively actions attached to a touch profile in the Niko Home Control II system,  will be discovered and put in the inbox.
+Subsequently, all defined actions that can be triggered from a smartphone/tablet in the Niko Home Control I system, respectively all actions in the Niko Home Control II system,  will be discovered and put in the inbox.
 It is possible to trigger a manual scan for things on the Niko Home Control bridge.
-Note that Niko Home Control II will require the touch profile and password parameters to be set on the bridge before the scan for actions can succeed.
+Note that Niko Home Control II will require the token to be set on the bridge before the scan for actions can succeed.
 The bridge will remain offline as long as these parameters are not set.
 
 If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such in Paper UI.
@@ -85,16 +88,14 @@ For Niko Home Control II:
 
 ```
 Bridge nikohomecontrol:bridge2:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>,
-                                           profile="<touch profile>", password="<password>",
-                                           refresh=<Refresh interval> ]
+                                           token="<token>", refresh=<Refresh interval> ]
 ```
 
 `bridgeId` can have any value.
 
 `addr` is the fixed Niko Home Connected Controller address and is required.
-`port` will be the port used to connect and is 8883 by default.
-`profile` is the name of the touch profile configured in the Niko Home Control II programming software to be made available to openHAB.
-`password` is the password for the touchprofile, cannot be empty.
+`port` will be the port used to connect and is 8884 by default.
+`token` is the API token retrieved from the Niko Home Control website, cannot be empty.
 `refresh` is the interval to restart the communication in minutes (300 by default), if 0 or omitted the connection will not restart at regular intervals.
 
 The Thing configuration for **Niko Home Control actions** has the following syntax:
@@ -132,14 +133,18 @@ It is not directly visible in the Niko Home Control programming or user software
 For textual configuration, you can manually retrieve it from the content of the .nhcp configuration file created by the programming software.
 Open the file with an unzip tool to read its content.
 
-For Niko Home Control II, the `actionId` parameter is a unique ID for the action in the controller. It can only be auto-discovered.
+For Niko Home Control II, the `actionId` parameter is a unique ID for the action in the controller.
+It can only be auto-discovered.
 If you want to define the action through textual configuration, the easiest way is to first do discovery on the bridge to get the correct `actionId` to use in the textual configuration.
 Discover and add the thing you want to add.
 Note down the `actionId` parameter from the thing, remove it before adding it again through textual configuration, with the same `actionId`parameter.
-Alternatively the `actionId`can be retrieved from the configuration file. The file contains a SQLLite database. The database contains a table `Action` with column `FifthplayId` corresponding to the required `actionId`parameter.
+Alternatively the `actionId`can be retrieved from the configuration file.
+The file contains a SQLLite database.
+The database contains a table `Action` with column `FifthplayId` corresponding to the required `actionId`parameter.
 
 The `step` parameter is only available for dimmers.
-It sets a step value for dimmer increase/decrease actions. The parameter is optional and set to 10 by default.
+It sets a step value for dimmer increase/decrease actions.
+The parameter is optional and set to 10 by default.
 
 The Thing configuration for **Niko Home Control thermostats** has the following syntax:
 
@@ -158,13 +163,15 @@ thermostat <thingId> "Label" @ "Location" [ thermostatId="<Niko Home Control the
 
 `"Label"` is an optional label for the Thing.
 
-`@ "Location"` is optional, and represents the location of the thing. Auto-discovery would have assigned a value automatically.
+`@ "Location"` is optional, and represents the location of the thing.
+Auto-discovery would have assigned a value automatically.
 
-The `thermostatId` parameter is the unique ip Interface Object ID as automatically assigned in the Niko Home Control Controller I when programming the Niko Home Control system using the Niko Home Control programming software.
+The `thermostatId` parameter is the unique IP Interface Object ID as automatically assigned in the Niko Home Control I Controller when programming the Niko Home Control system using the Niko Home Control programming software.
 It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery.
 For textual configuration, it can be retrieved from the .nhcp configuration file.
 
-For Niko Home Control II, the `thermostatId` parameter is a unique ID for the thermostat in the controller. It can only be auto-discovered.
+For Niko Home Control II, the `thermostatId` parameter is a unique ID for the thermostat in the controller.
+It can only be auto-discovered.
 If you want to define the thermostat through textual configuration, you may first need to do discovery on the bridge to get the correct `thermostatId` to use in the textual configuration.
 
 The `overruleTime` parameter is used to set the standard overrule duration when you set a new setpoint without providing an overrule duration.
@@ -190,7 +197,8 @@ energymeter <thingId> "Label" @ "Location" [ energyMeterId="<Niko Home Control e
 `@ "Location"` is optional, and represents the location of the thing. Auto-discovery would have assigned a value automatically.
 
 Energy meters can only be configured for Niko Home Control II.
-The `energyMeterId` parameter is a unique ID for the energy meter in the controller. It can only be auto-discovered.
+The `energyMeterId` parameter is a unique ID for the energy meter in the controller.
+It can only be auto-discovered.
 If you want to define the energy meter through textual configuration, you may first need to do discovery on the bridge to get the correct `energyMeterId` to use in the textual configuration.
 
 ## Channels
@@ -256,7 +264,7 @@ Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300
     thermostat 5 [ thermostatId="0", overruleTime=10 ]
 }
 
-Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8883, profile="openHAB", password="mypassword", refresh=300 ] {
+Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8884, token="A.B.C", refresh=300 ] {
     pushButton 1 "AllOff" [ actionId="12345678-abcd-1234-ef01-aa12bb34ee89" ]
     onOff 2 "Office" @ "Downstairs" [ actionId="12345678-abcd-1234-ef01-aa12bb34cc56" ]
     dimmer 3 "DiningRoom" [ actionId="abcdef01-abcd-1234-ab98-abcdef012345", step=5 ]

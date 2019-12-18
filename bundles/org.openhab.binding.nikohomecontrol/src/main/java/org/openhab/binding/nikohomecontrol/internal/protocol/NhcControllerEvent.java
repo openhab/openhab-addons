@@ -47,7 +47,7 @@ public interface NhcControllerEvent {
     }
 
     /**
-     * Get the touch profile of the Niko Home Control II system.
+     * Get the profile for the hobby API in the Niko Home Control II system.
      *
      * @return the profile
      */
@@ -56,11 +56,11 @@ public interface NhcControllerEvent {
     }
 
     /**
-     * Get the touch profile password of the Niko Home Control II system.
+     * Get the JWT Token of the Niko Home Control II system.
      *
-     * @return the password
+     * @return the token
      */
-    public default String getPassword() {
+    public default String getToken() {
         return "";
     }
 

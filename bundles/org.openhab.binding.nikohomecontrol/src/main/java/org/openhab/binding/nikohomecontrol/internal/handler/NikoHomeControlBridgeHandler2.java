@@ -50,18 +50,10 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
         setConfig();
 
-        String profile = getProfile();
-        logger.debug("Niko Home Control: touch profile {}", profile);
-        if (profile.isEmpty()) {
+        String token = getToken();
+        if (token.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: profile name not set.");
-            return;
-        }
-
-        String password = getPassword();
-        if (password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: password for profile cannot be empty.");
+                    "Niko Home Control: token cannot be empty.");
             return;
         }
 
@@ -98,6 +90,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
             properties.put("timeZone", comm.getTimeInfo().getTimeZone());
             properties.put("isDST", comm.getTimeInfo().getIsDst());
             properties.put("services", comm.getServices());
+            properties.put("profiles", comm.getProfiles());
 
             thing.setProperties(properties);
         }
@@ -105,21 +98,17 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     @Override
     public String getProfile() {
-        String profile = ((NikoHomeControlBridgeConfig2) config).profile;
-        if (profile == null) {
-            return "";
-        }
-        return profile;
+        return ((NikoHomeControlBridgeConfig2) config).profile;
     }
 
     @Override
-    public String getPassword() {
-        String password = ((NikoHomeControlBridgeConfig2) config).password;
-        if ((password == null) || password.isEmpty()) {
-            logger.debug("Niko Home Control: no password set.");
+    public String getToken() {
+        String token = ((NikoHomeControlBridgeConfig2) config).token;
+        if ((token == null) || token.isEmpty()) {
+            logger.debug("Niko Home Control: no JWT token set.");
             return "";
         }
-        return password;
+        return token;
     }
 
     @Override
