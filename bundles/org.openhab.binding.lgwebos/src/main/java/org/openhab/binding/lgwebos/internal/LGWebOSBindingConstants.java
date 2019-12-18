@@ -69,9 +69,5 @@ public class LGWebOSBindingConstants {
     public static final String CHANNEL_MEDIA_PLAYER = "mediaPlayer";
     public static final String CHANNEL_MEDIA_STOP = "mediaStop";
     public static final String CHANNEL_APP_LAUNCHER = "appLauncher";
-<<<<<<< HEAD
-    public static final String CHANNEL_IRCODE = "irCode";
-=======
     public static final String CHANNEL_RCBUTTON = "rcButton";
->>>>>>> Update to PR6492: name changed to rcButton
 }
