@@ -294,7 +294,7 @@
 		<state pattern="%.0f" readOnly="true" />
 	</channel-type>
 	<channel-type id="last_clean_finish">
-		<item-type>Boolean</item-type>
+		<item-type>Number</item-type>
 		<label>Cleaning Finished</label>
 		<state readOnly="true" />
 	</channel-type>
