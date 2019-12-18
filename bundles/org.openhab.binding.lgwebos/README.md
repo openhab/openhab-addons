@@ -20,13 +20,7 @@ In combination with the wake on LAN binding this will allow you to start the TV 
 
 ## Binding Configuration
 
-The binding has only one configuration parameter, which is only required if the binding cannot automatically detect openHAB's local IP address: 
-
-| Name    | Description                                                          |
-|---------|----------------------------------------------------------------------|
-| localIP | This is the local IP of your openHAB host on the network. (Optional) |
-
-If LocalIP is not set, the binding will use openHAB's primary IP address, which may be configured under network settings.
+The binding has no configuration parameter. 
 
 ## Discovery
 
@@ -34,11 +28,26 @@ TVs are auto discovered through SSDP in the local network.
 The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
 
 Please note, that if you are running openHAB in a Docker container you need to use macvlan or host networking for this binding to work.
+If automatic discovery is not possible you may still manually configure a device based on host and access key.
 
 ## Thing Configuration
 
-WebOS TV has no configuration parameters.
-Please note that at least one channel must be bound to an item before the binding will make an attempt to connect and pair with the TV once that one is turned on.
+WebOS TV has two configuration parameters.
+
+Parameters:
+
+| Name    | Description                                                                  |
+|---------|------------------------------------------------------------------------------|
+| host    | Hostname or IP address of TV                                                 |
+| key     | Key exchanged with TV after pairing (enter it after you paired the device)   |
+
+### Configuration in .things file
+
+Set host and key parameter as in the following example:
+
+```
+Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef"]
+```
 
 ## Channels
 
@@ -53,10 +62,10 @@ Please note that at least one channel must be bound to an item before the bindin
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
 | appLauncher     | String    | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel.                                                                 | RW         |
-| irCode          | String    | Simulates pressing of a button on the TV's infrared remote control. See below for a list of control strings.                                                                                                            | W          |
+| rcButton        | String    | Simulates pressing of a button on the TV's infrared remote control. See below for a list of button names.                                                                                                               | W          |
 
-### IR Remote Control Codes
-The IRCode channel has only been tested on an LGUJ657A TV. and this is a list of IR codes that are known to work with this device.
+### Remote Control Buttons
+The **rcButton** channel has only been tested on an LGUJ657A TV. and this is a list of button names that are known to work with this device.
 This list has been compiled mostly through trial and error. Your mileage may vary.
 
 | Code String | Description                                              |
@@ -83,18 +92,7 @@ A sample HABPanel remote control widget can be found [in this github repository.
 
 ## Example
 
-Assuming your TV has device ID 3aab9eea-953b-4272-bdbd-f0cd0ecf4a46. 
-By default this binding will create ThingIDs for discovery results with prefix lgwebos:WebOSTV: and the device ID. e.g. lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46.
-Thus, you can find your TV's device ID by looking into discovery results in Paper UI.
-
-You could also specify an alternate ThingID using a .things file, specifying the deviceId as a mandatory configuration parameter:
-
-```
-Thing lgwebos:WebOSTV:tv1 [ deviceId="3aab9eea-953b-4272-bdbd-f0cd0ecf4a46" ]
-```
-
-However, for the next steps of this example we will assume you are using automatic discovery and the default ThingID.
-
+Assuming your ThingID is lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46.
 
 demo.items:
 
