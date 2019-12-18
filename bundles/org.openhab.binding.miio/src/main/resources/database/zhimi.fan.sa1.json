@@ -87,7 +87,7 @@
 			},
 			{
 				"property": "led_b",
-				"friendlyName": "Led",
+				"friendlyName": "LED",
 				"channel": "led_b",
 				"type": "Number",
 				"refresh": true,
