@@ -72,6 +72,7 @@ public final class NibeUplinkBindingConstants {
     public static final String CHANNEL_TYPE_SPEED = "type-speed-percent";
     public static final String CHANNEL_TYPE_DEFROSTING_STATE = "type-defrosting-state";
     public static final String CHANNEL_TYPE_HPAC_STATE = "type-hpac-state";
+    public static final String CHANNEL_TYPE_PRESSURE = "type-pressure";
 
     public static final String RW_CHANNEL_PREFIX = "rw";
     public static final String CHANNEL_TYPE_HEAT_OFFSET_RW = "rwtype-heat-offset";

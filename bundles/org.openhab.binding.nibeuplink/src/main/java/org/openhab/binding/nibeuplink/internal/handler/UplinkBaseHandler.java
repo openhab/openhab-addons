@@ -113,7 +113,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      *
      */
     private void validateChannelsAndRegisterGroups() {
-        logger.info("Validating {} channels", getThing().getChannels().size());
+        logger.debug("Validating {} channels", getThing().getChannels().size());
         for (Channel channel : getThing().getChannels()) {
             if (!ChannelUtil.isValidNibeChannel(channel)) {
                 logger.warn("Channel {} is not a valid Nibe channel ({})", channel.getUID().getIdWithoutGroup(),
