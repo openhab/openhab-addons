@@ -35,7 +35,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.lgwebos.action.LGWebOSActions;
 import org.openhab.binding.lgwebos.internal.ChannelHandler;
+<<<<<<< HEAD
 import org.openhab.binding.lgwebos.internal.IRCodeControlCode;
+=======
+import org.openhab.binding.lgwebos.internal.RCButtonControl;
+>>>>>>> Update to PR6492: name changed to rcButton
 import org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants;
 import org.openhab.binding.lgwebos.internal.LauncherApplication;
 import org.openhab.binding.lgwebos.internal.MediaControlPlayer;
@@ -100,7 +104,11 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         handlers.put(CHANNEL_MEDIA_STOP, new MediaControlStop());
         handlers.put(CHANNEL_TOAST, new ToastControlToast());
         handlers.put(CHANNEL_MEDIA_PLAYER, new MediaControlPlayer());
+<<<<<<< HEAD
         handlers.put(CHANNEL_IRCODE, new IRCodeControlCode());
+=======
+        handlers.put(CHANNEL_RCBUTTON, new RCButtonControl());
+>>>>>>> Update to PR6492: name changed to rcButton
         channelHandlers = Collections.unmodifiableMap(handlers);
     }
 

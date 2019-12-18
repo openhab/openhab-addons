@@ -814,8 +814,13 @@ public class LGWebOSTVSocket {
 
     // IR CODE
 
+<<<<<<< HEAD
     public void sendIRCode(String irCode, ResponseListener<CommandConfirmation> listener) {
         executeMouse(s -> s.button(irCode));
+=======
+    public void sendRCButton(String rcButton, ResponseListener<CommandConfirmation> listener) {
+        executeMouse(s -> s.button(rcButton));
+>>>>>>> Update to PR6492: name changed to rcButton
     }
 
     //

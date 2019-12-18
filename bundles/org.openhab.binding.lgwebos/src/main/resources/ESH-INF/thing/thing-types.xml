@@ -18,7 +18,11 @@
 			<channel id="mediaPlayer" typeId="mediaPlayerType" />
 			<channel id="mediaStop" typeId="mediaStopType" />
 			<channel id="appLauncher" typeId="appLauncherChannelType" />
+<<<<<<< HEAD
 			<channel id="irCode" typeId="irCodeType" />
+=======
+			<channel id="rcButton" typeId="rcButtonType" />
+>>>>>>> Update to PR6492: name changed to rcButton
 		</channels>
 
 		<properties>
@@ -86,10 +90,17 @@
 		<label>Application</label>
 		<description>Start application and monitor running applications.</description>
 	</channel-type>
+<<<<<<< HEAD
 	<channel-type id="irCodeType">
 		<item-type>String</item-type>
 		<label>IRCode</label>
 		<description>IR Remote Code</description>
+=======
+	<channel-type id="rcButtonType">
+		<item-type>String</item-type>
+		<label>RCButton</label>
+		<description>Simulate a Remote Control button press</description>
+>>>>>>> Update to PR6492: name changed to rcButton
 	</channel-type>
 
 </thing:thing-descriptions>
