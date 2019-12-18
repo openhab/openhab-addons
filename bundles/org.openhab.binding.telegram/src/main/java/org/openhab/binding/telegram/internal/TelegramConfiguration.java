@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link TelegramConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Jens Runge - Initial contribution
+ * @author Eugene Horohorin - adding proxy config
  */
 @NonNullByDefault
 public class TelegramConfiguration {
