@@ -15,6 +15,8 @@ import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoverySe
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse;
 import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link WizLightingMediator} is responsible for receiving all the sync packets and route correctly to
@@ -22,6 +24,7 @@ import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiv
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
+@Component(configurationPid = "WizLightingMediator", service = org.openhab.binding.wizlighting.handler.WizLightingMediator)
 public interface WizLightingMediator {
 
     /**

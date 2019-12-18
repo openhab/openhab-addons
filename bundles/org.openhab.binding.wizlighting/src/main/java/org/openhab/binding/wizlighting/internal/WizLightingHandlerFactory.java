@@ -26,6 +26,8 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link WizLightingHandlerFactory} is responsible for creating things and thing
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
+@Component(configurationPid = "WizLightingHandlerFactory", service = org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory)
 public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

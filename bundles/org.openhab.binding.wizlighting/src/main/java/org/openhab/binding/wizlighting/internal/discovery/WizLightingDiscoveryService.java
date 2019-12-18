@@ -43,12 +43,16 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * This is the {@link DiscoveryService} for the Wizlighting Items.
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@Component(configurationPid = "WizLightingDiscoveryService", service = org.eclipse.smarthome.config.discovery.DiscoveryService)
 public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingDiscoveryService.class);
@@ -251,8 +255,8 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         String ipAddress = light.ip;
         int homeId = light.home_id;
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put(WizLightingBindingConstants.MAC_ADDRESS_ARG, macAddress);
-        properties.put(WizLightingBindingConstants.HOST_ADDRESS_ARG, ipAddress);
+        properties.put(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG, macAddress);
+        properties.put(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG, ipAddress);
         properties.put(WizLightingBindingConstants.HOME_ID_ARG, String.valueOf(homeId));
         ThingUID newThingId = new ThingUID(WizLightingBindingConstants.THING_TYPE_WIZ_BULB, macAddress);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
