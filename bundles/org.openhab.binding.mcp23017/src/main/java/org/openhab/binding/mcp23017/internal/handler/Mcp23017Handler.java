@@ -183,7 +183,9 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
 
     @Override
     public void dispose() {
-        pinStateHolder.unBindGpioPins();
+        if (pinStateHolder != null) {
+            pinStateHolder.unBindGpioPins();
+        }
         super.dispose();
     }
 
