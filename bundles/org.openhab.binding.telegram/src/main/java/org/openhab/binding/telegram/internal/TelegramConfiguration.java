@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.telegram.internal;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import java.util.List;
 
 /**
  * The {@link TelegramConfiguration} class contains fields mapping thing configuration parameters.
@@ -31,6 +31,8 @@ public class TelegramConfiguration {
     private @Nullable String botUsername;
     private @Nullable String botToken;
     private @Nullable List<String> chatIds;
+    private @Nullable String proxyHost;
+    private @Nullable String proxyPort;
     private String parseMode = "";
 
     public @Nullable String getBotUsername() {
@@ -47,6 +49,14 @@ public class TelegramConfiguration {
 
     public String getParseMode() {
         return parseMode;
+    }
+
+    public @Nullable String getProxyHost() {
+        return proxyHost;
+    }
+
+    public @Nullable String getProxyPort() {
+        return proxyPort;
     }
 
 }
