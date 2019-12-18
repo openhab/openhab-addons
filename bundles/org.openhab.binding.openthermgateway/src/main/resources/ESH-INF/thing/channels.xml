@@ -154,6 +154,48 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="servicerequest">
+		<item-type>Switch</item-type>
+		<label>Service request</label>
+		<description>Service required</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lockout-reset">
+		<item-type>Switch</item-type>
+		<label>Remote reset</label>
+		<description>Remote reset</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lowwaterpress">
+		<item-type>Switch</item-type>
+		<label>Low water pressure</label>
+		<description>Water pressure fault</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="gasflamefault">
+		<item-type>Switch</item-type>
+		<label>Gas or flame fault</label>
+		<description>Gas or flame fault</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="airpressfault">
+		<item-type>Switch</item-type>
+		<label>Air pressure fault</label>
+		<description>Air pressure fault</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="waterovtemp">
+		<item-type>Switch</item-type>
+		<label>Water over-temperature</label>
+		<description>Water over-temperature</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="oemfaultcode">
 		<item-type>Number</item-type>
 		<label>OEM fault code</label>

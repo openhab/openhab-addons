@@ -26,7 +26,13 @@
 			<channel id="modulevel" typeId="modulevel" />
 			<channel id="maxrelmdulevel" typeId="maxrelmdulevel" />
 			<channel id="fault" typeId="fault" />
-			<channel id="oemfaultcode" typeId="oemfaultcode" />			
+			<channel id="servicerequest" typeId="servicerequest" />
+			<channel id="lockout-reset" typeId="lockout-reset" />
+			<channel id="lowwaterpress" typeId="lowwaterpress" />
+			<channel id="gasflamefault" typeId="gasflamefault" />
+			<channel id="airpressfault" typeId="airpressfault" />
+			<channel id="waterovtemp" typeId="waterovtemp" />
+			<channel id="oemfaultcode" typeId="oemfaultcode" />
 			<channel id="sendcommand" typeId="sendcommand" />
 		</channels>
 		<properties>
