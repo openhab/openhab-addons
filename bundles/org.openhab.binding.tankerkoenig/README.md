@@ -180,7 +180,7 @@ Note: If the API-key is banned by Tankerkönig, the reason has to be cleared wit
 
 The correct usage of opening times needs the information if the actual day is a holiday.
 The binding expects a switch item linked to the Webservice channel holiday.
-This switch can be set either manually (only suggested for testing!) or by a rule which uses the [ephemeris action](<https://www.openhab.org/docs/configuration/actions.html#ephemeris>) to set that switch.
+This switch can be set either manually (only suggested for testing!) or by a rule which uses the [ephemeris action](https://www.openhab.org/docs/configuration/actions.html#ephemeris) to set that switch.
 
 ## Tankerkönig API
 
