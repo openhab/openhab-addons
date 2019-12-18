@@ -50,6 +50,13 @@ The OpenTherm Gateway supports the following channels:
 - Relative modulation level
 - Maximum relative modulation level
 - Fault indication
+- Service required
+- Lockout-reset
+- Low water pressure fault
+- Gas/flame fault
+- Air pressure fault
+- Water over-temperature fault
+- OEM fault code
 - Send command channel
 
 
@@ -84,6 +91,12 @@ Switch BurnerActive "Burner active" <switch> { channel="openthermgateway:otgw:1:
 Number RelativeModulationLevel "Relative modulation level [%.1f %%]" { channel="openthermgateway:otgw:1:modulevel" }
 Number MaximumRelativeModulationLevel "Maximum relative modulation level [%.1f %%]" { channel="openthermgateway:otgw:1:maxrelmdulevel" }
 Switch Fault "Fault indication" <switch> { channel="openthermgateway:otgw:1:fault" }
+Switch ServiceRequest "Service required" <switch> { channel="openthermgateway:otgw:1:servicerequest" }
+Switch LockoutReset "Lockout-reset" <switch> { channel="openthermgateway:otgw:1:lockout-reset" }
+Switch LowWaterPress "Low water pressure fault" <switch> { channel="openthermgateway:otgw:1:lowwaterpress" }
+Switch GasFlameFault "Gas or flame fault" <switch> { channel="openthermgateway:otgw:1:gasflamefault" }
+Switch AirPressFault "Air pressure fault" <switch> { channel="openthermgateway:otgw:1:airpressfault" }
+Switch waterOvTemp "Water over-temperature fault" <switch> { channel="openthermgateway:otgw:1:waterovtemp" }
 Number OemFaultCode "OEM fault code" { channel="openthermgateway:otgw:1:oemfaultcode" }
 Text SendCommand "Send command channel" { channel="openthermgateway:otgw:1:sendcommand" }
 ```
@@ -112,7 +125,13 @@ sitemap demo label="Main Menu" {
         Switch item="BurnerActive" icon="switch" label="Burner active"
         Text item="RelativeModulationLevel" icon="" label="Relative modulation level [%.1f %%]"
         Text item="MaximumRelativeModulationLevel" icon="" label="Maximum relative modulation level [%.1f %%]"        
-        Switch item="Fault" icon="switch" label="Fault indication"
+        Switch item="Fault" icon="" label="Fault indication"
+        Switch item="ServiceRequest" icon="" label="Service required"
+        Switch item="LockoutReset" icon="" label="Lockout-reset"
+        Switch item="LowWaterPress" icon="" label="Low water pressure fault"
+        Switch item="GasFlameFault" icon="" label="Gas or flame fault"
+        Switch item="AirPressFault" icon="" label="Air pressure fault"
+        Switch item="waterOvTemp" icon="" label="Water over-temperature fault"
         Text item="OemFaultCode" icon="" label="OEM fault code"
     }
 }

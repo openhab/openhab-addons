@@ -156,21 +156,21 @@
 
 	<channel-type id="servicerequest">
 		<item-type>Switch</item-type>
-		<label>Service request</label>
+		<label>Service required</label>
 		<description>Service required</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="lockout-reset">
 		<item-type>Switch</item-type>
-		<label>Remote reset</label>
-		<description>Remote reset</description>
+		<label>Lockout-reset enabled</label>
+		<description>Lockout-reset enabled</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="lowwaterpress">
 		<item-type>Switch</item-type>
-		<label>Low water pressure</label>
+		<label>Low water pressure fault</label>
 		<description>Water pressure fault</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -191,8 +191,8 @@
 
 	<channel-type id="waterovtemp">
 		<item-type>Switch</item-type>
-		<label>Water over-temperature</label>
-		<description>Water over-temperature</description>
+		<label>Water over-temperature fault</label>
+		<description>Water over-temperature fault</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
