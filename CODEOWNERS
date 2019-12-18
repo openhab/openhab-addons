@@ -27,7 +27,7 @@
 /bundles/org.openhab.binding.chromecast/ @kaikreuzer
 /bundles/org.openhab.binding.cm11a/ @BobRak
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
-/bundles/org.openhab.binding.daikin/ @caffineehacker
+/bundles/org.openhab.binding.daikin/ @caffineehacker @psmedley
 /bundles/org.openhab.binding.darksky/ @cweitkamp
 /bundles/org.openhab.binding.deconz/ @davidgraeff
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
