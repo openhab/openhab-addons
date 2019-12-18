@@ -85,7 +85,7 @@
 	</channel-type>
 	<channel-type id="led">
 		<item-type>Switch</item-type>
-		<label>Led</label>
+		<label>LED</label>
 	</channel-type>
 	<channel-type id="colorMode">
 		<item-type>Number</item-type>
