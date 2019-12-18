@@ -73,6 +73,9 @@ public class DataResponseTransformer {
                     case CHANNEL_TYPE_START_COOLING_RW:
                         putQuantityType(result, channel, value, DIV_10, SIUnits.CELSIUS);
                         break;
+                    case CHANNEL_TYPE_PRESSURE:
+                        putQuantityType(result, channel, value, DIV_10, SmartHomeUnits.BAR);
+                        break;
                     case CHANNEL_TYPE_ENERGY:
                         putQuantityType(result, channel, value, DIV_10, MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR));
                         break;
@@ -109,6 +112,9 @@ public class DataResponseTransformer {
                         putDecimalType(result, channel, value, DIV_100);
                     case CHANNEL_TYPE_NUMBER_SCALE10:
                     case CHANNEL_TYPE_DEGREE_MINUTES_RW:
+                    case CHANNEL_TYPE_STOP_HEATING_RW:
+                    case CHANNEL_TYPE_STOP_ADD_HEATING_RW:
+                    case CHANNEL_TYPE_ROOM_SENSOR_FACTOR_RW:
                         putDecimalType(result, channel, value, DIV_10);
                         break;
                     case CHANNEL_TYPE_NUMBER_UNSCALED:
@@ -117,6 +123,8 @@ public class DataResponseTransformer {
                     case CHANNEL_TYPE_HW_LUX_RW:
                     case CHANNEL_TYPE_HW_MODE_RW:
                     case CHANNEL_TYPE_FAN_SPEED_RW:
+                    case CHANNEL_TYPE_FILTER_TIME_RW:
+                    case CHANNEL_TYPE_HEAT_OFFSET_RW:
                         putDecimalType(result, channel, value, UNSCALED);
                         break;
                     default:
