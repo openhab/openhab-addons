@@ -30,7 +30,7 @@ public class WizLightingBindingConstants {
     /**
      * List of all Thing Type UIDs.
      */
-    public static final ThingTypeUID THING_TYPE_WIZ_BULB = new ThingTypeUID(BINDING_ID, "wizBulb");
+    public static final ThingTypeUID THING_TYPE_WIZ_BULB = new ThingTypeUID(BINDING_ID, "bulb");
 
     /**
      * List of all Channel ids
