@@ -52,8 +52,29 @@ Please note that the things cannot be used to send messages. In order to send a 
 | `chatIds`               |         | Yes      | Comma-separated list of chat ids                                                             |
 | `botToken`              |         | Yes      | authentication token                                                                         |
 | `parseMode`             |  None   | No       | Support for formatted messages, values: Markdown or HTML.                                    |
-| `proxyHost`             |  None   | No       | SOCKS5 proxy host for telegram binding, it doesn't affect entire openhab.                    |
-| `proxyPort`             |  None   | No       | SOCKS5 proxy port for telegram binding.                                                      |
+| `proxyHost`             |  None   | No       | Proxy host for telegram binding, it doesn't affect entire openhab.                           |
+| `proxyPort`             |  None   | No       | Proxy port for telegram binding.                                                             |
+| `proxyType`             |  SOCKS5 | No       | Type of proxy server for telegram binding. Default: SOCKS5                                   |
+
+
+telegram.thing (no proxy):
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >" ]
+```
+
+
+telegram.thing (SOCKS5 proxy server is used): 
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >", proxyHost="localhost", proxyPort="9050", proxyType="SOCKS5" ]
+```
+
+or HTTP proxy server
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
+```
+
+
 
 ## Channels
 

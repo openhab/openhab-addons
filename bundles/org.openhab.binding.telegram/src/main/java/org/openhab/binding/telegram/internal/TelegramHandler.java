@@ -147,13 +147,20 @@ public class TelegramHandler extends BaseThingHandler {
 
         String proxyHost = config.getProxyHost();
         String proxyPort = config.getProxyPort();
+        String proxyType = config.getProxyType();
 
         if (proxyHost != null && proxyPort != null) {
-
             InetSocketAddress proxyAddr = new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort));
-            Proxy proxy = new Proxy(Proxy.Type.SOCKS, proxyAddr);
 
-            logger.debug("SOCKS5 Proxy {}:{} is used for telegram ", proxyHost, proxyPort);
+            Proxy.Type proxyTypeParam = Proxy.Type.SOCKS;
+
+            if (proxyType != null && "HTTP".equals(proxyType)) {
+                proxyTypeParam = Proxy.Type.HTTP;
+            }
+
+            Proxy proxy = new Proxy(proxyTypeParam, proxyAddr);
+
+            logger.debug("{} Proxy {}:{} is used for telegram ", proxyTypeParam, proxyHost, proxyPort);
             prepareConnection.proxy(proxy);
         }
 
