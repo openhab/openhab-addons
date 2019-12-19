@@ -102,6 +102,4 @@
         <item-type>Dimmer</item-type>
         <label>Speed</label>
     </channel-type>
-        
-
 </thing:thing-descriptions>

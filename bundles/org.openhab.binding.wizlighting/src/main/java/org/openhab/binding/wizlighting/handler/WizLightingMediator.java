@@ -58,7 +58,7 @@ public interface WizLightingMediator {
     Set<Thing> getAllThingsRegistred();
 
     /**
-     * Sets the discovery service to inform the when one new thing has been found.
+     * Sets the discovery service to inform the user when one new thing has been found.
      *
      * @param discoveryService the discovery service.
      */

@@ -12,8 +12,6 @@ import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * The {@link WizLightingBindingConstants} class defines common constants, which are
  * used across the whole binding.
