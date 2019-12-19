@@ -49,7 +49,6 @@ import com.google.gson.GsonBuilder;
 import org.osgi.service.component.annotations.Component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This is the {@link DiscoveryService} for the Wizlighting Items.

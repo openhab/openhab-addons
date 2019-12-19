@@ -29,4 +29,12 @@ public class ColorTemperatureRequestParam implements Param {
     public ColorTemperatureRequestParam(PercentType colorTemperature) {
         temp = 2200 + (colorTemperature.intValue() * (6500 - 2200) / 100);
     }
+
+    public int getTemp() {
+        return temp;
+    }
+
+    public void setTemp(int temp) {
+        this.temp = temp;
+    }
 }
