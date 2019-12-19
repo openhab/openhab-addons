@@ -306,9 +306,9 @@ An arbitrary number of custom channels can be added via paper-ui or file based c
 The recommended way is to use paper-ui as this is much easier to use.
 There are three custom channel types available, which allow different scaling of the raw values retrieved from the NIBE API:
 
-- custom-type-unscaled
-- custom-type-div10
-- custom-type-div100
+- type-number-unscaled
+- type-number-scale10
+- type-number-scale100
 
 
 ## Full Example
@@ -318,8 +318,8 @@ There are three custom channel types available, which allow different scaling of
 ```
 nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", nibeId="4711", pollingInterval=300] {
    Channels:
-        Type custom-type-div10    : 47015 "min supply temp heating"
-        Type custom-type-unscaled : 48177 "min supply temp cooling"
+        Type type-number-scale10  : 47015 "min supply temp heating"
+        Type type-number-unscaled : 48177 "min supply temp cooling"
 }
 ```
 
