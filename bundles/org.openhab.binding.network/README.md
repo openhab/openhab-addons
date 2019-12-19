@@ -63,6 +63,7 @@ Use the following options for a **network:speedtest**:
 -   **url:** Url of the speed test server.
 -   **fileName:** Name of the file to download from test server.
 -   **initialDelay:** Delay (in minutes) before starting the first speed test (can help avoid flooding your server at startup). Default: `5`.
+-   **maxTimeout:** Number of timeout events that can happend (resetted at success) before setting the thing offline. Default: `3`.
 
 ## Presence detection - Configure target device
 

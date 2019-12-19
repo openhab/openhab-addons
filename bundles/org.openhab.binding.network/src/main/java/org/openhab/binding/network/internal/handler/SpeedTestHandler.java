@@ -56,6 +56,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     private @NonNullByDefault({}) ScheduledFuture<?> refreshTask;
     private @NonNullByDefault({}) SpeedTestConfiguration configuration;
     private State bufferedProgress = UnDefType.UNDEF;
+    private int timeouts;
 
     public SpeedTestHandler(Thing thing) {
         super(thing);
@@ -68,6 +69,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
                 configuration.refreshInterval);
         refreshTask = scheduler.scheduleWithFixedDelay(this::startSpeedTest, configuration.initialDelay,
                 configuration.refreshInterval, TimeUnit.MINUTES);
+        timeouts = configuration.maxTimeout;
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -103,6 +105,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
 
     @Override
     public void onCompletion(final @Nullable SpeedTestReport testReport) {
+        timeouts = configuration.maxTimeout;
         if (testReport != null) {
             BigDecimal rate = testReport.getTransferRateBit();
             QuantityType<DataTransferRate> quantity = new QuantityType<DataTransferRate>(rate, BIT_PER_SECOND)
@@ -132,7 +135,17 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
             freeRefreshTask();
             return;
-        } else if (SpeedTestError.SOCKET_TIMEOUT.equals(testError) || SpeedTestError.SOCKET_ERROR.equals(testError)
+        } else if (SpeedTestError.SOCKET_TIMEOUT.equals(testError)) {
+            timeouts--;
+            if (timeouts <= 0) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Max timeout count reached");
+                freeRefreshTask();
+            } else {
+                logger.warn("Speedtest timed out, {} attempts left. Message '{}'", timeouts, errorMessage);
+                stopSpeedTest();
+            }
+            return;
+        } else if (SpeedTestError.SOCKET_ERROR.equals(testError)
                 || SpeedTestError.INVALID_HTTP_RESPONSE.equals(testError)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             freeRefreshTask();
