@@ -52,6 +52,8 @@ Please note that the things cannot be used to send messages. In order to send a 
 | `chatIds`               |         | Yes      | Comma-separated list of chat ids                                                             |
 | `botToken`              |         | Yes      | authentication token                                                                         |
 | `parseMode`             |  None   | No       | Support for formatted messages, values: Markdown or HTML.                                    |
+| `proxyHost`             |  None   | No       | SOCKS5 proxy host for telegram binding, it doesn't affect entire openhab.                    |
+| `proxyPort`             |  None   | No       | SOCKS5 proxy port for telegram binding.                                                      |
 
 ## Channels
 
