@@ -14,12 +14,15 @@ package org.openhab.binding.wizlighting.internal.entities;
 
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This POJO represents one Wiz Lighting UDP Request.
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class WizLightingRequest {
     private int id;
 

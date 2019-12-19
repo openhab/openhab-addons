@@ -15,12 +15,15 @@ package org.openhab.binding.wizlighting.internal.entities;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This POJO represents one Scene Request Param
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class SceneRequestParam extends DimmingRequestParam {
     private int sceneId;
 

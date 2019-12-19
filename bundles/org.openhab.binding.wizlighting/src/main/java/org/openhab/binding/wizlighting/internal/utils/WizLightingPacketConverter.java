@@ -23,12 +23,15 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Transforms the datagram packet to request/response
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class WizLightingPacketConverter {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingPacketConverter.class);

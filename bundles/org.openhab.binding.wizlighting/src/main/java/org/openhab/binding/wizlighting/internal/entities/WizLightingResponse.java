@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This POJO represents one Wiz Lighting UDP Response
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class WizLightingResponse {
 
     private int id;

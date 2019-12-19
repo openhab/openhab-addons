@@ -53,6 +53,7 @@ import org.openhab.binding.wizlighting.internal.utils.ImageUtils;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link WizLightingHandler} is responsible for handling commands, which are
@@ -60,6 +61,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
+@NonNullByDefault
 public class WizLightingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingHandler.class);

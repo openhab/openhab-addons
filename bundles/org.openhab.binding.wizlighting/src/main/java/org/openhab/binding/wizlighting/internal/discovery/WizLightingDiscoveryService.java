@@ -47,7 +47,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This is the {@link DiscoveryService} for the Wizlighting Items.
@@ -57,6 +59,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 // TODO:  Check this annotation
 @Component(configurationPid = "discovery.wizlighting", service = DiscoveryService.class)
+@NonNullByDefault
 public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingDiscoveryService.class);

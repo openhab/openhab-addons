@@ -14,12 +14,15 @@ package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This POJO represents State Request Param
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class StateRequestParam implements Param {
     private boolean state; // true = ON, false = OFF
 

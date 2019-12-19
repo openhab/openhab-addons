@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.wizlighting.internal.discovery;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * This is {@link HomeDTO} Object to parse Discovery response of Home Items.
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class HomeDTO {
 
     static class Light {

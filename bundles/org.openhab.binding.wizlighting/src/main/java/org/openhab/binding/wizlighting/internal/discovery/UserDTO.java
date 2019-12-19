@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.wizlighting.internal.discovery;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * This POJO represents User Details for discovery
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class UserDTO {
 
     static class Home {

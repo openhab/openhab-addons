@@ -23,6 +23,8 @@ import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This Thread is responsible to receive all sync messages and redirect them to
  * {@link WizLightingMediator}.
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class WizLightingUpdateReceiverRunnable implements Runnable {
 
     private static final int TIMEOUT_TO_DATAGRAM_RECEPTION = 10000;

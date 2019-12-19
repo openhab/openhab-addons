@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.wizlighting.internal.discovery;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This is {@link TokenDTO} Object to parse Discovery response of access tokens.
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class TokenDTO {
     public String access_token;
     public long expires_in;

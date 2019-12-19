@@ -14,12 +14,15 @@ package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.smarthome.core.library.types.HSBType;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This POJO represents Color Request Param
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class ColorRequestParam extends DimmingRequestParam {
     private int b; // blue 0-255
     private int g; // green 0-255

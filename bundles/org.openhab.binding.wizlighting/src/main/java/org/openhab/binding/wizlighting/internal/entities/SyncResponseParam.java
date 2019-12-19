@@ -14,12 +14,16 @@ package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.smarthome.core.library.types.PercentType;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * This POJO represents one Wiz Lighting Sync params
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class SyncResponseParam implements Param {
     public String mac;
     public boolean state;

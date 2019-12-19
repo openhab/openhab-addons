@@ -27,11 +27,12 @@ import org.openhab.binding.wizlighting.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidException;
 import org.openhab.binding.wizlighting.internal.utils.NetworkUtils;
 import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link WizLightingHandlerFactory} is responsible for creating things and thing
@@ -40,6 +41,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Sriram Balakrishnan - Initial contribution
  */
 // TODO:  Check this annotation
+@NonNullByDefault
 @Component(configurationPid = "binding.wizlighting", service = ThingHandlerFactory.class)
 public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 

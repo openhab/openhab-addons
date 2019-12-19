@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Alexander Seeliger - Initial contribution
  *
  */
+@NonNullByDefault
 public class ColorTemperatureRequestParam implements Param {
     private int temp;
 

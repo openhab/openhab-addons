@@ -25,6 +25,7 @@ import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiv
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link WizLightingMediatorImpl} is responsible for receiving all the sync packets and route correctly to
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
+@NonNullByDefault
 public class WizLightingMediatorImpl implements WizLightingMediator {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingMediatorImpl.class);

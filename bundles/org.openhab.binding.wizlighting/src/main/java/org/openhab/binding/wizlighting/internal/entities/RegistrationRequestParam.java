@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This POJO represents Registration request param
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class RegistrationRequestParam implements Param {
     private String phoneIp;
     private boolean register;

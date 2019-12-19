@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.wizlighting.internal.utils;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Utility static class to perform some validations.
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public final class ValidationUtils {
 
     private ValidationUtils() {

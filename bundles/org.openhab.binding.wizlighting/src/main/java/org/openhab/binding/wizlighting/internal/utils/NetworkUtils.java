@@ -17,12 +17,16 @@ import java.net.SocketException;
 import java.rmi.UnknownHostException;
 import java.util.Enumeration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Utility class to perform some network routines.
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public final class NetworkUtils {
 
     /**

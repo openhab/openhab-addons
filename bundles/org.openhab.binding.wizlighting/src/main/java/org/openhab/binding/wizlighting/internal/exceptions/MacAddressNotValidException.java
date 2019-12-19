@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.wizlighting.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception thrown when Mac address is not valid.
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public class MacAddressNotValidException extends Exception {
+    private static final long serialVersionUID = 1L;
 
     private final String macAddress;
 
