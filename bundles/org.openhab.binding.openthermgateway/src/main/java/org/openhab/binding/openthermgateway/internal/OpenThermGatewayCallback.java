@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /** 
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public interface OpenThermGatewayCallback {
     public void connecting();
 
@@ -24,11 +25,11 @@ public interface OpenThermGatewayCallback {
 
     public void disconnected();
 
-    public void receiveMessage(@NonNull Message message);
+    public void receiveMessage(Message message);
 
-    public void log(@NonNull LogLevel loglevel, @NonNull String message);
+    public void log(LogLevel loglevel, String message);
 
-    public void log(@NonNull LogLevel loglevel, @NonNull String format, @NonNull String arg);
+    public void log(LogLevel loglevel, String format, String arg);
 
-    public void log(@NonNull LogLevel loglevel, @NonNull String format, @NonNull Throwable t);
+    public void log(LogLevel loglevel, String format, Throwable t);
 }

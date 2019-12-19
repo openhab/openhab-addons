@@ -35,6 +35,7 @@ import org.openhab.binding.openthermgateway.handler.TypeConverter;
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
     private static final int COMMAND_RESPONSE_TIME = 100;
     private static final int COMMAND_TIMEOUT = 5000;
+
     private OpenThermGatewayCallback callback;
     private String ipaddress;
     private int port;
@@ -45,24 +46,13 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
     private volatile boolean stopping;
     private boolean connected;
-    private Message previousMessage;
 
     public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, String ipaddress, int port) {
         this.callback = callback;
         this.ipaddress = ipaddress;
         this.port = port;
     }
-
-    @Override
-    public synchronized void stop() {
-        callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
-        try {
-            socket.close();
-        } catch (IOException ignore) {
-        }
-        stopping = true;
-    }
-
+  
     @Override
     public void run() {
         stopping = false;
@@ -92,7 +82,9 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             while (!stopping && !Thread.currentThread().isInterrupted()) {
                 String message = reader.readLine();
+
                 handleMessage(message);
+                
                 if (message == null) {
                     callback.log(LogLevel.Info, "Connection closed by OpenTherm Gateway");
                     break;
@@ -109,24 +101,25 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 writer.flush();
                 writer.close();
             }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                }
-            }
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                }
-            }
+
+            close(reader);
+            close(writer);
 
             connected = false;
 
             callback.log(LogLevel.Debug, "OpenThermGatewaySocketConnector disconnected");
             callback.disconnected();
         }
+    }
+
+    @Override
+    public synchronized void stop() {
+        callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
+        try {
+            socket.close();
+        } catch (IOException ignore) {
+        }
+        stopping = true;
     }
 
     @Override
@@ -226,6 +219,14 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private void receiveMessage(Message message) {
         if (message != null && callback != null) {
             callback.receiveMessage(message);
+        }
+    }
+
+    private void close(java.io.Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException e) { }
         }
     }
 }
