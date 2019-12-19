@@ -36,6 +36,14 @@
 				<default></default>
 				<description>Support for formatted messages, values: Markdown or HTML. Default: no formatting is used.</description>
 			</parameter>
+			<parameter name="proxyHost" type="text" required="false" multiple="false">
+				<label>SOCKS5 Proxy Host</label>
+				<description>Enter your SOCKS5 proxy host. It will be used for telegram binding only and doesn't affect entire system.</description>
+			</parameter>
+			<parameter name="proxyPort" type="text" required="false" multiple="false">
+				<label>SOCKS5 Proxy Port</label>
+				<description>Enter your SOCKS5 proxy port.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
