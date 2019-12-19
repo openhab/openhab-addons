@@ -36,16 +36,12 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.ChannelCo
 
         protected @Nullable Boolean optimistic;
 
-        protected @Nullable String command_topic;
         protected String state_topic = "";
-
-        protected @Nullable String state_on;
-        protected @Nullable String state_off;
+        protected String state_on = "ON";
+        protected String state_off = "OFF";
+        protected @Nullable String command_topic;
         protected String payload_on = "ON";
         protected String payload_off = "OFF";
-
-        protected @Nullable String json_attributes_topic;
-        protected @Nullable String json_attributes_template;
     }
 
     public ComponentSwitch(CFactory.ComponentConfiguration componentConfiguration) {
