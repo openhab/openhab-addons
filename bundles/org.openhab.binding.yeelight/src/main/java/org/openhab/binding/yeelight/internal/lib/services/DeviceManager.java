@@ -18,6 +18,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceFactory;
@@ -46,15 +48,15 @@ public class DeviceManager {
 
     private static final String TAG = DeviceManager.class.getSimpleName();
 
-    private static final String DISCOVERY_MSG = "M-SEARCH * HTTP/1.1\r\n" + "HOST:239.255.255.250:1982\r\n"
-            + "MAN:\"ssdp:discover\"\r\n" + "ST:wifi_bulb\r\n";
-
     private static final String MULTI_CAST_HOST = "239.255.255.250";
     private static final int MULTI_CAST_PORT = 1982;
+    private static final String DISCOVERY_MSG = "M-SEARCH * HTTP/1.1\r\n" + "HOST:" + MULTI_CAST_HOST + ":"
+            + MULTI_CAST_PORT + "\r\n" + "MAN:\"ssdp:discover\"\r\n" + "ST:wifi_bulb\r\n";
+
     private static final int TIMEOUT = 10000;
 
     public static DeviceManager sInstance;
-    public boolean mSearching = false;
+    public volatile boolean mSearching = false;
 
     public Map<String, DeviceBase> mDeviceList = new HashMap<>();
     public List<DeviceListener> mListeners = new ArrayList<>();
@@ -115,36 +117,42 @@ public class DeviceManager {
         try {
             final InetAddress multicastAddress = InetAddress.getByName(MULTI_CAST_HOST);
 
-            final List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            final List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
+                    .stream().filter(device -> {
+                        try {
+                            return device.isUp() && !device.isLoopback();
+                        } catch (SocketException e) {
+                            logger.debug("Failed to get device information", e);
+                            return false;
+                        }
+                    }).collect(Collectors.toList());
 
             executorService = Executors.newFixedThreadPool(networkInterfaces.size());
             mSearching = true;
 
             for (final NetworkInterface networkInterface : networkInterfaces) {
-
                 logger.debug("Starting Discovery on: {}", networkInterface.getDisplayName());
 
                 executorService.execute(() -> {
-                    try {
-                        MulticastSocket multiSocket = new MulticastSocket(MULTI_CAST_PORT);
+                    try (MulticastSocket multiSocket = new MulticastSocket(MULTI_CAST_PORT)) {
 
                         multiSocket.setSoTimeout(TIMEOUT);
                         multiSocket.setNetworkInterface(networkInterface);
                         multiSocket.joinGroup(multicastAddress);
 
+                        DatagramPacket dpSend = new DatagramPacket(DISCOVERY_MSG.getBytes(),
+                                DISCOVERY_MSG.getBytes().length, multicastAddress, MULTI_CAST_PORT);
+                        multiSocket.send(dpSend);
+
                         while (mSearching) {
                             byte[] buf = new byte[1024];
-                            DatagramPacket dpSend = new DatagramPacket(DISCOVERY_MSG.getBytes(),
-                                    DISCOVERY_MSG.getBytes().length, multicastAddress, MULTI_CAST_PORT);
 
                             DatagramPacket dpRecv = new DatagramPacket(buf, buf.length);
-
-                            multiSocket.send(dpSend);
 
                             try {
                                 multiSocket.receive(dpRecv);
                                 byte[] bytes = dpRecv.getData();
-                                StringBuffer buffer = new StringBuffer();
+                                StringBuilder buffer = new StringBuilder();
                                 for (int i = 0; i < dpRecv.getLength(); i++) {
                                     // parse /r
                                     if (bytes[i] == 13) {
@@ -152,11 +160,20 @@ public class DeviceManager {
                                     }
                                     buffer.append((char) bytes[i]);
                                 }
-                                logger.debug("{}: got message: {}", TAG, buffer.toString());
-                                String[] infos = buffer.toString().split("\n");
+
+                                String receivedMessage = buffer.toString();
+
+                                logger.debug("{}: got message: {}", TAG, receivedMessage);
+                                // we can skip the request because we aren't interested in our own search broadcast
+                                // message.
+                                if ((receivedMessage.startsWith("M-SEARCH"))) {
+                                    continue;
+                                }
+
+                                String[] infos = receivedMessage.split("\n");
                                 Map<String, String> bulbInfo = new HashMap<>();
                                 for (String info : infos) {
-                                    int index = info.indexOf(":");
+                                    int index = info.indexOf(':');
                                     if (index == -1) {
                                         continue;
                                     }
@@ -168,11 +185,14 @@ public class DeviceManager {
                                 logger.debug("{}: got bulbInfo: {}", TAG, bulbInfo);
                                 if (bulbInfo.containsKey("model") && bulbInfo.containsKey("id")) {
                                     DeviceBase device = DeviceFactory.build(bulbInfo);
-                                    if (bulbInfo.containsKey("name")) {
-                                        device.setDeviceName(bulbInfo.get("name"));
-                                    } else {
-                                        device.setDeviceName("");
+
+                                    if (null == device) {
+                                        logger.warn("Found unsupported device.");
+                                        continue;
                                     }
+                                    stopDiscovery();
+                                    device.setDeviceName(bulbInfo.getOrDefault("name", ""));
+
                                     if (mDeviceList.containsKey(device.getDeviceId())) {
                                         updateDevice(mDeviceList.get(device.getDeviceId()), bulbInfo);
                                     }
@@ -183,8 +203,6 @@ public class DeviceManager {
                             }
 
                         }
-
-                        multiSocket.close();
                     } catch (Exception e) {
                         if (!e.getMessage().contains("No IP addresses bound to interface")) {
                             logger.debug("Error getting ip addresses: {}", e.getMessage(), e);
