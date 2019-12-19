@@ -5,11 +5,12 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
     <!-- Socket Thing Type -->
-    <thing-type id="wizBulb">
+    <thing-type id="bulb">
         <label>Wiz Lighting Bulb</label>
         <description>Supports Wiz Lighting Bulb.</description>
 
         <channels>
+			<channel id="switch" typeId="switch" />
             <channel id="color" typeId="color" />
             <channel id="scene" typeId="scene" />
             <channel id="speed" typeId="speed" />
@@ -35,10 +36,14 @@
                 <default>60</default>
             </parameter>
         </config-description>
-
     </thing-type>
 
     <!-- Socket type Channel Type -->
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<category>Switch</category>
+	</channel-type>
     <channel-type id="color">
         <item-type>Color</item-type>
         <label>Color</label>
@@ -49,7 +54,6 @@
         <label>Scenes</label>
         <state readOnly="false">
             <options>
-                <option value="0">NONE</option>
                 <option value="1">Ocean</option>
                 <option value="6">Cozy White</option>
                 <option value="7">Forest</option>
