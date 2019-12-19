@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons.bom</groupId>
     <artifactId>org.openhab.addons.reactor.bom</artifactId>
-    <version>2.5.0</version>
+    <version>2.5.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.addons.bom.openhab-core-index</artifactId>
@@ -16,7 +16,7 @@
     <dependency>
       <groupId>org.openhab.core.bom</groupId>
       <artifactId>org.openhab.core.bom.openhab-core</artifactId>
-      <version>${project.version}</version>
+      <version>${ohc.version}</version>
       <type>pom</type>
       <scope>compile</scope>
       <optional>true</optional>
