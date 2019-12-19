@@ -56,7 +56,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     private String ipAddress;
 
-    private String macAddress;
+    private String bulbMacAddress;
 
     @Override
     protected void activate(ComponentContext componentContext) {
@@ -91,7 +91,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(final Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.trace("Create Handler Request " + thingTypeUID);
+        logger.trace("Creating Handler Request for {}", thingTypeUID);
 
         if (thingTypeUID.equals(WizLightingBindingConstants.THING_TYPE_WIZ_BULB)) {
             WizLightingHandler handler;
@@ -131,12 +131,12 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private String getMyMacAddress() {
-        if (macAddress != null) {
-            return macAddress;
+        if (bulbMacAddress != null) {
+            return bulbMacAddress;
         } else {
             try {
-                macAddress = NetworkUtils.getMacAddress();
-                if (macAddress == null) {
+                bulbMacAddress = NetworkUtils.getBulbMacAddress();
+                if (bulbMacAddress == null) {
                     logger.warn("No network interface could be found.");
                     return null;
                 }
@@ -146,7 +146,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
             }
 
-            return macAddress;
+            return bulbMacAddress;
         }
     }
 

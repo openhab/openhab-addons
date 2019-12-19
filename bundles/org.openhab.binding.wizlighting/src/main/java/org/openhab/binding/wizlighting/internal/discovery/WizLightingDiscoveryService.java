@@ -161,7 +161,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
                         for (int i = 0; i < lights.length; i++) {
                             HomeDTO.Light light = lights[i];
                             logger.debug("Found Light {} with ip {} and mac {} ", light.id, light.ip,
-                                    light.mac_address);
+                                    light.bulbMacAddress);
                             this.discoveredLight(light);
                         }
                     }
@@ -169,7 +169,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
             }
         } catch (Exception e) {
             logger.error("Auto-Discovery of WizLighting bulbs failed {} ", e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
         }
 
     }
@@ -186,7 +186,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Oauth Result {}", response.getContentAsString());
 
         TokenDTO data = gson.fromJson(response.getContentAsString(), TokenDTO.class);
-        return data.access_token;
+        return data.accessToken;
     }
 
     protected boolean authorizeInviteToken(String accessToken)
@@ -239,21 +239,21 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
     /**
      * Method called by mediator, when receive one packet from one unknown Wifi Socket.
      *
-     * @param macAddress the mack address from the device.
-     * @param hostAddress the host address from the device.
+     * @param bulbMacAddress the mac address from the device.
+     * @param bulbIpAddress the host address from the device.
      */
     public void discoveredLight(final HomeDTO.Light light) {
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put(WizLightingBindingConstants.MAC_ADDRESS_ARG, light.mac_address);
-        properties.put(WizLightingBindingConstants.HOST_ADDRESS_ARG, light.ip);
-        properties.put(WizLightingBindingConstants.HOME_ID_ARG, String.valueOf(light.home_id));
+        properties.put(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG, light.bulbMacAddress);
+        properties.put(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG, light.ip);
+        properties.put(WizLightingBindingConstants.HOME_ID_ARG, String.valueOf(light.homeId));
 
-        ThingUID newThingId = new ThingUID(WizLightingBindingConstants.THING_TYPE_WIZ_BULB, light.mac_address);
+        ThingUID newThingId = new ThingUID(WizLightingBindingConstants.THING_TYPE_WIZ_BULB, light.bulbMacAddress);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
-                .withLabel("Wizlighting Bulb").withRepresentationProperty(light.mac_address).build();
+                .withLabel("Wizlighting Bulb").withRepresentationProperty(light.bulbMacAddress).build();
 
         logger.debug("Discovered new thing with mac address '{}' and host address '{}' and homeId '{}",
-                light.mac_address, light.ip, light.home_id);
+                light.bulbMacAddress, light.ip, light.homeId);
 
         this.thingDiscovered(discoveryResult);
     }

@@ -24,11 +24,13 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class UserDTO {
 
+    @NonNullByDefault
     static class Home {
         public int id;
         public String name;
     }
 
+    @NonNullByDefault
     static class Data {
         public int id;
         public String username;
@@ -36,7 +38,7 @@ public class UserDTO {
     }
 
     public boolean success;
-    public Data data;
+    public @Nullable Data data;
 
     public int getHomeId() {
         if (this.data != null && this.data.homes != null && this.data.homes.length > 0) {

@@ -22,9 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TokenDTO {
-    public String access_token;
-    public long expires_in;
-    public String token_type;
+    public String accessToken;
+    public long expiresIn;
+    public String tokenType;
     public String scope;
-    public String refresh_token;
+    public String refreshToken;
 }

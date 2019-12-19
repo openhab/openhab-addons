@@ -88,7 +88,7 @@ public class WizLightingPacketConverter {
 
         WizLightingSyncResponse response = this.wizlightingGsonBuilder.fromJson(responseJson,
                 WizLightingSyncResponse.class);
-        response.setHostAddress(packet.getAddress().getHostAddress());
+        response.setBulbIpAddress(packet.getAddress().getHostAddress());
         return response;
     }
 }

@@ -37,7 +37,7 @@ public class MacAddressNotValidException extends Exception {
         this.macAddress = macAddress;
     }
 
-    public String getMacAddress() {
+    public String getBulbMacAddress() {
         return this.macAddress;
     }
 }

@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ImageUtils {
     /**
      * Convert color temperature in Kelvins to RGB color for AWT
-     * 
+     *
      * @param temperature
      * @return ready to use color object
      */

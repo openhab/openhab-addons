@@ -59,7 +59,7 @@ public interface WizLightingMediator {
      *
      * @returns all the {@link Thing}.
      */
-    Set<Thing> getAllThingsRegistred();
+    Set<Thing> getAllThingsRegistered();
 
     /**
      * Sets the discovery service to inform the user when one new thing has been found.

@@ -27,25 +27,25 @@ public class WizLightingSyncResponse {
     private String method;
     private SyncResponseParam params;
 
-    private String hostAddress;
+    private String bulbIpAddress;
 
     public WizLightingSyncResponse() {
     }
 
-    public String getMacAddress() {
+    public String getBulbMacAddress() {
         return this.getParams().mac;
     }
 
-    public void setMacAddress(final String macAddress) {
-        this.getParams().mac = macAddress;
+    public void setBulbMacAddress(final String bulbMacAddress) {
+        this.getParams().mac = bulbMacAddress;
     }
 
-    public String getHostAddress() {
-        return this.hostAddress;
+    public String getBulbIpAddress() {
+        return this.bulbIpAddress;
     }
 
-    public void setHostAddress(final String hostAddress) {
-        this.hostAddress = hostAddress;
+    public void setBulbIpAddress(final String bulbIpAddress) {
+        this.bulbIpAddress = bulbIpAddress;
     }
 
     public int getId() {

@@ -26,10 +26,10 @@ public class HomeDTO {
 
     static class Light {
         public int id;
-        public int home_id;
+        public int homeId;
         public String name;
-        public String mac_address;
-        public String fw_version;
+        public String bulbMacAddress;
+        public String bulbFwVersion;
         public String ip;
         public boolean connection_status;
     }

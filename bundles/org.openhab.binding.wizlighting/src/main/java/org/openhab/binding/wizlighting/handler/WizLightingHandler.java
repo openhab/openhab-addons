@@ -66,8 +66,8 @@ public class WizLightingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingHandler.class);
 
-    private String hostAddress;
-    private String macAddress;
+    private String bulbIpAddress;
+    private String bulbMacAddress;
     private int homeId;
     private Long updateInterval = WizLightingBindingConstants.DEFAULT_REFRESH_INTERVAL;
 
@@ -174,14 +174,14 @@ public class WizLightingHandler extends BaseThingHandler {
                         timePassedFromLastUpdateInSeconds);
 
                 logger.debug("It has been passed {} seconds since the last update on socket with mac address {}.",
-                        timePassedFromLastUpdateInSeconds, macAddress);
+                        timePassedFromLastUpdateInSeconds, bulbMacAddress);
 
-                boolean mustUpdateHostAddress = timePassedFromLastUpdateInSeconds > (updateInterval * 2);
+                boolean mustUpdateBulbIpAddress = timePassedFromLastUpdateInSeconds > (updateInterval * 2);
 
-                if (mustUpdateHostAddress) {
+                if (mustUpdateBulbIpAddress) {
                     logger.debug(
                             "No updates have been received for a long time, searching for the mac address {} in network...",
-                            getMacAddress());
+                            getBulbMacAddress());
                 }
 
                 boolean considerThingOffline = (latestUpdate < 0)
@@ -189,7 +189,7 @@ public class WizLightingHandler extends BaseThingHandler {
                 if (considerThingOffline) {
                     logger.debug(
                             "Since no updates have been received from mac address {}, setting its status to OFFLINE.",
-                            getMacAddress());
+                            getBulbMacAddress());
                     updateStatus(ThingStatus.OFFLINE);
                 }
 
@@ -241,18 +241,18 @@ public class WizLightingHandler extends BaseThingHandler {
     }
 
     /**
-     * Saves the host address from configuration in field.
+     * Saves the bulb address from configuration in field.
      *
      * @param configuration The {@link Configuration}
      */
     private void savebulbIpAddressFromConfiguration(final Configuration configuration) {
         if ((configuration != null) && (configuration.get(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG) != null)) {
-            hostAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG));
+            bulbIpAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG));
         }
     }
 
     /**
-     * Saves the host address from configuration in field.
+     * Saves the bulb address from configuration in field.
      *
      * @param configuration The {@link Configuration}
      */
@@ -274,14 +274,14 @@ public class WizLightingHandler extends BaseThingHandler {
      */
     private void savebulbMacAddressFromConfiguration(final Configuration configuration) throws MacAddressNotValidException {
         if ((configuration != null) && (configuration.get(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG) != null)) {
-            String macAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG));
+            String bulbMacAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG));
 
-            if (macAddress == null) {
+            if (bulbMacAddress == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.UNINITIALIZED.NONE);
-                throw new MacAddressNotValidException("The given MAC address is not valid.", macAddress);
+                throw new MacAddressNotValidException("The given MAC address is not valid: {}", bulbMacAddress);
             }
 
-            this.macAddress = macAddress.replaceAll(":", "").toUpperCase();
+            this.bulbMacAddress = bulbMacAddress.replaceAll(":", "").toUpperCase();
         }
 
     }
@@ -308,13 +308,13 @@ public class WizLightingHandler extends BaseThingHandler {
     private WizLightingResponse sendRequestPacket(final WizLightingMethodType method, final Param param) {
         DatagramSocket dsocket = null;
         try {
-            InetAddress address = InetAddress.getByName(hostAddress);
+            InetAddress address = InetAddress.getByName(bulbIpAddress);
             if (address != null) {
                 WizLightingRequest request = new WizLightingRequest(method, param);
                 request.setId(requestId++);
 
                 byte[] message = this.converter.transformToByteMessage(request);
-                logger.trace("Preparing packet to send...", message);
+                logger.trace("Packet to send: {}", message);
 
                 // Initialize a datagram packet with data and address
                 DatagramPacket packet = new DatagramPacket(message, message.length, address,
@@ -334,7 +334,7 @@ public class WizLightingHandler extends BaseThingHandler {
                 return response;
             }
         } catch (IOException exception) {
-            logger.debug("Something wrong happen sending the packet to address: {} and port {}... msg: {}", hostAddress,
+            logger.debug("Something wrong happen sending the packet to address: {} and port {}... msg: {}", bulbIpAddress,
                     WizLightingBindingConstants.BULB_DEFAULT_UDP_PORT, exception.getMessage());
         } finally {
             if (dsocket != null) {
@@ -351,7 +351,7 @@ public class WizLightingHandler extends BaseThingHandler {
 
             savebulbMacAddressFromConfiguration(configuration);
 
-            hostAddress = null;
+            bulbIpAddress = null;
             savebulbIpAddressFromConfiguration(configuration);
             saveUpdateIntervalFromConfiguration(configuration);
             saveHomeIdFromConfiguration(configuration);
@@ -359,7 +359,7 @@ public class WizLightingHandler extends BaseThingHandler {
             initGetStatusAndKeepAliveThread();
             saveConfigurationsUsingCurrentStates();
         } catch (MacAddressNotValidException e) {
-            logger.error("The Mac address passed is not valid! {}", e.getMacAddress());
+            logger.error("The Mac address passed is not valid! {}", e.getBulbMacAddress());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
     }
@@ -369,8 +369,8 @@ public class WizLightingHandler extends BaseThingHandler {
      */
     private void saveConfigurationsUsingCurrentStates() {
         Map<String, Object> map = new HashMap<>();
-        map.put(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG, macAddress);
-        map.put(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG, hostAddress);
+        map.put(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG, bulbMacAddress);
+        map.put(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG, bulbIpAddress);
         map.put(WizLightingBindingConstants.UPDATE_INTERVAL_ARG, updateInterval);
         map.put(WizLightingBindingConstants.HOME_ID_ARG, String.valueOf(homeId));
 
@@ -379,12 +379,12 @@ public class WizLightingHandler extends BaseThingHandler {
     }
 
     // SETTERS AND GETTERS
-    public String getHostAddress() {
-        return hostAddress;
+    public String getBulbIpAddress() {
+        return bulbIpAddress;
     }
 
-    public String getMacAddress() {
-        return macAddress;
+    public String getBulbMacAddress() {
+        return bulbMacAddress;
     }
 
     public int getHomeId() {

@@ -38,7 +38,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingMediatorImpl.class);
 
-    private final Map<Thing, WizLightingHandler> handlersRegistredByThing = new HashMap<>();
+    private final Map<Thing, WizLightingHandler> handlersRegisteredByThing = new HashMap<>();
 
     private WizLightingUpdateReceiverRunnable receiver;
     private Thread receiverThread;
@@ -74,18 +74,18 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      */
     @Override
     public void processReceivedPacket(final WizLightingSyncResponse receivedMessage) {
-        logger.debug("Received packet from: {} with content: [{}]", receivedMessage.getHostAddress(),
+        logger.debug("Received packet from: {} with content: [{}]", receivedMessage.getBulbIpAddress(),
                 receivedMessage.getMethod());
 
-        WizLightingHandler handler = this.getHandlerRegistredByMac(receivedMessage.getMacAddress());
+        WizLightingHandler handler = this.getHandlerRegisteredByMac(receivedMessage.getBulbMacAddress());
 
         if (handler != null) {
             // deliver message to handler.
             handler.newReceivedResponseMessage(receivedMessage);
             logger.debug("Received message delivered with success to handler of mac {}",
-                    receivedMessage.getMacAddress());
+                    receivedMessage.getBulbMacAddress());
         } else {
-            logger.debug("There is no handler registered for mac address:{}", receivedMessage.getMacAddress());
+            logger.debug("There is no handler registered for mac address:{}", receivedMessage.getBulbMacAddress());
         }
     }
 
@@ -97,7 +97,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      */
     @Override
     public void registerThingAndWizBulbHandler(final Thing thing, final WizLightingHandler handler) {
-        this.handlersRegistredByThing.put(thing, handler);
+        this.handlersRegisteredByThing.put(thing, handler);
     }
 
     /**
@@ -107,9 +107,9 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      */
     @Override
     public void unregisterWizBulbHandlerByThing(final Thing thing) {
-        WizLightingHandler handler = this.handlersRegistredByThing.get(thing);
+        WizLightingHandler handler = this.handlersRegisteredByThing.get(thing);
         if (handler != null) {
-            this.handlersRegistredByThing.remove(thing);
+            this.handlersRegisteredByThing.remove(thing);
         }
 
     }
@@ -117,13 +117,13 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     /**
      * Utilitary method to get the registered thing handler in mediator by the mac address.
      *
-     * @param macAddress the mac address of the thing of the handler.
+     * @param bulbMacAddress the mac address of the thing of the handler.
      * @return {@link WizLightingHandler} if found.
      */
-    private WizLightingHandler getHandlerRegistredByMac(final String macAddress) {
+    private WizLightingHandler getHandlerRegisteredByMac(final String bulbMacAddress) {
         WizLightingHandler searchedHandler = null;
-        for (WizLightingHandler handler : this.handlersRegistredByThing.values()) {
-            if (macAddress.equalsIgnoreCase(handler.getMacAddress())) {
+        for (WizLightingHandler handler : this.handlersRegisteredByThing.values()) {
+            if (bulbMacAddress.equalsIgnoreCase(handler.getBulbMacAddress())) {
                 searchedHandler = handler;
                 // don't spend more computation. Found the handler.
                 break;
@@ -158,8 +158,8 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      * @returns all the {@link Thing}.
      */
     @Override
-    public Set<Thing> getAllThingsRegistred() {
-        return this.handlersRegistredByThing.keySet();
+    public Set<Thing> getAllThingsRegistered() {
+        return this.handlersRegisteredByThing.keySet();
     }
 
     @Override

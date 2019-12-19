@@ -36,7 +36,7 @@ public final class NetworkUtils {
      * @throws UnknownHostException
      * @throws SocketException
      */
-    public static String getMacAddress() throws UnknownHostException, SocketException {
+    public static @Nullable String getBulbMacAddress() throws UnknownHostException, SocketException {
         Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
         while (networks.hasMoreElements()) {
             NetworkInterface network = networks.nextElement();
