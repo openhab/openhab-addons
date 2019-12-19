@@ -37,6 +37,7 @@ public enum StatusType {
     DOCKING(15, "Docking"),
     GOTO(16, "Go To"),
     ZONE(17, "Zone Clean"),
+    ROOM(18, "Room Clean"),
     FULL(100, "Full");
 
     private final int id;
