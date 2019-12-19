@@ -14,6 +14,7 @@ package org.openhab.binding.yeelight.internal.lib.device;
 
 import java.util.List;
 
+import org.openhab.binding.yeelight.internal.lib.enums.ActiveMode;
 import org.openhab.binding.yeelight.internal.lib.enums.DeviceMode;
 
 /**
@@ -44,6 +45,16 @@ public class DeviceStatus {
     private String name;
     private int flowEndAction;
     private int flowCount;
+
+    private int backgroundBrightness;
+    private boolean backgroundIsPowerOff;
+    private int backgroundR;
+    private int backgroundG;
+    private int backgroundB;
+    private int backgroundHue;
+    private int backgroundSat;
+
+    private ActiveMode activeMode;
 
     public int getR() {
         return r;
@@ -165,12 +176,79 @@ public class DeviceStatus {
         this.delayOff = delayOff;
     }
 
+    public boolean isBackgroundIsPowerOff() {
+        return backgroundIsPowerOff;
+    }
+
+    public void setBackgroundIsPowerOff(boolean backgroundIsPowerOff) {
+        this.backgroundIsPowerOff = backgroundIsPowerOff;
+    }
+
+    public int getBackgroundR() {
+        return backgroundR;
+    }
+
+    public void setBackgroundR(int backgroundR) {
+        this.backgroundR = backgroundR;
+    }
+
+    public int getBackgroundG() {
+        return backgroundG;
+    }
+
+    public void setBackgroundG(int backgroundG) {
+        this.backgroundG = backgroundG;
+    }
+
+    public int getBackgroundB() {
+        return backgroundB;
+    }
+
+    public void setBackgroundB(int backgroundB) {
+        this.backgroundB = backgroundB;
+    }
+
+    public int getBackgroundHue() {
+        return backgroundHue;
+    }
+
+    public void setBackgroundHue(int backgroundHue) {
+        this.backgroundHue = backgroundHue;
+    }
+
+    public int getBackgroundBrightness() {
+        return backgroundBrightness;
+    }
+
+    public void setBackgroundBrightness(int backgroundBrightness) {
+        this.backgroundBrightness = backgroundBrightness;
+    }
+
+    public int getBackgroundSat() {
+        return backgroundSat;
+    }
+
+    public void setBackgroundSat(int backgroundSat) {
+        this.backgroundSat = backgroundSat;
+    }
+
+    public ActiveMode getActiveMode() {
+        return activeMode;
+    }
+
+    public void setActiveMode(ActiveMode activeMode) {
+        this.activeMode = activeMode;
+    }
+
     @Override
     public String toString() {
         return "DeviceStatus [isPowerOff=" + isPowerOff + ", r=" + r + ", g=" + g + ", b=" + b + ", color=" + color
                 + ", brightness=" + brightness + ", ct=" + ct + ", hue=" + hue + ", sat=" + sat + ", isFlowing="
                 + isFlowing + ", delayOff=" + delayOff + ", mFlowItems=" + mFlowItems + ", mode=" + mode
-                + ", isMusicOn=" + isMusicOn + ", name=" + name + "]";
+                + ", isMusicOn=" + isMusicOn + ", name=" + name + ", backgroundIsPowerOff=" + backgroundIsPowerOff
+                + ", backgroundR=" + backgroundR + ", backgroundG=" + backgroundG + ", backgroundB=" + backgroundB
+                + ", backgroundHue=" + backgroundHue + ", backgroundBrightness=" + backgroundBrightness
+                + ", backgroundSat=" + backgroundSat + ", activeMode=" + activeMode + "]";
     }
 
     public int getFlowCount() {

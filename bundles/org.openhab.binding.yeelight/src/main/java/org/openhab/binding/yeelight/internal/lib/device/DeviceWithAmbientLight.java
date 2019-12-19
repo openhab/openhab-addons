@@ -10,13 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.yeelight.internal.lib.listeners;
-
-import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
+package org.openhab.binding.yeelight.internal.lib.device;
 
 /**
- * @author Coaster Li - Initial contribution
+ * Interface for devices with background light.
+ *
+ * @author Viktor Koop - Initial contribution
  */
-public interface DeviceStatusChangeListener {
-    void onStatusChanged(DeviceStatus status);
+public interface DeviceWithAmbientLight {
+    void setBackgroundColor(int hue, int saturation, int duration);
+
+    void setBackgroundBrightness(int brightness, int duration);
+
+    void setBackgroundPower(boolean on, int intDuration);
 }

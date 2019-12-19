@@ -10,13 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.yeelight.internal.lib.listeners;
-
-import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
+package org.openhab.binding.yeelight.internal.lib.enums;
 
 /**
- * @author Coaster Li - Initial contribution
+ * Yeelight Ceiling lights have to different modes: daylight and moonlight.
+ *
+ * @author Viktor Koop - Initial contribution
  */
-public interface DeviceStatusChangeListener {
-    void onStatusChanged(DeviceStatus status);
+public enum ActiveMode {
+    DAYLIGHT_MODE,
+    MOONLIGHT_MODE
 }

@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceFactory;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceWithAmbientLight;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceWithNightlight;
 import org.openhab.binding.yeelight.internal.lib.enums.DeviceAction;
 import org.openhab.binding.yeelight.internal.lib.listeners.DeviceListener;
 import org.slf4j.Logger;
@@ -55,7 +57,7 @@ public class DeviceManager {
 
     private static final int TIMEOUT = 10000;
 
-    public static DeviceManager sInstance;
+    public static final DeviceManager sInstance = new DeviceManager();
     public volatile boolean mSearching = false;
 
     public Map<String, DeviceBase> mDeviceList = new HashMap<>();
@@ -67,9 +69,6 @@ public class DeviceManager {
     }
 
     public static DeviceManager getInstance() {
-        if (sInstance == null) {
-            sInstance = new DeviceManager();
-        }
         return sInstance;
     }
 
@@ -129,7 +128,6 @@ public class DeviceManager {
 
             executorService = Executors.newFixedThreadPool(networkInterfaces.size());
             mSearching = true;
-
             for (final NetworkInterface networkInterface : networkInterfaces) {
                 logger.debug("Starting Discovery on: {}", networkInterface.getDisplayName());
 
@@ -251,6 +249,40 @@ public class DeviceManager {
                 case decrease_ct:
                     device.decreaseCt(action.intDuration());
                     break;
+                case background_color:
+                    if (device instanceof DeviceWithAmbientLight) {
+                        final String[] split = action.strValue().split(",");
+
+                        ((DeviceWithAmbientLight) device).setBackgroundColor(Integer.parseInt(split[0]),
+                                Integer.parseInt(split[1]), action.intDuration());
+                    }
+                    break;
+                case background_brightness:
+                    if (device instanceof DeviceWithAmbientLight) {
+                        ((DeviceWithAmbientLight) device).setBackgroundBrightness(action.intValue(),
+                                action.intDuration());
+                    }
+                    break;
+                case background_on:
+                    if (device instanceof DeviceWithAmbientLight) {
+                        ((DeviceWithAmbientLight) device).setBackgroundPower(true, action.intDuration());
+                    }
+                    break;
+                case background_off:
+                    if (device instanceof DeviceWithAmbientLight) {
+                        ((DeviceWithAmbientLight) device).setBackgroundPower(false, action.intDuration());
+                    }
+                    break;
+                case nightlight_off:
+                    if (device instanceof DeviceWithNightlight) {
+                        ((DeviceWithNightlight) device).toggleNightlightMode(false);
+                    }
+                    break;
+                case nightlight_on:
+                    if (device instanceof DeviceWithNightlight) {
+                        ((DeviceWithNightlight) device).toggleNightlightMode(true);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -290,6 +322,8 @@ public class DeviceManager {
             case ceiling1:
             case ceiling3:
                 return "Yeelight LED Ceiling";
+            case ceiling4:
+                return "Yeelight LED Ceiling with ambient light";
             case color:
                 return "Yeelight Color LED Bulb";
             case mono:

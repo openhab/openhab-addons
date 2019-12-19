@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="yeelight" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="ceiling4">
+		<label>Yeelight LED Ceiling with BG</label>
+		<description>Yeelight LED Ceiling lamp with background</description>
+		<channels>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="colorTemperature" typeId="colorTemperature"/>
+			<channel id="backgroundColor" typeId="backgroundColor"/>
+			<channel id="backgroundBrightness" typeId="backgroundBrightness"/>
+			<channel id="nightlight" typeId="nightlight" />
+			<channel id="command" typeId="command"/>
+		</channels>
+		<config-description-ref uri="thing-type:device:base"/>
+	</thing-type>
+</thing:thing-descriptions>

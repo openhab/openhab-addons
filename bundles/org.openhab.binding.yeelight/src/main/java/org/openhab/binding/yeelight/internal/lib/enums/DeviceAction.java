@@ -25,7 +25,13 @@ public enum DeviceAction {
     increase_bright,
     decrease_bright,
     increase_ct,
-    decrease_ct;
+    decrease_ct,
+    background_color,
+    background_brightness,
+    background_on,
+    background_off,
+    nightlight_off,
+    nightlight_on;
 
     private String mStrValue;
     private int mIntValue;
