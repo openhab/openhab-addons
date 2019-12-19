@@ -21,7 +21,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -139,13 +138,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_VIA);
             updateState(cuid, new StringType(armState.getChangedVia()));
             updateTimeStamp(armState.getDate());
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
-            BigDecimal siteId = alarmsJSON.getSiteId();
-            if (siteId != null) {
-                updateState(cuid, new DecimalType(siteId.longValue()));
-            }
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-            updateState(cuid, new StringType(alarmsJSON.getSiteName()));
+            super.update(alarmsJSON);
         } else {
             logger.warn("Alarm status is null!");
         }

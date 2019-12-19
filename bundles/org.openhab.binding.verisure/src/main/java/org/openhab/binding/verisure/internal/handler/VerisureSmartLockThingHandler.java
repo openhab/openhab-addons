@@ -22,7 +22,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -301,14 +300,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
             } else {
                 logger.debug("Old SmartLock JSON is null!");
             }
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
-            BigDecimal siteId = smartLocksJSON.getSiteId();
-            if (siteId != null) {
-                updateState(cuid, new DecimalType(siteId.longValue()));
-            }
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-            StringType instName = new StringType(smartLocksJSON.getSiteName());
-            updateState(cuid, instName);
+            super.update(smartLocksJSON);
         } else {
             logger.warn("Smart lock status is null!");
         }

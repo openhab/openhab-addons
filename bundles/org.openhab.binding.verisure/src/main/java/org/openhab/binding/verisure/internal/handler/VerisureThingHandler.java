@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.verisure.internal.handler;
 
-import static org.openhab.binding.verisure.internal.VerisureBindingConstants.CHANNEL_TIMESTAMP;
+import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -170,6 +173,13 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
     }
 
     public synchronized void update(@Nullable VerisureThingJSON thing) {
+        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
+        BigDecimal siteId = thing.getSiteId();
+        if (siteId != null) {
+            updateState(cuid, new DecimalType(siteId.longValue()));
+        }
+        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
+        updateState(cuid, new StringType(thing.getSiteName()));
     }
 
     @Override

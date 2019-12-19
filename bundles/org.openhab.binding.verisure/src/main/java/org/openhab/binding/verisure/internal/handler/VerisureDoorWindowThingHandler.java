@@ -14,13 +14,11 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -75,14 +73,7 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler {
         updateTimeStamp(doorWindow.getReportTime());
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_LOCATION);
         updateState(cuid, new StringType(doorWindow.getDevice().getArea()));
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
-        BigDecimal siteId = doorWindowJSON.getSiteId();
-        if (siteId != null) {
-            updateState(cuid, new DecimalType(siteId.longValue()));
-        }
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-        StringType instName = new StringType(doorWindowJSON.getSiteName());
-        updateState(cuid, instName);
+        super.update(doorWindowJSON);
     }
 
 }

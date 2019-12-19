@@ -21,7 +21,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -75,7 +74,6 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
                     sb.insert(4, " ");
                     String url = START_GRAPHQL;
                     String queryQLSmartPlugSetState;
-
                     if (command == OnOffType.OFF) {
                         queryQLSmartPlugSetState = "[{\"operationName\":\"UpdateState\",\"variables\":{\"giid\":\""
                                 + installationId + "\",\"deviceLabel\":\"" + sb.toString()
@@ -137,14 +135,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
             updateState(cuid, new StringType(smartplug.getDevice().getArea()));
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_HAZARDOUS);
             updateState(cuid, new StringType(smartplug.isHazardous().toString()));
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
-            BigDecimal siteId = smartPlugJSON.getSiteId();
-            if (siteId != null) {
-                updateState(cuid, new DecimalType(siteId.longValue()));
-            }
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-            StringType instName = new StringType(smartPlugJSON.getSiteName());
-            updateState(cuid, instName);
+            super.update(smartPlugJSON);
         }
     }
 }

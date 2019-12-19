@@ -79,9 +79,54 @@ Only the bridge require manual configuration. The devices and sensors can be add
 |-----------------|-----------|-------------------------------------------------------------------------------------------|
 | timestamp       | String    | This channel reports the last time the alarm status was changed.                          |
 | changedByUser   | String    | This channel reports the user that last changed the state of the alarm.                   |
+| changedVia      | String    | This channel reports the method used to change the status.                                               |
 | installationName| String    | This channel reports the installation name.                                                |
 | installationId  | Number    | This channel reports the installation ID.                                             |
-| alarmStatus     | Number    | This channel is used to arm/disarm the alarm. Available alarm status are "DISARMED", "ARMED_HOME" and "ARMED_AWAY".|               |
+| alarmStatus     | String    | This channel is used to arm/disarm the alarm. Available alarm status are "DISARMED", "ARMED_HOME" and "ARMED_AWAY".|               |
+
+### Verisure Yaleman SmartLock
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+
+#### Channels
+
+([smartLock]) supports the following channels:
+
+| Channel Type ID        | Item Type | Description                                                                                              |
+|------------------------|-----------|----------------------------------------------------------------------------------------------------------|
+| changedByUser          | String    | This channel reports the user that last changed the state of the alarm.                                  |
+| timestamp              | String    | This channel reports the last time the alarm status was changed.                                         |
+| changedVia             | String    | This channel reports the method used to change the status.                                               |
+| motorJam               | String    | This channel reports if the SmartLock motor has jammed.                                                  |
+| location               | String    | This channel reports the location.                                                                       |
+| installationName       | String    | This channel reports the installation name.                                                              |
+| installationId         | Number    | This channel reports the installation ID.                                                                |
+| smartLockStatus        | Switch    | This channel is used to lock/unlock.                                                                     |
+| autoRelock             | Switch    | This channel is used to configure auto-lock functionality. Only supported for users with Administrator rights.                                                |                
+| smartLockVolume        | String    | This channel is used to set the volume level. Available volume settings are "SILENCE", "LOW" and "HIGH". Only supported for users with Administrator rights.|  
+| smartLockVoiceLevel    | String    | This channel is used to set the voice level. Available voice level settings are "ESSENTIAL" and "NORMAL". Only supported for users with Administrator rights.| 
+
+### Verisure SmartPlug
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
+
+#### Channels
+
+([smartPlug]) supports the following channels:
+
+| Channel Type ID    | Item Type | Description                                                       | 
+|--------------------|-----------|-------------------------------------------------------------------|                                                                                                                                          
+| hazardous          | Number    | This channel reports if the smart plug is configured as hazardous.|
+| location           | String    | This channel reports the location.                                |
+| installationName   | String    | This channel reports the installation name.                       |
+| installationId     | Number    | This channel reports the installation ID.                         |
+| smartPlugStatus    | Switch    | This channel is used to turn smart plug on/off.                   |
 
 ### Verisure Smoke Detector
 
@@ -95,9 +140,10 @@ Only the bridge require manual configuration. The devices and sensors can be add
 ([smokeDetector]) supports the following channels:
  
 | Channel Type ID | Item Type             | Description                                                | 
-|-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
+|-----------------|-----------------------|------------------------------------------------------------|
+| temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |                                                                                                                                          
 | humidity        | Number                | This channel reports the current humidity in percentage.   |
-| temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
+| humidityEnabled | String                | This channel reports if the Climate is device capable of reporting humidity.     |
 | timestamp       | String                | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
@@ -160,53 +206,6 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
 
-### Verisure Yaleman SmartLock
-
-#### Configuration Options
-
-*   deviceId - Device Id
-    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
-
-#### Channels
-
-([smartLock]) supports the following channels:
-
-| Channel Type ID        | Item Type | Description                                                                                              |
-|------------------------|-----------|----------------------------------------------------------------------------------------------------------|
-| changedByUser          | String    | This channel reports the user that last changed the state of the alarm.                                  |
-| timestamp              | String    | This channel reports the last time the alarm status was changed.                                         |
-| changedVia             | String    | This channel reports the method used to change the status.                                               |
-| motorJam               | String    | This channel reports if the SmartLock motor has jammed.                                                  |
-| autoRelockEnabled      | String    | This channel reports the status of the Auto-lock function.                                               |
-| smartLockVolume        | String    | This channel reports the status of the Auto-lock function.                                               |
-| smartLockVoiceLevel    | String    | This channel reports the current voice level setting.                                                    | 
-| location               | String    | This channel reports the location.                                                                       |
-| installationName       | String    | This channel reports the installation name.                                                              |
-| installationId         | Number    | This channel reports the installation ID.                                                                |
-| smartLockStatus        | Switch    | This channel is used to lock/unlock.                                                                     |
-| autoRelock             | Switch    | This channel is used to configure auto-lock functionality. Only supported for users with Administrator rights.                                                |                
-| smartLockVolume        | String    | This channel is used to set the volume level. Available volume settings are "SILENCE", "LOW" and "HIGH". Only supported for users with Administrator rights.|  
-| smartLockVoiceLevel    | String    | This channel is used to set the voice level. Available voice level settings are "ESSENTIAL" and "NORMAL". Only supported for users with Administrator rights.| 
-
-### Verisure SmartPlug
-
-#### Configuration Options
-
-*   deviceId - Device Id
-    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
-
-#### Channels
-
-([smartPlug]) supports the following channels:
-
-| Channel Type ID    | Item Type | Description                                                       | 
-|--------------------|-----------|-------------------------------------------------------------------|                                                                                                                                          
-| hazardous          | Number    | This channel reports if the smart plug is configured as hazardous.|
-| location           | String    | This channel reports the location.                                |
-| installationName   | String    | This channel reports the installation name.                       |
-| installationId     | Number    | This channel reports the installation ID.                         |
-| smartPlugStatus    | Switch    | This channel is used to turn smart plug on/off.                   |
-
 ### Verisure DoorWindow Sensor
 
 #### Configuration Options
@@ -238,10 +237,10 @@ Only the bridge require manual configuration. The devices and sensors can be add
  
 | Channel Type ID    | Item Type | Description                                                             | 
 |--------------------|-----------|-------------------------------------------------------------------------|                                                                                                                                          
-| timestamp          | String    | This channel reports the last time the User Presence status was checked.|
+| timestamp          | String    | This channel reports the last time the User Presence status was changed.|
 | userName           | String    | This channel reports the user's name.                                   |
 | webAccount         | String    | This channel reports the user's email address.                          |
-| userLocationName   | String    | This channel reports the user presence (HOME/AWAY).                     |
+| userLocationStatus | String    | This channel reports the user presence status (HOME/AWAY).                     |
 | userDeviceName     | String    | This channel reports the name of the user device.                       |
 | installationName   | String    | This channel reports the installation name.                             |
 | installationId     | Number    | This channel reports the installation ID.                                |
@@ -299,14 +298,14 @@ Switch   SmartPlugGlavaRouter          "SmartPlug Glava Router"  <lock>   [ "Swi
 String DoorWindowLocation              "Door Window Location"    {channel="verisure:doorWindowSensor:myverisure:1SG5GHGT:location"}
 String DoorWindowStatus                "Door Window Status"      {channel="verisure:doorWindowSensor:myverisure:1SG5GHGT:state"}
 
-// UserLocation
+// UserPresence
 String UserName                        "User Name"               {channel="verisure:userPresence:myverisure:JannesUserPresence:userName"}
 String UserLocationEmail               "User Location Email"     {channel="verisure:userPresence:myverisure:JannesUserPresence:webAccount"}
-String UserLocationName                "User Location Name"      {channel="verisure:userPresence:myverisure:JannesUserPresence:userLocationName"}
+String UserLocationName                "User Location Name"      {channel="verisure:userPresence:myverisure:JannesUserPresence:userLocationStatus"}
 
 String UserNameGlava                   "User Name Glava"               {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:userName"}
 String UserLocationEmailGlava          "User Location Email Glava"     {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:webAccount"}
-String UserLocationNameGlava           "User Location Name Glava"      {channel="verisure:userPresence:myverisure:userpresencetestgmailcom1123456789:userLocationName"}
+String UserLocationNameGlava           "User Location Name Glava"      {channel="verisure:userPresence:myverisure:userpresencetestgmailcom1123456789:userLocationStatus"}
 
 // Broadband Connection
 String CurrentBBStatus                 "Broadband Connection Status"       {channel="verisure:broadbandConnection:myverisure:bc123456789:status"}
@@ -354,7 +353,7 @@ String CurrentBBStatus                 "Broadband Connection Status"       {chan
 			Frame label="User Presence Champinjonvägen" {
 				Text item=UserName label="User Name [%s]"
 				Text item=UserLocationEmail label="User Email [%s]"
-                     Text item=UserLocationName label="User Location Name [%s]"
+                     Text item=UserLocationStatus label="User Location Status [%s]"
 			}
 		}
 	}

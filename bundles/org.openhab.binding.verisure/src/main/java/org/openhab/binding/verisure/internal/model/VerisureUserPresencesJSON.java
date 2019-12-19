@@ -67,6 +67,7 @@ public class VerisureUserPresencesJSON extends VerisureBaseThingJSON {
         if (other == this) {
             return true;
         }
+
         if (!(other instanceof VerisureUserPresencesJSON)) {
             return false;
         }

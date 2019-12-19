@@ -14,13 +14,11 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -60,19 +58,11 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
     }
 
     private void updateBroadbandConnection(VerisureBroadbandConnectionsJSON vbcJSON) {
-        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP);
         updateTimeStamp(vbcJSON.getData().getInstallation().getBroadband().getTestDate());
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_CONNECTED);
+        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_CONNECTED);
         updateState(cuid,
                 new StringType(vbcJSON.getData().getInstallation().getBroadband().isBroadbandConnected().toString()));
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
-        BigDecimal siteId = vbcJSON.getSiteId();
-        if (siteId != null) {
-            updateState(cuid, new DecimalType(siteId.longValue()));
-        }
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-        StringType instName = new StringType(vbcJSON.getSiteName());
-        updateState(cuid, instName);
+        super.update(vbcJSON);
     }
 
 }

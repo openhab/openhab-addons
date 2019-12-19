@@ -14,7 +14,6 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -87,12 +86,6 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
         updateTimeStamp(climateJSON.getData().getInstallation().getClimates().get(0).getTemperatureTimestamp());
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_LOCATION);
         updateState(cuid, new StringType(climateJSON.getLocation()));
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
-        BigDecimal siteId = climateJSON.getSiteId();
-        if (siteId != null) {
-            updateState(cuid, new DecimalType(siteId.longValue()));
-        }
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-        updateState(cuid, new StringType(climateJSON.getSiteName()));
+        super.update(climateJSON);
     }
 }

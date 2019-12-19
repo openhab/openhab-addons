@@ -14,13 +14,11 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -63,20 +61,19 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler {
         ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_USER_NAME);
         UserTracking userTracking = userPresenceJSON.getData().getInstallation().getUserTrackings().get(0);
         updateState(cuid, new StringType(userTracking.getName()));
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_USER_LOCATION_NAME);
-        updateState(cuid, new StringType(userTracking.getCurrentLocationName()));
+        cuid = new ChannelUID(getThing().getUID(), CHANNEL_USER_LOCATION_STATUS);
+        if (userTracking.getCurrentLocationName() == null) {
+            updateState(cuid, new StringType(userTracking.getCurrentLocationId()));
+        } else {
+            updateState(cuid, new StringType(userTracking.getCurrentLocationName()));
+        }
+        cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
+        updateState(cuid, new StringType(userTracking.getStatus()));
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_WEBACCOUNT);
         updateState(cuid, new StringType(userTracking.getWebAccount()));
         updateTimeStamp(userTracking.getCurrentLocationTimestamp());
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_USER_DEVICE_NAME);
         updateState(cuid, new StringType(userTracking.getDeviceName()));
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
-        BigDecimal siteId = userPresenceJSON.getSiteId();
-        if (siteId != null) {
-            updateState(cuid, new DecimalType(siteId.longValue()));
-        }
-        cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
-        StringType instName = new StringType(userPresenceJSON.getSiteName());
-        updateState(cuid, instName);
+        super.update(userPresenceJSON);
     }
 }

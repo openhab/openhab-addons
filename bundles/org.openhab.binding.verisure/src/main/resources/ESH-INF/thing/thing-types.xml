@@ -176,7 +176,6 @@
 
 		<channels>
 			<channel id="temperature" typeId="temperature" />
-			<channel id="humidityEnabled" typeId="humidityEnabled" />
 			<channel id="timestamp" typeId="timestamp" />
 			<channel id="location" typeId="location" />
 			<channel id="installationName" typeId="installationName" />
@@ -206,7 +205,6 @@
 
 		<channels>
 			<channel id="temperature" typeId="temperature" />
-			<channel id="humidityEnabled" typeId="humidityEnabled" />
 			<channel id="timestamp" typeId="timestamp" />
 			<channel id="location" typeId="location" />
 			<channel id="installationName" typeId="installationName" />
@@ -236,7 +234,6 @@
 
 		<channels>
 			<channel id="temperature" typeId="temperature" />
-			<channel id="humidityEnabled" typeId="humidityEnabled" />
 			<channel id="timestamp" typeId="timestamp" />
 			<channel id="location" typeId="location" />
 			<channel id="installationName" typeId="installationName" />
@@ -290,13 +287,12 @@
 		</supported-bridge-type-refs>
 
 		<label>Verisure User Presence</label>
-		<description>Verisure Presence information about your configured Verisure users.</description>
+		<description>Verisure Presence information about your configured and active Verisure users.</description>
 
 		<channels>
-			<channel id="status" typeId="status" />
 			<channel id="userName" typeId="userName" />
 			<channel id="webAccount" typeId="webAccount" />
-			<channel id="userLocationName" typeId="userLocationName" />
+			<channel id="userLocationStatus" typeId="userLocationStatus" />
 			<channel id="userDeviceName" typeId="userDeviceName" />
 			<channel id="timestamp" typeId="timestamp" />
 			<channel id="installationName" typeId="installationName" />
@@ -364,10 +360,10 @@
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
-	<channel-type id="userLocationName">
+	<channel-type id="userLocationStatus">
 		<item-type>String</item-type>
-		<label>User Location Name</label>
-		<description>Information on user location name.</description>
+		<label>User Location Status</label>
+		<description>Information on user location status (HOME/AWAY).</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
