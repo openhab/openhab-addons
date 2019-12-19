@@ -10,22 +10,17 @@
         <description>Supports Wiz Lighting Bulb.</description>
 
         <channels>
-            <channel id="switch" typeId="switch"/>
             <channel id="color" typeId="color" />
-            <channel id="white" typeId="white" />
-            <channel id="white2" typeId="white2"/>
-            <channel id="dimmer" typeId="dimmer" />
             <channel id="scene" typeId="scene" />
             <channel id="speed" typeId="speed" />
-            
         </channels>
-        
+
         <config-description>
-            <parameter name="hostMacAddress" type="text" required="true">
+            <parameter name="bulbMacAddress" type="text" required="true">
                 <label>MAC address</label>
                 <description>Mac Address of the bulb</description>
             </parameter>
-            <parameter name="hostAddress" type="text" required="true">
+            <parameter name="bulbIpAddress" type="text" required="true">
                 <label>Ip address</label>
                 <context>network-address</context>
                 <description>IP address of the bulb</description>
@@ -33,37 +28,21 @@
            <parameter name="homeId" type="text" required="true">
                 <label>HomeId</label>
                 <description>HomeId of the bulb. This can be found in the ios or android app settings</description>
-            </parameter>            
+            </parameter>
             <parameter name="updateInterval" type="integer" min="5">
                 <label>Update interval</label>
                 <description>Update time interval in seconds to request the status of the bulb.</description>
+                <default>60</default>
             </parameter>
         </config-description>
-        
+
     </thing-type>
 
     <!-- Socket type Channel Type -->
-    <channel-type id="switch">
-        <item-type>Switch</item-type>
-        <label>Light Switch</label>
-        <description>Light Switch to turn on or off.</description>
-    </channel-type>
     <channel-type id="color">
         <item-type>Color</item-type>
         <label>Color</label>
         <category>ColorLight</category>
-    </channel-type>
-   <channel-type id="white">
-        <item-type>Number</item-type>
-        <label>White</label>
-    </channel-type> 
-   <channel-type id="white2">
-        <item-type>Number</item-type>
-        <label>White2</label>
-    </channel-type>       
-    <channel-type id="dimmer">
-        <item-type>Dimmer</item-type>
-        <label>Dimmer</label>
     </channel-type>
     <channel-type id="scene">
         <item-type>String</item-type>
@@ -94,7 +73,7 @@
                 <option value="25">Mojito</option>
                 <option value="26">Club</option>
                 <option value="27">Christmas</option>
-                <option value="28">Halloween</option>                
+                <option value="28">Halloween</option>
             </options>
         </state>
     </channel-type>

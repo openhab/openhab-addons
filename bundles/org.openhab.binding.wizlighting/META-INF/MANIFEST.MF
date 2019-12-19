@@ -30,5 +30,3 @@ Import-Package: com.google.common.collect,
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.wizlighting,
  org.openhab.binding.wizlighting.handler
-Require-Bundle: org.eclipse.jetty.client
-

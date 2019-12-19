@@ -33,24 +33,20 @@ public class WizLightingBindingConstants {
     /**
      * List of all Channel ids
      */
-    public static final String BULB_SWITCH_CHANNEL_ID = "switch";
     public static final String BULB_COLOR_CHANNEL_ID = "color";
-    public static final String BULB_WHITE_CHANNEL_ID = "white";
-    public static final String BULB_C_CHANNEL_ID = "white2";
-    public static final String BULB_DIMMER_CHANNEL_ID = "dimmer";
     public static final String BULB_SCENE_CHANNEL_ID = "scene";
     public static final String BULB_SPEED_CHANNEL_ID = "speed";
 
     /**
      * The supported thing types.
      */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WIZ_BULB);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_WIZ_BULB)));
 
     // -------------- Configuration arguments ----------------
     /**
      * Mac address configuration argument key.
      */
-    public static final String MAC_ADDRESS_ARG = "hostMacAddress";
+    public static final String BULB_MAC_ADDRESS_ARG = "bulbMacAddress";
     /**
      * Wifi socket update interval configuration argument key.
      */
@@ -58,7 +54,7 @@ public class WizLightingBindingConstants {
     /**
      * Host address configuration argument key.
      */
-    public static final String HOST_ADDRESS_ARG = "hostAddress";
+    public static final String BULB_IP_ADDRESS_ARG = "bulbIpAddress";
 
     public static final String HOME_ID_ARG = "homeId";
 
@@ -77,37 +73,5 @@ public class WizLightingBindingConstants {
      * Default listener socket default UDP port.
      */
     public static final int LISTENER_DEFAULT_UDP_PORT = 38900;
-
-    /**
-     * Discovery timeout in seconds.
-     */
-    public static final int DISCOVERY_TIMEOUT_SECONDS = 4;
-
-    /**
-     * Invite Token (one time use only). Needed to auto discover and can be obtained using ios or android app
-     */
-    public static final String DISCOVERY_INVITE_TOKEN = "inviteToken";
-
-    /**
-     * OAuth token end point URL For obtaining access token. Only needed for auto discovery
-     */
-    public static final String DISCOVERY_API_OAUTH_URL = "https://api.wiz.world/oauth/v2/token";
-
-    /**
-     * URL to obtain HomeId
-     */
-    public static final String DISCOVERY_API_USER_DETAILS_URL = "https://api.wiz.world/api/v2/user/me";
-
-    /**
-     * URL to obtain list of all bulbs once registered
-     */
-    public static final String DISCOVERY_API_HOME_DETAILS_URL = "https://api.wiz.world/api/v2/home/";
-
-    /**
-     * Register Invite code URL
-     */
-    public static final String DISCOVERY_API_INVITE_TOKEN_URL = "https://api.wiz.world/api/v2/invitation/";
-
-    public static final String INVITE_TOKEN_TEMP_FILE = "wizlighting.token";
 
 }

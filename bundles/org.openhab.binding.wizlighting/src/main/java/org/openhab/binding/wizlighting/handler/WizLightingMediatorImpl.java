@@ -45,7 +45,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      * @param componentContext the componentContext
      */
     protected void activate(final ComponentContext componentContext) {
-        logger.debug("Mediator has been activated by OSGI.");
+        logger.trace("Mediator has been activated by OSGI.");
         this.initMediatorWizBulbUpdateReceiverRunnable();
     }
 
@@ -84,7 +84,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     }
 
     /**
-     * Regists one new {@link Thing} and the corresponding {@link WizLightingHandler}.
+     * Registers one new {@link Thing} and the corresponding {@link WizLightingHandler}.
      *
      * @param thing the {@link Thing}.
      * @param handler the {@link WizLightingHandler}.
