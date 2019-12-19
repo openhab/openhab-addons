@@ -35,7 +35,6 @@ public class WizLightingPacketConverter {
      * Default constructor of the packet converter.
      */
     public WizLightingPacketConverter() {
-        // this.wizlightingGsonBuilder = new GsonBuilder().registerTypeAdapter(WizLightingRequest.class, null).create();
         this.wizlightingGsonBuilder = new GsonBuilder().create();
     }
 
@@ -51,8 +50,8 @@ public class WizLightingPacketConverter {
         // {"id":20,"method":"setPilot","params":{"sceneId":18}}
         String jsonCmd = this.wizlightingGsonBuilder.toJson(requestPacket);
         logger.debug("JsonCmd={{}}", jsonCmd);
-        requestDatagram = jsonCmd.getBytes();
 
+        requestDatagram = jsonCmd.getBytes();
         return requestDatagram;
     }
 
@@ -63,9 +62,9 @@ public class WizLightingPacketConverter {
      * @return the {@link WizLightingResponse} is successfully transformed.
      */
     public WizLightingResponse transformResponsePacket(final DatagramPacket packet) {
-
         String responseJson = new String(packet.getData(), 0, packet.getLength());
         logger.debug("Response Json={{}}", responseJson);
+
         WizLightingResponse response = this.wizlightingGsonBuilder.fromJson(responseJson, WizLightingResponse.class);
         return response;
     }
@@ -77,13 +76,12 @@ public class WizLightingPacketConverter {
      * @return the {@link WizLightingSyncResponse}
      */
     public WizLightingSyncResponse transformSyncResponsePacket(final DatagramPacket packet) {
-
         String responseJson = new String(packet.getData(), 0, packet.getLength());
         logger.debug("Sync Response Json={{}}", responseJson);
+
         WizLightingSyncResponse response = this.wizlightingGsonBuilder.fromJson(responseJson,
                 WizLightingSyncResponse.class);
         response.setHostAddress(packet.getAddress().getHostAddress());
         return response;
     }
-
 }

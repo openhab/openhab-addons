@@ -36,6 +36,6 @@ public enum WizLightingMethodType {
      * @return the method name
      */
     public String getMethod() {
-        return this.method;
+        return method;
     }
 }

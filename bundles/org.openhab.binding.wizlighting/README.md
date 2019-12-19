@@ -9,7 +9,10 @@ This binding integrates the Wiz Color Lighting devices .
 
 ## Discovery
 
-Auto-discovery is currently not supported.  All bulbs/plugs/switches must be added manually.
+The devices are discovered only once when the app is installed for the first time.
+Once the app is configured it allows creating additional invite codes that allow installation of the app on other ios or android devices.
+In order to start auto discovery, create a file named wizlighting.token in Userdata folder with the 7 digit invite token and initiate discovery.
+If this invite code is provided, we mimic the flow of an ios device to obtain list of devices from the wiz world api end point.
 
 ## Binding Configuration
 
@@ -41,6 +44,7 @@ The Binding supports the following channel:
 
 | Channel Type ID | Item Type | Description                                          | Access |
 |-----------------|-----------|------------------------------------------------------|--------|
+| switch          | Switch    | Power state of the Bulb (ON/OFF)                     | R/W    |
 | color           | Color     | State, intensity, and color of the LEDs              | R/W    |
 | scene           | String    | Preset light mode name to run on the bulb            | R/W    |
 | speed           | Dimmer    | Speed of the color changes in dynamic light modes    | R/W    |

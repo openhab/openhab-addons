@@ -84,7 +84,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     }
 
     /**
-     * Registers one new {@link Thing} and the corresponding {@link WizLightingHandler}.
+     * Register one new {@link Thing} and the corresponding {@link WizLightingHandler}.
      *
      * @param thing the {@link Thing}.
      * @param handler the {@link WizLightingHandler}.
@@ -95,7 +95,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     }
 
     /**
-     * Unregists one {@link WizLightingHandler} by the corresponding {@link Thing}.
+     * Unregister one {@link WizLightingHandler} by the corresponding {@link Thing}.
      *
      * @param thing the {@link Thing}.
      */

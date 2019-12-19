@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.types.Command;
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
-public class DimmingRequestParam extends Param {
+public class DimmingRequestParam implements Param {
     private int dimming;
 
     public DimmingRequestParam(int dimming) {
@@ -43,5 +43,4 @@ public class DimmingRequestParam extends Param {
         }
         this.dimming = dimming;
     }
-
 }

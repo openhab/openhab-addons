@@ -49,6 +49,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
     public WizLightingUpdateReceiverRunnable(final WizLightingMediator mediator, final int listeningPort)
             throws SocketException {
         logger.debug("Starting Update Receiver Runnable...");
+
         // Create a socket to listen on the port.
         this.listeningPort = listeningPort;
         this.mediator = mediator;
@@ -65,8 +66,8 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
     public void run() {
         // Now loop forever, waiting to receive packets and redirect them to mediator.
         while (!this.shutdown) {
-
             datagramSocketHealthRoutine();
+
             // Create a buffer to read datagrams into. If a
             // packet is larger than this buffer, the
             // excess will simply be discarded!
@@ -74,6 +75,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
 
             // Create a packet to receive data into the buffer
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
             // Wait to receive a datagram
             try {
                 this.datagramSocket.receive(packet);
@@ -81,11 +83,10 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
                 logger.debug("Received packet from: {}. Will process the packet...",
                         packet.getAddress().getHostAddress());
 
-                // Do mediator something with it
+                // Redirect packet to the mediator
                 this.mediator.processReceivedPacket(this.packetConverter.transformSyncResponsePacket(packet));
 
                 logger.debug("Message delivered with success to mediator.");
-
             } catch (SocketTimeoutException e) {
                 logger.trace("Socket Timeout receiving packet.");
             } catch (IOException e) {
@@ -121,5 +122,4 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
     public void shutdown() {
         this.shutdown = true;
     }
-
 }

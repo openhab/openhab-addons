@@ -9,7 +9,6 @@
 package org.openhab.binding.wizlighting.internal;
 
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.net.NetworkAddressService;
@@ -54,9 +53,6 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        Dictionary<String, Object> properties = componentContext.getProperties();
-        ipAddress = (String) properties.get("ipAddress");
-        macAddress = (String) properties.get("macAddress");
     };
 
     /**
@@ -65,7 +61,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
      * @param mediator the mediator
      */
     public void setMediator(final WizLightingMediator mediator) {
-        logger.debug("Mediator has been injected on handler factory service.");
+        logger.trace("Mediator has been injected on handler factory service.");
         this.mediator = mediator;
     }
 
@@ -75,7 +71,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
      * @param mediator the mediator
      */
     public void unsetMediator(final WizLightingMediator mitsubishiMediator) {
-        logger.debug("Mediator has been unsetted from discovery service.");
+        logger.trace("Mediator has been unsetted from discovery service.");
         this.mediator = null;
     }
 
@@ -86,9 +82,8 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(final Thing thing) {
-        logger.debug("Inside factory create handler ");
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.debug("Create Handler Request " + thingTypeUID);
+        logger.trace("Create Handler Request " + thingTypeUID);
 
         if (thingTypeUID.equals(WizLightingBindingConstants.THING_TYPE_WIZ_BULB)) {
             WizLightingHandler handler;
@@ -96,6 +91,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
             try {
                 handler = new WizLightingHandler(thing, getMyIpAddress(), getMyMacAddress());
                 logger.debug("WizLightingMediator will register the handler.");
+
                 if (this.mediator != null) {
                     this.mediator.registerThingAndWizBulbHandler(thing, handler);
                 } else {
@@ -162,5 +158,4 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
         this.networkAddressService = null;
     }
-
 }

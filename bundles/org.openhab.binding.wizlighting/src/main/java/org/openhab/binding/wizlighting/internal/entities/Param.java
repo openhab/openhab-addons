@@ -14,6 +14,6 @@ package org.openhab.binding.wizlighting.internal.entities;
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
-public abstract class Param {
+public interface Param {
 
 }

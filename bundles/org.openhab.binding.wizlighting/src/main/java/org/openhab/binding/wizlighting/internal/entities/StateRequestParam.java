@@ -16,7 +16,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
-public class StateRequestParam extends Param {
+public class StateRequestParam implements Param {
     private boolean state; // true = ON, false = OFF
 
     public StateRequestParam(OnOffType command) {

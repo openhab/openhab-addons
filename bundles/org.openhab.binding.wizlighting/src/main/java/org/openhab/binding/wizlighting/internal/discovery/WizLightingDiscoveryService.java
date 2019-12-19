@@ -27,7 +27,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -77,7 +76,8 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      * @param mediator the mediator
      */
     public void setMediator(final WizLightingMediator mediator) {
-        logger.debug("Mediator has been injected on discovery service.");
+        logger.trace("Mediator has been injected on discovery service.");
+
         this.mediator = mediator;
         mediator.setDiscoveryService(this);
     }
@@ -88,7 +88,8 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      * @param mediator the mediator
      */
     public void unsetMediator(final WizLightingMediator mitsubishiMediator) {
-        logger.debug("Mediator has been unsetted from discovery service.");
+        logger.trace("Mediator has been unsetted from discovery service.");
+
         this.mediator.setDiscoveryService(null);
         this.mediator = null;
     }
@@ -113,6 +114,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         if (inviteToken == null) {
             String folderName = ConfigConstants.getUserDataFolder() + "/";
             File file = new File(folderName, WizLightingBindingConstants.INVITE_TOKEN_TEMP_FILE);
+
             if (file.exists()) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
                     String line = reader.readLine();
@@ -128,17 +130,9 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
                 return;
             }
         }
+
         try {
-            SslContextFactory sslContextFactory = new SslContextFactory(true);
-            httpClient = new HttpClient(sslContextFactory);
-            // ProxyConfiguration proxyConfig = httpClient.getProxyConfiguration();
-            // HttpProxy proxy = new HttpProxy("192.168.0.241", 8888);
-
-            // Do not proxy requests for localhost:8080
-            // proxy.getExcludedAddresses().add("192.168.0.241:8888");
-
-            // add the new proxy to the list of proxies already registered
-            // proxyConfig.getProxies().add(proxy);
+            httpClient = new HttpClient();
             httpClient.start();
             this.gson = (new GsonBuilder()).create();
 
@@ -150,10 +144,10 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
             }
 
             if (this.authorizeInviteToken(accessToken)) {
-                int homeId = this.retriveHomeId(accessToken);
+                int homeId = this.retrieveHomeId(accessToken);
 
                 if (homeId != -1) {
-                    HomeDTO.Light[] lights = this.retriveHomeLights(accessToken, homeId);
+                    HomeDTO.Light[] lights = this.retrieveHomeLights(accessToken, homeId);
 
                     if (lights != null) {
                         for (int i = 0; i < lights.length; i++) {
@@ -174,72 +168,62 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     protected String obtainAccessToken()
             throws URISyntaxException, InterruptedException, TimeoutException, ExecutionException {
-        String accessToken = null;
-        StringBuilder urlBuilder = new StringBuilder(WizLightingBindingConstants.DISCOVERY_API_OAUTH_URL);
-
-        logger.debug("Result {}", urlBuilder.toString());
-        Request request = httpClient.newRequest(urlBuilder.toString()).header("Authorization",
-                "Basic Ml81ZHE1cHFzNnI0b3dvNDAwb284MGNvd2d3azA0Y2drb2t3azB3bzgwa3drb2M4d2NjczpNV0ppWTJFeU1Ea3dNR0V3TVdJM1pqTTFOREppWm1RMU1qTm1NV05qTVRVNE9UZzFOag==")
+        Request request = httpClient.newRequest(WizLightingBindingConstants.DISCOVERY_API_OAUTH_URL)
+                .header("Authorization", WizLightingBindingConstants.DISCOVERY_API_AUTHENTICATION_TOKEN)
                 .header("Content-Type", "application/x-www-form-urlencoded").method(HttpMethod.POST)
                 .content(new StringContentProvider("grant_type=urn:anonymous&scope=wiz_ios"));
+
         logger.debug("Request is {}", request.toString());
         ContentResponse response = request.send();
         logger.debug("Oauth Result {}", response.getContentAsString());
+
         TokenDTO data = gson.fromJson(response.getContentAsString(), TokenDTO.class);
-        if (data != null) {
-            accessToken = data.access_token;
-        }
-        return accessToken;
+        return data.access_token;
     }
 
     protected boolean authorizeInviteToken(String accessToken)
             throws InterruptedException, TimeoutException, ExecutionException {
         AuthenticationStore a = httpClient.getAuthenticationStore();
         a.clearAuthentications();
-        StringBuilder urlBuilder = new StringBuilder(
-                WizLightingBindingConstants.DISCOVERY_API_INVITE_TOKEN_URL + this.inviteToken);
-        logger.debug("Result {}", urlBuilder.toString());
-        Request request = httpClient.newRequest(urlBuilder.toString()).header("Authorization", "Bearer " + accessToken)
-                .timeout(10, TimeUnit.SECONDS);
+
+        Request request = httpClient
+                .newRequest(WizLightingBindingConstants.DISCOVERY_API_INVITE_TOKEN_URL + this.inviteToken)
+                .header("Authorization", "Bearer " + accessToken).timeout(10, TimeUnit.SECONDS);
+
         ContentResponse response = request.send();
         String result = response.getContentAsString();
         logger.debug("Invite Result {}", result);
         return result.contains("\"success\":true");
     }
 
-    protected int retriveHomeId(String accessToken) throws InterruptedException, TimeoutException, ExecutionException {
-        int homeId = -1;
+    protected int retrieveHomeId(String accessToken) throws InterruptedException, TimeoutException, ExecutionException {
         AuthenticationStore a = httpClient.getAuthenticationStore();
         a.clearAuthentications();
-        StringBuilder urlBuilder = new StringBuilder(WizLightingBindingConstants.DISCOVERY_API_USER_DETAILS_URL);
-        logger.debug("Result {}", urlBuilder.toString());
-        Request request = httpClient.newRequest(urlBuilder.toString()).header("Authorization", "Bearer " + accessToken)
-                .timeout(10, TimeUnit.SECONDS);
+
+        Request request = httpClient.newRequest(WizLightingBindingConstants.DISCOVERY_API_USER_DETAILS_URL)
+                .header("Authorization", "Bearer " + accessToken).timeout(10, TimeUnit.SECONDS);
+
         ContentResponse response = request.send();
         String result = response.getContentAsString();
         logger.debug("User Details Result {}", result);
-        UserDTO data = gson.fromJson(response.getContentAsString(), UserDTO.class);
-        if (data != null) {
-            homeId = data.getHomeId();
-        }
 
-        return homeId;
+        UserDTO data = gson.fromJson(response.getContentAsString(), UserDTO.class);
+        return data.getHomeId();
     }
 
-    protected HomeDTO.Light[] retriveHomeLights(String accessToken, int homeId)
+    protected HomeDTO.Light[] retrieveHomeLights(String accessToken, int homeId)
             throws InterruptedException, TimeoutException, ExecutionException {
         AuthenticationStore a = httpClient.getAuthenticationStore();
         a.clearAuthentications();
-        StringBuilder urlBuilder = new StringBuilder(
-                WizLightingBindingConstants.DISCOVERY_API_HOME_DETAILS_URL + homeId);
-        logger.debug("Result {}", urlBuilder.toString());
-        Request request = httpClient.newRequest(urlBuilder.toString()).header("Authorization", "Bearer " + accessToken)
-                .timeout(10, TimeUnit.SECONDS);
+
+        Request request = httpClient.newRequest(WizLightingBindingConstants.DISCOVERY_API_HOME_DETAILS_URL + homeId)
+                .header("Authorization", "Bearer " + accessToken).timeout(10, TimeUnit.SECONDS);
+
         ContentResponse response = request.send();
         String result = response.getContentAsString();
         logger.debug("Home Details Result {}", result);
-        HomeDTO data = gson.fromJson(response.getContentAsString(), HomeDTO.class);
 
+        HomeDTO data = gson.fromJson(response.getContentAsString(), HomeDTO.class);
         return data.getLights();
 
     }
@@ -251,19 +235,17 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      * @param hostAddress the host address from the device.
      */
     public void discoveredLight(final HomeDTO.Light light) {
-        String macAddress = light.mac_address;
-        String ipAddress = light.ip;
-        int homeId = light.home_id;
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG, macAddress);
-        properties.put(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG, ipAddress);
-        properties.put(WizLightingBindingConstants.HOME_ID_ARG, String.valueOf(homeId));
-        ThingUID newThingId = new ThingUID(WizLightingBindingConstants.THING_TYPE_WIZ_BULB, macAddress);
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
-                .withLabel("Wizlighting Bulb").withRepresentationProperty(macAddress).build();
+        properties.put(WizLightingBindingConstants.MAC_ADDRESS_ARG, light.mac_address);
+        properties.put(WizLightingBindingConstants.HOST_ADDRESS_ARG, light.ip);
+        properties.put(WizLightingBindingConstants.HOME_ID_ARG, String.valueOf(light.home_id));
 
-        logger.debug("Discovered new thing with mac address '{}' and host address '{}' and homeId '{}", macAddress,
-                ipAddress, homeId);
+        ThingUID newThingId = new ThingUID(WizLightingBindingConstants.THING_TYPE_WIZ_BULB, light.mac_address);
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
+                .withLabel("Wizlighting Bulb").withRepresentationProperty(light.mac_address).build();
+
+        logger.debug("Discovered new thing with mac address '{}' and host address '{}' and homeId '{}",
+                light.mac_address, light.ip, light.home_id);
 
         this.thingDiscovered(discoveryResult);
     }
@@ -277,5 +259,4 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
     public WizLightingMediator getMediator() {
         return this.mediator;
     }
-
 }

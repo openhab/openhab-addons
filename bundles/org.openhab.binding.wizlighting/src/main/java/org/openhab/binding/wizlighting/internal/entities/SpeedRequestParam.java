@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.types.Command;
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
-public class SpeedRequestParam extends Param {
+public class SpeedRequestParam implements Param {
     private int speed;
 
     public SpeedRequestParam(int speed) {

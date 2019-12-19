@@ -8,13 +8,15 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
+import org.eclipse.smarthome.core.library.types.PercentType;
+
 /**
  * This POJO represents one Wiz Lighting Sync params
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
-public class SyncResponseParam extends Param {
+public class SyncResponseParam implements Param {
     public String mac;
     public boolean state;
     public int sceneId;
@@ -26,5 +28,10 @@ public class SyncResponseParam extends Param {
     public int c;
     public int w;
     public int dimming;
+    public int temp;
     public int rssi;
+
+    public PercentType getTemperatureColor() {
+        return new PercentType((temp - 2200) / (6500 - 2200) * 100);
+    }
 }

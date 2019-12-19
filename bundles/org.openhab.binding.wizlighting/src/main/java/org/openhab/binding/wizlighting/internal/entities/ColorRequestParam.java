@@ -24,33 +24,11 @@ public class ColorRequestParam extends DimmingRequestParam {
     private int c; // not sure 0-255
 
     public ColorRequestParam(HSBType color) {
-        super(color.getBrightness().intValue());
+        super(color.getBrightness());
+
         this.b = (int) Math.round(color.getBlue().intValue() * 2.55);
         this.g = (int) Math.round(color.getGreen().intValue() * 2.55);
         this.r = (int) Math.round(color.getRed().intValue() * 2.55);
-        // strange logic here
-        if (color.getSaturation().intValue() > 50) {
-            this.w = 255;
-        } else {
-            this.w = 0;
-        }
-
-        if (this.r > 0 && this.b > 0 && this.g > 0) {
-            this.w = 0;
-        }
-        // this.w = (int) Math.round(color.getSaturation().intValue() * 2.55);
-        this.c = 0;
-        // this.c = (int)Math.round(color.getSaturation().intValue() * 2.55);
-
-    }
-
-    public ColorRequestParam(int b, int g, int r, int w, int c) {
-        super(100);
-        this.b = b;
-        this.g = g;
-        this.r = r;
-        this.w = w;
-        this.c = c;
     }
 
     public int getB() {

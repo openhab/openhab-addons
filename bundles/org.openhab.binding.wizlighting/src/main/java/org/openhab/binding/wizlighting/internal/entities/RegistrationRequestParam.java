@@ -14,7 +14,7 @@ package org.openhab.binding.wizlighting.internal.entities;
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
-public class RegistrationRequestParam extends Param {
+public class RegistrationRequestParam implements Param {
     private String phoneIp;
     private boolean register;
     private int homeId;
