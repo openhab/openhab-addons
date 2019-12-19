@@ -111,11 +111,12 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void disconnected() {
         connecting = false;
+
         try {
             updateStatus(ThingStatus.OFFLINE);
 
             // retry connection if disconnect is not explicitly requested
-            if (!explicitDisconnect) {
+            if (!explicitDisconnect && config.connectionRetryInterval > 0) {
                 scheduler.schedule(new Runnable() {
 
                     @Override
@@ -126,8 +127,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                     }
                 }, config.connectionRetryInterval * 1000, TimeUnit.MILLISECONDS);
             }
-        } catch (IllegalStateException ex) {
-        }
+        } catch (IllegalStateException ex) { }
     }
 
     @Override
@@ -257,7 +257,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             logger.info("Starting OpenTherm Gateway connector");
 
             explicitDisconnect = false;
-            // TODO: support different kinds of connectors, such as USB, serial port
+
             connector = new OpenThermGatewaySocketConnector(this, config.ipaddress, config.port);
             new Thread(connector).start();
 

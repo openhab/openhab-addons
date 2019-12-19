@@ -1,12 +1,12 @@
-# OpenTherm Gateway Binding
+# OpenTherm Gateway binding
 
-This binding is used to integrate the OpenTherm Gateway into OpenHAB2. The OpenTherm Gateway is a module designed by Schelte Bron that is connected in between a boiler and a thermostat that communicates using the OpenTherm protocol.
+This binding is used to integrate the OpenTherm Gateway into openHAB2. The OpenTherm Gateway is a module designed by Schelte Bron that is connected in between a boiler and a thermostat that communicates using the OpenTherm protocol.
 
 More information on the OpenTherm Gateway can be found at http://otgw.tclcode.com/
 
 This binding is still under development. Please visit https://github.com/ArjenKorevaar/openhab2-openthermgateway-binary to download the lastest compiled test version.
 
-Comments can be submitted to the topic on OpenHAB community at https://community.openhab.org/t/39160
+Comments can be submitted to the topic on openHAB community at https://community.openhab.org/t/39160
 
 ## Supported Things
 
@@ -22,13 +22,11 @@ The binding itself does not require any configuration.
 
 ## Thing Configuration
 
-The binding is designed to support various ways of connecting to the OpenTherm Gateway, but currently only supports a TCP socket connection. The configuration settings for the thing are Hostname and Port, which are used to open the socket to the gateway.
-
-Future types of connections may require other settings, such as a COM port.
+The binding is designed to support various ways of connecting to the OpenTherm Gateway device, but currently only supports a TCP socket connection. The configuration settings for the thing are Hostname/IP address and Port, which are used to connect to the gateway, and an automatic connection retry interval in case the connection to the OpenTherm Gateway device is lost.
 
 ## Channels
 
-The OpenTherm Gateway supports the following channels:
+The OpenTherm Gateway binding supports the following channels:
 
 - Room temperature
 - Room setpoint

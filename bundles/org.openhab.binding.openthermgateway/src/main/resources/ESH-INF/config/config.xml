@@ -18,13 +18,13 @@
 		<parameter name="port" type="integer" required="true" groupName="connection" min="0" max="65535">
 			<label>Port</label>
 			<description>The port used to connect to the OpenTherm Gateway.</description>
-		</parameter>				
+		</parameter>
 		
-		<parameter name="connectionRetryInterval" type="integer" required="true" groupName="connection" min="1" unit="s">
+		<parameter name="connectionRetryInterval" type="integer" required="true" groupName="connection" min="0" max="3600" unit="s">
 			<label>Connection Retry Interval</label>
-			<description>The interval in seconds to retry connecting.</description>
+			<description>The interval in seconds to retry connecting (0 = disabled).</description>
 			<default>60</default>
-		</parameter>				
+		</parameter>
 		
 	</config-description>
 

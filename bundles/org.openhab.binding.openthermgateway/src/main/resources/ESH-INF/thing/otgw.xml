@@ -7,10 +7,10 @@
 		<description>OpenTherm Gateway binding</description>
 		<channels>
 			<channel id="roomtemp" typeId="roomtemp" />
-			<channel id="roomsetpoint" typeId="roomsetpoint" />			
+			<channel id="roomsetpoint" typeId="roomsetpoint" />
 			<channel id="temperaturetemporary" typeId="temperaturetemporary" />
 			<channel id="temperatureconstant" typeId="temperatureconstant" />
-			<channel id="controlsetpoint" typeId="controlsetpoint" />			
+			<channel id="controlsetpoint" typeId="controlsetpoint" />
 			<channel id="dhwtemp" typeId="dhwtemp" />
 			<channel id="tdhwset" typeId="tdhwset" />
 			<channel id="overridedhwsetpoint" typeId="overridedhwsetpoint" />
