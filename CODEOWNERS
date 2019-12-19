@@ -24,7 +24,6 @@
 /bundles/org.openhab.binding.boschindego/ @jofleck
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
 /bundles/org.openhab.binding.buienradar/ @gedejong
-/bundles/org.openhab.binding.ccu825/ @ehorohorin
 /bundles/org.openhab.binding.chromecast/ @kaikreuzer
 /bundles/org.openhab.binding.cm11a/ @BobRak
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
