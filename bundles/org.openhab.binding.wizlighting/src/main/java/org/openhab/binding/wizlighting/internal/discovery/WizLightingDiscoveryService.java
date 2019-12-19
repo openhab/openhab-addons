@@ -51,7 +51,8 @@ import org.osgi.service.component.annotations.Reference;
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
-@Component(configurationPid = "WizLightingDiscoveryService", service = org.eclipse.smarthome.config.discovery.DiscoveryService)
+// TODO:  Check this annotation
+@Component(configurationPid = "discovery.wizlighting", service = DiscoveryService.class)
 public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingDiscoveryService.class);

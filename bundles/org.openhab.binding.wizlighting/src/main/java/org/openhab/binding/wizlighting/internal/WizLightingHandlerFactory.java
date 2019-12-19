@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.wizlighting.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.handler.WizLightingHandler;
 import org.openhab.binding.wizlighting.handler.WizLightingMediator;
@@ -34,7 +35,8 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
-@Component(configurationPid = "WizLightingHandlerFactory", service = org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory)
+// TODO:  Check this annotation
+@Component(configurationPid = "binding.wizlighting", service = ThingHandlerFactory.class)
 public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

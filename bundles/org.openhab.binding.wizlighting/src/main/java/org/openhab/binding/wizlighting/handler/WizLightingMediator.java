@@ -24,6 +24,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
+// TODO:  Figure out the correct annotation here.
 @Component(configurationPid = "WizLightingMediator", service = org.openhab.binding.wizlighting.handler.WizLightingMediator)
 public interface WizLightingMediator {
 
