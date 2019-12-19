@@ -18,6 +18,7 @@
 			<channel id="mediaPlayer" typeId="mediaPlayerType" />
 			<channel id="mediaStop" typeId="mediaStopType" />
 			<channel id="appLauncher" typeId="appLauncherChannelType" />
+			<channel id="rcButton" typeId="rcButtonType" />
 		</channels>
 
 		<properties>
@@ -84,6 +85,11 @@
 		<item-type>String</item-type>
 		<label>Application</label>
 		<description>Start application and monitor running applications.</description>
+	</channel-type>
+	<channel-type id="rcButtonType">
+		<item-type>String</item-type>
+		<label>RCButton</label>
+		<description>Simulate a Remote Control button press</description>
 	</channel-type>
 
 </thing:thing-descriptions>

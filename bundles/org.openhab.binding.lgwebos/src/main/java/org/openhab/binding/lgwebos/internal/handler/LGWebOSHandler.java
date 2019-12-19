@@ -40,6 +40,7 @@ import org.openhab.binding.lgwebos.internal.LauncherApplication;
 import org.openhab.binding.lgwebos.internal.MediaControlPlayer;
 import org.openhab.binding.lgwebos.internal.MediaControlStop;
 import org.openhab.binding.lgwebos.internal.PowerControlPower;
+import org.openhab.binding.lgwebos.internal.RCButtonControl;
 import org.openhab.binding.lgwebos.internal.TVControlChannel;
 import org.openhab.binding.lgwebos.internal.TVControlChannelName;
 import org.openhab.binding.lgwebos.internal.ToastControlToast;
@@ -99,6 +100,7 @@ public class LGWebOSHandler extends BaseThingHandler implements LGWebOSTVSocket.
         handlers.put(CHANNEL_MEDIA_STOP, new MediaControlStop());
         handlers.put(CHANNEL_TOAST, new ToastControlToast());
         handlers.put(CHANNEL_MEDIA_PLAYER, new MediaControlPlayer());
+        handlers.put(CHANNEL_RCBUTTON, new RCButtonControl());
         channelHandlers = Collections.unmodifiableMap(handlers);
     }
 
