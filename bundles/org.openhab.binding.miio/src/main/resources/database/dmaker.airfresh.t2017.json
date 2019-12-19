@@ -61,6 +61,15 @@
         ]
       },
       {
+        "property": "ptc_status",
+        "friendlyName": "PTC Status",
+        "channel": "airFreshPTCStatus",
+        "type": "Switch",
+        "refresh": true,
+        "ChannelGroup": "Status",
+        "actions": []
+      },
+      {
         "property": "screen_direction",
         "friendlyName": "Screen direction",
         "channel": "airFreshDisplayDirection",
@@ -91,7 +100,7 @@
       {
         "property": "child_lock",
         "friendlyName": "Child Lock",
-        "channel": "airFreshParentalControls",
+        "channel": "airFreshChildLock",
         "type": "Switch",
         "refresh": true,
         "channelGroup": "actions",
@@ -136,7 +145,7 @@
       },
       {
         "property": "control_speed",
-        "friendlyName": "Control Speed",
+        "friendlyName": "Current Speed",
         "channel": "airFreshCurrentSpeed",
         "type": "Number",
         "refresh": true,
@@ -201,6 +210,20 @@
         "refresh": true,
         "ChannelGroup": "Status",
         "actions": []
+      },
+      {
+        "property": "",
+        "friendlyName": "Reset Filter",
+        "channel": "airFreshResetFilter",
+        "type": "String",
+        "refresh": false,
+        "ChannelGroup": "actions",
+        "actions": [
+          {
+            "command": "set_filter_reset",
+            "parameterType": "STRING"
+          }
+        ]
       }
     ]
   }
