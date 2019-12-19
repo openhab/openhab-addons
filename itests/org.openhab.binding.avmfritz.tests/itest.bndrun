@@ -33,8 +33,8 @@ Fragment-Host: org.openhab.binding.avmfritz
 	org.apache.commons.exec;version='[1.1.0,1.1.1)',\
 	org.apache.felix.http.servlet-api;version='[1.1.2,1.1.3)',\
 	org.jupnp;version='[2.5.2,2.5.3)',\
-	org.openhab.binding.avmfritz;version='[2.5.0,2.5.1)',\
-	org.openhab.binding.avmfritz.tests;version='[2.5.0,2.5.1)',\
+	org.openhab.binding.avmfritz;version='[2.5.1,2.5.2)',\
+	org.openhab.binding.avmfritz.tests;version='[2.5.1,2.5.2)',\
 	org.openhab.core.config.discovery.upnp;version='[2.5.0,2.5.1)',\
 	org.openhab.core.io.net;version='[2.5.0,2.5.1)',\
 	org.openhab.core.test;version='[2.5.0,2.5.1)',\
