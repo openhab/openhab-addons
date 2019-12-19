@@ -81,8 +81,8 @@ public class WizLightingHandler extends BaseThingHandler {
             throws MacAddressNotValidException {
         super(thing);
 
-        saveMacAddressFromConfiguration(this.getConfig());
-        saveHostAddressFromConfiguration(this.getConfig());
+        savebulbMacAddressFromConfiguration(this.getConfig());
+        savebulbIpAddressFromConfiguration(this.getConfig());
         saveHomeIdFromConfiguration(this.getConfig());
         saveUpdateIntervalFromConfiguration(this.getConfig());
 
@@ -239,7 +239,7 @@ public class WizLightingHandler extends BaseThingHandler {
      *
      * @param configuration The {@link Configuration}
      */
-    private void saveHostAddressFromConfiguration(final Configuration configuration) {
+    private void savebulbIpAddressFromConfiguration(final Configuration configuration) {
         if ((configuration != null) && (configuration.get(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG) != null)) {
             hostAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG));
         }
@@ -266,7 +266,7 @@ public class WizLightingHandler extends BaseThingHandler {
      *
      * @param configuration The {@link Configuration}
      */
-    private void saveMacAddressFromConfiguration(final Configuration configuration) throws MacAddressNotValidException {
+    private void savebulbMacAddressFromConfiguration(final Configuration configuration) throws MacAddressNotValidException {
         if ((configuration != null) && (configuration.get(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG) != null)) {
             String macAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG));
 
@@ -343,10 +343,10 @@ public class WizLightingHandler extends BaseThingHandler {
         try {
             latestUpdate = -1;
 
-            saveMacAddressFromConfiguration(configuration);
+            savebulbMacAddressFromConfiguration(configuration);
 
             hostAddress = null;
-            saveHostAddressFromConfiguration(configuration);
+            savebulbIpAddressFromConfiguration(configuration);
             saveUpdateIntervalFromConfiguration(configuration);
             saveHomeIdFromConfiguration(configuration);
 

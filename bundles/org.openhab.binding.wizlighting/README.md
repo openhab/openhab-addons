@@ -26,9 +26,9 @@ Wifi Socket thing parameters:
 
 | Parameter ID | Parameter Type | Mandatory | Description | Default |
 |--------------|----------------|------|------------------|-----|
-| macAddress | text | true | The bulb MAC address |  |
-| ipAddress | text | true | The bulb Ip address |  |
-| homeId | text | true | The homeId the bulb belongs to |  |
+| macAddress | text | true | The MAC address of the bulb |  |
+| ipAddress | text | true | The Ip of the bulb |  |
+| homeId | text | true | Your WiZ homeId |  |
 | updateInterval | integer | false | Update time interval in seconds to request the status of the bulb. | 60 |
 
 
@@ -44,7 +44,7 @@ The Binding supports the following channel:
 
 | Channel Type ID | Item Type | Description                                          | Access |
 |-----------------|-----------|------------------------------------------------------|--------|
-| switch          | Switch    | Power state of the Bulb (ON/OFF)                     | R/W    |
+| switch          | Switch    | Power state (ON/OFF)                                 | R/W    |
 | color           | Color     | State, intensity, and color of the LEDs              | R/W    |
-| scene           | String    | Preset light mode name to run on the bulb            | R/W    |
+| scene           | String    | Preset light mode name to run                        | R/W    |
 | speed           | Dimmer    | Speed of the color changes in dynamic light modes    | R/W    |
