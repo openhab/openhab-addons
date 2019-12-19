@@ -142,6 +142,9 @@ public class TelegramHandler extends BaseThingHandler {
             }
         }
 
+        OkHttpClient.Builder prepareConnection = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS)
+                .readTimeout(75, TimeUnit.SECONDS);
+
         String proxyHost = config.getProxyHost();
         String proxyPort = config.getProxyPort();
 
@@ -151,12 +154,10 @@ public class TelegramHandler extends BaseThingHandler {
             Proxy proxy = new Proxy(Proxy.Type.SOCKS, proxyAddr);
 
             logger.debug("SOCKS5 Proxy {}:{} is used for telegram ", proxyHost, proxyPort);
-            botLibClient = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS)
-                    .readTimeout(75, TimeUnit.SECONDS).proxy(proxy).build();
-        } else {
-            botLibClient = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS)
-                    .readTimeout(75, TimeUnit.SECONDS).build();
+            prepareConnection.proxy(proxy);
         }
+
+        botLibClient = prepareConnection.build();
         updateStatus(ThingStatus.ONLINE);
         TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(botLibClient).build();
         localBot.setUpdatesListener(updates -> {
