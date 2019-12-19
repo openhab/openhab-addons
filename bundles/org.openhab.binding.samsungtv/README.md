@@ -21,6 +21,7 @@ Tested TV models:
 | LE40C650    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
 | UE55LS003   | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode`                                                                |
 | UE43MU6199  | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                |
+| KU6519 | PARTIAL | Supported channels: `volume`, `mute`, `power`,  `keyCode` (at least)                                                                |
 
 ## Discovery
 
