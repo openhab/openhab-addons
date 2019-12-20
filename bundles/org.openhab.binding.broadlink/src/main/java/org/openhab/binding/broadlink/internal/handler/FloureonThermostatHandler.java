@@ -221,12 +221,12 @@ public class FloureonThermostatHandler extends BroadlinkHandler {
     @NotNull
     private String getTimestamp(AdvancedStatusInfo advancedStatusInfo) {
         ZonedDateTime now = ZonedDateTime.now();
-        return String.valueOf(now.getYear())+"-"+
-                        String.valueOf(now.getMonthValue())+"-"+
-                        String.valueOf(now.getDayOfMonth())+"T"+
-                        advancedStatusInfo.getHour()+":"+
-                        advancedStatusInfo.getMin()+":"+
-                        advancedStatusInfo.getSec();
+        return (String.valueOf(now.getYear()) + "-" +
+                String.valueOf(now.getMonthValue()) + "-" +
+                String.valueOf(now.getDayOfMonth()) + "T" +
+                advancedStatusInfo.getHour() + ":" +
+                advancedStatusInfo.getMin() + ":" +
+                String.format("%02d", advancedStatusInfo.getSec()));
     }
 
     private static byte tob(int in) {

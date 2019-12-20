@@ -30,16 +30,20 @@ The autodiscovery process finds both parts automatically.
 ## Channels
 
 ### Floureon-/Hysenthermostat
-| Channel Type ID  | Item Type          | Description                                                                                                                                                                           |
-|------------------|--------------------|----------------------------------------------------|
-| power            | Switch             | Switch display on/off and enable/disables heating  |
-| mode             | String             | Current mode of the thermostat (`auto` or `manual`)|
-| roomtemperature  | Number:Temperature | Room temperature, measured directly at the device  |
-| active           | Switch             | Show if thermostat is currently actively heating   |
-| setpoint         | Number:Temperature | Temperature setpoint that open/close valve         |
-| temperatureoffset| Number:Temperature | Manual temperature adjustment                      |
+| Channel Type ID               | Item Type          | Description                                                                                                                                                                           |
+|-------------------------------|--------------------|----------------------------------------------------------------------|
+| power                         | Switch             | Switch display on/off and enable/disables heating                    |
+| mode                          | String             | Current mode of the thermostat (`auto` or `manual`)                  |
+| sensor                        | String             | The sensor (`internal`/`external`) used for triggering the thermostat|
+| roomtemperature               | Number:Temperature | Room temperature, measured directly at the device                    |
+| roomtemperatureexternalsensor | Number:Temperature | Room temperature, measured by an external sensor                     |
+| active                        | Switch             | Show if thermostat is currently actively heating                     |
+| setpoint                      | Number:Temperature | Temperature setpoint that open/close valve                           |
+| temperatureoffset             | Number:Temperature | Manual temperature adjustment                                        |
+| remotelock                    | Switch             | Locks the device to only allow remote actions                        |
+| time                          | DateTime           | The time and day of week of the device                               |
 
-### Floureon-/Hysenthermostat
+### A1 Environmental Sensor
 | Channel Type ID  | Item Type          | Description                                                                                                                                                                           |
 |------------------|--------------------|----------------------------------------------------|
 | temperature      | Number:Temperature | Temperature                                        |
@@ -59,11 +63,16 @@ Thing broadlink:floureonthermostat:bathroomthermostat "Bathroom Thermostat" [ ho
 demo.items:
 
 ```
-Number:Temperature  Bathroom_Thermostat_Temperature  "Room temperature [%.1f %unit%]" <temperature>  { channel="broadlink:floureonthermostat:bathroomthermostat:roomtemperature"}
-Number:Temperature  Bathroom_Thermostat_Setpoint     "Setpoint [%.1f %unit%]"         <temperature>  { channel="broadlink:floureonthermostat:bathroomthermostat:setpoint"}
-Switch              Bathroom_Thermostat_Power        "Power"                                         { channel="broadlink:floureonthermostat:bathroomthermostat:power"}
-Switch              Bathroom_Thermostat_Active       "Active"                                        { channel="broadlink:floureonthermostat:bathroomthermostat:active"}
-String              Bathroom_Thermostat_Mode         "Mode"                                          { channel="broadlink:floureonthermostat:bathroomthermostat:mode"}
+Number:Temperature  Bathroom_Thermostat_Temperature      "Room temperature [%.1f %unit%]"        <temperature>  { channel="broadlink:floureonthermostat:bathroomthermostat:roomtemperature"}
+Number:Temperature  Bathroom_Thermostat_Temperature_Ext  "Room temperature (ext) [%.1f %unit%]"  <temperature>  { channel="broadlink:floureonthermostat:bathroomthermostat:roomtemperature"}
+Number:Temperature  Bathroom_Thermostat_Setpoint         "Setpoint [%.1f %unit%]"                <temperature>  { channel="broadlink:floureonthermostat:bathroomthermostat:setpoint"}
+Switch              Bathroom_Thermostat_Power            "Power"                                                { channel="broadlink:floureonthermostat:bathroomthermostat:power"}
+Switch              Bathroom_Thermostat_Active           "Active"                                               { channel="broadlink:floureonthermostat:bathroomthermostat:active"}
+String              Bathroom_Thermostat_Mode             "Mode"                                                 { channel="broadlink:floureonthermostat:bathroomthermostat:mode"}
+String              Bathroom_Thermostat_Sensor           "Sensor"                                               { channel="broadlink:floureonthermostat:bathroomthermostat:sensor"}
+Switch              Bathroom_Thermostat_Lock             "Lock"                                  <lock>         { channel="broadlink:floureonthermostat:bathroomthermostat:remotelock"}
+DateTime            Bathroom_Thermostat_Time             "Time [%1$tm/%1$td %1$tH:%1$tM]"        <time>         { channel="broadlink:floureonthermostat:bathroomthermostat:time"}
+
 ```
 
 demo.rules:

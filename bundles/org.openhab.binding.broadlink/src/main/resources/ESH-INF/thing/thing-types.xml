@@ -64,6 +64,15 @@
 		<config-description-ref uri="thing-type:broadlink:floureonandhysenthermostat" />
 	</thing-type>
 
+	<thing-type id="rmmini">
+		<label>RM Mini</label>
+		<description>TODO</description>
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+		</channels>
+		<representation-property>host</representation-property>
+		<config-description-ref uri="thing-type:broadlink:floureonandhysenthermostat" />
+	</thing-type>
 
 	<channel-type id="power">
 		<item-type>Switch</item-type>

@@ -114,6 +114,9 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
                 case "Environmental Sensor":
                     thingUID = new ThingUID(A1_ENVIRONMENTAL_SENSOR_THING_TYPE, id );
                     break;
+                case "RM Mini":
+                    thingUID = new ThingUID(RM_MINI_THING_TYPE,id);
+                    break;
                 default:
                     thingUID = new ThingUID(UNKNOWN_BROADLINK_THING_TYPE, id  );
             }

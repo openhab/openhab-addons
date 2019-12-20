@@ -31,6 +31,7 @@ public class BroadlinkBindingConstants {
     public static final ThingTypeUID HYSEN_THERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID, "hysenthermostat");;
     public static final ThingTypeUID UNKNOWN_BROADLINK_THING_TYPE = new ThingTypeUID(BINDING_ID, "unknownbroadlinkdevice");
     public static final ThingTypeUID A1_ENVIRONMENTAL_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "a1environmentalsensor");
+    public static final ThingTypeUID RM_MINI_THING_TYPE = new ThingTypeUID(BINDING_ID, "rmmini");
 
     // List of all Channel ids
     public static final String ROOM_TEMPERATURE = "roomtemperature";
@@ -60,5 +61,6 @@ public class BroadlinkBindingConstants {
     public static final String MODE_MANUAL = "manual";
     public static final String SENSOR_INTERNAL = "internal";
     public static final String SENSOR_EXTERNAL = "external";
+
 
 }
