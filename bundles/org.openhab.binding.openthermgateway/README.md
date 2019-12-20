@@ -70,7 +70,7 @@ The OpenTherm Gateway binding supports the following channels:
 ### demo.things
 
 ```
-Thing openthermgateway:otgw:1 [ipaddress="192.168.1.100", port="8000"]
+Thing openthermgateway:otgw:1 [ipaddress="192.168.1.100", port=8000, connectionRetryInterval=60]
 ```
 
 ### demo.items
