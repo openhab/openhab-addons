@@ -130,6 +130,7 @@
 /bundles/org.openhab.binding.opengarage/ @psmedley
 /bundles/org.openhab.binding.opensprinkler/ @CrackerStealth @FlorianSW
 /bundles/org.openhab.binding.openuv/ @clinique
+/bundles/org.openhab.binding.openthermgateway/ @ArjenKorevaar
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.orvibo/ @tavalin
 /bundles/org.openhab.binding.paradoxalarm/ @theater
