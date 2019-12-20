@@ -34,36 +34,36 @@ The binding is designed to support various ways of connecting to the OpenTherm G
 
 The OpenTherm Gateway binding supports the following channels:
 
-| Channel Type ID      | Item Type | Description                                              |
-|----------------------|-----------|----------------------------------------------------------|
-| roomtemp             | Number    | Current sensed room temperature                          |
-| roomsetpoint         | Number    | Current room temperature setpoint                        |
-| temperaturetemporary | Number    | Temporary override room temperature setpoint             |
-| temperatureconstant  | Number    | Constant override room temperature setpoint              |
-| controlsetpoint      | Number    | Central heating water setpoint                           |
-| dhwtemp              | Number    | Domestic hot water temperature                           |
-| tdhwset              | Number    | Domestic hot water temperature setpoint                  |
-| overridedhwsetpoint  | Number    | Domestic hot water temperature setpoint override         |
-| flowtemp             | Number    | Boiler water temperature                                 |
-| returntemp           | Number    | Return water temperature                                 |
-| outsidetemp          | Number    | Outside temperature                                      |
-| waterpressure        | Number    | Central heating water pressure                           |
-| ch_enable            | Switch    | Central heating enabled                                  |
-| ch_mode              | Switch    | Central heating active                                   |
-| dhw_enable           | Switch    | Domestic hot water enabled                               |
-| dhw_mode             | Switch    | Domestic hot water active                                |
-| flame                | Switch    | Burner active                                            |
-| modulevel            | Number    | Relative modulation level                                |
-| maxrelmdulevel       | Number    | Maximum relative modulation level                        |
-| fault                | Switch    | Fault indication                                         |
-| servicerequest       | Switch    | Service required                                         |
-| lockout-reset        | Switch    | Lockout-reset enabled                                    |
-| lowwaterpress        | Switch    | Low water pressure fault                                 |
-| gasflamefault        | Switch    | Gas or flame fault                                       |
-| airpressfault        | Switch    | Air pressure fault                                       |
-| waterovtemp          | Switch    | Water over-temperature fault                             |
-| oemfaultcode         | Switch    | OEM fault code                                           |
-| sendcommand          | Text      | Channel to send commands to the OpenTherm Gateway device |
+| Channel Type ID      | Item Type | Description                                              | Read Only |
+|----------------------|-----------|----------------------------------------------------------|-----------|
+| roomtemp             | Number    | Current sensed room temperature                          | yes       |
+| roomsetpoint         | Number    | Current room temperature setpoint                        | yes       |
+| temperaturetemporary | Number    | Temporary override room temperature setpoint             | yes       |
+| temperatureconstant  | Number    | Constant override room temperature setpoint              | yes       |
+| controlsetpoint      | Number    | Central heating water setpoint                           | yes       |
+| dhwtemp              | Number    | Domestic hot water temperature                           | yes       |
+| tdhwset              | Number    | Domestic hot water temperature setpoint                  | yes       |
+| overridedhwsetpoint  | Number    | Domestic hot water temperature setpoint override         | yes       |
+| flowtemp             | Number    | Boiler water temperature                                 | yes       |
+| returntemp           | Number    | Return water temperature                                 | yes       |
+| outsidetemp          | Number    | Outside temperature                                      | yes       |
+| waterpressure        | Number    | Central heating water pressure                           | yes       |
+| ch_enable            | Switch    | Central heating enabled                                  | yes       |
+| ch_mode              | Switch    | Central heating active                                   | yes       |
+| dhw_enable           | Switch    | Domestic hot water enabled                               | yes       |
+| dhw_mode             | Switch    | Domestic hot water active                                | yes       |
+| flame                | Switch    | Burner active                                            | yes       |
+| modulevel            | Number    | Relative modulation level                                | yes       |
+| maxrelmdulevel       | Number    | Maximum relative modulation level                        | yes       |
+| fault                | Switch    | Fault indication                                         | yes       |
+| servicerequest       | Switch    | Service required                                         | yes       |
+| lockout-reset        | Switch    | Lockout-reset enabled                                    | yes       |
+| lowwaterpress        | Switch    | Low water pressure fault                                 | yes       |
+| gasflamefault        | Switch    | Gas or flame fault                                       | yes       |
+| airpressfault        | Switch    | Air pressure fault                                       | yes       |
+| waterovtemp          | Switch    | Water over-temperature fault                             | yes       |
+| oemfaultcode         | Switch    | OEM fault code                                           | yes       |
+| sendcommand          | Text      | Channel to send commands to the OpenTherm Gateway device | no        |
 
 ## Full Example
 
