@@ -35,11 +35,11 @@ public class TouchWandSwitchHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(int status) {
-        OnOffType state = OnOffType.OFF;
+        OnOffType state = OnOffType.ON;
         String sStatus = Integer.toString(status);
 
-        if (sStatus.equals(SWITCH_STATUS_ON)) {
-            state = OnOffType.ON;
+        if (sStatus.equals(SWITCH_STATUS_OFF)) {
+            state = OnOffType.OFF;
         }
         updateState(CHANNEL_SWITCH, state);
     }
