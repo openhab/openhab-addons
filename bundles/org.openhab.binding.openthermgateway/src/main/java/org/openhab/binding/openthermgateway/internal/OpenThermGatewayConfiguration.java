@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link OpenThermGatewayConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public class OpenThermGatewayConfiguration {
 
-    public String ipaddress;
+    public String ipaddress = "";
 
-    public int port;
+    public int port = 0;
 
-    public int connectionRetryInterval;
+    public int connectionRetryInterval = 60;
 }

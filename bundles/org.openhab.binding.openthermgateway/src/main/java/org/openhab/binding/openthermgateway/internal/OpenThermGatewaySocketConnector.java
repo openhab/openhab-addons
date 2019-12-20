@@ -13,6 +13,7 @@
 package org.openhab.binding.openthermgateway.internal;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -22,7 +23,8 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.openthermgateway.handler.TypeConverter;
 
@@ -32,6 +34,7 @@ import org.openhab.binding.openthermgateway.handler.TypeConverter;
  * @author Arjen Korevaar - Initial contribution
  * @author Arjan Mels - Improved robustness by re-sending commands, handling all message types (not only Boiler)
  */
+@NonNullByDefault
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
     private static final int COMMAND_RESPONSE_TIME = 100;
     private static final int COMMAND_TIMEOUT = 5000;
@@ -40,9 +43,9 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private String ipaddress;
     private int port;
 
-    private Socket socket;
-    private BufferedReader reader;
-    private PrintWriter writer;
+    private @Nullable Socket socket;
+    private @Nullable BufferedReader reader;
+    private @Nullable PrintWriter writer;
 
     private volatile boolean stopping;
     private boolean connected;
@@ -52,7 +55,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         this.ipaddress = ipaddress;
         this.port = port;
     }
-  
+
     @Override
     public void run() {
         stopping = false;
@@ -81,11 +84,11 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintSummary, "0"));
 
             while (!stopping && !Thread.currentThread().isInterrupted()) {
-                String message = reader.readLine();
+                @Nullable String message = reader.readLine();
 
-                handleMessage(message);
-                
-                if (message == null) {
+                if (message != null) {
+                    handleMessage(message);
+                } else {
                     callback.log(LogLevel.Info, "Connection closed by OpenTherm Gateway");
                     break;
                 }
@@ -115,11 +118,10 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     @Override
     public synchronized void stop() {
         callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
-        try {
-            socket.close();
-        } catch (IOException ignore) {
-        }
+
         stopping = true;
+
+        close(socket);
     }
 
     @Override
@@ -146,10 +148,6 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     }
 
     private void handleMessage(String message) {
-        if (message == null) {
-            return;
-        }
-
         if (message.length() > 2 && message.charAt(2) == ':') {
             String code = message.substring(0, 2);
             String value = message.substring(3);
@@ -207,7 +205,6 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 callback.log(LogLevel.Trace,
                         String.format("  Data %d: %d %s %s %s", i, dataItem.getID(), dataItem.getSubject(),
                                 dataItem.getDataType().toString(), state == null ? "" : state.toString()));
-
             }
         }
 
@@ -222,7 +219,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         }
     }
 
-    private void close(java.io.Closeable closeable) {
+    private void close(@Nullable Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();

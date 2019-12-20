@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.openthermgateway.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -23,6 +24,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
  *
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public class TypeConverter {
     /*
      * DateTimeType

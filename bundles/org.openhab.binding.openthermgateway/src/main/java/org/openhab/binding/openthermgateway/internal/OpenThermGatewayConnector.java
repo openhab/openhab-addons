@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public interface OpenThermGatewayConnector extends Runnable {
     public void sendCommand(GatewayCommand command);
 

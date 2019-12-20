@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public class Message {
     /*
      * The code field is not part of OpenTherm specification, but added by OpenTherm Gateway.
@@ -44,8 +48,8 @@ public class Message {
         return id;
     }
 
-    public String getData(ByteType byteType) {
-        if (this.data != null && this.data.length() == 4) {
+    public @Nullable String getData(ByteType byteType) {
+        if (this.data.length() == 4) {
             switch (byteType) {
                 case HighByte:
                     return this.data.substring(0, 2);
@@ -60,7 +64,8 @@ public class Message {
     }
 
     public boolean getBit(ByteType byteType, int pos) {
-        String data = getData(byteType);
+        @Nullable String data = getData(byteType);
+
         if (data != null) {
             // First parse the hex value to an integer
             int parsed = Integer.parseInt(data, 16);
@@ -74,12 +79,17 @@ public class Message {
     }
 
     public int getUInt(ByteType byteType) {
-        String data = getData(byteType);
-        return Integer.parseInt(data, 16);
+        @Nullable String data = getData(byteType);
+
+        if (data != null) {
+            return Integer.parseInt(data, 16);
+        }
+
+        return 0;
     }
 
     public int getInt(ByteType byteType) {
-        String data = getData(byteType);
+        @Nullable String data = getData(byteType);
 
         if (data != null) {
             return parseSignedInteger(data);
@@ -90,29 +100,32 @@ public class Message {
 
     public float getFloat() {
         // f8.8, two's complement
+        @Nullable String data = getData(ByteType.Both);
 
-        String data = getData(ByteType.Both);
+        if (data != null) {
+            long value = Long.parseLong(data, 16);
 
-        long value = Long.parseLong(data, 16);
+            // left padded with zeros
+            String binary = String.format("%16s", Long.toBinaryString(value)).replace(' ', '0');
 
-        // left padded with zeros
-        String binary = String.format("%16s", Long.toBinaryString(value)).replace(' ', '0');
+            if (binary.charAt(0) == '1') {
+                // negative value
 
-        if (binary.charAt(0) == '1') {
-            // negative value
+                String inverted = invertBinary(binary);
 
-            String inverted = invertBinary(binary);
+                value = Long.parseLong(inverted, 2);
+                value = value + 1;
+                value = value * -1;
+            }
 
-            value = Long.parseLong(inverted, 2);
-            value = value + 1;
-            value = value * -1;
+            // divide by 2^8 = 256
+            return (float) value / 256;
         }
 
-        // divide by 2^8 = 256
-        return (float) value / 256;
+        return 0;
     }
 
-    public boolean overrides(Message other) {
+    public boolean overrides(@Nullable Message other) {
         // If the message is a Request sent to the boiler or an Answer returned to the
         // thermostat, and it's ID is equal to the previous message, then this is an
         // override sent by the OpenTherm Gateway
@@ -135,8 +148,8 @@ public class Message {
         this.data = data;
     }
 
-    public static Message parse(String message) {
-        if (message != null && message.matches("[TBRA]{1}[A-F0-9]{8}")) {
+    public static @Nullable Message parse(String message) {
+        if (message.matches("[TBRA]{1}[A-F0-9]{8}")) {
 
             // For now, only parse TBRA codes
             String code = message.substring(0, 1);

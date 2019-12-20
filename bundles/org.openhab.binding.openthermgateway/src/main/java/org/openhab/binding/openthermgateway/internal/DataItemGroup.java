@@ -13,10 +13,12 @@
 package org.openhab.binding.openthermgateway.internal;
 
 import java.util.HashMap;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public class DataItemGroup {
     private int id;
     private DataItem[] dataItems;
