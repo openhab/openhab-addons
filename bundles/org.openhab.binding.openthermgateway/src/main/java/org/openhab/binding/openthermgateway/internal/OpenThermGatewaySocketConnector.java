@@ -23,6 +23,7 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.State;
@@ -84,7 +85,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintSummary, "0"));
 
             while (!stopping && !Thread.currentThread().isInterrupted()) {
-                @Nullable String message = reader.readLine();
+                @Nullable
+                String message = reader.readLine();
 
                 if (message != null) {
                     handleMessage(message);
@@ -223,7 +225,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (IOException e) { }
+            } catch (IOException e) {
+            }
         }
     }
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
-/** 
+/**
  * @author Arjen Korevaar - Initial contribution
  */
 public enum MessageType {

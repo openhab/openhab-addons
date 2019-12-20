@@ -14,6 +14,7 @@ package org.openhab.binding.openthermgateway;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -33,7 +34,7 @@ public class OpenThermGatewayBindingConstants {
 
     // List of all Channel id's
     public static final String CHANNEL_SEND_COMMAND = "sendcommand";
-    
+
     public static final String CHANNEL_OVERRIDE_SETPOINT_TEMPORARY = "temperaturetemporary";
     public static final String CHANNEL_OVERRIDE_SETPOINT_CONSTANT = "temperatureconstant";
     public static final String CHANNEL_OVERRIDE_DHW_SETPOINT = "overridedhwsetpoint";
@@ -53,14 +54,14 @@ public class OpenThermGatewayBindingConstants {
     public static final String CHANNEL_FLAME = "flame";
     public static final String CHANNEL_RELATIVE_MODULATION_LEVEL = "modulevel";
     public static final String CHANNEL_MAXIMUM_MODULATION_LEVEL = "maxrelmdulevel";
-    public static final String CHANNEL_FAULT = "fault";    
+    public static final String CHANNEL_FAULT = "fault";
     public static final String CHANNEL_SERVICEREQUEST = "servicerequest";
     public static final String CHANNEL_REMOTE_RESET = "lockout-reset";
     public static final String CHANNEL_LOW_WATER_PRESSURE = "lowwaterpress";
     public static final String CHANNEL_GAS_FLAME_FAULT = "gasflamefault";
     public static final String CHANNEL_AIR_PRESSURE_FAULT = "airpressfault";
     public static final String CHANNEL_WATER_OVER_TEMP = "waterovtemp";
-    public static final String CHANNEL_OEM_FAULTCODE = "oemfaultcode";    
+    public static final String CHANNEL_OEM_FAULTCODE = "oemfaultcode";
 
     public static final List<String> SUPPORTED_CHANNEL_IDS = Arrays.asList(CHANNEL_ROOM_TEMPERATURE,
             CHANNEL_ROOM_SETPOINT, CHANNEL_FLOW_TEMPERATURE, CHANNEL_RETURN_TEMPERATURE, CHANNEL_OUTSIDE_TEMPERATURE,

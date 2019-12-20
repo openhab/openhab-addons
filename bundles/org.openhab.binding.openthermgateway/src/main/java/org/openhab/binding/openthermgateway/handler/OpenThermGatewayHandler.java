@@ -13,6 +13,7 @@
 package org.openhab.binding.openthermgateway.handler;
 
 import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -127,7 +128,8 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                     }
                 }, config.connectionRetryInterval * 1000, TimeUnit.MILLISECONDS);
             }
-        } catch (IllegalStateException ex) { }
+        } catch (IllegalStateException ex) {
+        }
     }
 
     @Override

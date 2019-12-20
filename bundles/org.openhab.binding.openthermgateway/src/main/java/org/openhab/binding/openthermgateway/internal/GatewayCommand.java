@@ -13,6 +13,7 @@
 package org.openhab.binding.openthermgateway.internal;
 
 import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -47,7 +48,8 @@ public class GatewayCommand {
         this.validationSet = validationSet;
 
         if (!validate()) {
-            throw new IllegalArgumentException(String.format("Invalid value '%s' for code '%s'", this.message, this.code));
+            throw new IllegalArgumentException(
+                    String.format("Invalid value '%s' for code '%s'", this.message, this.code));
         }
     }
 

@@ -13,6 +13,7 @@
 package org.openhab.binding.openthermgateway.internal;
 
 import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
