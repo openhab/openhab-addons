@@ -62,7 +62,7 @@ Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
 | appLauncher     | String    | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel.                                                                 | RW         |
-| rcButton        | String    | Simulates pressing of a button on the TV's infrared remote control. See below for a list of button names.                                                                                                               | W          |
+| rcButton        | String    | Simulates pressing of a button on the TV's remote control. See below for a list of button names.                                                                                                                        | W          |
 
 ### Remote Control Buttons
 The rcButton channel has only been tested on an LGUJ657A TV. and this is a list of button codes that are known to work with this device.
