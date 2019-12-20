@@ -143,12 +143,12 @@
 				<label>File Name</label>
 				<description>Name of the file to download from test server</description>
 			</parameter>
-            <parameter name="maxTimeout" type="integer">
-                <label>Timeouts</label>
-                <description>Number of timeout that can happend before the device is stated as offline</description>
-                <default>3</default>
-                <advanced>true</advanced>
-            </parameter>
+			<parameter name="maxTimeout" type="integer">
+				<label>Timeouts</label>
+				<description>Number of timeout that can happend before the device is stated as offline</description>
+				<default>3</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
