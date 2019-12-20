@@ -259,7 +259,7 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
                             hubDiscovered(ip, friendlyName, hostName);
                         }
                     }
-                } catch (IOException | RuntimeException e) {
+                } catch (IOException | IndexOutOfBoundsException e) {
                     if (running) {
                         logger.debug("Error connecting with found hub", e);
                     }
