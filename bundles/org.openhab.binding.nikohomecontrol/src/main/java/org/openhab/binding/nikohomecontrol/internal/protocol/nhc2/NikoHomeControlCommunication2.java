@@ -165,7 +165,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "systeminfo.publish";
-        mqttConnection.connectionPublish("public/system/cmd", gson.toJson(message));
+        mqttConnection.connectionPublish(profile + "/system/cmd", gson.toJson(message));
 
         message.method = "profiles.list";
         mqttConnection.connectionPublish("public/authentication/cmd", gson.toJson(message));
@@ -803,7 +803,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         String message = new String(payload);
         if ("public/system/evt".equals(topic) || (profile + "/system/evt").equals(topic)) {
             systemEvt(message);
-        } else if ("public/system/rsp".equals(topic)) {
+        } else if ((profile + "/system/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             systeminfoPublishRsp(message);
         } else if ("public/authentication/rsp".equals(topic)) {

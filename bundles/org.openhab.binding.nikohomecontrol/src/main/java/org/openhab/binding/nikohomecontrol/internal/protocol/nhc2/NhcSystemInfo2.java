@@ -13,6 +13,7 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -45,9 +46,9 @@ public class NhcSystemInfo2 {
      * @return the NhcVersion
      */
     public String getNhcVersion() {
-        if (swVersions.size() > 0) {
-            return swVersions.get(0).nhcVersion;
-        } else {
+        try {
+            return swVersions.stream().filter(p -> (!p.nhcVersion.isEmpty())).findFirst().get().nhcVersion;
+        } catch (NoSuchElementException e) {
             return "";
         }
     }
@@ -56,9 +57,9 @@ public class NhcSystemInfo2 {
      * @return the CocoImage version
      */
     public String getCocoImage() {
-        if (swVersions.size() > 0) {
-            return swVersions.get(0).cocoImage;
-        } else {
+        try {
+            return swVersions.stream().filter(p -> (!p.cocoImage.isEmpty())).findFirst().get().cocoImage;
+        } catch (NoSuchElementException e) {
             return "";
         }
     }

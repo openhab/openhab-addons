@@ -170,7 +170,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     @Override
     public String getToken() {
-        String token = ((NikoHomeControlBridgeConfig2) config).token;
+        String token = ((NikoHomeControlBridgeConfig2) config).password;
         if ((token == null) || token.isEmpty()) {
             logger.debug("Niko Home Control: no JWT token set.");
             return "";
