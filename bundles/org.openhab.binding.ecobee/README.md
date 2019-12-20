@@ -1,0 +1,1199 @@
+# Ecobee Binding
+
+[Ecobee Inc.](https://www.ecobee.com/)  of Toronto, Canada, sells a range of Wi-Fi 
+enabled thermostats, principally in the Americas. 
+This binding communicates with the 
+[Ecobee API](https://www.ecobee.com/home/developer/api/introduction/index.shtml) over a secure, 
+RESTful API to Ecobee's servers. 
+Monitoring ambient temperature and humidity, changing HVAC mode, changing heat or cool setpoints, 
+changing the backlight intensity, and even sending textual messages to one or a group of thermostats, 
+can be accomplished through this binding.
+
+## Supported Things
+
+The following thing types are supported:
+
+| Thing          |  ID             |  Description |
+|----------------|-----------------|--------------|
+| Account        | account         | Represents an Ecobee account. Manages all communication with the Ecobee API. |
+| Thermostat     | thermostat      | Represents a physical Ecobee thermostat associated with the Ecobee Account. |
+| Remote Sensor  | sensor          | Represents an Ecobee remote sensor that is associated with an Ecobee Thermostat. Also represents the internal sensor of an Ecobee Thermostat. |
+
+## Discovery
+
+Once an Account has been set up, and the API key has been authorized, Thermostats and Remote 
+Sensors will be discovered automatically.
+First, the thermostats will be added to the inbox.
+Then, once a Thermostat thing has been created, the Remote Sensors associated with that 
+thermostat will be added to the inbox.
+The binding will detect the capabilities (e.g. temperature, humidity, occupancy) supported by the 
+sensor, and then dynamically create channels for those capabilities.
+
+## Authorization
+
+After you have installed the binding, and have created the Account thing with a valid API key, 
+when the binding performs its first poll of the Ecobee servers, it will discover that is has 
+not yet been authorized.
+At that point it will retrieve a four-character PIN from the Ecobee server.
+This PIN will appear prominently in your `openhab.log` file:
+
+```
+    #################################################################
+    # Ecobee: U S E R   I N T E R A C T I O N   R E Q U I R E D !!
+    # Go to the Ecobee web portal, then:
+    # Enter PIN 'jhsh' in My Apps within 9 minutes.
+    # NOTE: All API attempts will fail in the meantime.
+    #################################################################
+```
+
+When you see the above message, enter the PIN into your **My Apps** settings in your account at ecobee.com.
+This will authorize your instance of the binding to work with your Ecobee account.
+On the next poll of the API, it will retrieve information about the available thermostats, and add them to the inbox.
+
+## Thing Configuration
+
+### Ecobee Account
+
+The following configuration parameters are available on the Ecobee Account:
+
+| Parameter               | Type       |Required/Optional | Description |
+|-------------------------|------------|------------------|-------------|
+| apiKey                  | String     | Required         | This is the Ecobee API key, which is needed to authorize the binding with the Ecobee servers. |
+| refreshIntervalNormal   | Integer    | Required         | Specifies the interval in seconds with which the Ecobee data will be updated under normal operation. |
+| refreshIntervalQuick    | Integer    | Required         | Specifies the interval in seconds with which the Ecobee data will be updated after sending an update or executing a function. |
+| apiTimeout              | Integer    | Required         | Time in seconds to allow an API request against the Ecobee servers to complete. |
+| discoveryEnabled        | Switch     | Required         | Specifies whether the binding should auto-discover thermostats and remote sensors. |
+| discoveryInterval       | Integer    | Optional         | Specifies time interval in seconds in which the binding will attempt to discover thermostats. |
+
+### Ecobee Thermostat
+
+The following configuration parameters are available on the Ecobee Thermostat:
+
+| Parameter               | Required/Optional | Description |
+|-------------------------|-------------------|-------------|
+| thermostatId            | Required          | This is the ID that is assigned to a thermostat by Ecobee. This parameter is used for all communication with Ecobee involving this thermostat. |
+
+### Ecobee Remote Sensor
+
+The following configuration parameters are available on the Ecobee Remote Sensor:
+
+| Parameter               | Required/Optional | Description |
+|-------------------------|-------------------|-------------|
+| sensorId                | Required          | This is the ID that is assigned to a remote and/or internal sensor by Ecobee. |
+
+## Channels
+
+### Thermostat Channels
+
+The following channels are available on the Ecobee Thermostat.
+
+| Channel              | Group            | Type                  | Description  |
+|----------------------|------------------|-----------------------|--------------|
+| identifier | info | String | Identifier |
+| name | info | String | Name |
+| thermostatRev | info | String | Thermostat Rev |
+| isRegistered | info | Switch | Is Registered |
+| modelNumber | info | String | Model Number |
+| brand | info | String | Brand |
+| features | info | String | Features |
+| lastModified | info | DateTime | Last Modified |
+| thermostatTime | info | DateTime | Thermostat Time |
+| equipmentStatus | equipmentStatus | String | Equipment Status |
+| runtimeRev | runtime | String | Runtime Rev |
+| connected | runtime | Switch | Connected |
+| firstConnected | runtime | DateTime | First Connected |
+| connectDateTime | runtime | DateTime | Connected Date Time |
+| disconnectDateTime | runtime | DateTime | Disconnected Date Timee |
+| lastModified | runtime | DateTime | Last Modified |
+| lastStatusModified | runtime | DateTime | Last Status Modified |
+| runtimeDate | runtime | String | Runtime Date |
+| runtimeInterval | runtime | Number | Runtime Interval |
+| actualTemperature | runtime | Number:Temperature | Actual Temperature |
+| actualHumidity | runtime | Number:Dimensionless | Actual Humidity |
+| rawTemperature | runtime | Number:Temperature | Raw Temperature |
+| showIconMode | runtime | Number | Show Icon Mode |
+| desiredHeat | runtime | Number:Temperature | Desired Heat |
+| desiredCool | runtime | Number:Temperature | Desired Cool |
+| desiredHumidity | runtime | Number:Dimensionless | Desired Humidity |
+| desiredDehumidity | runtime | Number:Dimensionless | Desired Dehumidity |
+| desiredFanMode | runtime | String | Desired Fan Mode |
+| desiredHeatRangeLow | runtime | Number:Temperature | Desired Heat Range Low |
+| desiredHeatRangeHigh | runtime | Number:Temperature | Desired Heat Range High |
+| desiredCoolRangeLow | runtime | Number:Temperature | Desired Cool Range Low |
+| desiredCoolRangeHigh | runtime | Number:Temperature | Desired Cool Range High |
+| hvacMode | settings | String | HVAC Mode |
+| lastServiceDate | settings | String | Last Service Date |
+| serviceRemindMe | settings | Switch | Service Remind Me |
+| monthsBetweenService | settings | Number | Months Between Service |
+| remindMeDate | settings | String | Remind Me Date |
+| vent | settings | String | Vent |
+| ventilatorMinOnTime | settings | Number | Ventilator Min On Time |
+| serviceRemindTechnician | settings | Switch | Service Remind Technician |
+| eiLocation | settings | String | EI Location |
+| coldTempAlert | settings | Number:Temperature | Cold Temp Alert |
+| coldTempAlertEnabled | settings | Switch | Cold Temp Alert Enabled |
+| hotTempAlert | settings | Number:Temperature | Hot Temp Alert |
+| hotTempAlertEnabled | settings | Switch | Hot Temp Alert Enabled |
+| coolStages | settings | Number | Cool Stages |
+| heatStages | settings | Number | Heat Stages |
+| maxSetBack | settings | Number | Max Set Back |
+| maxSetForward | settings | Number | Max Set Forward |
+| quickSaveSetBack | settings | Number | Quick Save Set Back |
+| quickSaveSetForward | settings | Number | Quick Save Set Forward |
+| hasHeatPump | settings | Switch | Has Heat Pump |
+| hasForcedAir | settings | Switch | Has Forced Air |
+| hasBoiler | settings | Switch | Has Boiler |
+| hasHumidifier | settings | Switch | Has Humidifier |
+| hasErv | settings | Switch | Has ERV |
+| hasHrv | settings | Switch | Has HRV |
+| condensationAvoid | settings | Switch | Condensation Avoid |
+| useCelsius | settings | Switch | Use Celsius |
+| useTimeFormat12 | settings | Switch | Use Time Format 12 |
+| locale | settings | String | Locale |
+| humidity | settings | String | Humidity |
+| humidifierMode | settings | String | Humidifier Mode |
+| backlightOnIntensity | settings | Number | Backlight On Intensity |
+| backlightSleepIntensity | settings | Number | Backlight Sleep Intensity |
+| backlightOffTime | settings | Number | Backlight Off Time |
+| soundTickVolume | settings | Number | Sound Tick Volume |
+| soundAlertVolume | settings | Number | Sound Alert Volume |
+| compressorProtectionMinTime | settings | Number | Compressor Protection Min Time |
+| compressorProtectionMinTemp | settings | Number:Temperature | Compressor Protection Min Temp |
+| stage1HeatingDifferentialTemp | settings | Number | Stage 1 Heating Differential Temp |
+| stage1CoolingDifferentialTemp | settings | Number | Stage 1 Cooling Differential Temp |
+| stage1HeatingDissipationTime | settings | Number | Stage 1 Heating Dissipation Time |
+| stage1CoolingDissipationTime | settings | Number | Stage 1 Cooling Dissipation Time |
+| heatPumpReversalOnCool | settings | Switch | Heat Pump Reversal On Cool |
+| fanControlRequired | settings | Switch | Fan Control Required |
+| fanMinOnTime | settings | Number | Fan Min On Time |
+| heatCoolMinDelta | settings | Number | Heat Cool Min Delta |
+| tempCorrection | settings | Number | Temp Correction |
+| holdAction | settings | String | Hold Action |
+| heatPumpGroundWater | settings | Switch | Heat Pump Ground Water |
+| hasElectric | settings | Switch | Has Electric |
+| hasDehumidifier | settings | Switch | Has Dehumidifier |
+| dehumidifierMode | settings | String | Dehumidifier Mode |
+| dehumidifierLevel | settings | Number | Dehumidifier Level |
+| dehumidifyWithAC | settings | Switch | Dehumidify With AC |
+| dehumidifyOvercoolOffset | settings | Number | Dehumidify Overcool Effect |
+| autoHeatCoolFeatureEnabled | settings | Switch | Auto Heat Cool Feature Enabled |
+| wifiOfflineAlert | settings | Switch | WiFi Offline Alert |
+| heatMinTemp | settings | Number:Temperature | Heat Min Temp |
+| heatMaxTemp | settings | Number:Temperature | Heat Max Temp |
+| coolMinTemp | settings | Number:Temperature | Cool Min Temp |
+| coolMaxTemp | settings | Number:Temperature | Cool Max Temp |
+| heatRangeHigh | settings | Number:Temperature | Heat Range High |
+| heatRangeLow | settings | Number:Temperature | Heat Range Low |
+| coolRangeHigh | settings | Number:Temperature | Cool Range High |
+| coolRangeLow | settings | Number:Temperature | Cool Range Low |
+| userAccessCode | settings | String | User Access Code |
+| userAccessSetting | settings | Number | User Access Settings |
+| auxRuntimeAlert | settings | Number | Aux Runtime Alert |
+| auxOutdoorTempAlert | settings | Number:Temperature | Aux Outdoor Temp Alert |
+| auxMaxOutdoorTemp | settings | Number:Temperature | Aux Max Outdoor Temp |
+| auxRuntimeAlertNotify | settings | Switch | Aux Runtime Alert Notify |
+| auxOutdoorTempAlertNotify | settings | Switch | Aux Outdoor Temp Alert Notify |
+| auxRuntimeAlertNotifyTechnician | settings | Switch | Aux Runtime Alert Notify Technician |
+| auxOutdoorTempAlertNotifyTechnician | settings | Switch | Aux Outdoor Temp Alert Notify Technician |
+| disablePreHeating | settings | Switch | Disable Pre Heating |
+| disablePreCooling | settings | Switch | Disable Pre Cooling |
+| installerCodeRequired | settings | Switch | Installer Code Required |
+| drAccept | settings | String | DR Accept |
+| isRentalProperty | settings | Switch | Is Rental Property |
+| useZoneController | settings | Switch | Use Zone Controller |
+| randomStartDelayCool | settings | Number | Random Start Delay Cool |
+| randomStartDelayHeat | settings | Number | Random Start Delay Heat |
+| humidityHighAlert | settings | Number:Dimensionless | Humidity High Alert |
+| humidityLowAlert | settings | Number:Dimensionless | Humidity Low Alert |
+| disableHeatPumpAlerts | settings | Switch | Disable Heat Pump Alerts |
+| disableAlertsOnIdt | settings | Switch | Disable Alerts On IDT |
+| humidityAlertNotify | settings | Switch | Humidity Alert Notify |
+| humidityAlertNotifyTechnician | settings | Switch | Humidity Alert Notify Technician |
+| tempAlertNotify | settings | Switch | Temp Alert Notify |
+| tempAlertNotifyTechnician | settings | Switch | Temp Alert Notify Technician |
+| monthlyElectricityBillLimit | settings | Number | Monthly Electricity Bill Limit |
+| enableElectricityBillAlert | settings | Switch | Enable Electricity Bill Alert |
+| enableProjectedElectricityBillAlert | settings | Switch | Enable Projected Electricity Bill Alert |
+| electricityBillingDayOfMonth | settings | Number | Electricity Billing Day Of Month |
+| electricityBillCycleMonths | settings | Number | Electricity Bill Cycle Months |
+| electricityBillStartMonth | settings | Number | Electricity Bill Start Month |
+| ventilatorMinOnTimeHome | settings | Number | Ventilator Min On Time Home |
+| ventilatorMinOnTimeAway | settings | Number | Ventilator Min On Time Away |
+| backlightOffDuringSleep | settings | Switch | Backlight Off During Sleep |
+| autoAway | settings | Switch | Auto Away |
+| smartCirculation | settings | Switch | Smart Circulation |
+| followMeComfort | settings | Switch | Follow Me Comfort |
+| ventilatorType | settings | String | Ventilator Type |
+| isVentilatorTimerOn | settings | Switch | Is Ventilator Timer On |
+| ventilatorOffDateTime | settings | String | Ventilator Off Date Time |
+| hasUVFilter | settings | Switch | Has UV Filter |
+| coolingLockout | settings | Switch | Cooling Lockout |
+| ventilatorFreeCooling | settings | Switch | Ventilator Free Cooling |
+| dehumidifyWhenHeating | settings | Switch | Dehumidify When Heating |
+| ventilatorDehumidify | settings | Switch | Ventilator Dehumidify |
+| groupRef | settings | String | Group Ref |
+| groupName | settings | String | Group Name |
+| groupSetting | settings | Number | Group Setting |
+| acknowledgeRef | alerts | String | Acknowledge Ref |
+| date | alerts | String | Date |
+| time | alerts | String | Time |
+| severity | alerts | String | Severity |
+| text | alerts | String | Text |
+| number | alerts | Number | Number |
+| type | alerts | String | Type |
+| isOperatorAlert | alerts | Switch | Is Operator Alert |
+| reminder | alerts | String | Reminder |
+| showIdt | alerts | Switch | Show IDT |
+| showWeb | alerts | Switch | Show Web |
+| sendEmail | alerts | Switch | Send Email |
+| acknowledgement | alerts | String | Acknowledgement |
+| remindMeLater | alerts | Switch | Remind Me Later |
+| thermostatIdentifier | alerts | String | Thermostat Identifier |
+| notificationType | alerts | String | Notification Type |
+| currentClimateRef | program | String | Current Climate Ref |
+| name | events | String | Event Name |
+| type | events | String | Event Type |
+| running | events | Switch | Event is Running |
+| startDate | events | String | Event Start Date |
+| startTime | events | String | Event Start Time |
+| endDate | events | String | Event End Date |
+| endTime | events | String | Event End Time |
+| isOccupied | events | Switch | Is Occupied |
+| isCoolOff | events | Switch | Is Cool Off |
+| isHeatOff | events | Switch | Is Heat Off |
+| coolHoldTemp | events | Number:Temperature | Cool Hold Temp |
+| heatHoldTemp | events | Number:Temperature | Heat Hold Temp |
+| fan | events | String | Fan |
+| vent | events | String | Vent |
+| ventilatorMinOnTime | events | Number | Ventilator Min On Time |
+| isOptional | events | Switch | Is Optional |
+| isTemperatureRelative | events | Switch | Is Temperature Relative |
+| coolRelativeTemp | events | Number | Cool Relative Temp |
+| heatRelativeTemp | events | Number | Heat Relative Temp |
+| isTemperatureAbsolute | events | Switch | Is Temperature Absolute |
+| dutyCyclePercentage | events | Number | Duty Cycle Percentage |
+| fanMinOnTime | events | Number | Fan Min On Time |
+| occupiedSensorActive | events | Switch | Occupied Sensor Active |
+| unoccupiedSensorActive | events | Switch | Unoccupied Sensor Active |
+| drRampUpTemp | events | Number | DR Ramp Up Temp |
+| drRampUpTime | events | Number | DR Ramp Up Time |
+| linkRef | events | String | Link Ref |
+| holdClimateRef | events | String | Hold Climate Ref |
+| timestamp | weather | DateTime | Timestamp |
+| weatherStation | weather | String | Weather Station |
+| weatherSymbol | weather | Number | Symbol |
+| weatherSymbolText | weather | String | Symbol Text |
+| dateTime | forecast0..9 | DateTime | Date Time |
+| condition | forecast0..9 | String | Condition |
+| temperature | forecast0..9 | Number:Temperature | Temperature |
+| pressure | forecast0..9 | Number:Pressure | Pressure |
+| relativeHumidity | forecast0..9 | Number:Dimensionless | Relative Humidity |
+| dewpoint | forecast0..9 | Number:Temperature | Dewpoint |
+| visibility | forecast0..9 | Number | Visibility |
+| windSpeed | forecast0..9 | Number:Speed | Wind Speed |
+| windGust | forecast0..9 | Number:Speed | Wind Gust |
+| windDirection | forecast0..9 | String | Wind Direction |
+| windBearing | forecast0..9 | Number:Angle | Wind Bearing |
+| pop | forecast0..9 | Number:Dimensionless | Probability of Precipitation |
+| tempHigh | forecast0..9 | Number:Temperature | High Temperature |
+| tempLow | forecast0..9 | Number:Temperature | Low Temperature |
+| sky | forecast0..9 | Number | Sky |
+| skyText | forecast0..9 | String | Sky Text |
+| style | houseDetails | String | Style |
+| size | houseDetails | Number | Size |
+| numberOfFloors | houseDetails | Number | Number of Floors |
+| numberOfRooms | houseDetails | Number | Number of Rooms |
+| numberOfOccupants | houseDetails | Number | Number of Occupants |
+| age | houseDetails | Number | Age |
+| windowEfficiency | houseDetails | Number | Window Efficiency |
+| timeZoneOffsetMinutes | location | Number | Time Zone Offset Minutes |
+| timeZone | location | String | Time Zone |
+| isDaylightSaving | location | Switch | Is Daylight Saving |
+| streetAddress | location | String | Street Address |
+| city | location | String | City |
+| provinceState | location | String | Province/State |
+| country | location | String | Country |
+| postalCode | location | String | Postal Code |
+| phoneNumber | location | String | Phone Number |
+| mapCoordinates | location | Location | Thermostat Location |
+| administrativeContact | management | String | Administrative Contact |
+| billingContact | management | String | Billing Contact |
+| name | management | String | Name |
+| phone | management | String | Phone |
+| email | management | String | Email |
+| web | management | String | Web |
+| showAlertIdt | management | Switch | Show Alert Idt |
+| showAlertWeb | management | Switch | Show Alert Web |
+| contractorRef | technician | String | Contractor Ref |
+| name | technician | String | Name |
+| phone | technician | String | Phone |
+| streetAddress | technician | String | Street Address |
+| city | technician | String | City |
+| provinceState | technician | String | Province/State |
+| country | technician | String | Country |
+| postalCode | technician | String | Postal Code |
+| email | technician | String | Email |
+| web | technician | String | Web |
+| thermostatFirmwareVersion | version | String | Firmware Version |
+
+### Remote Sensor Channels
+
+The following channels are available on the Ecobee Remote Sensor.
+
+| Channel              | Type                  | Description  |
+|----------------------|-----------------------|--------------|
+| id                   | String                | Sensor ID assigned by thermostat  |
+| name                 | String                | Name given to the remote sensor by the user  |
+| type                 | String                | The type of sensor  |
+| code                 | String                | The unique 4-digit alphanumeric sensor code  |
+| inUse                | Switch                | Indicates whether the remote sensor is currently in use by a comfort setting  |
+
+Some or all of the following Remote Sensor channels will be added dynamically depending on the capabilities of the sensor.
+
+| Channel              | Type                  | Description  |
+|----------------------|-----------------------|--------------|
+| temperature          | Number:Temperature    | Temperature reported by the sensor  |
+| humidity             | Number:Dimensionless  | Humidity reported by the sensor  |
+| occupancy            | Switch                | Occupancy status reported by the sensor  |
+| co2                  | String                | CO2 reported by the sensor  |
+| dryContact           | String                | Dry contact status reported by the sensor  |
+| adc                  | String                | ADC reported by the sensor  |
+
+## Thing Actions
+
+### Acknowledge
+
+The acknowledge function allows an alert to be acknowledged by specifying the alert's acknowledgement ref.
+
+##### acknowledge - acknowledge an alert
+
+```java
+boolean acknowledge(String ackRef, String ackType, Boolean remindMeLater)
+```
+
+```
+Parameters:
+ackRef - The acknowledge ref of alert.
+ackType - The type of acknowledgement. Valid values: accept, decline, defer, unacknowledged.
+remindMeLater - Whether to remind at a later date, if this is a defer acknowledgement.
+
+Returns - true if the operation was successful, false otherwise
+```
+
+### Control Plug
+
+Control the on/off state of a plug by setting a hold on the plug.
+Creates a hold for the on or off state of the plug for the specified duration.
+Note that an event is created regardless of whether the program is in the same state as the requested state.
+
+##### controlPlug - Control the on/off state of a plug
+
+```java
+boolean controlPlug(String plugName, String plugState, Date startDateTime, Date endDateTime, String holdType, Number holdHours)
+```
+
+```
+Parameters:
+plugName - Name of plug to be controlled.
+plugState - State to which plug should be set (on, off, resume).
+startDateTime - Start time for which the plug state should be applied.
+endDateTime - End time for which the plug state should be applied.
+holdType - Type of hold that should be applied (dateTime, nextTransityion, indefinite, holdHours).
+holdHours - Number of hours for which the plug state should be applied.
+
+Returns - true if the operation was successful, false otherwise
+```
+
+### Create Vacation
+
+If the start/end date/times are not provided for the vacation event,
+the vacation event will begin immediately and last 14 days.
+If both the coolHoldTemp and heatHoldTemp parameters provided to this function have the same value, 
+and the Thermostat is in auto mode, then the two values will be adjusted during processing to be
+separated by the value stored in thermostat.settings.heatCoolMinDelta.
+
+##### createVacation - Create a vacation event on the thermostat
+
+```java
+boolean createVacation(String name, QuantityType<Temperature> coolHoldTemp, QuantityType<Temperature> heatHoldTemp, Date startDateTime, Date endDateTime, String fan, Number fanMinOnTime)
+```
+
+```
+Parameters:
+name - The vacation event name. It must be unique.
+coolHoldTemp - The temperature to set the cool vacation hold at.
+heatHoldTemp - The temperature to set the heat vacation hold at.
+startDateTime - The start date/time.
+endDateTime - The end date/time.
+fan - The fan mode during the vacation. Values: auto, on Default: auto
+fanMinOnTime - The minimum number of minutes to run the fan each hour. Range: 0-60, Default: 0
+
+Returns - true if the operation was successful, false otherwise
+```
+
+### Delete Vacation
+
+The delete vacation function deletes a vacation event from a thermostat.
+This is the only way to cancel a vacation event. 
+This method is able to remove vacation events not yet started and scheduled in the future.
+
+##### deleteVacation - delete a vacation event from a thermostat
+
+```java
+boolean deleteVacation(String name)
+```
+
+```
+Parameters:
+name - Name of vacation to be deleted.
+
+Returns - true if the operation was successful, false otherwise
+```
+
+### Reset Preferences
+
+The reset preferences function sets all of the user configurable settings back 
+to the factory default values. 
+This function call will not only reset the top level thermostat settings such 
+as hvacMode, lastServiceDate and vent, but also all of the user configurable 
+fields of the thermostat.settings and thermostat.program objects.
+Note that this does not reset all values. 
+For example, the installer settings and wifi details remain untouched.
+
+##### resetPreferences - Sets all user configurable settings back to factory defaults
+
+```java
+boolean resetPreferences()
+```
+
+```
+Returns - true if the operation was successful, false otherwise
+```
+
+### Resume program
+
+The resume program function removes the currently running event providing the event 
+is not a mandatory demand response event. 
+If resumeAll parameter is not set, top active event is removed from the stack and 
+the thermostat resumes its program, or enters the next event in the stack if one exists.
+If resumeAll parameter set to true, the function resumes all events and returns the thermostat to its program.
+
+##### resumeProgram - Remove the currently running event
+
+```java
+boolean resumeProgram(Boolean resumeAll)
+```
+
+```
+Parameters:
+resumeAll - Indicates if the thermostat should be resumed to next event (false) or to its program (true).
+
+Returns - true if the operation was successful, false otherwise
+```
+
+### Send Message
+
+The send message function allows an alert message to be sent to the thermostat. 
+The message properties are same as those of the Alert Object.
+
+##### - sendMessage - Send a message to a thermostat
+
+```java
+boolean sendMessage(String text)
+```
+
+```
+Parameters:
+text - Text of message to be sent to the thermostat.
+
+Returns - true if the operation was successful, false otherwise
+```
+
+### Set Hold
+
+The set hold function sets the thermostat into a hold with the specified temperature. 
+Creates a hold for the specified duration. 
+Note that an event is created regardless of whether the program is in the same state as the requested state.
+
+There is also support for creating a hold by passing a holdClimateRef request parameter/value pair to this function. 
+When an existing and valid Climate.climateRef value is passed to this function, the coolHoldTemp, 
+heatHoldTemp and fan mode from that Climate are used in the creation of the hold event. 
+The values from that Climate will take precedence over any coolHoldTemp, heatHoldTemp and fan mode 
+parameters passed into this function separately.
+
+To resume from a hold and return to the program, use the ResumeProgram function.
+
+##### setHold - Set an indefinite hold using the supplied coolHoldTemp and heatHoldTemp
+
+```java
+boolean setHold(QuantityType<Temperature> coolHoldTemp, QuantityType<Temperature> heatHoldTemp)
+```
+
+```
+Parameters:
+coolHoldTemp - The temperature to set the cool hold at.
+heatHoldTemp - The temperature to set the heat hold at.
+
+Returns - true if the operation was successful, false otherwise
+```
+
+##### setHold - Set a hold using the supplied cool and heat temperatures that lasts for the specified number of hours
+
+```java
+boolean setHold(QuantityType<Temperature> coolHoldTemp, QuantityType<Temperature> heatHoldTemp, Number holdHours)
+```
+
+```
+Parameters:
+coolHoldTemp - The temperature to set the cool hold at.
+heatHoldTemp - The temperature to set the heat hold at.
+holdHours - Duration of hold.
+
+Returns - true if the operation was successful, false otherwise
+```
+
+##### setHold - Set an indefinite hold using the supplied climate ref
+
+```java
+boolean setHold(String climateRef)
+```
+
+```
+Parameters:
+climateRef - Climate to be applied to thermostat (e.g. home, away).
+
+Returns - true if the operation was successful, false otherwise
+```
+
+##### setHold - Set a hold using the supplied climate ref that lasts for the specified number of hours
+
+```java
+boolean setHold(String climateRef, Number holdHours)
+```
+
+```
+Parameters:
+climateRef - Climate to be applied to thermostat (e.g. home, away).
+holdHours - Duration of hold.
+
+Returns - true if the operation was successful, false otherwise
+```
+
+##### setHold
+
+```java
+boolean setHold(QuantityType<Temperature> coolHoldTemp, QuantityType<Temperature> heatHoldTemp, String holdClimateRef, Date startDateTime, Date endDateTime, String holdType, Number holdHours)
+```
+
+```
+Parameters:
+coolHoldTemp - The temperature to set the cool hold at.
+heatHoldTemp - The temperature to set the heat hold at.
+holdClimateRef - Climate to be applied to thermostat (e.g. home, away).
+startDateTime - The start date/time of the hold.
+endDateTime - The end date/time of the hold.
+holdType - The hold duration type. Valid values: dateTime, nextTransition, indefinite, holdHours.
+holdHours - Duration of hold.
+
+Returns - true if the operation was successful, false otherwise
+```
+
+##### setHold
+
+```java
+boolean setHold(Map<String,Object> params, String holdType, Number holdHours, Date startDateTime, Date endDateTime)
+
+Parameters:
+params - The map of hold parameters.
+holdType - The hold duration type. Valid values: dateTime, nextTransition, indefinite, holdHours.
+holdHours - Duration of hold.
+startDateTime - The start date/time of the hold.
+endDateTime - The end date/time of the hold.
+
+Returns - true if the operation was successful, false otherwise
+```
+
+### Set Occupied
+
+The set occupied function may only be used by EMS thermostats. 
+The function switches a thermostat from occupied mode to unoccupied, or vice versa. 
+If used on a Smart thermostat, the function will throw an error. 
+Switch occupancy events are treated as Holds. 
+There may only be one Switch Occupancy at one time, and the new event will replace any previous event.
+
+Note that an occupancy event is created regardless what the program on the thermostat is set to. 
+For example, if the program is currently unoccupied and you set occupied=false, an occupancy event 
+will be created using the heat/cool settings of the unoccupied program climate. 
+If your intent is to go back to the program and remove the occupancy event, use resumeProgram instead.
+
+##### setOccupied - 
+
+```java
+boolean setOccupied(Boolean occupied, Date startDateTime, Date endDateTime, String holdType, Number holdHours)
+```
+
+```
+Parameters:
+occupied - The climate to use for the temperature, occupied (true) or unoccupied (false).
+holdType - The hold duration type. Valid values: dateTime, nextTransition, indefinite, holdHours.
+holdHours - Duration of hold.
+startDateTime - The start date/time.
+endDateTime - The end date/time.
+
+Returns - true if the operation was successful, false otherwise
+```
+
+### Update Sensor
+
+The update sensor function allows the caller to update the name of an ecobee3 remote sensor.
+
+Each ecobee3 remote sensor "enclosure" contains two distinct sensors types temperature and occupancy. 
+Only one of the sensors is required in the request. 
+Both of the sensors' names will be updated to ensure consistency as they are part of the 
+same remote sensor enclosure. 
+This also reflects accurately what happens on the Thermostat itself.
+
+##### updateSensor - Update the name of a sensor
+
+```java
+boolean updateSensor(String name, String deviceId, String sensorId)
+```
+
+```
+Parameters:
+name - The updated name to give the sensor. Has a max length of 32, but shorter is recommended.
+deviceId - The deviceId for the sensor, typically this indicates the enclosure and corresponds to the ThermostatRemoteSensor.id field. For example: rs:100
+sensorId - The idendifier for the sensor within the enclosure. Corresponds to the RemoteSensorCapability.id. For example: 1
+
+Returns - true if the operation was successful, false otherwise
+```
+
+### Get Alerts
+
+##### getAlerts - Get the list of alerts
+
+```java
+String getAlerts()
+```
+
+```
+Returns - A JSON string representing the array of alerts for the thermostat, or null if there are no alerts.
+```
+
+### Get Events
+
+##### getEvents - Get the list of events
+
+```java
+String getEvents()
+```
+
+```
+Returns - A JSON string representing the array of events for the thermostat, or null if there are no events.
+```
+
+### Get Climates
+
+##### getClimates - Get the list of climates configured on this thermostat
+
+```java
+String getClimates()
+```
+
+```
+Returns - A JSON string representing the array of climates for the thermostat.
+```
+
+## Full Example
+
+### Things
+
+```
+Bridge ecobee:account:account "Ecobee Account" [ apiKey="kjafhd4YTiucye48yn498n94c8ufn49", refreshIntervalNormal=30, refreshIntervalQuick=5, apiTimeout=20, discoveryEnabled=false ] {
+    Bridge thermostat 32122305166 "Ecobee First Floor Thermostat" [ thermostatId="32122305166" ] {
+        Thing sensor ei-0 "Ecobee Sensor Thermostat" [ sensorId="ei:0" ] {
+            Channels:
+                Type sensorTemperature : temperature [ ]
+                Type sensorHumidity : humidity [ ]
+                Type sensorOccupancy : occupancy [ ]
+        }
+        Thing sensor rs-101 "Ecobee Sensor Room 1" [ sensorId="rs:101" ] {
+            Channels:
+                Type sensorTemperature : temperature [ ]
+                Type sensorOccupancy : occupancy [ ]
+        }
+        Thing sensor rs-100 "Ecobee Sensor Room 2" [ sensorId="rs:100" ] {
+            Channels:
+                Type sensorTemperature : temperature [ ]
+                Type sensorOccupancy : occupancy [ ]
+        }
+    }
+    Bridge thermostat 385421394655 "Ecobee Upstairs Thermostat" [ thermostatId="385421394655" ] {
+    }
+}
+```
+
+### Items
+
+```
+Group gInfo "Information"
+Group gRuntime "Runtime"
+Group gEquipmentStatus "Equipment Status"
+Group gSettings "Settings"
+Group gProgram "Program"
+Group gAlert "First Alert in Alert List"
+Group gEvent "Currently Running Event"
+Group gWeather "Weather Forecast"
+Group gVersion "Version"
+Group gLocation "Location"
+Group gHouseDetails "House Details"
+Group gManagement "Management"
+Group gTechnician "Technician"
+Group gThermostatSensor "Thermostat Sensor"
+Group gRoom1Sensor "Room 1 Sensor"
+Group gRoom2Sensor "Room 2 Sensor"
+
+// Info group
+String Info_Identifier "Thermostat Identifier [%s]" <text> (gInfo) { channel="ecobee:thermostat:account:729318833078:info#identifier" }
+String Info_Name "Thermostat Name [%s]" <text> (gInfo) { channel="ecobee:thermostat:account:729318833078:info#name" }
+String Info_ThermostatRev "Thermostat Rev [%s]" <text> (gInfo) { channel="ecobee:thermostat:account:729318833078:info#thermostatRev" }
+Switch Info_IsRegistered "Is Registered [%s]" <switch> (gInfo) { channel="ecobee:thermostat:account:729318833078:info#isRegistered" }
+String Info_ModelNumber "Model Number [%s]" <text> (gInfo) { channel="ecobee:thermostat:account:729318833078:info#modelNumber" }
+String Info_Brand "Brand [%s]" <text> (gInfo) { channel="ecobee:thermostat:account:729318833078:info#brand" }
+String Info_Features "Features [%s]" <text> (gInfo) { channel="ecobee:thermostat:account:729318833078:info#features" }
+DateTime Info_LastModified "Last Modified [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> (gInfo) { channel="ecobee:thermostat:account:729318833078:info#lastModified" }
+DateTime Info_ThermostatTime "Thermostat Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> (gInfo) { channel="ecobee:thermostat:account:729318833078:info#thermostatTime" }
+
+// Equipment Status group
+String EquipmentStatus_EquipmentStatus "Equipment Status [%s]" <text> (gEquipmentStatus) { channel="ecobee:thermostat:account:729318833078:equipmentStatus#equipmentStatus" }
+
+// Runtime group
+String Runtime_RuntimeRev "Runtime Rev [%s]" <text> (gRuntime) ["tag"] { channel="ecobee:thermostat:account:729318833078:runtime#runtimeRev" }
+Switch Runtime_Connected "Connected [%s]" <switch> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#connected" }
+DateTime Runtime_FirstConnected "First Connected [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#firstConnected" }
+DateTime Runtime_ConnectDateTime "Connect Date Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#connectDateTime" }
+DateTime Runtime_DisconnectDateTime "Disconnect Date Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#disconnectDateTime" }
+DateTime Runtime_LastModified "Last Modified [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#lastModified" }
+DateTime Runtime_LastStatusModified "Last Status Modified [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#lastStatusModified" }
+String Runtime_RuntimeDate "Runtime Date [%s]" <text> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#runtimeDate" }
+Number Runtime_RuntimeInterval "Runtime Interval [%.0f]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#runtimeInterval" }
+Number:Temperature Runtime_ActualTemperature "Actual Temperature [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualTemperature" }
+Number:Dimensionless Runtime_ActualHumidity "Actual Humidity [%.0f %unit%]" <humidity> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualHumidity" }
+Number:Temperature Runtime_RawTemperature "Raw Temperature [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#rawTemperature" }
+Number Runtime_ShowIconMode "Show Icon Mode [%.0f]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#showIconMode" }
+Number:Temperature Runtime_DesiredHeat "Desired Heat [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredHeat" }
+Number:Temperature Runtime_DesiredCool "Desired Cool [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredCool" }
+Number:Dimensionless Runtime_DesiredHumidity "Desired Humidity [%.0f %unit%]" <humidity> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredHumidity" }
+Number:Dimensionless Runtime_DesiredDehumidity "Desired Dehumidity [%.0f %unit%]" <humidity> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredDehumidity" }
+String Runtime_DesiredFanMode "Desired Fan Mode [%s]" <text> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredFanMode" }
+Number:Temperature Runtime_DesiredHeatRangeLow "Desired Heat Range Low [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredHeatRangeLow" }
+Number:Temperature Runtime_DesiredHeatRangeHigh "Desired Heat Range High [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredHeatRangeHigh" }
+Number:Temperature Runtime_DesiredCoolRangeLow "Desired Cool Range Low [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredCoolRangeLow" }
+Number:Temperature Runtime_DesiredCoolRangeHigh "Desired Cool Range High [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredCoolRangeHigh" }
+
+// Settings group
+String Settings_HvacMode "HVAC Mode [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hvacMode" }
+String Settings_LastServiceDate "Last Service Date [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#lastServiceDate" }
+Switch Settings_ServiceRemindMe "Service Remind Me [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#serviceRemindMe" }
+Number Settings_MonthsBetweenService "Months Between Service [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#monthsBetweenService" }
+String Settings_RemindMeDate "Remind Me Date [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#remindMeDate" }
+String Settings_Vent "Vent [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#vent" }
+Number Settings_VentilatorMinOnTime "Ventilator Min On Time [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#ventilatorMinOnTime" }
+Switch Settings_ServiceRemindTechnician "Service Remind Technician [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#serviceRemindTechnician" }
+String Settings_Location "EI Location [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#eiLocation" }
+Number:Temperature Settings_ColdTempAlert "Cold Temp Alert [%.0f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#coldTempAlert" }
+Switch Settings_ColdTempAlertEnabled "Cold Temp Alert Enabled [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#coldTempAlertEnabled" }
+Number:Temperature Settings_HotTempAlert "Hot Temp Alert [%.0f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hotTempAlert" }
+Switch Settings_HotTempAlertEnabled "Hot Temp Alert Enabled [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hotTempAlertEnabled" }
+Number Settings_CoolStages "Cool Stages [%s]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#coolStages" }
+Number Settings_HeatStages "Heat Stages [%s]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#heatStages" }
+Number Settings_MaxSetBack "Max Set Back [%s]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#maxSetBack" }
+Number Settings_MaxSetForward "Max Set Forward [%s]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#maxSetForward" }
+Number Settings_QuickSaveSetBack "Quick Save Set Back [%s]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#quickSaveSetBack" }
+Number Settings_QuickSaveSetForward "Quick Save Set Forward [%s]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#quickSaveSetForward" }
+Switch Settings_HasHeatPump "Has Heat Pump [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hasHeatPump" }
+Switch Settings_HasForcedAir "Has Forced Air [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hasForcedAir" }
+Switch Settings_HasBoiler "Has Boiler [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hasBoiler" }
+Switch Settings_HasHumidifier "Has Humidifier [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hasHumidifier" }
+Switch Settings_HasERV "Has ERV [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hasErv" }
+Switch Settings_HasHRV "Has HRV [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hasHrv" }
+Switch Settings_CondensationAvoid "Condensation Avoid [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#condensationAvoid" }
+Switch Settings_UseCelsius "Use Celsius [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#useCelsius" }
+Switch Settings_UseTime_Format12 "Use Time Format 12 [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#useTimeFormat12" }
+String Settings_Locale "Locale [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#locale" }
+String Settings_Humidity "Humidity [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#humidity" }
+String Settings_HumidifierMode "Humidifier Mode [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#humidifierMode" }
+Number Settings_BacklightOnIntensity "Backlight On Intensity [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#backlightOnIntensity" }
+Number Settings_BacklightSleepIntensity "Backlight Sleep Intensity [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#backlightSleepIntensity" }
+Number Settings_BacklightOffTime "Backlight Off Time [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#backlightOffTime" }
+Number Settings_SoundTickVolume "Sound Tick Volume [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#soundTickVolume" }
+Number Settings_SoundAlertVolume "Sound Alert Volume [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#soundAlertVolume" }
+Number Settings_CompressorProtectionMinTime "Compressor Protection Min Time [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#compressorProtectionMinTime" }
+Number:Temperature Settings_CompressorProtectionMinTemp "Compressor Protection Min Temp [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#compressorProtectionMinTemp" }
+Number Settings_Stage1HeatingDifferentialTemp "Stage 1 Heating Differential Temp [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#stage1HeatingDifferentialTemp" }
+Number Settings_Stage1CoolingDifferentialTemp "Stage 1 Cooling Differential Temp [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#stage1CoolingDifferentialTemp" }
+Number Settings_Stage1HeatingDissipationTime "Stage 1 Heating Dissipation Time [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#stage1HeatingDissipationTime" }
+Number Settings_Stage1CoolingDissipationTime "Stage 1 Cooling Dissipation Time [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#stage1CoolingDissipationTime" }
+Switch Settings_HeatPumpReversalOnCool "Heat Pump Reversal On Cool [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#heatPumpReversalOnCool" }
+Switch Settings_FanControlRequired "Fan Control Required [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#fanControlRequired" }
+Number Settings_FanMinOnTime "Fan Min On Time [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#fanMinOnTime" }
+Number Settings_HeatCoolMinDelta "Heat Cool Min Delta [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#heatCoolMinDelta" }
+Number Settings_TempCorrection "Temp Correction [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#tempCorrection" }
+String Settings_HoldAction "Hold Action [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#holdAction" }
+Switch Settings_HeatPumpGroundWater "Heat Pump Ground Water [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#heatPumpGroundWater" }
+Switch Settings_HasElectric "Has Electric [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hasElectric" }
+Switch Settings_HasDehumidifier "Has Dehumidifier [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hasDehumidifier" }
+String Settings_DehumidifierMode "Dehumidifier Mode [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#dehumidifierMode" }
+Number Settings_DehumidifierLevel "Dehumidifier Level [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#dehumidifierLevel" }
+Switch Settings_DehumidifyWithAC "Dehumidify With AC [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#dehumidifyWithAC" }
+Number Settings_DehumidifyOvercoolEffect "Dehumidify Overcool Effect [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#dehumidifyOvercoolOffset" }
+Switch Settings_AutoHeatCoolFeatureEnabled "Auto Heat Cool Feature Enabled [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#autoHeatCoolFeatureEnabled" }
+Switch Settings_WiFiOfflineAlert "WiFi Offline Alert [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#wifiOfflineAlert" }
+Number:Temperature Settings_HeatMinTemp "Heat Min Temp [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#heatMinTemp" }
+Number:Temperature Settings_HeatMaxTemp "Heat Max Temp [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#heatMaxTemp" }
+Number:Temperature Settings_CoolMinTemp "Cool Min Temp [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#coolMinTemp" }
+Number:Temperature Settings_CoolMaxTemp "Cool Max Temp [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#coolMaxTemp" }
+Number:Temperature Settings_HeatRangeHigh "Heat Range High [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#heatRangeHigh" }
+Number:Temperature Settings_HeatRangeLow "Heat Range Low [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#heatRangeLow" }
+Number:Temperature Settings_CoolRangeHigh "Cool Range High [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#coolRangeHigh" }
+Number:Temperature Settings_CoolRangeLow "Cool Range Low [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#coolRangeLow" }
+String Settings_UserAccessCode "User Access Code [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#userAccessCode" }
+Number Settings_UserAccessSettings "User Access Settings [%s]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#userAccessSetting" }
+Number Settings_AuxRuntimeAlert "Aux Runtime Alert [%s]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#auxRuntimeAlert" }
+Number:Temperature Settings_AuxOutdoorTempAlert "Aux Outdoor Temp Alert [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#auxOutdoorTempAlert" }
+Number:Temperature Settings_AuxMaxOutdoorTemp "Aux Max Outdoor Temp [%.1f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#auxMaxOutdoorTemp" }
+Switch Settings_AuxRuntimeAlertNotify "Aux Runtime Alert Notify [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#auxRuntimeAlertNotify" }
+Switch Settings_AuxOutdoorTempAlertNotify "Aux Outdoor Temp Alert Notify [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#auxOutdoorTempAlertNotify" }
+Switch Settings_AuxRuntimeAlertNotifyTechnician "Aux Runtime Alert Notifi Technician [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#auxRuntimeAlertNotifyTechnician" }
+Switch Settings_AuxOutdoorTempAlertNotifyTechnician "Aux Outdoor Temp Alert Notify Technician [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#auxOutdoorTempAlertNotifyTechnician" }
+Switch Settings_DisablePreHeating "Disable Pre Heating [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#disablePreHeating" }
+Switch Settings_DisablePreCooling "Disable Pre Cooling [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#disablePreCooling" }
+Switch Settings_InstallerCodeRequired "Installer Code Required [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#installerCodeRequired" }
+String Settings_DRAccept "DR Accept [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#drAccept" }
+Switch Settings_IsRentalProperty "Is Rental Property [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#isRentalProperty" }
+Switch Settings_UseZoneController "Use Zone Controller [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#useZoneController" }
+Number Settings_RandomStartDelayCool "Random Start Delay Cool [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#randomStartDelayCool" }
+Number Settings_RandomStartDelayHeat "Random Start Delay Heat [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#randomStartDelayHeat" }
+Number:Dimensionless Settings_HumidityHighAlert "Humidity High Alert [%.0f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#humidityHighAlert" }
+Number:Dimensionless Settings_HumidityLowAlert "Humidity Low Alert [%.0f %unit%]" <temperature> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#humidityLowAlert" }
+Switch Settings_DisableHeatPumpAlerts "Disable Heat Pump Alerts [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#disableHeatPumpAlerts" }
+Switch Settings_DisableAlertsOnIDT "Disable Alerts On IDT [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#disableAlertsOnIdt" }
+Switch Settings_HumidityAlertNotify "Humidity Alert Notify [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#humidityAlertNotify" }
+Switch Settings_HumidityAlertNotifyTechnicial "Humidity Alert Notify Technician [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#humidityAlertNotify" }
+Switch Settings_TempAlertNotify "Temp Alert Notify [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#tempAlertNotify" }
+Switch Settings_TempAlertNotifyTechnician "Temp Alert Notify Technician [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#tempAlertNotify" }
+Number Settings_MonthlyElectricityBillLimit "Monthly Electricity Bill Limit [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#monthlyElectricityBillLimit" }
+Switch Settings_EnableElectricityBillAlert "Enable Electricity Bill Alert [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#enableElectricityBillAlert" }
+Switch Settings_EnableProjectedElectricityBillAlert "Enable Projected Electricity Bill Alert [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#enableProjectedElectricityBillAlert" }
+Number Settings_ElectricityBillingDayOfMonth "Electricity Billing Day Of Month [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#electricityBillingDayOfMonth" }
+Number Settings_ElectricityBillCycleMonths "Electricity Bill Cycle Months [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#electricityBillCycleMonths" }
+Number Settings_ElectricityBillStartMonth "Electricity Bill Start Month [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#electricityBillStartMonth" }
+Number Settings_VentilatorMinOnTimeHome "Ventilator Min On Time Home [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#ventilatorMinOnTimeHome" }
+Number Settings_VentilatorMinOnTimeAway "Ventilator Min On Time Away [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#ventilatorMinOnTimeAway" }
+Switch Settings_BacklightOffDuringSleep "Backlight Off During Sleep [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#backlightOffDuringSleep" }
+Switch Settings_AutoAway "Auto Away [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#autoAway" }
+Switch Settings_SmartCirculation "Smart Circulation [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#smartCirculation" }
+Switch Settings_FollowMeComfort "Follow Me Comfort [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#followMeComfort" }
+String Settings_VentilatorType "Ventilator Type [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#ventilatorType" }
+Switch Settings_IsVentilatorTimerOn "Is Ventilator Timer On [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#isVentilatorTimerOn" }
+String Settings_VentilatorOffDateTime "Ventilator Off Date Time [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#ventilatorOffDateTime" }
+Switch Settings_HasUVFilter "Has UV Filter [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hasUVFilter" }
+Switch Settings_CoolingLockout "Cooling Lockout [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#coolingLockout" }
+Switch Settings_VentilatorFreeCooling "Ventilator Free Cooling [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#ventilatorFreeCooling" }
+Switch Settings_DehumidifyWhenHeating "Dehumidify When Heating [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#dehumidifyWhenHeating" }
+Switch Settings_VentilatorDehumidify "Ventilator Dehumidify [%s]" <switch> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#ventilatorDehumidify" }
+String Settings_GroupRef "Group Ref [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#groupRef" }
+String Settings_GroupName "Group Name [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#groupName" }
+Number Settings_GroupSetting "Group Setting [%.0f]" <none> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#groupSetting" }
+
+// Alert group
+String Alert_Achnowledge_Ref "Alert Achnowledge Ref [%s]" <text> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#acknowledgeRef" }
+String Alert_Date "Date [%s]" <date> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#date" }
+String Alert_Time "Time [%s]" <time> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#time" }
+String Alert_Severity "Severity [%s]" <text> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#severity" }
+String Alert_Text "Alert Text [%s]" <text> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#text" }
+Number Alert_AlertNumber "Alert Number [%.0f]" (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#number" }
+String Alert_AlertType "Alert Type [%s]" <text> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#type" }
+Switch Alert_IsOperatorAlert "Is Operator Alert [%s]" <switch> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#isOperatorAlert" }
+String Alert_Reminder "Reminder [%s]" <text> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#reminder" }
+Switch Alert_ShowIdt "Show IDT [%s]" <switch> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#showIdt" }
+Switch Alert_ShowWeb "Show Web [%s]" <switch> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#showWeb" }
+Switch Alert_SendEmail "Send Email [%s]" <switch> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#sendEmail" }
+String Alert_Acknowledgement "Acknowledgement [%s]" <text> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#acknowledgement" }
+Switch Alert_RemindMeLater "Remind Me Later [%s]" <switch> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#remindMeLater" }
+String Alert_ThermostatIdentifier "Thermostat Identifier [%s]" <text> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#thermostatIdentifier" }
+String Alert_NotificationType "Notification Type [%s]" <text> (gAlert) { channel="ecobee:thermostat:account:729318833078:alerts#notificationType" }
+
+// Program group
+String Program_CurrentClimateRef "Current Climate Ref [%s]" <text> (gProgram) { channel="ecobee:thermostat:account:729318833078:program#currentClimateRef" }
+
+// Events group
+String Event_Name "Name [%s]" <text> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#name" }
+String Event_Type "Type [%s]" <text> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#type" }
+Switch Event_Running "Running [%s]" <switch> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#running" }
+String Event_StartDate "Start Date [%s]" <text> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#startDate" }
+String Event_StartTime "Start Time [%s]" <text> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#startTime" }
+String Event_EndDate "End Date [%s]" <text> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#endDate" }
+String Event_EndTime "End Time [%s]" <text> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#endTime" }
+Switch Event_IsOccupied "Running [%s]" <switch> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#isOccupied" }
+Switch Event_IsCoolOff "Is Cool Off [%s]" <switch> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#isCoolOff" }
+Switch Event_HeatOff "Is Heat Off [%s]" <switch> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#isHeatOff" }
+Number:Temperature Event_CoolHoldTemp "Cool Hold Temp [%.1f %unit%]" (gEvent) { channel="ecobee:thermostat:account:729318833078:events#coolHoldTemp" }
+Number:Temperature Event_HeatHoldTemp "Heat Hold Temp [%.1f %unit%]" (gEvent) { channel="ecobee:thermostat:account:729318833078:events#heatHoldTemp" }
+String Event_Fan "Fan [%s]" <text> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#fan" }
+String Event_Vent "Vent [%s]" <text> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#vent" }
+Number Event_VentilatorMinOnTime "Ventilator Min On Time [%.0f]" <none> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#ventilatorMinOnTime" }
+Switch Event_IsOptional "Is Optional [%s]" <switch> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#isOptional" }
+Switch Event_IsTemperatureRelative "Is Temperature Relative [%s]" <switch> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#isTemperatureRelative" }
+Number Event_CoolRelativeTemp "Cool Relative Temp [%.0f]" <none> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#coolRelativeTemp" }
+Number Event_HeatRelativeTemp "Heat Relative Temp [%.0f]" <none> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#heatRelativeTemp" }
+Switch Event_IsTemperatureAbsolute "Is Temperature Absolute [%s]" <switch> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#isTemperatureAbsolute" }
+Number Event_DutyCyclePercentage "Duty Cycle Percentage [%.0f]" <none> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#dutyCyclePercentage" }
+Number Event_FanMinOnTime "Fan Min On Time [%.0f]" <none> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#fanMinOnTime" }
+Switch Event_OccupiedSensorActive "Occupied Sensor Active [%s]" <switch> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#occupiedSensorActive" }
+Switch Event_UnoccupiedSensorActive "Unoccupied Sensor Active [%s]" <switch> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#unoccupiedSensorActive" }
+Number Event_DrRampUpTemp "DR Ramp Up Temp [%.0f]" <none> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#drRampUpTemp" }
+Number Event_DrRampUpTime "DR Ramp Up Time [%.0f]" <none> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#drRampUpTime" }
+String Event_LinkRef "Link Ref [%s]" <text> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#linkRef" }
+String Event_HoldClimateRef "Hold Climate Ref [%s]" <text> (gEvent) { channel="ecobee:thermostat:account:729318833078:events#holdClimateRef" }
+
+// Version group
+String Version_ThermostatFirmwareVersion "Thermostat Firmware Version [%s]" <text> (gVersion) { channel="ecobee:thermostat:account:729318833078:version#thermostatFirmwareVersion" }
+
+// Location group
+Number Location_TimeZoneOffsetMinutes "Time Zone Offset Minutes [%.0f]" <none> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#timeZoneOffsetMinutes" }
+String Location_TimeZone "Time Zone [%s]" <text> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#timeZone" }
+Switch Location_IsDaylightSaving "Is Daylight Saving [%s]" <switch> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#isDaylightSaving" }
+String Location_StreetAddress "Street Address [%s]" <text> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#streetAddress" }
+String Location_City "City [%s]" <text> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#city" }
+String Location_ProvinceState "Province/State [%s]" <text> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#provinceState" }
+String Location_Country "Country [%s]" <text> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#country" }
+String Location_PostalCode "Postal Code [%s]" <text> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#postalCode" }
+String Location_PhoneNumber "Phone Number [%s]" <text> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#phoneNumber" }
+Location Location_MapCoordinates "Lat/Lon [%s]" <none> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#mapCoordinates" }
+Switch Location_ShowAlertIdt "Show Alert Idt [%s]" <switch> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#showAlertIdt" }
+Switch Location_ShowAlertWeb "Show Alert Web [%s]" <switch> (gLocation) { channel="ecobee:thermostat:account:729318833078:location#showAlertWeb" }
+
+// House Details group
+String HouseDetails_Style "Style [%s]" <text> (gHouseDetails) { channel="ecobee:thermostat:account:729318833078:houseDetails#style" }
+Number HouseDetails_Size "Size [%.0f]" <none> (gHouseDetails) { channel="ecobee:thermostat:account:729318833078:houseDetails#size" }
+Number HouseDetails_NumberOfFloors "Number of Floors [%.0f]" <none> (gHouseDetails) { channel="ecobee:thermostat:account:729318833078:houseDetails#numberOfFloors" }
+Number HouseDetails_NumberOfRooms "Number of Rooms [%.0f]" <none> (gHouseDetails) { channel="ecobee:thermostat:account:729318833078:houseDetails#numberOfRooms" }
+Number HouseDetails_NumberOfOccupants "Number of Occupants [%.0f]" <none> (gHouseDetails) { channel="ecobee:thermostat:account:729318833078:houseDetails#numberOfOccupants" }
+Number HouseDetails_Age "Age [%.0f]" <none> (gHouseDetails) { channel="ecobee:thermostat:account:729318833078:houseDetails#age" }
+Number HouseDetails_WindowEfficiency "Window Efficiency [%.0f]" <none> (gHouseDetails) { channel="ecobee:thermostat:account:729318833078:houseDetails#windowEfficiency" }
+
+// Management group
+String Management_AdministrativeContact "Administrative Contact [%s]" <text> (gManagement) { channel="ecobee:thermostat:account:729318833078:management#administrativeContact" }
+String Management_BillingContact "Billing Contact [%s]" <text> (gManagement) { channel="ecobee:thermostat:account:729318833078:management#billingContact" }
+String Management_Name "Name [%s]" <text> (gManagement) { channel="ecobee:thermostat:account:729318833078:management#Name" }
+String Management_Phone "Phone [%s]" <text> (gManagement) { channel="ecobee:thermostat:account:729318833078:management#phone" }
+String Management_Email "Email [%s]" <text> (gManagement) { channel="ecobee:thermostat:account:729318833078:management#email" }
+String Management_Web "Web [%s]" <text> (gManagement) { channel="ecobee:thermostat:account:729318833078:management#web" }
+
+// Technician group
+String Technician_ContractorRef "Contractor Ref [%s]" <text> (gTechnician) { channel="ecobee:thermostat:account:729318833078:technician#contractorRef" }
+String Technician_Name "Name [%s]" <text> (gTechnician) { channel="ecobee:thermostat:account:729318833078:technician#name" }
+String Technician_Phone "Phone [%s]" <text> (gTechnician) { channel="ecobee:thermostat:account:729318833078:technician#phone" }
+String Technician_StreetAddress "Street Address [%s]" <text> (gTechnician) { channel="ecobee:thermostat:account:729318833078:technician#streetAddress" }
+String Technician_City "City [%s]" <text> (gTechnician) { channel="ecobee:thermostat:account:729318833078:technician#city" }
+String Technician_ProvinceState "Province/State [%s]" <text> (gTechnician) { channel="ecobee:thermostat:account:729318833078:technician#provinceState" }
+String Technician_Country "Country [%s]" <text> (gTechnician) { channel="ecobee:thermostat:account:729318833078:technician#country" }
+String Technician_PostalCode "Postal Code [%s]" <text> (gTechnician) { channel="ecobee:thermostat:account:729318833078:technician#postalCode" }
+String Technician_Email "Email [%s]" <text> (gTechnician) { channel="ecobee:thermostat:account:729318833078:technician#email" }
+String Technician_Web "Web [%s]" <text> (gTechnician) { channel="ecobee:thermostat:account:729318833078:technician#web" }
+
+// Weather group
+DateTime Weather_Timestamp "Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> (gWeather) { channel="ecobee:thermostat:account:729318833078:weather#timestamp" }
+String Weather_WeatherStation "Weather Station [%s]" <text> (gWeather) { channel="ecobee:thermostat:account:729318833078:weather#weatherStation" }
+
+// Forecast0 group
+Number Forecast0_WeatherSymbol "Symbol [%.0f]" <none> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#weatherSymbol" }
+String Forecast0_WeatherSymbolText "Symbol Text [%s]" <text> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#weatherSymbolText" }
+DateTime Forecast0_DateTime "Date/Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#dateTime" }
+String Forecast0_Condition "Condition [%s]" <text> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#condition" }
+Number:Temperature Forecast0_Temperature "Temperature [%.1f %unit%]" <temperature> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#temperature" }
+Number:Pressure Forecast0_Pressure "Pressure [%.1f %unit%]" <pressure> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#pressure" }
+Number:Dimensionless Forecast0_RelativeHumidity "Relative Humidity [%.0f %unit%]" <humidity> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#relativeHumidity" }
+Number:Temperature Forecast0_Dewpoint "Dewpoint [%.1f %unit%]" <temperature> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#dewpoint" }
+Number:Length Forecast0_Visibility "Visibility [%.1f mi]" <none> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#visibility" }
+Number:Speed Forecast0_WindSpeed "Wind Speed [%.1f %unit%]" <wind> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#windSpeed" }
+Number:Speed Forecast0_WindGust "Wind Gust [%.1f %unit%]" <wind> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#windGust" }
+String Forecast0_WindDirection "Wind Direction [%s]" <wind> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#windDirection" }
+Number:Angle Forecast0_WindBearing "Wind Bearing [%.0f %unit%]" <wind> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#windBearing" }
+Number:Dimensionless Forecast0_ProbabilityOfPrecipitation "Probability of Precipitation [%.0f %unit%]" <none> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#pop" }
+Number:Temperature Forecast0_TemperatureHigh "Temperature High [%.1f %unit%]" <temperature> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#tempHigh" }
+Number:Temperature Forecast0_TemperatureLow "Temperature Low [%.1f %unit%]" <temperature> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#tempLow" }
+Number Forecast0_Sky "Sky [%.0f]" <none> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#sky" }
+String Forecast0_SkyText "Sky Text [%s]" <text> (gForecast0) { channel="ecobee:thermostat:account:729318833078:forecast0#skyText" }
+
+// Forecast1 group
+Number Forecast1_WeatherSymbol "Symbol [%.0f]" <none> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#weatherSymbol" }
+String Forecast1_WeatherSymbolText "Symbol Text [%s]" <text> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#weatherSymbolText" }
+DateTime Forecast1_DateTime "Date/Time [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#dateTime" }
+String Forecast1_Condition "Condition [%s]" <text> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#condition" }
+Number:Temperature Forecast1_Temperature "Temperature [%.1f %unit%]" <temperature> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#temperature" }
+Number:Pressure Forecast1_Pressure "Pressure [%.1f %unit%]" <pressure> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#pressure" }
+Number:Dimensionless Forecast1_RelativeHumidity "Relative Humidity [%.0f %unit%]" <humidity> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#relativeHumidity" }
+Number:Temperature Forecast1_Dewpoint "Dewpoint [%.1f %unit%]" <temperature> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#dewpoint" }
+Number:Length Forecast1_Visibility "Visibility [%.1f mi]" <none> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#visibility" }
+Number:Speed Forecast1_WindSpeed "Wind Speed [%.1f %unit%]" <wind> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#windSpeed" }
+Number:Speed Forecast1_WindGust "Wind Gust [%.1f %unit%]" <wind> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#windGust" }
+String Forecast1_WindDirection "Wind Direction [%s]" <wind> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#windDirection" }
+Number:Angle Forecast1_WindBearing "Wind Bearing [%.0f %unit%]" <wind> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#windBearing" }
+Number:Dimensionless Forecast1_ProbabilityOfPrecipitation "Probability of Precipitation [%.0f %unit%]" <none> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#pop" }
+Number:Temperature Forecast1_TemperatureHigh "Temperature High [%.1f %unit%]" <temperature> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#tempHigh" }
+Number:Temperature Forecast1_TemperatureLow "Temperature Low [%.1f %unit%]" <temperature> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#tempLow" }
+Number Forecast1_Sky "Sky [%.0f]" <none> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#sky" }
+String Forecast1_SkyText "Sky Text [%s]" <text> (gForecast1) { channel="ecobee:thermostat:account:729318833078:forecast1#skyText" }
+
+// Remote sensor S0
+String S0_Id "Sensor Id [%s]" <text> (gThermostatSensor) { channel="ecobee:sensor:account:729318833078:ei-0:id" }
+String S0_Name "Sensor Name [%s]" <text> (gThermostatSensor) { channel="ecobee:sensor:account:729318833078:ei-0:name" }
+String S0_Type "Sensor Type [%s]" <text> (gThermostatSensor) { channel="ecobee:sensor:account:729318833078:ei-0:type" }
+String S0_Code "Sensor Code [%s]" <text> (gThermostatSensor) { channel="ecobee:sensor:account:729318833078:ei-0:code" }
+Switch S0_InUse "Sensor In Use [%s]" <switch> (gThermostatSensor) { channel="ecobee:sensor:account:729318833078:ei-0:inUse" }
+Number:Temperature S0_Temperature "Temperature [%.1f %unit%]" <none> (gThermostatSensor) { channel="ecobee:sensor:account:729318833078:ei-0:temperature" }
+Number:Dimensionless S0_Humidity "Humidity [%.0f %unit%]" <none> (gThermostatSensor) { channel="ecobee:sensor:account:729318833078:ei-0:humidity" }
+Switch S0_Occupancy "Occupancy [%s]" <none> (gThermostatSensor) { channel="ecobee:sensor:account:729318833078:ei-0:occupancy" }
+
+// Remote sensor S1
+String S1_Id "Sensor Id [%s]" <text> (gRoom1Sensor) { channel="ecobee:sensor:account:729318833078:rs-101:id" }
+String S1_Name "Sensor Name [%s]" <text> (gRoom1Sensor) { channel="ecobee:sensor:account:729318833078:rs-101:name" }
+String S1_Type "Sensor Type [%s]" <text> (gRoom1Sensor) { channel="ecobee:sensor:account:729318833078:rs-101:type" }
+String S1_Code "Sensor Code [%s]" <text> (gRoom1Sensor) { channel="ecobee:sensor:account:729318833078:rs-101:code" }
+Switch S1_InUse "Sensor In Use [%s]" <switch> (gRoom1Sensor) { channel="ecobee:sensor:account:729318833078:rs-101:inUse" }
+Number:Temperature S1_Temperature "Temperature [%.1f %unit%]" <none> (gRoom1Sensor) { channel="ecobee:sensor:account:729318833078:rs-101:temperature" }
+Switch S1_Occupancy "Occupancy [%s]" <none> (gRoom1Sensor) { channel="ecobee:sensor:account:729318833078:rs-101:occupancy" }
+
+// Remote sensor S2
+String S2_Id "Sensor Id [%s]" <text> (gRoom2Sensor) { channel="ecobee:sensor:account:729318833078:rs-100:id" }
+String S2_Name "Sensor Name [%s]" <text> (gRoom2Sensor) { channel="ecobee:sensor:account:729318833078:rs-100:name" }
+String S2_Type "Sensor Type [%s]" <text> (gRoom2Sensor) { channel="ecobee:sensor:account:729318833078:rs-100:type" }
+String S2_Code "Sensor Code [%s]" <text> (gRoom2Sensor) { channel="ecobee:sensor:account:729318833078:rs-100:code" }
+Switch S2_InUse "Sensor In Use [%s]" <switch> (gRoom2Sensor) { channel="ecobee:sensor:account:729318833078:rs-100:inUse" }
+Number:Temperature S2_Temperature "Temperature [%.1f %unit%]" <none> (gRoom2Sensor) { channel="ecobee:sensor:account:729318833078:rs-100:temperature" }
+Switch S2_Occupancy "Occupancy [%s]" <none> (gRoom2Sensor) { channel="ecobee:sensor:account:729318833078:rs-100:occupancy" }
+```
+
+### Sitemap
+
+```
+Frame label="Ecobee Thermostat" {
+    Group item=gInfo
+    Group item=gEquipmentStatus
+    Group item=gRuntime
+    Group item=gSettings
+    Group item=gProgram
+    Group item=gAlert
+    Group item=gEvent
+    Group item=gWeather
+    Group item=gLocation
+    Group item=gHouseDetails
+    Group item=gVersion
+    Group item=gManagement
+    Group item=gTechnician
+    Group item=gThermostatSensor
+    Group item=gRoom1Sensor
+    Group item=gRoom2Sensor
+}
+```
+
+### Rules
+
+```
+rule "Send Message"
+when
+    Item Ecobee_SendMessage received command
+then
+    val actionsThermostat1 = getActions("ecobee","ecobee:thermostat:account:103778713388")
+    var Boolean isSuccess
+    isSuccess = actionsThermostat1.sendMessage(receivedCommand.toString)
+    logInfo("ecobee", "Action 'sendMessage' returned '{}'", isSuccess)
+end
+
+
+rule "Acknowledge Alert"
+when
+    Item Ecobee_AcknowledgeAlert received command
+then
+    val actionsThermostat1 = getActions("ecobee","ecobee:thermostat:account:103778713388")
+    var Boolean isSuccess
+    isSuccess = actionsThermostat1.acknowledge(receivedCommand.toString, "accept", null)
+    logInfo("ecobee", "Action 'acknowledge' returned '{}'", isSuccess)
+end
+
+
+rule "Resume Program"
+when
+    Item Ecobee_ResumeProgram received command
+then
+    val actionsThermostat1 = getActions("ecobee","ecobee:thermostat:account:103778713388")
+    var Boolean isSuccess
+    isSuccess = actionsThermostat1.resumeProgram(true)
+    logInfo("ecobee", "Action 'resumeProgram' returned '{}'", isSuccess)
+end
+
+
+rule "Get Alerts"
+when
+    Item Ecobee_GetAlerts received command
+then
+    val actionsThermostat1 = getActions("ecobee","ecobee:thermostat:account:103778713388")
+    var String alerts = actionsThermostat1.getAlerts()
+    if (alerts !== null) {
+        val int numElements = Integer.parseInt(transform("JSONPATH", "$.length()", alerts))
+        logInfo("ecobee", "Alerts: There are {} alerts in array", numElements)
+        var String ref
+        var String text
+        for (var int i=0; i < numElements; i++) {
+            ref = transform("JSONPATH", "$.[" + i + "].acknowledgeRef", alerts)
+            text = transform("JSONPATH", "$.[" + i + "].text", alerts)
+            logInfo("test", "Alerts: Alert '{}' with acknowledgeRef '{}'", text, ref)
+        }
+    } else {
+        logInfo("ecobee", "Alerts: No alerts!!!")
+    }
+end
+
+
+rule "Get Events"
+when
+    Item Ecobee_GetEvents received command
+then
+    val actionsThermostat1 = getActions("ecobee","ecobee:thermostat:account:103778713388")
+    var String events = actionsThermostat1.getEvents()
+    if (events !== null) {
+        val int numElements = Integer.parseInt(transform("JSONPATH", "$.length()", events))
+        logInfo("ecobee", "Events: There are {} events in array", numElements)
+    } else {
+        logInfo("ecobee", "Events: No events!!!")
+    }
+end
+
+
+rule "Get Climates"
+when
+    Item Ecobee_GetClimates received command
+then
+    val actionsThermostat1 = getActions("ecobee","ecobee:thermostat:account:103778713388")
+    var String climates = actionsThermostat1.getClimates()
+    if (climates !== null) {
+        val int numElements = Integer.parseInt(transform("JSONPATH", "$.length()", climates))
+        logInfo("ecobee", "Climates: There are {} climates in array", numElements)
+        var String climateRef
+        for (var int i=0; i < numElements; i++) {
+            climateRef = transform("JSONPATH", "$.[" + i + "].climateRef", climates)
+            logInfo("test", "Climates: Climate Ref: {}", climateRef)
+        }
+    } else {
+        logInfo("ecobee", "Climates: No events!!!")
+    }
+end
+
+```
+
+## Acnowledgements
+
+Thanks to John Cocula for his openHAB version 1 implementation of the Ecobee binding.
+It was a valuable starting point for my work on the openHAB version 2 binding.
