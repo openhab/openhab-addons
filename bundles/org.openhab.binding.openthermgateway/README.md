@@ -24,11 +24,11 @@ The binding itself does not require any configuration.
 
 The binding is designed to support various ways of connecting to the OpenTherm Gateway device, but currently only supports a TCP socket connection. The configuration settings for the thing are Hostname/IP address and Port, which are used to connect to the gateway, and an automatic connection retry interval in case the connection to the OpenTherm Gateway device is lost.
 
-| Parameter                 | Name                      | Description                                                     | Required |
-|---------------------------|---------------------------|-----------------------------------------------------------------|----------|
-| `ipaddress`               | Hostname or IP address    | The hostname or IP address to connect to the OpenTherm Gateway. | yes      |
-| `port`                    | Port                      | The port used to connect to the OpenTherm Gateway.              | yes      |
-| `connectionRetryInterval` | Connection Retry Interval | The interval in seconds to retry connecting (0 = disabled).     | yes      |
+| Parameter                 | Name                      | Description                                                     | Required | Default |
+|---------------------------|---------------------------|-----------------------------------------------------------------|----------|---------|
+| `ipaddress`               | Hostname or IP address    | The hostname or IP address to connect to the OpenTherm Gateway. | yes      |         |
+| `port`                    | Port                      | The port used to connect to the OpenTherm Gateway.              | yes      |         |
+| `connectionRetryInterval` | Connection Retry Interval | The interval in seconds to retry connecting (0 = disabled).     | yes      | 60      |
 
 ## Channels
 
