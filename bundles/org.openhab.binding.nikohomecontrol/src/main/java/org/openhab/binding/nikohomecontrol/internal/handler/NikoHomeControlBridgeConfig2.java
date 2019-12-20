@@ -19,5 +19,5 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
  */
 public class NikoHomeControlBridgeConfig2 extends NikoHomeControlBridgeConfig {
     public String profile;
-    public String token;
+    public String password;
 }

@@ -58,7 +58,7 @@
 				<default>hobby</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="token" type="text" required="true">
+			<parameter name="password" type="text" required="true">
 				<label>API Token</label>
 				<description>Token for Niko Home Control II hobby API, should not be empty. This token will have to be renewed after expiration (1 year after creation)</description>
 				<context>password</context>
