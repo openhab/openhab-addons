@@ -58,7 +58,7 @@ The OpenTherm Gateway binding supports the following channels:
 | fault                | Switch    | Fault indication                                         |
 | servicerequest       | Switch    | Service required                                         |
 | lockout-reset        | Switch    | Lockout-reset enabled                                    |
-| lowwaterpress        | Switch    | Water pressure fault                                     |
+| lowwaterpress        | Switch    | Low water pressure fault                                 |
 | gasflamefault        | Switch    | Gas or flame fault                                       |
 | airpressfault        | Switch    | Air pressure fault                                       |
 | waterovtemp          | Switch    | Water over-temperature fault                             |

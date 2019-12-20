@@ -171,7 +171,7 @@
 	<channel-type id="lowwaterpress">
 		<item-type>Switch</item-type>
 		<label>Low water pressure fault</label>
-		<description>Water pressure fault</description>
+		<description>Low water pressure fault</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
