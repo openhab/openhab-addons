@@ -44,6 +44,8 @@ The Niko Home Control II bridge has an extra required parameter for the API toke
 The API token can be retrieved from your Niko Home Control profile page on the Niko Home Control website.
 For that, you will need to add the Hobby API as a connected service on your profile.
 Note that the API token is only valid for one year after creation.
+The token expiry date is visible in the bridge properties.
+Entries will also be written in the log when the token is about to expire (starting 14 days in advance).
 
 An optional refresh interval will be used to restart the bridge at regular intervals (every 300 minutes by default).
 Restarting the bridge at regular times improves the connection stability and avoids loss of connection.

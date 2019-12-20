@@ -16,9 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -64,7 +61,6 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private MqttMessageSubscriber messageSubscriber;
     private MqttConnectionObserver connectionObserver;
 
-    private Path persistenceBasePath;
     private TrustManager trustManagers[];
     private String clientId;
 
@@ -73,9 +69,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile String profile = "";
     private volatile String token = "";
 
-    NhcMqttConnection2(String clientId, String persistencePath, MqttMessageSubscriber messageSubscriber,
+    NhcMqttConnection2(String clientId, MqttMessageSubscriber messageSubscriber,
             MqttConnectionObserver connectionObserver) throws CertificateException {
-        persistenceBasePath = Paths.get(persistencePath).resolve("nikohomecontrol");
         trustManagers = getTrustManagers();
         this.clientId = clientId;
         this.messageSubscriber = messageSubscriber;
@@ -148,38 +143,22 @@ public class NhcMqttConnection2 implements MqttActionCallback {
                 }
             } else {
                 logger.debug("Niko Home Control: error connecting");
-                throw new MqttException(32103);
+                throw new MqttException("Connection execution exception");
             }
         } catch (InterruptedException e) {
             logger.debug("Niko Home Control: connection interrupted exception");
-            throw new MqttException(0);
+            throw new MqttException("Connection interrupted exception");
         } catch (ExecutionException e) {
             logger.debug("Niko Home Control: connection execution exception", e.getCause());
-            throw new MqttException(32103);
+            throw new MqttException("Connection execution exception");
         } catch (TimeoutException e) {
             logger.debug("Niko Home Control: connection timeout exception");
-            throw new MqttException(32000);
-        }
-    }
-
-    /**
-     * This method cleans the locks to overcome bug in Paho persistence implementation. It will be removed when Paho
-     * bug is fixed, or another mqtt library is used.
-     *
-     * @param persistencePath
-     */
-    private void cleanLock(Path persistencePath) {
-        try {
-            Files.delete(persistencePath);
-        } catch (IOException e) {
+            throw new MqttException("Connection timeout exception");
         }
     }
 
     private MqttBrokerConnection createMqttConnection() throws MqttException {
-        Path persistencePath = persistenceBasePath.resolve(clientId);
-        cleanLock(persistencePath); // fix for lock files not being removed
         MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
-        connection.setPersistencePath(persistencePath);
         connection.setTrustManagers(trustManagers);
         connection.setCredentials(profile, token);
         connection.setQos(1);
@@ -245,7 +224,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         MqttBrokerConnection connection = mqttConnection;
         if (connection == null) {
             logger.debug("Niko Home Control: cannot publish, no connection");
-            throw new MqttException(32104);
+            throw new MqttException("No connection exception");
         }
 
         if (isConnected()) {

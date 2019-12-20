@@ -92,10 +92,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      * @throws UnknownHostException when the IP address is not provided
      *
      */
-    public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId, String persistencePath,
+    public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId,
             ScheduledExecutorService scheduler) throws CertificateException {
         super(handler);
-        mqttConnection = new NhcMqttConnection2(clientId, persistencePath, this, this);
+        mqttConnection = new NhcMqttConnection2(clientId, this, this);
         this.scheduler = scheduler;
     }
 
@@ -851,10 +851,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     /**
-     * @return comma separated list of profiles retrieved from Connected Controller
+     * @return comma separated list of profiles with uuid's retrieved from Connected Controller
      */
     public String getProfiles() {
-        return profiles.stream().map(NhcProfile2::name).collect(Collectors.joining(", "));
+        return profiles.stream().map(NhcProfile2::profile).collect(Collectors.joining(", "));
     }
 
     /**

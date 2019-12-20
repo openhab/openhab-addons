@@ -42,7 +42,7 @@ public class NhcSystemInfo2 {
     ArrayList<NhcSwVersion> swVersions = new ArrayList<>();
 
     /**
-     * @return the lastConfig
+     * @return the NhcVersion
      */
     public String getNhcVersion() {
         if (swVersions.size() > 0) {
@@ -53,7 +53,7 @@ public class NhcSystemInfo2 {
     }
 
     /**
-     * @return the lastConfig
+     * @return the CocoImage version
      */
     public String getCocoImage() {
         if (swVersions.size() > 0) {
