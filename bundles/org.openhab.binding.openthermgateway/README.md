@@ -1,12 +1,12 @@
 # OpenTherm Gateway binding
 
-This binding is used to integrate the OpenTherm Gateway into openHAB2. The OpenTherm Gateway is a module designed by Schelte Bron that is connected in between a boiler and a thermostat that communicates using the OpenTherm protocol.
+This binding is used to integrate the OpenTherm Gateway into openHAB2. The OpenTherm Gateway is a module designed by Schelte Bron that is connected in between a boiler and a thermostat and communicates using the OpenTherm protocol.
 
-More information on the OpenTherm Gateway can be found at http://otgw.tclcode.com/
+More information on the OpenTherm Gateway device can be found at http://otgw.tclcode.com/
 
-This binding is still under development. Please visit https://github.com/ArjenKorevaar/openhab2-openthermgateway-binary to download the lastest compiled test version.
+This binding is still in development. Please visit https://github.com/ArjenKorevaar/openhab2-openthermgateway-binary to download the lastest compiled test version.
 
-Comments can be submitted to the topic on openHAB community at https://community.openhab.org/t/39160
+Comments can be submitted to the openHAB community topic at https://community.openhab.org/t/39160
 
 ## Supported Things
 
@@ -38,15 +38,15 @@ The OpenTherm Gateway binding supports the following channels:
 |----------------------|-----------|----------------------------------------------------------|-----------|
 | roomtemp             | Number    | Current sensed room temperature                          | yes       |
 | roomsetpoint         | Number    | Current room temperature setpoint                        | yes       |
-| temperaturetemporary | Number    | Temporary override room temperature setpoint             | yes       |
-| temperatureconstant  | Number    | Constant override room temperature setpoint              | yes       |
+| temperaturetemporary | Number    | Temporary override room temperature setpoint             | no        |
+| temperatureconstant  | Number    | Constant override room temperature setpoint              | no        |
 | controlsetpoint      | Number    | Central heating water setpoint                           | yes       |
 | dhwtemp              | Number    | Domestic hot water temperature                           | yes       |
 | tdhwset              | Number    | Domestic hot water temperature setpoint                  | yes       |
-| overridedhwsetpoint  | Number    | Domestic hot water temperature setpoint override         | yes       |
+| overridedhwsetpoint  | Number    | Domestic hot water temperature setpoint override         | no        |
 | flowtemp             | Number    | Boiler water temperature                                 | yes       |
 | returntemp           | Number    | Return water temperature                                 | yes       |
-| outsidetemp          | Number    | Outside temperature                                      | yes       |
+| outsidetemp          | Number    | Outside temperature                                      | no        |
 | waterpressure        | Number    | Central heating water pressure                           | yes       |
 | ch_enable            | Switch    | Central heating enabled                                  | yes       |
 | ch_mode              | Switch    | Central heating active                                   | yes       |
@@ -70,7 +70,7 @@ The OpenTherm Gateway binding supports the following channels:
 ### demo.things
 
 ```
-Thing openthermgateway:otgw:1 [ipaddress="192.168.1.100", port=8000, connectionRetryInterval=60]
+Thing openthermgateway:otgw:1 [ ipaddress="192.168.1.100", port=8000, connectionRetryInterval=60 ]
 ```
 
 ### demo.items
@@ -101,7 +101,7 @@ Switch LockoutReset "Lockout-reset" <switch> { channel="openthermgateway:otgw:1:
 Switch LowWaterPress "Low water pressure fault" <switch> { channel="openthermgateway:otgw:1:lowwaterpress" }
 Switch GasFlameFault "Gas or flame fault" <switch> { channel="openthermgateway:otgw:1:gasflamefault" }
 Switch AirPressFault "Air pressure fault" <switch> { channel="openthermgateway:otgw:1:airpressfault" }
-Switch waterOvTemp "Water over-temperature fault" <switch> { channel="openthermgateway:otgw:1:waterovtemp" }
+Switch WaterOvTemp "Water over-temperature fault" <switch> { channel="openthermgateway:otgw:1:waterovtemp" }
 Number OemFaultCode "OEM fault code" { channel="openthermgateway:otgw:1:oemfaultcode" }
 Text SendCommand "Send command channel" { channel="openthermgateway:otgw:1:sendcommand" }
 ```
