@@ -18,7 +18,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -29,11 +28,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -245,39 +247,30 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
                             break;
                         }
                         logger.trace("READ {}", input);
-                        Properties properties = readProperties(input);
-
-                        String friendlyName = properties.getProperty("friendlyName");
-                        if (!responses.contains(friendlyName)) {
-                            responses.add(friendlyName);
-                            hubDiscovered(properties);
+                        // response format is key1:value1;key2:value2;key3:value3;
+                        Map<String, String> properties = Stream.of(input.split(";")).map(line -> line.split(":", 2))
+                                .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
+                        String friendlyName = properties.get("friendlyName");
+                        String hostName = properties.get("host_name");
+                        String ip = properties.get("ip");
+                        if (StringUtils.isNotBlank(friendlyName) && StringUtils.isNotBlank(hostName)
+                                && StringUtils.isNotBlank(ip) && !responses.contains(hostName)) {
+                            responses.add(hostName);
+                            hubDiscovered(ip, friendlyName, hostName);
                         }
                     }
-                } catch (IOException e) {
+                } catch (IOException | RuntimeException e) {
                     if (running) {
                         logger.debug("Error connecting with found hub", e);
                     }
                 }
             }
         }
-
-        private Properties readProperties(String input) throws IOException {
-            String propsString = input.replaceAll(";", "\n");
-            propsString = propsString.replaceAll(":", "=");
-            Properties properties = new Properties();
-            properties.load(new StringReader(propsString));
-            return properties;
-        }
-
     }
 
-    private void hubDiscovered(Properties properties) {
-        String ip = properties.getProperty("ip");
-        String friendlyName = properties.getProperty("friendlyName");
-        String thingId = properties.getProperty("host_name").replaceAll("[^A-Za-z0-9\\-_]", "");
-
+    private void hubDiscovered(String ip, String friendlyName, String hostName) {
+        String thingId = hostName.replaceAll("[^A-Za-z0-9\\-_]", "");
         logger.trace("Adding HarmonyHub {} ({}) at host {}", friendlyName, thingId, ip);
-
         ThingUID uid = new ThingUID(HARMONY_HUB_THING_TYPE, thingId);
         // @formatter:off
         thingDiscovered(DiscoveryResultBuilder.create(uid)
