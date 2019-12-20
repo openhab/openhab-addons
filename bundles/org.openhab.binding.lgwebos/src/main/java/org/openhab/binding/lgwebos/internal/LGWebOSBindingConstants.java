@@ -69,4 +69,5 @@ public class LGWebOSBindingConstants {
     public static final String CHANNEL_MEDIA_PLAYER = "mediaPlayer";
     public static final String CHANNEL_MEDIA_STOP = "mediaStop";
     public static final String CHANNEL_APP_LAUNCHER = "appLauncher";
+    public static final String CHANNEL_RCBUTTON = "rcButton";
 }
