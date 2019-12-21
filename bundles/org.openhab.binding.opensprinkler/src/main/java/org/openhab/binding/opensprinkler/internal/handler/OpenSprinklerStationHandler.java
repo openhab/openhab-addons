@@ -85,11 +85,12 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
     private void handleNextDurationCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof QuantityType<?>)) {
-            logger.info("Ignoring implausible non-DecimalType command for NEXT_DURATION");
+            logger.info("Ignoring implausible non-QuantityType command for NEXT_DURATION");
             return;
         }
-        this.nextDurationTime = ((QuantityType<?>) command).toBigDecimal();
-        updateState(channelUID, (DecimalType) command);
+        QuantityType<?> quantity = (QuantityType<?>) command;
+        this.nextDurationTime = quantity.toBigDecimal();
+        updateState(channelUID, quantity);
     }
 
     private void handleStationStateCommand(OpenSprinklerApi api, Command command) {
