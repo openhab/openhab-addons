@@ -110,7 +110,7 @@ Using different character sets may produce unwanted results.
 Examples:
 
 ```
-val mailActions = getActions("mail","mail:smtp:sampleserver")
+val mailActions = getActions("mail","mail:smtp:samplesmtp")
 mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
 mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
 
