@@ -50,7 +50,7 @@
 					<option value="SOCKS5">SOCKS5</option>
 					<option value="HTTP">HTTP</option>
 				</options>
-				<default>"SOCKS5"</default>
+				<default>SOCKS5</default>
 				<description>Enter your proxy type. Default: SOCKS5</description>
 			</parameter>
 		</config-description>
