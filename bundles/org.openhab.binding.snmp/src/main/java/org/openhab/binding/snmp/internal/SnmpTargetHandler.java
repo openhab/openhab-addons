@@ -209,17 +209,17 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         final PDU pdu = event.getPDU();
         final String address = ((UdpAddress) event.getPeerAddress()).getInetAddress().getHostAddress();
         final String community = new String(event.getSecurityName());
-        
-        if ((pdu.getType() == PDU.V1TRAP) && config.community.equals(community) && (pdu instanceof PDUv1)){
+
+        if ((pdu.getType() == PDU.V1TRAP) && config.community.equals(community) && (pdu instanceof PDUv1)) {
             logger.trace("{} received trap is PDUv1.", thing.getUID());
-            PDUv1 pduv1 = (PDUv1)pdu;
+            PDUv1 pduv1 = (PDUv1) pdu;
             OID oidEnterprise = pduv1.getEnterprise();
             int trapValue = pduv1.getGenericTrap();
-            if(trapValue == PDUv1.ENTERPRISE_SPECIFIC){ 
+            if (trapValue == PDUv1.ENTERPRISE_SPECIFIC) {
                 trapValue = pduv1.getSpecificTrap();
             }
-            updateChannels(oidEnterprise, new UnsignedInteger32(trapValue), trapChannelSet);     
-        }    
+            updateChannels(oidEnterprise, new UnsignedInteger32(trapValue), trapChannelSet);
+        }
         if ((pdu.getType() == PDU.TRAP || pdu.getType() == PDU.V1TRAP) && config.community.equals(community)
                 && targetAddressString.equals(address)) {
             pdu.getVariableBindings().forEach(variable -> {
