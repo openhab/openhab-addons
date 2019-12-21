@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Marcel Verpaalen - Initial contribution
  */
 public enum MiIoDevices {
-    AIR_FRESH_VENTILATOR("dmaker.airfresh.t2017", "MiJia Fresh Air Ventilator", THING_TYPE_BASIC),
     AIRCONDITION_A1("aux.aircondition.v1", "AUX Air Conditioner", THING_TYPE_UNSUPPORTED),
     AIRCONDITION_I1("idelan.aircondition.v1", "Idelan Air Conditioner", THING_TYPE_UNSUPPORTED),
     AIRCONDITION_M1("midea.aircondition.v1", "Midea Air Conditioner v2", THING_TYPE_UNSUPPORTED),
@@ -46,7 +45,7 @@ public enum MiIoDevices {
     AIR_PURIFIERMA4("zhimi.airpurifier.ma4", "Mi Air Purifier 3", THING_TYPE_BASIC),
     AIR_PURIFIERSA1("zhimi.airpurifier.sa1", "Mi Air Purifier Super", THING_TYPE_BASIC),
     AIR_PURIFIERSA2("zhimi.airpurifier.sa2", "Mi Air Purifier Super 2", THING_TYPE_BASIC),
-    AIRPURIFIER_T2017("dmaker.airfresh.t2017", "Mi Fresh Air Ventilator", THING_TYPE_UNSUPPORTED),
+    AIRPURIFIER_T2017("dmaker.airfresh.t2017", "Mi Fresh Air Ventilator", THING_TYPE_BASIC),
     ALARM_CLOCK_MYK01("zimi.clock.myk01", "Xiao AI Smart Alarm Clock", THING_TYPE_UNSUPPORTED),
     BATHHEATER_V2("yeelight.bhf_light.v2", "Yeelight Smart Bath Heater", THING_TYPE_UNSUPPORTED),
     DEHUMIDIFIER_FW1("nwt.derh.wdh318efw1", "XIAOMI MIJIA WIDETECH WDH318EFW1 Dehumidifier", THING_TYPE_UNSUPPORTED),
