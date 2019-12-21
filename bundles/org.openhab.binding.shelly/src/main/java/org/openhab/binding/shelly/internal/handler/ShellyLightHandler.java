@@ -349,6 +349,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, getOnOff(light.ison));
             updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(light.autoOn));
             updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(light.autoOff));
+            updated |= updateInputs(controlGroup, genericStatus, lightId);
             if (getBool(light.overpower)) {
                 postAlarm(ALARM_TYPE_OVERPOWER, false);
             }

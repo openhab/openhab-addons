@@ -410,6 +410,7 @@ public class ShellyApiJson {
         public String mac;
         public ArrayList<ShellySettingsRelay> relays;
         public ArrayList<ShellySettingsRoller> rollers;
+        public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellyInputState> inputs;
         public ArrayList<ShellySettingsLight> lights;
         public ArrayList<ShellyShortLightStatus> dimmers;

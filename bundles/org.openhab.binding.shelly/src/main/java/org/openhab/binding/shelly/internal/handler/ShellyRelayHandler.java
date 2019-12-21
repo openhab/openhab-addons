@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyControlRoller;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyInputState;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsRoller;
@@ -429,34 +428,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
                 updated |= updateInputs(groupName, orgStatus, l);
                 l++;
-            }
-        }
-        return updated;
-    }
-
-    /**
-     * Map input states to channels
-     *
-     * @param groupName Channel Group (relay / relay1...)
-     *
-     * @param status Shelly device status
-     * @return true: one or more inputs were updated
-     */
-    @SuppressWarnings("null")
-    private boolean updateInputs(String groupName, ShellySettingsStatus status, int index) {
-        boolean updated = false;
-        if (status.inputs != null) {
-            if (profile.isDimmer || profile.isRoller) {
-                ShellyInputState state1 = status.inputs.get(0);
-                ShellyInputState state2 = status.inputs.get(1);
-                logger.trace("{}: Updating {}#input1 with {}, input2 with {}", thingName, groupName,
-                        getOnOff(state1.input), getOnOff(state2.input));
-                updated |= updateChannel(groupName, CHANNEL_INPUT + "1", getOnOff(state1.input));
-                updated |= updateChannel(groupName, CHANNEL_INPUT + "2", getOnOff(state2.input));
-            } else {
-                ShellyInputState state = status.inputs.get(index);
-                logger.trace("{}: Updating input[{}] with {}", thingName, index, getOnOff(state.input));
-                updated |= updateChannel(groupName, CHANNEL_INPUT, getOnOff(state.input));
             }
         }
         return updated;

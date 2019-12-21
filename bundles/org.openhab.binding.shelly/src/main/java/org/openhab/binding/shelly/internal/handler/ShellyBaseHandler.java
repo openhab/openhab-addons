@@ -29,6 +29,7 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
@@ -40,6 +41,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyInputState;
 import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
@@ -629,6 +631,39 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             return true;
         }
         return false;
+    }
+
+    /**
+     * Map input states to channels
+     *
+     * @param groupName Channel Group (relay / relay1...)
+     *
+     * @param status Shelly device status
+     * @return true: one or more inputs were updated
+     */
+    @SuppressWarnings({ "null", "unused" })
+    public boolean updateInputs(String groupName, ShellySettingsStatus status, int index) {
+        boolean updated = false;
+        if ((status.input != null) && (index == 0)) {
+            // RGBW2: a single int rather than an array
+            logger.trace("{}: Updating input with {}", thingName, getInteger(status.input));
+            updated |= updateChannel(groupName, CHANNEL_INPUT,
+                    getInteger(status.input) == 0 ? OnOffType.OFF : OnOffType.ON);
+        } else if (status.inputs != null) {
+            if (profile.isDimmer || profile.isRoller) {
+                ShellyInputState state1 = status.inputs.get(0);
+                ShellyInputState state2 = status.inputs.get(1);
+                logger.trace("{}: Updating {}#input1 with {}, input2 with {}", thingName, groupName,
+                        getOnOff(state1.input), getOnOff(state2.input));
+                updated |= updateChannel(groupName, CHANNEL_INPUT + "1", getOnOff(state1.input));
+                updated |= updateChannel(groupName, CHANNEL_INPUT + "2", getOnOff(state2.input));
+            } else {
+                ShellyInputState state = status.inputs.get(index);
+                logger.trace("{}: Updating input[{}] with {}", thingName, index, getOnOff(state.input));
+                updated |= updateChannel(groupName, CHANNEL_INPUT, getOnOff(state.input));
+            }
+        }
+        return updated;
     }
 
     /**
