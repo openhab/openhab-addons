@@ -13,7 +13,6 @@
 package org.openhab.binding.tplinksmarthome.internal.device;
 
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.HS300;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,11 +21,12 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tplinksmarthome.internal.Commands;
+import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
 import org.openhab.binding.tplinksmarthome.internal.model.Realtime;
 import org.openhab.binding.tplinksmarthome.internal.model.Sysinfo.Outlet;
 import org.slf4j.Logger;
@@ -45,14 +45,9 @@ public class PowerStripDevice extends EnergySwitchDevice {
     private final List<@Nullable Realtime> realTimeCacheList;
     private final List<@Nullable String> childIds;
 
-    public PowerStripDevice(ThingTypeUID thingTypeUID) {
-        final int nrOfSockets;
+    public PowerStripDevice(final TPLinkSmartHomeThingType type) {
+        final int nrOfSockets = type.getSockets();
 
-        if (HS300.is(thingTypeUID)) {
-            nrOfSockets = 6;
-        } else {
-            nrOfSockets = 2;
-        }
         realTimeCacheList = new ArrayList<>(nrOfSockets);
         childIds = new ArrayList<>(Collections.nCopies(nrOfSockets, ""));
     }
@@ -63,7 +58,7 @@ public class PowerStripDevice extends EnergySwitchDevice {
     }
 
     @Override
-    public void refreshedDeviceState(@Nullable DeviceState deviceState) {
+    public void refreshedDeviceState(@Nullable final DeviceState deviceState) {
         if (deviceState != null) {
             for (int i = 0; i < childIds.size(); i++) {
                 childIds.set(i, deviceState.getSysinfo().getChildren().get(i).getId());
@@ -73,7 +68,18 @@ public class PowerStripDevice extends EnergySwitchDevice {
     }
 
     @Override
-    public State updateChannel(ChannelUID channelUid, DeviceState deviceState) {
+    protected State getOnOffState(final DeviceState deviceState) {
+        // Global On/Off state is determined by the combined state of all sockets. If 1 socket is on, the state is on.
+        for (int i = 0; i < childIds.size(); i++) {
+            if (OnOffType.ON.equals(deviceState.getSysinfo().getChildren().get(i).getState())) {
+                return OnOffType.ON;
+            }
+        }
+        return OnOffType.OFF;
+    }
+
+    @Override
+    public State updateChannel(final ChannelUID channelUid, final DeviceState deviceState) {
         final int idx = channelToIndex(channelUid);
 
         if (idx >= 0 && idx < childIds.size()) {
@@ -97,7 +103,7 @@ public class PowerStripDevice extends EnergySwitchDevice {
     }
 
     @Override
-    protected @Nullable String getChildId(ChannelUID channelUid) {
+    protected @Nullable String getChildId(final ChannelUID channelUid) {
         final int idx = channelToIndex(channelUid);
 
         return idx >= 0 && idx < childIds.size() ? childIds.get(idx) : null;
@@ -111,15 +117,15 @@ public class PowerStripDevice extends EnergySwitchDevice {
                 : 0) - 1;
     }
 
-    private @Nullable Realtime refreshCache(int idx) {
+    private @Nullable Realtime refreshCache(final int idx) {
         try {
             final String childId = childIds.get(idx);
 
             return childId == null ? null
                     : commands.getRealtimeResponse(connection.sendCommand(Commands.getRealtimeWithContext(childId)));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return null;
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             logger.debug(
                     "Obtaining realtime data for channel-'{}' unexpectedly crashed. If this keeps happening please report: ",
                     idx, e);
