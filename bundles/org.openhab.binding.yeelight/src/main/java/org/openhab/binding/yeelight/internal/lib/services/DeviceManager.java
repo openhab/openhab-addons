@@ -166,7 +166,7 @@ public class DeviceManager {
                                 logger.debug("{}: got message: {}", TAG, receivedMessage);
                                 // we can skip the request because we aren't interested in our own search broadcast
                                 // message.
-                                if ((receivedMessage.startsWith("M-SEARCH"))) {
+                                if (receivedMessage.startsWith("M-SEARCH")) {
                                     continue;
                                 }
 
