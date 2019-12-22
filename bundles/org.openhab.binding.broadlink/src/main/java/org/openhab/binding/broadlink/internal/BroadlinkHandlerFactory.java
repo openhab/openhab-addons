@@ -45,7 +45,7 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(BroadlinkHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream.of(FLOUREON_THERMOSTAT_THING_TYPE, HYSEN_THERMOSTAT_THING_TYPE, A1_ENVIRONMENTAL_SENSOR_THING_TYPE, UNKNOWN_BROADLINK_THING_TYPE).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(FLOUREON_THERMOSTAT_THING_TYPE, HYSEN_THERMOSTAT_THING_TYPE, A1_ENVIRONMENTAL_SENSOR_THING_TYPE, RM_MINI_THING_TYPE, UNKNOWN_BROADLINK_THING_TYPE).collect(Collectors.toSet()));
     private static final Map<String, BroadlinkHandler> BROADLINK_THING_HANDLERS = new HashMap<>();
 
     @Override
@@ -59,7 +59,9 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
 
         if(FLOUREON_THERMOSTAT_THING_TYPE.equals(thingTypeUID) || HYSEN_THERMOSTAT_THING_TYPE.equals(thingTypeUID)) {
             return new FloureonThermostatHandler(thing);
-        }else if(HYSEN_THERMOSTAT_THING_TYPE.equals(thingTypeUID)) {
+        }else if(A1_ENVIRONMENTAL_SENSOR_THING_TYPE.equals(thingTypeUID)) {
+            return new A1EnvironmentalSensorHandler(thing);
+        }else if(RM_MINI_THING_TYPE.equals(thingTypeUID)) {
             return new A1EnvironmentalSensorHandler(thing);
         }
 

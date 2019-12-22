@@ -44,6 +44,8 @@ public class BroadlinkBindingConstants {
     public static final String ACTIVE = "active";
     public static final String REMOTE_LOCK = "remotelock";
     public static final String TIME = "time";
+    public static final String IR_RF_COMMAND = "irrfcommand";
+
 
 
     public static final String AIR_QUALITY = "airquality";

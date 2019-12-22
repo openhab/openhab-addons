@@ -68,6 +68,7 @@
 		<label>RM Mini</label>
 		<description>TODO</description>
 		<channels>
+			<channel id="command" typeId="command" />
 			<channel id="temperature" typeId="temperature" />
 		</channels>
 		<representation-property>host</representation-property>
@@ -170,6 +171,11 @@
 		<label>Time</label>
 		<description>The time and day of week</description>
 	</channel-type>
-
+	<channel-type id="irrfcommand">
+		<item-type>String</item-type>
+		<label>IR/RF Command</label>
+		<description>The IR/RF command sent to the device</description>
+		<category>Text</category>
+	</channel-type>
 
 </thing:thing-descriptions>

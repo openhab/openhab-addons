@@ -84,7 +84,9 @@ public abstract class BroadlinkHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing thing {}", getThing().getUID());
-        scanJob.cancel(true);
+        if(scanJob != null) {
+            scanJob.cancel(true);
+        }
         logger.debug("Thing {} disposed", getThing().getUID());
     }
 

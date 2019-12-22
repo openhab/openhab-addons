@@ -162,7 +162,6 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService {
      *
      * @return local ip or <code>empty</code> if configured primary IP is not set or could not be parsed.
      */
-    @NonNullByDefault({})
     private Optional<InetAddress> getIpFromNetworkAddressService() {
         NetworkAddressService service = networkAddressService;
         if (service == null) {
