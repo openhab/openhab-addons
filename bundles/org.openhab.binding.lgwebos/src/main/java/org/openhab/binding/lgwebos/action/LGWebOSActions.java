@@ -237,6 +237,12 @@ public class LGWebOSActions implements ThingActions {
         getConnectedSocket().ifPresent(control -> control.channelDown(createResponseListener()));
     }
 
+    @RuleAction(label = "@text/actionSendRCButtonLabel", description = "@text/actionSendRCButtonDesc")
+    public void sendRCButton(
+            @ActionInput(name = "text", label = "@text/actionSendRCButtonInputTextLabel", description = "@text/actionSendRCButtonInputTextDesc") String rcButton) {
+        getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(rcButton)));
+    }
+
     private Optional<LGWebOSTVSocket> getConnectedSocket() {
         LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
         final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
