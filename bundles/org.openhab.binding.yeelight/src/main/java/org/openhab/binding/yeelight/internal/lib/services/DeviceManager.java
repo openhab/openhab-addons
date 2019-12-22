@@ -190,7 +190,6 @@ public class DeviceManager {
                                         logger.warn("Found unsupported device.");
                                         continue;
                                     }
-                                    stopDiscovery();
                                     device.setDeviceName(bulbInfo.getOrDefault("name", ""));
 
                                     if (mDeviceList.containsKey(device.getDeviceId())) {
