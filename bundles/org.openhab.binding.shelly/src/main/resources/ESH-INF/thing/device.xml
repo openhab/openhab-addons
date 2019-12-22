@@ -11,6 +11,8 @@
 			<channel id="uptime" typeId="uptime" />
 			<channel id="wifiSignal" typeId="system.signal-strength" />
 			<channel id="alarm" typeId="alarmTrigger" />
+			<channel id="timeoutErrors" typeId="timeoutErrors" />
+			<channel id="timeoutsRecovered" typeId="timeoutsRecovered" />
 		</channels>
 	</channel-group-type>
 

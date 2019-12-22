@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link ShellyApiJson} is used for the JSon/GSon mapping
+ * The {@link ShellyApiJsonDTO} is used for the JSon/GSon mapping
  *
  * @author Markus Michels - Initial contribution
  */
-public class ShellyApiJson {
+public class ShellyApiJsonDTO {
 
     public static final String SHELLY_API_ON = "on";
     public static final String SHELLY_API_OFF = "off";

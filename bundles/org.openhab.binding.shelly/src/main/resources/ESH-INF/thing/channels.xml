@@ -353,4 +353,20 @@
 			</options>
 		</event>
 	</channel-type>
+
+	<channel-type id="timeoutErrors" advanced="true">
+		<item-type>Number</item-type>
+		<label>Timeouts</label>
+		<description>Number of timeouts while accessing the device API</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="timeoutsRecovered" advanced="true">
+		<item-type>Number</item-type>
+		<label>Timeouts recovered</label>
+		<description>Number of device API timeouts, which could be recovered</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>

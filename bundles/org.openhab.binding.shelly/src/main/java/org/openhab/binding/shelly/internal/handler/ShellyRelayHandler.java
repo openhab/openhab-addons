@@ -15,7 +15,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 
 import java.io.IOException;
 
@@ -33,15 +33,15 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyControlRoller;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsDimmer;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsRoller;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyShortStatusRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusRelay;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyControlRoller;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDimmer;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRoller;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortStatusRelay;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
@@ -390,7 +390,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             // the same structure as lights[] from Bulb and RGBW2. The tag gets replaced by dimmers[] so that Gson maps
             // to a different structure (ShellyShortLight).
             Gson gson = new Gson();
-            ShellySettingsStatus dstatus = gson.fromJson(ShellyApiJson.fixDimmerJson(orgStatus.json),
+            ShellySettingsStatus dstatus = gson.fromJson(ShellyApiJsonDTO.fixDimmerJson(orgStatus.json),
                     ShellySettingsStatus.class);
             Validate.notNull(dstatus.dimmers, "dstatus.dimmers must not be null!");
             Validate.notNull(dstatus.tmp, "dstatus.tmp must not be null!");
@@ -409,12 +409,12 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 // and send a OFF status to the same channel.
                 // When the device's brightness is > 0 we send the new value to the channel and a ON command
                 if (dimmer.ison) {
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, OnOffType.ON);
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, toQuantityType(
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value", toQuantityType(
                             new Double(getInteger(dimmer.brightness)), DIGITS_NONE, SmartHomeUnits.PERCENT));
                 } else {
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS, OnOffType.OFF);
-                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS,
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.OFF);
+                    updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
                             toQuantityType(new Double(0), DIGITS_NONE, SmartHomeUnits.PERCENT));
                 }
 

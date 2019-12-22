@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -29,16 +29,16 @@ import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyControlRoller;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySendKeyList;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySenseKeyCode;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsDevice;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsLight;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusLight;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusRelay;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyControlRoller;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySendKeyList;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySenseKeyCode;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLight;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLight;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +56,8 @@ public class ShellyHttpApi {
     private final Logger logger = LoggerFactory.getLogger(ShellyHttpApi.class);
     private final ShellyThingConfiguration config;
     private final String thingName = "";
+    private int timeoutErrors = 0;
+    private int timeoutsRecovered = 0;
     private Gson gson = new Gson();
 
     private @Nullable ShellyDeviceProfile profile;
@@ -136,8 +138,10 @@ public class ShellyHttpApi {
     }
 
     public void setDimmerBrightness(Integer relayIndex, Integer brightness) throws IOException {
-        request(SHELLY_URL_CONTROL_LIGHT + "/" + relayIndex.toString() + "?" + SHELLY_LIGHT_TURN + "=" + SHELLY_API_ON
-                + "&brightness=" + brightness.toString());
+        // request(SHELLY_URL_CONTROL_LIGHT + "/" + relayIndex.toString() + "?" + SHELLY_LIGHT_TURN + "=" +
+        // SHELLY_API_ON
+        // + "&brightness=" + brightness.toString());
+        request(SHELLY_URL_CONTROL_LIGHT + "/" + relayIndex.toString() + "?" + "&brightness=" + brightness.toString());
     }
 
     @Nullable
@@ -459,40 +463,68 @@ public class ShellyHttpApi {
      * @param uri: URI (e.g. "/settings")
      */
     private String request(String uri) throws IOException {
-        String httpResponse = "ERROR";
-        String url = "http://" + config.deviceIp + uri;
-        // boolean acquired = false;
+        String result = "";
+        boolean retry = false;
         try {
-            logger.trace("HTTP GET for {}: {}", thingName, url);
-
-            Properties headers = new Properties();
-            if (!config.userId.isEmpty()) {
-                String value = config.userId + ":" + config.password;
-                headers.put(HTTP_HEADER_AUTH,
-                        HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(value.getBytes()));
-            }
-
-            httpResponse = HttpUtil.executeUrl(HttpMethod.GET, url, headers, null, "", SHELLY_API_TIMEOUT_MS);
-            Validate.notNull(httpResponse, "httpResponse must not be null");
-            // all api responses are returning the result in Json format. If we are getting
-            // something else it must
-            // be an error message, e.g. http result code
-            if (httpResponse.contains(APIERR_HTTP_401_UNAUTHORIZED)) {
-                throw new IOException(
-                        APIERR_HTTP_401_UNAUTHORIZED + ", set/correct userid and password in the thing/binding config");
-            }
-            if (!httpResponse.startsWith("{") && !httpResponse.startsWith("[")) {
-                throw new IOException("Unexpected http response: " + httpResponse);
-            }
-
-            logger.trace("HTTP response from {}: {}", thingName, httpResponse);
-            return httpResponse;
+            result = innerRequest(uri);
         } catch (IOException e) {
             if (e.getMessage().contains("Timeout")) {
-                throw new IOException("Shelly API call failed: Timeout (" + SHELLY_API_TIMEOUT_MS + " ms)");
+                timeoutErrors++;
+                retry = true;
             } else {
-                throw new IOException("Shelly API call failed: " + e.getMessage() + ", url=" + url);
+                throw new IOException("Shelly API call failed: " + e.getMessage() + ", uri=" + uri);
             }
         }
+        if (retry) {
+            try {
+                // retry to recover
+                result = innerRequest(uri);
+                timeoutsRecovered++;
+            } catch (IOException e) {
+                if (e.getMessage().contains("Timeout")) {
+                    throw new IOException("Shelly API timeout, uri=" + uri);
+                } else {
+                    throw new IOException("Shelly API call failed: " + e.getMessage() + ", uri=" + uri);
+                }
+            }
+        }
+        return result;
+    }
+
+    private String innerRequest(String uri) throws IOException {
+        String httpResponse = "ERROR";
+        String url = "http://" + config.deviceIp + uri;
+        logger.trace("HTTP GET for {}: {}", thingName, url);
+
+        Properties headers = new Properties();
+        if (!config.userId.isEmpty()) {
+            String value = config.userId + ":" + config.password;
+            headers.put(HTTP_HEADER_AUTH,
+                    HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(value.getBytes()));
+        }
+
+        httpResponse = HttpUtil.executeUrl(HttpMethod.GET, url, headers, null, "", SHELLY_API_TIMEOUT_MS);
+        Validate.notNull(httpResponse, "httpResponse must not be null");
+        // all api responses are returning the result in Json format. If we are getting
+        // something else it must
+        // be an error message, e.g. http result code
+        if (httpResponse.contains(APIERR_HTTP_401_UNAUTHORIZED)) {
+            throw new IOException(
+                    APIERR_HTTP_401_UNAUTHORIZED + ", set/correct userid and password in the thing/binding config");
+        }
+        if (!httpResponse.startsWith("{") && !httpResponse.startsWith("[")) {
+            throw new IOException("Unexpected http response: " + httpResponse);
+        }
+
+        logger.trace("HTTP response from {}: {}", thingName, httpResponse);
+        return httpResponse;
+    }
+
+    public int getTimeoutErrors() {
+        return timeoutErrors;
+    }
+
+    public int getTimeoutsRecovered() {
+        return timeoutsRecovered;
     }
 }

@@ -23,11 +23,11 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 /**
- * The {@link ShellyCoapJSon} helps the CoIoT Json into Java objects
+ * The {@link ShellyCoapJSonDTO} helps the CoIoT Json into Java objects
  *
  * @author Markus Michels - Initial contribution
  */
-public class ShellyCoapJSon {
+public class ShellyCoapJSonDTO {
 
     public static final String COIOT_TAG_BLK = "blk";
     public static final String COIOT_TAG_SEN = "sen";

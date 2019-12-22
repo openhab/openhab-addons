@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 
 import java.math.BigDecimal;
 
