@@ -44,7 +44,9 @@ public class State {
     private DoubleState wHRating;
 
     /** SHC device states */
-    private StringState updateAvailable;
+    // Removed updateAvailable because it is different between version 1 and 2 devices and not used anyway
+    // Related to openhab-addons #6613
+    // private StringState updateAvailable
 
     private DateTimeState lastReboot;
 
@@ -172,20 +174,6 @@ public class State {
      */
     public void setWHRating(DoubleState wHRating) {
         this.wHRating = wHRating;
-    }
-
-    /**
-     * @return the updateAvailable
-     */
-    public StringState getUpdateAvailable() {
-        return updateAvailable;
-    }
-
-    /**
-     * @param updateAvailable the updateAvailable to set
-     */
-    public void setUpdateAvailable(StringState updateAvailable) {
-        this.updateAvailable = updateAvailable;
     }
 
     /**
