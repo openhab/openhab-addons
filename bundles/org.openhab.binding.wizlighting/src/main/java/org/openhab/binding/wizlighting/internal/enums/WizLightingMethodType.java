@@ -26,7 +26,9 @@ public enum WizLightingMethodType {
     /** setPilot */
     setPilot("setPilot"),
     /** setSystemConfig */
-    setSystemConfig("setSystemConfig");
+    setSystemConfig("setSystemConfig"),
+    /** firstBeat */
+    firstBeat("firstBeat");
 
     private String method;
 

@@ -27,8 +27,8 @@ public class ColorRequestParam extends DimmingRequestParam {
     private int b; // blue 0-255
     private int g; // green 0-255
     private int r; // red 0-255
-    private int w; // brightness
-    private int c; // not sure 0-255
+    private int w; // warm white LED's 0-255
+    private int c; // cool white LED's 0-255
 
     public ColorRequestParam(HSBType color) {
         super(color.getBrightness());

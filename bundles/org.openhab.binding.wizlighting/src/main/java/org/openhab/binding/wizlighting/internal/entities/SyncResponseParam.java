@@ -26,6 +26,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class SyncResponseParam implements Param {
     public @Nullable String mac;
+    public int rssi;
+    public @Nullable String src;
+    public int mqttCd;
     public boolean state;
     public int sceneId;
     public boolean play;
@@ -37,7 +40,7 @@ public class SyncResponseParam implements Param {
     public int w;
     public int dimming;
     public int temp;
-    public int rssi;
+    public int schdPsetId;
 
     public PercentType getTemperatureColor() {
         return new PercentType((temp - 2200) / (6500 - 2200) * 100);
