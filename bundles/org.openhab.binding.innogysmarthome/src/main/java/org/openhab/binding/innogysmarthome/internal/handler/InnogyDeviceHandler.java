@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -389,7 +390,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             }
 
             // CAPABILITY STATES
-            for (final Capability c : device.getCapabilityMap().values()) {
+            for (final Entry<String, Capability> entry : device.getCapabilityMap().entrySet()) {
+                final Capability c = entry.getValue();
+
                 logger.debug("->capability:{} ({}/{})", c.getId(), c.getType(), c.getName());
 
                 if (c.getCapabilityState() == null) {
@@ -420,11 +423,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         final Integer dimLevel = c.getCapabilityState().getDimmerActuatorState();
                         if (dimLevel != null) {
                             logger.debug("Dimlevel state {}", dimLevel);
-                            if (dimLevel > 0) {
-                                updateState(CHANNEL_DIMMER, OnOffType.ON);
-                            } else {
-                                updateState(CHANNEL_DIMMER, OnOffType.OFF);
-                            }
                             updateState(CHANNEL_DIMMER, new PercentType(dimLevel));
                         } else {
                             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
@@ -436,11 +434,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         if (rollerShutterLevel != null) {
                             rollerShutterLevel = invertValueIfConfigured(CHANNEL_ROLLERSHUTTER, rollerShutterLevel);
                             logger.debug("RollerShutterlevel state {}", rollerShutterLevel);
-                            if (rollerShutterLevel > 0) {
-                                updateState(CHANNEL_ROLLERSHUTTER, UpDownType.DOWN);
-                            } else {
-                                updateState(CHANNEL_ROLLERSHUTTER, UpDownType.UP);
-                            }
                             updateState(CHANNEL_ROLLERSHUTTER, new PercentType(rollerShutterLevel));
                         } else {
                             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
