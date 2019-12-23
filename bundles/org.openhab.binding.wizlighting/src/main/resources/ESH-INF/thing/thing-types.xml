@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="wizlighting"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Socket Thing Type -->
+	<!-- Sample Thing Type -->
 	<thing-type id="wizBulb">
 		<label>Wiz Lighting Bulb</label>
-		<description>Supports Wiz Lighting Bulb.</description>
+		<description>Supports Wiz Lighting Bulbs</description>
 
 		<channels>
 			<channel id="switch" typeId="switch" />
@@ -38,7 +38,7 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Socket type Channel Type -->
+	<!-- Bulb Channel Types -->
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
