@@ -13,6 +13,7 @@
 package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This POJO represents one Wiz Lighting UDP Response
@@ -24,8 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class WizLightingResponse {
 
     private int id;
-    private String method;
-    private Param param;
+    private @Nullable String method;
+    private @Nullable Param param;
 
     public int getId() {
         return id;
@@ -35,7 +36,7 @@ public class WizLightingResponse {
         this.id = id;
     }
 
-    public String getMethod() {
+    public @Nullable String getMethod() {
         return method;
     }
 
@@ -43,7 +44,7 @@ public class WizLightingResponse {
         this.method = method;
     }
 
-    public Param getParam() {
+    public @Nullable Param getParam() {
         return param;
     }
 

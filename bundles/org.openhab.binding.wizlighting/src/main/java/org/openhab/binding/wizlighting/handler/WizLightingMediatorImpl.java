@@ -26,6 +26,7 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link WizLightingMediatorImpl} is responsible for receiving all the sync packets and route correctly to
@@ -40,10 +41,10 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
 
     private final Map<Thing, WizLightingHandler> handlersRegisteredByThing = new HashMap<>();
 
-    private WizLightingUpdateReceiverRunnable receiver;
-    private Thread receiverThread;
+    private @Nullable WizLightingUpdateReceiverRunnable receiver;
+    private @Nullable Thread receiverThread;
 
-    private WizLightingDiscoveryService wizlightingDiscoveryService;
+    private @Nullable WizLightingDiscoveryService wizlightingDiscoveryService;
 
     /**
      * Called at the service activation.
@@ -61,8 +62,9 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      * @param componentContext the componentContext
      */
     protected void deactivate(final ComponentContext componentContext) {
-        if (this.receiver != null) {
-            this.receiver.shutdown();
+        WizLightingUpdateReceiverRunnable receiver = this.receiver;
+        if (receiver != null) {
+            receiver.shutdown();
         }
     }
 
@@ -77,6 +79,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
         logger.debug("Received packet from: {} with content: [{}]", receivedMessage.getBulbIpAddress(),
                 receivedMessage.getMethod());
 
+        @Nullable
         WizLightingHandler handler = this.getHandlerRegisteredByMac(receivedMessage.getBulbMacAddress());
 
         if (handler != null) {
@@ -107,11 +110,11 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      */
     @Override
     public void unregisterWizBulbHandlerByThing(final Thing thing) {
+        @Nullable
         WizLightingHandler handler = this.handlersRegisteredByThing.get(thing);
         if (handler != null) {
             this.handlersRegisteredByThing.remove(thing);
         }
-
     }
 
     /**
@@ -137,13 +140,15 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      * packets from Wiz Bulbs, and redirect the messages to mediator.
      */
     private void initMediatorWizBulbUpdateReceiverRunnable() {
+        WizLightingUpdateReceiverRunnable receiver = this.receiver;
+        Thread receiverThread = this.receiverThread;
         // try with handler port if is null
-        if ((this.receiver == null) || ((this.receiverThread != null)
-                && (this.receiverThread.isInterrupted() || !this.receiverThread.isAlive()))) {
+        if ((receiver == null) || ((receiverThread != null)
+                && (receiverThread.isInterrupted() || !receiverThread.isAlive()))) {
             try {
                 this.receiver = new WizLightingUpdateReceiverRunnable(this,
                         WizLightingBindingConstants.LISTENER_DEFAULT_UDP_PORT);
-                this.receiverThread = new Thread(this.receiver);
+                this.receiverThread = new Thread(receiver);
                 this.receiverThread.start();
                 logger.debug("Invoked the start of receiver thread.");
             } catch (SocketException e) {
@@ -163,8 +168,11 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     }
 
     @Override
-    public void setDiscoveryService(final WizLightingDiscoveryService discoveryService) {
+    public void setDiscoveryService(final @Nullable WizLightingDiscoveryService discoveryService) {
         this.wizlightingDiscoveryService = discoveryService;
+    }
 
+    public @Nullable WizLightingDiscoveryService getDiscoveryService() {
+        return this.wizlightingDiscoveryService;
     }
 }

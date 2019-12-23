@@ -50,10 +50,13 @@ import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidException;
 import org.openhab.binding.wizlighting.internal.utils.ImageUtils;
+import org.openhab.binding.wizlighting.internal.utils.ValidationUtils;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link WizLightingHandler} is responsible for handling commands, which are
@@ -72,7 +75,7 @@ public class WizLightingHandler extends BaseThingHandler {
     private Long updateInterval = WizLightingBindingConstants.DEFAULT_REFRESH_INTERVAL;
 
     private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
-    private ScheduledFuture<?> keepAliveJob;
+    private @Nullable ScheduledFuture<?> keepAliveJob;
     private long latestUpdate = -1;
     private RegistrationRequestParam registrationInfo;
     private int requestId = 0;
@@ -83,7 +86,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * @param thing the thing of the handler.
      * @throws MacAddressNotValidException if the mac address isn't valid.
      */
-    public WizLightingHandler(final Thing thing, final String myAddress, final String myMacAddress)
+    public WizLightingHandler(final Thing thing, final @Nullable String myAddress, final @Nullable String myMacAddress)
             throws MacAddressNotValidException {
         super(thing);
 
@@ -144,10 +147,10 @@ public class WizLightingHandler extends BaseThingHandler {
     @Override
     public void handleRemoval() {
         // stop update thread
+        ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
         if (keepAliveJob == null) {
             return;
         }
-
         keepAliveJob.cancel(true);
         super.handleRemoval();
     }
@@ -156,6 +159,8 @@ public class WizLightingHandler extends BaseThingHandler {
      * Starts one thread that querys the state of the socket, after the defined refresh interval.
      */
     private void initGetStatusAndKeepAliveThread() {
+
+        ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
         if (keepAliveJob != null) {
             keepAliveJob.cancel(true);
         }
@@ -215,29 +220,31 @@ public class WizLightingHandler extends BaseThingHandler {
     public void newReceivedResponseMessage(final WizLightingSyncResponse receivedMessage) {
         SyncResponseParam params = receivedMessage.getParams();
 
-        // update on-off switch channel
-        updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, OnOffType.from(params.state));
+        if (params != null) {
+            // update on-off switch channel
+            updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, OnOffType.from(params.state));
 
-        // update scene channel
-        updateState(WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID, new StringType(String.valueOf(params.sceneId)));
+            // update scene channel
+            updateState(WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID, new StringType(String.valueOf(params.sceneId)));
 
-        // update speed channel
-        updateState(WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID, new PercentType(params.speed));
+            // update speed channel
+            updateState(WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID, new PercentType(params.speed));
 
-        // check whether the bulb sent temperature
-        HSBType colorHSB = null;
-        if (params.temp != 0) {
-            Color color = ImageUtils.getRGBFromK(params.temp);
-            colorHSB = HSBType.fromRGB(color.getRed(), color.getGreen(), color.getBlue());
-        } else {
-            colorHSB = HSBType.fromRGB(params.r, params.g, params.b);
+            // check whether the bulb sent temperature
+            HSBType colorHSB = null;
+            if (params.temp != 0) {
+                Color color = ImageUtils.getRGBFromK(params.temp);
+                colorHSB = HSBType.fromRGB(color.getRed(), color.getGreen(), color.getBlue());
+            } else {
+                colorHSB = HSBType.fromRGB(params.r, params.g, params.b);
+            }
+
+            // update color channel
+            updateState(WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID, colorHSB);
+
+            updateStatus(ThingStatus.ONLINE);
+            latestUpdate = System.currentTimeMillis();
         }
-
-        // update color channel
-        updateState(WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID, colorHSB);
-
-        updateStatus(ThingStatus.ONLINE);
-        latestUpdate = System.currentTimeMillis();
     }
 
     /**
@@ -246,9 +253,8 @@ public class WizLightingHandler extends BaseThingHandler {
      * @param configuration The {@link Configuration}
      */
     private void savebulbIpAddressFromConfiguration(final Configuration configuration) {
-        if ((configuration != null) && (configuration.get(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG) != null)) {
-            bulbIpAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG));
-        }
+        bulbIpAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG));
+        logger.info("Bulb IP Address set to '{}'", bulbIpAddress);
     }
 
     /**
@@ -258,8 +264,7 @@ public class WizLightingHandler extends BaseThingHandler {
      */
     private void saveUpdateIntervalFromConfiguration(final Configuration configuration) {
         updateInterval = WizLightingBindingConstants.DEFAULT_REFRESH_INTERVAL;
-        if ((configuration != null)
-                && (configuration.get(WizLightingBindingConstants.UPDATE_INTERVAL_ARG) instanceof BigDecimal)
+        if ((configuration.get(WizLightingBindingConstants.UPDATE_INTERVAL_ARG) instanceof BigDecimal)
                 && (((BigDecimal) configuration.get(WizLightingBindingConstants.UPDATE_INTERVAL_ARG))
                         .longValue() > 0)) {
             updateInterval = ((BigDecimal) configuration.get(WizLightingBindingConstants.UPDATE_INTERVAL_ARG))
@@ -268,34 +273,32 @@ public class WizLightingHandler extends BaseThingHandler {
     }
 
     /**
-     * Saves the mac address from configuration in field.
+     * Saves the bulb's mac address from configuration in field.
      *
      * @param configuration The {@link Configuration}
      */
     private void savebulbMacAddressFromConfiguration(final Configuration configuration) throws MacAddressNotValidException {
-        if ((configuration != null) && (configuration.get(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG) != null)) {
-            String bulbMacAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG));
+        String bulbMacAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG));
 
-            if (bulbMacAddress == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.UNINITIALIZED.NONE);
-                throw new MacAddressNotValidException("The given MAC address is not valid: {}", bulbMacAddress);
-            }
-
+        if (ValidationUtils.isMacNotValid(bulbMacAddress)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.UNINITIALIZED.NONE);
+            throw new MacAddressNotValidException("The given MAC address is not valid: {}", bulbMacAddress);
+        } else {
             this.bulbMacAddress = bulbMacAddress.replaceAll(":", "").toUpperCase();
+            logger.info("Bulb Mac Address set to '{}'", bulbMacAddress);
         }
-
     }
 
     /**
-     * Saves the mac address from configuration in field.
+     * Saves the home id from configuration in field.
      *
      * @param configuration The {@link Configuration}
      */
     private void saveHomeIdFromConfiguration(final Configuration configuration) {
-        if ((configuration != null) && (configuration.get(WizLightingBindingConstants.HOME_ID_ARG) != null)) {
+        if (configuration.get(WizLightingBindingConstants.HOME_ID_ARG) != null) {
             String homeIdStr = (String) configuration.get(WizLightingBindingConstants.HOME_ID_ARG);
             this.homeId = Integer.parseInt(homeIdStr);
-            logger.debug("HomeId is set to '{}'", this.homeId);
+            logger.info("HomeId set to '{}'", this.homeId);
         }
     }
 
@@ -305,7 +308,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * @param requestPacket the {@link WizLightingRequest}.
      * @param address the {@link InetAddress}.
      */
-    private WizLightingResponse sendRequestPacket(final WizLightingMethodType method, final Param param) {
+    private @Nullable WizLightingResponse sendRequestPacket(final WizLightingMethodType method, final Param param) {
         DatagramSocket dsocket = null;
         try {
             InetAddress address = InetAddress.getByName(bulbIpAddress);
@@ -350,8 +353,6 @@ public class WizLightingHandler extends BaseThingHandler {
             latestUpdate = -1;
 
             savebulbMacAddressFromConfiguration(configuration);
-
-            bulbIpAddress = null;
             savebulbIpAddressFromConfiguration(configuration);
             saveUpdateIntervalFromConfiguration(configuration);
             saveHomeIdFromConfiguration(configuration);
@@ -369,10 +370,10 @@ public class WizLightingHandler extends BaseThingHandler {
      */
     private void saveConfigurationsUsingCurrentStates() {
         Map<String, Object> map = new HashMap<>();
-        map.put(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG, bulbMacAddress);
-        map.put(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG, bulbIpAddress);
-        map.put(WizLightingBindingConstants.UPDATE_INTERVAL_ARG, updateInterval);
-        map.put(WizLightingBindingConstants.HOME_ID_ARG, String.valueOf(homeId));
+        map.put(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG, this.bulbMacAddress);
+        map.put(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG, this.bulbIpAddress);
+        map.put(WizLightingBindingConstants.UPDATE_INTERVAL_ARG, this.updateInterval);
+        map.put(WizLightingBindingConstants.HOME_ID_ARG, String.valueOf(this.homeId));
 
         Configuration newConfiguration = new Configuration(map);
         super.updateConfiguration(newConfiguration);

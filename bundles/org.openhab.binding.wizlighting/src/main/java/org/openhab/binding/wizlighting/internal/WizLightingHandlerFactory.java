@@ -33,6 +33,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link WizLightingHandlerFactory} is responsible for creating things and thing
@@ -40,7 +41,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
-// TODO:  Check this annotation
 @NonNullByDefault
 @Component(configurationPid = "binding.wizlighting", service = ThingHandlerFactory.class)
 public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
@@ -50,13 +50,13 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingHandlerFactory.class);
 
-    private WizLightingMediator mediator;
+    private @Nullable WizLightingMediator mediator;
 
-    private NetworkAddressService networkAddressService;
+    private @Nullable NetworkAddressService networkAddressService;
 
-    private String ipAddress;
+    private @Nullable String myIpAddress;
 
-    private String bulbMacAddress;
+    private @Nullable String myMacAddress;
 
     @Override
     protected void activate(ComponentContext componentContext) {
@@ -89,7 +89,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(final Thing thing) {
+    protected @Nullable ThingHandler createHandler(final Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.trace("Creating Handler Request for {}", thingTypeUID);
 
@@ -100,7 +100,8 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
                 handler = new WizLightingHandler(thing, getMyIpAddress(), getMyMacAddress());
                 logger.debug("WizLightingMediator will register the handler.");
 
-                if (this.mediator != null) {
+                WizLightingMediator mediator = this.mediator;
+                if (mediator != null) {
                     this.mediator.registerThingAndWizBulbHandler(thing, handler);
                 } else {
                     logger.error(
@@ -116,27 +117,29 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    private String getMyIpAddress() {
-        if (ipAddress != null) {
-            return ipAddress;
-        } else {
-            ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (ipAddress == null) {
+    private @Nullable String getMyIpAddress() {
+        NetworkAddressService networkAddressService = this.networkAddressService;
+        if (myIpAddress != null) {
+            return myIpAddress;
+        } else if (networkAddressService != null) {
+            myIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
+            if (myIpAddress == null) {
                 logger.warn("No network interface could be found.");
                 return null;
             }
-
-            return ipAddress;
+            return myIpAddress;
+        } else {
+            return null;
         }
     }
 
-    private String getMyMacAddress() {
-        if (bulbMacAddress != null) {
-            return bulbMacAddress;
+    private @Nullable String getMyMacAddress() {
+        if (myMacAddress != null) {
+            return myMacAddress;
         } else {
             try {
-                bulbMacAddress = NetworkUtils.getBulbMacAddress();
-                if (bulbMacAddress == null) {
+                myMacAddress = NetworkUtils.getMyMacAddress();
+                if (myMacAddress == null) {
                     logger.warn("No network interface could be found.");
                     return null;
                 }
@@ -146,14 +149,15 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
             }
 
-            return bulbMacAddress;
+            return myMacAddress;
         }
     }
 
     @Override
     public void unregisterHandler(final Thing thing) {
-        if (this.mediator != null) {
-            this.mediator.unregisterWizBulbHandlerByThing(thing);
+        WizLightingMediator mediator = this.mediator;
+        if (mediator != null) {
+            mediator.unregisterWizBulbHandlerByThing(thing);
         }
         super.unregisterHandler(thing);
     }

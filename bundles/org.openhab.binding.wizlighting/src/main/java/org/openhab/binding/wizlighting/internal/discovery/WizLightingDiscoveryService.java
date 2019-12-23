@@ -12,11 +12,6 @@
  */
 package org.openhab.binding.wizlighting.internal.discovery;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +26,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -49,6 +43,7 @@ import com.google.gson.GsonBuilder;
 import org.osgi.service.component.annotations.Component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This is the {@link DiscoveryService} for the Wizlighting Items.
@@ -56,20 +51,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
-// TODO:  Check this annotation
 @Component(configurationPid = "discovery.wizlighting", service = DiscoveryService.class)
 @NonNullByDefault
 public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingDiscoveryService.class);
     private WizLightingMediator mediator;
-    private String inviteToken;
-    private Gson gson;
+    private @Nullable String inviteToken;
+    private @Nullable Gson gson;
     private HttpClient httpClient;
 
     @Override
     protected void activate(Map<String, Object> configProperties) {
         if (configProperties != null) {
+            @Nullable
             Object property = configProperties.get(WizLightingBindingConstants.DISCOVERY_INVITE_TOKEN);
             if (property != null) {
                 this.inviteToken = String.valueOf(property);
@@ -119,23 +114,8 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         if (inviteToken == null) {
-            String folderName = ConfigConstants.getUserDataFolder() + "/";
-            File file = new File(folderName, WizLightingBindingConstants.INVITE_TOKEN_TEMP_FILE);
-
-            if (file.exists()) {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
-                    String line = reader.readLine();
-                    reader.close();
-                    if (line != null && line.length() > 0) {
-                        this.inviteToken = line;
-                    }
-                } catch (IOException e) {
-                    logger.error("Error reading invite token file {}", file, e);
-                }
-            } else {
-                logger.warn("Discovery Invite Token not configured. Cannot auto discover {}", this.inviteToken);
-                return;
-            }
+            logger.warn("Discovery Invite Token not configured. Cannot auto discover.");
+            return;
         }
 
         try {
@@ -159,8 +139,8 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
                     if (lights != null) {
                         for (int i = 0; i < lights.length; i++) {
                             HomeDTO.Light light = lights[i];
-                            logger.debug("Found Light {} with ip {} and mac {} ", light.id, light.ip,
-                                    light.bulbMacAddress);
+                            logger.debug("Found Light {} with ip {} and mac {} ", light.discoveredLightId, light.discoveredLightIpAddress,
+                                    light.discoveredLightMacAddress);
                             this.discoveredLight(light);
                         }
                     }
@@ -173,7 +153,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     }
 
-    protected String obtainAccessToken()
+    protected @Nullable String obtainAccessToken()
             throws URISyntaxException, InterruptedException, TimeoutException, ExecutionException {
         Request request = httpClient.newRequest(WizLightingBindingConstants.DISCOVERY_API_OAUTH_URL)
                 .header("Authorization", WizLightingBindingConstants.DISCOVERY_API_AUTHENTICATION_TOKEN)
@@ -243,16 +223,22 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      */
     public void discoveredLight(final HomeDTO.Light light) {
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG, light.bulbMacAddress);
-        properties.put(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG, light.ip);
-        properties.put(WizLightingBindingConstants.HOME_ID_ARG, String.valueOf(light.homeId));
+        if (light.discoveredLightMacAddress != null) {
+            properties.put(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG, light.discoveredLightMacAddress);
+        }
+        if (light.discoveredLightIpAddress != null) {
+            properties.put(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG, light.discoveredLightIpAddress);
+        }
+        if (light.discoveredLightHomeId > 0) {
+            properties.put(WizLightingBindingConstants.HOME_ID_ARG, String.valueOf(light.discoveredLightHomeId));
+        }
 
-        ThingUID newThingId = new ThingUID(WizLightingBindingConstants.THING_TYPE_WIZ_BULB, light.bulbMacAddress);
+        ThingUID newThingId = new ThingUID(WizLightingBindingConstants.THING_TYPE_WIZ_BULB, light.discoveredLightMacAddress);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
-                .withLabel("Wizlighting Bulb").withRepresentationProperty(light.bulbMacAddress).build();
+                .withLabel("Wizlighting Bulb").withRepresentationProperty(light.discoveredLightMacAddress).build();
 
         logger.debug("Discovered new thing with mac address '{}' and host address '{}' and homeId '{}",
-                light.bulbMacAddress, light.ip, light.homeId);
+                light.discoveredLightMacAddress, light.discoveredLightIpAddress, light.discoveredLightHomeId);
 
         this.thingDiscovered(discoveryResult);
     }

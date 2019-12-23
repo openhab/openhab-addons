@@ -18,6 +18,7 @@ import java.rmi.UnknownHostException;
 import java.util.Enumeration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Utility class to perform some network routines.
@@ -35,10 +36,10 @@ public final class NetworkUtils {
      * @throws UnknownHostException
      * @throws SocketException
      */
-    public static String getBulbMacAddress() throws UnknownHostException, SocketException {
+    public static @Nullable String getMyMacAddress() throws UnknownHostException, SocketException {
         Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
         while (networks.hasMoreElements()) {
-            NetworkInterface network = networks.nextElement();
+            @Nullable NetworkInterface network = networks.nextElement();
             byte[] macAddressBytes = network.getHardwareAddress();
             if (macAddressBytes != null) {
                 StringBuilder macAddressBuilder = new StringBuilder();

@@ -24,24 +24,23 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class UserDTO {
 
-    @NonNullByDefault
     static class Home {
         public int id;
-        public String name;
+        public @Nullable String name;
     }
 
-    @NonNullByDefault
     static class Data {
         public int id;
-        public String username;
-        public Home[] homes;
+        public @Nullable String username;
+        public Home @Nullable [] homes;
     }
 
     public boolean success;
     public @Nullable Data data;
 
     public int getHomeId() {
-        if (this.data != null && this.data.homes != null && this.data.homes.length > 0) {
+        Data data = this.data;
+        if (data != null && data.homes != null && data.homes.length > 0) {
             return this.data.homes[0].id;
         } else {
             return -1;

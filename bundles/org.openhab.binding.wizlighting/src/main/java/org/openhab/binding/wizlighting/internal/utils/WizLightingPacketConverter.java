@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Transforms the datagram packet to request/response
@@ -72,7 +73,7 @@ public class WizLightingPacketConverter {
         String responseJson = new String(packet.getData(), 0, packet.getLength());
         logger.debug("Response Json={{}}", responseJson);
 
-        WizLightingResponse response = this.wizlightingGsonBuilder.fromJson(responseJson, WizLightingResponse.class);
+        @Nullable WizLightingResponse response = this.wizlightingGsonBuilder.fromJson(responseJson, WizLightingResponse.class);
         return response;
     }
 
@@ -86,6 +87,7 @@ public class WizLightingPacketConverter {
         String responseJson = new String(packet.getData(), 0, packet.getLength());
         logger.debug("Sync Response Json={{}}", responseJson);
 
+        @Nullable
         WizLightingSyncResponse response = this.wizlightingGsonBuilder.fromJson(responseJson,
                 WizLightingSyncResponse.class);
         response.setBulbIpAddress(packet.getAddress().getHostAddress());

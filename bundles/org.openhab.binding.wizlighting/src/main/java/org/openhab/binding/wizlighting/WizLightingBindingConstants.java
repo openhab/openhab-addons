@@ -125,9 +125,4 @@ public class WizLightingBindingConstants {
      */
     public static final String DISCOVERY_API_AUTHENTICATION_TOKEN = "Basic Ml81ZHE1cHFzNnI0b3dvNDAwb284MGNvd2d3azA0Y2drb2t3azB3bzgwa3drb2M4d2NjczpNV0ppWTJFeU1Ea3dNR0V3TVdJM1pqTTFOREppWm1RMU1qTm1NV05qTVRVNE9UZzFOag==";
 
-    /**
-     * File name for the token temporary storage
-     */
-    public static final String INVITE_TOKEN_TEMP_FILE = "wizlighting.token";
-
 }

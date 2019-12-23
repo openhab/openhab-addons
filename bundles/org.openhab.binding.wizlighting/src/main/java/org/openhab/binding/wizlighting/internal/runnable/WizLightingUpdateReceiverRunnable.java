@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This Thread is responsible to receive all sync messages and redirect them to
@@ -39,7 +40,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingUpdateReceiverRunnable.class);
 
-    private DatagramSocket datagramSocket;
+    private @Nullable DatagramSocket datagramSocket;
     private final WizLightingMediator mediator;
     private final WizLightingPacketConverter packetConverter = new WizLightingPacketConverter();
 

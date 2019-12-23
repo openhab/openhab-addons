@@ -13,6 +13,7 @@
 package org.openhab.binding.wizlighting.internal.discovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This is {@link TokenDTO} Object to parse Discovery response of access tokens.
@@ -22,9 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TokenDTO {
-    public String accessToken;
+    public @Nullable String accessToken;
     public long expiresIn;
-    public String tokenType;
-    public String scope;
-    public String refreshToken;
+    public @Nullable String tokenType;
+    public @Nullable String scope;
+    public @Nullable String refreshToken;
 }

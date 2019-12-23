@@ -19,7 +19,8 @@ import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoverySe
 import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse;
 import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link WizLightingMediator} is responsible for receiving all the sync packets and route correctly to
@@ -27,8 +28,8 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
-// TODO:  Figure out the correct annotation here.
-@Component(configurationPid = "WizLightingMediator", service = org.openhab.binding.wizlighting.handler.WizLightingMediator)
+@Component(configurationPid = "WizLightingMediator", service = WizLightingMediator.class)
+@NonNullByDefault
 public interface WizLightingMediator {
 
     /**
@@ -66,5 +67,5 @@ public interface WizLightingMediator {
      *
      * @param discoveryService the discovery service.
      */
-    void setDiscoveryService(WizLightingDiscoveryService discoveryService);
+    void setDiscoveryService(final @Nullable WizLightingDiscoveryService discoveryService);
 }

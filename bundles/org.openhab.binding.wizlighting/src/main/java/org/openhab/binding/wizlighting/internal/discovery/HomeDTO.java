@@ -25,27 +25,34 @@ import org.eclipse.jdt.annotation.Nullable;
 public class HomeDTO {
 
     static class Light {
-        public int id;
-        public int homeId;
-        public String name;
-        public String bulbMacAddress;
-        public String bulbFwVersion;
-        public String ip;
-        public boolean connection_status;
+        public int discoveredLightId;
+        public int discoveredLightHomeId;
+        public @Nullable String discoveredLightName;
+        public @Nullable String discoveredLightMacAddress;
+        public @Nullable String discoveredLightFwVersion;
+        public @Nullable String discoveredLightIpAddress;
+        public boolean discoveredLightConnectionStatus;
     }
 
     static class Data {
         public int id;
-        public String username;
-        public Light[] lights;
+        public @Nullable String username;
+        public Light @Nullable [] lights;
     }
 
     public boolean success;
-    public Data data;
+    public @Nullable Data data;
 
-    public Light[] getLights() {
-        if (this.data != null && this.data.lights != null && this.data.lights.length > 0) {
-            return this.data.lights;
+    public Light @Nullable [] getLights() {
+        Data data = this.data;
+        if (data != null) {
+            Light[] lights = data.lights;
+            int numLights = data.lights.length;
+            if (lights != null && numLights > 0) {
+                return lights;
+            } else {
+                return null;
+            }
         } else {
             return null;
         }

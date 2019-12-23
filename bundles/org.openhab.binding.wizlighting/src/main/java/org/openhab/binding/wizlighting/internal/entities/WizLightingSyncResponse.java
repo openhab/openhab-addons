@@ -13,6 +13,7 @@
 package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This POJO represents one Wiz Lighting Sync response
@@ -24,23 +25,31 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class WizLightingSyncResponse {
 
     private int id;
-    private String method;
-    private SyncResponseParam params;
+    private @Nullable String method;
+    private @Nullable SyncResponseParam params;
 
-    private String bulbIpAddress;
+    private @Nullable String bulbIpAddress;
 
     public WizLightingSyncResponse() {
     }
 
-    public String getBulbMacAddress() {
-        return this.getParams().mac;
+    public @Nullable String getBulbMacAddress() {
+        SyncResponseParam params = this.getParams();
+        if (params != null) {
+            return params.mac;
+        } else {
+            return null;
+        }
     }
 
     public void setBulbMacAddress(final String bulbMacAddress) {
-        this.getParams().mac = bulbMacAddress;
+        SyncResponseParam params = this.getParams();
+        if (params != null) {
+            params.mac = bulbMacAddress;
+        }
     }
 
-    public String getBulbIpAddress() {
+    public @Nullable String getBulbIpAddress() {
         return this.bulbIpAddress;
     }
 
@@ -56,7 +65,7 @@ public class WizLightingSyncResponse {
         this.id = id;
     }
 
-    public String getMethod() {
+    public @Nullable String getMethod() {
         return method;
     }
 
@@ -64,7 +73,7 @@ public class WizLightingSyncResponse {
         this.method = method;
     }
 
-    public SyncResponseParam getParams() {
+    public @Nullable SyncResponseParam getParams() {
         return params;
     }
 
