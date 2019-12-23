@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wizlighting.handler;
+package org.openhab.binding.wizlighting.internal.handler;
 
 import java.util.Set;
 

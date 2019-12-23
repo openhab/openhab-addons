@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wizlighting;
+package org.openhab.binding.wizlighting.internal;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -89,9 +89,4 @@ public class WizLightingBindingConstants {
      * Default listener socket default UDP port.
      */
     public static final int LISTENER_DEFAULT_UDP_PORT = 38900;
-
-    /**
-     * Discovery timeout in seconds.
-     */
-    public static final int DISCOVERY_TIMEOUT_SECONDS = 4;
 }

@@ -18,7 +18,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
-import org.openhab.binding.wizlighting.handler.WizLightingMediator;
+import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,9 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
 
         logger.debug("Opening socket and start listening UDP port: {}", listeningPort);
         this.datagramSocket = new DatagramSocket(listeningPort);
-        this.datagramSocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
+        if (this.datagramSocket != null) {
+            this.datagramSocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
+        }
         logger.debug("Update Receiver Runnable and socket started with success...");
 
         this.shutdown = false;

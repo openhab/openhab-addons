@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wizlighting.handler;
+package org.openhab.binding.wizlighting.internal.handler;
 
 import java.net.SocketException;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.wizlighting.WizLightingBindingConstants;
+import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse;
 import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
 import org.osgi.service.component.ComponentContext;
