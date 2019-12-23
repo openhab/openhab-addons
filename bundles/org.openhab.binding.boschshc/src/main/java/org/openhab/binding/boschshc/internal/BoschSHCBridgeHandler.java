@@ -34,13 +34,16 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     public BoschSHCBridgeHandler(Bridge bridge) {
         super(bridge);
 
+        String keystore = "/local/bosch-keystore";
+        logger.warn("Starting with keystore at: {}", keystore);
+
         // Instantiate and configure the SslContextFactory
         // SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
         SslContextFactory sslContextFactory = new SslContextFactory(true); // Accept all certificates
 
         // Keystore for managing the keys that have been used to pair with the SHC
         // https://www.eclipse.org/jetty/javadoc/9.4.12.v20180830/org/eclipse/jetty/util/ssl/SslContextFactory.html
-        sslContextFactory.setKeyStorePath("/home/skaestle/projects/smart-home/bosch/keystore");
+        sslContextFactory.setKeyStorePath(keystore);
         sslContextFactory.setKeyStorePassword("123456");
 
         // Bosch is using a self signed certificate
