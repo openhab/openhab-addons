@@ -123,8 +123,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
             ContentResponse contentResponse;
             try {
-                logger.debug("Sending http request to Bosch to request clients");
-                contentResponse = this.httpClient.newRequest("https://192.168.178.128:8444/smarthome/devices")
+                logger.debug("Sending http request to Bosch to request clients: {}", config.ipAddress);
+                contentResponse = this.httpClient.newRequest("https://" + config.ipAddress + ":8444/smarthome/devices")
                         .header("Content-Type", "application/json").header("Accept", "application/json").method(GET)
                         .send();
 
@@ -184,7 +184,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                 logger.debug("Sending content: {}", str_content);
 
-                contentResponse = this.httpClient.newRequest("https://192.168.178.128:8444/remote/json-rpc")
+                contentResponse = this.httpClient.newRequest("https://" + config.ipAddress + ":8444/remote/json-rpc")
                         .header("Content-Type", "application/json").header("Accept", "application/json")
                         .header("Gateway-ID", "64-DA-A0-02-14-9B").method(POST)
                         .content(new StringContentProvider(str_content)).send();
@@ -320,7 +320,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 }
             }
 
-            this.httpClient.newRequest("https://192.168.178.128:8444/remote/json-rpc")
+            this.httpClient.newRequest("https://" + config.ipAddress + ":8444/remote/json-rpc")
                     .header("Content-Type", "application/json").header("Accept", "application/json")
                     .header("Gateway-ID", "64-DA-A0-02-14-9B").method(POST)
                     .content(new StringContentProvider(str_content)).send(new LongPollListener(this));
@@ -341,7 +341,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             ContentResponse contentResponse;
             try {
                 logger.debug("Sending http request to Bosch to request rooms");
-                contentResponse = this.httpClient.newRequest("https://192.168.178.128:8444/smarthome/remote/json-rpc")
+                contentResponse = this.httpClient
+                        .newRequest("https://" + config.ipAddress + ":8444/smarthome/remote/json-rpc")
                         .header("Content-Type", "application/json").header("Accept", "application/json").method(GET)
                         .send();
 
@@ -389,14 +390,14 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             try {
 
                 String boschID = handler.getBoschID();
-                logger.debug("Requesting state update from Bosch: {}", boschID);
+                logger.debug("Requesting state update from Bosch: {} via {}", boschID, config.ipAddress);
 
                 // GET request
                 // ----------------------------------------------------------------------------------
 
                 // TODO: PowerSwitch is hard-coded
                 contentResponse = this.httpClient
-                        .newRequest("https://192.168.178.128:8444/smarthome/devices/" + boschID
+                        .newRequest("https://" + config.ipAddress + ":8444/smarthome/devices/" + boschID
                                 + "/services/PowerSwitch/state")
                         .header("Content-Type", "application/json").header("Accept", "application/json")
                         .header("Gateway-ID", "64-DA-A0-02-14-9B").method(GET).send();
@@ -449,7 +450,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                 // TODO Path should be different for other kinds of device updates
                 contentResponse = this.httpClient
-                        .newRequest("https://192.168.178.128:8444/smarthome/devices/" + boschID
+                        .newRequest("https://" + config.ipAddress + ":8444/smarthome/devices/" + boschID
                                 + "/services/PowerSwitch/state")
                         .header("Content-Type", "application/json").header("Accept", "application/json")
                         .header("Gateway-ID", "64-DA-A0-02-14-9B").method(PUT)
