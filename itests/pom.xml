@@ -40,13 +40,14 @@
     <dependency>
       <groupId>org.openhab.core.bom</groupId>
       <artifactId>org.openhab.core.bom.openhab-core</artifactId>
-      <version>${project.version}</version>
+      <version>${ohc.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.openhab.core.bom</groupId>
       <artifactId>org.openhab.core.bom.compile</artifactId>
+      <version>${ohc.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
@@ -89,6 +90,7 @@
         <dependency>
           <groupId>org.openhab.core.bom</groupId>
           <artifactId>org.openhab.core.bom.test</artifactId>
+          <version>${ohc.version}</version>
           <type>pom</type>
           <scope>provided</scope>
         </dependency>
@@ -96,21 +98,21 @@
         <dependency>
           <groupId>org.openhab.core.bom</groupId>
           <artifactId>org.openhab.core.bom.test-index</artifactId>
-          <version>${project.version}</version>
+          <version>${ohc.version}</version>
           <type>pom</type>
           <scope>provided</scope>
         </dependency>
         <dependency>
           <groupId>org.openhab.core.bom</groupId>
           <artifactId>org.openhab.core.bom.openhab-core-index</artifactId>
-          <version>${project.version}</version>
+          <version>${ohc.version}</version>
           <type>pom</type>
           <scope>provided</scope>
         </dependency>
         <dependency>
           <groupId>org.openhab.core.bom</groupId>
           <artifactId>org.openhab.core.bom.runtime-index</artifactId>
-          <version>${project.version}</version>
+          <version>${ohc.version}</version>
           <type>pom</type>
           <scope>provided</scope>
         </dependency>

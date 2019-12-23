@@ -66,6 +66,7 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
+    <ohc.version>${project.version}</ohc.version>
     <bnd.version>4.3.0</bnd.version>
     <karaf.version>4.2.7</karaf.version>
     <sat.version>0.8.0</sat.version>
@@ -85,35 +86,35 @@
       <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.compile</artifactId>
-        <version>${project.version}</version>
+        <version>${ohc.version}</version>
         <type>pom</type>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.compile-model</artifactId>
-        <version>${project.version}</version>
+        <version>${ohc.version}</version>
         <type>pom</type>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.openhab-core</artifactId>
-        <version>${project.version}</version>
+        <version>${ohc.version}</version>
         <type>pom</type>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.runtime</artifactId>
-        <version>${project.version}</version>
+        <version>${ohc.version}</version>
         <type>pom</type>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.openhab.core.bom</groupId>
         <artifactId>org.openhab.core.bom.test</artifactId>
-        <version>${project.version}</version>
+        <version>${ohc.version}</version>
         <type>pom</type>
         <scope>test</scope>
       </dependency>
