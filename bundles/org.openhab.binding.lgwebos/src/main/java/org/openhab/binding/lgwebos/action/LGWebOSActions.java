@@ -366,4 +366,12 @@ public class LGWebOSActions implements ThingActions {
             throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
         }
     }
+
+    public static void sendRCButton(@Nullable ThingActions actions, String rcButton) {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).sendRCButton(rcButton);
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
 }
