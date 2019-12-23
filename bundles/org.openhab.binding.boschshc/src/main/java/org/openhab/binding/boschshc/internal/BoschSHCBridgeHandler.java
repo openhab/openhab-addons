@@ -79,18 +79,14 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         // Example for background initialization:
         scheduler.execute(() -> {
 
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
+            Boolean thingReachable = true;
+            thingReachable &= this.getRooms();
+            thingReachable &= this.getDevices();
+
             if (thingReachable) {
-
-                // TODO Check for errors and fall back to ThingStatus.OFFLINE
-                this.getRooms();
-                this.getDevices();
-
+                updateStatus(ThingStatus.ONLINE);
                 this.subscribe();
                 this.longPoll();
-
-                updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
@@ -121,7 +117,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     /**
      * Get a list of connected devices from the Smart-Home Controller
      */
-    private void getDevices() {
+    private Boolean getDevices() {
 
         if (this.httpClient != null) {
 
@@ -155,9 +151,15 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     }
                 }
 
+                return true;
+
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("HTTP request failed: {}", e);
+                return false;
             }
+        } else {
+
+            return false;
         }
     }
 
@@ -332,7 +334,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     /**
      * Get a list of rooms from the Smart-Home controller
      */
-    private void getRooms() {
+    private Boolean getRooms() {
 
         if (this.httpClient != null) {
 
@@ -358,9 +360,15 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     }
                 }
 
+                return true;
+
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("HTTP request failed: {}", e);
+                return false;
             }
+        } else {
+
+            return false;
         }
     }
 
