@@ -815,20 +815,24 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
 
                         // PushButtonSensor
                     } else if (capability.isTypePushButtonSensor()) {
-                        // if the same button is pressed more than once
-                        // the buttonIndex and LastKeyPressCounter come with two events
-                        // updates should only do when arriving value
+                        // Some devices send both StateChanged and ButtonPressed. But only one should be handled.
+                        // If ButtonPressed is send lastPressedButtonIndex is not set in StateChanged so ignore
+                        // StateChanged.
+                        // type is also not always present if null will be interpreted as a normal key press.
                         final Integer tmpButtonIndex = event.getProperties().getLastPressedButtonIndex();
-                        final Integer tmpLastKeyPressCounter = event.getProperties().getLastKeyPressCounter();
-                        final String lastKeyPressType = event.getProperties().getLastKeyPressType();
-                        if (tmpButtonIndex != null && lastKeyPressType != null) {
+
+                        if (tmpButtonIndex != null) {
                             capabilityState.setPushButtonSensorButtonIndexState(tmpButtonIndex);
-                            capabilityState.setPushButtonSensorButtonIndexType(lastKeyPressType);
+                            capabilityState
+                                    .setPushButtonSensorButtonIndexType(event.getProperties().getLastKeyPressType());
+
+                            final Integer tmpLastKeyPressCounter = event.getProperties().getLastKeyPressCounter();
+
+                            if (tmpLastKeyPressCounter != null) {
+                                capabilityState.setPushButtonSensorCounterState(tmpLastKeyPressCounter);
+                            }
+                            deviceChanged = true;
                         }
-                        if (tmpLastKeyPressCounter != null) {
-                            capabilityState.setPushButtonSensorCounterState(tmpLastKeyPressCounter);
-                        }
-                        deviceChanged = true;
 
                         // EnergyConsumptionSensor
                     } else if (capability.isTypeEnergyConsumptionSensor()) {
