@@ -21,6 +21,7 @@
     <dependency>
       <groupId>org.openhab.core.bom</groupId>
       <artifactId>org.openhab.core.bom.test</artifactId>
+      <version>${ohc.version}</version>
       <type>pom</type>
       <scope>compile</scope>
       <optional>true</optional>
