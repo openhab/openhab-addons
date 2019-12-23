@@ -15,7 +15,6 @@ package org.openhab.binding.wizlighting.handler;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse;
 import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
 import org.osgi.service.component.annotations.Component;
@@ -61,11 +60,4 @@ public interface WizLightingMediator {
      * @returns all the {@link Thing}.
      */
     Set<Thing> getAllThingsRegistered();
-
-    /**
-     * Sets the discovery service to inform the user when one new thing has been found.
-     *
-     * @param discoveryService the discovery service.
-     */
-    void setDiscoveryService(final @Nullable WizLightingDiscoveryService discoveryService);
 }

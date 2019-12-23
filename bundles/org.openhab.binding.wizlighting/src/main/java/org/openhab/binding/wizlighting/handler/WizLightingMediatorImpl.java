@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.wizlighting.WizLightingBindingConstants;
-import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse;
 import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
 import org.osgi.service.component.ComponentContext;
@@ -43,8 +42,6 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
 
     private @Nullable WizLightingUpdateReceiverRunnable receiver;
     private @Nullable Thread receiverThread;
-
-    private @Nullable WizLightingDiscoveryService wizlightingDiscoveryService;
 
     /**
      * Called at the service activation.
@@ -165,14 +162,5 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     @Override
     public Set<Thing> getAllThingsRegistered() {
         return this.handlersRegisteredByThing.keySet();
-    }
-
-    @Override
-    public void setDiscoveryService(final @Nullable WizLightingDiscoveryService discoveryService) {
-        this.wizlightingDiscoveryService = discoveryService;
-    }
-
-    public @Nullable WizLightingDiscoveryService getDiscoveryService() {
-        return this.wizlightingDiscoveryService;
     }
 }

@@ -94,35 +94,4 @@ public class WizLightingBindingConstants {
      * Discovery timeout in seconds.
      */
     public static final int DISCOVERY_TIMEOUT_SECONDS = 4;
-
-    /**
-     * Invite Token (one time use only). Needed to auto discover and can be obtained using ios or android app
-     */
-    public static final String DISCOVERY_INVITE_TOKEN = "inviteToken";
-
-    /**
-     * OAuth token end point URL For obtaining access token. Only needed for auto discovery
-     */
-    public static final String DISCOVERY_API_OAUTH_URL = "https://api.wiz.world/oauth/v2/token";
-
-    /**
-     * URL to obtain HomeId
-     */
-    public static final String DISCOVERY_API_USER_DETAILS_URL = "https://api.wiz.world/api/v2/user/me";
-
-    /**
-     * URL to obtain list of all bulbs once registered
-     */
-    public static final String DISCOVERY_API_HOME_DETAILS_URL = "https://api.wiz.world/api/v2/home/";
-
-    /**
-     * Register Invite code URL
-     */
-    public static final String DISCOVERY_API_INVITE_TOKEN_URL = "https://api.wiz.world/api/v2/invitation/";
-
-    /**
-     * Basic Authentication Token for the wiz.world API (probably from the iOS or Android app)
-     */
-    public static final String DISCOVERY_API_AUTHENTICATION_TOKEN = "Basic Ml81ZHE1cHFzNnI0b3dvNDAwb284MGNvd2d3azA0Y2drb2t3azB3bzgwa3drb2M4d2NjczpNV0ppWTJFeU1Ea3dNR0V3TVdJM1pqTTFOREppWm1RMU1qTm1NV05qTVRVNE9UZzFOag==";
-
 }
