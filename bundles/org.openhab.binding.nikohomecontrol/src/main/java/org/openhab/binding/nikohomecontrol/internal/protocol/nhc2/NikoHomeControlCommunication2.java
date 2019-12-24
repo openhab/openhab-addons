@@ -792,7 +792,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     connectionLost();
                 }
             } catch (MqttException e1) {
-                logger.warn("Niko Home Control: error resending thermostat command");
+                logger.warn("Niko Home Control: error resending device command");
                 connectionLost();
             }
         }
@@ -867,8 +867,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         if (error != null) {
-            logger.debug("Connection error: {}", state, error);
-            connectionLost();
+            logger.debug("Connection state: {}", state, error);
+            restartCommunication();
+            if (!communicationActive()) {
+                logger.warn("Niko Home Control: failed to restart communication");
+                connectionLost();
+            }
         } else {
             logger.trace("Connection state: {}", state);
         }
