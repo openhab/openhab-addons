@@ -158,7 +158,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     abstract void touhWandUnitHandleCommand(Command command);
 
-    abstract void updateTouchWandUnitState(int status);
+    abstract void updateTouchWandUnitState(TouchWandUnitData unitData);
 
     @Override
     public void onItemStatusUpdate(TouchWandUnitData unitData) {
@@ -168,7 +168,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
             // updateStatus(ThingStatus.OFFLINE); // comment if for now , it seems we are missing commands
             logger.debug("UpdateStatus OFFLINE {}", getThing().getLabel());
         }
-        updateTouchWandUnitState(unitData.getCurrStatus());
+        updateTouchWandUnitState(unitData);
     }
 
     @Override

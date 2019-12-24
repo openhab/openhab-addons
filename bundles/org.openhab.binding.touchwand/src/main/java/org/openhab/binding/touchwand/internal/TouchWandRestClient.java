@@ -107,7 +107,6 @@ public class TouchWandRestClient {
     public String cmdListUnits() {
         String command = buildUrl(CMD_LIST_UNITS);
         String response = sendCommand(command, METHOD_GET, null);
-
         return response;
     }
 

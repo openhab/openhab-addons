@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
 
 /**
  * The {@link TouchWandDimmerHandler} is responsible for handling commands for Dimmer units
@@ -47,10 +48,12 @@ public class TouchWandDimmerHandler extends TouchWandBaseUnitHandler {
     }
 
     @Override
-    void updateTouchWandUnitState(int status) {
+    void updateTouchWandUnitState(TouchWandUnitData unitData) {
+        int status = unitData.getCurrStatus();
         PercentType state = PercentType.ZERO;
         int convertStatus = status;
         state = new PercentType(convertStatus);
         updateState(CHANNEL_DIMMER, state);
     }
+
 }
