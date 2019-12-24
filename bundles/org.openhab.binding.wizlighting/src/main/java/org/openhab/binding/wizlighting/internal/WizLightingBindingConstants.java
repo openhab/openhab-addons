@@ -38,7 +38,7 @@ public class WizLightingBindingConstants {
     /**
      * List of all Thing Type UIDs.
      */
-    public static final ThingTypeUID THING_TYPE_WIZ_BULB = new ThingTypeUID(BINDING_ID, "bulb");
+    public static final ThingTypeUID THING_TYPE_WIZ_BULB = new ThingTypeUID(BINDING_ID, "wizBulb");
 
     /**
      * List of all Channel ids
@@ -59,15 +59,26 @@ public class WizLightingBindingConstants {
      * Mac address configuration argument key.
      */
     public static final String BULB_MAC_ADDRESS_ARG = "bulbMacAddress";
+
+    /**
+     * Host address configuration argument key.
+     */
+    public static final String BULB_IP_ADDRESS_ARG = "bulbIpAddress";
+
     /**
      * Wifi socket update interval configuration argument key.
      */
     public static final String UPDATE_INTERVAL_ARG = "updateInterval";
 
     /**
-     * Host address configuration argument key.
+     * Home id configuration argument key.
      */
-    public static final String BULB_IP_ADDRESS_ARG = "bulbIpAddress";
+    public static final String OH_MAC_ADDRESS_ARG = "ohMacAddress";
+
+    /**
+     * Home id configuration argument key.
+     */
+    public static final String OH_IP_ADDRESS_ARG = "ohIpAddress";
 
     /**
      * Home id configuration argument key.

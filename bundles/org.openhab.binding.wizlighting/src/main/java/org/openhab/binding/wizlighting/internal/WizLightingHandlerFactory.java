@@ -15,7 +15,6 @@ package org.openhab.binding.wizlighting.internal;
 import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -25,12 +24,10 @@ import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingHandler;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidException;
-import org.openhab.binding.wizlighting.internal.utils.NetworkUtils;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -51,12 +48,6 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(WizLightingHandlerFactory.class);
 
     private @Nullable WizLightingMediator mediator;
-
-    private @Nullable NetworkAddressService networkAddressService;
-
-    private @Nullable String myIpAddress;
-
-    private @Nullable String myMacAddress;
 
     @Override
     protected void activate(ComponentContext componentContext) {
@@ -97,12 +88,12 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
             WizLightingHandler handler;
             logger.debug("Creating a new WizLightingHandler...");
             try {
-                handler = new WizLightingHandler(thing, getMyIpAddress(), getMyMacAddress());
+                handler = new WizLightingHandler(thing);
                 logger.debug("WizLightingMediator will register the handler.");
 
                 WizLightingMediator mediator = this.mediator;
                 if (mediator != null) {
-                    this.mediator.registerThingAndWizBulbHandler(thing, handler);
+                    mediator.registerThingAndWizBulbHandler(thing, handler);
                 } else {
                     logger.error(
                             "The mediator is missing on Handler factory. Without one mediator the handler cannot work!");
@@ -117,42 +108,6 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    private @Nullable String getMyIpAddress() {
-        NetworkAddressService networkAddressService = this.networkAddressService;
-        if (myIpAddress != null) {
-            return myIpAddress;
-        } else if (networkAddressService != null) {
-            myIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (myIpAddress == null) {
-                logger.warn("No network interface could be found.");
-                return null;
-            }
-            return myIpAddress;
-        } else {
-            return null;
-        }
-    }
-
-    private @Nullable String getMyMacAddress() {
-        if (myMacAddress != null) {
-            return myMacAddress;
-        } else {
-            try {
-                myMacAddress = NetworkUtils.getMyMacAddress();
-                if (myMacAddress == null) {
-                    logger.warn("No network interface could be found.");
-                    return null;
-                }
-            } catch (Exception e) {
-                logger.warn("No network interface could be found.");
-                return null;
-
-            }
-
-            return myMacAddress;
-        }
-    }
-
     @Override
     public void unregisterHandler(final Thing thing) {
         WizLightingMediator mediator = this.mediator;
@@ -160,14 +115,5 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
             mediator.unregisterWizBulbHandlerByThing(thing);
         }
         super.unregisterHandler(thing);
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
     }
 }

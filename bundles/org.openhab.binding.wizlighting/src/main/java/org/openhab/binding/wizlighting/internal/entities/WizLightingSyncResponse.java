@@ -25,15 +25,16 @@ import org.eclipse.jdt.annotation.Nullable;
 public class WizLightingSyncResponse {
 
     private int id;
+    private @Nullable String env;
     private @Nullable String method;
     private @Nullable SyncResponseParam params;
 
-    private @Nullable String bulbIpAddress;
+    private @Nullable String wizResponseIpAddress;
 
     public WizLightingSyncResponse() {
     }
 
-    public @Nullable String getBulbMacAddress() {
+    public @Nullable String getWizResponseMacAddress() {
         SyncResponseParam params = this.getParams();
         if (params != null) {
             return params.mac;
@@ -42,19 +43,19 @@ public class WizLightingSyncResponse {
         }
     }
 
-    public void setBulbMacAddress(final String bulbMacAddress) {
+    public void setWizResponseMacAddress(final String wizResponseMacAddress) {
         SyncResponseParam params = this.getParams();
         if (params != null) {
-            params.mac = bulbMacAddress;
+            params.mac = wizResponseMacAddress;
         }
     }
 
-    public @Nullable String getBulbIpAddress() {
-        return this.bulbIpAddress;
+    public @Nullable String getWizResponseIpAddress() {
+        return this.wizResponseIpAddress;
     }
 
-    public void setBulbIpAddress(final String bulbIpAddress) {
-        this.bulbIpAddress = bulbIpAddress;
+    public void setWizResponseIpAddress(final String wizResponseIpAddress) {
+        this.wizResponseIpAddress = wizResponseIpAddress;
     }
 
     public int getId() {
@@ -71,6 +72,14 @@ public class WizLightingSyncResponse {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public @Nullable String getEnv() {
+        return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
     }
 
     public @Nullable SyncResponseParam getParams() {

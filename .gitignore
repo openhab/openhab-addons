@@ -24,4 +24,7 @@ features/**/src/main/feature
 .project
 .classpath
 .settings
+/*.project
+/.classpath
+/.settings
 *.jar

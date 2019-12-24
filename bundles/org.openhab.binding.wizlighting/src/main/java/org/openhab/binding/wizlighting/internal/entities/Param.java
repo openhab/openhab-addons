@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This POJO represents an abstract Request Param
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public interface Param {
 
 }

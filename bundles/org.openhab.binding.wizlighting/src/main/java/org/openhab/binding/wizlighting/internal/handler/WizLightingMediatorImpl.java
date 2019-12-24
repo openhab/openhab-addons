@@ -24,6 +24,7 @@ import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiv
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+// import org.osgi.service.component.annotations.Component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -33,6 +34,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
+// @Component(configurationPid = "WizLightingMediator", service = WizLightingMediator.class)
 @NonNullByDefault
 public class WizLightingMediatorImpl implements WizLightingMediator {
 
@@ -73,19 +75,25 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      */
     @Override
     public void processReceivedPacket(final WizLightingSyncResponse receivedMessage) {
-        logger.debug("Received packet from: {} with content: [{}]", receivedMessage.getBulbIpAddress(),
+        logger.debug("Received packet from: {} with method: [{}]", receivedMessage.getWizResponseIpAddress(),
                 receivedMessage.getMethod());
 
-        @Nullable
-        WizLightingHandler handler = this.getHandlerRegisteredByMac(receivedMessage.getBulbMacAddress());
+        @Nullable String bulbMac =receivedMessage.getWizResponseIpAddress();
 
-        if (handler != null) {
-            // deliver message to handler.
-            handler.newReceivedResponseMessage(receivedMessage);
-            logger.debug("Received message delivered with success to handler of mac {}",
-                    receivedMessage.getBulbMacAddress());
+        if (bulbMac != null){
+            @Nullable
+            WizLightingHandler handler = this.getHandlerRegisteredByMac(bulbMac);
+
+            if (handler != null) {
+                // deliver message to handler.
+                handler.newReceivedResponseMessage(receivedMessage);
+                logger.debug("Received message delivered with success to handler of mac {}",
+                        receivedMessage.getWizResponseIpAddress());
+            } else {
+                logger.debug("There is no handler registered for mac address:{}", receivedMessage.getWizResponseIpAddress());
+            }
         } else {
-            logger.debug("There is no handler registered for mac address:{}", receivedMessage.getBulbMacAddress());
+            logger.warn("The sync response did not contain a mac address, it cannot be processed.");
         }
     }
 
@@ -107,11 +115,11 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      */
     @Override
     public void unregisterWizBulbHandlerByThing(final Thing thing) {
-        @Nullable
-        WizLightingHandler handler = this.handlersRegisteredByThing.get(thing);
-        if (handler != null) {
+        // @Nullable
+        // WizLightingHandler handler = this.handlersRegisteredByThing.get(thing);
+        // if (handler != null) {
             this.handlersRegisteredByThing.remove(thing);
-        }
+        // }
     }
 
     /**
@@ -120,7 +128,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      * @param bulbMacAddress the mac address of the thing of the handler.
      * @return {@link WizLightingHandler} if found.
      */
-    private WizLightingHandler getHandlerRegisteredByMac(final String bulbMacAddress) {
+    private @Nullable WizLightingHandler getHandlerRegisteredByMac(final String bulbMacAddress) {
         WizLightingHandler searchedHandler = null;
         for (WizLightingHandler handler : this.handlersRegisteredByThing.values()) {
             if (bulbMacAddress.equalsIgnoreCase(handler.getBulbMacAddress())) {
@@ -146,7 +154,10 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
                 this.receiver = new WizLightingUpdateReceiverRunnable(this,
                         WizLightingBindingConstants.LISTENER_DEFAULT_UDP_PORT);
                 this.receiverThread = new Thread(receiver);
-                this.receiverThread.start();
+                Thread receiverThread2 = this.receiverThread;
+                if (receiverThread2 != null) {
+                    receiverThread2.start();
+                }
                 logger.debug("Invoked the start of receiver thread.");
             } catch (SocketException e) {
                 logger.debug("Cannot start the socket with default port...");

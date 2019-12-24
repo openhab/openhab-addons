@@ -18,15 +18,16 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * This POJO represents one Wiz Lighting UDP Response
  *
- * @author Sriram Balakrishnan - Initial contribution
+ * @author Sara Geleskie Damiano - Initial contribution
  *
  */
 @NonNullByDefault
-public class WizLightingResponse {
+public class WizLightingRegistrationResponse {
 
     private int id;
+    private @Nullable String env;
     private @Nullable String method;
-    private @Nullable Param param;
+    private @Nullable Param result;
 
     public int getId() {
         return id;
@@ -44,11 +45,19 @@ public class WizLightingResponse {
         this.method = method;
     }
 
-    public @Nullable Param getParam() {
-        return param;
+    public @Nullable String getEnv() {
+        return env;
     }
 
-    public void setParam(Param param) {
-        this.param = param;
+    public void setEnv(String env) {
+        this.env = env;
+    }
+
+    public @Nullable Param getParam() {
+        return result;
+    }
+
+    public void setParam(Param result) {
+        this.result = result;
     }
 }

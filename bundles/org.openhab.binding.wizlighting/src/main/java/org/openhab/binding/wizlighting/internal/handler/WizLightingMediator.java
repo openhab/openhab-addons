@@ -16,10 +16,7 @@ import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse;
-import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
-import org.osgi.service.component.annotations.Component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link WizLightingMediator} is responsible for receiving all the sync packets and route correctly to
@@ -27,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
-@Component(configurationPid = "WizLightingMediator", service = WizLightingMediator.class)
 @NonNullByDefault
 public interface WizLightingMediator {
 
@@ -35,7 +31,7 @@ public interface WizLightingMediator {
      * This method is called by the {@link WizLightingUpdateReceiverRunnable}, when one new message has been
      * received.
      *
-     * @param receivedMessage the {@link WizLightingResponse} message.
+     * @param receivedMessage the {@link WizLightingSyncResponse} message.
      */
     void processReceivedPacket(final WizLightingSyncResponse receivedMessage);
 

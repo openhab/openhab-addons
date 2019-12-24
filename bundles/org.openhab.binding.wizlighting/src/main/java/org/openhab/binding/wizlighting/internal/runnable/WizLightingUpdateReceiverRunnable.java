@@ -64,8 +64,9 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
 
         logger.debug("Opening socket and start listening UDP port: {}", listeningPort);
         this.datagramSocket = new DatagramSocket(listeningPort);
-        if (this.datagramSocket != null) {
-            this.datagramSocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
+        DatagramSocket mySock = this.datagramSocket;
+        if (mySock != null) {
+            mySock.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
         }
         logger.debug("Update Receiver Runnable and socket started with success...");
 
@@ -74,6 +75,8 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
 
     @Override
     public void run() {
+        DatagramSocket datagramSocket = this.datagramSocket;
+
         // Now loop forever, waiting to receive packets and redirect them to mediator.
         while (!this.shutdown) {
             datagramSocketHealthRoutine();
@@ -86,21 +89,23 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
             // Create a packet to receive data into the buffer
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-            // Wait to receive a datagram
-            try {
-                this.datagramSocket.receive(packet);
+            if (datagramSocket != null) {
+                // Wait to receive a datagram
+                try {
+                    datagramSocket.receive(packet);
 
-                logger.debug("Received packet from: {}. Will process the packet...",
-                        packet.getAddress().getHostAddress());
+                    logger.debug("Received packet from: {}. Will process the packet...",
+                            packet.getAddress().getHostAddress());
 
-                // Redirect packet to the mediator
-                this.mediator.processReceivedPacket(this.packetConverter.transformSyncResponsePacket(packet));
+                    // Redirect packet to the mediator
+                    this.mediator.processReceivedPacket(this.packetConverter.transformSyncResponsePacket(packet));
 
-                logger.debug("Message delivered with success to mediator.");
-            } catch (SocketTimeoutException e) {
-                logger.trace("Socket Timeout receiving packet.");
-            } catch (IOException e) {
-                logger.debug("One exception has occurred: {} ", e.getMessage());
+                    logger.debug("Message delivered with success to mediator.");
+                } catch (SocketTimeoutException e) {
+                    logger.trace("Socket Timeout receiving packet.");
+                } catch (IOException e) {
+                    logger.debug("One exception has occurred: {} ", e.getMessage());
+                }
             }
         }
 
@@ -111,6 +116,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
     }
 
     private void datagramSocketHealthRoutine() {
+        DatagramSocket datagramSocket = this.datagramSocket;
         if (datagramSocket == null || datagramSocket.isClosed()) {
             logger.debug("Datagram Socket has been closed, will reconnect again...");
             DatagramSocket newDatagramSocket = null;

@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * This POJO represents one Wiz Lighting Sync params
+ * This POJO represents one Wiz Lighting Response params
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
@@ -41,6 +41,7 @@ public class SyncResponseParam implements Param {
     public int dimming;
     public int temp;
     public int schdPsetId;
+    public @Nullable String fwVersion;
 
     public PercentType getTemperatureColor() {
         return new PercentType((temp - 2200) / (6500 - 2200) * 100);
