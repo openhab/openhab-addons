@@ -19,6 +19,8 @@ import java.time.Instant;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.data.TouchWandUnitDataWallController;
 
 /**
  * The {@link TouchWandWallControllerHandler} is responsible for handling commands and triggers
@@ -44,7 +46,9 @@ public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
     }
 
     @Override
-    void updateTouchWandUnitState(int status) {
+    void updateTouchWandUnitState(TouchWandUnitData unitData) {
+
+        int status = ((TouchWandUnitDataWallController) unitData).getCurrStatus();
         long timeDiff = Instant.now().toEpochMilli() - timeSinceLastEvent;
         if ((timeDiff) > ajdustentEventFilterTime) {
             String action = status <= 100 ? "SHORT" : "LONG";

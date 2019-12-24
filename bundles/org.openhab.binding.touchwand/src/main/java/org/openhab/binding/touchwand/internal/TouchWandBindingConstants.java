@@ -43,6 +43,8 @@ public class TouchWandBindingConstants {
     public static final String CHANNEL_DIMMER = "brightness";
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_WALLCONTROLER_ACTION = "wallaction";
+    public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
+    public static final String CHANNEL_BATTERY_LOW = "battery_low";
 
     // List of configuration parameters
 
@@ -64,9 +66,16 @@ public class TouchWandBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHUTTER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WALLCONTROLLER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DIMMER); // not implemented yet
-        // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ALARMSENSOR); // not implemented yet
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ALARMSENSOR); // not implemented yet
     }
 
-    public static final String[] SUPPORTED_TOCUHWAND_TYPES = { "Switch", "WallController", "shutter", "dimmer" };
+    public static final String TYPE_WALLCONTROLLER = "WallController";
+    public static final String TYPE_SWITCH = "Switch";
+    public static final String TYPE_SHUTTER = "shutter";
+    public static final String TYPE_DIMMER = "dimmer";
+    public static final String TYPE_ALARMSENSOR = "AlarmSensor";
+
+    public static final String[] SUPPORTED_TOCUHWAND_TYPES = { TYPE_WALLCONTROLLER, TYPE_SWITCH, TYPE_SHUTTER,
+            TYPE_DIMMER, TYPE_ALARMSENSOR };
 
 }

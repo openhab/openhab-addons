@@ -233,5 +233,5 @@ public abstract class TouchWandUnitData {
         this.roomId = roomId;
     }
 
-    public abstract Integer getCurrStatus();
+    public abstract Object getCurrStatus();
 }

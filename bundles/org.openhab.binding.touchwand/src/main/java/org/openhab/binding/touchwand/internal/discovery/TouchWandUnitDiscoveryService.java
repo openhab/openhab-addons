@@ -34,6 +34,7 @@ import org.openhab.binding.touchwand.internal.TouchWandBridgeHandler;
 import org.openhab.binding.touchwand.internal.TouchWandUnitStatusUpdateListener;
 import org.openhab.binding.touchwand.internal.data.TouchWandShutterSwitchUnitData;
 import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.data.TouchWandUnitDataAlarmSensor;
 import org.openhab.binding.touchwand.internal.data.TouchWandUnitDataWallController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,57 +108,62 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                             logger.debug("Unit discovery skipping unsupported unit type : {} ", type);
                             continue;
                         }
-
                         if (!unitObj.has("currStatus") || (unitObj.get("currStatus") == null)) {
                             logger.warn("Unit discovery unit currStatus is null : {}", response);
                             continue;
                         }
 
-                        if (type.equals("WallController")) {
-                            touchWandUnit = gson.fromJson(unitObj, TouchWandUnitDataWallController.class);
-                        } else {
-                            touchWandUnit = gson.fromJson(unitObj, TouchWandShutterSwitchUnitData.class);
-                        }
-
                         if (!touchWandBridgeHandler.isAddSecondaryControllerUnits()) {
-                            if (!Arrays.asList(CONNECTIVITY_OPTIONS).contains(touchWandUnit.getConnectivity())) {
+                            if (!Arrays.asList(CONNECTIVITY_OPTIONS)
+                                    .contains(unitObj.get("connectivity").getAsString())) {
                                 continue;
                             }
                         }
 
-                        String unitType = touchWandUnit.getType();
-
-                        if (unitType.equals("Switch")) {
-                            addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SWITCH);
-                        } else if (unitType.equals("shutter")) {
-                            addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
-                        } else if (unitType.equals("WallController")) {
-                            addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_WALLCONTROLLER);
-                        } else if (unitType.equals("dimmer")) {
-                            addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_DIMMER);
-                        }
-
-                        /* sometimes current status received null , no point update listeners */
-                        if (touchWandUnit.getCurrStatus() == null) {
-                            // logger.warn("Unit id {} name {} CurrStatus is null", touchWandUnit.getId(),
-                            // touchWandUnit.getName());
-                            continue;
-                        }
-
-                        if (unitType.equals("Switch") || unitType.equals("shutter") || unitType.equals("dimmer")) {
-                            norifyListeners(touchWandUnit);
+                        switch (type) {
+                            case TYPE_WALLCONTROLLER:
+                                touchWandUnit = gson.fromJson(unitObj, TouchWandUnitDataWallController.class);
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_WALLCONTROLLER);
+                                break;
+                            case TYPE_SWITCH:
+                                touchWandUnit = gson.fromJson(unitObj, TouchWandShutterSwitchUnitData.class);
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SWITCH);
+                                norifyListeners(touchWandUnit);
+                                break;
+                            case TYPE_DIMMER:
+                                touchWandUnit = gson.fromJson(unitObj, TouchWandShutterSwitchUnitData.class);
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_DIMMER);
+                                norifyListeners(touchWandUnit);
+                                break;
+                            case TYPE_SHUTTER:
+                                touchWandUnit = gson.fromJson(unitObj, TouchWandShutterSwitchUnitData.class);
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
+                                break;
+                            case TYPE_ALARMSENSOR:
+                                touchWandUnit = gson.fromJson(unitObj, TouchWandUnitDataAlarmSensor.class);
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_ALARMSENSOR);
+                                break;
+                            default:
+                                continue;
                         }
                     }
                 } catch (JsonSyntaxException e) {
                     logger.warn("Could not parse unit {}", e.getMessage());
                 }
+
             }
         } catch (JsonSyntaxException msg) {
             logger.warn("Could not parse list units response {}", msg);
         }
+
     }
 
     private void norifyListeners(TouchWandUnitData touchWandUnit) {
+        /* sometimes current status received null , no point update listeners */
+        if (touchWandUnit.getCurrStatus() == null) {
+            return;
+        }
+
         for (TouchWandUnitStatusUpdateListener listener : listeners) {
             listener.onDataReceived(touchWandUnit);
         }

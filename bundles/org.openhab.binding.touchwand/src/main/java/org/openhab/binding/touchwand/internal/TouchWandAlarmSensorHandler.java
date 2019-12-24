@@ -14,44 +14,41 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.touchwand.internal.data.TouchWandShutterSwitchUnitData;
 import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.data.TouchWandUnitDataAlarmSensor;
 
 /**
- * The {@link TouchWandSwitchHandler} is responsible for handling command for Switch unit
+ * The {@link TouchWandAlarmSensorHandler} is responsible for handling Alarm Sensor triggers
  *
+ * for WallController units
  *
  * @author Roie Geron - Initial contribution
  *
  */
 @NonNullByDefault
-public class TouchWandSwitchHandler extends TouchWandBaseUnitHandler {
+public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
 
-    public TouchWandSwitchHandler(Thing thing) {
+    public TouchWandAlarmSensorHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        OnOffType state = OnOffType.ON;
-        int status = ((TouchWandShutterSwitchUnitData) unitData).getCurrStatus();
-        String sStatus = Integer.toString(status);
-        if (sStatus.equals(SWITCH_STATUS_OFF)) {
-            state = OnOffType.OFF;
-        }
-        updateState(CHANNEL_SWITCH, state);
+        Instant.now().toEpochMilli();
     }
 
     @Override
     void touhWandUnitHandleCommand(Command command) {
-        if (command instanceof OnOffType) {
-            bridgeHandler.touchWandClient.cmdSwitchOnOff(unitId, (OnOffType) command);
-        }
-
     }
 
+    @Override
+    void updateTouchWandUnitState(TouchWandUnitData unitData) {
+        Integer batteryLevel = ((TouchWandUnitDataAlarmSensor) unitData).getCurrStatus().getBatt();
+        DecimalType dBatteryLevel = DecimalType.valueOf(String.valueOf(batteryLevel));
+        updateState(CHANNEL_BATTERY_LEVEL, dBatteryLevel);
+        updateState(CHANNEL_BATTERY_LOW, dBatteryLevel.intValue() <= 10 ? OnOffType.ON : OnOffType.OFF);
+    }
 }
