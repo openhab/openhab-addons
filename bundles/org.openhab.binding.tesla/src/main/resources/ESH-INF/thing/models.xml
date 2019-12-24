@@ -14,7 +14,6 @@
 		<description>A Tesla Model S Vehicle</description>
 
 		<channels>
-			<channel id="allowwakeup" typeId="allowwakeup" />
 			<channel id="autoconditioning" typeId="autoconditioning" />
 			<channel id="autoparkstate" typeId="autoparkstate" />
 			<channel id="autoparkstate2" typeId="autoparkstate" />
@@ -62,6 +61,7 @@
 			<channel id="flashlights" typeId="flashlights" />
 			<channel id="frontdefroster" typeId="frontdefroster" />
 			<channel id="fronttrunk" typeId="fronttrunk" />
+			<channel id="forcerefresh" typeId="forcerefresh" />
 			<channel id="gpstimestamp" typeId="gpstimestamp" />
 			<channel id="heading" typeId="heading" />
 			<channel id="headingestimation" typeId="headingestimation" />
