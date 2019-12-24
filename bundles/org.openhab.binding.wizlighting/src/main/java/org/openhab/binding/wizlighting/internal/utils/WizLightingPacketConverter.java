@@ -63,7 +63,8 @@ public class WizLightingPacketConverter {
     }
 
     /**
-     * Method that transforms {@link DatagramPacket} to a {@link WizLightingSyncResponse} Object
+     * Method that transforms {@link DatagramPacket} to a
+     * {@link WizLightingSyncResponse} Object
      *
      * @param packet the {@link DatagramPacket}
      * @return the {@link WizLightingSyncResponse}

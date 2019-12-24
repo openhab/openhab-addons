@@ -39,7 +39,8 @@ public final class NetworkUtils {
     public static @Nullable String getMyMacAddress() throws UnknownHostException, SocketException {
         Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
         while (networks.hasMoreElements()) {
-            @Nullable NetworkInterface network = networks.nextElement();
+            @Nullable
+            NetworkInterface network = networks.nextElement();
             byte[] macAddressBytes = network.getHardwareAddress();
             if (macAddressBytes != null) {
                 StringBuilder macAddressBuilder = new StringBuilder();

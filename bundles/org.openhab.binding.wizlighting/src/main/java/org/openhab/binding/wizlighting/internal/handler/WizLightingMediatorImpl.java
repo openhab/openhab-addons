@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
+import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse;
 import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
 import org.osgi.service.component.ComponentContext;
@@ -29,12 +30,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link WizLightingMediatorImpl} is responsible for receiving all the sync packets and route correctly to
- * each handler.
+ * The {@link WizLightingMediatorImpl} is responsible for receiving all the sync
+ * packets and route correctly to each handler.
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
-// @Component(configurationPid = "WizLightingMediator", service = WizLightingMediator.class)
+// @Component(configurationPid = "WizLightingMediator", service =
+// WizLightingMediator.class)
 @NonNullByDefault
 public class WizLightingMediatorImpl implements WizLightingMediator {
 
@@ -44,6 +46,8 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
 
     private @Nullable WizLightingUpdateReceiverRunnable receiver;
     private @Nullable Thread receiverThread;
+
+    private @Nullable WizLightingDiscoveryService wizlightingDiscoveryService;
 
     /**
      * Called at the service activation.
@@ -68,8 +72,8 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     }
 
     /**
-     * This method is called by the {@link WizLightingUpdateReceiverRunnable}, when one new message has been
-     * received.
+     * This method is called by the {@link WizLightingUpdateReceiverRunnable}, when
+     * one new message has been received.
      *
      * @param receivedMessage the {@link WizLightingSyncResponse} message.
      */
@@ -78,9 +82,12 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
         logger.debug("Received packet from: {} with method: [{}]", receivedMessage.getWizResponseIpAddress(),
                 receivedMessage.getMethod());
 
-        @Nullable String bulbMac =receivedMessage.getWizResponseIpAddress();
+        @Nullable
+        String bulbIp = receivedMessage.getWizResponseIpAddress();
+        @Nullable
+        String bulbMac = receivedMessage.getWizResponseMacAddress();
 
-        if (bulbMac != null){
+        if (bulbMac != null) {
             @Nullable
             WizLightingHandler handler = this.getHandlerRegisteredByMac(bulbMac);
 
@@ -89,8 +96,10 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
                 handler.newReceivedResponseMessage(receivedMessage);
                 logger.debug("Received message delivered with success to handler of mac {}",
                         receivedMessage.getWizResponseIpAddress());
-            } else {
-                logger.debug("There is no handler registered for mac address:{}", receivedMessage.getWizResponseIpAddress());
+            } else if (bulbIp != null) {
+                logger.debug("There is no handler registered for mac address:{}",
+                        receivedMessage.getWizResponseIpAddress());
+                wizlightingDiscoveryService.discoveredLight(bulbMac, bulbIp);
             }
         } else {
             logger.warn("The sync response did not contain a mac address, it cannot be processed.");
@@ -98,9 +107,10 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     }
 
     /**
-     * Register one new {@link Thing} and the corresponding {@link WizLightingHandler}.
+     * Register one new {@link Thing} and the corresponding
+     * {@link WizLightingHandler}.
      *
-     * @param thing the {@link Thing}.
+     * @param thing   the {@link Thing}.
      * @param handler the {@link WizLightingHandler}.
      */
     @Override
@@ -118,12 +128,13 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
         // @Nullable
         // WizLightingHandler handler = this.handlersRegisteredByThing.get(thing);
         // if (handler != null) {
-            this.handlersRegisteredByThing.remove(thing);
+        this.handlersRegisteredByThing.remove(thing);
         // }
     }
 
     /**
-     * Utilitary method to get the registered thing handler in mediator by the mac address.
+     * Utilitary method to get the registered thing handler in mediator by the mac
+     * address.
      *
      * @param bulbMacAddress the mac address of the thing of the handler.
      * @return {@link WizLightingHandler} if found.
@@ -141,15 +152,16 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     }
 
     /**
-     * Inits the mediator WizBulbUpdateReceiverRunnable thread. This thread is responsible to receive all
-     * packets from Wiz Bulbs, and redirect the messages to mediator.
+     * Inits the mediator WizBulbUpdateReceiverRunnable thread. This thread is
+     * responsible to receive all packets from Wiz Bulbs, and redirect the messages
+     * to mediator.
      */
     private void initMediatorWizBulbUpdateReceiverRunnable() {
         WizLightingUpdateReceiverRunnable receiver = this.receiver;
         Thread receiverThread = this.receiverThread;
         // try with handler port if is null
-        if ((receiver == null) || ((receiverThread != null)
-                && (receiverThread.isInterrupted() || !receiverThread.isAlive()))) {
+        if ((receiver == null)
+                || ((receiverThread != null) && (receiverThread.isInterrupted() || !receiverThread.isAlive()))) {
             try {
                 this.receiver = new WizLightingUpdateReceiverRunnable(this,
                         WizLightingBindingConstants.LISTENER_DEFAULT_UDP_PORT);
@@ -173,5 +185,14 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
     @Override
     public Set<Thing> getAllThingsRegistered() {
         return this.handlersRegisteredByThing.keySet();
+    }
+
+    @Override
+    public void setDiscoveryService(final @Nullable WizLightingDiscoveryService discoveryService) {
+        this.wizlightingDiscoveryService = discoveryService;
+    }
+
+    public @Nullable WizLightingDiscoveryService getDiscoveryService() {
+        return this.wizlightingDiscoveryService;
     }
 }

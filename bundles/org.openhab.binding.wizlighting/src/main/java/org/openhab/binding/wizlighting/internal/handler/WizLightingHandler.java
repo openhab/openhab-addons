@@ -61,8 +61,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link WizLightingHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link WizLightingHandler} is responsible for handling commands, which
+ * are sent to one of the channels.
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
@@ -77,7 +77,7 @@ public class WizLightingHandler extends BaseThingHandler {
 
     private String bulbIpAddress = "bulbIpAddress";
     private String bulbMacAddress = "bulbMacAddress";
-    private int homeId;
+    private int homeId = Integer.valueOf(WizLightingBindingConstants.HOME_ID_ARG);
     private Long updateInterval = WizLightingBindingConstants.DEFAULT_REFRESH_INTERVAL;
 
     private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
@@ -92,13 +92,11 @@ public class WizLightingHandler extends BaseThingHandler {
      * @param thing the thing of the handler.
      * @throws MacAddressNotValidException if the mac address isn't valid.
      */
-    public WizLightingHandler(final Thing thing)
-            throws MacAddressNotValidException {
+    public WizLightingHandler(final Thing thing) throws MacAddressNotValidException {
         super(thing);
 
         savebulbMacAddressFromConfiguration(this.getConfig());
         savebulbIpAddressFromConfiguration(this.getConfig());
-        saveHomeIdFromConfiguration(this.getConfig());
         saveUpdateIntervalFromConfiguration(this.getConfig());
     }
 
@@ -109,41 +107,41 @@ public class WizLightingHandler extends BaseThingHandler {
         }
 
         switch (channelUID.getId()) {
-            case WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID:
+        case WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID:
+            sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command));
+            break;
+
+        case WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID:
+            if (command instanceof HSBType) {
+                HSBType hsbCommand = (HSBType) command;
+                if (hsbCommand.getBrightness().intValue() == 0) {
+                    sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam(OnOffType.OFF));
+                } else {
+                    sendRequestPacket(WizLightingMethodType.setPilot, new ColorRequestParam((HSBType) command));
+                }
+            } else if (command instanceof PercentType) {
+                sendRequestPacket(WizLightingMethodType.setPilot, new DimmingRequestParam(command));
+            } else if (command instanceof OnOffType) {
                 sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command));
-                break;
+            }
+            break;
 
-            case WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID:
-                if (command instanceof HSBType) {
-                    HSBType hsbCommand = (HSBType) command;
-                    if (hsbCommand.getBrightness().intValue() == 0) {
-                        sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam(OnOffType.OFF));
-                    } else {
-                        sendRequestPacket(WizLightingMethodType.setPilot, new ColorRequestParam((HSBType) command));
-                    }
-                } else if (command instanceof PercentType) {
-                    sendRequestPacket(WizLightingMethodType.setPilot, new DimmingRequestParam(command));
-                } else if (command instanceof OnOffType) {
-                    sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command));
+        case WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID:
+            sendRequestPacket(WizLightingMethodType.setPilot, new SceneRequestParam(command));
+            break;
+
+        case WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID:
+            if (command instanceof PercentType) {
+                sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(command));
+            } else if (command instanceof OnOffType) {
+                OnOffType onOffCommand = (OnOffType) command;
+                if (onOffCommand.equals(OnOffType.ON)) {
+                    sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(100));
+                } else {
+                    sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(0));
                 }
-                break;
-
-            case WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID:
-                sendRequestPacket(WizLightingMethodType.setPilot, new SceneRequestParam(command));
-                break;
-
-            case WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID:
-                if (command instanceof PercentType) {
-                    sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(command));
-                } else if (command instanceof OnOffType) {
-                    OnOffType onOffCommand = (OnOffType) command;
-                    if (onOffCommand.equals(OnOffType.ON)) {
-                        sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(100));
-                    } else {
-                        sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(0));
-                    }
-                }
-                break;
+            }
+            break;
         }
     }
 
@@ -159,7 +157,8 @@ public class WizLightingHandler extends BaseThingHandler {
     }
 
     /**
-     * Starts one thread that querys the state of the socket, after the defined refresh interval.
+     * Starts one thread that querys the state of the socket, after the defined
+     * refresh interval.
      */
     private void initGetStatusAndKeepAliveThread() {
 
@@ -229,7 +228,8 @@ public class WizLightingHandler extends BaseThingHandler {
     }
 
     /**
-     * Method called by {@link WizLightingMediator} when one new message has been received for this handler.
+     * Method called by {@link WizLightingMediator} when one new message has been
+     * received for this handler.
      *
      * @param receivedMessage the received {@link WizLightingSyncResponse}.
      */
@@ -241,7 +241,8 @@ public class WizLightingHandler extends BaseThingHandler {
             updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, OnOffType.from(params.state));
 
             // update scene channel
-            updateState(WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID, new StringType(String.valueOf(params.sceneId)));
+            updateState(WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID,
+                    new StringType(String.valueOf(params.sceneId)));
 
             // update speed channel
             updateState(WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID, new PercentType(params.speed));
@@ -293,7 +294,8 @@ public class WizLightingHandler extends BaseThingHandler {
      *
      * @param configuration The {@link Configuration}
      */
-    private void savebulbMacAddressFromConfiguration(final Configuration configuration) throws MacAddressNotValidException {
+    private void savebulbMacAddressFromConfiguration(final Configuration configuration)
+            throws MacAddressNotValidException {
         String bulbMacAddress = String.valueOf(configuration.get(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG));
 
         if (ValidationUtils.isMacNotValid(bulbMacAddress)) {
@@ -306,23 +308,10 @@ public class WizLightingHandler extends BaseThingHandler {
     }
 
     /**
-     * Saves the home id from configuration in field.
-     *
-     * @param configuration The {@link Configuration}
-     */
-    private void saveHomeIdFromConfiguration(final Configuration configuration) {
-        if (configuration.get(WizLightingBindingConstants.HOME_ID_ARG) != null) {
-            String homeIdStr = (String) configuration.get(WizLightingBindingConstants.HOME_ID_ARG);
-            this.homeId = Integer.parseInt(homeIdStr);
-            logger.info("HomeId set to '{}'", this.homeId);
-        }
-    }
-
-    /**
      * Sends {@link WizLightingRequest} to the passed {@link InetAddress}.
      *
      * @param requestPacket the {@link WizLightingRequest}.
-     * @param address the {@link InetAddress}.
+     * @param address       the {@link InetAddress}.
      */
     private @Nullable WizLightingSyncResponse sendRequestPacket(final WizLightingMethodType method, final Param param) {
         DatagramSocket dsocket = null;
@@ -353,8 +342,8 @@ public class WizLightingHandler extends BaseThingHandler {
                 return response;
             }
         } catch (IOException exception) {
-            logger.debug("Something wrong happen sending the packet to address: {} and port {}... msg: {}", bulbIpAddress,
-                    WizLightingBindingConstants.BULB_DEFAULT_UDP_PORT, exception.getMessage());
+            logger.debug("Something wrong happen sending the packet to address: {} and port {}... msg: {}",
+                    bulbIpAddress, WizLightingBindingConstants.BULB_DEFAULT_UDP_PORT, exception.getMessage());
         } finally {
             if (dsocket != null) {
                 dsocket.close();
@@ -371,7 +360,6 @@ public class WizLightingHandler extends BaseThingHandler {
             savebulbMacAddressFromConfiguration(configuration);
             savebulbIpAddressFromConfiguration(configuration);
             saveUpdateIntervalFromConfiguration(configuration);
-            saveHomeIdFromConfiguration(configuration);
 
             initGetStatusAndKeepAliveThread();
             saveConfigurationsUsingCurrentStates();
@@ -382,7 +370,8 @@ public class WizLightingHandler extends BaseThingHandler {
     }
 
     /**
-     * Save the current runtime configuration of the handler in configuration mechanism.
+     * Save the current runtime configuration of the handler in configuration
+     * mechanism.
      */
     private void saveConfigurationsUsingCurrentStates() {
         Map<String, Object> map = new HashMap<>();

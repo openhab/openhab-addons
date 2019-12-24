@@ -33,8 +33,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link WizLightingHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link WizLightingHandlerFactory} is responsible for creating things and
+ * thing handlers.
  *
  * @author Sriram Balakrishnan - Initial contribution
  */

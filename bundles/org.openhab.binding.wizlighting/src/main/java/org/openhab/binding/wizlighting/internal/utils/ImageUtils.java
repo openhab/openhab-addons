@@ -32,7 +32,8 @@ public class ImageUtils {
      */
     public static Color getRGBFromK(int temperature) {
         // Used this: https://gist.github.com/paulkaplan/5184275 at the beginning
-        // based on http://stackoverflow.com/questions/7229895/display-temperature-as-a-color-with-c
+        // based on
+        // http://stackoverflow.com/questions/7229895/display-temperature-as-a-color-with-c
         // this answer: http://stackoverflow.com/a/24856307
         // (so, just interpretation of pseudocode in Java)
 

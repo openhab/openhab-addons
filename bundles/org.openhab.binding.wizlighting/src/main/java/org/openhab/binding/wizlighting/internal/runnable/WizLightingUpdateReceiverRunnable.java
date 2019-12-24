@@ -50,7 +50,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
     /**
      * Constructor of the receiver runnable thread.
      *
-     * @param mediator the {@link WizLightingMediator}
+     * @param mediator      the {@link WizLightingMediator}
      * @param listeningPort the listening UDP port
      * @throws SocketException is some problem occurs opening the socket.
      */
@@ -133,7 +133,8 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
     }
 
     /**
-     * Gracefully shutdown thread. Worst case takes TIMEOUT_TO_DATAGRAM_RECEPTION to shutdown.
+     * Gracefully shutdown thread. Worst case takes TIMEOUT_TO_DATAGRAM_RECEPTION to
+     * shutdown.
      */
     public void shutdown() {
         this.shutdown = true;

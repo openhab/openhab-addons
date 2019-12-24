@@ -16,11 +16,14 @@ import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse;
+import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link WizLightingMediator} is responsible for receiving all the sync packets and route correctly to
- * each handler.
+ * The {@link WizLightingMediator} is responsible for receiving all the sync
+ * packets and route correctly to each handler.
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
@@ -28,17 +31,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface WizLightingMediator {
 
     /**
-     * This method is called by the {@link WizLightingUpdateReceiverRunnable}, when one new message has been
-     * received.
+     * This method is called by the {@link WizLightingUpdateReceiverRunnable}, when
+     * one new message has been received.
      *
      * @param receivedMessage the {@link WizLightingSyncResponse} message.
      */
     void processReceivedPacket(final WizLightingSyncResponse receivedMessage);
 
     /**
-     * Registers a new {@link Thing} and the corresponding {@link WizLightingHandler}.
+     * Registers a new {@link Thing} and the corresponding
+     * {@link WizLightingHandler}.
      *
-     * @param thing the {@link Thing}.
+     * @param thing   the {@link Thing}.
      * @param handler the {@link WizLightingHandler}.
      */
     void registerThingAndWizBulbHandler(final Thing thing, final WizLightingHandler handler);
@@ -56,4 +60,12 @@ public interface WizLightingMediator {
      * @returns all the {@link Thing}.
      */
     Set<Thing> getAllThingsRegistered();
+
+    /**
+     * Sets the discovery service to inform the user when one new thing has been
+     * found.
+     *
+     * @param discoveryService the discovery service.
+     */
+    void setDiscoveryService(final @Nullable WizLightingDiscoveryService discoveryService);
 }

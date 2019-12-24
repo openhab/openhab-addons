@@ -22,8 +22,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link WizLightingBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link WizLightingBindingConstants} class defines common constants, which
+ * are used across the whole binding.
  *
  * @author Sriram Balakrishnan - Initial contribution
  */

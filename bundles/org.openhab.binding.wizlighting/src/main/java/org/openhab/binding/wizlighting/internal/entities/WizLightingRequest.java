@@ -32,7 +32,7 @@ public class WizLightingRequest {
     /**
      * Default constructor.
      *
-     * @param type the {@link WizLightingMethodType}
+     * @param type   the {@link WizLightingMethodType}
      * @param params {@link Param}
      */
     public WizLightingRequest(final WizLightingMethodType method, final Param params) {
