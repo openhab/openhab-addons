@@ -215,7 +215,7 @@ Here are a few examples to unwrap a value from a complex response:
 |---------------------------------------------------------------------|-------------|-------------------------------------------|
 | `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH    | `JSONPATH:$.device.status.temperature`    |
 | `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath:/device/status/temperature/text()` |
-| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX::(.*?)°`                           |
+| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX:(.*?)°`                           |
 
 Transformations can be chained by separating them with the mathematical intersection character "∩".
 Please note that the incoming value will be discarded if one transformation fails (e.g. REGEX did not match).
