@@ -67,7 +67,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
         WizLightingMediator mediator = this.mediator;
         if (mediator != null) {
-            this.mediator.setDiscoveryService(null);
+            mediator.setDiscoveryService(null);
             this.mediator = null;
         }
     }

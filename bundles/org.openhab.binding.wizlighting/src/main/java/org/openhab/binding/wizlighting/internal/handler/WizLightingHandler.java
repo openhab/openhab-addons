@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.entities.ColorRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.DimmingRequestParam;
@@ -51,14 +50,12 @@ import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidException;
 import org.openhab.binding.wizlighting.internal.utils.ImageUtils;
 import org.openhab.binding.wizlighting.internal.utils.ValidationUtils;
-import org.openhab.binding.wizlighting.internal.utils.NetworkUtils;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link WizLightingHandler} is responsible for handling commands, which
@@ -71,19 +68,15 @@ public class WizLightingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingHandler.class);
 
-    private @Nullable NetworkAddressService networkAddressService;
-    private @Nullable String myIpAddress;
-    private @Nullable String myMacAddress;
-
     private String bulbIpAddress = "bulbIpAddress";
     private String bulbMacAddress = "bulbMacAddress";
-    private int homeId = Integer.valueOf(WizLightingBindingConstants.HOME_ID_ARG);
+    private int homeId;
     private Long updateInterval = WizLightingBindingConstants.DEFAULT_REFRESH_INTERVAL;
 
     private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
     private @Nullable ScheduledFuture<?> keepAliveJob;
     private long latestUpdate = -1;
-    private @Nullable RegistrationRequestParam registrationInfo;
+    private RegistrationRequestParam registrationInfo;
     private int requestId = 0;
 
     /**
@@ -92,12 +85,17 @@ public class WizLightingHandler extends BaseThingHandler {
      * @param thing the thing of the handler.
      * @throws MacAddressNotValidException if the mac address isn't valid.
      */
-    public WizLightingHandler(final Thing thing) throws MacAddressNotValidException {
+    public WizLightingHandler(final Thing thing, final String myAddress, final String myMacAddress)
+            throws MacAddressNotValidException {
         super(thing);
 
         savebulbMacAddressFromConfiguration(this.getConfig());
         savebulbIpAddressFromConfiguration(this.getConfig());
+        saveHomeIdFromConfiguration(this.getConfig());
         saveUpdateIntervalFromConfiguration(this.getConfig());
+
+        logger.debug("Setting my host to {} and mac to {}", myAddress, myMacAddress);
+        registrationInfo = new RegistrationRequestParam(myAddress, true, this.homeId, myMacAddress);
     }
 
     @Override
@@ -200,21 +198,8 @@ public class WizLightingHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE);
                 }
 
-                @Nullable
-                String myIp = getMyIpAddress();
-                @Nullable
-                String myMac = getMyMacAddress();
-
-                if (myIp != null && myMac != null) {
-                    logger.debug("Setting request for sync from host {} and mac {}", myIp, myMac);
-                    registrationInfo = new RegistrationRequestParam(myIp, true, homeId, myMac);
-                }
-
-                RegistrationRequestParam regisInfo = registrationInfo;
-                if (regisInfo != null) {
-                    // request gpio status
-                    sendRequestPacket(WizLightingMethodType.registration, regisInfo);
-                }
+                // request gpio status
+                sendRequestPacket(WizLightingMethodType.registration, registrationInfo);
             }
         };
         this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, updateInterval, TimeUnit.SECONDS);
@@ -308,6 +293,19 @@ public class WizLightingHandler extends BaseThingHandler {
     }
 
     /**
+     * Saves the home id from configuration in field.
+     *
+     * @param configuration The {@link Configuration}
+     */
+    private void saveHomeIdFromConfiguration(final Configuration configuration) {
+        if (configuration.get(WizLightingBindingConstants.HOME_ID_ARG) != null) {
+            String homeIdStr = (String) configuration.get(WizLightingBindingConstants.HOME_ID_ARG);
+            this.homeId = Integer.parseInt(homeIdStr);
+            logger.info("HomeId set to '{}'", this.homeId);
+        }
+    }
+
+    /**
      * Sends {@link WizLightingRequest} to the passed {@link InetAddress}.
      *
      * @param requestPacket the {@link WizLightingRequest}.
@@ -360,6 +358,7 @@ public class WizLightingHandler extends BaseThingHandler {
             savebulbMacAddressFromConfiguration(configuration);
             savebulbIpAddressFromConfiguration(configuration);
             saveUpdateIntervalFromConfiguration(configuration);
+            saveHomeIdFromConfiguration(configuration);
 
             initGetStatusAndKeepAliveThread();
             saveConfigurationsUsingCurrentStates();
@@ -382,58 +381,6 @@ public class WizLightingHandler extends BaseThingHandler {
 
         Configuration newConfiguration = new Configuration(map);
         super.updateConfiguration(newConfiguration);
-    }
-
-    private @Nullable String getMyIpAddress() {
-        NetworkAddressService networkAddressService = this.networkAddressService;
-        String ohIpAddress = String.valueOf(WizLightingBindingConstants.OH_IP_ADDRESS_ARG);
-        if (myIpAddress != null) {
-            return myIpAddress;
-        } else if (ohIpAddress != null) {
-            return ohIpAddress;
-        } else if (networkAddressService != null) {
-            myIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (myIpAddress == null) {
-                logger.warn("No network interface could be found.  IP of OpenHab device is unknown");
-                return null;
-            }
-            logger.info("IP of OpenHab device is {}.", myIpAddress);
-            return myIpAddress;
-        } else {
-            return null;
-        }
-    }
-
-    private @Nullable String getMyMacAddress() {
-        String ohMacAddress = String.valueOf(WizLightingBindingConstants.OH_MAC_ADDRESS_ARG);
-        if (myMacAddress != null) {
-            return myMacAddress;
-        } else if (ohMacAddress != null && ValidationUtils.isMacValid(ohMacAddress)) {
-            logger.info("Mac Address of OpenHab device is {}.", ohMacAddress);
-            return ohMacAddress;
-        } else {
-            try {
-                myMacAddress = NetworkUtils.getMyMacAddress();
-                if (myMacAddress == null) {
-                    logger.warn("No network interface could be found.  Mac of OpenHab device is unknown.");
-                    return null;
-                }
-            } catch (Exception e) {
-                logger.warn("Mac Address of OpenHab device is invalid.");
-                return null;
-            }
-            logger.info("Mac Address of OpenHab device is {}.", myMacAddress);
-            return myMacAddress;
-        }
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
     }
 
     // SETTERS AND GETTERS

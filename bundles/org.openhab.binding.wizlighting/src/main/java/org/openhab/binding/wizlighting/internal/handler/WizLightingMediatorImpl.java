@@ -25,7 +25,7 @@ import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiv
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-// import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -35,8 +35,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
-// @Component(configurationPid = "WizLightingMediator", service =
-// WizLightingMediator.class)
+@Component(configurationPid = "WizLightingMediator", service = WizLightingMediator.class)
 @NonNullByDefault
 public class WizLightingMediatorImpl implements WizLightingMediator {
 
@@ -99,7 +98,10 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
             } else if (bulbIp != null) {
                 logger.debug("There is no handler registered for mac address:{}",
                         receivedMessage.getWizResponseIpAddress());
-                wizlightingDiscoveryService.discoveredLight(bulbMac, bulbIp);
+                WizLightingDiscoveryService discoveryServe = this.wizlightingDiscoveryService;
+                if (discoveryServe != null){
+                    discoveryServe.discoveredLight(bulbMac, bulbIp);
+                }
             }
         } else {
             logger.warn("The sync response did not contain a mac address, it cannot be processed.");
@@ -125,11 +127,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      */
     @Override
     public void unregisterWizBulbHandlerByThing(final Thing thing) {
-        // @Nullable
-        // WizLightingHandler handler = this.handlersRegisteredByThing.get(thing);
-        // if (handler != null) {
         this.handlersRegisteredByThing.remove(thing);
-        // }
     }
 
     /**
