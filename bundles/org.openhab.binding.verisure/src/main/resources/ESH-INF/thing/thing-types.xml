@@ -263,6 +263,7 @@
 
 		<channels>
 			<channel id="state" typeId="state" />
+			<channel id="timestamp" typeId="timestamp" />
 			<channel id="location" typeId="location" />
 			<channel id="installationName" typeId="installationName" />
 			<channel id="installationId" typeId="installationId" />

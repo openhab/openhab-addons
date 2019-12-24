@@ -77,9 +77,9 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 | Channel Type ID | Item Type | Description                                                                               |
 |-----------------|-----------|-------------------------------------------------------------------------------------------|
-| timestamp       | String    | This channel reports the last time the alarm status was changed.                          |
-| changedByUser   | String    | This channel reports the user that last changed the state of the alarm.                   |
-| changedVia      | String    | This channel reports the method used to change the status.                                               |
+| changedByUser   | String    | This channel reports the user that last changed the state of the alarm.           |
+| changedVia      | String    | This channel reports the method used to change the status.                       |
+| timestamp       | DateTime  | This channel reports the last time the alarm status was changed.                  |
 | installationName| String    | This channel reports the installation name.                                                |
 | installationId  | Number    | This channel reports the installation ID.                                             |
 | alarmStatus     | String    | This channel is used to arm/disarm the alarm. Available alarm status are "DISARMED", "ARMED_HOME" and "ARMED_AWAY".|               |
@@ -97,10 +97,10 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 | Channel Type ID        | Item Type | Description                                                                                              |
 |------------------------|-----------|----------------------------------------------------------------------------------------------------------|
-| changedByUser          | String    | This channel reports the user that last changed the state of the alarm.                                  |
-| timestamp              | String    | This channel reports the last time the alarm status was changed.                                         |
-| changedVia             | String    | This channel reports the method used to change the status.                                               |
-| motorJam               | String    | This channel reports if the SmartLock motor has jammed.                                                  |
+| changedByUser          | String    | This channel reports the user that last changed the state of the alarm.                             |
+| timestamp              | DateTime  | This channel reports the last time the alarm status was changed.                                         |
+| changedVia             | String    | This channel reports the method used to change the status.                                                 |
+| motorJam               | String    | This channel reports if the SmartLock motor has jammed.                                                 |
 | location               | String    | This channel reports the location.                                                                       |
 | installationName       | String    | This channel reports the installation name.                                                              |
 | installationId         | Number    | This channel reports the installation ID.                                                                |
@@ -144,7 +144,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |                                                                                                                                          
 | humidity        | Number                | This channel reports the current humidity in percentage.   |
 | humidityEnabled | String                | This channel reports if the Climate is device capable of reporting humidity.     |
-| timestamp       | String                | This channel reports the last time this sensor was updated.|
+| timestamp       | DateTime              | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
@@ -163,7 +163,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | Channel Type ID | Item Type             | Description                                                | 
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
 | temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
-| timestamp       | String                | This channel reports the last time this sensor was updated.|
+| timestamp       | DateTime                | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
@@ -182,7 +182,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | Channel Type ID | Item Type             | Description                                                | 
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
 | temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
-| timestamp       | String                | This channel reports the last time this sensor was updated.|
+| timestamp       | DateTime              | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
@@ -201,7 +201,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | Channel Type ID | Item Type             | Description                                                | 
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
 | temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
-| timestamp       | String                | This channel reports the last time this sensor was updated.|
+| timestamp       | DateTime              | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
@@ -220,6 +220,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | Channel Type ID | Item Type | Description                                                                 | 
 |-----------------|-----------|-----------------------------------------------------------------------------|                                                                                                                                          
 | state           | Contact   | This channel reports the if the door/window is open or closed (OPEN/CLOSED).|
+| timestamp       | DateTime  | This channel reports the last time this sensor was updated.|
 | location        | String    | This channel reports the location.                                          |
 | installationName| String    | This channel reports the installation name.                                 |
 | installationId  | Number    | This channel reports the installation ID.                                   |
@@ -237,10 +238,10 @@ Only the bridge require manual configuration. The devices and sensors can be add
  
 | Channel Type ID    | Item Type | Description                                                             | 
 |--------------------|-----------|-------------------------------------------------------------------------|                                                                                                                                          
-| timestamp          | String    | This channel reports the last time the User Presence status was changed.|
+| userLocationStatus | String    | This channel reports the user presence status (HOME/AWAY).                     |
+| timestamp          | DateTime  | This channel reports the last time the User Presence status was changed.     |
 | userName           | String    | This channel reports the user's name.                                   |
 | webAccount         | String    | This channel reports the user's email address.                          |
-| userLocationStatus | String    | This channel reports the user presence status (HOME/AWAY).                     |
 | userDeviceName     | String    | This channel reports the name of the user device.                       |
 | installationName   | String    | This channel reports the installation name.                             |
 | installationId     | Number    | This channel reports the installation ID.                                |
@@ -258,8 +259,8 @@ Only the bridge require manual configuration. The devices and sensors can be add
  
 | Channel Type ID | Item Type | Description                                                                    | 
 |-----------------|-----------|--------------------------------------------------------------------------------|                                                                                                                                          
-| timestamp       | String    | This channel reports the last time the Broadband connection status was checked.|
-| connected       | String    | This channel reports the broadband connection status (true means connected).   |
+| connected       | String    | This channel reports the broadband connection status (true means connected).       |
+| timestamp       | DateTime  | This channel reports the last time the Broadband connection status was checked.|
 | installationName| String    | This channel reports the installation name.                                    |
 | installationId  | Number    | This channel reports the installation ID.                                      |
 
@@ -284,11 +285,13 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
 ````
 // SmartLock and Alarm
 Switch   SmartLock                     "Verisure SmartLock"  <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockStatus"}
-String   AlarmHome                     "Alarm Home"          <alarm>                    {channel="verisure:alarm:myverisure:JannesAlarm:alarmStatus"}
-String   AlarmTimeStamp                "Verisure Alarm Time Stamp"                      {channel="verisure:alarm:myverisure:JannesAlarm:timestamp"}
-String   AlarmChangedByUser            "Verisure Alarm Changed By User"                 {channel="verisure:alarm:myverisure:JannesAlarm:changedByUser"}
 Switch   AutoLock                      "AutoLock"            <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:autoRelock"}
 String   SmartLockVolume               "SmartLock Volume"     <lock>                    {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockVolume"}
+DateTime SmartLockLastUpdated          "SmartLock Last Updated [%1$tY-%1$tm-%1$td %1$tR]" {channel="verisure:smartLock:myverisure:JannesSmartLock:timestamp"}
+String   AlarmHome                     "Alarm Home"          <alarm>                    {channel="verisure:alarm:myverisure:JannesAlarm:alarmStatus"}
+DateTime  AlarmLastUpdated             "Verisure Alarm Last Updated [%1$tY-%1$tm.%1$td %1$tR]"               {channel="verisure:alarm:myverisure:JannesAlarm:timestamp"}
+String   AlarmChangedByUser            "Verisure Alarm Changed By User"                 {channel="verisure:alarm:myverisure:JannesAlarm:changedByUser"}
+
 
 // SmartPlugs         
 Switch   SmartPlugLamp                 "SmartPlug"               <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:4ED5ZXYC:smartPlugStatus"}
@@ -331,7 +334,7 @@ String CurrentBBStatus                 "Broadband Connection Status"       {chan
             }
             Text item=AlarmHomeInstallationName label="Alarm Installation [%s]"
             Text item=AlarmChangedByUser label="Changed by user [%s]"
-            Text item=AlarmTimeStamp
+            Text item=AlarmLastUpdated
             Text item=SmartLockStatus label="SmartLock status [%s]"
             Text item=SmartLockLastUpdated
             Text item=SmartLockOperatedBy label="Changed by user [%s]"
