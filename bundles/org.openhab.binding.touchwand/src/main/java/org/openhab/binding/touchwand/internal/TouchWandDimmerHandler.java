@@ -49,11 +49,16 @@ public class TouchWandDimmerHandler extends TouchWandBaseUnitHandler {
     }
 
     @Override
-    void updateTouchWandUnitState(int status) {
-        PercentType state = PercentType.ZERO;
-        int convertStatus = status;
-        state = new PercentType(convertStatus);
-        updateState(CHANNEL_DIMMER, state);
+    void updateTouchWandUnitState(TouchWandUnitData unitData) {
+        if (unitData instanceof TouchWandShutterSwitchUnitData) {
+            int status = ((TouchWandShutterSwitchUnitData) unitData).getCurrStatus();
+            PercentType state = PercentType.ZERO;
+            int convertStatus = status;
+            state = new PercentType(convertStatus);
+            updateState(CHANNEL_DIMMER, state);
+        } else {
+            logger.warn("updateTouchWandUnitState incompatible TouchWandUnitData instance");
+        }
     }
 
 }

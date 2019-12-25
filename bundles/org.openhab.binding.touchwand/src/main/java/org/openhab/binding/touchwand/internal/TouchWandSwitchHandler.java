@@ -37,13 +37,23 @@ public class TouchWandSwitchHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        OnOffType state = OnOffType.ON;
-        int status = ((TouchWandShutterSwitchUnitData) unitData).getCurrStatus();
-        String sStatus = Integer.toString(status);
-        if (sStatus.equals(SWITCH_STATUS_OFF)) {
-            state = OnOffType.OFF;
+        if (unitData instanceof TouchWandShutterSwitchUnitData) {
+            OnOffType state;
+            int status = ((TouchWandShutterSwitchUnitData) unitData).getCurrStatus();
+            String sStatus = Integer.toString(status);
+
+            if (sStatus.equals(SWITCH_STATUS_OFF)) {
+                state = OnOffType.OFF;
+            } else if ((status >= 1) && (status <= 255)) {
+                state = OnOffType.ON;
+            } else {
+                logger.warn("updateTouchWandUnitState illigal update value {}", status);
+                return;
+            }
+            updateState(CHANNEL_SWITCH, state);
+        } else {
+            logger.warn("updateTouchWandUnitState incompatible TouchWandUnitData instance");
         }
-        updateState(CHANNEL_SWITCH, state);
     }
 
     @Override

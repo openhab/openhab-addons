@@ -34,9 +34,8 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.touchwand.internal.data.TouchWandShutterSwitchUnitData;
 import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitDataWallController;
+import org.openhab.binding.touchwand.internal.data.TouchWandUnitFromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,25 +161,17 @@ public class TouchWandWebSockets {
                 if (!eventUnitChanged) {
                     return;
                 }
-                boolean isUnitAlive = unitObj.get("unit").getAsJsonObject().get("status").getAsString().equals("ALIVE");
-                if (!isUnitAlive) {
+
+                touchWandUnit = TouchWandUnitFromJson.ParseResponse(unitObj.get("unit").getAsString());
+                if (!touchWandUnit.getStatus().equals("ALIVE")) {
                     return;
                 }
-                boolean supportedUnitType = Arrays.asList(SUPPORTED_TOCUHWAND_TYPES)
-                        .contains(unitObj.get("unit").getAsJsonObject().get("type").getAsString());
+                boolean supportedUnitType = Arrays.asList(SUPPORTED_TOCUHWAND_TYPES).contains(touchWandUnit.getType());
                 if (!supportedUnitType) {
-                    logger.debug("UNIT_CHANGED for unsupported unit type {}",
-                            unitObj.get("unit").getAsJsonObject().get("type").getAsString());
+                    logger.debug("UNIT_CHANGED for unsupported unit type {}", touchWandUnit.getType());
                     return;
                 }
 
-                if (unitObj.get("unit").getAsJsonObject().get("type").getAsString().equals("WallController")) {
-                    touchWandUnit = gson.fromJson(unitObj.get("unit").getAsJsonObject(),
-                            TouchWandUnitDataWallController.class);
-                } else {
-                    touchWandUnit = gson.fromJson(unitObj.get("unit").getAsJsonObject(),
-                            TouchWandShutterSwitchUnitData.class);
-                }
                 logger.debug("UNIT_CHANGED: name {} id {} status {}", touchWandUnit.getName(), touchWandUnit.getId(),
                         touchWandUnit.getCurrStatus());
                 if (touchWandUnit.getCurrStatus() != null) {

@@ -56,11 +56,14 @@ public class TouchWandShutterHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-
-        int status = ((TouchWandShutterSwitchUnitData) unitData).getCurrStatus();
-        PercentType state = PercentType.ZERO;
-        int convertStatus = 100 - status;
-        state = new PercentType(convertStatus);
-        updateState(CHANNEL_SHUTTER, state);
+        if (unitData instanceof TouchWandShutterSwitchUnitData) {
+            int status = ((TouchWandShutterSwitchUnitData) unitData).getCurrStatus();
+            PercentType state = PercentType.ZERO;
+            int convertStatus = 100 - status;
+            state = new PercentType(convertStatus);
+            updateState(CHANNEL_SHUTTER, state);
+        } else {
+            logger.warn("updateTouchWandUnitState incompatible TouchWandUnitData instance");
+        }
     }
 }

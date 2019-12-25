@@ -67,7 +67,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateTouchWandUnitState(getUnitState(unitId));
+            // updateTouchWandUnitState(getUnitState(unitId));
         } else {
             touhWandUnitHandleCommand(command);
         }

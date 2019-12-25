@@ -13,7 +13,7 @@
 
 package org.openhab.binding.touchwand.internal.data;
 
-import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.SUPPORTED_TOCUHWAND_TYPES;
+import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
 import java.util.Arrays;
 
@@ -31,31 +31,55 @@ import com.google.gson.JsonParser;
  */
 public class TouchWandUnitFromJson {
 
-    private final Logger logger = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
+    private final static Logger logger = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
 
-    TouchWandUnitFromJson(String JsonUnit) {
-        JsonParser jsonParser = new JsonParser();
+    public TouchWandUnitFromJson() {
+    }
+
+    public static TouchWandUnitData ParseResponse(JsonObject JsonUnit) {
         Gson gson = new Gson();
-        JsonObject unitObj = jsonParser.parse(JsonUnit).getAsJsonObject();
         TouchWandUnitData touchWandUnit;
-        String type = unitObj.get("type").getAsString();
+        String type = JsonUnit.get("type").getAsString();
         if (!Arrays.asList(SUPPORTED_TOCUHWAND_TYPES).contains(type)) {
             logger.debug("Unit parse skipping unsupported unit type : {} ", type);
-            continue;
+            return null;
         }
 
-        if (!unitObj.has("currStatus") || (unitObj.get("currStatus") == null)) {
+        if (!JsonUnit.has("currStatus") || (JsonUnit.get("currStatus") == null)) {
             logger.warn("Unit discovery unit currStatus is null : {}", JsonUnit);
-            continue;
+            return null;
         }
 
-        if (type.equals("WallController")) {
-            touchWandUnit = gson.fromJson(unitObj, TouchWandUnitDataWallController.class);
-        } else {
-            touchWandUnit = gson.fromJson(unitObj, TouchWandShutterSwitchUnitData.class);
+        switch (type) {
+            case TYPE_WALLCONTROLLER:
+                touchWandUnit = gson.fromJson(JsonUnit, TouchWandUnitDataWallController.class);
+                break;
+            case TYPE_SWITCH:
+                touchWandUnit = gson.fromJson(JsonUnit, TouchWandShutterSwitchUnitData.class);
+                break;
+            case TYPE_DIMMER:
+                touchWandUnit = gson.fromJson(JsonUnit, TouchWandShutterSwitchUnitData.class);
+                break;
+            case TYPE_SHUTTER:
+                touchWandUnit = gson.fromJson(JsonUnit, TouchWandShutterSwitchUnitData.class);
+                break;
+            case TYPE_ALARMSENSOR:
+                touchWandUnit = gson.fromJson(JsonUnit, TouchWandUnitDataAlarmSensor.class);
+                break;
+            default:
+                return null;
         }
 
-        return null;
+        return touchWandUnit;
+
+    }
+
+    public static TouchWandUnitData ParseResponse(String JsonUnit) {
+
+        JsonParser jsonParser = new JsonParser();
+        JsonObject unitObj = jsonParser.parse(JsonUnit).getAsJsonObject();
+        return ParseResponse(unitObj);
+
     }
 
 }
