@@ -19,7 +19,6 @@
 			<channel id="readyToArm" typeId="readyToArm" />
 			<channel id="inExitDelay" typeId="inExitDelay" />
 			<channel id="inEntryDelay" typeId="inEntryDelay" />
-			<channel id="inEntryDelay" typeId="inEntryDelay" />
 			<channel id="inTrouble" typeId="inTrouble" />
 			<channel id="alarmInMemory" typeId="alarmInMemory" />
 			<channel id="zoneBypass" typeId="zoneBypass" />
