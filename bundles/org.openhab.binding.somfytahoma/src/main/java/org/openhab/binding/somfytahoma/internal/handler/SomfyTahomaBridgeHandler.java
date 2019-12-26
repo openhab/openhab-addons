@@ -141,6 +141,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             return;
         }
 
+        if (ThingStatus.ONLINE == thing.getStatus()) {
+            logger.debug("No need to log in, because already logged in");
+            return;
+        }
+
         try {
             url = TAHOMA_API_URL + "login";
             String urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword=" + urlEncode(thingConfig.getPassword());
@@ -469,7 +474,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private void processExecutionChangedEvent(SomfyTahomaEvent event) {
-        if ("4".equals(event.getNewState()) || "5".equals(event.getNewState())) {
+        if ("FAILED".equals(event.getNewState()) || "COMPLETED".equals(event.getNewState())) {
             logger.debug("Removing execution id: {}", event.getExecId());
             unregisterExecution(event.getExecId());
         }
