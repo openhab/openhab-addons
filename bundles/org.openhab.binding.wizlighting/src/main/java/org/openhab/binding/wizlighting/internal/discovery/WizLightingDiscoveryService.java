@@ -28,6 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,6 +53,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      *
      * @param mediator the mediator
      */
+    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC)
     public void setMediator(final WizLightingMediator mediator) {
         logger.trace("Mediator has been injected on discovery service.");
 
@@ -106,7 +110,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
                 .withLabel("Wizlighting Bulb").withRepresentationProperty(lightMacAddress).build();
 
-        logger.debug("Discovered new thing with mac address '{}' and host address '{}'", lightMacAddress,
+        logger.debug("Discovered new WiZ bulb with mac address '{}' and host address '{}'", lightMacAddress,
                 lightIpAddress);
 
         this.thingDiscovered(discoveryResult);

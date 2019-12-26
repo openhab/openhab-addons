@@ -25,12 +25,15 @@ import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingHandler;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidException;
+import org.openhab.binding.wizlighting.internal.utils.ValidationUtils;
 import org.openhab.binding.wizlighting.internal.utils.NetworkUtils;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,6 +71,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
      *
      * @param mediator the mediator
      */
+    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.STATIC)
     public void setMediator(final WizLightingMediator mediator) {
         logger.trace("Mediator has been injected on handler factory service.");
         this.mediator = mediator;
@@ -117,8 +121,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
                     logger.debug("The mac address passed by configurations is not valid.");
                 }
             } else {
-                logger.error(
-                        "No IP or MAC have been returned by the network service, cannot create handler!");
+                logger.error("No IP or MAC have been returned by the network service, cannot create handler!");
                 return null;
             }
         }
@@ -127,14 +130,18 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     private @Nullable String getMyIpAddress() {
         NetworkAddressService networkAddressService = this.networkAddressService;
+        String ohIpAddress = String.valueOf(WizLightingBindingConstants.OH_IP_ADDRESS_ARG);
         if (myIpAddress != null) {
             return myIpAddress;
+        } else if (ohIpAddress != null) {
+            return ohIpAddress;
         } else if (networkAddressService != null) {
             myIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
             if (myIpAddress == null) {
-                logger.warn("No network interface could be found.");
+                logger.warn("No network interface could be found.  IP of OpenHab device is unknown");
                 return null;
             }
+            logger.info("IP of OpenHab device is {}.", myIpAddress);
             return myIpAddress;
         } else {
             return null;
@@ -142,21 +149,24 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private @Nullable String getMyMacAddress() {
+        String ohMacAddress = String.valueOf(WizLightingBindingConstants.OH_MAC_ADDRESS_ARG);
         if (myMacAddress != null) {
             return myMacAddress;
+        } else if (ohMacAddress != null && ValidationUtils.isMacValid(ohMacAddress)) {
+            logger.info("Mac Address of OpenHab device is {}.", ohMacAddress);
+            return ohMacAddress;
         } else {
             try {
                 myMacAddress = NetworkUtils.getMyMacAddress();
                 if (myMacAddress == null) {
-                    logger.warn("No network interface could be found.");
+                    logger.warn("No network interface could be found.  Mac of OpenHab device is unknown.");
                     return null;
                 }
             } catch (Exception e) {
-                logger.warn("No network interface could be found.");
+                logger.warn("Mac Address of OpenHab device is invalid.");
                 return null;
-
             }
-
+            logger.info("Mac Address of OpenHab device is {}.", myMacAddress);
             return myMacAddress;
         }
     }
