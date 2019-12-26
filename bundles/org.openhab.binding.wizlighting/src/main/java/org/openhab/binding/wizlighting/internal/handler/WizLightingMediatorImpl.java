@@ -96,7 +96,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
                 logger.debug("Received message delivered with success to handler of mac {}",
                         receivedMessage.getWizResponseIpAddress());
             } else if (bulbIp != null) {
-                logger.debug("There is no handler registered for mac address:{}",
+                logger.debug("There is no handler registered for mac address: {}",
                         receivedMessage.getWizResponseIpAddress());
                 WizLightingDiscoveryService discoveryServe = this.wizlightingDiscoveryService;
                 if (discoveryServe != null){

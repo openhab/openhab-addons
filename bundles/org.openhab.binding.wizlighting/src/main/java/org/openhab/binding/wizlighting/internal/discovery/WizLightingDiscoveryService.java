@@ -110,7 +110,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
                 .withLabel("Wizlighting Bulb").withRepresentationProperty(lightMacAddress).build();
 
-        logger.debug("Discovered new WiZ bulb with mac address '{}' and host address '{}'", lightMacAddress,
+        logger.debug("A new WiZ bulb appeared with mac address '{}' and host address '{}'", lightMacAddress,
                 lightIpAddress);
 
         this.thingDiscovered(discoveryResult);
