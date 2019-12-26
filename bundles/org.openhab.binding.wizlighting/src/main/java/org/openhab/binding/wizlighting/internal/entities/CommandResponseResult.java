@@ -12,33 +12,21 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.types.Command;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * This POJO represents one Scene Request Param
+ * This POJO represents the "result" of one WiZ Lighting Response
+ * "results" are returned from registration, pulse, and setPilot commands
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
 @NonNullByDefault
-public class SceneRequestParam implements Param {
-    private int sceneId;
+public class CommandResponseResult {
+    // The MAC address of the bulb
+    public @Nullable String mac;
 
-    public SceneRequestParam(Command command) {
-        if (command instanceof StringType) {
-            this.setSceneId(Integer.parseInt(command.toString()));
-        }
-    }
-
-    public int getSceneId() {
-        return sceneId;
-    }
-
-    public void setSceneId(int sceneId) {
-        this.sceneId = sceneId;
-    }
-
+    // If a "result" instead of a "param"
+    public boolean success = false;
 }

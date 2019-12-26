@@ -16,28 +16,39 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * This POJO represents one Wiz Lighting Sync response
+ * This POJO represents one WiZ Lighting Response
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
 @NonNullByDefault
-public class WizLightingSyncResponse {
+public class WizLightingResponse {
 
+    // Increasing numeric value.
+    // Bulb doesn't seem to care if it receives the same id multiple time
+    // or commands with lower numbers after higher ones.
     private int id;
+    // Not sure what env is - value always seems to be "pro"
     private @Nullable String env;
+    // The method being used - see the enum for details
     private @Nullable String method;
+
+    // The parameters or result of a command/response
     private @Nullable SyncResponseParam params;
+    private @Nullable CommandResponseResult result;
 
     private @Nullable String wizResponseIpAddress;
 
-    public WizLightingSyncResponse() {
+    public WizLightingResponse() {
     }
 
     public @Nullable String getWizResponseMacAddress() {
         SyncResponseParam params = this.getParams();
+        CommandResponseResult result = this.getResult();
         if (params != null) {
             return params.mac;
+        } else if (result != null) {
+            return result.mac;
         } else {
             return null;
         }
@@ -45,8 +56,11 @@ public class WizLightingSyncResponse {
 
     public void setWizResponseMacAddress(final String wizResponseMacAddress) {
         SyncResponseParam params = this.getParams();
+        CommandResponseResult result = this.getResult();
         if (params != null) {
             params.mac = wizResponseMacAddress;
+        } else if (result != null) {
+            result.mac = wizResponseMacAddress;
         }
     }
 
@@ -88,5 +102,13 @@ public class WizLightingSyncResponse {
 
     public void setParams(SyncResponseParam params) {
         this.params = params;
+    }
+
+    public @Nullable CommandResponseResult getResult() {
+        return result;
+    }
+
+    public void setResult(CommandResponseResult result) {
+        this.result = result;
     }
 }

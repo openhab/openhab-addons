@@ -47,6 +47,7 @@ public class WizLightingBindingConstants {
     public static final String BULB_COLOR_CHANNEL_ID = "color";
     public static final String BULB_SCENE_CHANNEL_ID = "scene";
     public static final String BULB_SPEED_CHANNEL_ID = "speed";
+    public static final String BULB_RSSI_CHANNEL_ID = "rssi";
 
     /**
      * The supported thing types.

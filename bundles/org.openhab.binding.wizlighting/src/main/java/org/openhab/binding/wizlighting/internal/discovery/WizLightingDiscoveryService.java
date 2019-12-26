@@ -41,7 +41,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
-@Component(configurationPid = "discovery.wizlighting", service = DiscoveryService.class)
+@Component(configurationPid = "discovery.wizlighting", service = DiscoveryService.class, immediate = true)
 @NonNullByDefault
 public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 

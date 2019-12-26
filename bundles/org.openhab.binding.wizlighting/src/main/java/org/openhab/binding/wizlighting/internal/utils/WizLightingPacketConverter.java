@@ -15,7 +15,7 @@ package org.openhab.binding.wizlighting.internal.utils;
 import java.net.DatagramPacket;
 
 import org.openhab.binding.wizlighting.internal.entities.WizLightingRequest;
-import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse;
+import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,18 +64,18 @@ public class WizLightingPacketConverter {
 
     /**
      * Method that transforms {@link DatagramPacket} to a
-     * {@link WizLightingSyncResponse} Object
+     * {@link WizLightingResponse} Object
      *
      * @param packet the {@link DatagramPacket}
-     * @return the {@link WizLightingSyncResponse}
+     * @return the {@link WizLightingResponse}
      */
-    public WizLightingSyncResponse transformSyncResponsePacket(final DatagramPacket packet) {
+    public WizLightingResponse transformSyncResponsePacket(final DatagramPacket packet) {
         String responseJson = new String(packet.getData(), 0, packet.getLength());
         logger.debug("Sync Response Json={{}}", responseJson);
 
         @Nullable
-        WizLightingSyncResponse response = this.wizlightingGsonBuilder.fromJson(responseJson,
-                WizLightingSyncResponse.class);
+        WizLightingResponse response = this.wizlightingGsonBuilder.fromJson(responseJson,
+                WizLightingResponse.class);
         response.setWizResponseIpAddress(packet.getAddress().getHostAddress());
         return response;
     }

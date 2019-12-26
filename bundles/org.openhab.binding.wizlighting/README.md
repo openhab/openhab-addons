@@ -1,10 +1,10 @@
-# Wiz Lighting Binding
+# WiZ Lighting Binding
 
 This binding integrates the Wiz Color Lighting devices .
 
 ## Supported Things
 
-- WiZ Connected Lights Color A E26 Light Kit
+- WiZ Connected Lights Color and Tunable White
 
 
 ## Discovery

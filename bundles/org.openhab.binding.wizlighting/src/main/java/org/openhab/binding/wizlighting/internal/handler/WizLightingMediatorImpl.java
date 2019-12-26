@@ -20,7 +20,7 @@ import java.util.Set;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
-import org.openhab.binding.wizlighting.internal.entities.WizLightingSyncResponse;
+import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
@@ -74,10 +74,10 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      * This method is called by the {@link WizLightingUpdateReceiverRunnable}, when
      * one new message has been received.
      *
-     * @param receivedMessage the {@link WizLightingSyncResponse} message.
+     * @param receivedMessage the {@link WizLightingResponse} message.
      */
     @Override
-    public void processReceivedPacket(final WizLightingSyncResponse receivedMessage) {
+    public void processReceivedPacket(final WizLightingResponse receivedMessage) {
         logger.debug("Received packet from: {} with method: [{}]", receivedMessage.getWizResponseIpAddress(),
                 receivedMessage.getMethod());
 

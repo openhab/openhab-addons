@@ -6,14 +6,15 @@
 
 	<!-- Color WiFi Bulb Thing Type -->
 	<thing-type id="wizBulb">
-		<label>Wiz Lighting Bulb</label>
-		<description>Supports Wiz Lighting Bulbs</description>
+		<label>WiZ Lighting Bulb</label>
+		<description>Supports WiZ Lighting Bulbs</description>
 
 		<channels>
 			<channel id="switch" typeId="switch" />
 			<channel id="color" typeId="color" />
 			<channel id="scene" typeId="scene" />
 			<channel id="speed" typeId="speed" />
+			<channel id="rssi" typeId="rssi" />
 		</channels>
 
 		<config-description>
@@ -87,5 +88,12 @@
 	<channel-type id="speed" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Speed</label>
+	</channel-type>
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Signal</label>
+		<description>Wi-Fi signal strength indicator.</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 </thing:thing-descriptions>
