@@ -106,7 +106,6 @@ public class WizLightingHandler extends BaseThingHandler {
         }
 
         switch (channelUID.getId()) {
-
         case WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID:
             if (sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command))) {
                 updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, (OnOffType) command);
@@ -182,7 +181,6 @@ public class WizLightingHandler extends BaseThingHandler {
      * refresh interval.
      */
     private void initGetStatusAndKeepAliveThread() {
-
         ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
         if (keepAliveJob != null) {
             keepAliveJob.cancel(true);
@@ -355,7 +353,7 @@ public class WizLightingHandler extends BaseThingHandler {
                 dsocket.receive(packet);
 
                 WizLightingResponse response = converter.transformSyncResponsePacket(packet);
-                if (response != null) {
+                if (response.getResult() != null) {
                     updateStatus(ThingStatus.ONLINE);
                     return response.getResult().success;
                 }
