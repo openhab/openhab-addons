@@ -26,6 +26,7 @@ public enum MiIoCommand {
 
     // Basic device commands
     GET_PROPERTY("get_prop"),
+    GET_VALUE("get_value"),
     SET_MODE_BASIC("set_mode"),
     SET_POWER("set_power"),
     SET_BRIGHT("set_bright"),

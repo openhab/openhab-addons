@@ -216,21 +216,31 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     private boolean refreshProperties(MiIoBasicDevice device) {
+        MiIoCommand command = MiIoCommand.getCommand(device.getDevice().getPropertyMethod());
+        if (command == MiIoCommand.UNKNOWN) {
+            command = MiIoCommand.GET_PROPERTY;
+        }
+        int maxProperties = MAX_PROPERTIES;
+        if (device.getDevice().getMaxProperties() != 0) {
+            maxProperties = device.getDevice().getMaxProperties();
+        }
         JsonArray getPropString = new JsonArray();
         for (MiIoBasicChannel miChannel : refreshList) {
             getPropString.add(miChannel.getProperty());
-            if (getPropString.size() >= MAX_PROPERTIES) {
-                sendRefreshProperties(getPropString);
+            if (getPropString.size() >= maxProperties) {
+                sendRefreshProperties(command, getPropString);
                 getPropString = new JsonArray();
             }
         }
-        sendRefreshProperties(getPropString);
+        if (getPropString.size() > 0) {
+            sendRefreshProperties(command, getPropString);
+        }
         return true;
     }
 
-    private void sendRefreshProperties(JsonArray getPropString) {
+    private void sendRefreshProperties(MiIoCommand command, JsonArray getPropString) {
         try {
-            miioCom.queueCommand(MiIoCommand.GET_PROPERTY, getPropString.toString());
+            miioCom.queueCommand(command, getPropString.toString());
         } catch (MiIoCryptoException | IOException e) {
             logger.debug("Send refresh failed {}", e.getMessage(), e);
         }
@@ -464,6 +474,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             switch (response.getCommand()) {
                 case MIIO_INFO:
                     break;
+                case GET_VALUE:
                 case GET_PROPERTY:
                     if (response.getResult().isJsonArray()) {
                         updatePropsFromJsonArray(response);

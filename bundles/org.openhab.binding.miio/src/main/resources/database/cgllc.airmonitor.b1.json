@@ -1,7 +1,7 @@
 {
   "deviceMapping": {
     "id": [
-      "cgllc.airmonitor.s1"
+      "cgllc.airmonitor.b1"
     ],
     "propertyMethod": "get_value",
     "maxProperties": 6,
@@ -26,8 +26,8 @@
         "actions": []
       },
       {
-        "property": "co2",
-        "friendlyName": "CO2",
+        "property": "co2e",
+        "friendlyName": "CO2e",
         "channel": "co2",
         "type": "Number",
         "refresh": true,

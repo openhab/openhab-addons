@@ -31,6 +31,12 @@ public class DeviceMapping {
     @SerializedName("channels")
     @Expose
     private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<MiIoBasicChannel>();
+    @SerializedName("propertyMethod")
+    @Expose
+    private String propertyMethod;
+    @SerializedName("maxProperties")
+    @Expose
+    private int maxProperties = 0;
 
     public List<String> getId() {
         return id;
@@ -38,6 +44,22 @@ public class DeviceMapping {
 
     public void setId(List<String> id) {
         this.id = id;
+    }
+
+    public String getPropertyMethod() {
+        return propertyMethod;
+    }
+
+    public void setPropertyMethod(String propertyMethod) {
+        this.propertyMethod = propertyMethod;
+    }
+
+    public int getMaxProperties() {
+        return maxProperties;
+    }
+
+    public void setMaxProperties(int maxProperties) {
+        this.maxProperties = maxProperties;
     }
 
     public List<MiIoBasicChannel> getChannels() {
