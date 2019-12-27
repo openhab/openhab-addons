@@ -208,7 +208,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             }
 
             // send changed colors to the device
-            sendColors(profile, lightId, oldCol, col);
+            sendColors(profile, lightId, oldCol, col, config.brightnessAutoOn);
         }
 
         return true;
@@ -439,7 +439,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
     @SuppressWarnings("null")
     private void sendColors(@Nullable ShellyDeviceProfile profile, Integer lightId, ShellyColorUtils oldCol,
-            ShellyColorUtils newCol) throws IOException {
+            ShellyColorUtils newCol, boolean autoOn) throws IOException {
         Validate.notNull(profile);
 
         // boolean updated = false;
@@ -450,7 +450,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 "{}: New color settings for channel {}: RGB {}/{}/{}, white={}, gain={}, brightness={}, color-temp={}",
                 thingName, channelId, newCol.red, newCol.green, newCol.blue, newCol.white, newCol.gain,
                 newCol.brightness, newCol.temp);
-        parms.put(SHELLY_LIGHT_TURN, profile.inColor || newCol.brightness > 0 ? SHELLY_API_ON : SHELLY_API_OFF);
+        if (autoOn) {
+            parms.put(SHELLY_LIGHT_TURN, profile.inColor || newCol.brightness > 0 ? SHELLY_API_ON : SHELLY_API_OFF);
+        }
         if (profile.inColor) {
             if (!oldCol.red.equals(newCol.red) || !oldCol.green.equals(newCol.green) || !oldCol.blue.equals(newCol.blue)
                     || !oldCol.white.equals(newCol.white)) {

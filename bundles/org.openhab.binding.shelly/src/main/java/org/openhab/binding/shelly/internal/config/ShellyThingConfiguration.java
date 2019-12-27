@@ -22,11 +22,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ShellyThingConfiguration {
     public String deviceIp = ""; // ip address of thedevice
-    public int updateInterval = 60; // schedule interval for the update job
-    public float lowBattery = 20; // threshold for battery value
-
     public String userId = ""; // userid for http basic auth
     public String password = ""; // password for http basic auth
+
+    public int updateInterval = 60; // schedule interval for the update job
+    public int lowBattery = 20; // threshold for battery value
+    public int weakSignal = -80; // threshold for weak wifi signal
+    public boolean brightnessAutoOn = true; // true: turn on device if brightness > 0 is set
 
     public boolean eventsButton = false; // true: register for Relay btn_xxx events
     public boolean eventsSwitch = true; // true: register for device out_xxx events

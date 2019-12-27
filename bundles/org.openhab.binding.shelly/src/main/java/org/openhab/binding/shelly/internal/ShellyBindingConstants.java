@@ -300,7 +300,6 @@ public class ShellyBindingConstants {
 
     // Minimum signal strength for basic connectivity. Packet delivery may be unreliable.
     public static final int HEALTH_CHECK_INTERVAL_SEC = 300;
-    public static final int SIGNAL_ALARM_MIN_RSSI = -80;
 
     public static final int DIM_STEPSIZE = 5;
 

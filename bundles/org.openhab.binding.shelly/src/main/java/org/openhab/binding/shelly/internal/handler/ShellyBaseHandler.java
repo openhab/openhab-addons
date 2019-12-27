@@ -118,7 +118,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         // start background initialization:
         scheduler.schedule(() -> {
             boolean start = true;
@@ -177,12 +176,17 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         Map<String, String> properties = getThing().getProperties();
         logger.debug("{}: Start initializing, ip address {}, CoIoT: {}", getThing().getLabel(), config.deviceIp,
                 config.eventsCoIoT);
+        if (config.deviceIp.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/config-status.error.missing-device-ip");
+            return false;
+        }
 
         // Initialize API access, exceptions will be catched by initialize()
-        api = new ShellyHttpApi(config);
-        ShellyDeviceProfile tmpPrf = api.getDeviceProfile(this.getThing().getThingTypeUID().getId());
         thingName = properties.get(PROPERTY_SERVICE_NAME) != null ? properties.get(PROPERTY_SERVICE_NAME).toLowerCase()
                 : "";
+        api = new ShellyHttpApi(config);
+        ShellyDeviceProfile tmpPrf = api.getDeviceProfile(this.getThing().getThingTypeUID().getId());
         thingName = (!thingName.isEmpty() ? thingName : tmpPrf.hostname).toLowerCase();
         Validate.isTrue(!thingName.isEmpty(), "initializeThing(): thingName must not be empty!");
 
@@ -233,9 +237,11 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         String thingType = getThing().getThingTypeUID().getId();
         String reqMode = thingType.contains("-") ? StringUtils.substringAfter(thingType, "-") : "";
         if (!reqMode.isEmpty() && !tmpPrf.mode.equals(reqMode)) {
+            logger.info(
+                    "{}: Thing is in mode {}, expecting mode {} - going offline. Re-run discovery to changed device mode.",
+                    thingName, profile.mode, reqMode);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Thing is in mode " + profile.mode + ", required is " + reqMode
-                            + " - going offline. Re-run discovery to find the thing for the requested mode.");
+                    "@text/offline.conf-error-wrong-mode");
             return false;
         }
 
@@ -358,19 +364,25 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
         } catch (IOException e) {
             // http call failed: go offline except for battery devices, which might be in
-            // sleep mode
-            // once the next update is successful the device goes back online
+            // sleep mode. Once the next update is successful the device goes back online
+            String status = "";
             if (e.getMessage().contains("Timeout")) {
-                logger.debug("Device {} is not reachable, update canceled ({} skips, {} scheduledUpdates)!", thingName,
+                logger.debug("{}: Device is not reachable, update canceled ({} skips, {} scheduledUpdates)!", thingName,
                         skipCount, scheduledUpdates);
+                status = "@text/offline.status-error-timeout";
+            } else if (e.getMessage().contains(APIERR_HTTP_401_UNAUTHORIZED)) {
+                logger.debug("{}: Unable to access device, check credentials!", thingName);
+                status = "@text/offline.conf-error-access-denied";
             } else if (e.getMessage().contains("Not calibrated!")) {
                 logger.debug("{}: Roller is not calibrated! Use the Shelly App or Web UI to run calibration.",
                         thingName);
+                status = "@text/offline.conf-error-not-calibrated";
             } else {
                 logger.debug("{}: Unable to update status: {} ({})", thingName, e.getMessage(), e.getClass());
+                status = "@text/offline.status-error-unexpected-api-result";
             }
             if (e.getMessage().contains(APIERR_HTTP_401_UNAUTHORIZED) || (profile != null && !profile.isSensor)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, status);
             }
         } catch (NullPointerException e) {
             logger.warn("{}: Unable to update status: {} ({})", thingName, e.getMessage(), e.getClass());
@@ -416,7 +428,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
         lastUptime = uptime;
 
-        if ((rssi < SIGNAL_ALARM_MIN_RSSI) && ((lastAlarmTs == 0))) {
+        if ((rssi < config.weakSignal) && ((lastAlarmTs == 0))) {
             alarm = ALARM_TYPE_WEAKSIGNAL;
         }
         if (getBool(status.overtemperature)) {
@@ -468,17 +480,14 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     @SuppressWarnings({ "null" })
     @Override
     public boolean onEvent(String deviceName, String deviceIndex, String type, Map<String, String> parameters) {
-        if (profile == null) {
-            logger.debug("OnEvent: Thing not yet initialized, skip event");
-        }
         if (thingName.equalsIgnoreCase(deviceName) || config.deviceIp.equals(deviceName)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters.toString());
             boolean hasBattery = profile != null && profile.hasBattery ? true : false;
             if (profile == null) {
                 logger.debug("{}: Device is not yet initialized, event triggers initialization", deviceName);
+                requestUpdates(1, true);
             } else {
-
                 String group = "";
                 Integer rindex = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) + 1 : -1;
                 if (type.equals(EVENT_TYPE_RELAY)) {
@@ -577,7 +586,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             logger.warn("{}: Device {} reported 'Access Denied' (user id/password mismatch)", getThing().getLabel(),
                     config.deviceIp);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Access denied, configure user id and password");
+                    "@text/offline.conf-error-access-denied");
             changeThingType(THING_TYPE_SHELLYPROTECTED_STR, "");
             return true;
         }

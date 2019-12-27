@@ -199,7 +199,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
         validateRange("brightness", value, 0, 100);
         logger.debug("{}: Setting dimmer brightness to {}", thingName, value);
-        api.setDimmerBrightness(index, value);
+        api.setDimmerBrightness(index, value, config.brightnessAutoOn);
 
     }
 

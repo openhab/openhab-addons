@@ -137,11 +137,14 @@ public class ShellyHttpApi {
                 + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase());
     }
 
-    public void setDimmerBrightness(Integer relayIndex, Integer brightness) throws IOException {
-        // request(SHELLY_URL_CONTROL_LIGHT + "/" + relayIndex.toString() + "?" + SHELLY_LIGHT_TURN + "=" +
-        // SHELLY_API_ON
-        // + "&brightness=" + brightness.toString());
-        request(SHELLY_URL_CONTROL_LIGHT + "/" + relayIndex.toString() + "?" + "&brightness=" + brightness.toString());
+    public void setDimmerBrightness(Integer relayIndex, Integer brightness, boolean autoOn) throws IOException {
+        if (autoOn) {
+            request(SHELLY_URL_CONTROL_LIGHT + "/" + relayIndex.toString() + "?" + SHELLY_LIGHT_TURN + "="
+                    + SHELLY_API_ON + "&brightness=" + brightness.toString());
+        } else {
+            request(SHELLY_URL_CONTROL_LIGHT + "/" + relayIndex.toString() + "?" + "&brightness="
+                    + brightness.toString());
+        }
     }
 
     @Nullable

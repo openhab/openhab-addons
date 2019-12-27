@@ -257,6 +257,13 @@
 			<channel id="lastUpdate" typeId="timestamp" />
 		</channels>
 	</channel-group-type>
+	<channel-group-type id="basicMeter">
+		<label>Power Meter</label>
+		<description>Power consumption</description>
+		<channels>
+			<channel id="currentWatts" typeId="meterWatts" />
+		</channels>
+	</channel-group-type>
 	<channel-group-type id="ledControl">
 		<label>LED Control</label>
 		<description>Control the LEDs</description>
