@@ -56,7 +56,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.max.internal.MaxBackupUtils;
@@ -506,12 +505,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Bridge connection lost. Updating thing status to OFFLINE.");
         previousOnline = false;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
-        for (Thing thing : getThing().getThings()) {
-            ThingHandler handler = thing.getHandler();
-            if (handler != null && handler instanceof MaxDevicesHandler) {
-                ((MaxDevicesHandler) handler).setForceRefresh();
-            }
-        }
         clearDeviceList();
     }
 
@@ -842,11 +835,19 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             for (Map.Entry<String, String> entry : properties.entrySet()) {
                 logger.debug("key: {}  : {}", entry.getKey(), entry.getValue());
             }
-            Configuration configuration = editConfiguration();
-            configuration.put(MaxBindingConstants.PROPERTY_RFADDRESS, message.getRFAddress());
-            configuration.put(Thing.PROPERTY_SERIAL_NUMBER, message.getSerialNumber());
-            updateConfiguration(configuration);
-            logger.debug("properties updated");
+            if (getConfig().get(MaxBindingConstants.PROPERTY_RFADDRESS) != null
+                    && message.getRFAddress()
+                            .equalsIgnoreCase((String) getConfig().get(MaxBindingConstants.PROPERTY_RFADDRESS))
+                    && getConfig().get(Thing.PROPERTY_SERIAL_NUMBER) != null && message.getSerialNumber()
+                            .equalsIgnoreCase((String) getConfig().get(Thing.PROPERTY_SERIAL_NUMBER))) {
+                logger.debug("properties not changed");
+            } else {
+                Configuration configuration = editConfiguration();
+                configuration.put(MaxBindingConstants.PROPERTY_RFADDRESS, message.getRFAddress());
+                configuration.put(Thing.PROPERTY_SERIAL_NUMBER, message.getSerialNumber());
+                updateConfiguration(configuration);
+                logger.debug("properties updated");
+            }
             propertiesSet = true;
         } catch (Exception e) {
             logger.debug("Exception occurred during property update: {}", e.getMessage(), e);
