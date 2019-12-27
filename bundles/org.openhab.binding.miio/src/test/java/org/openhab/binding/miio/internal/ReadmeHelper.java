@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ public class ReadmeHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadmeHelper.class);
     private static final String BASEFILE = "./README.base.md";
 
+    @Ignore
     public static void main(String[] args) {
         ReadmeHelper rm = new ReadmeHelper();
         System.out.println("## Creating device list\n");
@@ -54,7 +56,7 @@ public class ReadmeHelper {
         StringWriter channelList = rm.channelList();
         System.out.println("## Creating Item Files for miio:basic devices\n");
         StringWriter itemFileExamples = rm.itemFileExamples();
-        System.out.println("\n## Done");
+        System.out.println("## Done");
         try {
             File file = new File(BASEFILE);
             String baseDoc = FileUtils.readFileToString(file);
