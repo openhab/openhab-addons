@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.miio.internal.handler;
 
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -278,15 +280,21 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     private URL findDatabaseEntry(String deviceName) {
-        URL fn;
+        List<URL> urlEntries = new ArrayList<>();
         try {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
-            fn = bundle.getEntry(MiIoBindingConstants.DATABASE_PATH + deviceName + ".json");
-            if (fn != null) {
-                logger.trace("bundle: {}, {}", bundle, fn.getFile());
-                return fn;
+            File[] userDbFiles = new File(ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID)
+                    .listFiles((dir, name) -> name.endsWith(".json"));
+            if (userDbFiles != null) {
+                for (File f : userDbFiles) {
+                    urlEntries.add(f.toURI().toURL());
+                    logger.debug("Adding local json db file: {}, {}", f.getName(), f.toURI().toURL());
+                }
             }
-            for (URL db : Collections.list(bundle.findEntries(MiIoBindingConstants.DATABASE_PATH, "*.json", false))) {
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            urlEntries
+                    .addAll(Collections.list(bundle.findEntries(MiIoBindingConstants.DATABASE_PATH, "*.json", false)));
+            for (URL db : urlEntries) {
+                logger.trace("Testing for {} in db file: {}", deviceName, db);
                 try {
                     JsonObject deviceMapping = Utils.convertFileToJSON(db);
                     Gson gson = new GsonBuilder().serializeNulls().create();
