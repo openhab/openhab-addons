@@ -2,7 +2,7 @@
 
 <img align="right" width="220" src="./logo.png" />
 
-[![Build Status](https://travis-ci.org/openhab/openhab2-addons.svg)](https://travis-ci.org/openhab/openhab2-addons)
+[![Build Status](https://travis-ci.org/openhab/openhab-addons.svg)](https://travis-ci.org/openhab/openhab-addons)
 [![EPL-2.0](https://img.shields.io/badge/license-EPL%202-green.svg)](https://opensource.org/licenses/EPL-2.0)
 [![Bountysource](https://www.bountysource.com/badge/tracker?tracker_id=2164344)](https://www.bountysource.com/teams/openhab/issues?tracker_ids=2164344)
 
