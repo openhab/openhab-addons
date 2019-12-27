@@ -40,6 +40,10 @@ import com.google.gson.JsonParser;
  *
  * Run after adding devices or changing database entries of basic devices
  *
+ * Run in IDE with 'run as java application'
+ * or run in command line as:
+ * mvn exec:java -Dexec.mainClass="org.openhab.binding.miio.internal.ReadmeHelper" -Dexec.classpathScope="test"
+ *
  * @author Marcel Verpaalen - Initial contribution
  */
 public class ReadmeHelper {
