@@ -59,13 +59,13 @@ public class ReadmeHelper {
         System.out.println("## Done");
         try {
             File file = new File(BASEFILE);
-            String baseDoc = FileUtils.readFileToString(file);
+            String baseDoc = FileUtils.readFileToString(file, "UTF-8");
             String nw = baseDoc.replaceAll("!!!devices", deviceList.toString())
                     .replaceAll("!!!channelList", channelList.toString())
                     .replaceAll("!!!itemFileExamples", itemFileExamples.toString());
 
             File newDocfile = new File("README.md");
-            FileUtils.writeStringToFile(newDocfile, nw);
+            FileUtils.writeStringToFile(newDocfile, nw, "UTF-8");
         } catch (IOException e) {
             LOGGER.warn("IO exception", e);
         }
