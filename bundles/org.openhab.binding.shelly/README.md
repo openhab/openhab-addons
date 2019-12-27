@@ -70,8 +70,10 @@ The binding has the following configuration options:
 |deviceIp          |IP address of the Shelly device                               |    yes  |none                                              |
 |userId            |The user id used for HTTP authentication                      |    no   |none                                              |
 |password          |Password for HTTP authentication*                             |    no   |none                                              |
-|lowBattery        |Threshold for battery level. Set alert when level is below.   |    no   |20 (=20%), only for battery powered devices       |
+|lowBattery        |An alarm is raised when battery level is < this threshold     |    no   |20 (=20%), only for battery powered devices       |
+|weakSignal        |An alarm is raised when wifi signal strength is < this threshold  |    no   |-80 dBm                                           |
 |updateInterval    |Interval for the background status check in seconds.          |    no   |1h for battery powered devices, 60s for all others|
+|brightnessAutoOn  |true: Setting brightness > 0 automatically turns on the device|    no   |true                                             |
 |eventsButton      |true: register event "trigger when a button is pushed"        |    no   |false                                             |
 |eventsPush        |true: register event "trigger on short and long push"         |    no   |false                                             |
 |eventsSwitch      |true: register event "trigger of switching the relay output"  |    no   |true                                              |
