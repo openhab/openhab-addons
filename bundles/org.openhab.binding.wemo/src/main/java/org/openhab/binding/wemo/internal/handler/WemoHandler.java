@@ -17,9 +17,12 @@ import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -464,27 +467,25 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         String host = null;
         String port = null;
         if (descriptorURL != null) {
-            
-            int defaultPort = descriptorURL.getPort();
-            if(defaultPort == -1) {
-                defaultPort = descriptorURL.getDefaultPort();
+            host = StringUtils.substringBetween(descriptorURL.toString(), "://", ":");
+            for (int i = portCheckStart; i < portCheckStop; i++) {
+                try {
+                    boolean portFound = servicePing(host, i);
+                    if (portFound) {
+                        logger.trace("WeMo device {} responded at Port {}", getUDN(), i);
+                        port = String.valueOf(i);
+                        break;
+                    }
+                } catch (Exception e) {
+                }
             }
-            
-            host = descriptorURL.getHost();
-            boolean portFound = false;
-            if (defaultPort != -1) {
-                portFound = servicePing(host, defaultPort);
-            }
-            if (portFound) {
-                port = String.valueOf(defaultPort);
-            } else {
-                for (int i = portCheckStart; i < portCheckStop; i++) {
-                        portFound = servicePing(host, i);
-                        if (portFound) {
-                            logger.trace("WeMo device {} responded at Port {}", getUDN(), i);
-                            port = String.valueOf(i);
-                            break;
-                        }
+            if (port == null) {
+                int defaultPort = descriptorURL.getPort();
+                if(defaultPort == -1) {
+                    defaultPort = descriptorURL.getDefaultPort();
+                }
+                if (defaultPort != -1) {
+                    port = String.valueOf(defaultPort);
                 }
             }
             wemoURL = "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
@@ -493,13 +494,13 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         return wemoURL;
     }
 
-    public boolean servicePing(String host, int port) {
+    public boolean servicePing(String host, int port) throws IOException {
         SocketAddress socketAddress = new InetSocketAddress(host, port);
         try (Socket socket = new Socket()) {
             logger.trace("Ping WeMo device at '{}'", socketAddress);
             socket.connect(socketAddress, 250);
             return true;
-        } catch (IOException ignored) {
+        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
             return false;
         }
     }
