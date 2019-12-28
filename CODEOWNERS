@@ -193,6 +193,7 @@
 /bundles/org.openhab.binding.wemo/ @hmerk
 /bundles/org.openhab.binding.wifiled/ @rvt @xylo
 /bundles/org.openhab.binding.windcentrale/ @marcelrv
+/bundles/org.openhab.binding.wizlighting/ @alexsee @basriram @schrieveslaach
 /bundles/org.openhab.binding.xmltv/ @clinique
 /bundles/org.openhab.binding.xmppclient/ @pavel-gololobov
 /bundles/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz

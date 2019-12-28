@@ -15,17 +15,21 @@ package org.openhab.binding.wizlighting.internal;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.wizlighting.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.handler.WizLightingHandler;
 import org.openhab.binding.wizlighting.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidException;
 import org.openhab.binding.wizlighting.internal.utils.NetworkUtils;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +40,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sriram Balakrishnan - Initial contribution
  */
+// TODO: @NonNullByDefault
+@Component(configurationPid = "binding.wizlighting", service = ThingHandlerFactory.class)
 public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
@@ -68,8 +74,6 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Used by OSGI to unsets the mediator from the handler factory.
-     *
-     * @param mediator the mediator
      */
     public void unsetMediator(final WizLightingMediator mitsubishiMediator) {
         logger.trace("Mediator has been unsetted from discovery service.");
@@ -77,12 +81,12 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    protected ThingHandler createHandler(final Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.trace("Create Handler Request for thing {}", thingTypeUID);
 
@@ -102,7 +106,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
                 }
                 return handler;
             } catch (MacAddressNotValidException e) {
-                logger.debug("The mac address passed by configurations is not valid.");
+                logger.debug("The mac address passed by configurations is not valid.", e);
             }
 
         }
