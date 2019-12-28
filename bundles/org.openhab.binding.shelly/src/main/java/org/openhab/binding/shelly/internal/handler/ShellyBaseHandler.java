@@ -596,8 +596,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     /**
      * Change type of this thing.
      *
-     * @param serviceName mDNS service name from thing discovery - will be used to build the Thing type name
-     * @param mode
+     * @param thingType thing type acc. to the xml definition
+     * @param mode Device mode (e.g. relay, roller)
      */
     private void changeThingType(String thingType, String mode) {
         ThingTypeUID thingTypeUID = getThingTypeUID(thingType, mode);
@@ -729,8 +729,15 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      * @param profile The device profile
      * @param status the /status result
      */
+    @SuppressWarnings("null")
     protected void updateProperties(ShellyDeviceProfile profile, ShellySettingsStatus status) {
         Map<String, Object> properties = fillDeviceProperties(profile);
+        String serviceName = getThing().getProperties().get(PROPERTY_SERVICE_NAME);
+        String hostname = getString(profile.settings.device.hostname).toLowerCase();
+        if ((serviceName == null) || serviceName.isEmpty()) {
+            properties.put(PROPERTY_SERVICE_NAME, hostname);
+            logger.trace("{}: Updated serrviceName to {}", thingName, hostname);
+        }
 
         // add status properties
         Validate.notNull(status, "updateProperties(): status must not be null!");
