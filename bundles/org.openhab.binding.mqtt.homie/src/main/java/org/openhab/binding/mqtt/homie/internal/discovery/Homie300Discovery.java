@@ -80,6 +80,9 @@ public class Homie300Discovery extends AbstractMQTTDiscovery {
     @Override
     public void receivedMessage(ThingUID connectionBridge, MqttBrokerConnection connection, String topic,
             byte[] payload) {
+
+        resetTimeout();
+
         if (!checkVersion(payload)) {
             logger.trace("Found homie device. But version {} is out of range.",
                     new String(payload, StandardCharsets.UTF_8));
