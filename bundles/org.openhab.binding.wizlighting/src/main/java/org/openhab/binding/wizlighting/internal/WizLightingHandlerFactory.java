@@ -131,7 +131,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     private @Nullable String getMyIpAddress() {
         NetworkAddressService networkAddressService = this.networkAddressService;
         String ohIpAddress = String.valueOf(WizLightingBindingConstants.OH_IP_ADDRESS_ARG);
-        if (myIpAddress != null) {
+        if (myIpAddress != null && myIpAddress != "ohIpAddress") {
             return myIpAddress;
         } else if (ohIpAddress != null) {
             return ohIpAddress;
@@ -150,7 +150,7 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     private @Nullable String getMyMacAddress() {
         String ohMacAddress = String.valueOf(WizLightingBindingConstants.OH_MAC_ADDRESS_ARG);
-        if (myMacAddress != null) {
+        if (myMacAddress != null && myMacAddress != "ohMacAddress") {
             return myMacAddress;
         } else if (ohMacAddress != null && ValidationUtils.isMacValid(ohMacAddress)) {
             logger.info("Mac Address of OpenHab device is {}.", ohMacAddress);

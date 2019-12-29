@@ -355,6 +355,7 @@ public class WizLightingHandler extends BaseThingHandler {
                 WizLightingResponse response = converter.transformSyncResponsePacket(packet);
                 if (response.getResult() != null) {
                     updateStatus(ThingStatus.ONLINE);
+                    latestUpdate = System.currentTimeMillis();
                     return response.getResult().success;
                 }
             }
