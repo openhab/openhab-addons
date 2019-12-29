@@ -82,6 +82,8 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
                     modelName = "CONNECT";
                 } else if (modelName.equals("ZP100")) {
                     modelName = "CONNECTAMP";
+                } else if (modelName.equals("One SL")) {
+                    modelName = "One";
                 }
                 ThingTypeUID thingUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName);
                 if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingUID)) {
