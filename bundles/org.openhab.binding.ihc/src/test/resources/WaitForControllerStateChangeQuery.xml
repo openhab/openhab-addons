@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
- <soapenv:Body>
-  <ns1:waitForControllerStateChange1 xmlns:ns1="utcs" xsi:type="ns1:WSControllerState">
-   <ns1:state xsi:type="xsd:string">text.ctrl.state.initialize</ns1:state>
-  </ns1:waitForControllerStateChange1>
-  <ns2:waitForControllerStateChange2 xmlns:ns2="utcs" xsi:type="xsd:int">5</ns2:waitForControllerStateChange2>
- </soapenv:Body>
-</soapenv:Envelope>

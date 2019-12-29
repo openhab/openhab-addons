@@ -29,11 +29,6 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>src/main/resources/conf/cometvisu.cfg</file>
-                  <type>cfg</type>
-                  <classifier>cometvisu</classifier>
-                </artifact>
-                <artifact>
                   <file>src/main/resources/conf/voicerss.cfg</file>
                   <type>cfg</type>
                   <classifier>voicerss</classifier>
