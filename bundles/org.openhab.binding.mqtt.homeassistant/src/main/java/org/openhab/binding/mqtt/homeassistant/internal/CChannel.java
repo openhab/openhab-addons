@@ -125,6 +125,7 @@ public class CChannel {
         private @Nullable String state_topic;
         private @Nullable String command_topic;
         private boolean retain;
+        private @Nullable Integer qos;
         private String unit = "";
         private ChannelStateUpdateListener channelStateUpdateListener;
 
@@ -163,9 +164,23 @@ public class CChannel {
             return this;
         }
 
+        /**
+         * @deprecated use commandTopic(String, boolean, int)
+         * @param command_topic
+         * @param retain
+         * @return
+         */
+        @Deprecated
         public Builder commandTopic(@Nullable String command_topic, boolean retain) {
             this.command_topic = command_topic;
             this.retain = retain;
+            return this;
+        }
+
+        public Builder commandTopic(@Nullable String command_topic, boolean retain, int qos) {
+            this.command_topic = command_topic;
+            this.retain = retain;
+            this.qos = qos;
             return this;
         }
 
@@ -184,7 +199,7 @@ public class CChannel {
             channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
                     channelUID.getGroupId() + "_" + channelID);
             channelState = new ChannelState(
-                    ChannelConfigBuilder.create().withRetain(retain).withStateTopic(state_topic)
+                    ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(state_topic)
                             .withCommandTopic(command_topic).build(),
                     channelUID, valueState, channelStateUpdateListener);
 
