@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
- <soap:Body>
-  <ns1:getIHCProjectSegment1 xmlns:ns1="utcs" xsi:type="xsd:int">1</ns1:getIHCProjectSegment1>
-  <ns2:getIHCProjectSegment2 xmlns:ns2="utcs" xsi:type="xsd:int">1001</ns2:getIHCProjectSegment2>
-  <ns3:getIHCProjectSegment3 xmlns:ns3="utcs" xsi:type="xsd:int">2002</ns3:getIHCProjectSegment3>
- </soap:Body>
-</soap:Envelope>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-<SOAP-ENV:Body>
-<ns1:getState1 xmlns:ns1="utcs" xsi:type="ns1:WSControllerState">
-<ns1:state xsi:type="xsd:string">text.ctrl.state.ready</ns1:state>
-</ns1:getState1>
-</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
