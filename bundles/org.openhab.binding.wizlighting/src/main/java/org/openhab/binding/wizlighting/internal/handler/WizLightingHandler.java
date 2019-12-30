@@ -353,10 +353,11 @@ public class WizLightingHandler extends BaseThingHandler {
                 dsocket.receive(packet);
 
                 WizLightingResponse response = converter.transformSyncResponsePacket(packet);
-                if (response.getResult() != null) {
+                CommandResponseResult respResult = response.getResult();
+                if (respResult != null) {
                     updateStatus(ThingStatus.ONLINE);
                     latestUpdate = System.currentTimeMillis();
-                    return response.getResult().success;
+                    return respResult.success;
                 }
             }
         } catch (IOException exception) {
