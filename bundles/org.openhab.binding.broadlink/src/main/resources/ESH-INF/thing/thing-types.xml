@@ -99,6 +99,7 @@
 			<options>
 				<option value="INTERNAL">internal</option>
 				<option value="EXTERNAL">external</option>
+				<option value="INTERNAL_TEMP_EXTERNAL_LIMIT">internal_temp_external_limit</option>
 			</options>
 		</state>
 	</channel-type>
