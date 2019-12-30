@@ -257,7 +257,8 @@ public class ChromecastStatusUpdater {
         }
 
         if (callback.isLinked(CHANNEL_IMAGE)) {
-            callback.updateState(CHANNEL_IMAGE, imageSrc == null ? UNDEF : HttpUtil.downloadImage(imageSrc));
+            State image = imageSrc == null ? UNDEF : HttpUtil.downloadImage(imageSrc);
+            callback.updateState(CHANNEL_IMAGE, image == null ? UNDEF : image);
         }
     }
 
