@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class AbstractMQTTDiscovery extends AbstractDiscoveryService implements MQTTTopicDiscoveryParticipant {
-
     private final Logger logger = LoggerFactory.getLogger(AbstractMQTTDiscovery.class);
 
     protected final String subscribeTopic;
