@@ -754,7 +754,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         if (!roomPropertiesSet) {
             setProperties(msg);
         }
-        setProperties(msg);
         for (DeviceInformation di : msg.devices) {
             DeviceConfiguration c = null;
             for (DeviceConfiguration conf : configurations) {
@@ -840,13 +839,13 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                             .equalsIgnoreCase((String) getConfig().get(MaxBindingConstants.PROPERTY_RFADDRESS))
                     && getConfig().get(Thing.PROPERTY_SERIAL_NUMBER) != null && message.getSerialNumber()
                             .equalsIgnoreCase((String) getConfig().get(Thing.PROPERTY_SERIAL_NUMBER))) {
-                logger.debug("properties not changed");
+                logger.debug("MAX! Cube config already up2date.");
             } else {
                 Configuration configuration = editConfiguration();
                 configuration.put(MaxBindingConstants.PROPERTY_RFADDRESS, message.getRFAddress());
                 configuration.put(Thing.PROPERTY_SERIAL_NUMBER, message.getSerialNumber());
                 updateConfiguration(configuration);
-                logger.debug("properties updated");
+                logger.debug("MAX! Cube config updated");
             }
             propertiesSet = true;
         } catch (Exception e) {
