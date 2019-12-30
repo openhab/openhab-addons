@@ -142,8 +142,10 @@ public class FloureonThermostatHandler extends BroadlinkHandler {
                 BaseStatusInfo statusInfo = floureonDevice.getBasicStatus();
                 if(SENSOR_INTERNAL.equals(command.toFullString())){
                     floureonDevice.setMode(statusInfo.getAutoMode(),statusInfo.getLoopMode(), SensorControl.INTERNAL);
-                }else{
+                }else if(SENSOR_EXTERNAL.equals(command.toFullString())){
                     floureonDevice.setMode(statusInfo.getAutoMode(),statusInfo.getLoopMode(), SensorControl.EXTERNAL);
+                }else{
+                    floureonDevice.setMode(statusInfo.getAutoMode(),statusInfo.getLoopMode(), SensorControl.EXTERNAL_LIMIT);
                 }
             } catch (Exception e) {
                 logger.error("Error while trying to set sensor mode {}: ",command,e);
