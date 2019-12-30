@@ -310,7 +310,6 @@ public class ShellyApiJsonDTO {
         public Double total; // Total consumed energy, Wh
         @SerializedName("total_returned")
         public Double totalReturned; // Total returned energy, Wh
-        public Long timestamp;
     }
 
     public static class ShellySettingsUpdate {

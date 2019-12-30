@@ -389,6 +389,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER : CHANNEL_GROUP_METER + rIndex;
                         updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
                                 toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                        if (profile.isEMeter) {
+                            updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
+                        }
                         break;
                     case "o": // Overtemp
                         // will be handled by status update

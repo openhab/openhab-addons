@@ -111,8 +111,7 @@ public class ShellyComponents {
                             updated |= th.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
                             if (updated) {
-                                th.updateChannel(groupName, CHANNEL_LAST_UPDATE,
-                                        getTimestamp(getString(profile.settings.timezone), getLong(emeter.timestamp)));
+                                th.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());
                             }
                             m++;
                         }
