@@ -17,17 +17,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.osgi.service.component.annotations.Component;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link WizLightingMediatorImpl} is responsible for receiving all the sync
@@ -99,7 +99,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
                 logger.debug("There is no handler registered for mac address: {}",
                         receivedMessage.getWizResponseIpAddress());
                 WizLightingDiscoveryService discoveryServe = this.wizlightingDiscoveryService;
-                if (discoveryServe != null){
+                if (discoveryServe != null) {
                     discoveryServe.discoveredLight(bulbMac, bulbIp);
                 }
             }
@@ -112,7 +112,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
      * Register one new {@link Thing} and the corresponding
      * {@link WizLightingHandler}.
      *
-     * @param thing   the {@link Thing}.
+     * @param thing the {@link Thing}.
      * @param handler the {@link WizLightingHandler}.
      */
     @Override

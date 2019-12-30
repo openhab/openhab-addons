@@ -14,12 +14,11 @@ package org.openhab.binding.wizlighting.internal.handler;
 
 import java.util.Set;
 
-import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
-import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
+import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 
 /**
  * The {@link WizLightingMediator} is responsible for receiving all the sync
@@ -42,7 +41,7 @@ public interface WizLightingMediator {
      * Registers a new {@link Thing} and the corresponding
      * {@link WizLightingHandler}.
      *
-     * @param thing   the {@link Thing}.
+     * @param thing the {@link Thing}.
      * @param handler the {@link WizLightingHandler}.
      */
     void registerThingAndWizBulbHandler(final Thing thing, final WizLightingHandler handler);

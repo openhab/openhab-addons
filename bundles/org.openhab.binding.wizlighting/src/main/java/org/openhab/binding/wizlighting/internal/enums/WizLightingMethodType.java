@@ -50,7 +50,7 @@ public enum WizLightingMethodType {
      * syncPilot - sent by the bulb as heart-beats
      * Example:
      * {"method": "syncPilot", "id": 218, "env": "pro", "params":
-     * { "mac": "bulbMac", "rssi": -72, "src":  "udp", "state": true, "sceneId": 0,
+     * { "mac": "bulbMac", "rssi": -72, "src": "udp", "state": true, "sceneId": 0,
      * "temp": 3362, "dimming": 69, "schdPsetId": 5}}
      * Another Example:
      * {"method": "syncPilot", "id": 219, "env": "pro", "params":
@@ -60,7 +60,7 @@ public enum WizLightingMethodType {
     syncPilot("syncPilot"),
     /**
      * setSystemConfig - no clue, I've never seen this command
-     * */
+     */
     setSystemConfig("setSystemConfig"),
     /**
      * firstBeat - set by a bulb upon power up

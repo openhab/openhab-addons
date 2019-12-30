@@ -29,7 +29,7 @@ public class MacAddressNotValidException extends Exception {
     /**
      * Default constructor.
      *
-     * @param message    the error message
+     * @param message the error message
      * @param macAddress the wrong mac address.
      */
     public MacAddressNotValidException(final String message, final String macAddress) {

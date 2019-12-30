@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This POJO represents Speed Request Param

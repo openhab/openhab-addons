@@ -18,13 +18,12 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This Thread is responsible to receive all sync messages and redirect them to
@@ -50,7 +49,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
     /**
      * Constructor of the receiver runnable thread.
      *
-     * @param mediator      the {@link WizLightingMediator}
+     * @param mediator the {@link WizLightingMediator}
      * @param listeningPort the listening UDP port
      * @throws SocketException is some problem occurs opening the socket.
      */

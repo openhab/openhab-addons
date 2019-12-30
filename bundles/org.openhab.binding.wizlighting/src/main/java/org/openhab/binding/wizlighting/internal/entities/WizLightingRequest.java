@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
-import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 
 /**
  * This POJO represents one WiZ Lighting UDP Request.
@@ -32,7 +31,7 @@ public class WizLightingRequest {
     /**
      * Default constructor.
      *
-     * @param type   the {@link WizLightingMethodType}
+     * @param type the {@link WizLightingMethodType}
      * @param params {@link Param}
      */
     public WizLightingRequest(final WizLightingMethodType method, final Param params) {

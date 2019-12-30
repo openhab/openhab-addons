@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
-import org.eclipse.smarthome.core.library.types.PercentType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.PercentType;
 
 /**
  * This POJO represents the "params" of one WiZ Lighting Response

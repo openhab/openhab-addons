@@ -14,6 +14,8 @@ package org.openhab.binding.wizlighting.internal.utils;
 
 import java.net.DatagramPacket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingRequest;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 import org.slf4j.Logger;
@@ -21,9 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Transforms the datagram packet to request/response
@@ -74,8 +73,7 @@ public class WizLightingPacketConverter {
         logger.debug("Sync Response Json={{}}", responseJson);
 
         @Nullable
-        WizLightingResponse response = this.wizlightingGsonBuilder.fromJson(responseJson,
-                WizLightingResponse.class);
+        WizLightingResponse response = this.wizlightingGsonBuilder.fromJson(responseJson, WizLightingResponse.class);
         response.setWizResponseIpAddress(packet.getAddress().getHostAddress());
         return response;
     }

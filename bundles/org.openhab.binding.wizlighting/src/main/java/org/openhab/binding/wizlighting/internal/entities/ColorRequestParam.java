@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
-import org.eclipse.smarthome.core.library.types.HSBType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.HSBType;
 
 /**
  * This POJO represents Color Request Param

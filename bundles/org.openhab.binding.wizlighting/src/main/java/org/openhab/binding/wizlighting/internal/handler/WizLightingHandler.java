@@ -23,11 +23,13 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -38,6 +40,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.entities.ColorRequestParam;
+import org.openhab.binding.wizlighting.internal.entities.CommandResponseResult;
 import org.openhab.binding.wizlighting.internal.entities.DimmingRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.Param;
 import org.openhab.binding.wizlighting.internal.entities.RegistrationRequestParam;
@@ -54,9 +57,6 @@ import org.openhab.binding.wizlighting.internal.utils.ValidationUtils;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link WizLightingHandler} is responsible for handling commands, which
@@ -106,62 +106,63 @@ public class WizLightingHandler extends BaseThingHandler {
         }
 
         switch (channelUID.getId()) {
-        case WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID:
-            if (sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command))) {
-                updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, (OnOffType) command);
-            }
-            break;
+            case WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID:
+                if (sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command))) {
+                    updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, (OnOffType) command);
+                }
+                break;
 
-        case WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID:
-            if (command instanceof HSBType) {
-                HSBType hsbCommand = (HSBType) command;
-                if (hsbCommand.getBrightness().intValue() == 0) {
-                    if (sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam(OnOffType.OFF))) {
+            case WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID:
+                if (command instanceof HSBType) {
+                    HSBType hsbCommand = (HSBType) command;
+                    if (hsbCommand.getBrightness().intValue() == 0) {
+                        if (sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam(OnOffType.OFF))) {
+                            updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, (OnOffType) command);
+                            updateState(WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID, (HSBType) command);
+                        }
+                    } else {
+                        if (sendRequestPacket(WizLightingMethodType.setPilot,
+                                new ColorRequestParam((HSBType) command))) {
+                            updateState(WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID, (HSBType) command);
+                        }
+                    }
+                } else if (command instanceof PercentType) {
+                    if (sendRequestPacket(WizLightingMethodType.setPilot, new DimmingRequestParam(command))) {
+                        updateState(WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID, (HSBType) command);
+                    }
+                } else if (command instanceof OnOffType) {
+                    if (sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command))) {
                         updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, (OnOffType) command);
                         updateState(WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID, (HSBType) command);
                     }
-                } else {
-                    if (sendRequestPacket(WizLightingMethodType.setPilot, new ColorRequestParam((HSBType) command))) {
-                        updateState(WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID, (HSBType) command);
+                }
+                break;
+
+            case WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID:
+                if (sendRequestPacket(WizLightingMethodType.setPilot, new SceneRequestParam(command))) {
+                    updateState(WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID, (StringType) command);
+                }
+                break;
+
+            case WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID:
+                if (command instanceof PercentType) {
+                    if (sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(command))) {
+                        updateState(WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID, (PercentType) command);
+
+                    }
+                } else if (command instanceof OnOffType) {
+                    OnOffType onOffCommand = (OnOffType) command;
+                    if (onOffCommand.equals(OnOffType.ON)) {
+                        if (sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(100))) {
+                            updateState(WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID, (OnOffType) command);
+                        }
+                    } else {
+                        if (sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(0))) {
+                            updateState(WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID, (OnOffType) command);
+                        }
                     }
                 }
-            } else if (command instanceof PercentType) {
-                if (sendRequestPacket(WizLightingMethodType.setPilot, new DimmingRequestParam(command))) {
-                    updateState(WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID, (HSBType) command);
-                }
-            } else if (command instanceof OnOffType) {
-                if (sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command))) {
-                    updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, (OnOffType) command);
-                    updateState(WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID, (HSBType) command);
-                }
-            }
-            break;
-
-        case WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID:
-            if (sendRequestPacket(WizLightingMethodType.setPilot, new SceneRequestParam(command))) {
-                updateState(WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID, (StringType) command);
-            }
-            break;
-
-        case WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID:
-            if (command instanceof PercentType) {
-                if (sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(command))) {
-                    updateState(WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID, (PercentType) command);
-
-                }
-            } else if (command instanceof OnOffType) {
-                OnOffType onOffCommand = (OnOffType) command;
-                if (onOffCommand.equals(OnOffType.ON)) {
-                    if (sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(100))) {
-                        updateState(WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID, (OnOffType) command);
-                    }
-                } else {
-                    if (sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(0))) {
-                        updateState(WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID, (OnOffType) command);
-                    }
-                }
-            }
-            break;
+                break;
         }
     }
 
@@ -325,7 +326,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * Sends {@link WizLightingRequest} to the passed {@link InetAddress}.
      *
      * @param requestPacket the {@link WizLightingRequest}.
-     * @param address       the {@link InetAddress}.
+     * @param address the {@link InetAddress}.
      */
     private boolean sendRequestPacket(final WizLightingMethodType method, final Param param) {
         DatagramSocket dsocket = null;
