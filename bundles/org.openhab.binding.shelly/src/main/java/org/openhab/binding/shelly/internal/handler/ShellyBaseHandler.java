@@ -174,8 +174,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         lockUpdates = false;
 
         Map<String, String> properties = getThing().getProperties();
-        logger.debug("{}: Start initializing, ip address {}, CoIoT: {}", getThing().getLabel(), config.deviceIp,
-                config.eventsCoIoT);
+        thingName = properties.get(PROPERTY_SERVICE_NAME) != null ? properties.get(PROPERTY_SERVICE_NAME).toLowerCase()
+                : this.getThing().getThingTypeUID().getId();
+        logger.debug("{}: Start initializing thing {}, ip address {}, CoIoT: {}", thingName, getThing().getLabel(),
+                config.deviceIp, config.eventsCoIoT);
         if (config.deviceIp.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/config-status.error.missing-device-ip");
@@ -183,10 +185,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
 
         // Initialize API access, exceptions will be catched by initialize()
-        thingName = properties.get(PROPERTY_SERVICE_NAME) != null ? properties.get(PROPERTY_SERVICE_NAME).toLowerCase()
-                : "";
         api = new ShellyHttpApi(config);
-        ShellyDeviceProfile tmpPrf = api.getDeviceProfile(this.getThing().getThingTypeUID().getId());
+        ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingName);
         thingName = (!thingName.isEmpty() ? thingName : tmpPrf.hostname).toLowerCase();
         Validate.isTrue(!thingName.isEmpty(), "initializeThing(): thingName must not be empty!");
 
@@ -201,11 +201,11 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         logger.debug("{}: Shelly settings info: {}", thingName, tmpPrf.settingsJson);
         logger.debug(
                 "{}: Device has relays: {} (numRelays={}, is roller: {} (numRoller={}), is Plug S: {}, is Dimmer: {}, "
-                        + "has LEDs: {}, is Light: {}, has Meter: {} (numMeter={}, EMeter: {}), is Sensor: {}, is Sense: {}, has Battery: {} {}, "
+                        + "has LEDs: {}, is Light: {}, has Meter: {} (numMeter={}, EMeter: {}), is Sensor: {}, is Sense: {}, weak signal threshold: {} dBm, has Battery: {} {}, "
                         + "event urls: btn:{},out:{},push{},roller:{},sensor:{}",
                 tmpPrf.hostname, tmpPrf.hasRelays, tmpPrf.numRelays, tmpPrf.isRoller, tmpPrf.numRollers, tmpPrf.isPlugS,
                 tmpPrf.isDimmer, tmpPrf.hasLed, tmpPrf.isLight, tmpPrf.hasMeter, tmpPrf.numMeters, tmpPrf.isEMeter,
-                tmpPrf.isSensor, tmpPrf.isSense, tmpPrf.hasBattery,
+                tmpPrf.isSensor, tmpPrf.isSense, config.weakSignal, tmpPrf.hasBattery,
                 tmpPrf.hasBattery ? "(low battery threshold=" + config.lowBattery + "%)" : "",
                 tmpPrf.supportsButtonUrls, tmpPrf.supportsOutUrls, tmpPrf.supportsPushUrls, tmpPrf.supportsRollerUrls,
                 tmpPrf.supportsSensorUrls);
@@ -532,8 +532,33 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                         payload = event;
                         break;
 
+                    case SHELLY_EVENT_BTN_ON:
+                        updateChannel(group, CHANNEL_INPUT, OnOffType.ON);
+                        break;
+                    case SHELLY_EVENT_BTN_OFF:
+                        updateChannel(group, CHANNEL_INPUT, OnOffType.OFF);
+                        break;
+                    case SHELLY_EVENT_BTN1_ON:
+                        updateChannel(group, CHANNEL_INPUT1, OnOffType.ON);
+                        break;
+                    case SHELLY_EVENT_BTN1_OFF:
+                        updateChannel(group, CHANNEL_INPUT1, OnOffType.OFF);
+                        break;
+                    case SHELLY_EVENT_BTN2_ON:
+                        updateChannel(group, CHANNEL_INPUT2, OnOffType.ON);
+                        break;
+                    case SHELLY_EVENT_BTN2_OFF:
+                        updateChannel(group, CHANNEL_INPUT2, OnOffType.OFF);
+                        break;
+                    case SHELLY_EVENT_OUT_ON:
+                        updateChannel(group, CHANNEL_OUTPUT, OnOffType.ON);
+                        break;
+                    case SHELLY_EVENT_OUT_OFF:
+                        updateChannel(group, CHANNEL_OUTPUT, OnOffType.OFF);
+                        break;
+
                     default:
-                        // triggered will be provided by input/output channel or sensor channels
+                        // trigger will be provided by input/output channel or sensor channels
                 }
 
                 if (!payload.isEmpty()) {

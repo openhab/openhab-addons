@@ -223,8 +223,8 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_EVENT_BTN2_OFF = "btn2_off";
     public static final String SHELLY_EVENT_SHORTPUSH = "shortpush";
     public static final String SHELLY_EVENT_LONGPUSH = "longpush";
-    public static final String SHELLY_EVENT_OUT_ON = "btn2_off";
-    public static final String SHELLY_EVENT_OUT_OFF = "btn_on";
+    public static final String SHELLY_EVENT_OUT_ON = "out_on";
+    public static final String SHELLY_EVENT_OUT_OFF = "out_off";
     public static final String SHELLY_EVENT_ROLLER_OPEN = "roller_open";
     public static final String SHELLY_EVENT_ROLLER_CLOSE = "roller_close";
     public static final String SHELLY_EVENT_ROLLER_STOP = "roller_stop";

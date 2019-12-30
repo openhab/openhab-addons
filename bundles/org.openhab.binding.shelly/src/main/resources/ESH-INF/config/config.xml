@@ -50,7 +50,7 @@
 			<label>Enable Push Events (short/long)</label>
 			<description>True if the binding should register to get the Short/Long Push Events.</description>
 			<advanced>true</advanced>
-			<default>true</default>
+			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
 			<label>Enable CoIoT Events</label>

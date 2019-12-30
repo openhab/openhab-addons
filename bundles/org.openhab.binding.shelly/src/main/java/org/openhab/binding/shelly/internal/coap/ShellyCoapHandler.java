@@ -344,7 +344,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             return;
         }
 
-        logger.debug("{}: {} status updates received", thingName, list.generic.size());
+        logger.debug("{}: {} status updates received", thingName, new Integer(list.generic.size()).toString());
         for (int i = 0; i < list.generic.size(); i++) {
             CoIotSensor s = list.generic.get(i);
             CoIotDescrSen sen = sensorMap.get(s.index);
@@ -420,19 +420,22 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                         toQuantityType(pos, SmartHomeUnits.PERCENT));
                                 break;
                             case "input":
-                                if (!profile.isDimmer) {
-                                    // Device has 1 input: 0=off, 1+2 depend on switch mode
-                                    updateChannel(updates, rGroup, CHANNEL_INPUT,
-                                            s.value == 0 ? OnOffType.OFF : OnOffType.ON);
-                                } else {
-                                    // only Dimmer has 2 inputs
-                                    Integer idx = getInputId(sen.id);
-                                    if (idx != null) {
-                                        updateChannel(updates, rGroup, CHANNEL_INPUT + idx.toString(),
-                                                s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                Integer idx = getInputId(sen.id);
+                                String iGroup = rGroup;
+                                String iChannel = CHANNEL_INPUT;
+                                if (idx != null) {
+                                    if (profile.isDimmer || profile.isRoller) {
+                                        // Dimmer and Roller things have 2 inputs
+                                        iChannel = CHANNEL_INPUT + idx.toString();
+                                    } else {
+                                        // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
+                                        iGroup = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
+                                                : CHANNEL_GROUP_RELAY_CONTROL + idx;
                                     }
                                 }
+                                updateChannel(updates, iGroup, iChannel, s.value == 0 ? OnOffType.OFF : OnOffType.ON);
                                 break;
+
                             case "flood":
                                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
                                         s.value == 1 ? OnOffType.ON : OnOffType.OFF);
