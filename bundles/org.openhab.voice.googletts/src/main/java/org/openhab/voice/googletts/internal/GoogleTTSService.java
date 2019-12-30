@@ -23,12 +23,12 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.core.ConfigConstants;
-import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.ByteArrayAudioStream;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
