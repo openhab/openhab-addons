@@ -44,10 +44,6 @@
                   <header file="src/main/resources/header.xml" filtering="no"/>
                   <fileset dir="${basedirRoot}/bundles">
                     <include name="*/src/main/feature/feature.xml"/>
-                    <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
-                    <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
-                    <!-- temporarily disabled due to malfunction -->
-                    <exclude name="**/org.openhab.io.azureiothub/**/feature.xml"/>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>
@@ -69,9 +65,6 @@
             <id>karaf-feature-verification</id>
             <configuration>
               <features>
-                <feature>openhab-binding-bluetooth</feature>
-                <feature>openhab-binding-mqtt</feature>
-                <feature>openhab-misc-ruleengine</feature>
               </features>
             </configuration>
           </execution>
