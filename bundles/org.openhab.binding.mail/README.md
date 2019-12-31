@@ -125,3 +125,7 @@ val List<String> attachmentUrlList = newArrayList(
 val mailActions = getActions("mail","mail:smtp:sampleserver")
 mailActions.sendHtmlMail("mail@example.com", "Test subject", "<h1>Header</h1>This is the mail content.", attachmentUrlList)
 ```
+
+## Note
+
+This binding is incompatible with the openHAB 1.x mail action.  Remove this action before attempting to use this mail binding.
