@@ -144,7 +144,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile @Nullable PollTask pollTask;
     private volatile boolean isWriteEnabled;
     private volatile boolean isReadEnabled;
-    private volatile boolean transformationOnlyInWrite;
+    private volatile boolean writeParametersHavingTransformationOnly;
     private volatile boolean childOfEndpoint;
     private volatile @Nullable ModbusPollerThingHandler pollerHandler;
     private volatile Map<String, ChannelUID> channelCache = new HashMap<>();
@@ -252,7 +252,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             if (transformOutput.contains("[")) {
                 processJsonTransform(command, transformOutput);
                 return null;
-            } else if (transformationOnlyInWrite) {
+            } else if (writeParametersHavingTransformationOnly) {
                 logger.error(
                         "Thing {} seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '{}' (channel {}), this is a configuration error.",
                         getThing().getUID(), command, channelUID);
@@ -411,7 +411,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         pollTask = null;
         isWriteEnabled = false;
         isReadEnabled = false;
-        transformationOnlyInWrite = false;
+        writeParametersHavingTransformationOnly = false;
         childOfEndpoint = false;
         pollerHandler = null;
         channelCache = new HashMap<>();
@@ -518,28 +518,31 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         boolean writeValueTypeMissing = StringUtils.isBlank(config.getWriteValueType());
         boolean writeTransformationMissing = StringUtils.isBlank(config.getWriteTransform());
         writeTransformation = new Transformation(config.getWriteTransform());
-
         boolean writingCoil = WRITE_TYPE_COIL.equals(config.getWriteType());
-        transformationOnlyInWrite = (writeTypeMissing && writeStartMissing && writeValueTypeMissing
-                && !writeTransformationMissing);
-        boolean allMissingOrAllPresentOrOnlyTransform = (writeTypeMissing && writeStartMissing && writeValueTypeMissing)
-                || (!writeTypeMissing && !writeStartMissing && (!writeValueTypeMissing || writingCoil))
-                || transformationOnlyInWrite;
-        if (!allMissingOrAllPresentOrOnlyTransform) {
+        writeParametersHavingTransformationOnly = (writeTypeMissing && writeStartMissing
+                && writeValueTypeMissing && !writeTransformationMissing);
+        boolean allMissingOrAllPresentOrOnlyNonDefaultTransform = //
+                // read-only thing, no write specified
+                (writeTypeMissing && writeStartMissing && writeValueTypeMissing)
+                        // mandatory write parameters provided. With coils one can drop value type
+                        || (!writeTypeMissing && !writeStartMissing && (!writeValueTypeMissing || writingCoil))
+                        // only transformation provided
+                        || writeParametersHavingTransformationOnly;
+        if (!allMissingOrAllPresentOrOnlyNonDefaultTransform) {
             String errmsg = String.format(
                     "writeType=%s, writeStart=%s, and writeValueType=%s should be all present, or all missing! Alternatively, you can provide just writeTransformation, and use transformation returning JSON.",
                     config.getWriteType(), config.getWriteStart(), config.getWriteValueType());
             throw new ModbusConfigurationException(errmsg);
-        } else if (!writeTypeMissing || transformationOnlyInWrite) {
+        } else if (!writeTypeMissing || writeParametersHavingTransformationOnly) {
             isWriteEnabled = true;
             // all write values are present
-            if (!transformationOnlyInWrite && !WRITE_TYPE_HOLDING.equals(config.getWriteType())
+            if (!writeParametersHavingTransformationOnly && !WRITE_TYPE_HOLDING.equals(config.getWriteType())
                     && !WRITE_TYPE_COIL.equals(config.getWriteType())) {
                 String errmsg = String.format("Invalid writeType=%s. Expecting %s or %s!", config.getWriteType(),
                         WRITE_TYPE_HOLDING, WRITE_TYPE_COIL);
                 throw new ModbusConfigurationException(errmsg);
             }
-            if (transformationOnlyInWrite) {
+            if (writeParametersHavingTransformationOnly) {
                 // Placeholder for further checks
                 writeValueType = ModbusConstants.ValueType.INT16;
             } else if (writingCoil && writeValueTypeMissing) {
@@ -567,7 +570,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             }
 
             try {
-                if (!transformationOnlyInWrite) {
+                if (!writeParametersHavingTransformationOnly) {
                     writeStart = Integer.parseInt(config.getWriteStart().trim());
                 }
             } catch (IllegalArgumentException e) {
