@@ -234,14 +234,6 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="motionDetection">
-		<item-type>Switch</item-type>
-		<label>Motion Detected</label>
-		<description>Motion detection sensor state.</description>
-		<category>Switch</category>
-		<state readOnly="true" />
-	</channel-type>
-
 	<channel-type id="vibration">
 		<item-type>Switch</item-type>
 		<label>Vibration Alarm</label>
@@ -351,13 +343,6 @@
 		<label>Current</label>
 		<description>Current</description>
 		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="windspeed">
-		<item-type>Number:Speed</item-type>
-		<label>Wind Speed</label>
-		<description>Current wind speed</description>
-		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="rainStatus">
