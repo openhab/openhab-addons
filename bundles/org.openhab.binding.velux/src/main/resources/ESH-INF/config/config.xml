@@ -12,6 +12,7 @@
 		<parameter name="ipAddress" type="text">
 			<label>@text/config.velux.bridge.ipAddress.label</label>
 			<description>@text/config.velux.bridge.ipAddress.description</description>
+			<context>network-address</context>
 			<required>true</required>
 		</parameter>
 		<parameter name="protocol" type="text">
@@ -42,7 +43,7 @@
 			<!-- Velux Bridge factory default -->
 			<default>velux123</default>
 		</parameter>
-		<parameter name="timeoutMsecs" type="integer" min="1" step="1" max="10000">
+		<parameter name="timeoutMsecs" type="integer" min="1" step="1" max="60000">
 			<label>@text/config.velux.bridge.timeoutMsecs.label</label>
 			<description>@text/config.velux.bridge.timeoutMsecs.description</description>
 			<required>false</required>
@@ -56,11 +57,11 @@
 			<default>5</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="refreshMsecs" type="integer" min="1" step="1" max="10000">
+		<parameter name="refreshMsecs" type="integer" min="1" step="1" max="3600000">
 			<label>@text/config.velux.bridge.refreshMsecs.label</label>
 			<description>@text/config.velux.bridge.refreshMsecs.description</description>
 			<required>false</required>
-			<default>10000</default>
+			<default>15000</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="isBulkRetrievalEnabled" type="boolean">

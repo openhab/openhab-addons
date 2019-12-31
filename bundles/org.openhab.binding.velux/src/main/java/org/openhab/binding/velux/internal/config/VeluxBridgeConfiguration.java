@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link VeluxBridgeConfiguration} is a wrapper for
  * configuration settings needed to access the
- * {@link org.openhab.binding.velux.bridge.VeluxBridgeProvider}
+ * {@link org.openhab.binding.velux.internal.bridge.VeluxBridgeProvider}
  * device.
  * <p>
  * It contains the factory default values as well.

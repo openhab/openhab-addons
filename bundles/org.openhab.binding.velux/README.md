@@ -35,18 +35,18 @@ Items marked with (\*) are fully implemented. Items marked with (+) have only pa
 
 The <B>Velux KLF200</B> bridge has to be configured with some parameters, at least with the IP address of the bridge.
 
-| Property             | Default          | Required | Description                                                  |
-|----------------------|------------------|:--------:|--------------------------------------------------------------|
-| ipAddress            |                  |   Yes    | Hostname or address for accessing the Velux Bridge.          |
-| protocol             | slip             |    No    | Underlying communication protocol (http/https/slip).         |
-| tcpPort              | 51200            |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.       |
-| password             | velux123         |    No    | Password for authentication against the Velux Bridge.(\*\*)    |
-| timeoutMsecs         | 1000             |    No    | Initial Connection timeout in milliseconds.                  |
-| retries              | 5                |    No    | Number of retries during I/O.                                |
-| refreshMsecs         | 10000            |    No    | Refresh interval in milliseconds.                            |
-| isBulkRetrievalEnabled | yes            |    No    | Load all scenes and actuators in one step.                   |
-| isSequentialEnforced | no               |    No    | Enforce Sequential Actuator Control even for long operations.|
-| isProtocolTraceEnabled | no             |    No    | Show any protocol interaction (loglevel INFO).               |
+| Property               | Default          | Required | Description                                                  |
+|------------------------|------------------|:--------:|--------------------------------------------------------------|
+| ipAddress              |                  |   Yes    | Hostname or address for accessing the Velux Bridge.          |
+| protocol               | slip             |    No    | Underlying communication protocol (http/https/slip).         |
+| tcpPort                | 51200            |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.       |
+| password               | velux123         |    No    | Password for authentication against the Velux Bridge.(\*\*)    |
+| timeoutMsecs           | 1000             |    No    | Initial Connection timeout in milliseconds.                  |
+| retries                | 5                |    No    | Number of retries during I/O.                                |
+| refreshMsecs           | 10000            |    No    | Refresh interval in milliseconds.                            |
+| isBulkRetrievalEnabled | yes              |    No    | Load all scenes and actuators in one step.                   |
+| isSequentialEnforced   | no               |    No    | Enforce Sequential Actuator Control even for long operations.|
+| isProtocolTraceEnabled | no               |    No    | Show any protocol interaction (loglevel INFO).               |
 
 (\*\*) Note: This password is the API password that is printed on the back of the unit. Normally it differs from the password of the web frontend.
 
@@ -119,30 +119,44 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 ### Subtype
 
 
-| Subtype      | Item Type     | Description                                                     | Mastertype | Parameter |
-|--------------|---------------|-----------------------------------------------------------------|------------|-----------|
-| information  | String        | Describes the current state of the binding                      | binding    | N/A       |
-| status       | String        | Current Bridge State (\*\*\*)                                      | bridge     | N/A       |
-| reload       | Switch        | Reload information from bridge into binding                     | bridge     | N/A       |
-| timestamp    | Number        | Timestamp of last successful device interaction                 | bridge     | N/A       |
-| doDetection  | Switch        | Start of the product detection mode                             | bridge     | N/A       |
-| firmware     | String        | Software version of the Bridge                                  | bridge     | N/A       |
-| ipAddress    | String        | IP address of the Bridge                                        | bridge     | N/A       |
-| subnetMask   | String        | IP subnetmask of the Bridge                                     | bridge     | N/A       |
-| defaultGW    | String        | IP address of the Default Gateway of the Bridge                 | bridge     | N/A       |
-| DHCP         | Switch        | Flag whether automatic IP configuration is enabled              | bridge     | N/A       |
-| WLANSSID     | String        | Name of the wireless network                                    | bridge     | N/A       |
-| WLANPassword | String        | WLAN Authentication Password                                    | bridge     | N/A       |
-| products     | String        | List of all recognized products                                 | bridge     | N/A       |
-| scenes       | String        | List of all defined scenes                                      | bridge     | N/A       |
-| check        | String        | Result of the check of current item configuration               | bridge     | N/A       |
-| shutter      | Rollershutter | Virtual rollershutter as combination of different scenes        | bridge     | required  |
-| position     | Rollershutter | Position of the IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)| actuator   | required  |
-| state        | Switch        | Position of the IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)| actuator   | required  |
-| serial       | Rollershutter | IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)		 | actuator   | required  |
-| silentMode   | Switch        | NOT YET IMPLEMENTED.                                            | actuator   | required  |
-| action       | Switch        | Activates a set of predefined product settings                  | scene      | required  |
-| silentMode   | Switch        | Modification of the silent mode of the defined product settings | scene      | required  |
+| Subtype      | Item Type     | Description                                                     | Mastertype   | Parameter |
+|--------------|---------------|-----------------------------------------------------------------|--------------|-----------|
+| information  | String        | Describes the current state of the binding                      | binding      | N/A       |
+| status       | String        | Current Bridge State (\*\*\*)                                   | bridge       | N/A       |
+| reload       | Switch        | Reload information from bridge into binding                     | bridge       | N/A       |
+| timestamp    | Number        | Timestamp of last successful device interaction                 | bridge       | N/A       |
+| doDetection  | Switch        | Start of the product detection mode                             | bridge       | N/A       |
+| firmware     | String        | Software version of the Bridge                                  | bridge       | N/A       |
+| ipAddress    | String        | IP address of the Bridge                                        | bridge       | N/A       |
+| subnetMask   | String        | IP subnetmask of the Bridge                                     | bridge       | N/A       |
+| defaultGW    | String        | IP address of the Default Gateway of the Bridge                 | bridge       | N/A       |
+| DHCP         | Switch        | Flag whether automatic IP configuration is enabled              | bridge       | N/A       |
+| WLANSSID     | String        | Name of the wireless network                                    | bridge       | N/A       |
+| WLANPassword | String        | WLAN Authentication Password                                    | bridge       | N/A       |
+| products     | String        | List of all recognized products                                 | bridge       | N/A       |
+| scenes       | String        | List of all defined scenes                                      | bridge       | N/A       |
+| check        | String        | Result of the check of current item configuration               | bridge       | N/A       |
+| shutter      | Rollershutter | Virtual rollershutter as combination of different scenes        | bridge       | required  |
+|--------------|---------------|-----------------------------------------------------------------|--------------|-----------|
+| serial       | String        | IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)                | actuator     | required  |
+| position     | Rollershutter | Position of the IO-Homecontrol'ed device (\*\*\*\*)             | actuator     | optional  |
+| state        | Switch        | State of the IO-Homecontrol'ed device                           | actuator     | optional  |
+| limitMinimum | Rollershutter | Minimum position of the IO-Homecontrol'ed device (\*\*\*\*)     | actuator     | optional  |
+| limitMaximum | Rollershutter | Maximum position of the IO-Homecontrol'ed device (\*\*\*\*)     | actuator     | optional  |
+|--------------|---------------|-----------------------------------------------------------------|--------------|-----------|
+| serial       | String        | IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)                | window       | required  |
+| position     | Rollershutter | Position of the IO-Homecontrol'ed device (\*\*\*\*)             | window       | optional  |
+| limitMinimum | Rollershutter | Minimum position of the IO-Homecontrol'ed device (\*\*\*\*)     | window       | optional  |
+| limitMaximum | Rollershutter | Maximum position of the IO-Homecontrol'ed device (\*\*\*\*)     | window       | optional  |
+|--------------|---------------|-----------------------------------------------------------------|--------------|-----------|
+| serial       | String        | IO-Homecontrol'ed device (\*\*\*\*) (\*\*\*\*\*)                | rollershutter| required  |
+| position     | Rollershutter | Position of the IO-Homecontrol'ed device (\*\*\*\*)             | rollershutter| optional  |
+| limitMinimum | Rollershutter | Minimum position of the IO-Homecontrol'ed device (\*\*\*\*)     | rollershutter| optional  |
+| limitMaximum | Rollershutter | Maximum position of the IO-Homecontrol'ed device (\*\*\*\*)     | rollershutter| optional  |
+|--------------|---------------|-----------------------------------------------------------------|--------------|-----------|
+| sceneName    | String        | Defines the scene by name according to registration in KLF200   | scene        | required  |
+| action       | Switch        | Activates a set of predefined product settings                  | scene        | optional  |
+| silentMode   | Switch        | Modification of the silent mode of the defined product settings | scene        | optional  |
 
 Notes:
 (\*\*\*) The existence of this item triggers the continuous realtime status updates of any Velux item like shutters even if they are manually controlled by other controllers.
@@ -169,226 +183,24 @@ The subtype shutter requires an even pair of parameters, each defining the shutt
 
 ### Virtual shutter
 
-As the bridge does not support a real rollershutter interaction, this binding provides a virtual rollershutter consisting of different scenes which set a specific shutter level. Therefore the item definition contains multiple pairs of rollershutter levels each followed by a scene name, which leads to this setting.
-
-
-## Full Example for firmware version One
-
+As the bridge with firmware version one does not support a real rollershutter interaction, this binding provides a virtual rollershutter consisting of different scenes which set a specific shutter level. Therefore the item definition contains multiple pairs of rollershutter levels each followed by a scene name, which leads to this setting.
 
 
 ### Items
 
-```
-//  Group for simulating push buttons
-
-Group:Switch:OR(ON, OFF)    gV  "PushButton"
-
-// Velux Scenes
-
-Switch  V_W_S_OPEN   "Velux DG Rolladen West open"       (gV)    { velux="thing=scene;channel=action#V_Shutter_West_000" }
-Switch  V_W_S_SUNNY  "Velux DG Rolladen West sunny"      (gV)    { velux="thing=scene;channel=action#V_Shutter_West_090" }
-Switch  V_W_S_CLOSED "Velux DG Rolladen West closed"     (gV)    { velux="thing=scene;channel=action#V_Shutter_West_100" }
-
-Switch  V_O_S_OPEN   "Velux DG Rolladen Ost open"        (gV)    { velux="thing=scene;channel=action#V_Shutter_Ost_000" }
-Switch  V_O_S_SUNNY  "Velux DG Rolladen Ost sunny"       (gV)    { velux="thing=scene;channel=action#V_Shutter_Ost_090" }
-Switch  V_O_S_CLOSED "Velux DG Rolladen Ost closed"      (gV)    { velux="thing=scene;channel=action#V_Shutter_Ost_100" }
-
-Switch  V_M_S_OPEN   "Velux DG Rolladen Mitte open"      (gV)    { velux="thing=scene;channel=action#V_Shutter_Mitte_000" }
-Switch  V_M_S_SUNNY  "Velux DG Rolladen Mitte sunny"     (gV)    { velux="thing=scene;channel=action#V_Shutter_Mitte_090" }
-Switch  V_M_S_CLOSED "Velux DG Rolladen Mitte closed"    (gV)    { velux="thing=scene;channel=action#V_Shutter_Mitte_100" }
-
-Switch  V_M_W_OPEN   "Velux DG Window open"          (gV)    { velux="thing=scene;channel=action#V_Window_Mitte_000" }
-Switch  V_M_W_UNLOCKED "Velux DG Window unlocked"        (gV)    { velux="thing=scene;channel=action#V_Window_Mitte_010" }
-Switch  V_M_W_CLOSED "Velux DG Window closed"        (gV)    { velux="thing=scene;channel=action#V_Window_Mitte_100" }
-
-Switch  V_OPEN   "Velux DG open"             (gV)    { velux="thing=scene;channel=action#V_Shutters_000" }
-Switch  V_SUNNY  "Velux DG sunny"            (gV)    { velux="thing=scene;channel=action#V_Shutters_090" }
-Switch  V_CLOSED "Velux DG closed"           (gV)    { velux="thing=scene;channel=action#V_Shutters_100" }
-
-// Velux Bridge parameters
-
-Switch  V_RELOAD    "Reload info from bridge"       { velux="thing=bridge;channel=reload" }
-String  V_STATUS    "Status [%s]"                   { velux="thing=bridge;channel=status" }
-String  V_TIMESTAMP "Timestamp [%.1f]"              { velux="thing=bridge;channel=timestamp" }
-String  V_CHECK     "Velux Config Check [%s]"       { velux="thing=bridge;channel=check" }
-String  V_FIRMWARE  "Firmware [%s]"                 { velux="thing=bridge;channel=firmware" }
-String	V_CONF_LAN_IP	"KLF LAN IP [%s]"	{ velux="thing=bridge;channel=ipAddress" }
-String	V_CONF_LAN_SUBNET "KLF LAN Subnet [%s]"	{ velux="thing=bridge;channel=subnetMask" }
-String	V_CONF_LAN_GW	"KLF LAN Gateway [%s]"	{ velux="thing=bridge;channel=defaultGW" }
-Switch	V_CONF_LAN_DHCP	"KLF LAN DHCP [%s]"	{ velux="thing=bridge;channel=DHCP" }
-String	V_CONF_WLAN_SSID "KLF WLAN SSID [%s]"	{ velux="thing=bridge;channel=WLANSSID" }
-String	V_CONF_WLAN_PW	"KLF WLAN Password [%s]"{ velux="thing=bridge;channel=WLANPassword" }
-
-
-// Velux Shutters
-
-Rollershutter V_W_S  "Velux DG Rolladen West [%d]"   { velux="thing=bridge;channel=shutter#0,V_Shutter_West_000,90,V_Shutter_West_090, 100,V_Shutter_West_100"}
-Rollershutter V_O_S  "Velux DG Rolladen Ost [%d]"    { velux="thing=bridge;channel=shutter#0,V_Shutter_Ost_000,90,V_Shutter_Ost_090,10 0,V_Shutter_Ost_100"}
-Rollershutter V_M_S  "Velux DG Rolladen Mitte [%d]"  { velux="thing=bridge;channel=shutter#0,V_Shutter_Mitte_000,90,V_Shutter_Mitte_09
-0,100,V_Shutter_Mitte_100"}
-Rollershutter V_M_W  "Velux DG Window Mitte [%d]"    { velux="thing=bridge;channel=shutter#0,V_Window_Mitte_000,10,V_Window_Mitte_010,
-100,V_Window_Mitte_100"}
-```
+[Sample items file for textual configuration](doc/conf/items/velux.items)
 
 ### Sitemap
 
-```
-sitemap velux label="Velux Environment"
-{
-    Frame label="Velux Shutter and Window" {
-        Switch  item=V_W_S
-        Switch  item=V_O_S
-        Switch  item=V_M_S
-        Switch  item=V_M_W
-    }
-    Frame label="Velux Bridge" {
-        Switch  item=V_RELOAD
-        Text    item=V_STATUS
-        Text    item=V_TIMESTAMP
-        Text    item=V_CHECK
-        Text    item=V_FIRMWARE
-        Text    item=V_CONF_LAN_IP
-        Text    item=V_CONF_LAN_SUBNET
-        Text    item=V_CONF_LAN_GW
-        Switch  item=V_CONF_LAN_DHCP
-        Text    item=V_CONF_WLAN_SSID
-        Text    item=V_CONF_WLAN_PW
-    }
-}
-```
+[Sample sitemaps file for textual configuration](doc/conf/sitemaps/velux.sitemap)
 
 ### Rules
 
-```
-/**
- * This rule simulates the push button behaviour.
- */
-rule "PushButton of group gV"
-    when
-        Item gV changed
-    then
-        // waiting a second.
-            Thread::sleep(1000)
-        // Foreach-Switch-is-ON
-        gV.allMembers.filter( s | s.state == ON).forEach[i|
-            // switching OFF
-                i.sendCommand(OFF)
-        ]
-    end
-```
-
-## Full Example for firmware version Two (text-based configuration)
-
+[Sample rules file for textual configuration](doc/conf/rules/velux.rules)
 
 ### Things
 
-```
-//
-// Definition of Velux bridge velux:klf200:home
-//
-
-Bridge velux:klf200:home    [ ipAddress="192.168.1.1", tcpPort=51200, password="secret" ] {
-
-// Velux scenes
-
-    Thing   scene   windowClosed    [ sceneName="V_Window_Mitte_000" ]
-    Thing   scene   windowUnlocked  [ sceneName="V_Window_Mitte_005" ]
-    Thing   scene   windowOpened    [ sceneName="V_Window_Mitte_100" ]
-
-// Velux IO-homecontrol devices
-
-    Thing   actuator    V_M_W       [ serial="43:12:3E:26:0C:1B:00:10" ]
-    Thing   actuator    V_M_S       [ serial="43:12:14:5A:12:1C:05:5F" ]
-    Thing   actuator    V_W_S       [ serial="43:12:40:5A:0C:2A:05:64" ]
-    Thing   actuator    V_O_S       [ serial="43:12:40:5A:0C:23:0A:6E",inverted=true ]
-
-}
-
-```
-
-### Items
-
-```
-//  Group for simulating push buttons
-
-Group:Switch:OR(ON, OFF) gV "PushButton"
-
-// Velux Bridge channels
-
-String  V_BRIDGE_STATUS     "Velux Bridge Status [%s]"          { channel="velux:klf200:home:status" }
-Switch  V_BRIDGE_RELOAD     "Velux Bridge Reload"         (gV)  { channel="velux:klf200:home:reload" }
-String  V_BRIDGE_TIMESTAMP  "Velux Bridge Timestamp [%d]"       { channel="velux:klf200:home:timestamp" }
-
-String  V_BRIDGE_FIRMWARE   "Velux Bridge Firmware version [%s]" { channel="velux:klf200:home:firmware" }
-String  V_BRIDGE_IPADDRESS  "Velux Bridge LAN IP Address"       { channel="velux:klf200:home:ipAddress" }
-String  V_BRIDGE_SUBNETMASK "Velux Bridge LAN IP Subnet Mask"   { channel="velux:klf200:home:subnetMask" }
-String  V_BRIDGE_DEFAULTGW  "Velux Bridge LAN Default Gateway"  { channel="velux:klf200:home:defaultGW" }
-String  V_BRIDGE_DHCP       "Velux Bridge LAN DHCP Enabled"     { channel="velux:klf200:home:DHCP" }
-String  V_BRIDGE_WLANSSID   "Velux Bridge WLAN SSID"            { channel="velux:klf200:home:WLANSSID" }
-String  V_BRIDGE_WLANPASSWD "Velux Bridge WLAN Password"        { channel="velux:klf200:home:WLANPassword" }
-
-Switch  V_BRIDGE_DETECTION  "Velux Bridge Detection mode"  (gV) { channel="velux:klf200:home:doDetection" }
-String  V_BRIDGE_CHECK      "Velux Bridge Check"                { channel="velux:klf200:home:check" }
-String  V_BRIDGE_SCENES     "Velux Bridge Scenes"               { channel="velux:klf200:home:scenes" }
-String  V_BRIDGE_PRODUCTS   "Velux Bridge Products"             { channel="velux:klf200:home:products" }
-
-// Velux Scene channels
-
-Switch  V_M_W_OPEN          "Velux Window open"            (gV) { channel="velux:scene:home:windowOpened:action" }
-Switch  V_M_W_UNLOCKED      "Velux Window a little open"   (gV) { channel="velux:scene:home:windowUnlocked:action" }
-Switch  V_M_W_CLOSED        "Velux Window closed"          (gV) { channel="velux:scene:home:windowClosed:action" }
-
-// Velux Bridge channel
-
-Rollershutter RS2           "Velux Rolladen 2 [%d]"              { channel="velux:klf200:home:shutter#0,V_Shutter_Ost_000,100,V_Shutter_Ost_100", channel="knx:device:bridge:control:VeluxFenster" }
-
-// Velux Actuator channels
-
-Rollershutter   V_M_W        "DG Fenster Bad [%d]"              { channel="velux:klf200:home:V_M_W" }
-Rollershutter   V_M_S        "DG Bad  [%d]"                     { channel="velux:klf200:home:V_M_S" }
-Rollershutter   V_W_S        "DG West [%d]"                     { channel="velux:klf200:home:V_W_S" }
-Rollershutter   V_O_S        "DG Ost  [%d]"                     { channel="velux:klf200:home:V_O_S" }
-
-```
-
-### Sitemap
-
-```
-sitemap velux label="Velux Environment"
-{
-    Frame label="Velux Shutter and Window" {
-
-        Switch  item=V_M_W_OPEN
-        Switch  item=V_M_W_UNLOCKED
-        Switch  item=V_M_W_CLOSED
-        Slider  item=V_M_W
-    }
-    
-    Frame label="Velux Bridge Status" {
-        Text    item=V_BRIDGE_STATUS
-        Text    item=V_BRIDGE_TIMESTAMP
-        Switch  item=V_BRIDGE_RELOAD
-    }
-
-    Frame label="Velux Bridge Status" {
-        Switch  item=V_BRIDGE_DETECTION  
-        Text    item=V_BRIDGE_CHECK
-        Text    item=V_BRIDGE_SCENES
-        Text    item=V_BRIDGE_PRODUCTS
-    }
-
-    Frame label="Velux Bridge Configuration" {
-        Text    item=V_BRIDGE_FIRMWARE
-        Text    item=V_BRIDGE_IPADDRESS
-        Text    item=V_BRIDGE_SUBNETMASK
-        Text    item=V_BRIDGE_DEFAULTGW
-        Switch  item=V_BRIDGE_DHCP
-        Text    item=V_BRIDGE_WLANSSID
-        Text    item=V_BRIDGE_WLANPASSWD    
-    }
-    
-}
-```
+[Sample things file for textual configuration](doc/conf/things/velux.things)
 
 ## More automation samples
 

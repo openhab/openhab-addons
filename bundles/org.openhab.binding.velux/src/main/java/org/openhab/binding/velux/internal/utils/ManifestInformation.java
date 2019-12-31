@@ -13,8 +13,7 @@
 package org.openhab.binding.velux.internal.utils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * This is a helper class for dealing with information from MANIFEST file.
@@ -29,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ManifestInformation {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManifestInformation.class);
 
     /*
      * ************************
@@ -43,15 +41,16 @@ public class ManifestInformation {
         throw new AssertionError();
     }
 
+    // Class access methods
+
     /**
      * Returns the bundle version as specified within the MANIFEST file.
      *
      * @return <B>bundleVersion</B> the resulted bundle version as {@link String}.
      */
     public static String getBundleVersion() {
-        String osgiBundleVersion = org.osgi.framework.FrameworkUtil.getBundle(ManifestInformation.class)
-                .getBundleContext().getBundle().toString();
-        LOGGER.trace("getBundleVersion() has found {}.", osgiBundleVersion);
+        String osgiBundleVersion = FrameworkUtil.getBundle(ManifestInformation.class).getBundleContext().getBundle()
+                .toString();
         return osgiBundleVersion;
     }
 

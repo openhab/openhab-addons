@@ -3,7 +3,8 @@
 <thing:thing-descriptions bindingId="velux"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
 	<!-- -->
 	<!-- Velux vshutter Binding -->
 	<!-- -->
@@ -13,13 +14,10 @@
 		</supported-bridge-type-refs>
 		<label>@text/thing-type.velux.vshutter.label</label>
 		<description>@text/thing-type.velux.vshutter.description</description>
-		<category>Rollershutter</category>
+		<category>Blinds</category>
 		<channels>
 			<channel id="position" typeId="position" />
 		</channels>
 		<config-description-ref uri="thing-type:velux:vshutter" />
 	</thing-type>
 </thing:thing-descriptions>
-<!-- ==================================== -->
-<!-- end-of-ESH-INF/thing/vshutter.xml -->
-<!-- ==================================== -->

@@ -12,24 +12,30 @@
  */
 package org.openhab.binding.velux.internal;
 
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.velux.VeluxBindingConstants;
-import org.openhab.binding.velux.discovery.VeluxDiscoveryService;
-import org.openhab.binding.velux.handler.VeluxBindingHandler;
-import org.openhab.binding.velux.handler.VeluxBridgeHandler;
-import org.openhab.binding.velux.handler.VeluxHandler;
+import org.openhab.binding.velux.internal.discovery.VeluxDiscoveryService;
+import org.openhab.binding.velux.internal.handler.VeluxBindingHandler;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
+import org.openhab.binding.velux.internal.handler.VeluxHandler;
+import org.openhab.binding.velux.internal.utils.Localization;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,89 +53,119 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
     // Class internal
 
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
-    private @Nullable VeluxBindingHandler veluxBindingHandler = null;
-    private Integer veluxBridgeCount = 0;
+    private Set<VeluxBindingHandler> veluxBindingHandlers = new HashSet<VeluxBindingHandler>();
+    private Set<VeluxBridgeHandler> veluxBridgeHandlers = new HashSet<VeluxBridgeHandler>();
+    private Set<VeluxHandler> veluxHandlers = new HashSet<VeluxHandler>();
+
+    private Localization localization;
 
     // Private
 
     private void registerDeviceDiscoveryService(VeluxBridgeHandler bridgeHandler) {
-        VeluxDiscoveryService discoveryService = new VeluxDiscoveryService(bridgeHandler);
+        VeluxDiscoveryService discoveryService = new VeluxDiscoveryService(bridgeHandler, localization);
         discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());
     }
 
     private synchronized void unregisterDeviceDiscoveryService() {
-        logger.trace("unregisterDeviceDiscoveryService({}) called.");
-
+        logger.trace("unregisterDeviceDiscoveryService() called.");
         if (discoveryServiceReg != null) {
             discoveryServiceReg.unregister();
             discoveryServiceReg = null;
         }
     }
 
+    private @Nullable ThingHandler createBindingHandler(Thing thing) {
+        logger.trace("createBindingHandler({}) called for thing named '{}'.", thing.getUID(), thing.getLabel());
+        VeluxBindingHandler veluxBindingHandler = new VeluxBindingHandler(thing, localization);
+        veluxBindingHandlers.add(veluxBindingHandler);
+        return veluxBindingHandler;
+    }
+
+    private @Nullable ThingHandler createBridgeHandler(Thing thing) {
+        logger.trace("createBridgeHandler({}) called for thing named '{}'.", thing.getUID(), thing.getLabel());
+        VeluxBridgeHandler veluxBridgeHandler = new VeluxBridgeHandler((Bridge) thing, localization);
+        veluxBridgeHandlers.add(veluxBridgeHandler);
+        registerDeviceDiscoveryService(veluxBridgeHandler);
+        return veluxBridgeHandler;
+    }
+
+    private @Nullable ThingHandler createThingHandler(Thing thing) {
+        logger.trace("createThingHandler({}) called for thing named '{}'.", thing.getUID(), thing.getLabel());
+        VeluxHandler veluxHandler = new VeluxHandler(thing, localization);
+        veluxHandlers.add(veluxHandler);
+        return veluxHandler;
+    }
+
+    private void updateBindingState() {
+        veluxBindingHandlers.forEach((VeluxBindingHandler veluxBindingHandler) -> {
+            veluxBindingHandler.updateBindingState(veluxBridgeHandlers.size(), veluxHandlers.size());
+        });
+    }
+
+    // Constructor
+
+    @Activate
+    public VeluxHandlerFactory(final @Reference LocaleProvider localeProvider,
+            final @Reference TranslationProvider i18nProvider) {
+        this.localization = new Localization(localeProvider, i18nProvider);
+    }
+
     // Utility methods
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        boolean result = VeluxBindingConstants.SUPPORTED_THINGS_BRIDGE.contains(thingTypeUID)
-                || VeluxBindingConstants.SUPPORTED_THINGS_ITEMS.contains(thingTypeUID)
-                || VeluxBindingConstants.SUPPORTED_THINGS_BINDING.contains(thingTypeUID);
+        boolean result = VeluxBindingConstants.SUPPORTED_THINGS_BINDING.contains(thingTypeUID)
+                || VeluxBindingConstants.SUPPORTED_THINGS_BRIDGE.contains(thingTypeUID)
+                || VeluxBindingConstants.SUPPORTED_THINGS_ITEMS.contains(thingTypeUID);
         logger.trace("supportsThingType({}) called and returns {}.", thingTypeUID, result);
         return result;
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        logger.trace("createHandler({}) called.", thing.getLabel());
-
+        ThingHandler resultHandler = null;
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        // Handle Binding creation as 1st choice
+        // Handle Binding creation
         if (VeluxBindingConstants.SUPPORTED_THINGS_BINDING.contains(thingTypeUID)) {
-            logger.trace("createHandler(): Creating a Handler for thing '{}'.", thing.getUID());
-            veluxBindingHandler = new VeluxBindingHandler(thing);
-            return veluxBindingHandler;
-        }
-
-        else
-        // Handle Bridge creation as 2nd choice
+            resultHandler = createBindingHandler(thing);
+        } else
+        // Handle Bridge creation
         if (VeluxBindingConstants.SUPPORTED_THINGS_BRIDGE.contains(thingTypeUID)) {
-            logger.trace("createHandler(): Creating a VeluxBridgeHandler for thing '{}'.", thing.getUID());
-            VeluxBridgeHandler handler = new VeluxBridgeHandler((Bridge) thing);
-            veluxBridgeCount++;
-            synchronized (this) {
-                if (veluxBindingHandler != null) {
-                    veluxBindingHandler.updateNoOfBridges(veluxBridgeCount);
-                }
-            }
-            registerDeviceDiscoveryService(handler);
-            return handler;
-        }
-
-        else
+            resultHandler = createBridgeHandler(thing);
+        } else
         // Handle creation of Things behind the Bridge
         if (VeluxBindingConstants.SUPPORTED_THINGS_ITEMS.contains(thingTypeUID)) {
-            logger.trace("createHandler(): Creating a VeluxHandler for thing '{}'.", thing.getUID());
-            return new VeluxHandler(thing);
+            resultHandler = createThingHandler(thing);
         } else {
-            logger.warn("ThingHandler not found for {}.", thingTypeUID);
-            return null;
+            logger.warn("createHandler({}) failed: ThingHandler not found for {}.", thingTypeUID, thing.getLabel());
         }
+        updateBindingState();
+        return resultHandler;
     }
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        logger.trace("removeHandler({}) called.", thingHandler.toString());
+        ThingTypeUID thingTypeUID = thingHandler.getThing().getThingTypeUID();
 
-        if (thingHandler.getThing().getThingTypeUID().equals(VeluxBindingConstants.THING_TYPE_BRIDGE)) {
-            veluxBridgeCount--;
+        // Handle Binding removal
+        if (VeluxBindingConstants.SUPPORTED_THINGS_BINDING.contains(thingTypeUID)) {
+            logger.trace("removeHandler() removing information element '{}'.", thingHandler.toString());
+            veluxBindingHandlers.remove(thingHandler);
+        } else
+        // Handle Bridge removal
+        if (VeluxBindingConstants.SUPPORTED_THINGS_BRIDGE.contains(thingTypeUID)) {
+            logger.trace("removeHandler() removing bridge '{}'.", thingHandler.toString());
+            veluxBridgeHandlers.remove(thingHandler);
             unregisterDeviceDiscoveryService();
-            synchronized (this) {
-                if (veluxBindingHandler != null) {
-                    veluxBindingHandler.updateNoOfBridges(veluxBridgeCount);
-                }
-            }
+        } else
+        // Handle removal of Things behind the Bridge
+        if (VeluxBindingConstants.SUPPORTED_THINGS_ITEMS.contains(thingTypeUID)) {
+            logger.trace("removeHandler() removing thing '{}'.", thingHandler.toString());
+            veluxHandlers.remove(thingHandler);
         }
+        updateBindingState();
         super.removeHandler(thingHandler);
     }
 

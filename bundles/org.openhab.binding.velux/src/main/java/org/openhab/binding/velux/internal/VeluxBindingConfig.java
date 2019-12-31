@@ -63,7 +63,7 @@ class VeluxBindingConfig {
      * @param bindingConfig
      *            The optional configuration type of the Velux binding.
      */
-    public VeluxBindingConfig(VeluxItemType bindingItemType, String bindingConfig) { // NO_UCD (use default)
+    public VeluxBindingConfig(VeluxItemType bindingItemType, String bindingConfig) {
         logger.trace("VeluxBindingConfig(constructor:{},{}) called.", bindingItemType, bindingConfig);
 
         this.bindingItemType = bindingItemType;

@@ -19,7 +19,6 @@ import java.lang.reflect.Field;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.velux.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -3,7 +3,7 @@
 <thing:thing-descriptions bindingId="velux"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- -->
 	<!-- Velux actuator Binding -->
 	<!-- -->
@@ -13,17 +13,14 @@
 		</supported-bridge-type-refs>
 		<label>@text/thing-type.velux.actuator.label</label>
 		<description>@text/thing-type.velux.actuator.description</description>
-		<category>Rollershutter</category>
+		<category>Blinds</category>
 		<channels>
 			<channel id="position" typeId="position" />
 			<channel id="state" typeId="state" />
-			<channel id="silentMode" typeId="silentMode" />
-			<channel id="limitation" typeId="limitation" />
+			<channel id="limitMinimum" typeId="limitMinimum" />
+			<channel id="limitMaximum" typeId="limitMaximum" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description-ref uri="thing-type:velux:actuator" />
 	</thing-type>
 </thing:thing-descriptions>
-<!-- ==================================== -->
-<!-- end-of-ESH-INF/thing/actuator.xml -->
-<!-- ==================================== -->

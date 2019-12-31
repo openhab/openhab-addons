@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.library.items.RollershutterItem;
 import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.velux.VeluxBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +82,7 @@ public enum VeluxItemType {
     BINDING_INFORMATION(VeluxBindingConstants.THING_TYPE_BINDING,               VeluxBindingConstants.CHANNEL_BINDING_INFORMATION,  TypeFlavor.READONLY_VOLATILE_STRING),
     //
     BRIDGE_STATUS(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.CHANNEL_BRIDGE_STATUS,        TypeFlavor.READONLY_VOLATILE_STRING),
-    BRIDGE_TIMESTAMP(VeluxBindingConstants.THING_TYPE_BRIDGE,                   VeluxBindingConstants.CHANNEL_BRIDGE_TIMESTAMP,     TypeFlavor.READONLY_VOLATILE_NUMBER),
+    BRIDGE_DOWNTIME(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_DOWNTIME,      TypeFlavor.READONLY_VOLATILE_NUMBER),
     BRIDGE_RELOAD(VeluxBindingConstants.THING_TYPE_BRIDGE,                      VeluxBindingConstants.CHANNEL_BRIDGE_RELOAD,        TypeFlavor.INITIATOR),
     BRIDGE_DO_DETECTION(VeluxBindingConstants.THING_TYPE_BRIDGE,                VeluxBindingConstants.CHANNEL_BRIDGE_DO_DETECTION,  TypeFlavor.INITIATOR),
     BRIDGE_FIRMWARE(VeluxBindingConstants.THING_TYPE_BRIDGE,                    VeluxBindingConstants.CHANNEL_BRIDGE_FIRMWARE,      TypeFlavor.READONLY_STATIC_STRING),
@@ -99,15 +98,16 @@ public enum VeluxItemType {
     //
     ACTUATOR_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,          VeluxBindingConstants.CHANNEL_ACTUATOR_POSITION,    TypeFlavor.MANIPULATOR_SHUTTER),
     ACTUATOR_STATE(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,             VeluxBindingConstants.CHANNEL_ACTUATOR_STATE,       TypeFlavor.MANIPULATOR_SWITCH),
-//TODO: waiting for feedback from Velux: API does not work properly.
-//  ACTUATOR_SILENTMODE(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,        VeluxBindingConstants.CHANNEL_ACTUATOR_SILENTMODE,  TypeFlavor.WRITEONLY_VOLATILE_SWITCH),
-    ACTUATOR_LIMITATION(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,        VeluxBindingConstants.CHANNEL_ACTUATOR_LIMITATION,  TypeFlavor.MANIPULATOR_SHUTTER),
+    ACTUATOR_LIMIT_MINIMUM(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,     VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MINIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
+    ACTUATOR_LIMIT_MAXIMUM(VeluxBindingConstants.THING_TYPE_VELUX_ACTUATOR,     VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MAXIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
     //
     ROLLERSHUTTER_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER,VeluxBindingConstants.CHANNEL_ACTUATOR_POSITION,    TypeFlavor.MANIPULATOR_SHUTTER),
-    ROLLERSHUTTER_LIMITATION(VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER,VeluxBindingConstants.CHANNEL_ACTUATOR_LIMITATION,TypeFlavor.MANIPULATOR_SHUTTER),
+    ROLLERSHUTTER_LIMIT_MINIMUM(VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER,VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MINIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
+    ROLLERSHUTTER_LIMIT_MAXIMUM(VeluxBindingConstants.THING_TYPE_VELUX_ROLLERSHUTTER,VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MAXIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
     //
     WINDOW_POSITION(VeluxBindingConstants.THING_TYPE_VELUX_WINDOW,              VeluxBindingConstants.CHANNEL_ACTUATOR_POSITION,    TypeFlavor.MANIPULATOR_SHUTTER),
-    WINDOW_LIMITATION(VeluxBindingConstants.THING_TYPE_VELUX_WINDOW,            VeluxBindingConstants.CHANNEL_ACTUATOR_LIMITATION,  TypeFlavor.MANIPULATOR_SHUTTER),
+    WINDOW_LIMIT_MINIMUM(VeluxBindingConstants.THING_TYPE_VELUX_WINDOW,         VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MINIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
+    WINDOW_LIMIT_MAXIMUM(VeluxBindingConstants.THING_TYPE_VELUX_WINDOW,         VeluxBindingConstants.CHANNEL_ACTUATOR_LIMIT_MAXIMUM,TypeFlavor.MANIPULATOR_SHUTTER),
     //
     SCENE_ACTION(VeluxBindingConstants.THING_TYPE_VELUX_SCENE,                  VeluxBindingConstants.CHANNEL_SCENE_ACTION,         TypeFlavor.INITIATOR),
     SCENE_SILENTMODE(VeluxBindingConstants.THING_TYPE_VELUX_SCENE,              VeluxBindingConstants.CHANNEL_SCENE_SILENTMODE,     TypeFlavor.WRITEONLY_VOLATILE_SWITCH),
@@ -157,7 +157,6 @@ public enum VeluxItemType {
          * Used to define an UNUSABLE entry.
          */
         UNUSABLE,
-
     }
 
     private ThingTypeUID thingIdentifier;
@@ -212,7 +211,7 @@ public enum VeluxItemType {
                 this.itemIsWritable = false;
                 this.itemIsExecutable = false;
                 this.itemIsToBeRefreshed = true;
-                this.itemsRefreshDivider = REFRESH_EACH_MINUTE;
+                this.itemsRefreshDivider = REFRESH_EVERY_CYCLE;
                 break;
             case WRITEONLY_VOLATILE_SWITCH:
                 this.itemClass = SwitchItem.class;
@@ -265,7 +264,7 @@ public enum VeluxItemType {
                 this.itemIsWritable = false;
                 this.itemIsExecutable = false;
                 this.itemIsToBeRefreshed = false;
-                this.itemsRefreshDivider = 1;
+                this.itemsRefreshDivider = REFRESH_ONCE_A_DAY;
         }
     }
 
@@ -363,8 +362,7 @@ public enum VeluxItemType {
      *
      * @return <b>veluxItemType</b> of type VeluxItemType describing the appropriate enum.
      */
-    public VeluxItemType getByString(String itemTypeName) { // NO_UCD (unused code)
-        logger.trace("getByString({}) called.", itemTypeName);
+    public VeluxItemType getByString(String itemTypeName) {
         try {
             return VeluxItemType.valueOf(itemTypeName);
         } catch (IllegalArgumentException e) {
@@ -398,7 +396,7 @@ public enum VeluxItemType {
      *
      * @return <b>veluxItemType</b> of type VeluxItemType describing the appropriate enum.
      */
-    public static String[] getThingIdentifiers() { // NO_UCD (unused code)
+    public static String[] getThingIdentifiers() {
         LOGGER.trace("getThingIdentifiers() called.");
         Set<List<ThingTypeUID>> uniqueSet = new HashSet<List<ThingTypeUID>>();
         for (VeluxItemType v : VeluxItemType.values()) {
@@ -415,7 +413,7 @@ public enum VeluxItemType {
      *
      * @return <b>veluxItemType</b> of type VeluxItemType describing the appropriate enum.
      */
-    public static String[] getChannelIdentifiers(ThingTypeUID thingIdentifier) { // NO_UCD (unused code)
+    public static String[] getChannelIdentifiers(ThingTypeUID thingIdentifier) {
         LOGGER.trace("getChannelIdentifiers() called.");
         Set<List<String>> uniqueSet = new HashSet<List<String>>();
         for (VeluxItemType v : VeluxItemType.values()) {
@@ -450,12 +448,11 @@ public enum VeluxItemType {
      */
     public static boolean isToBeRefreshedNow(int refreshCycleCounter, ThingTypeUID thingIdentifier,
             String channelIdentifier) {
-        LOGGER.trace("isToBeRefreshedNow({},{},{}) called.", refreshCycleCounter, thingIdentifier, channelIdentifier);
-
         VeluxItemType itemType = getByThingAndChannel(thingIdentifier, channelIdentifier);
 
         if (itemType == VeluxItemType.UNKNOWN) {
-            LOGGER.trace("isToBeRefreshedNow(): returning false, as item is not found.");
+            LOGGER.warn("isToBeRefreshedNow({},{},{}): returning false, as item is not found.", refreshCycleCounter,
+                    thingIdentifier, channelIdentifier);
             return false;
         }
 
@@ -463,7 +460,7 @@ public enum VeluxItemType {
                 || (itemType.isToBeRefreshed())) {
             if ((refreshCycleCounter == REFRESH_CYCLE_FIRST_TIME)
                     || (isModulo(refreshCycleCounter, itemType.getRefreshDivider()))) {
-                LOGGER.trace("isToBeRefreshedNow(): returning false, as item is to be refreshed, now.");
+                LOGGER.trace("isToBeRefreshedNow(): returning true, as item is to be refreshed, now.");
                 return true;
             } else {
                 LOGGER.trace("isToBeRefreshedNow(): returning false, as refresh cycle has not yet come for this item.");

@@ -14,8 +14,8 @@ package org.openhab.binding.velux.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.openhab.binding.velux.VeluxBindingConstants;
-import org.openhab.binding.velux.things.VeluxProductSerialNo;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
 
 /**
  * The {@link VeluxThingConfiguration} is a wrapper for
@@ -46,7 +46,7 @@ public class VeluxThingConfiguration extends Configuration {
      * </UL>
      */
     @SuppressWarnings("unused")
-    private String sceneName;
+    private String sceneName = VeluxBindingConstants.UNKNOWN;
 
     /**
      * {@link #serial} of type {@link String}, identifying a io-homecontrol device by its serial number (i.e.
@@ -62,7 +62,7 @@ public class VeluxThingConfiguration extends Configuration {
      * </UL>
      */
     @SuppressWarnings("unused")
-    private String serial;
+    private String serial = VeluxProductSerialNo.UNKNOWN;
     /**
      * {@link #name} of type {@link String}, identifying a io-homecontrol device by its registration name especially
      * for <B>somfy</B> as they do not provide a valid serial number.
@@ -71,7 +71,7 @@ public class VeluxThingConfiguration extends Configuration {
      * </P>
      */
     @SuppressWarnings("unused")
-    private String name;
+    private String name = VeluxBindingConstants.UNKNOWN;
     /**
      * {@link #inverted} of type {@link Boolean}, inverts each Channel value. This means 0% will be handled as 100%,
      * and vice versa, 100% will be handled as 0%.
@@ -80,7 +80,7 @@ public class VeluxThingConfiguration extends Configuration {
      * </P>
      */
     @SuppressWarnings("unused")
-    private Boolean inverted;
+    private Boolean inverted = false;
     /**
      * {@link #velocity} of type {@link String}, describes the intended speed of action.
      * Possible values are defined within VeluxProductVelocity.
@@ -89,7 +89,7 @@ public class VeluxThingConfiguration extends Configuration {
      * </P>
      */
     @SuppressWarnings("unused")
-    private String velocity;
+    private String velocity = VeluxBindingConstants.UNKNOWN;
 
     /**
      * {@link #sceneLevels} of type {@link String}, identifying a number of Velux scenes which act together as a virtual
@@ -108,7 +108,7 @@ public class VeluxThingConfiguration extends Configuration {
      * </UL>
      */
     @SuppressWarnings("unused")
-    private String sceneLevels;
+    private String sceneLevels = VeluxBindingConstants.UNKNOWN;
     /**
      * {@link #currentLevel} of type {@link int}, which represents the current shutter level.
      * <P>
@@ -116,25 +116,6 @@ public class VeluxThingConfiguration extends Configuration {
      * </P>
      */
     @SuppressWarnings("unused")
-    private int currentLevel;
-
-    /**
-     * Default values - should not be modified
-     */
-    public VeluxThingConfiguration() {
-        //
-        sceneName = VeluxBindingConstants.UNKNOWN;
-        //
-        serial = VeluxProductSerialNo.UNKNOWN;
-        name = VeluxBindingConstants.UNKNOWN;
-        inverted = false;
-        velocity = VeluxBindingConstants.UNKNOWN;
-        //
-        sceneLevels = VeluxBindingConstants.UNKNOWN;
-        currentLevel = 0;
-    }
+    private int currentLevel = 0;
 
 }
-/*
- * end-of-internal/config/VeluxThingConfiguration.java
- */

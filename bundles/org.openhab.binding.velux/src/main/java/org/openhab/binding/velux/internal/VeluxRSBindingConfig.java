@@ -18,7 +18,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.VeluxBindingConstants;
 //import org.openhab.model.item.binding.BindingConfigParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +131,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
      * @param channelValue
      *            The optional configuration type of the Velux binding.
      */
-    public VeluxRSBindingConfig(VeluxItemType bindingItemType, String channelValue) { // NO_UCD (unused code)
+    public VeluxRSBindingConfig(VeluxItemType bindingItemType, String channelValue) {
         super(bindingItemType, channelValue);
         logger.trace("VeluxRSBindingConfig(constructor:{},{}) called.", bindingItemType, channelValue);
         veluxRollershutterBindingParser(channelValue);
@@ -205,7 +204,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
      * @return <B>sceneName</B>
      *         A String describing the next scene.
      */
-    public String getSceneName(Integer level) { // NO_UCD (use private)
+    public String getSceneName(Integer level) {
         logger.trace("getSceneName({}) called.", level);
         logger.trace("getSceneName() returning {}.", mapDescending.get(level));
         return mapDescending.get(level);

@@ -3,7 +3,7 @@
 <thing:thing-descriptions bindingId="velux"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Channel Type - of Binding -->
 
@@ -11,7 +11,7 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.information.label</label>
 		<description>@text/channel-type.velux.information.description</description>
-		<category>Binding</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -22,22 +22,22 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.status.label</label>
 		<description>@text/channel-type.velux.status.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="reload">
+	<channel-type id="reload" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.velux.reload.label</label>
 		<description>@text/channel-type.velux.reload.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 	</channel-type>
 
-	<channel-type id="timestamp" advanced="true">
+	<channel-type id="downtime" advanced="true">
 		<item-type>Number</item-type>
-		<label>@text/channel-type.velux.timestamp.label</label>
-		<description>@text/channel-type.velux.timestamp.description</description>
-		<category>Bridge</category>
+		<label>@text/channel-type.velux.downtime.label</label>
+		<description>@text/channel-type.velux.downtime.description</description>
+		<category>NetworkAppliance</category>
 		<state readOnly="true" />
 	</channel-type>
 
@@ -45,14 +45,14 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.velux.doDetection.label</label>
 		<description>@text/channel-type.velux.doDetection.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 	</channel-type>
 
 	<channel-type id="firmware" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.firmware.label</label>
 		<description>@text/channel-type.velux.firmware.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -60,7 +60,7 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.ipAddress.label</label>
 		<description>@text/channel-type.velux.ipAddress.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -68,7 +68,7 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.subnetMask.label</label>
 		<description>@text/channel-type.velux.subnetMask.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -76,7 +76,7 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.defaultGW.label</label>
 		<description>@text/channel-type.velux.defaultGW.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -84,7 +84,7 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.velux.DHCP.label</label>
 		<description>@text/channel-type.velux.DHCP.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -92,7 +92,7 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.WLANSSID.label</label>
 		<description>@text/channel-type.velux.WLANSSID.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -100,7 +100,7 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.WLANPassword.label</label>
 		<description>@text/channel-type.velux.WLANPassword.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -108,7 +108,7 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.products.label</label>
 		<description>@text/channel-type.velux.products.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -116,7 +116,7 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.scenes.label</label>
 		<description>@text/channel-type.velux.scenes.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -124,7 +124,7 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.velux.check.label</label>
 		<description>@text/channel-type.velux.check.description</description>
-		<category>Bridge</category>
+		<category>NetworkAppliance</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -134,48 +134,49 @@
 		<item-type>Rollershutter</item-type>
 		<label>@text/channel-type.velux.position.label</label>
 		<description>@text/channel-type.velux.position.description</description>
-		<category>Rollershutter</category>
+		<category>Blinds</category>
 	</channel-type>
 
 	<channel-type id="state">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.velux.state.label</label>
 		<description>@text/channel-type.velux.state.description</description>
-		<category>Switch</category>
+		<category>WallSwitch</category>
 	</channel-type>
 
-	<channel-type id="limitation" advanced="true">
+	<channel-type id="limitMinimum" advanced="true">
 		<item-type>Rollershutter</item-type>
-		<label>@text/channel-type.velux.limitation.label</label>
-		<description>@text/channel-type.velux.limitation.description</description>
-		<category>Rollershutter</category>
+		<label>@text/channel-type.velux.limitMinimum.label</label>
+		<description>@text/channel-type.velux.limitMinimum.description</description>
+		<category>Blinds</category>
 	</channel-type>
 
+	<channel-type id="limitMaximum" advanced="true">
+		<item-type>Rollershutter</item-type>
+		<label>@text/channel-type.velux.limitMaximum.label</label>
+		<description>@text/channel-type.velux.limitMaximum.description</description>
+		<category>Blinds</category>
+	</channel-type>
 
 	<channel-type id="action">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.velux.action.label</label>
 		<description>@text/channel-type.velux.action.description</description>
-		<category>Scene</category>
+		<category>WallSwitch</category>
 	</channel-type>
 
 	<channel-type id="silentMode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.velux.silentMode.label</label>
 		<description>@text/channel-type.velux.silentMode.description</description>
-		<category>Scene</category>
+		<category>Blinds</category>
 	</channel-type>
 
 	<channel-type id="vposition">
 		<item-type>Rollershutter</item-type>
 		<label>@text/channel-type.velux.vposition.label</label>
 		<description>@text/channel-type.velux.vposition.description</description>
-		<category>Rollershutter</category>
+		<category>Blinds</category>
 	</channel-type>
 
 </thing:thing-descriptions>
-
-<!-- ==================================== -->
-<!-- end-of-ESH-INF/thing/channels.xml -->
-<!-- ==================================== -->
-

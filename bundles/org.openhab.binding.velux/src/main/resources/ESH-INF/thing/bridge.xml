@@ -3,7 +3,7 @@
 <thing:thing-descriptions bindingId="velux"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Velux Bridge Binding -->
 	<bridge-type id="klf200">
@@ -13,7 +13,7 @@
 		<channels>
 			<channel id="status" typeId="status" />
 			<channel id="reload" typeId="reload" />
-			<channel id="timestamp" typeId="timestamp" />
+			<channel id="downtime" typeId="downtime" />
 			<channel id="doDetection" typeId="doDetection" />
 
 			<channel id="firmware" typeId="firmware" />
@@ -37,7 +37,3 @@
 	</bridge-type>
 
 </thing:thing-descriptions>
-
-<!-- ==================================== -->
-<!-- end-of-ESH-INF/thing/bridge.xml -->
-<!-- ==================================== -->
