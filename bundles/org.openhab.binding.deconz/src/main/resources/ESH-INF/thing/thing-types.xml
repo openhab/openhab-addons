@@ -354,7 +354,7 @@
 	<channel-type id="fire">
 		<item-type>Switch</item-type>
 		<label>Fire</label>
-		<description>Fire was triggered.</description>
+		<description>A fire was detected.</description>
 		<state readOnly="true" />
 	</channel-type>
 
