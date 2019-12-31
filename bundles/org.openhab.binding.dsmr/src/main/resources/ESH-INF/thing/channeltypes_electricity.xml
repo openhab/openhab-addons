@@ -193,15 +193,15 @@
 	<channel-type id="powerFailureLogEndType" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Power Failure End</label>
-		<description>Timestamp when the power failure ended. There can be multiple log entries. 
-Each entry has its own channel (emeter_power_failure_log_timestamp*x*, *x* = 0 - 9)</description>
+		<description>Timestamp when the power failure ended. There can be multiple log entries.
+			Each entry has its own channel (emeter_power_failure_log_timestamp*x*, *x* = 0 - 9)</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="powerFailureLogDurationType" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Power Failure Duration</label>
-		<description>Duration of the power failure. 
-Each entry has its own channel (emeter_power_failure_log_duration*x*, *x* = 0 - 9)</description>
+		<description>Duration of the power failure.
+			Each entry has its own channel (emeter_power_failure_log_duration*x*, *x* = 0 - 9)</description>
 		<state pattern="%.0f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="voltageSagsL1Type" advanced="true">
