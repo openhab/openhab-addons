@@ -30,13 +30,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthAutenhicateResponse;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthAutenhicateResponseInstanceCreator;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthTokenResponse;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthTokenResponseInstanceCreator;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.OauthCredentials;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.OauthCredentialsInstanceCreator;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.OauthKeyValue;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAutenhicateResponse;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAutenhicateResponseInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthTokenResponse;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthTokenResponseInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthCredentials;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthCredentialsInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthKeyValue;
 import org.openhab.binding.magentatv.internal.handler.MagentaTVControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,7 +199,7 @@ public class MagentaTVOAuth {
             String hashedUserID = MagentaTVControl.computeMD5(resp.userID).toUpperCase();
             logger.trace("done, userID = {}", hashedUserID);
             return hashedUserID;
-        } catch (RuntimeException | IOException e) {
+        } catch (IOException e) {
             throw new MagentaTVException(e,
                     "Unable to authenticate {0}: {1} failed; serviceURL={2}, rc={3}/{4}, response={5}", accountName,
                     step, oAuthService, retcode, retmsg, httpResponse);

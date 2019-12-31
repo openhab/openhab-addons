@@ -99,7 +99,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
             if (!upnpListener.isStarted()) {
                 upnpListener.start();
             }
-        } catch (RuntimeException | MagentaTVException e) {
+        } catch (MagentaTVException e) {
             logger.warn("Initialization failed: {}", e.toString());
         }
     }
@@ -115,11 +115,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
         logger.debug("Create thing type {}", thing.getThingTypeUID().getAsString());
         if (THING_TYPE_RECEIVER.equals(thingTypeUID)) {
-            try {
-                return new MagentaTVHandler(this, thing, network);
-            } catch (RuntimeException e) {
-                logger.warn("Unable to create ThingHandler: {}", e.getMessage());
-            }
+            return new MagentaTVHandler(this, thing, network);
         }
 
         return null;
@@ -154,7 +150,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                     addNewDevice(discoveredUDN, null, ipAddress, mac, discoveryProperties, null);
                 }
             }
-        } catch (MagentaTVException | RuntimeException e) {
+        } catch (MagentaTVException e) {
             logger.debug("Unable to process discovered device, UDN={} - {}", discoveredUDN, e.toString());
         }
     }
@@ -305,7 +301,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
             }
 
             logger.debug("Received pairingCode {} for unregistered device {}!", pairingCode, ipAddress);
-        } catch (RuntimeException | MagentaTVException e) {
+        } catch (MagentaTVException e) {
             logger.debug("Unable to process pairing result for deviceID {}: {}", notifyDeviceId, e.toString());
         }
         return false;
@@ -349,7 +345,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 logger.trace("Continue with UDN {}", dev.udn);
                 dev.thingHandler.onPowerOff();
             }
-        } catch (RuntimeException | MagentaTVException e) {
+        } catch (MagentaTVException e) {
             logger.debug("Unable to process SSDP message for IP {} - {}", ipAddress, e.toString());
         }
     }

@@ -30,7 +30,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -39,19 +42,20 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.magentatv.internal.MagentaTVConfiguration;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MRPayEvent;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MRPayEventInstanceCreator;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MRProgramInfoEvent;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MRProgramInfoEventInstanceCreator;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MRProgramStatus;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MRProgramStatusInstanceCreator;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MRShortProgramInfo;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.MRShortProgramInfoInstanceCreator;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthAutenhicateResponse;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.OAuthTokenResponse;
-import org.openhab.binding.magentatv.internal.MagentaTVGson.OauthCredentials;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRPayEvent;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRPayEventInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRProgramInfoEvent;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRProgramInfoEventInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRProgramStatus;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRProgramStatusInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRShortProgramInfo;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRShortProgramInfoInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAutenhicateResponse;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthTokenResponse;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthCredentials;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
 import org.openhab.binding.magentatv.internal.network.MagentaTVNetwork;
 import org.osgi.service.component.annotations.Reference;
@@ -90,12 +94,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         super(thing);
         this.handlerFactory = handlerFactory;
         this.network = network;
-        gson = new GsonBuilder()
-                .registerTypeAdapter(OauthCredentials.class, new MRProgramInfoEventInstanceCreator())
+        gson = new GsonBuilder().registerTypeAdapter(OauthCredentials.class, new MRProgramInfoEventInstanceCreator())
                 .registerTypeAdapter(OAuthTokenResponse.class, new MRProgramStatusInstanceCreator())
                 .registerTypeAdapter(OAuthAutenhicateResponse.class, new MRShortProgramInfoInstanceCreator())
-                .registerTypeAdapter(OAuthAutenhicateResponse.class, new MRPayEventInstanceCreator())
-                .create();
+                .registerTypeAdapter(OAuthAutenhicateResponse.class, new MRPayEventInstanceCreator()).create();
 
         // setup background device check
         scheduler.scheduleWithFixedDelay(new Runnable() {
@@ -168,7 +170,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 // (see onPairingResult())
             } catch (MagentaTVException e) {
                 errorMessage = e.toString();
-            } catch (InterruptedException | RuntimeException e) {
+            } catch (InterruptedException e) {
                 errorMessage = e.toString();
             } finally {
                 if (!errorMessage.isEmpty()) {
@@ -196,7 +198,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
 
         try {
             if (!isOnline() || command.toString().equalsIgnoreCase("PAIR")) {
-                logger.info("Device {} is offline, try to (re-)connect", deviceName());
+                logger.debug("Device {} is offline, try to (re-)connect", deviceName());
                 connectReceiver(); // reconnect to MR, throws an exception if this fails
             }
 
@@ -206,6 +208,54 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 case CHANNEL_POWER: // toggle power
                     logger.debug("Toggle power, new state={}", command.toString());
                     control.sendKey("POWER");
+                    break;
+                case CHANNEL_PLAYER:
+                    logger.debug("Player command: {}", command);
+                    if (command instanceof OnOffType) {
+                        control.sendKey("POWER");
+                    } else if (command instanceof PlayPauseType) {
+                        if (command == PlayPauseType.PLAY) {
+                            control.sendKey("PLAY");
+                        } else if (command == PlayPauseType.PAUSE) {
+                            control.sendKey("PAUSE");
+                        }
+                    } else if (command instanceof NextPreviousType) {
+                        if (command == NextPreviousType.NEXT) {
+                            control.sendKey("NEXTCH");
+                        } else if (command == NextPreviousType.PREVIOUS) {
+                            control.sendKey("PREVCH");
+                        }
+                    } else if (command instanceof RewindFastforwardType) {
+                        if (command == RewindFastforwardType.FASTFORWARD) {
+                            control.sendKey("FORWARD");
+                        } else if (command == RewindFastforwardType.REWIND) {
+                            control.sendKey("REWIND");
+                        }
+                    } else {
+                        logger.debug("Unknown media command: {}", command.toString());
+                    }
+                    break;
+                case CHANNEL_STOP:
+                    control.sendKey("STOP");
+                    updateState(CHANNEL_STOP, OnOffType.OFF);
+                    updateState(CHANNEL_PLAYER, PlayPauseType.PAUSE);
+                    break;
+                case CHANNEL_VOLUME_UP:
+                    control.sendKey("VOLUP");
+                    updateState(CHANNEL_MUTE, OnOffType.OFF);
+                    updateState(CHANNEL_VOLUME_UP, OnOffType.OFF);
+                    break;
+                case CHANNEL_VOLUME_DOWN:
+                    control.sendKey("VOLDOWN");
+                    updateState(CHANNEL_MUTE, OnOffType.OFF);
+                    updateState(CHANNEL_VOLUME_DOWN, OnOffType.OFF);
+                    break;
+                case CHANNEL_MUTE:
+                    if (command == OnOffType.ON) {
+                        control.sendKey("MUTE");
+                    } else {
+                        control.sendKey("VOLUP");
+                    }
                     break;
                 case CHANNEL_CHANNEL:
                     control.selectChannel(command.toString());
@@ -218,29 +268,44 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     control.sendKey("CHDOWN");
                     updateState(CHANNEL_CHDOWN, OnOffType.OFF);
                     break;
-                case CHANNEL_VOLUP:
-                    control.sendKey("VOLUP");
-                    updateState(CHANNEL_VOLUP, OnOffType.OFF);
-                    break;
-                case CHANNEL_VOLDOWN:
-                    control.sendKey("VOLDOWN");
-                    updateState(CHANNEL_VOLDOWN, OnOffType.OFF);
-                    break;
                 case CHANNEL_KEY:
                     if (command.toString().equalsIgnoreCase("PAIR")) { // special key to re-pair receiver
                         logger.debug("PAIRing key received, reconnect device {}", deviceName());
                     } else {
                         control.sendKey(command.toString());
+                        mapKeyToMediateState(command.toString());
                     }
                     break;
                 default:
                     logger.debug("Command for unknown channel {}", channelUID.getAsString());
             }
-        } catch (MagentaTVException | RuntimeException e) {
+        } catch (MagentaTVException e) {
             String errorMessage = MessageFormat.format("Channel operation failed (command={0}, value={1}): {2}",
                     command.toString(), channelUID.getId().toString(), e.toString());
             logger.debug("{}", errorMessage);
             setOnlineState(ThingStatus.OFFLINE, errorMessage);
+        }
+    }
+
+    private void mapKeyToMediateState(String key) {
+        State state = null;
+        switch (key.toUpperCase()) {
+            case "PLAY":
+                state = PlayPauseType.PLAY;
+                break;
+            case "PAUSE":
+                state = PlayPauseType.PAUSE;
+                break;
+            case "FORWARD":
+                state = RewindFastforwardType.FASTFORWARD;
+                break;
+            case "REWIND":
+                updateState(CHANNEL_PLAYER, RewindFastforwardType.REWIND);
+                break;
+        }
+        if (state != null) {
+            logger.debug("Setting Player state to {}", state);
+            updateState(CHANNEL_PLAYER, state);
         }
     }
 
@@ -452,7 +517,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 flUpdatePower = true;
             }
             if (event.newPlayMode != -1) {
-                updateState(CHANNEL_PLAY_MODE, new StringType(control.getPlayStatus(event.newPlayMode)));
+                String playMode = control.getPlayStatus(event.newPlayMode);
+                updateState(CHANNEL_PLAY_MODE, new StringType(playMode));
+                mapPlayModeToMediaControl(playMode);
             }
             if (event.duration > 0) {
                 updateState(CHANNEL_PROG_DURATION, new StringType(event.duration.toString()));
@@ -466,6 +533,29 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         if (flUpdatePower) {
             // We received a non-stopped event -> MR must be on
             updateState(CHANNEL_POWER, OnOffType.ON);
+        }
+    }
+
+    private void mapPlayModeToMediaControl(String playMode) {
+        switch (playMode) {
+            case "playing":
+            case "playing (MC)":
+            case "playing (UC)":
+            case "buffering":
+                logger.debug("Setting Player state to PLAY");
+                updateState(CHANNEL_PLAYER, PlayPauseType.PLAY);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
+                break;
+            case "paused":
+                logger.debug("Setting Player state to PAUSE");
+                updateState(CHANNEL_PLAYER, PlayPauseType.PAUSE);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
+                break;
+            case "stopped":
+                logger.debug("Setting  STOP to ON and Player state to PAUSE");
+                updateState(CHANNEL_STOP, OnOffType.ON);
+                updateState(CHANNEL_PLAYER, PlayPauseType.PAUSE);
+                break;
         }
     }
 
@@ -525,7 +615,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 logger.debug("{}: Renew MR event subscription", deviceName());
                 control.subscribeEventChannel();
             }
-        } catch (MagentaTVException | RuntimeException e) {
+        } catch (MagentaTVException e) {
             logger.warn("{}: Re-new event subscription failed: {}", deviceName(), e.toString());
         }
 

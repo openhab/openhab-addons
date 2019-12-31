@@ -73,11 +73,15 @@
 		<label>Control</label>
 		<description>Control function for your Media Receiver</description>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="channelUp" typeId="channelUp" />
-			<channel id="channelDown" typeId="channelDown" />
+			<channel id="power" typeId="system.power" />
+			<channel id="player" typeId="system.media-control" />
+			<channel id="stop" typeId="stop" />
 			<channel id="volumeUp" typeId="volumeUp" />
 			<channel id="volumeDown" typeId="volumeDown" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="channel" typeId="channel" />
+			<channel id="channelUp" typeId="channelUp" />
+			<channel id="channelDown" typeId="channelDown" />
 			<channel id="key" typeId="key" />
 		</channels>
 	</channel-group-type>
@@ -86,7 +90,7 @@
 		<label>Program Information</label>
 		<description>Information on the running program</description>
 		<channels>
-			<channel id="programTitle" typeId="programTitle" />
+			<channel id="programTitle" typeId="system.media-title" />
 			<channel id="programText" typeId="programText" />
 			<channel id="programStart" typeId="programStart" />
 			<channel id="programDuration" typeId="programDuration" />
@@ -98,17 +102,21 @@
 		<label>Play Status</label>
 		<description>Status information on media play</description>
 		<channels>
-			<channel id="channel" typeId="channel" />
 			<channel id="channelCode" typeId="channelCode" />
 			<channel id="runStatus" typeId="runStatus" />
 			<channel id="playMode" typeId="playMode" />
 		</channels>
 	</channel-group-type>
 
+	<channel-type id="stop">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stops the player. ON if the player is stopped.</description>
+	</channel-type>
 	<channel-type id="channel">
 		<item-type>String</item-type>
 		<label>Channel</label>
-		<description>Currently selected program</description>
+		<description>Send channel number to switch program</description>
 	</channel-type>
 	<channel-type id="channelCode" advanced="true">
 		<item-type>String</item-type>
@@ -138,13 +146,6 @@
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
-	<channel-type id="programText">
-		<item-type>String</item-type>
-		<label>Description</label>
-		<description>Program description</description>
-		<state readOnly="true" pattern="%s">
-		</state>
-	</channel-type>
 	<channel-type id="programStart">
 		<item-type>String</item-type>
 		<label>Start</label>
@@ -165,12 +166,6 @@
 		<description>Play position since program started</description>
 		<state readOnly="true" pattern="%s">
 		</state>
-	</channel-type>
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Toggles STB power (on/off)</description>
-		<category>Switch</category>
 	</channel-type>
 	<channel-type id="channelUp">
 		<item-type>Switch</item-type>

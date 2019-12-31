@@ -487,7 +487,7 @@ public class MagentaTVControl {
             }
 
             return sb.toString();
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException | RuntimeException e) {
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
             return "";
         }
     }

@@ -69,7 +69,7 @@ public class MagentaTVNetwork {
                 logger.debug("Local IP address={}, Local MAC address = {}", localIP, localMAC);
                 return;
             }
-        } catch (RuntimeException | UnknownHostException | SocketException e) {
+        } catch (UnknownHostException | SocketException e) {
             throw new MagentaTVException(e);
         }
 

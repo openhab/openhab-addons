@@ -24,14 +24,14 @@ import com.google.gson.InstanceCreator;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MagentaTVGson} class implements The MR returns event information every time the program changes. This
+ * The {@link MagentaTVGsonDTO} class implements The MR returns event information every time the program changes. This
  * information is mapped to various Thing channels and also used to catch the power down event for MR400 (there is no
  * way to query power status). This class provides the mapping between event JSON and Java class using Gson.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class MagentaTVGson {
+public class MagentaTVGsonDTO {
     /*
      * Program information event is send by the MR when a channel is changed.
      *

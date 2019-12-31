@@ -6,7 +6,6 @@ The Binding does NOT support MR3xx/1xx (old Entertain system based on Microsoft 
 Media Receivers are automatically discovered.
 You could send keys as you press them on the remote and the binding receives program information when the channel is switched (no
 The binding provides device discovery, sending keys for the remote and also receiving program information/events.
-It has been tested with the Entertain TV service as well as the  Magenta TV service launched in 10/2018.
 
 ## Supported Models
 
@@ -26,7 +25,8 @@ The Media receiver has 3 different standby modes, which could be selected in the
 - Suspend/Resume - The receiver goes to sleep mode, but could be awaked by a Wake-on-LAN packet
 - Shutdown - Powering off will shutdown the receiver, can be awaked only with the power button
 
-Standby provides the best results, because the binding could wake-up the receiver (Power On/Off). Suspend/Resume would require a Wake-on-LAN, which could be done, but is currently not implemented. Shutdown turns the receiver off, which requires a manual PowerOn.
+Standby provides the best results, because the binding could wake-up the receiver (Power On/Off). Suspend/Resume would require a Wake-on-LAN, which could be done, but is currently not implemented. 
+Shutdown turns the receiver off, which requires a manual PowerOn.
 
 There is no way to detect the "display status" of the receiver. 
 The binding detects PowerOff with the MR401B/MR201 by listening to UPnP events, but can't verify the status when started.
@@ -83,24 +83,41 @@ The binding uses the network settings in openHAB system configuration to determi
 
 ## Channels
 
-|Group   |Channel        |Description                                                                                                 |
-|-------|---------------|------------------------------------------------------------------------------------------------------------|
-|control |power          |Switching the channel simulates pressing the power button (same as sending "POWER" to the key channel). The receiver doesn't offer ON and OFF, but just toggles the power state. For that it's tricky to ensure the power state. Maybe some future versions will use some kind of testing to determine the current state.                                                                                  |
-|        | channelUp     |Switch one channel up (same as sending "CHUP" to the key channel)                                           |
-|        | channelDown   |Switch one channel down (same as sending "CHDOWN" to the key channel)                                       |
-|        | volumeUp      |Increase volume (same as sending "VOLUP" to the key channel)                                                |
-|        | volumeDown    |Decrease volume (same as sending "VOLDOWN" to the key channel)                                              |
-|        | key           |Updates to this channel simulate a "key pressed" to the receiver. Those include Menu, EPG etc. (see below)  |
-|status  | channel       |Changing this channel can be used to simulate entering the channel number on the remote - digit by digit, e.g. 10 will be send as '1' and '0' key. |
-|        |channelCode    |The channel code from the EPG                                                                               |
-|        |playMode       |Current play mode - this info is not reliable                                                               |
-|program |programTitle   |Title of the running program or video being played                                                          |
-|        |programText    | Some description                                                                                           |
-|        |programStart   |Time when the program started                                                                               |
-|        |programDuration| Remaining time, usually not updated for TV program                                                         | 
-|        |programPosition| Position within a movie (0 for regular programs).                                                          |
+|Group   |Channel        |Description                                                              |
+|-------|---------------|--------------------------------------------------------------------------|
+|control |power          |Switching the channel simulates pressing the power button (same as sending "POWER" to the key channel). The receiver doesn't offer ON and OFF, but just toggles the power state. For that it's tricky to ensure the power state. Maybe some future versions will use some kind of testing to determine the current state.                                                                    |
+|        |player         |Send commands to the receiver - see below                                |
+|        |volumeUp       |Increase the volume                                                      |
+|        |volumeDown     |Decrease the volume                                                      |
+|        |mute           |Mute volume (mute the speaker)                                           |
+|        |channel        |Select program channel (outbound only, current channel is not available) |
+|        |channelUp      |Switch one channel up (same as sending "CHUP" to the key channel)        |
+|        |channelDown    |Switch one channel down (same as sending "CHDOWN" to the key channel)    |
+|        |key            |Send key code to the receiver (see code table below)                     |
+|status  |channelCode    |The channel code from the EPG                                            |
+|        |playMode       |Current play mode - this info is not reliable                            |
+|program |programTitle   |Title of the running program or video being played                       |
+|        |programText    | Some description (as reported by the receiver, could be empty)          |
+|        |programStart   |Time when the program started                                            |
+|        |programDuration| Remaining time, usually not updated for TV program                      | 
+|        |programPosition| Position within a movie (0 for regular programs).                       |
 
 Channels receiving event information when changing the channel or playing a video.
+
+## Player and channel
+
+The player control supports the following actions:
+
+|Channel |Command                           |Description                       |
+|--------|----------------------------------|----------------------------------|
+|player  |PlayPauseType.PLAY                |Start playing media               |
+|        |PlayPauseType.PAUSE               |Pause player                      |
+|        |NextPreviousType.NEXT             |Move to the next chapter          |
+|        |NextPreviousType.PREVIOUS         |Move to the previous chapter      |
+|        |RewindFastforwardType.FASTFORWARD |Switch to forward mode            |
+|        |RewindFastforwardType.REWIND      |Switch to rewind mode             |
+|        |OnOffType.ON or OFF               |Toggle power - see notes on power |
+|channel |Numeric string                    |Send channel number key by key    |
 
 ## Supported Key Code (channel key)
 

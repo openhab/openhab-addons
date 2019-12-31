@@ -144,7 +144,7 @@ public class MagentaTVHttp {
             }
         } catch (UnknownHostException e) {
             errorMessage = "Unknown host!";
-        } catch (IOException | InterruptedException | RuntimeException e) {
+        } catch (IOException | InterruptedException e) {
             errorMessage = MessageFormat.format("{0} ({1})", e.getMessage(), e.getClass());
         } finally {
             try {
