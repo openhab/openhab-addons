@@ -100,4 +100,9 @@ public class WizLightingBindingConstants {
      * Default listener socket default UDP port.
      */
     public static final int LISTENER_DEFAULT_UDP_PORT = 38900;
+
+    /**
+     * Default listener socket default UDP port.
+     */
+    public static final int DISCOVERY_TIMEOUT_SECONDS = 4;
 }

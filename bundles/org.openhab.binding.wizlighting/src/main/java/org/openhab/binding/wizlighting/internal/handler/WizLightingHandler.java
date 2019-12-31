@@ -103,6 +103,7 @@ public class WizLightingHandler extends BaseThingHandler {
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
             sendRequestPacket(WizLightingMethodType.registration, registrationInfo);
+            return;
         }
 
         switch (channelUID.getId()) {
@@ -231,11 +232,13 @@ public class WizLightingHandler extends BaseThingHandler {
      * @param receivedMessage the received {@link WizLightingResponse}.
      */
     public void newReceivedResponseMessage(final WizLightingResponse receivedMessage) {
-        SyncResponseParam params = receivedMessage.getParams();
 
+        // As soon as we get a message, bump up the request ID number and mark the bulb online
+        requestId = receivedMessage.getId() + 1;
         updateStatus(ThingStatus.ONLINE);
         latestUpdate = System.currentTimeMillis();
 
+        SyncResponseParam params = receivedMessage.getParams();
         if (params != null) {
             // update on-off switch channel
             updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, OnOffType.from(params.state));

@@ -163,14 +163,14 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
             try {
                 this.receiver = new WizLightingUpdateReceiverRunnable(this,
                         WizLightingBindingConstants.LISTENER_DEFAULT_UDP_PORT);
-                this.receiverThread = new Thread(receiver);
+                this.receiverThread = new Thread(this.receiver);
                 Thread receiverThread2 = this.receiverThread;
                 if (receiverThread2 != null) {
                     receiverThread2.start();
                 }
                 logger.debug("Invoked the start of receiver thread.");
             } catch (SocketException e) {
-                logger.debug("Cannot start the socket with default port...");
+                logger.debug("Cannot start the socket with default port {}...", e);
             }
         }
     }

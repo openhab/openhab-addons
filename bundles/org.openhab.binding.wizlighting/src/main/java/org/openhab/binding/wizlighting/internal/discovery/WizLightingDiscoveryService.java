@@ -15,6 +15,8 @@ package org.openhab.binding.wizlighting.internal.discovery;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+// import java.util.concurrent.ScheduledFuture;
+// import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,6 +47,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingDiscoveryService.class);
     private @Nullable WizLightingMediator mediator;
+    // private @Nullable ScheduledFuture<?> keepAliveJob;
 
     /**
      * Used by OSGI to inject the mediator in the discovery service.
@@ -66,7 +69,6 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      */
     public void unsetMediator(final WizLightingMediator mitsubishiMediator) {
         logger.trace("Mediator has been unsetted from discovery service.");
-
         WizLightingMediator mediator = this.mediator;
         if (mediator != null) {
             mediator.setDiscoveryService(null);
@@ -80,7 +82,8 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      * @throws IllegalArgumentException if the timeout < 0
      */
     public WizLightingDiscoveryService() throws IllegalArgumentException {
-        super(WizLightingBindingConstants.SUPPORTED_THING_TYPES_UIDS, 4);
+        super(WizLightingBindingConstants.SUPPORTED_THING_TYPES_UIDS,
+                WizLightingBindingConstants.DISCOVERY_TIMEOUT_SECONDS);
     }
 
     @Override
@@ -88,8 +91,38 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         return WizLightingBindingConstants.SUPPORTED_THING_TYPES_UIDS;
     }
 
+    // @Override
+    // protected void startBackgroundDiscovery() {
+    //     logger.debug("Start WiZ Lighting device background discovery");
+    //     ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
+    //     if (keepAliveJob != null) {
+    //         keepAliveJob.cancel(true);
+    //     }
+    //     // try with handler port if is null
+    //     Runnable runnable = new Runnable() {
+    //         @Override
+    //         public void run() {
+    //         }
+    //     };
+    //     Long updateInterval = WizLightingBindingConstants.DEFAULT_REFRESH_INTERVAL;
+    //     this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, updateInterval, TimeUnit.SECONDS);
+    // }
+
+    // @Override
+    // protected void stopBackgroundDiscovery() {
+    //     logger.debug("Stop WiZ Lighting device background discovery");
+    //     // stop update thread
+    //     ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
+    //     if (keepAliveJob == null) {
+    //         return;
+    //     }
+    //     keepAliveJob.cancel(true);
+    // }
+
     @Override
     protected void startScan() {
+        logger.debug("Don't need to start new scan... background scanning in progress by mediator.");
+        return;
     }
 
     /**

@@ -19,7 +19,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.slf4j.Logger;
@@ -39,7 +38,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingUpdateReceiverRunnable.class);
 
-    private @Nullable DatagramSocket datagramSocket;
+    private DatagramSocket datagramSocket;
     private final WizLightingMediator mediator;
     private final WizLightingPacketConverter packetConverter = new WizLightingPacketConverter();
 
@@ -63,10 +62,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
 
         logger.debug("Opening socket and start listening UDP port: {}", listeningPort);
         this.datagramSocket = new DatagramSocket(listeningPort);
-        DatagramSocket mySock = this.datagramSocket;
-        if (mySock != null) {
-            mySock.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
-        }
+        datagramSocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
         logger.debug("Update Receiver Runnable and socket started with success...");
 
         this.shutdown = false;
@@ -74,8 +70,6 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
 
     @Override
     public void run() {
-        DatagramSocket datagramSocket = this.datagramSocket;
-
         // Now loop forever, waiting to receive packets and redirect them to mediator.
         while (!this.shutdown) {
             datagramSocketHealthRoutine();
@@ -88,35 +82,31 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
             // Create a packet to receive data into the buffer
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-            if (datagramSocket != null) {
-                // Wait to receive a datagram
-                try {
-                    datagramSocket.receive(packet);
+            // Wait to receive a datagram
+            try {
+                datagramSocket.receive(packet);
 
-                    logger.debug("Received packet from: {}. Will process the packet...",
-                            packet.getAddress().getHostAddress());
+                logger.debug("Received packet from: {}. Will process the packet...",
+                        packet.getAddress().getHostAddress());
 
-                    // Redirect packet to the mediator
-                    this.mediator.processReceivedPacket(this.packetConverter.transformSyncResponsePacket(packet));
+                // Redirect packet to the mediator
+                this.mediator.processReceivedPacket(this.packetConverter.transformSyncResponsePacket(packet));
 
-                    logger.debug("Message delivered with success to mediator.");
-                } catch (SocketTimeoutException e) {
-                    logger.trace("Socket Timeout receiving packet.");
-                } catch (IOException e) {
-                    logger.debug("One exception has occurred: {} ", e.getMessage());
-                }
+                logger.debug("Message delivered with success to mediator.");
+            } catch (SocketTimeoutException e) {
+                logger.trace("Socket Timeout receiving packet.");
+            } catch (IOException e) {
+                logger.debug("One exception has occurred: {} ", e.getMessage());
             }
         }
 
         // close the socket
-        if (datagramSocket != null) {
-            datagramSocket.close();
-        }
+        datagramSocket.close();
     }
 
     private void datagramSocketHealthRoutine() {
         DatagramSocket datagramSocket = this.datagramSocket;
-        if (datagramSocket == null || datagramSocket.isClosed()) {
+        if (datagramSocket.isClosed() || !datagramSocket.isConnected()) {
             logger.debug("Datagram Socket has been closed, will reconnect again...");
             DatagramSocket newDatagramSocket = null;
             try {

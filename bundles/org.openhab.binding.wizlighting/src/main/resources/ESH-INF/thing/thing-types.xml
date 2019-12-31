@@ -85,14 +85,15 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="speed" advanced="true">
+	<channel-type id="speed">
 		<item-type>Dimmer</item-type>
-		<label>Speed</label>
+		<label>Scene Speed</label>
+		<description>Speed of color/intensity changes in dynamic light modes</description>
 	</channel-type>
-	<channel-type id="rssi" advanced="true">
+	<channel-type id="rssi">
 		<item-type>Number:Power</item-type>
 		<label>Signal</label>
-		<description>Wi-Fi signal strength indicator.</description>
+		<description>Wi-Fi signal strength indicator</description>
 		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
