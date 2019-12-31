@@ -38,7 +38,6 @@ import javax.measure.quantity.Power;
 import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -143,7 +142,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
     }
 
     @Override
-    public void bridgeStatusChanged(@NonNull ThingStatusInfo bridgeStatusInfo) {
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (config.id.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ID not set");
             return;
@@ -438,6 +437,9 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
                 break;
             case CHANNEL_WATERLEAKAGE:
                 updateState(channelUID, Boolean.TRUE.equals(newState.water) ? OnOffType.ON : OnOffType.OFF);
+                break;
+            case CHANNEL_FIRE:
+                updateState(channelUID, Boolean.TRUE.equals(newState.fire) ? OnOffType.ON : OnOffType.OFF);
                 break;
             case CHANNEL_ALARM:
                 updateState(channelUID, Boolean.TRUE.equals(newState.alarm) ? OnOffType.ON : OnOffType.OFF);

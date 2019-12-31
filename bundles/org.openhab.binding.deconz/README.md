@@ -25,6 +25,7 @@ These things are supported:
 | Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`    |
 | Water Leakage Sensor              | ZHAWater                          | `waterleakagesensor` |
 | Alarm Sensor                      | ZHAAlarm                          | `alarmsensor`        |
+| Fire Sensor                       | ZHAFire                           | `firesensor`         |
 | Vibration Sensor                  | ZHAVibration                      | `vibrationsensor`    |
 | deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
 
@@ -99,6 +100,7 @@ The devices support some of the following channels:
 | pressure        | Number:Pressure          |      R      | Current pressure in hPa                                                                   | pressuresensor                               |
 | open            | Contact                  |      R      | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                              |
 | waterleakage    | Switch                   |      R      | Status of water leakage: `ON` = water leakage detected; `OFF` = no water leakage detected | waterleakagesensor                           |
+| fire            | Switch                   |      R      | Status of a fire: `ON` = fire was detected; `OFF` = no fire detected                      | firesensor                                   |
 | alarm           | Switch                   |      R      | Status of an alarm: `ON` = alarm was triggered; `OFF` = no alarm                          | alarmsensor                                  |
 | tampered        | Switch                   |      R      | Status of a zone: `ON` = zone is being tampered; `OFF` = zone is not tampered             | any IAS sensor                               |
 | vibration       | Switch                   |      R      | Status of vibration: `ON` = vibration was detected; `OFF` = no vibration                  | alarmsensor                                  |

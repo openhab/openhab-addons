@@ -335,6 +335,29 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<thing-type id="firesensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Fire Sensor</label>
+		<description>A fire sensor</description>
+		<channels>
+			<channel typeId="fire" id="fire" />
+			<channel typeId="last_updated" id="last_updated" />
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
+	</thing-type>
+
+	<channel-type id="fire">
+		<item-type>Switch</item-type>
+		<label>Fire</label>
+		<description>A fire was detected.</description>
+		<state readOnly="true" />
+	</channel-type>
+
 	<thing-type id="alarmsensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
