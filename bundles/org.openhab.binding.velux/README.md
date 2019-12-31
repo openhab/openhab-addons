@@ -161,8 +161,7 @@ Optionally the subtype is enhanced with parameters like the appropriate name of 
 Notes:
 (\*\*\*) The existence of this item triggers the continuous realtime status updates of any Velux item like shutters even if they are manually controlled by other controllers.
 
-(\*\*\*\*) To enable a complete invertion of all parameter values (i.e. for Velux windows), add a trailing star to the eight-byte serial number. For an example,
-see below at item `Velux DG Window Bathroom`.
+(\*\*\*\*) To enable a complete invertion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number. For an example, see below at item `Velux DG Window Bathroom`.
 
 (\*\*\*\*\*) Somfy devices does not provides a valid serial number to the Velux KLF200 gateway: The bridge reports a registration of the serial number 00:00:00:00:00:00:00:00. Therefore the binding implements a fallback to allow an item specification with a actuator name instead of actuator serial number whenever such an invalid serial number occurs. For an example, see below at item `Velux OG Somfy Shutter`.
 
@@ -180,6 +179,10 @@ The subtype shutter requires an even pair of parameters, each defining the shutt
 ```
 { velux="thing=brigde;channel=shutter#<Level1>,<Scene1>,<Level2>,<Scene2>" }
 ```
+
+### Rain Sensor
+
+Unfortunately Velux has decided to closely integrate the rain sensor into the window device. The rain sensor is therefore not displayed in the device list. On the other hand, the 'limitMinimum' channel of a roof window now provides information about rainy weather: if it is set internally by the Velux control unit to a value other than zero, it rains.
 
 ### Virtual shutter
 

@@ -54,9 +54,11 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
      */
     public VeluxBinding(@Nullable VeluxBridgeConfiguration uncheckedConfiguration) {
         logger.trace("VeluxBinding(constructor) called.");
-        for (Field field : VeluxBridgeConfiguration.class.getFields()) {
-            if (!StringUtils.capitalize(field.getName()).contentEquals(field.getName())) {
-                logger.trace("VeluxBinding(): FYI: a potential configuration string is '{}'.", field.getName());
+        if (logger.isTraceEnabled()) {
+            for (Field field : VeluxBridgeConfiguration.class.getFields()) {
+                if (!StringUtils.capitalize(field.getName()).contentEquals(field.getName())) {
+                    logger.trace("VeluxBinding(): FYI: a potential configuration string is '{}'.", field.getName());
+                }
             }
         }
         if (uncheckedConfiguration == null) {
