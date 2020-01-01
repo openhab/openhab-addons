@@ -59,7 +59,7 @@ public class DS2438Test extends DeviceTestParent {
 
         final AbstractOwDevice testDevice = this.testDevice;
         final InOrder inOrder = this.inOrder;
-        if (testDevice==null || inOrder == null) {
+        if (testDevice == null || inOrder == null) {
             Assert.fail("prerequisite is null");
             return;
         }
@@ -88,7 +88,7 @@ public class DS2438Test extends DeviceTestParent {
 
         final AbstractOwDevice testDevice = this.testDevice;
         final InOrder inOrder = this.inOrder;
-        if (testDevice==null || inOrder == null) {
+        if (testDevice == null || inOrder == null) {
             Assert.fail("prerequisite is null");
             return;
         }
@@ -123,7 +123,7 @@ public class DS2438Test extends DeviceTestParent {
 
         final AbstractOwDevice testDevice = this.testDevice;
         final InOrder inOrder = this.inOrder;
-        if (testDevice==null || inOrder == null) {
+        if (testDevice == null || inOrder == null) {
             Assert.fail("prerequisite is null");
             return;
         }
@@ -152,7 +152,7 @@ public class DS2438Test extends DeviceTestParent {
 
         final AbstractOwDevice testDevice = this.testDevice;
         final InOrder inOrder = this.inOrder;
-        if (testDevice==null || inOrder == null) {
+        if (testDevice == null || inOrder == null) {
             Assert.fail("prerequisite is null");
             return;
         }
@@ -182,7 +182,7 @@ public class DS2438Test extends DeviceTestParent {
 
         final AbstractOwDevice testDevice = this.testDevice;
         final InOrder inOrder = this.inOrder;
-        if (testDevice==null || inOrder == null) {
+        if (testDevice == null || inOrder == null) {
             Assert.fail("prerequisite is null");
             return;
         }
@@ -218,7 +218,7 @@ public class DS2438Test extends DeviceTestParent {
 
         final AbstractOwDevice testDevice = this.testDevice;
         final InOrder inOrder = this.inOrder;
-        if (testDevice==null || inOrder == null) {
+        if (testDevice == null || inOrder == null) {
             Assert.fail("prerequisite is null");
             return;
         }
@@ -247,7 +247,7 @@ public class DS2438Test extends DeviceTestParent {
 
         final AbstractOwDevice testDevice = this.testDevice;
         final InOrder inOrder = this.inOrder;
-        if (testDevice==null || inOrder == null) {
+        if (testDevice == null || inOrder == null) {
             Assert.fail("prerequisite is null");
             return;
         }

@@ -12,6 +12,16 @@
  */
 package org.openhab.binding.onewire.owserver;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -33,16 +43,6 @@ import org.openhab.binding.onewire.internal.owserver.OwserverConnection;
 import org.openhab.binding.onewire.internal.owserver.OwserverConnectionState;
 import org.openhab.binding.onewire.test.OwserverTestServer;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.MockitoAnnotations.initMocks;
-
 /**
  * Tests cases for {@link OwserverConnection}.
  *
@@ -56,8 +56,7 @@ public class OwserverConnectionTest extends JavaTest {
     private @Nullable OwserverConnection owserverConnection;
 
     @Mock
-    private @NonNullByDefault({})
-    OwserverBridgeHandler bridgeHandler;
+    private @NonNullByDefault({}) OwserverBridgeHandler bridgeHandler;
 
     private int testPort;
 

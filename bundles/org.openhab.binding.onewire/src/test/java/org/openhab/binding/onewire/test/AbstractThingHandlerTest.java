@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.onewire.test;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_OWSERVER;
+
+import java.util.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -33,11 +38,6 @@ import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
-
-import java.util.*;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_OWSERVER;
 
 /**
  * Base class for thing handler tests.

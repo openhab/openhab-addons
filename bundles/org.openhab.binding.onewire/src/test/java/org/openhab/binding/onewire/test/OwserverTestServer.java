@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.onewire.test;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Assert;
 import org.openhab.binding.onewire.internal.OwException;
@@ -20,14 +28,6 @@ import org.openhab.binding.onewire.internal.owserver.OwserverPacket;
 import org.openhab.binding.onewire.internal.owserver.OwserverPacketType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * The {@link OwserverTestServer} defines a server for testing the OwserverConnection class
@@ -60,8 +60,8 @@ public class OwserverTestServer {
                         final DataInputStream inputStream = new DataInputStream(connectionSocket.getInputStream());
                         final DataOutputStream outputStream = new DataOutputStream(connectionSocket.getOutputStream());
 
-                            receivedPacket = new OwserverPacket(inputStream, OwserverPacketType.REQUEST);
-                            logger.debug("received {}", receivedPacket);
+                        receivedPacket = new OwserverPacket(inputStream, OwserverPacketType.REQUEST);
+                        logger.debug("received {}", receivedPacket);
 
                         answerPackets = processPacket(receivedPacket);
 

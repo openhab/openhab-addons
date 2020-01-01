@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.onewire.internal;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_ID;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_MS_TX;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -30,13 +37,6 @@ import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.test.AbstractThingHandlerTest;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_ID;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_MS_TX;
 
 /**
  * Tests cases for {@link BasicMultisensorThingHandler}.

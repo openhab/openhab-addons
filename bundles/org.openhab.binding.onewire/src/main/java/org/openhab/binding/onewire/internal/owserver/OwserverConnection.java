@@ -12,6 +12,16 @@
  */
 package org.openhab.binding.onewire.internal.owserver;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -24,16 +34,6 @@ import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The {@link OwserverConnection} defines the protocol for connections to owservers
@@ -270,8 +270,8 @@ public class OwserverConnection {
         try {
             write(requestPacket);
             do {
-                if (requestPacket.getMessageType() == OwserverMessageType.PRESENT || requestPacket
-                        .getMessageType() == OwserverMessageType.NOP) {
+                if (requestPacket.getMessageType() == OwserverMessageType.PRESENT
+                        || requestPacket.getMessageType() == OwserverMessageType.NOP) {
                     returnPacket = read(true);
                 } else {
                     returnPacket = read(false);

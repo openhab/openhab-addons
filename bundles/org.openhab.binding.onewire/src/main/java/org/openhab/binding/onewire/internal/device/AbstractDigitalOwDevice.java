@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.onewire.internal.device;
 
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIGITAL_LOGIC;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIGITAL_MODE;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -31,13 +38,6 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-
-import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIGITAL_LOGIC;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIGITAL_MODE;
-
 /**
  * The {@link AbstractDigitalOwDevice} class defines an abstract digital I/O device
  *
@@ -47,10 +47,8 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIG
 public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
     private final Logger logger = LoggerFactory.getLogger(AbstractDigitalOwDevice.class);
 
-    protected @NonNullByDefault({})
-    OwserverDeviceParameter fullInParam;
-    protected @NonNullByDefault({})
-    OwserverDeviceParameter fullOutParam;
+    protected @NonNullByDefault({}) OwserverDeviceParameter fullInParam;
+    protected @NonNullByDefault({}) OwserverDeviceParameter fullOutParam;
 
     protected final List<DigitalIoConfig> ioConfig = new ArrayList<DigitalIoConfig>();
 
@@ -86,8 +84,8 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
                     StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
                             .withReadOnly(ioConfig.get(i).isInput()).build().toStateDescription();
                     if (stateDescription != null) {
-                        dynamicStateDescriptionProvider
-                                .setDescription(ioConfig.get(i).getChannelUID(), stateDescription);
+                        dynamicStateDescriptionProvider.setDescription(ioConfig.get(i).getChannelUID(),
+                                stateDescription);
                     } else {
                         logger.warn("Failed to create state description in thing {}", thing.getUID());
                     }

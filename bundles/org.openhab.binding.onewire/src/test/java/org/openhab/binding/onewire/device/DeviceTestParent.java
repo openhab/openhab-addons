@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.onewire.device;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_PRESENT;
+
+import java.lang.reflect.Constructor;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -29,12 +35,6 @@ import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
-
-import java.lang.reflect.Constructor;
-
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_PRESENT;
 
 /**
  * Abtract test class for onewire devices.
@@ -113,8 +113,8 @@ public abstract class DeviceTestParent {
             return null;
         }
         try {
-            Constructor<?> constructor = deviceTestClazz
-                    .getConstructor(SensorId.class, OwSensorType.class, OwBaseThingHandler.class);
+            Constructor<?> constructor = deviceTestClazz.getConstructor(SensorId.class, OwSensorType.class,
+                    OwBaseThingHandler.class);
             testDevice = (AbstractOwDevice) constructor
                     .newInstance(new Object[] { testSensorId, sensorType, mockThingHandler });
             return testDevice;

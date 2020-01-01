@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.onewire.internal;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -28,12 +34,6 @@ import org.mockito.MockitoAnnotations;
 import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.test.AbstractThingHandlerTest;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 /**
  * Tests cases for {@link EDSSensorThingHandler}.

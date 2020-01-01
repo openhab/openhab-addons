@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.onewire.internal.handler;
 
+import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -32,14 +40,6 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
-
 /**
  * The {@link OwserverBridgeHandler} class implements the refresher and the interface for reading from the bridge
  *
@@ -52,8 +52,8 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OwserverBridgeHandler.class);
     protected boolean refreshable = false;
 
-    protected ScheduledFuture<?> refreshTask = scheduler
-            .scheduleWithFixedDelay(this::refresh, 1, 1000, TimeUnit.MILLISECONDS);
+    protected ScheduledFuture<?> refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 1, 1000,
+            TimeUnit.MILLISECONDS);
 
     // thing update
     private final Queue<@Nullable Thing> thingPropertiesUpdateQueue = new ConcurrentLinkedQueue<>();
@@ -89,8 +89,8 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
         }
 
         for (Channel channel : thing.getChannels()) {
-            if (CHANNEL_TYPE_UID_OWFS_NUMBER.equals(channel.getChannelTypeUID()) || CHANNEL_TYPE_UID_OWFS_STRING
-                    .equals(channel.getChannelTypeUID())) {
+            if (CHANNEL_TYPE_UID_OWFS_NUMBER.equals(channel.getChannelTypeUID())
+                    || CHANNEL_TYPE_UID_OWFS_STRING.equals(channel.getChannelTypeUID())) {
                 final OwfsDirectChannelConfig channelConfig = channel.getConfiguration()
                         .as(OwfsDirectChannelConfig.class);
                 if (channelConfig.initialize(channel.getUID(), channel.getAcceptedItemType())) {

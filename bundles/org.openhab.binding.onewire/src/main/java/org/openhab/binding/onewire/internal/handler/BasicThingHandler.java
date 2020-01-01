@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.onewire.internal.handler;
 
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_DIGITAL;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_BASIC;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -24,14 +32,6 @@ import org.openhab.binding.onewire.internal.device.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_DIGITAL;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_BASIC;
-
 /**
  * The {@link BasicThingHandler} is responsible for handling simple sensors
  *
@@ -40,10 +40,10 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE
 @NonNullByDefault
 public class BasicThingHandler extends OwBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BASIC);
-    public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Collections.unmodifiableSet(
-            Stream.of(OwSensorType.DS1420, OwSensorType.DS18B20, OwSensorType.DS18S20, OwSensorType.DS1822,
-                    OwSensorType.DS2401, OwSensorType.DS2405, OwSensorType.DS2406, OwSensorType.DS2408,
-                    OwSensorType.DS2413, OwSensorType.DS2423).collect(Collectors.toSet()));
+    public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Collections
+            .unmodifiableSet(Stream.of(OwSensorType.DS1420, OwSensorType.DS18B20, OwSensorType.DS18S20,
+                    OwSensorType.DS1822, OwSensorType.DS2401, OwSensorType.DS2405, OwSensorType.DS2406,
+                    OwSensorType.DS2408, OwSensorType.DS2413, OwSensorType.DS2423).collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(BasicThingHandler.class);
 
@@ -100,8 +100,8 @@ public class BasicThingHandler extends OwBaseThingHandler {
                 if (bridge != null) {
                     OwserverBridgeHandler bridgeHandler = (OwserverBridgeHandler) bridge.getHandler();
                     if (bridgeHandler != null) {
-                        if (!((AbstractDigitalOwDevice) sensors.get(0))
-                                .writeChannel(bridgeHandler, ioChannel, command)) {
+                        if (!((AbstractDigitalOwDevice) sensors.get(0)).writeChannel(bridgeHandler, ioChannel,
+                                command)) {
                             logger.debug("writing to channel {} in thing {} not permitted (input channel)", channelUID,
                                     this.thing.getUID());
                         }

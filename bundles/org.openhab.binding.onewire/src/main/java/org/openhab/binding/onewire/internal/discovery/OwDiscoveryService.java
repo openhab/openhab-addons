@@ -48,7 +48,8 @@ public class OwDiscoveryService extends AbstractDiscoveryService {
 
     Map<SensorId, OwDiscoveryItem> owDiscoveryItems = new HashMap<>();
     Set<SensorId> associatedSensors = new HashSet<>();
-    @Nullable ThingUID bridgeUID;
+    @Nullable
+    ThingUID bridgeUID;
 
     public OwDiscoveryService(OwserverBridgeHandler owBridgeHandler) {
         super(SUPPORTED_THING_TYPES, 60, false);
