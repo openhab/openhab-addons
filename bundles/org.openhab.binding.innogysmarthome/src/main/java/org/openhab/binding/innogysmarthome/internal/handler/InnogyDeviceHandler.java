@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -389,7 +390,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             }
 
             // CAPABILITY STATES
-            for (final Capability c : device.getCapabilityMap().values()) {
+            for (final Entry<String, Capability> entry : device.getCapabilityMap().entrySet()) {
+                final Capability c = entry.getValue();
+
                 logger.debug("->capability:{} ({}/{})", c.getId(), c.getType(), c.getName());
 
                 if (c.getCapabilityState() == null) {
@@ -420,11 +423,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         final Integer dimLevel = c.getCapabilityState().getDimmerActuatorState();
                         if (dimLevel != null) {
                             logger.debug("Dimlevel state {}", dimLevel);
-                            if (dimLevel > 0) {
-                                updateState(CHANNEL_DIMMER, OnOffType.ON);
-                            } else {
-                                updateState(CHANNEL_DIMMER, OnOffType.OFF);
-                            }
                             updateState(CHANNEL_DIMMER, new PercentType(dimLevel));
                         } else {
                             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
@@ -436,11 +434,6 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         if (rollerShutterLevel != null) {
                             rollerShutterLevel = invertValueIfConfigured(CHANNEL_ROLLERSHUTTER, rollerShutterLevel);
                             logger.debug("RollerShutterlevel state {}", rollerShutterLevel);
-                            if (rollerShutterLevel > 0) {
-                                updateState(CHANNEL_ROLLERSHUTTER, UpDownType.DOWN);
-                            } else {
-                                updateState(CHANNEL_ROLLERSHUTTER, UpDownType.UP);
-                            }
                             updateState(CHANNEL_ROLLERSHUTTER, new PercentType(rollerShutterLevel));
                         } else {
                             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
@@ -822,20 +815,24 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
 
                         // PushButtonSensor
                     } else if (capability.isTypePushButtonSensor()) {
-                        // if the same button is pressed more than once
-                        // the buttonIndex and LastKeyPressCounter come with two events
-                        // updates should only do when arriving value
+                        // Some devices send both StateChanged and ButtonPressed. But only one should be handled.
+                        // If ButtonPressed is send lastPressedButtonIndex is not set in StateChanged so ignore
+                        // StateChanged.
+                        // type is also not always present if null will be interpreted as a normal key press.
                         final Integer tmpButtonIndex = event.getProperties().getLastPressedButtonIndex();
-                        final Integer tmpLastKeyPressCounter = event.getProperties().getLastKeyPressCounter();
-                        final String lastKeyPressType = event.getProperties().getLastKeyPressType();
-                        if (tmpButtonIndex != null && lastKeyPressType != null) {
+
+                        if (tmpButtonIndex != null) {
                             capabilityState.setPushButtonSensorButtonIndexState(tmpButtonIndex);
-                            capabilityState.setPushButtonSensorButtonIndexType(lastKeyPressType);
+                            capabilityState
+                                    .setPushButtonSensorButtonIndexType(event.getProperties().getLastKeyPressType());
+
+                            final Integer tmpLastKeyPressCounter = event.getProperties().getLastKeyPressCounter();
+
+                            if (tmpLastKeyPressCounter != null) {
+                                capabilityState.setPushButtonSensorCounterState(tmpLastKeyPressCounter);
+                            }
+                            deviceChanged = true;
                         }
-                        if (tmpLastKeyPressCounter != null) {
-                            capabilityState.setPushButtonSensorCounterState(tmpLastKeyPressCounter);
-                        }
-                        deviceChanged = true;
 
                         // EnergyConsumptionSensor
                     } else if (capability.isTypeEnergyConsumptionSensor()) {
