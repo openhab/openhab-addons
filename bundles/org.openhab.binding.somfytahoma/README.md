@@ -107,6 +107,15 @@ When a roller shutter-like thing receives STOP command, there are two possible b
 - when the roller shutter is idle then MY command is interpreted (the roller shutter/exterior screen/awning goes to your favourite position)
 - when the roller shutter is moving then STOP command is interpreted (the roller shutter/exterior screen/awning stops)
 
+If you want to set the MY position of a roller shutter and you don't care the possible movement, try sending the MOVE command (OH2 does not know MY, so it stands for "move to MY position")
+
+```
+sendCommand(ROLLERSHUTTER_THING, MOVE)
+```
+or
+```
+ROLLERSHUTTER_THING.sendCommand(MOVE)
+```
 
 ## Full Example
 

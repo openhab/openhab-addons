@@ -275,8 +275,9 @@ public class SomfyTahomaBindingConstants {
     public static final String THING_REMOTE_CONTROLLER = "RemoteController";
     public static final String THING_NETWORK_COMPONENT = "NetworkComponent";
 
-    // cache timeout
-    public static final int CACHE_EXPIRY = 10000;
+    // Event states
+    public static final String FAILED_EVENT = "FAILED";
+    public static final String COMPLETED_EVENT = "COMPLETED";
 
     // supported thing types for discovery
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(

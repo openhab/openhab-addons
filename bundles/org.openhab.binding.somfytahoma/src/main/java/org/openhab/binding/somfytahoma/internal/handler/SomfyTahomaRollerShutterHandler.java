@@ -43,13 +43,15 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
         }
 
         if (RefreshType.REFRESH.equals(command)) {
-                return;
+            return;
         } else {
             String cmd = getTahomaCommand(command.toString());
             if (COMMAND_MY.equals(cmd)) {
+                sendCommand(COMMAND_MY);
+            } else if (COMMAND_STOP.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //Check if the roller shutter is moving and MY is sent => STOP it
+                    //Check if the roller shutter is moving and STOP is sent => STOP it
                     cancelExecution(executionId);
                 } else {
                     sendCommand(COMMAND_MY);
@@ -71,9 +73,11 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
             case "UP":
             case "OPEN":
                 return COMMAND_UP;
+            case "MOVE":
             case "MY":
-            case "STOP":
                 return COMMAND_MY;
+            case "STOP":
+                return COMMAND_STOP;
             default:
                 return COMMAND_SET_CLOSURE;
         }

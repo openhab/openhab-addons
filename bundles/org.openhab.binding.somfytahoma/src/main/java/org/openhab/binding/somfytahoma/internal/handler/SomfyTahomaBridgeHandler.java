@@ -467,7 +467,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private void processExecutionChangedEvent(SomfyTahomaEvent event) {
-        if ("FAILED".equals(event.getNewState()) || "COMPLETED".equals(event.getNewState())) {
+        if (FAILED_EVENT.equals(event.getNewState()) || COMPLETED_EVENT.equals(event.getNewState())) {
             logger.debug("Removing execution id: {}", event.getExecId());
             unregisterExecution(event.getExecId());
         }
