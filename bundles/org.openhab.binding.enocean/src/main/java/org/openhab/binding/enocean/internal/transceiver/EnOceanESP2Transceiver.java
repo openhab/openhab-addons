@@ -24,6 +24,7 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ESP2Packet;
 import org.openhab.binding.enocean.internal.messages.ESP2PacketConverter;
 import org.openhab.binding.enocean.internal.messages.Response;
+import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 
 /**
  *
@@ -109,7 +110,11 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                                                     packet.getPacketType().name(), msg.getRORG().name(),
                                                     HexUtils.bytesToHex(msg.getSenderId()));
 
-                                            informListeners(msg);
+                                            if(msg.getRORG() != RORG.Unknown) {
+                                                    informListeners(msg);
+                                            } else {
+                                                logger.debug("Received unknown RORG");
+                                            }
                                         }
                                             break;
                                         case RESPONSE: {
