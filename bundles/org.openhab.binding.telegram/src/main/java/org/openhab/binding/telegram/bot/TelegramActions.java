@@ -341,6 +341,15 @@ public class TelegramActions implements ThingActions {
                 // Load image from provided base64 image
                 logger.debug("Photo base64 provided; converting to binary.");
                 try {
+                    if (photoURL.startsWith("data:")) // support data URI scheme
+                    {
+                        String[] photoURLParts = photoURL.split(",");
+                        if (photoURLParts.length > 1) {
+                            photoURL = photoURLParts[1];
+                        } else {
+                            logger.warn("The provided base64 string doesn't seem to a be valid data URI schema");
+                        }
+                    }
                     InputStream is = Base64.getDecoder().wrap(new ByteArrayInputStream(photoURL.getBytes("UTF-8")));
                     try {
                         byte[] photoBytes = IOUtils.toByteArray(is);
