@@ -10,7 +10,8 @@ IF %ARGC% NEQ 3 (
 	exit /B 1
 )
 
-SET OpenhabVersion="2.5.0-SNAPSHOT"
+SET OpenhabCoreVersion="2.5.0-SNAPSHOT"
+SET OpenhabVersion="2.5.1-SNAPSHOT"
 
 SET BindingIdInCamelCase=%~1
 SET BindingIdInLowerCase=%BindingIdInCamelCase%
@@ -19,9 +20,12 @@ SET GithubUser=%~3
 
 call :LoCase BindingIdInLowerCase
 
-call mvn -s archetype-settings.xml archetype:generate -N -DarchetypeGroupId=org.openhab.core.tools.archetypes -DarchetypeArtifactId=org.openhab.core.tools.archetypes.binding -DarchetypeVersion=%OpenhabVersion% -DgroupId=org.openhab.binding -DartifactId=org.openhab.binding.%BindingIdInLowerCase% -Dpackage=org.openhab.binding.%BindingIdInLowerCase% -Dversion=%OpenhabVersion% -DbindingId=%BindingIdInLowerCase% -DbindingIdCamelCase=%BindingIdInCamelCase% -DvendorName=openHAB -Dnamespace=org.openhab -Dauthor="%Author%" -DgithubUser="%GithubUser%"
+call mvn -s archetype-settings.xml archetype:generate -N -DarchetypeGroupId=org.openhab.core.tools.archetypes -DarchetypeArtifactId=org.openhab.core.tools.archetypes.binding -DarchetypeVersion=%OpenhabCoreVersion% -DgroupId=org.openhab.binding -DartifactId=org.openhab.binding.%BindingIdInLowerCase% -Dpackage=org.openhab.binding.%BindingIdInLowerCase% -Dversion=%OpenhabVersion% -DbindingId=%BindingIdInLowerCase% -DbindingIdCamelCase=%BindingIdInCamelCase% -DvendorName=openHAB -Dnamespace=org.openhab -Dauthor="%Author%" -DgithubUser="%GithubUser%"
 
 COPY ..\src\etc\NOTICE org.openhab.binding.%BindingIdInLowerCase%\
+
+:: temporary fix
+:: TODO replace ${project.version} by ${ohc.version} in src/main/feature/feature.xml
 
 (SET BindingIdInLowerCase=)
 (SET BindingIdInCamelCase=)
@@ -29,7 +33,6 @@ COPY ..\src\etc\NOTICE org.openhab.binding.%BindingIdInLowerCase%\
 (SET GithubUser=)
 
 GOTO:EOF
-
 
 :LoCase
 :: Subroutine to convert a variable VALUE to all lower case.

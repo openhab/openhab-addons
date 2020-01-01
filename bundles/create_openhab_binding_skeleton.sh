@@ -2,7 +2,8 @@
 
 [ $# -lt 3 ] && { echo "Usage: $0 <BindingIdInCamelCase> <Author> <GitHub Username>"; exit 1; }
 
-openHABVersion=2.5.0-SNAPSHOT
+openHABCoreVersion=2.5.0-SNAPSHOT
+openHABVersion=2.5.1-SNAPSHOT
 
 camelcaseId=$1
 id=`echo $camelcaseId | tr '[:upper:]' '[:lower:]'`
@@ -13,7 +14,7 @@ githubUser=$3
 mvn -s archetype-settings.xml archetype:generate -N \
   -DarchetypeGroupId=org.openhab.core.tools.archetypes \
   -DarchetypeArtifactId=org.openhab.core.tools.archetypes.binding \
-  -DarchetypeVersion=$openHABVersion \
+  -DarchetypeVersion=$openHABCoreVersion \
   -DgroupId=org.openhab.binding \
   -DartifactId=org.openhab.binding.$id \
   -Dpackage=org.openhab.binding.$id \
@@ -28,4 +29,7 @@ mvn -s archetype-settings.xml archetype:generate -N \
 directory="org.openhab.binding.$id/"
 
 cp ../src/etc/NOTICE "$directory"
+
+# temporary fix
+sed -i'.bak' -e "s|\-core\/\${project.version}|\-core\/\${ohc.version}|g" "$directory/src/main/feature/feature.xml"
 
