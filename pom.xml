@@ -406,7 +406,7 @@ Import-Package: \\
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2019</year>
+              <year>2020</year>
             </properties>
             <encoding>UTF-8</encoding>
           </configuration>
