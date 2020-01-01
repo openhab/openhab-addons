@@ -813,7 +813,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateUserRating(double rating) {
-        updateState(CHANNEL_RATING, new DecimalType(rating));
+        updateState(CHANNEL_USERRATING, new DecimalType(rating));
     }
 
     @Override
