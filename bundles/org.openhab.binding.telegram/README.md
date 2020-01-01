@@ -2,6 +2,10 @@
 
 The Telegram binding allows sending and receiving messages to and from Telegram clients (https://telegram.org), by using the Telegram Bot API.
 
+# Migrating from the old Telegram Action
+
+This binding replaces the old Telegram Action. In case you want to migrate to this binding, it is recommended to uninstall the old action first. A new configuration as well as changes to your existing rules are necessary. For further details see the following sections.
+
 # Prerequisites
 
 As described in the Telegram Bot API, this is the manual procedure needed in order to get the necessary information.
