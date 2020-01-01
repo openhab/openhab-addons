@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,10 +21,6 @@ import java.time.Instant;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
-import org.openhab.binding.icalendar.internal.logic.BiweeklyPresentableCalendar;
-import org.openhab.binding.icalendar.internal.logic.CalendarException;
-import org.openhab.binding.icalendar.internal.logic.Event;
 
 /**
  * Tests for presentable calendar.
