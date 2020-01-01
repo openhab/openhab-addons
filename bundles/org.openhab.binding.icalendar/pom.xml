@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>2.5.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.binding.icalendar</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: iCalendar Binding</name>
+  
+  
+  
+  <dependencies>
+    <!-- own dependencies -->
+    <dependency>
+       <groupId>net.sf.biweekly</groupId>
+       <artifactId>biweekly</artifactId>
+       <version>0.6.3</version>
+       <scope>compile</scope>
+       <type>bundle</type>
+    </dependency>
+    <!-- dependencies of biweekly -->
+    <dependency>
+       <groupId>com.github.mangstadt</groupId>
+       <artifactId>vinnie</artifactId>
+       <version>2.0.2</version>
+       <scope>compile</scope>
+       <type>bundle</type>
+    </dependency>
+    <dependency>
+       <groupId>com.fasterxml.jackson.core</groupId>
+       <artifactId>jackson-core</artifactId>
+       <version>2.10.0.pr3</version>
+       <scope>compile</scope>
+       <type>bundle</type>
+    </dependency>
+  </dependencies>
+
+</project>
