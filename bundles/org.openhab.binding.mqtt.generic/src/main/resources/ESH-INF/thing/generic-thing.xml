@@ -13,6 +13,20 @@
 		<label>Generic MQTT Thing</label>
 		<description>You need a configured Broker first. Dynamically add channels of various types to this Thing. Link
 			different MQTT topics to each channel.</description>
-	</thing-type>
 
+		<config-description>
+			<parameter name="availabilityTopic" type="text">
+				<label>Availability Topic</label>
+				<description>Topic of the LWT of the device</description>
+			</parameter>
+			<parameter name="payloadAvailable" type="text">
+				<label>Payload available</label>
+				<description>Payload of the 'Availability Topic', when the device is available. Default: 'ON'</description>
+			</parameter>
+			<parameter name="payloadNotAvailable" type="text">
+				<label>Payload not availabe</label>
+				<description>Payload of the 'Availability Topic', when the device is *not* available. Default: 'OFF'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 </thing:thing-descriptions>

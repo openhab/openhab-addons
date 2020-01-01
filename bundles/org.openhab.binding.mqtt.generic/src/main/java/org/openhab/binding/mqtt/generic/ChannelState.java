@@ -158,8 +158,7 @@ public class ChannelState implements MqttMessageSubscriber {
             if (transformedValue != null) {
                 strValue = transformedValue;
             } else {
-                logger.debug("Transformation '{}' returned null on '{}', discarding message", strValue,
-                        t.serviceName);
+                logger.debug("Transformation '{}' returned null on '{}', discarding message", strValue, t.serviceName);
                 receivedOrTimeout();
                 return;
             }

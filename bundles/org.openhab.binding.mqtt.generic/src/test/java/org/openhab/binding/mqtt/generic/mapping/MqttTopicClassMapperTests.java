@@ -36,19 +36,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
-import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
-import org.openhab.binding.mqtt.generic.mapping.MQTTvalueTransform;
-import org.openhab.binding.mqtt.generic.mapping.SubscribeFieldToMQTTtopic;
-import org.openhab.binding.mqtt.generic.mapping.TopicPrefix;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.AttributeChanged;
 
 /**
- * Tests cases for {@link AbstractMqttAttributeClass}.
+ * Tests cases for {@link org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass}.
+ *
  * <p>
  * How it works:
+ *
  * <ol>
- * <li>A DTO (data transfer object) is defined, here it is {@link Attributes},
- * which extends {@link AbstractMqttAttributeClass}.
+ * <li>A DTO (data transfer object) is defined, here it is {@link Attributes}, which extends
+ * {@link org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass}.
  * <li>The createSubscriber method is mocked so that no real MQTTConnection interaction happens.
  * <li>The subscribeAndReceive method is called.
  * </ol>

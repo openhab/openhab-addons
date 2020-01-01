@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.slf4j.Logger;
@@ -44,10 +45,11 @@ public class CFactory {
      * @return A HA MQTT Component
      */
     public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID,
-            String channelConfigurationJSON, ChannelStateUpdateListener updateListener, Gson gson,
-            TransformationServiceProvider transformationServiceProvider) {
+            String channelConfigurationJSON, ChannelStateUpdateListener updateListener, AvailabilityTracker tracker,
+            Gson gson, TransformationServiceProvider transformationServiceProvider) {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
-                channelConfigurationJSON, gson, updateListener).transformationProvider(transformationServiceProvider);
+                channelConfigurationJSON, gson, updateListener, tracker)
+                        .transformationProvider(transformationServiceProvider);
         try {
             switch (haID.component) {
                 case "alarm_control_panel":
@@ -78,20 +80,22 @@ public class CFactory {
     }
 
     protected static class ComponentConfiguration {
-        private ThingUID thingUID;
-        private HaID haID;
-        private String configJSON;
+        private final ThingUID thingUID;
+        private final HaID haID;
+        private final String configJSON;
+        private final ChannelStateUpdateListener updateListener;
+        private final AvailabilityTracker tracker;
+        private final Gson gson;
         private @Nullable TransformationServiceProvider transformationServiceProvider;
-        private ChannelStateUpdateListener updateListener;
-        private Gson gson;
 
         protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson,
-                ChannelStateUpdateListener updateListener) {
+                ChannelStateUpdateListener updateListener, AvailabilityTracker tracker) {
             this.thingUID = thingUID;
             this.haID = haID;
             this.configJSON = configJSON;
             this.gson = gson;
             this.updateListener = updateListener;
+            this.tracker = tracker;
         }
 
         public ComponentConfiguration transformationProvider(
@@ -123,6 +127,10 @@ public class CFactory {
 
         public Gson getGson() {
             return gson;
+        }
+
+        public AvailabilityTracker getTracker() {
+            return tracker;
         }
 
         public <C extends BaseChannelConfiguration> C getConfig(Class<C> clazz) {

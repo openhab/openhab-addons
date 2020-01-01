@@ -127,7 +127,7 @@ public class SubscribeFieldToMQTTtopic implements MqttMessageSubscriber {
      */
     @SuppressWarnings({ "null", "unused" })
     @Override
-    public void processMessage(String topic, byte [] payload) {
+    public void processMessage(String topic, byte[] payload) {
         final ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
         if (scheduledFuture != null) { // Cancel timeout
             scheduledFuture.cancel(false);

@@ -35,13 +35,13 @@ import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.thing.util.ThingHelper;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.tools.DelayedBatchProcessing;
+import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.CChannel;
@@ -51,7 +51,6 @@ import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.util.FutureCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +113,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         this.transformationServiceProvider = transformationServiceProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);
-        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, gson,
+        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, this, gson,
                 this.transformationServiceProvider);
     }
 
@@ -152,7 +151,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             if (channelConfigurationJSON == null) {
                 logger.warn("Provided channel does not have a 'config' configuration key!");
             } else {
-                component = CFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, gson,
+                component = CFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, this, gson,
                         transformationServiceProvider);
             }
 
@@ -188,7 +187,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
         started = true;
 
-        connection.setRetain(true);
         connection.setQos(1);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "No response from the device yet");
@@ -294,17 +292,14 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         }
 
         updateThingType();
-        updateThingStatus();
     }
 
-    private void updateThingStatus() {
-        synchronized (haComponents) { // sync whenever discoverComponents is started
-            boolean allActive = haComponents.values().stream().allMatch(comp -> comp.isActive());
-            if (allActive) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "At least one component not active");
-            }
+    @Override
+    protected void updateThingStatus(boolean messageReceived, boolean availabilityTopicsSeen) {
+        if (messageReceived || availabilityTopicsSeen) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
         }
     }
 
@@ -326,15 +321,5 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
             channelTypeProvider.setThingType(typeID, thingType);
         }
-    }
-
-    @Override
-    public void updateChannelState(ChannelUID channelUID, State value) {
-
-        if (AVAILABILITY_CHANNEL.equals(channelUID.getIdWithoutGroup())) {
-            updateThingStatus();
-            return;
-        }
-        super.updateChannelState(channelUID, value);
     }
 }

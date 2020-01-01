@@ -47,6 +47,8 @@ import java.lang.annotation.Target;
 @Target(FIELD)
 public @interface MQTTvalueTransform {
     String suffix() default "";
+
     String prefix() default "";
+
     String splitCharacter() default "";
 }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal.util;
+package org.openhab.binding.mqtt.generic.utils;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -240,4 +240,9 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
             return String.format("%s/%s", config.basetopic, d);
         }).collect(Collectors.toList()).forEach(t -> connection.publish(t, new byte[0], 1, true));
     }
+
+    @Override
+    protected void updateThingStatus(boolean messageReceived, boolean availabilityTopicsSeen) {
+        // not used here
+    }
 }

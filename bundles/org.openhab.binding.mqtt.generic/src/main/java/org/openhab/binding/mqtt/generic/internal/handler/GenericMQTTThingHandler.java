@@ -86,7 +86,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         List<CompletableFuture<@Nullable Void>> futures = channelStateByChannelUID.values().stream()
                 .map(c -> c.start(connection, scheduler, 0)).collect(Collectors.toList());
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).thenRun(() -> {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            calculateThingStatus();
         });
     }
 
@@ -142,6 +142,16 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
     @Override
     public void initialize() {
+        GenericThingConfiguration config = getConfigAs(GenericThingConfiguration.class);
+
+        String availabilityTopic = config.availabilityTopic;
+
+        if (availabilityTopic != null) {
+            addAvailabilityTopic(availabilityTopic, config.payloadAvailable, config.payloadNotAvailable);
+        } else {
+            clearAllAvailabilityTopics();
+        }
+
         List<ChannelUID> configErrors = new ArrayList<>();
         for (Channel channel : thing.getChannels()) {
             final ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
@@ -168,11 +178,20 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
         // If some channels could not start up, put the entire thing offline and display the channels
         // in question to the user.
-        if (configErrors.isEmpty()) {
-            super.initialize();
-        } else {
+        if (!configErrors.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Remove and recreate: "
                     + configErrors.stream().map(e -> e.getAsString()).collect(Collectors.joining(",")));
+            return;
+        }
+        super.initialize();
+    }
+
+    @Override
+    protected void updateThingStatus(boolean messageReceived, boolean availibilityTopicsSeen) {
+        if (messageReceived || availibilityTopicsSeen) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
         }
     }
 }
