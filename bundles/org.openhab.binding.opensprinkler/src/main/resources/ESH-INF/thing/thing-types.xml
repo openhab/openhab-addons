@@ -51,6 +51,7 @@
 
 		<channels>
 			<channel id="stationState" typeId="stationState"></channel>
+			<channel id="queued" typeId="queued"></channel>
 			<channel id="remainingWaterTime" typeId="remainingWaterTime"></channel>
 			<channel id="nextDuration" typeId="nextDuration"></channel>
 		</channels>
@@ -89,6 +90,13 @@
 		<description>Controls a station on the OpenSprinkler device.</description>
 		<category>Switch</category>
 	</channel-type>
+
+    <channel-type id="queued">
+        <item-type>Switch</item-type>
+        <label>Queued</label>
+        <description>Indicates if the station is queued to be turned on. Can be removed from the queue by turning off. ON is read-only.</description>
+        <category>Switch</category>
+    </channel-type>
 	
 	<channel-type id="remainingWaterTime">
 		<item-type>Number:Time</item-type>
