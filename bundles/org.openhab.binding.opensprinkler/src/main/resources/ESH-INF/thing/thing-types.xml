@@ -91,20 +91,20 @@
 		<category>Switch</category>
 	</channel-type>
 
-    <channel-type id="queued">
-        <item-type>Switch</item-type>
-        <label>Queued</label>
-        <description>Indicates if the station is queued to be turned on. Can be removed from the queue by turning off. ON is read-only.</description>
-        <category>Switch</category>
-    </channel-type>
-	
+	<channel-type id="queued">
+		<item-type>Switch</item-type>
+		<label>Queued</label>
+		<description>Indicates if the station is queued to be turned on. Can be removed from the queue by turning off. ON is read-only.</description>
+		<category>Switch</category>
+	</channel-type>
+
 	<channel-type id="remainingWaterTime">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Water Time</label>
 		<description>Read-only property of the remaining water time of the station.</description>
 		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
-	
+
 	<channel-type id="nextDuration">
 		<item-type>Number:Time</item-type>
 		<label>Next Open Duration</label>
