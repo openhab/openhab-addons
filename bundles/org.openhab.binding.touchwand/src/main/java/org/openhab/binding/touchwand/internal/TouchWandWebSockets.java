@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ import org.openhab.binding.touchwand.internal.data.TouchWandUnitFromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -154,15 +153,13 @@ public class TouchWandWebSockets {
         public void onMessage(String msg) {
             TouchWandUnitData touchWandUnit;
             JsonParser jsonParser = new JsonParser();
-            Gson gson = new Gson();
             try {
                 JsonObject unitObj = jsonParser.parse(msg).getAsJsonObject();
                 boolean eventUnitChanged = unitObj.get("type").getAsString().equals("UNIT_CHANGED");
                 if (!eventUnitChanged) {
                     return;
                 }
-
-                touchWandUnit = TouchWandUnitFromJson.ParseResponse(unitObj.get("unit").getAsString());
+                touchWandUnit = TouchWandUnitFromJson.ParseResponse(unitObj.get("unit").getAsJsonObject());
                 if (!touchWandUnit.getStatus().equals("ALIVE")) {
                     return;
                 }
@@ -171,7 +168,6 @@ public class TouchWandWebSockets {
                     logger.debug("UNIT_CHANGED for unsupported unit type {}", touchWandUnit.getType());
                     return;
                 }
-
                 logger.debug("UNIT_CHANGED: name {} id {} status {}", touchWandUnit.getName(), touchWandUnit.getId(),
                         touchWandUnit.getCurrStatus());
                 if (touchWandUnit.getCurrStatus() != null) {
