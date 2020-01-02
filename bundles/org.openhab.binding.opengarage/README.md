@@ -34,15 +34,15 @@ As a minimum, the IP address is needed:
 opengarage.things:
 
 ```
-opengarage:opengarage:garage [ host="192.168.0.5" ]
+opengarage:opengarage:OpenGarage [ host="192.168.0.5" ]
 ```
 
 opengarage.items:
 
 ```
-Switch OpenGarage_Status { channel="opengarage:opengarage:garage:status" }
-Number:Distance OpenGarage_Distance { channel="opengarage:opengarage:garage:setpoint" }
-String OpenGarage_Vehicle { channel="opengarage:opengarage:garage:vehicle" }
+Switch OpenGarage_Status { channel="opengarage:opengarage:OpenGarage:status" }
+Number:Length OpenGarage_Distance { channel="opengarage:opengarage:OpenGarage:setpoint" }
+String OpenGarage_Vehicle { channel="opengarage:opengarage:OpenGarage:vehicle" }
 ```
 
 opengarage.sitemap:
@@ -52,7 +52,7 @@ Switch item=OpenGarage_Status icon="garagedoorclosed" mappings=[ON=Open]  visibi
 Switch item=OpenGarage_Status icon="garagedooropen"   mappings=[OFF=Close] visibility=[OpenGarage_Status == OPEN]
 Switch item=OpenGarage_Status icon="garage" 
 Text item=OpenGarage_Distance label="OG distance"
-String item=OpenGarage_Vehicle label=Vehicle Presence"
+Text item=OpenGarage_Vehicle label="Vehicle Presence"
 ```
 
 
