@@ -102,9 +102,16 @@ public class WizLightingBindingConstants {
     public static final int LISTENER_DEFAULT_UDP_PORT = 38900;
 
     /**
-     * Default listener socket default UDP port.
+     * How long before active discovery times out.
+     * This is set at 0 because there is no active discovery.
      */
-    public static final int DISCOVERY_TIMEOUT_SECONDS = 4;
+    public static final int DISCOVERY_TIMEOUT_SECONDS = 0;
+
+    /**
+     * The number of refresh intervals without a response before a bulb is marked
+     * offline
+     */
+    public static final int INTERVALS_BEFORE_OFFLINE = 4;
 
     // -------------- Constants Used ----------------
 

@@ -224,7 +224,7 @@ public class WizLightingHandler extends BaseThingHandler {
                         latestUpdate, now, timePassedFromLastUpdateInSeconds);
 
                 boolean considerThingOffline = (latestUpdate < 0)
-                        || (timePassedFromLastUpdateInSeconds > (updateInterval * 4));
+                        || (timePassedFromLastUpdateInSeconds > (updateInterval * INTERVALS_BEFORE_OFFLINE));
                 if (considerThingOffline) {
                     logger.debug(
                             "Since no updates have been received from mac address {}, setting its status to OFFLINE.",
