@@ -25,7 +25,8 @@ call mvn -s archetype-settings.xml archetype:generate -N -DarchetypeGroupId=org.
 COPY ..\src\etc\NOTICE org.openhab.binding.%BindingIdInLowerCase%\
 
 :: temporary fix
-:: TODO replace ${project.version} by ${ohc.version} in src/main/feature/feature.xml
+:: replace ${project.version} by ${ohc.version} in src/main/feature/feature.xml
+@powershell --command "get-content org.openhab.binding.%BindingIdInLowerCase%\src\main\feature\feature.xml | %{$_ -replace \"-core/${project.version}\",\"-core/${ohc.version}\""
 
 (SET BindingIdInLowerCase=)
 (SET BindingIdInCamelCase=)

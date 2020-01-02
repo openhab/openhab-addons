@@ -31,5 +31,6 @@ directory="org.openhab.binding.$id/"
 cp ../src/etc/NOTICE "$directory"
 
 # temporary fix
+# replace ${project.version} by ${ohc.version} in src/main/feature/feature.xml
 sed -i'.bak' -e "s|\-core\/\${project.version}|\-core\/\${ohc.version}|g" "$directory/src/main/feature/feature.xml"
 
