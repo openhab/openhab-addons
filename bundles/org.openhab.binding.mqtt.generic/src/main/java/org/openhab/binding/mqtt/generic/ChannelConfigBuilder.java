@@ -64,6 +64,11 @@ public class ChannelConfigBuilder {
         return this;
     }
 
+    public ChannelConfigBuilder withQos(@Nullable Integer qos) {
+        config.qos = qos;
+        return this;
+    }
+
     public ChannelConfigBuilder makeTrigger(boolean trigger) {
         config.trigger = trigger;
         return this;
