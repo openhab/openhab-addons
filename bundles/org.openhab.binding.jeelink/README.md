@@ -136,6 +136,7 @@ The available init commands depend on the sketch that is running on the USB stic
 | consumptionTotal        | Number:Energy | Total energy consumption                             |
 
 #### Revolt power monitors
+
 | Channel Type ID   | Item Type                | Description                               |
 |-------------------|--------------------------|-------------------------------------------|
 | currentPower      | Number:Power             | Current power draw                        |
