@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.entities;
 
+import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.PercentType;
 
@@ -23,17 +25,18 @@ import org.eclipse.smarthome.core.library.types.PercentType;
  */
 @NonNullByDefault
 public class ColorTemperatureRequestParam implements Param {
-    private int temp;
+    private int colorTemperature;
 
-    public ColorTemperatureRequestParam(PercentType colorTemperature) {
-        temp = 2200 + (colorTemperature.intValue() * (6500 - 2200) / 100);
+    public ColorTemperatureRequestParam(PercentType colorPercent) {
+        colorTemperature = MIN_COLOR_TEMPERATURE
+                + Math.round((COLOR_TEMPERATURE_RANGE * colorPercent.floatValue()) / 100);
     }
 
-    public int getTemp() {
-        return temp;
+    public int getColorTemperature() {
+        return colorTemperature;
     }
 
-    public void setTemp(int temp) {
-        this.temp = temp;
+    public void setColorTemperature(int temp) {
+        this.colorTemperature = temp;
     }
 }

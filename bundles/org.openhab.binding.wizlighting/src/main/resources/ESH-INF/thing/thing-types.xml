@@ -10,11 +10,11 @@
 		<description>Supports WiZ Lighting Bulbs</description>
 
 		<channels>
-			<channel id="switch" typeId="switch" />
 			<channel id="color" typeId="color" />
+			<channel id="temperature" typeId="temperature" />
 			<channel id="scene" typeId="scene" />
 			<channel id="speed" typeId="speed" />
-			<channel id="rssi" typeId="rssi" />
+			<channel id="signalstrength" typeId="system.signal-strength" />
 		</channels>
 
 		<config-description>
@@ -29,7 +29,7 @@
 				<description>IP address of the bulb</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="homeId" type="text" required="true">
+			<parameter name="homeId" type="integer" required="true">
 				<label>HomeId</label>
 				<description>Your WiZ HomeId; This can be found in the iOS or Android app settings</description>
 				<required>true</required>
@@ -43,16 +43,23 @@
 	</thing-type>
 
 	<!-- Bulb Channel Types -->
-	<channel-type id="switch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<category>Switch</category>
-	</channel-type>
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
+		<description>Selects the color of the light</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Dimmer</item-type>
+		<label>Color Temperature</label>
+		<description>Sets the temperature of the light</description>
 		<category>ColorLight</category>
 	</channel-type>
+
 	<channel-type id="scene">
 		<item-type>String</item-type>
 		<label>Scenes</label>
@@ -85,16 +92,11 @@
 			</options>
 		</state>
 	</channel-type>
+
 	<channel-type id="speed">
 		<item-type>Dimmer</item-type>
 		<label>Scene Speed</label>
 		<description>Speed of color/intensity changes in dynamic light modes</description>
 	</channel-type>
-	<channel-type id="rssi">
-		<item-type>Number:Power</item-type>
-		<label>Signal</label>
-		<description>Wi-Fi signal strength indicator</description>
-		<category>QualityOfService</category>
-		<state readOnly="true" pattern="%d %unit%"></state>
-	</channel-type>
+
 </thing:thing-descriptions>

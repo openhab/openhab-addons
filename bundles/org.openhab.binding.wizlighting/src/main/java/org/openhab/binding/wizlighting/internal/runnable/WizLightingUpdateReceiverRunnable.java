@@ -15,6 +15,7 @@ package org.openhab.binding.wizlighting.internal.runnable;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WizLightingUpdateReceiverRunnable implements Runnable {
 
-    private static final int TIMEOUT_TO_DATAGRAM_RECEPTION = 10000;
+    private static final int TIMEOUT_TO_DATAGRAM_RECEPTION = 15000; // in milliseconds
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingUpdateReceiverRunnable.class);
 
@@ -55,14 +56,17 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
     public WizLightingUpdateReceiverRunnable(final WizLightingMediator mediator, final int listeningPort)
             throws SocketException {
         logger.debug("Starting Update Receiver Runnable...");
-
-        // Create a socket to listen on the port.
         this.listeningPort = listeningPort;
         this.mediator = mediator;
 
+        // Create a socket to listen on the port.
         logger.debug("Opening socket and start listening UDP port: {}", listeningPort);
-        this.datagramSocket = new DatagramSocket(listeningPort);
-        datagramSocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
+        DatagramSocket dsocket = new DatagramSocket(null);
+        dsocket.setReuseAddress(true);
+        dsocket.setBroadcast(true);
+        dsocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
+        dsocket.bind(new InetSocketAddress(listeningPort));
+        this.datagramSocket = dsocket;
         logger.debug("Update Receiver Runnable and socket started with success...");
 
         this.shutdown = false;
@@ -101,19 +105,25 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
         }
 
         // close the socket
+        logger.trace("Ending run loop; closing socket.");
         datagramSocket.close();
     }
 
     private void datagramSocketHealthRoutine() {
         DatagramSocket datagramSocket = this.datagramSocket;
         if (datagramSocket.isClosed() || !datagramSocket.isConnected()) {
-            logger.debug("Datagram Socket has been closed, will reconnect again...");
-            DatagramSocket newDatagramSocket = null;
+            logger.trace("Datagram Socket is disconnected or has been closed, will reconnect again...");
             try {
-                newDatagramSocket = new DatagramSocket(listeningPort);
-                newDatagramSocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
-                datagramSocket = newDatagramSocket;
-                logger.debug("Datagram Socket reconnected.");
+                // close the socket before trying to reopen
+                this.datagramSocket.close();
+                logger.trace("Old socket closed.");
+                DatagramSocket dsocket = new DatagramSocket(null);
+                dsocket.setReuseAddress(true);
+                dsocket.setBroadcast(true);
+                dsocket.setSoTimeout(TIMEOUT_TO_DATAGRAM_RECEPTION);
+                dsocket.bind(new InetSocketAddress(listeningPort));
+                this.datagramSocket = dsocket;
+                logger.trace("Datagram Socket reconnected.");
             } catch (SocketException exception) {
                 logger.error("Problem creating one new socket on port {}. Error: {}", listeningPort,
                         exception.getLocalizedMessage());

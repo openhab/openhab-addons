@@ -13,6 +13,7 @@
 package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 
 /**
@@ -26,7 +27,7 @@ public class WizLightingRequest {
     private int id;
 
     private WizLightingMethodType method;
-    private Param params;
+    private @Nullable Param params;
 
     /**
      * Default constructor.
@@ -34,12 +35,12 @@ public class WizLightingRequest {
      * @param type the {@link WizLightingMethodType}
      * @param params {@link Param}
      */
-    public WizLightingRequest(final WizLightingMethodType method, final Param params) {
+    public WizLightingRequest(final WizLightingMethodType method, final @Nullable Param params) {
         this.method = method;
         this.params = params;
     }
 
-    public Param getParams() {
+    public @Nullable Param getParams() {
         return this.params;
     }
 

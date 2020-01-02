@@ -8,16 +8,18 @@
 	<author>Sriram Balakrishnan</author>
 
 	<config-description>
-		<parameter name="ohMacAddress" type="text" required="true">
+		<parameter name="ohMacAddress" type="text">
 			<label>OpenHab MAC address</label>
 			<description>MAC Address of the OpenHab Installation</description>
 			<required>false</required>
+			<advanced>true</advanced>
 		</parameter>
-		<parameter name="ohIpAddress" type="text" required="true">
+		<parameter name="ohIpAddress" type="text">
 			<label>OpenHab IP Address</label>
 			<context>network-address</context>
 			<description>IP address of the OpenHab Installation</description>
 			<required>false</required>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 

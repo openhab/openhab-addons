@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.wizlighting.internal.discovery;
 
+import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-// import java.util.concurrent.ScheduledFuture;
-// import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,7 +26,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -82,42 +81,13 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      * @throws IllegalArgumentException if the timeout < 0
      */
     public WizLightingDiscoveryService() throws IllegalArgumentException {
-        super(WizLightingBindingConstants.SUPPORTED_THING_TYPES_UIDS,
-                WizLightingBindingConstants.DISCOVERY_TIMEOUT_SECONDS);
+        super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS);
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return WizLightingBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+        return SUPPORTED_THING_TYPES_UIDS;
     }
-
-    // @Override
-    // protected void startBackgroundDiscovery() {
-    //     logger.debug("Start WiZ Lighting device background discovery");
-    //     ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
-    //     if (keepAliveJob != null) {
-    //         keepAliveJob.cancel(true);
-    //     }
-    //     // try with handler port if is null
-    //     Runnable runnable = new Runnable() {
-    //         @Override
-    //         public void run() {
-    //         }
-    //     };
-    //     Long updateInterval = WizLightingBindingConstants.DEFAULT_REFRESH_INTERVAL;
-    //     this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, updateInterval, TimeUnit.SECONDS);
-    // }
-
-    // @Override
-    // protected void stopBackgroundDiscovery() {
-    //     logger.debug("Stop WiZ Lighting device background discovery");
-    //     // stop update thread
-    //     ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
-    //     if (keepAliveJob == null) {
-    //         return;
-    //     }
-    //     keepAliveJob.cancel(true);
-    // }
 
     @Override
     protected void startScan() {
@@ -132,17 +102,18 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      * @param bulbMacAddress the mac address from the device.
      * @param bulbIpAddress the host address from the device.
      */
-    public void discoveredLight(final String lightMacAddress, final String lightIpAddress) {
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put(WizLightingBindingConstants.BULB_MAC_ADDRESS_ARG, lightMacAddress);
-        properties.put(WizLightingBindingConstants.BULB_IP_ADDRESS_ARG, lightIpAddress);
+    public void discoveredLight(final String lightMacAddress, final String lightIpAddress, final int homeId) {
+        Map<String, Object> properties = new HashMap<>(2);
+        properties.put(BULB_MAC_ADDRESS_ARG, lightMacAddress);
+        properties.put(BULB_IP_ADDRESS_ARG, lightIpAddress);
+        properties.put(HOME_ID_ARG, homeId);
 
-        ThingUID newThingId = new ThingUID(WizLightingBindingConstants.THING_TYPE_WIZ_BULB, lightMacAddress);
+        ThingUID newThingId = new ThingUID(THING_TYPE_WIZ_BULB, lightMacAddress);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
                 .withLabel("Wizlighting Bulb").withRepresentationProperty(lightMacAddress).build();
 
-        logger.debug("A new WiZ bulb appeared with mac address '{}' and host address '{}'", lightMacAddress,
-                lightIpAddress);
+        logger.debug("New WiZ bulb sent to inbox! MAC: {}  IP: {}  Home ID: {}", lightMacAddress, lightIpAddress,
+                homeId);
 
         this.thingDiscovered(discoveryResult);
     }

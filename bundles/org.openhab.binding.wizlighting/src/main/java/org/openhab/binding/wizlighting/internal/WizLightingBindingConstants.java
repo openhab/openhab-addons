@@ -42,11 +42,11 @@ public class WizLightingBindingConstants {
     /**
      * List of all Channel ids
      */
-    public static final String BULB_SWITCH_CHANNEL_ID = "switch";
-    public static final String BULB_COLOR_CHANNEL_ID = "color";
-    public static final String BULB_SCENE_CHANNEL_ID = "scene";
-    public static final String BULB_SPEED_CHANNEL_ID = "speed";
-    public static final String BULB_RSSI_CHANNEL_ID = "rssi";
+    public static final String COLOR_CHANNEL = "color";
+    public static final String TEMP_CHANNEL = "temperature";
+    public static final String SCENE_CHANNEL = "scene";
+    public static final String SCENE_SPEED_CHANNEL = "speed";
+    public static final String RSSI_CHANNEL = "signalstrength";
 
     /**
      * The supported thing types.
@@ -66,24 +66,24 @@ public class WizLightingBindingConstants {
     public static final String BULB_IP_ADDRESS_ARG = "bulbIpAddress";
 
     /**
+     * Home id configuration argument key.
+     */
+    public static final String HOME_ID_ARG = "homeId";
+
+    /**
      * Wifi socket update interval configuration argument key.
      */
     public static final String UPDATE_INTERVAL_ARG = "updateInterval";
 
     /**
-     * Home id configuration argument key.
+     * MAC Address of the OpenHAB machine
      */
     public static final String OH_MAC_ADDRESS_ARG = "ohMacAddress";
 
     /**
-     * Home id configuration argument key.
+     * IP Address of the OpenHAB machine
      */
     public static final String OH_IP_ADDRESS_ARG = "ohIpAddress";
-
-    /**
-     * Home id configuration argument key.
-     */
-    public static final String HOME_ID_ARG = "homeId";
 
     // -------------- Default values ----------------
     /**
@@ -105,4 +105,13 @@ public class WizLightingBindingConstants {
      * Default listener socket default UDP port.
      */
     public static final int DISCOVERY_TIMEOUT_SECONDS = 4;
+
+    // -------------- Constants Used ----------------
+
+    /**
+     * The color temperature range of the WiZ bulbs
+     */
+    public static final int MIN_COLOR_TEMPERATURE = 2200;
+    public static final int MAX_COLOR_TEMPERATURE = 6500;
+    public static final int COLOR_TEMPERATURE_RANGE = MAX_COLOR_TEMPERATURE - MIN_COLOR_TEMPERATURE;
 }

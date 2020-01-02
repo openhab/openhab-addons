@@ -13,6 +13,7 @@
 package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 
@@ -23,14 +24,16 @@ import org.eclipse.smarthome.core.types.Command;
  *
  */
 @NonNullByDefault
-public class DimmingRequestParam implements Param {
+public class DimmingRequestParam extends StateRequestParam {
     private int dimming;
 
     public DimmingRequestParam(int dimming) {
+        super(OnOffType.ON);
         this.dimming = dimming;
     }
 
     public DimmingRequestParam(Command command) {
+        super(OnOffType.ON);
         if (command instanceof PercentType) {
             this.setDimming(((PercentType) command).intValue());
         } else {

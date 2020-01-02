@@ -27,7 +27,7 @@ public enum WizLightingMethodType {
      * {"phoneIp": "10.0.0.xxx", "register": true, "homeId": xxxxxx, "phoneMac": "macOfOpenHab"}}
      * Example Response:
      * {"method": "registration", "id": 1, "env": "pro", "result":
-     * {"mac":"macOfOpenHab","success":true}}
+     * {"mac": "macOfOpenHab", "success": true}}
      */
     registration("registration"),
     /**
@@ -43,9 +43,19 @@ public enum WizLightingMethodType {
      * Example Request:
      * {"method": "setPilot", "id": 24, "params": {"state": 1}}
      * Example Response:
-     * {"method": "setPilot", "id": 24, "env":"pro", "result": {"success": true}}
+     * {"method": "setPilot", "id": 24, "env": "pro", "result": {"success": true}}
      */
     setPilot("setPilot"),
+    /**
+     * getPilot - gets the current bulb state - no paramters need to be included
+     * Example Request:
+     * {"method": "getPilot", "id": 24}
+     * Example Response:
+     * {"method": "getPilot", "id": 22, "env": "pro", "result": {"mac":
+     * "a8bb508f570a", "rssi":-76, "state": true, "sceneId": 0, "temp": 2700,
+     * "dimming": 42, "schdPsetId": 5}}
+     */
+    getPilot("getPilot"),
     /**
      * syncPilot - sent by the bulb as heart-beats
      * Example:
@@ -59,7 +69,20 @@ public enum WizLightingMethodType {
      */
     syncPilot("syncPilot"),
     /**
-     * setSystemConfig - no clue, I've never seen this command
+     * getSystemConfig - gets the current system configuration - no paramters need
+     * to be included
+     * Example Request:
+     * {"method": "getSystemConfig", "id": 24}
+     * Example Response:
+     * {"method": "getSystemConfig", "id": 22, "env": "pro",
+     * "result": {"mac": "bulbMac", "homeId": xxxxxx, "roomId": xxxxxx,
+     * "homeLock": false, "pairingLock": false, "typeId": 0, "moduleName":
+     * "ESP01_SHRGB1C_31", "fwVersion": "1.15.2", "groupId": 0, "drvConf":[33,1]}}
+     */
+    getSystemConfig("getSystemConfig"),
+    /**
+     * setSystemConfig - set up the system
+     * I have NOT attempted to use this method
      */
     setSystemConfig("setSystemConfig"),
     /**

@@ -23,6 +23,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.wizlighting.internal.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.discovery.WizLightingDiscoveryService;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
+import org.openhab.binding.wizlighting.internal.entities.WizResponseParam;
+import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 import org.openhab.binding.wizlighting.internal.runnable.WizLightingUpdateReceiverRunnable;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
@@ -85,6 +87,7 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
         String bulbIp = receivedMessage.getWizResponseIpAddress();
         @Nullable
         String bulbMac = receivedMessage.getWizResponseMacAddress();
+        WizLightingMethodType bulbMethod = receivedMessage.getMethod();
 
         if (bulbMac != null) {
             @Nullable
@@ -100,7 +103,19 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
                         receivedMessage.getWizResponseIpAddress());
                 WizLightingDiscoveryService discoveryServe = this.wizlightingDiscoveryService;
                 if (discoveryServe != null) {
-                    discoveryServe.discoveredLight(bulbMac, bulbIp);
+                    WizResponseParam incomingParam = receivedMessage.getParams();
+                    if (bulbMethod == WizLightingMethodType.firstBeat && incomingParam != null) {
+                        int homeId = incomingParam.homeId;
+                        discoveryServe.discoveredLight(bulbMac, bulbIp, homeId);
+                        logger.trace("Sending a new thing to the discovery service.  MAC: {}  IP: {}  Home ID: {}",
+                                bulbMac, bulbIp, homeId);
+                    } else if (receivedMessage.getMethod() != WizLightingMethodType.firstBeat) {
+                        logger.trace("Not a firstBeat, method is {}.  Ignoring.", receivedMessage.getMethod());
+                    } else if (incomingParam == null) {
+                        logger.trace("Appears to be a firstBeat, but params not received.");
+                    }
+                } else {
+                    logger.trace("There is no discovery service registered to receive the new bulb!");
                 }
             }
         } else {
@@ -161,14 +176,14 @@ public class WizLightingMediatorImpl implements WizLightingMediator {
         if ((receiver == null)
                 || ((receiverThread != null) && (receiverThread.isInterrupted() || !receiverThread.isAlive()))) {
             try {
-                this.receiver = new WizLightingUpdateReceiverRunnable(this,
+                logger.trace("Receiver thread is either null, interrupted, or dead.");
+                WizLightingUpdateReceiverRunnable newReceiver = new WizLightingUpdateReceiverRunnable(this,
                         WizLightingBindingConstants.LISTENER_DEFAULT_UDP_PORT);
-                this.receiverThread = new Thread(this.receiver);
-                Thread receiverThread2 = this.receiverThread;
-                if (receiverThread2 != null) {
-                    receiverThread2.start();
-                }
-                logger.debug("Invoked the start of receiver thread.");
+                Thread newThread = new Thread(newReceiver);
+                newThread.start();
+                this.receiver = newReceiver;
+                this.receiverThread = newThread;
+                logger.trace("A new receiver thread has been started.");
             } catch (SocketException e) {
                 logger.debug("Cannot start the socket with default port {}...", e);
             }

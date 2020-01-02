@@ -70,7 +70,7 @@ public class WizLightingPacketConverter {
      */
     public WizLightingResponse transformSyncResponsePacket(final DatagramPacket packet) {
         String responseJson = new String(packet.getData(), 0, packet.getLength());
-        logger.debug("Sync Response Json={{}}", responseJson);
+        logger.debug("Response Json={}", responseJson);
 
         @Nullable
         WizLightingResponse response = this.wizlightingGsonBuilder.fromJson(responseJson, WizLightingResponse.class);

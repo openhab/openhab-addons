@@ -14,6 +14,7 @@ package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 
 /**
  * This POJO represents one WiZ Lighting Response
@@ -31,11 +32,15 @@ public class WizLightingResponse {
     // Not sure what env is - value always seems to be "pro"
     private @Nullable String env;
     // The method being used - see the enum for details
-    private @Nullable String method;
+    private @Nullable WizLightingMethodType method;
 
     // The parameters or result of a command/response
-    private @Nullable SyncResponseParam params;
-    private @Nullable CommandResponseResult result;
+    // A "result" is generally returned when solicited using a set/get method and a
+    // "params" is retuned with an unsolicited sync/heartbeat. The result returned
+    // from a get method is generally identical to the params returned in the
+    // heartbeat.
+    private @Nullable WizResponseParam params;
+    private @Nullable WizResponseParam result;
 
     private @Nullable String wizResponseIpAddress;
 
@@ -43,8 +48,8 @@ public class WizLightingResponse {
     }
 
     public @Nullable String getWizResponseMacAddress() {
-        SyncResponseParam params = this.getParams();
-        CommandResponseResult result = this.getResult();
+        WizResponseParam params = this.getParams();
+        WizResponseParam result = this.getResult();
         if (params != null) {
             return params.mac;
         } else if (result != null) {
@@ -55,8 +60,8 @@ public class WizLightingResponse {
     }
 
     public void setWizResponseMacAddress(final String wizResponseMacAddress) {
-        SyncResponseParam params = this.getParams();
-        CommandResponseResult result = this.getResult();
+        WizResponseParam params = this.getParams();
+        WizResponseParam result = this.getResult();
         if (params != null) {
             params.mac = wizResponseMacAddress;
         } else if (result != null) {
@@ -80,11 +85,11 @@ public class WizLightingResponse {
         this.id = id;
     }
 
-    public @Nullable String getMethod() {
+    public @Nullable WizLightingMethodType getMethod() {
         return method;
     }
 
-    public void setMethod(String method) {
+    public void setMethod(WizLightingMethodType method) {
         this.method = method;
     }
 
@@ -96,19 +101,31 @@ public class WizLightingResponse {
         this.env = env;
     }
 
-    public @Nullable SyncResponseParam getParams() {
-        return params;
+    public @Nullable WizResponseParam getParams() {
+        if (params != null) {
+            return params;
+        } else if (result != null) {
+            return result;
+        } else {
+            return null;
+        }
     }
 
-    public void setParams(SyncResponseParam params) {
+    public void setParams(WizResponseParam params) {
         this.params = params;
     }
 
-    public @Nullable CommandResponseResult getResult() {
-        return result;
+    public @Nullable WizResponseParam getResult() {
+        if (result != null) {
+            return result;
+        } else if (params != null) {
+            return params;
+        } else {
+            return null;
+        }
     }
 
-    public void setResult(CommandResponseResult result) {
+    public void setResult(WizResponseParam result) {
         this.result = result;
     }
 }

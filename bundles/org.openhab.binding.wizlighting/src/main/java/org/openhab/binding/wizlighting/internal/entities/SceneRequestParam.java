@@ -13,6 +13,7 @@
 package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 
@@ -23,10 +24,11 @@ import org.eclipse.smarthome.core.types.Command;
  *
  */
 @NonNullByDefault
-public class SceneRequestParam implements Param {
+public class SceneRequestParam extends StateRequestParam {
     private int sceneId;
 
     public SceneRequestParam(Command command) {
+        super(OnOffType.ON);
         if (command instanceof StringType) {
             this.setSceneId(Integer.parseInt(command.toString()));
         }
