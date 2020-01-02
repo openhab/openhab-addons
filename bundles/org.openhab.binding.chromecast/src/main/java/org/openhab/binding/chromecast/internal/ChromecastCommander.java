@@ -172,7 +172,7 @@ public class ChromecastCommander {
         }
     }
 
-    private void handleStop(final Command command) {
+    public void handleStop(final Command command) {
         if (command == OnOffType.ON) {
             try {
                 chromeCast.stopApp();

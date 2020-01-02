@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,30 +42,37 @@ public class ChromecastAudioSink {
     }
 
     public void process(AudioStream audioStream) throws UnsupportedAudioFormatException {
-        String url;
-        if (audioStream instanceof URLAudioStream) {
-            // it is an external URL, the speaker can access it itself and play it.
-            URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
-            url = urlAudioStream.getURL();
+        if (audioStream == null) {
+            // in case the audioStream is null, this should be interpreted as a request to end any currently playing
+            // stream.
+            logger.trace("Stop currently playing stream.");
+            commander.handleStop(OnOffType.ON);
         } else {
-            if (callbackUrl != null) {
-                // we serve it on our own HTTP server
-                String relativeUrl;
-                if (audioStream instanceof FixedLengthAudioStream) {
-                    relativeUrl = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 10);
-                } else {
-                    relativeUrl = audioHTTPServer.serve(audioStream);
-                }
-                url = callbackUrl + relativeUrl;
+            String url;
+            if (audioStream instanceof URLAudioStream) {
+                // it is an external URL, the speaker can access it itself and play it.
+                URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
+                url = urlAudioStream.getURL();
             } else {
-                logger.warn("We do not have any callback url, so Chromecast cannot play the audio stream!");
-                return;
+                if (callbackUrl != null) {
+                    // we serve it on our own HTTP server
+                    String relativeUrl;
+                    if (audioStream instanceof FixedLengthAudioStream) {
+                        relativeUrl = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 10);
+                    } else {
+                        relativeUrl = audioHTTPServer.serve(audioStream);
+                    }
+                    url = callbackUrl + relativeUrl;
+                } else {
+                    logger.warn("We do not have any callback url, so Chromecast cannot play the audio stream!");
+                    return;
+                }
             }
+
+            String mimeType = Objects.equals(audioStream.getFormat().getCodec(), AudioFormat.CODEC_MP3) ? "audio/mpeg"
+                    : "audio/wav";
+
+            commander.playMedia("Notification", url, mimeType);
         }
-
-        String mimeType = Objects.equals(audioStream.getFormat().getCodec(), AudioFormat.CODEC_MP3) ? "audio/mpeg"
-                : "audio/wav";
-
-        commander.playMedia("Notification", url, mimeType);
     }
 }
