@@ -400,7 +400,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         JsonArray para = parser.parse(response.getCommandString()).getAsJsonObject().get("params").getAsJsonArray();
         if (res.size() != para.size()) {
             logger.debug("Unexpected size different. Request size {},  response size {}. (Req: {}, Resp:{})",
-                    para.size(), res.size(), para.toString(), res.toString());
+                    para.size(), res.size(), para, res);
         }
         for (int i = 0; i < para.size(); i++) {
             String param = para.get(i).getAsString();
@@ -455,8 +455,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     updateState(basicChannel.getChannel(), hsb);
                 }
             } catch (Exception e) {
-                logger.debug("Error updating {} property {} with '{}' : {}", getThing().getUID().getAsString(),
-                        basicChannel.getChannel(), val.getAsString(), e.getMessage());
+                logger.debug("Error updating {} property {} with '{}' : {}: {}", getThing().getUID(),
+                        basicChannel.getChannel(), val, e.getClass().getCanonicalName(), e.getMessage());
                 logger.trace("Property update error detail:", e);
             }
         } else {
