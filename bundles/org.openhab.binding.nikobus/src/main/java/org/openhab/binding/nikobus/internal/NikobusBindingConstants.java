@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Boris Krivonog - Initial contribution
+ * @author Wouter Denayer - support for module addresses as seen in the Niko PC tool 
  */
 @NonNullByDefault
 public class NikobusBindingConstants {
@@ -42,7 +43,12 @@ public class NikobusBindingConstants {
     // Configuration parameters
     public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
     public static final String CONFIG_IMPACTED_MODULES = "impactedModules";
-    public static final String CONFIG_ADDRESS = "address";
+    public static final String CONFIG_IMPACTED_MODULES_PC = "impactedModulesPC"; // address as seen in the Nikobus PC
+                                                                                 // software
+    public static final String CONFIG_ADDRESS = "address"; // address as seen on the bus
+    public static final String CONFIG_ADDRESS_PC = "addressPC"; // address as seen in the Nikobus PC software
+    public static final String CONFIG_ADDRESS_BUTTON_PC = "addressButtonPC"; // the specific button as seen in the
+                                                                             // Nikobus PC software (A, B, ...)
     public static final String CONFIG_PORT_NAME = "port";
 
 }

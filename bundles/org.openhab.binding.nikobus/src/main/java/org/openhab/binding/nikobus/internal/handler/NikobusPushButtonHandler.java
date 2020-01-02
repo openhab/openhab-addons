@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.nikobus.internal.NikobusBindingConstants;
 import org.openhab.binding.nikobus.internal.protocol.NikobusCommand;
 import org.openhab.binding.nikobus.internal.protocol.SwitchModuleGroup;
 import org.openhab.binding.nikobus.internal.utils.Utils;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * The {@link NikobusPushButtonHandler} is responsible for handling Nikobus push buttons.
  *
  * @author Boris Krivonog - Initial contribution
+ * @author Wouter Denayer - support for module addresses as seen in the Niko PC tool
  */
 @NonNullByDefault
 public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
@@ -111,7 +113,53 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
+        // super.initialize();
+
+        address = (String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS);
+        updateStatus(ThingStatus.UNKNOWN);
+
+        if (address == null) {
+            logger.debug("address == null");
+
+            String addressPC = (String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS_PC);
+            String addressButtonPC = (String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS_BUTTON_PC);
+
+            // check if the addressNiko is set, as well as the specific button
+            if (addressPC != null && addressButtonPC != null) {
+                // the specific button comes in as e.g. 2_0 or 4_3 or 8_7 (<numberOfButtons>_<specificButton>
+                addressButtonPC = addressButtonPC.substring(2);
+
+                // calculate address
+                logger.debug("addressNiko '{}'", addressPC);
+
+                int addressNikoInt = Integer.parseInt(addressPC, 16);
+                String addressPCString = Integer.toBinaryString(addressNikoInt);
+
+                // pad left to 22 bit
+                addressPCString = String.format("%" + 22 + "s", addressPCString).replace(' ', '0');
+                // pad right to 24 bit
+                addressPCString = String.format("%-" + 24 + "s", addressPCString).replace(' ', '0');
+
+                // set the specific button
+                String addressButtonPCString = Integer.toBinaryString(Integer.parseInt(addressButtonPC));
+                addressPCString = addressPCString.substring(0,
+                        addressPCString.length() - addressButtonPCString.length()) + addressButtonPCString;
+
+                // reverse bits
+                StringBuilder sb = new StringBuilder(addressPCString);
+                addressPCString = sb.reverse().toString();
+                logger.trace("address Niko button '{}'", addressPCString);
+
+                address = String.format("%06X", Integer.parseInt(addressPCString, 2));
+                // logger.debug("addressNiko '{}'", address);
+
+            } else {
+                logger.debug("address != null");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Address must be set!");
+                return;
+            }
+        }
 
         if (thing.getStatus() == ThingStatus.OFFLINE) {
             return;
@@ -120,25 +168,34 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         impactedModules.clear();
 
         try {
+
             ThingUID bridgeUID = thing.getBridgeUID();
             if (bridgeUID == null) {
                 throw new IllegalArgumentException("Bridge does not exist!");
             }
 
-            String[] impactedModulesString = getConfig().get(CONFIG_IMPACTED_MODULES).toString().split(",");
-            for (String impactedModuleString : impactedModulesString) {
-                ImpactedModuleUID impactedModuleUID = new ImpactedModuleUID(impactedModuleString.trim());
-                ThingTypeUID thingTypeUID = new ThingTypeUID(bridgeUID.getBindingId(),
-                        impactedModuleUID.getThingTypeId());
-                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, impactedModuleUID.getThingId());
-                impactedModules.add(new ImpactedModule(thingUID, impactedModuleUID.getGroup()));
+            String impactedModulesStringFull = (String) getConfig().get(CONFIG_IMPACTED_MODULES);
+            if (impactedModulesStringFull != null) {
+
+                String[] impactedModulesString = impactedModulesStringFull.toString().split(",");
+
+                for (String impactedModuleString : impactedModulesString) {
+                    ImpactedModuleUID impactedModuleUID = new ImpactedModuleUID(impactedModuleString.trim());
+                    ThingTypeUID thingTypeUID = new ThingTypeUID(bridgeUID.getBindingId(),
+                            impactedModuleUID.getThingTypeId());
+                    ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, impactedModuleUID.getThingId());
+                    impactedModules.add(new ImpactedModule(thingUID, impactedModuleUID.getGroup()));
+                }
+
+                logger.debug("Impacted modules for {} = {}", thing.getUID(), impactedModules);
+            } else {
+                logger.debug("Impacted modules for {} = none specified", thing.getUID());
             }
+
         } catch (RuntimeException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
-
-        logger.debug("Impacted modules for {} = {}", thing.getUID(), impactedModules);
 
         NikobusPcLinkHandler pcLink = getPcLink();
         if (pcLink != null) {

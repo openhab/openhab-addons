@@ -17,7 +17,7 @@ More specifically, it allows openHAB to:
 This binding works with at least the following hardware:
 
 * PC-link module (05-200),
-* Push buttons (05-060-01, 05-064-01), RF Transmitter (05-314), PIR Sensor (430-00500),
+* Push buttons (05-060-01, 05-064-01, 05-078-01), RF Transmitter (05-314), PIR Sensor (430-00500),
 * 4 channel switch module (05-002-02),
 * 12 channel switch module (05-000-02),
 * 12 channel dimmer module.

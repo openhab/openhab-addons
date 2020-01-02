@@ -14,7 +14,8 @@
 				<context>serial-port</context>
 				<description>The serial port used to connect to the Nikobus PC Link.</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" max="65535" min="10" required="false">
+			<parameter name="refreshInterval" type="integer"
+				max="65535" min="10" required="false">
 				<default>60</default>
 				<label>Refresh Interval</label>
 				<description>Refresh interval in seconds.</description>
@@ -35,14 +36,63 @@
 		</channels>
 
 		<config-description>
-			<parameter name="address" type="text">
+			<parameter-group name="parameterGroupPC">
+				<label>Parameters retrieved from the Niko PC application</label>
+				<description>Parameters retrieved from the Niko PC application</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="parameterGroupBus">
+				<label>Parameters retrieved from the bus</label>
+				<description>String</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="addressPC" type="text"
+				groupName="parameterGroupPC" pattern="([0-9a-fA-F]){6}">
 				<label>Address</label>
 				<description>The Nikobus address of the module</description>
 			</parameter>
-			<parameter name="impactedModules" type="text">
+			<parameter name="addressButtonPC" type="text"
+				groupName="parameterGroupPC">
+				<label>Specific Button</label>
+				<description>The specific button</description>
+				<options>
+					<option value="2_1">2-button A (top)</option>
+					<option value="2_3">2-button B (bottom)</option>
+					<option value="4_1">4-button A (top left)</option>
+					<option value="4_3">4-button B (bottom left)</option>
+					<option value="4_0">4-button C (top right)</option>
+					<option value="4_2">4-button D (bottom right)</option>
+					<option value="8_5">8-button 1A (top left)</option>
+					<option value="8_7">8-button 1B (bottom left)</option>
+					<option value="8_4">8-button 1C (top column 2)</option>
+					<option value="8_6">8-button 1D (bottom column 2)</option>
+					<option value="8_1">8-button 2A (top column 3)</option>
+					<option value="8_3">8-button 2B (bottom column 3)</option>
+					<option value="8_0">8-button 2C (top right)</option>
+					<option value="8_2">8-button 2D (bottom right)</option>
+				</options>
+				<default></default>
+			</parameter>
+			<parameter name="impactedModulesPC" type="text"
+				groupName="parameterGroupPC"
+				pattern="([0-9a-fA-F]){4}-\d(([0-9a-fA-F]){4}-\d)*">
 				<label>Impacted Modules</label>
 				<description>Comma separated list of impacted modules, i.e. 4C6C-1,4C6C-2</description>
 			</parameter>
+
+			<parameter name="address" type="text"
+				groupName="parameterGroupBus" pattern="([0-9a-fA-F]){6}">
+				<label>Address</label>
+				<description>The Nikobus address of the module</description>
+			</parameter>
+			<parameter name="impactedModules" type="text"
+				groupName="parameterGroupBus"
+				pattern="([0-9a-fA-F]){4}-\d(([0-9a-fA-F]){4}-\d)*">
+				<label>Impacted Modules</label>
+				<description>Comma separated list of impacted modules, i.e. 4C6C-1,4C6C-2</description>
+			</parameter>
+
 		</config-description>
 	</thing-type>
 
@@ -107,9 +157,16 @@
 		</channels>
 
 		<config-description>
-			<parameter name="address" type="text">
+			<parameter name="addressPC" type="text"
+				pattern="([0-9a-fA-F]){4}">
 				<label>Address</label>
-				<description>The Nikobus address of the module</description>
+				<description>The Nikobus address of the module as retrieved from the PC application</description>
+			</parameter>
+			<parameter name="address" type="text"
+				pattern="([0-9a-fA-F]){4}">
+				<label>Address</label>
+				<description>The Nikobus address of the module as seen on the bus</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -162,9 +219,16 @@
 		</channels>
 
 		<config-description>
-			<parameter name="address" type="text">
+			<parameter name="addressPC" type="text"
+				pattern="([0-9a-fA-F]){4}">
 				<label>Address</label>
-				<description>The Nikobus address of the module</description>
+				<description>The Nikobus address of the module as retrieved from the PC application</description>
+			</parameter>
+			<parameter name="address" type="text"
+				pattern="([0-9a-fA-F]){4}">
+				<label>Address</label>
+				<description>The Nikobus address of the module as seen on the bus</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -199,9 +263,16 @@
 		</channels>
 
 		<config-description>
-			<parameter name="address" type="text">
+			<parameter name="addressPC" type="text"
+				pattern="([0-9a-fA-F]){4}">
 				<label>Address</label>
-				<description>The Nikobus address of the module</description>
+				<description>The Nikobus address of the module as retrieved from the PC application</description>
+			</parameter>
+			<parameter name="address" type="text"
+				pattern="([0-9a-fA-F]){4}">
+				<label>Address</label>
+				<description>The Nikobus address of the module as seen on the bus</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

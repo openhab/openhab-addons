@@ -20,15 +20,21 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.openhab.binding.nikobus.internal.NikobusBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NikobusBaseThingHandler} class defines utility logic to be consumed by Nikobus thing(s).
  *
  * @author Boris Krivonog - Initial contribution
+ * @author Wouter Denayer - support for module addresses as seen in the Niko PC tool
  */
 @NonNullByDefault
 abstract class NikobusBaseThingHandler extends BaseThingHandler {
-    private @Nullable String address;
+    @Nullable
+    protected String address;
+
+    private final Logger logger = LoggerFactory.getLogger(NikobusBaseThingHandler.class);
 
     protected NikobusBaseThingHandler(Thing thing) {
         super(thing);
@@ -38,8 +44,15 @@ abstract class NikobusBaseThingHandler extends BaseThingHandler {
     public void initialize() {
         address = (String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS);
         if (address == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Address must be set!");
-            return;
+            String addressPC = (String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS_PC);
+            if (addressPC != null) {
+                address = addressPC.substring(2, 4) + addressPC.substring(0, 2);
+                logger.debug("address PC, address= '{}'", address);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Address must be set!");
+                return;
+            }
         }
 
         updateStatus(ThingStatus.UNKNOWN);
