@@ -188,8 +188,13 @@ when
     Item Light_GF_Living_Table changed
 then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    // image as base64 string
     var String base64Image = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
     telegramAction.sendTelegramPhoto(base64Image, "battery of motion sensor is empty")
+    
+    // image as base64 string in data URI scheme
+    var String base64ImageDataURI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
+    telegramAction.sendTelegramPhoto(base64ImageDataURI, "battery of motion sensor is empty")    
 end
 ```
 
