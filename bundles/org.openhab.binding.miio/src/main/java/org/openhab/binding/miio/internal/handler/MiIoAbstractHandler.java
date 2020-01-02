@@ -15,7 +15,9 @@ package org.openhab.binding.miio.internal.handler;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -30,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ThingType;
@@ -43,10 +46,13 @@ import org.openhab.binding.miio.internal.MiIoDevices;
 import org.openhab.binding.miio.internal.MiIoMessageListener;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.Utils;
+import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -387,7 +393,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.info("Mi Device model {} has model config: {}. Unexpected unless manual override", model,
                     configuration.model);
         }
-        if (miDevice.getThingType().equals(getThing().getThingTypeUID())) {
+        if (miDevice.getThingType().equals(getThing().getThingTypeUID())
+                && !(miDevice.getThingType().equals(THING_TYPE_UNSUPPORTED) && findDatabaseEntry(model) != null)) {
             logger.info("Mi Device model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
                     miDevice.getThingType().toString());
             return true;
@@ -397,7 +404,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 changeType(model);
             } else {
                 logger.warn(
-                        "Mi Device model {} identified as: {}, thingtype {}. Does not matches thingtype {}. Unexpected, unless unless manual override.",
+                        "Mi Device model {} identified as: {}, thingtype {}. Does not matches thingtype {}. Unexpected, unless manual override.",
                         miDevice.toString(), miDevice.getThingType(), getThing().getThingTypeUID().toString(),
                         miDevice.getThingType().toString());
                 return true;
@@ -423,7 +430,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.info("Mi Device model {} identified as: {}. Does not match thingtype {}. Changing thingtype to {}",
                     modelId, miDevice.toString(), getThing().getThingTypeUID().toString(),
                     miDevice.getThingType().toString());
-            changeThingType(MiIoDevices.getType(modelId).getThingType(), getConfig());
+            ThingTypeUID thingTypeUID = MiIoDevices.getType(modelId).getThingType();
+            if (thingTypeUID.equals(THING_TYPE_UNSUPPORTED) && findDatabaseEntry(modelId) != null) {
+                thingTypeUID = THING_TYPE_BASIC;
+            }
+            changeThingType(thingTypeUID, getConfig());
         }, 10, TimeUnit.SECONDS);
     }
 
@@ -461,5 +472,26 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         } catch (Exception e) {
             logger.debug("Error while handing message {}", response.getResponse(), e);
         }
+    }
+
+    protected URL findDatabaseEntry(String deviceName) {
+        List<URL> urlEntries = new Utils().findDatabaseFiles(logger);
+        for (URL db : urlEntries) {
+            logger.trace("Testing for {} in db file: {}", deviceName, db);
+            try {
+                JsonObject deviceMapping = Utils.convertFileToJSON(db);
+                Gson gson = new GsonBuilder().serializeNulls().create();
+                MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
+                for (String id : devdb.getDevice().getId()) {
+                    if (deviceName.equals(id)) {
+                        return db;
+                    }
+                }
+            } catch (Exception e) {
+                // not relevant
+                logger.debug("Error while searching for {} in database '{}': {}", deviceName, db, e.getMessage());
+            }
+        }
+        return null;
     }
 }

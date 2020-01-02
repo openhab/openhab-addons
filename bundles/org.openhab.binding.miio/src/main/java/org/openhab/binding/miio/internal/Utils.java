@@ -12,10 +12,21 @@
  */
 package org.openhab.binding.miio.internal;
 
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
@@ -90,5 +101,26 @@ public final class Utils {
         JsonElement jsonElement = parser.parse(IOUtils.toString(fileName));
         jsonObject = jsonElement.getAsJsonObject();
         return jsonObject;
+    }
+
+    @NonNullByDefault
+    public List<URL> findDatabaseFiles(Logger logger) {
+        List<URL> urlEntries = new ArrayList<>();
+        try {
+            File[] userDbFiles = new File(ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID)
+                    .listFiles((dir, name) -> name.endsWith(".json"));
+            if (userDbFiles != null) {
+                for (File f : userDbFiles) {
+                    urlEntries.add(f.toURI().toURL());
+                    logger.debug("Adding local json db file: {}, {}", f.getName(), f.toURI().toURL());
+                }
+            }
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            urlEntries
+                    .addAll(Collections.list(bundle.findEntries(MiIoBindingConstants.DATABASE_PATH, "*.json", false)));
+        } catch (Exception e) {
+            logger.debug("Error while searching for database files: {}", e.getMessage());
+        }
+        return urlEntries;
     }
 }
