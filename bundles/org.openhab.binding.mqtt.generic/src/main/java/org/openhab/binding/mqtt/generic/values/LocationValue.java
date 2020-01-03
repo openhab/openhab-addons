@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,13 +39,17 @@ public class LocationValue extends Value {
     @Override
     public @NonNull String getMQTTpublishValue(@Nullable String pattern) {
         String formatPattern = pattern;
+        PointType point = ((PointType) state);
 
         if (formatPattern == null || "%s".equals(formatPattern)) {
-            formatPattern = "%1$f,%2$f";
+            if (point.getAltitude().toBigDecimal().equals(BigDecimal.ZERO)) {
+                formatPattern = "%2$f,%3$f";
+            } else {
+                formatPattern = "%2$f,%3$f,%1$f";
+            }
         }
-        PointType point = ((PointType) state);
-        return String.format(Locale.ROOT, formatPattern, point.getLatitude().toBigDecimal(),
-                point.getLongitude().toBigDecimal(), point.getAltitude().toBigDecimal());
+        return String.format(Locale.ROOT, formatPattern, point.getAltitude().toBigDecimal(),
+                point.getLatitude().toBigDecimal(), point.getLongitude().toBigDecimal());
     }
 
     @Override

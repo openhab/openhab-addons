@@ -31,8 +31,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
  */
 @NonNullByDefault
 public class DateTimeValue extends Value {
-    private static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-
     public DateTimeValue() {
         super(CoreItemFactory.DATETIME, Stream.of(DateTimeType.class, StringType.class).collect(Collectors.toList()));
     }
@@ -53,8 +51,8 @@ public class DateTimeValue extends Value {
         }
         String formatPattern = pattern;
         if (formatPattern == null || "%s".contentEquals(formatPattern)) {
-            formatPattern = DATE_PATTERN;
+            return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(((DateTimeType) state).getZonedDateTime());
         }
-        return DateTimeFormatter.ofPattern(formatPattern).format(((DateTimeType) state).getZonedDateTime());
+        return String.format(formatPattern, ((DateTimeType) state).getZonedDateTime());
     }
 }

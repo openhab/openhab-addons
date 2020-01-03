@@ -132,7 +132,7 @@ public class PercentageValue extends Value {
         // Calculation need to happen with big decimals to either return a straight integer or a decimal depending on
         // the value.
         BigDecimal value = ((PercentType) state).toBigDecimal().multiply(span).divide(DB100, MathContext.DECIMAL128)
-                .add(min);
+                .add(min).stripTrailingZeros();
 
         String formatPattern = pattern;
         if (formatPattern == null || "%s".equals(formatPattern)) {

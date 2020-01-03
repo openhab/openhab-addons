@@ -24,11 +24,13 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -348,16 +350,14 @@ public class ChannelState implements MqttMessageSubscriber {
             return CompletableFuture.completedFuture(false);
         }
 
-        String commandString = null;
-
         // Outgoing transformations
         for (ChannelStateTransformation t : transformationsOut) {
-            if (commandString == null) {
-                commandString = mqttCommandValue.getMQTTpublishValue(null);
-            }
+            String commandString = mqttCommandValue.getMQTTpublishValue(null);
             String transformedValue = t.processValue(commandString);
             if (transformedValue != null) {
-                commandString = transformedValue;
+                Value textValue = new TextValue();
+                textValue.update(new StringType(transformedValue));
+                mqttCommandValue = textValue;
             } else {
                 logger.debug("Transformation '{}' returned null on '{}', discarding message", mqttCommandValue,
                         t.serviceName);
@@ -365,17 +365,18 @@ public class ChannelState implements MqttMessageSubscriber {
             }
         }
 
-        if (commandString == null) {
-            // Formatter: Applied before the channel state value is published to the MQTT broker.
-            if (config.formatBeforePublish.length() > 0) {
-                try {
-                    commandString = mqttCommandValue.getMQTTpublishValue(config.formatBeforePublish);
-                } catch (IllegalFormatException e) {
-                    logger.debug("Format pattern incorrect for {}", channelUID, e);
-                }
-            } else {
+        String commandString;
+
+        // Formatter: Applied before the channel state value is published to the MQTT broker.
+        if (config.formatBeforePublish.length() > 0) {
+            try {
+                commandString = mqttCommandValue.getMQTTpublishValue(config.formatBeforePublish);
+            } catch (IllegalFormatException e) {
+                logger.debug("Format pattern incorrect for {}", channelUID, e);
                 commandString = mqttCommandValue.getMQTTpublishValue(null);
             }
+        } else {
+            commandString = mqttCommandValue.getMQTTpublishValue(null);
         }
 
         int qos = (config.qos != null) ? config.qos : connection.getQos();
