@@ -26,7 +26,7 @@ COPY ..\src\etc\NOTICE org.openhab.binding.%BindingIdInLowerCase%\
 
 :: temporary fix
 :: replace ${project.version} by ${ohc.version} in src/main/feature/feature.xml
-@powershell --command "get-content org.openhab.binding.%BindingIdInLowerCase%\src\main\feature\feature.xml | %{$_ -replace \"-core/${project.version}\",\"-core/${ohc.version}\""
+@powershell -command "(Get-Content org.openhab.binding.$env:BindingIdInLowerCase/src/main/feature/feature.xml).replace('-core/${project.version}', '-core/${ohc.version}') | Set-Content org.openhab.binding.$env:BindingIdInLowerCase/src/main/feature/feature.xml"
 
 (SET BindingIdInLowerCase=)
 (SET BindingIdInCamelCase=)
