@@ -17,6 +17,8 @@
   <name>openHAB Add-ons :: Bundles</name>
 
   <modules>
+    <!-- bindings -->
+    <module>org.openhab.binding.pushover</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.persistence.dynamodb</module>
     <module>org.openhab.persistence.influxdb</module>
