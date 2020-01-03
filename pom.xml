@@ -151,7 +151,8 @@ Import-Package: \\
   ${bnd.exportpackage}
 -sources: false
 -contract: *
--includeresource: ${bnd.includeresource}]]></bnd>
+-includeresource: ${bnd.includeresource}
+${bnd.additional}]]></bnd>
             <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
           </configuration>
