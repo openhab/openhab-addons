@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoUnsupportedHandler.class);
 
@@ -40,7 +41,6 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         return true;
     });
 
-    @NonNullByDefault
     public MiIoUnsupportedHandler(Thing thing) {
         super(thing);
     }
