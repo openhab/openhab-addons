@@ -256,4 +256,17 @@
 		<label>Rocker Position</label>
 		<description>A channel for controlling the rocker position</description>
 	</channel-type>
+
+	<channel-type id="cloud_status">
+		<item-type>String</item-type>
+		<label>Cloud Status State</label>
+		<description>Cloud status state of the camera</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="shutter">
+		<item-type>Switch</item-type>
+		<label>Myfox Shutter</label>
+		<description>A channel for controlling the shutter</description>
+	</channel-type>
 </thing:thing-descriptions>

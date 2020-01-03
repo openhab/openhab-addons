@@ -16,6 +16,7 @@ import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstan
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,6 +66,10 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
     protected boolean isAlwaysOnline() {
@@ -208,6 +213,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             case "detected":
             case "personinside":
             case "open":
+            case "opened":
             case "unlocked":
                 return OpenClosedType.OPEN;
             default:
@@ -247,9 +253,10 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     public void updateThingChannels(List<SomfyTahomaState> states) {
+        Map<String, String> properties = new HashMap<>();
         for (SomfyTahomaState state : states) {
             logger.trace("processing state: {} with value: {}", state.getName(), state.getValue());
-            updateProperty(state.getName(), state.getValue().toString());
+            properties.put(state.getName(), state.getValue().toString());
             for (HashMap.Entry<String, String> entry : stateNames.entrySet()) {
                 if (entry.getValue().equals(state.getName())) {
                     // get channel and update it if linked
@@ -264,5 +271,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                 }
             }
         }
+        updateProperties(properties);
     }
 }

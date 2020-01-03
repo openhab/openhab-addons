@@ -246,6 +246,19 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             case THING_ADJUSTABLE_SLATS_ROLLER_SHUTTER:
                 deviceDiscovered(device, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER);
                 break;
+            case THING_CAMERA:
+                if (hasMyfoxShutter(device)) {
+                    deviceDiscovered(device, THING_TYPE_MYFOX_CAMERA);
+                } else {
+                    if (device.getStates().size() > 1) {
+                        //we have a camera with an extra state
+                        logUnsupportedDevice(device);
+                    } else {
+                        //a generic camera
+                        deviceDiscovered(device, THING_TYPE_CAMERA);
+                    }
+                }
+                break;
             case THING_PROTOCOL_GATEWAY:
             case THING_REMOTE_CONTROLLER:
             case THING_NETWORK_COMPONENT:
@@ -280,6 +293,10 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             }
         }
         return false;
+    }
+
+    private boolean hasMyfoxShutter(SomfyTahomaDevice device) {
+        return hasState(device, MYFOX_SHUTTER_STATUS_STATE);
     }
 
     private boolean hasEnergyConsumption(SomfyTahomaDevice device) {

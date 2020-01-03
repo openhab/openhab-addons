@@ -126,6 +126,12 @@ public class SomfyTahomaBindingConstants {
     // Adjustable slats roller shutter
     public static final ThingTypeUID THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "adjustableslatsrollershutter");
 
+    // Camera
+    public static final ThingTypeUID THING_TYPE_CAMERA = new ThingTypeUID(BINDING_ID, "camera");
+
+    // MyFox Camera
+    public static final ThingTypeUID THING_TYPE_MYFOX_CAMERA = new ThingTypeUID(BINDING_ID, "myfoxcamera");
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
@@ -203,6 +209,12 @@ public class SomfyTahomaBindingConstants {
     public static final String ONOFF_STATE = "onoff";
     public static final String BATTERY = "battery";
 
+    // Camera
+    public static final String CLOUD_STATUS = "cloud_status";
+
+    // Myfox Camera
+    public static final String SHUTTER = "shutter";
+
     //Constants
     public static final String TAHOMA_API_URL = "https://www.tahomalink.com/enduser-mobile-web/enduserAPI/";
     public static final String TAHOMA_EVENTS_URL = TAHOMA_API_URL + "events/";
@@ -236,6 +248,7 @@ public class SomfyTahomaBindingConstants {
     public static final String ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState";
     public static final String CYCLIC_BUTTON_STATE = "core:CyclicButtonState";
     public static final String BATTERY_STATUS_STATE = "internal:BatteryStatusState";
+    public static final String MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState";
     public static final String UNAVAILABLE = "unavailable";
     public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
     public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
@@ -269,6 +282,7 @@ public class SomfyTahomaBindingConstants {
     public static final String THING_DOCK = "Dock";
     public static final String THING_SIREN = "Siren";
     public static final String THING_ADJUSTABLE_SLATS_ROLLER_SHUTTER = "AdjustableSlatsRollerShutter";
+    public static final String THING_CAMERA = "Camera";
 
     // unsupported uiClasses
     public static final String THING_PROTOCOL_GATEWAY = "ProtocolGateway";
@@ -288,7 +302,8 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM, THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD,
             THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA,
             THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_CURTAIN,
-            THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER));
+            THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER,
+            THING_TYPE_CAMERA, THING_TYPE_MYFOX_CAMERA));
 
     //somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {
