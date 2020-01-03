@@ -530,8 +530,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             boolean config_changed = false;
             logger.debug("MAX! {} {} configuration update", device.getType(), device.getSerialNumber());
             Configuration configuration = editConfiguration();
-            if (getConfig().get(PROPERTY_ROOMNAME) == null
-                    || !device.getRoomName().equalsIgnoreCase((String) getConfig().get(PROPERTY_ROOMNAME))) {
+            if (!device.getRoomName().equalsIgnoreCase((String) getConfig().get(PROPERTY_ROOMNAME))) {
                 configuration.put(PROPERTY_ROOMNAME, device.getRoomName());
                 config_changed = true;
             }
@@ -540,13 +539,11 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 configuration.put(PROPERTY_ROOMID, new BigDecimal(device.getRoomId()));
                 config_changed = true;
             }
-            if (getConfig().get(PROPERTY_DEVICENAME) == null
-                    || !device.getName().equalsIgnoreCase((String) getConfig().get(PROPERTY_DEVICENAME))) {
+            if (!device.getName().equalsIgnoreCase((String) getConfig().get(PROPERTY_DEVICENAME))) {
                 configuration.put(PROPERTY_DEVICENAME, device.getName());
                 config_changed = true;
             }
-            if (getConfig().get(PROPERTY_RFADDRESS) == null
-                    || !device.getRFAddress().equalsIgnoreCase((String) getConfig().get(PROPERTY_RFADDRESS))) {
+            if (!device.getRFAddress().equalsIgnoreCase((String) getConfig().get(PROPERTY_RFADDRESS))) {
                 configuration.put(PROPERTY_RFADDRESS, device.getRFAddress());
                 config_changed = true;
             }
