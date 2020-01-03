@@ -2,7 +2,7 @@
 
 [ $# -lt 3 ] && { echo "Usage: $0 <BindingIdInCamelCase> <Author> <GitHub Username>"; exit 1; }
 
-openHABCoreVersion=2.5.0-SNAPSHOT
+openHABCoreVersion=2.5.0
 openHABVersion=2.5.1-SNAPSHOT
 
 camelcaseId=$1
@@ -33,4 +33,3 @@ cp ../src/etc/NOTICE "$directory"
 # temporary fix
 # replace ${project.version} by ${ohc.version} in src/main/feature/feature.xml
 sed -i'.bak' -e "s|\-core\/\${project.version}|\-core\/\${ohc.version}|g" "$directory/src/main/feature/feature.xml"
-
