@@ -140,6 +140,10 @@ The following things types are available:
 | Yeelight Color Bulb YLDP06YL 10W | miio:basic       | [yeelink.light.color2](#yeelink-light-color2) | Yes       |            |
 | Yeelight Color Bulb          | miio:basic       | [yeelink.light.color3](#yeelink-light-color3) | Yes       |            |
 
+# Advanced: adding local database files to support new devices
+
+Things using the basic handler are driven by json 'database' files. This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
+The User Data Folder/miio (e.g. in Linux `/opt/openhab2/userdata/miio/`) is scanned for database files and will be used for your devices. Note that local database files take preference over build-in ones. Hence if a json file is local and in the database the local file will be used. For format, please check the current database files in github.
 
 # Discovery
 
