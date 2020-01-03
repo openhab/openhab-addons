@@ -494,7 +494,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 
     @Override
     public void onDeviceAdded(Bridge bridge, Device device) {
-        //
     }
 
     /**

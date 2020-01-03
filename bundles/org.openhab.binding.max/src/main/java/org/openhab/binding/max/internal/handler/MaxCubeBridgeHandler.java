@@ -830,14 +830,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, message.getSerialNumber());
             properties.put(Thing.PROPERTY_VENDOR, MaxBindingConstants.PROPERTY_VENDOR_NAME);
             updateProperties(properties);
-            // TODO: Remove this once UI is displaying this info
-            for (Map.Entry<String, String> entry : properties.entrySet()) {
-                logger.debug("key: {}  : {}", entry.getKey(), entry.getValue());
-            }
-            if (getConfig().get(MaxBindingConstants.PROPERTY_RFADDRESS) != null
-                    && message.getRFAddress()
-                            .equalsIgnoreCase((String) getConfig().get(MaxBindingConstants.PROPERTY_RFADDRESS))
-                    && getConfig().get(Thing.PROPERTY_SERIAL_NUMBER) != null && message.getSerialNumber()
+            if (message.getRFAddress()
+                    .equalsIgnoreCase((String) getConfig().get(MaxBindingConstants.PROPERTY_RFADDRESS))
+                    && message.getSerialNumber()
                             .equalsIgnoreCase((String) getConfig().get(Thing.PROPERTY_SERIAL_NUMBER))) {
                 logger.debug("MAX! Cube config already up2date.");
             } else {
