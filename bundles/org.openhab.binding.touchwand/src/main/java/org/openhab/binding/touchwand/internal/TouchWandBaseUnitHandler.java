@@ -16,7 +16,6 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
@@ -104,8 +103,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
         logger.trace("initializeThing Thing {} Bridge status {}", getThing().getUID(), bridgeStatus);
 
         Thing thing = getThing();
-        Map<String, String> properties = thing.getProperties();
-        unitId = properties.get("id");
+        unitId = thing.getUID().toString().split(":")[3]; // touchwand id
         bridgeHandler.registerUpdateListener(this);
 
         if (!bridgeStatus.equals(ThingStatus.ONLINE)) {
