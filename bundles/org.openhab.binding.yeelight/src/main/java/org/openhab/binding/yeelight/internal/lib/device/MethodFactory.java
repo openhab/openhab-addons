@@ -165,20 +165,16 @@ public class MethodFactory {
             case mono:
                 return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright" });
             case color:
+            case stripe:
                 return new DeviceMethod(MethodAction.PROP,
                         new Object[] { "power", "name", "bright", "ct", "rgb", "hue", "sat" });
             case ceiling:
+            case desklamp:
+            case ct_bulb:
                 return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
             case ceiling4:
                 return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct", "bg_power",
                         "bg_bright", "bg_hue", "bg_sat", "active_mode" });
-            case ct_bulb:
-                return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
-            case stripe:
-                return new DeviceMethod(MethodAction.PROP,
-                        new Object[] { "power", "name", "bright", "ct", "rgb", "hue", "sat" });
-            case desklamp:
-                return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
             default:
                 return null;
         }
