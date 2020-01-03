@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -30,6 +31,8 @@ import org.eclipse.smarthome.core.types.UnDefType;
  */
 @NonNullByDefault
 public class DateTimeValue extends Value {
+    private static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+
     public DateTimeValue() {
         super(CoreItemFactory.DATETIME, Stream.of(DateTimeType.class, StringType.class).collect(Collectors.toList()));
     }
@@ -44,11 +47,14 @@ public class DateTimeValue extends Value {
     }
 
     @Override
-    public String getMQTTpublishValue() {
+    public String getMQTTpublishValue(@Nullable String pattern) {
         if (state == UnDefType.UNDEF) {
             return "";
         }
-
-        return ((DateTimeType) state).getZonedDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        String formatPattern = pattern;
+        if (formatPattern == null || "%s".contentEquals(formatPattern)) {
+            formatPattern = DATE_PATTERN;
+        }
+        return DateTimeFormatter.ofPattern(formatPattern).format(((DateTimeType) state).getZonedDateTime());
     }
 }

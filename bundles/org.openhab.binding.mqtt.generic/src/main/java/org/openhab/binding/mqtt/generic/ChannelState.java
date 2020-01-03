@@ -14,7 +14,6 @@ package org.openhab.binding.mqtt.generic;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -158,8 +157,7 @@ public class ChannelState implements MqttMessageSubscriber {
             if (transformedValue != null) {
                 strValue = transformedValue;
             } else {
-                logger.debug("Transformation '{}' returned null on '{}', discarding message", strValue,
-                        t.serviceName);
+                logger.debug("Transformation '{}' returned null on '{}', discarding message", strValue, t.serviceName);
                 receivedOrTimeout();
                 return;
             }
@@ -332,7 +330,7 @@ public class ChannelState implements MqttMessageSubscriber {
     public CompletableFuture<Boolean> publishValue(Command command) {
         cachedValue.update(command);
 
-        String mqttCommandValue = cachedValue.getMQTTpublishValue();
+        Value mqttCommandValue = cachedValue;
 
         final MqttBrokerConnection connection = this.connection;
 
@@ -350,11 +348,16 @@ public class ChannelState implements MqttMessageSubscriber {
             return CompletableFuture.completedFuture(false);
         }
 
+        String commandString = null;
+
         // Outgoing transformations
         for (ChannelStateTransformation t : transformationsOut) {
-            String transformedValue = t.processValue(mqttCommandValue);
+            if (commandString == null) {
+                commandString = mqttCommandValue.getMQTTpublishValue(null);
+            }
+            String transformedValue = t.processValue(commandString);
             if (transformedValue != null) {
-                mqttCommandValue = transformedValue;
+                commandString = transformedValue;
             } else {
                 logger.debug("Transformation '{}' returned null on '{}', discarding message", mqttCommandValue,
                         t.serviceName);
@@ -362,19 +365,22 @@ public class ChannelState implements MqttMessageSubscriber {
             }
         }
 
-        // Formatter: Applied before the channel state value is published to the MQTT broker.
-        if (config.formatBeforePublish.length() > 0) {
-            try (Formatter formatter = new Formatter()) {
-                Formatter format = formatter.format(config.formatBeforePublish, mqttCommandValue);
-                mqttCommandValue = format.toString();
-            } catch (IllegalFormatException e) {
-                logger.debug("Format pattern incorrect for {}", channelUID, e);
+        if (commandString == null) {
+            // Formatter: Applied before the channel state value is published to the MQTT broker.
+            if (config.formatBeforePublish.length() > 0) {
+                try {
+                    commandString = mqttCommandValue.getMQTTpublishValue(config.formatBeforePublish);
+                } catch (IllegalFormatException e) {
+                    logger.debug("Format pattern incorrect for {}", channelUID, e);
+                }
+            } else {
+                commandString = mqttCommandValue.getMQTTpublishValue(null);
             }
         }
 
         int qos = (config.qos != null) ? config.qos : connection.getQos();
 
-        return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), qos, config.retained);
+        return connection.publish(config.commandTopic, commandString.getBytes(), qos, config.retained);
     }
 
     /**

@@ -23,7 +23,6 @@ import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
  * Implements an rollershutter value.
@@ -114,7 +113,7 @@ public class RollershutterValue extends Value {
     }
 
     @Override
-    public String getMQTTpublishValue() {
+    public String getMQTTpublishValue(@Nullable String pattern) {
         final String upString = this.upString;
         final String downString = this.downString;
         if (this.nextIsStop) {
