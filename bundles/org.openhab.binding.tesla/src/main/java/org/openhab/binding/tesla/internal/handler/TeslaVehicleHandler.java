@@ -535,7 +535,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     protected boolean allowQuery() {
-        return allowWakeUp || (isAwake() && !isInactive());
+        return (isAwake() && !isInactive());
     }
 
     protected void setActive() {
