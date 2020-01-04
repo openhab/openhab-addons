@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,8 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LutronMdnsBridgeDiscoveryService} discovers Lutron Caseta Smart Bridge and RA2 Select Main Repeater
- * devices on the network using mDNS.
+ * The {@link LutronMdnsBridgeDiscoveryService} discovers Lutron Caseta Smart Bridge Pro and eventually RA2 Select Main
+ * Repeater and other Lutron devices on the network using mDNS.
  *
  * @author Bob Adair - Initial contribution
  */
@@ -96,18 +96,20 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
             return null;
         }
         if (ipAddresses.length > 1) {
-            logger.info("Multiple addresses found for discovered Lutron bridge device. Using only the first.");
+            logger.debug("Multiple addresses found for discovered Lutron device. Using only the first.");
         }
         properties.put(HOST, ipAddresses[0].getHostAddress());
 
         String bridgeHostName = ipAddresses[0].getHostName();
-        logger.trace("Lutron mDNS bridge hostname: {}", bridgeHostName);
+        logger.debug("Lutron mDNS bridge hostname: {}", bridgeHostName);
 
         if (devclass != null && devclass.equals(DEVCLASS_CASETA_SBP2)) {
             properties.put(PROPERTY_PRODFAM, PRODFAM_CASETA);
             properties.put(PROPERTY_PRODTYP, PRODTYP_CASETA_SBP2);
             label = PRODFAM_CASETA + " " + PRODTYP_CASETA_SBP2;
         } else {
+            logger.info("Lutron device with unknown DEVCLASS discovered via mDNS: {}. Configure device manually.",
+                    devclass);
             return null; // For now, exit if service has unknown DEVCLASS
         }
 
@@ -124,9 +126,12 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
         }
 
         String sn = getSerial(service);
-        logger.trace("Lutron mDNS bridge serial number: {}", sn);
         if (sn != null) {
+            logger.trace("Lutron mDNS bridge serial number: {}", sn);
             properties.put(SERIAL_NUMBER, sn);
+        } else {
+            logger.debug("Unable to determine serial number of discovered Lutron bridge device.");
+            return null;
         }
 
         ThingUID uid = getThingUID(service);
@@ -136,7 +141,7 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
             logger.debug("Discovered Lutron bridge device via mDNS {}", uid);
             return result;
         } else {
-            logger.trace("Failed to successfully discover bridge via mDNS");
+            logger.trace("Failed to create uid for discovered Lutron bridge device");
             return null;
         }
     }
@@ -152,11 +157,11 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
     }
 
     /**
-     * Return the serial number from the mDNS service. Extracts serial number from the mDNS service hostname or uses MAC
-     * address if serial number is unavailable. Used as unique thing representation property.
+     * Returns the device serial number for the mDNS service by extracting it from the hostname.
+     * Used as unique thing representation property.
      *
      * @param service Lutron mDNS service
-     * @return String containing serial number or MAC, or null if neither can be determined
+     * @return String containing serial number, or null if it cannot be determined
      */
     private @Nullable String getSerial(ServiceInfo service) {
         InetAddress[] ipAddresses = service.getInetAddresses();
@@ -173,26 +178,7 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
         if (matched && serialnum != null && !serialnum.isEmpty()) {
             return serialnum;
         } else {
-            String macaddr = service.getPropertyString("MACADDR");
-            String strippedMac = stripMac(macaddr);
-            if (strippedMac != null) {
-                return strippedMac;
-            } else {
-                return null;
-            }
-        }
-    }
-
-    /**
-     * Utility routine to strip colon characters from MAC address
-     *
-     * @param mac String containing the MAC address to strip
-     * @return String containing stripped MAC address or null if mac is null or empty
-     */
-    private @Nullable String stripMac(@Nullable String mac) {
-        if (mac == null || mac.isEmpty()) {
             return null;
         }
-        return mac.replace(":", ""); // strip colon chars from MAC address
     }
 }
