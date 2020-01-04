@@ -27,7 +27,6 @@ import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidExc
 import org.openhab.binding.wizlighting.internal.handler.WizLightingHandler;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.utils.NetworkUtils;
-import org.openhab.binding.wizlighting.internal.utils.ValidationUtils;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -128,11 +127,8 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
 
     private @Nullable String getMyIpAddress() {
         NetworkAddressService networkAddressService = this.networkAddressService;
-        String ohIpAddress = String.valueOf(WizLightingBindingConstants.OH_IP_ADDRESS_ARG);
-        if (myIpAddress != null && myIpAddress != "ohIpAddress") {
+        if (myIpAddress != null) {
             return myIpAddress;
-        } else if (ohIpAddress != null && ohIpAddress != "ohIpAddress") {
-            return ohIpAddress;
         } else if (networkAddressService != null) {
             myIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
             if (myIpAddress == null) {
@@ -147,12 +143,8 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private @Nullable String getMyMacAddress() {
-        String ohMacAddress = String.valueOf(WizLightingBindingConstants.OH_MAC_ADDRESS_ARG);
-        if (myMacAddress != null && myMacAddress != "ohMacAddress") {
+        if (myMacAddress != null) {
             return myMacAddress;
-        } else if (ohMacAddress != null && ohMacAddress != "ohMacAddress" && ValidationUtils.isMacValid(ohMacAddress)) {
-            logger.info("Mac Address of OpenHab device is {}.", ohMacAddress);
-            return ohMacAddress;
         } else {
             try {
                 myMacAddress = NetworkUtils.getMyMacAddress();

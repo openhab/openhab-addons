@@ -42,11 +42,11 @@ public class WizLightingBindingConstants {
     /**
      * List of all Channel ids
      */
-    public static final String COLOR_CHANNEL = "color";
-    public static final String TEMP_CHANNEL = "temperature";
-    public static final String SCENE_CHANNEL = "scene";
-    public static final String SCENE_SPEED_CHANNEL = "speed";
-    public static final String RSSI_CHANNEL = "signalstrength";
+    public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_SCENE = "scene";
+    public static final String CHANNEL_DYNAMIC_SPEED = "speed";
+    public static final String CHANNEL_RSSI = "signalstrength";
 
     /**
      * The supported thing types.
@@ -58,32 +58,17 @@ public class WizLightingBindingConstants {
     /**
      * Mac address configuration argument key.
      */
-    public static final String BULB_MAC_ADDRESS_ARG = "bulbMacAddress";
+    public static final String CONFIG_MAC_ADDRESS = "bulbMacAddress";
 
     /**
      * Host address configuration argument key.
      */
-    public static final String BULB_IP_ADDRESS_ARG = "bulbIpAddress";
-
-    /**
-     * Home id configuration argument key.
-     */
-    public static final String HOME_ID_ARG = "homeId";
+    public static final String CONFIG_IP_ADDRESS = "bulbIpAddress";
 
     /**
      * Wifi socket update interval configuration argument key.
      */
-    public static final String UPDATE_INTERVAL_ARG = "updateInterval";
-
-    /**
-     * MAC Address of the OpenHAB machine
-     */
-    public static final String OH_MAC_ADDRESS_ARG = "ohMacAddress";
-
-    /**
-     * IP Address of the OpenHAB machine
-     */
-    public static final String OH_IP_ADDRESS_ARG = "ohIpAddress";
+    public static final String CONFIG_UPDATE_INTERVAL = "updateInterval";
 
     // -------------- Default values ----------------
     /**
@@ -94,12 +79,12 @@ public class WizLightingBindingConstants {
     /**
      * Default Wifi socket default UDP port.
      */
-    public static final int BULB_DEFAULT_UDP_PORT = 38899;
+    public static final int DEFAULT_BULB_UDP_PORT = 38899;
 
     /**
      * Default listener socket default UDP port.
      */
-    public static final int LISTENER_DEFAULT_UDP_PORT = 38900;
+    public static final int DEFAULT_LISTENER_UDP_PORT = 38900;
 
     /**
      * How long before active discovery times out.
@@ -121,4 +106,14 @@ public class WizLightingBindingConstants {
     public static final int MIN_COLOR_TEMPERATURE = 2200;
     public static final int MAX_COLOR_TEMPERATURE = 6500;
     public static final int COLOR_TEMPERATURE_RANGE = MAX_COLOR_TEMPERATURE - MIN_COLOR_TEMPERATURE;
+
+    // -------------- Bulb Properties ----------------
+
+    public static final String PROPERTY_HOME_ID = "homeId";
+    public static final String PROPERTY_ROOM_ID = "roomId";
+    public static final String PROPERTY_HOME_LOCK = "homeLock";
+    public static final String PROPERTY_PAIRING_LOCK = "pairingLock";
+    public static final String PROPERTY_TYPE_ID = "typeId";
+    public static final String PROPERTY_MODULE_NAME = "moduleName";
+    public static final String PROPERTY_GROUP_ID = "groupId";
 }

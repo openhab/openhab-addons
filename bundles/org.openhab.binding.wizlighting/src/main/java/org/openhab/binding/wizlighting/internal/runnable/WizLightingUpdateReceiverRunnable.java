@@ -20,6 +20,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.slf4j.Logger;
@@ -94,9 +95,13 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
                         packet.getAddress().getHostAddress());
 
                 // Redirect packet to the mediator
-                this.mediator.processReceivedPacket(this.packetConverter.transformSyncResponsePacket(packet));
-
-                logger.debug("Message delivered with success to mediator.");
+                WizLightingResponse response = this.packetConverter.transformSyncResponsePacket(packet);
+                if (response != null) {
+                    this.mediator.processReceivedPacket(response);
+                    logger.debug("Message delivered with success to mediator.");
+                } else {
+                    logger.debug("No WizLightingResponse was parsed from returned packet");
+                }
             } catch (SocketTimeoutException e) {
                 logger.trace("Socket Timeout receiving packet.");
             } catch (IOException e) {

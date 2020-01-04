@@ -13,7 +13,6 @@
 package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.HSBType;
 
 /**
  * This POJO represents Color Request Param
@@ -22,39 +21,18 @@ import org.eclipse.smarthome.core.library.types.HSBType;
  *
  */
 @NonNullByDefault
-public class ColorRequestParam extends DimmingRequestParam {
-    private int b; // blue 0-255
-    private int g; // green 0-255
+// TODO: Decide if this implements param or extends dimming request
+public class ColorRequestParam implements Param {
     private int r; // red 0-255
+    private int g; // green 0-255
+    private int b; // blue 0-255
     private int w; // warm white LED's 0-255
     private int c; // cool white LED's 0-255
 
-    public ColorRequestParam(HSBType color) {
-        super(color.getBrightness().intValue());
-
-        this.b = (int) Math.round(color.getBlue().intValue() * 2.55);
-        this.g = (int) Math.round(color.getGreen().intValue() * 2.55);
-        this.r = (int) Math.round(color.getRed().intValue() * 2.55);
-
-        // strange logic here
-        // The WiZ app turns on the warm LED's when the requested saturation is high
-        if (color.getSaturation().intValue() > 50) {
-            this.w = 255;
-        } else {
-            this.w = 0;
-        }
-
-        if (this.r > 0 && this.b > 0 && this.g > 0) {
-            this.w = 0;
-        }
-        this.c = 0;
-    }
-
-    public ColorRequestParam(int b, int g, int r, int w, int c) {
-        super(100);
-        this.b = b;
-        this.g = g;
+    public ColorRequestParam(int r, int g, int b, int w, int c) {
         this.r = r;
+        this.g = g;
+        this.b = b;
         this.w = w;
         this.c = c;
     }

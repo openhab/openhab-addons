@@ -29,15 +29,11 @@
 				<description>IP address of the bulb</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="homeId" type="integer" required="true">
-				<label>HomeId</label>
-				<description>Your WiZ HomeId; This can be found in the iOS or Android app settings</description>
-				<required>true</required>
-			</parameter>
 			<parameter name="updateInterval" type="integer" min="5">
 				<label>Update interval</label>
 				<description>Update time interval in seconds to request the status of the bulb.</description>
 				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

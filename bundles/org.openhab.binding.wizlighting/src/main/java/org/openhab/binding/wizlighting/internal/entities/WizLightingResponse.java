@@ -25,48 +25,73 @@ import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 @NonNullByDefault
 public class WizLightingResponse {
 
+    // The IP address we're coming from
+    private @Nullable String wizResponseIpAddress;
+
     // Increasing numeric value.
     // Bulb doesn't seem to care if it receives the same id multiple time
     // or commands with lower numbers after higher ones.
     private int id;
     // Not sure what env is - value always seems to be "pro"
     private @Nullable String env;
+
+    // An error response
+    private @Nullable ErrorResponseResult methodError;
+
     // The method being used - see the enum for details
-    private @Nullable WizLightingMethodType method;
+    // We're setting this to "unknown"
+    private WizLightingMethodType method = WizLightingMethodType.unknownMethod;
+
+    // The MAC address the response is coming from
+    private @Nullable String mac;
+
+    // Whether or not a command succeeded (if the response is from a command)
+    private boolean success = false;
+
+    // The system configuration result, if present
+    private @Nullable SystemConfigResult configResult;
 
     // The parameters or result of a command/response
     // A "result" is generally returned when solicited using a set/get method and a
     // "params" is retuned with an unsolicited sync/heartbeat. The result returned
     // from a get method is generally identical to the params returned in the
     // heartbeat.
-    private @Nullable WizResponseParam params;
-    private @Nullable WizResponseParam result;
+    private @Nullable SyncResponseParam params;
 
-    private @Nullable String wizResponseIpAddress;
+    /**
+     * Setters and Getters
+     */
 
-    public WizLightingResponse() {
+    public @Nullable SystemConfigResult getSystemConfigResults() {
+        return this.configResult;
+    }
+
+    public void setSystemConfigResult(final SystemConfigResult configResult) {
+        this.configResult = configResult;
+    }
+
+    public boolean getResultSuccess() {
+        return this.success;
+    }
+
+    public void setResultSucess(final boolean success) {
+        this.success = success;
+    }
+
+    public @Nullable SyncResponseParam getSyncParams() {
+        return this.params;
+    }
+
+    public void setSyncParams(final SyncResponseParam params) {
+        this.params = params;
     }
 
     public @Nullable String getWizResponseMacAddress() {
-        WizResponseParam params = this.getParams();
-        WizResponseParam result = this.getResult();
-        if (params != null) {
-            return params.mac;
-        } else if (result != null) {
-            return result.mac;
-        } else {
-            return null;
-        }
+        return this.mac;
     }
 
-    public void setWizResponseMacAddress(final String wizResponseMacAddress) {
-        WizResponseParam params = this.getParams();
-        WizResponseParam result = this.getResult();
-        if (params != null) {
-            params.mac = wizResponseMacAddress;
-        } else if (result != null) {
-            result.mac = wizResponseMacAddress;
-        }
+    public void setWizResponseMacAddress(final @Nullable String wizResponseMacAddress) {
+        this.mac = wizResponseMacAddress;
     }
 
     public @Nullable String getWizResponseIpAddress() {
@@ -81,7 +106,7 @@ public class WizLightingResponse {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(final int id) {
         this.id = id;
     }
 
@@ -89,7 +114,7 @@ public class WizLightingResponse {
         return method;
     }
 
-    public void setMethod(WizLightingMethodType method) {
+    public void setMethod(final WizLightingMethodType method) {
         this.method = method;
     }
 
@@ -97,35 +122,15 @@ public class WizLightingResponse {
         return env;
     }
 
-    public void setEnv(String env) {
+    public void setEnv(final String env) {
         this.env = env;
     }
 
-    public @Nullable WizResponseParam getParams() {
-        if (params != null) {
-            return params;
-        } else if (result != null) {
-            return result;
-        } else {
-            return null;
-        }
+    public @Nullable ErrorResponseResult getError() {
+        return methodError;
     }
 
-    public void setParams(WizResponseParam params) {
-        this.params = params;
-    }
-
-    public @Nullable WizResponseParam getResult() {
-        if (result != null) {
-            return result;
-        } else if (params != null) {
-            return params;
-        } else {
-            return null;
-        }
-    }
-
-    public void setResult(WizResponseParam result) {
-        this.result = result;
+    public void setError(ErrorResponseResult error) {
+        this.methodError = error;
     }
 }

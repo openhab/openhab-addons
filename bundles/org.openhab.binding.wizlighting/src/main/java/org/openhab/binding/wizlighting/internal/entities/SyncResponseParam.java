@@ -28,20 +28,13 @@ import org.openhab.binding.wizlighting.internal.enums.*;
  *
  */
 @NonNullByDefault
-public class WizResponseParam implements Param {
+public class SyncResponseParam {
+    // The MAC address the response is coming from
+    public @Nullable String mac;
 
     // The current color mode of the bulb
     // We will assume by default that it's a single color bulb
     public WizLightingColorMode colorMode = WizLightingColorMode.SetColor;
-
-    /*
-     * Bulb metadata in the param of all incoming messages from the bulb
-     */
-    // The MAC address of the bulb
-    public @Nullable String mac;
-    // The source of a command
-    // Possibilites: "udp" (in response to UDP command) "hb" (regular heartbeat)
-    public @Nullable String src;
 
     /*
      * Extra Information only in 'hb' params
@@ -49,20 +42,6 @@ public class WizResponseParam implements Param {
     // Not sure exactly what this means, seems to be a boolean
     // I believe the bulb communicates with the WiZ servers via MQTT
     public int mqttCd;
-
-    /*
-     * Extra Information only in 'firstBeat' params
-     */
-    // Firmware version of the bulb
-    public @Nullable String fwVersion;
-    // Home ID of the bulb
-    public int homeId;
-
-    /*
-     * If the response is the result from a comman, a success field is returned
-     */
-    // Whether the change was successful
-    public boolean success = false;
 
     /*
      * Bulb state information - not all fields are populated
@@ -84,9 +63,9 @@ public class WizResponseParam implements Param {
     public int g;
     // Strength of the blue channel (0-255)
     public int b;
-    // Intensity of the cool whilte LED's (0-255)
+    // Intensity of the cool white channel (0-255)
     public int c;
-    // Intensity of the warm whilte LED's (0-255)
+    // Intensity of the warm white channel (0-255)
     public int w;
     // Dimming percent (10-100)
     public int dimming;
@@ -109,6 +88,7 @@ public class WizResponseParam implements Param {
     public HSBType getHSBColor() {
         if (getColorMode() == WizLightingColorMode.RGBMode) {
             HSBType newColor = HSBType.fromRGB(r, g, b);
+            // TODO get color from RGBW instead of from RGB
             return newColor;
         } else {
             // If a rgb color isn't returned, simply call it simply white.

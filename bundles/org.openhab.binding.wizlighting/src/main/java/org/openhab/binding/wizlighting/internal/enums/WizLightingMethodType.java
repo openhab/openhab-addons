@@ -31,7 +31,7 @@ public enum WizLightingMethodType {
      */
     registration("registration"),
     /**
-     * Pulse - uncertain of purpose
+     * Pulse - tells the bulb to briely change brightness (by delta % for duration ms)
      * Example Request:
      * {"method": "pulse", "id": 22, "params": {"delta": -30, "duration": 900}}
      * Example Response:
@@ -81,17 +81,35 @@ public enum WizLightingMethodType {
      */
     getSystemConfig("getSystemConfig"),
     /**
-     * setSystemConfig - set up the system
-     * I have NOT attempted to use this method
+     * setSystemConfig - presumably sets up the system
+     * I have NOT attempted to call this method
      */
     setSystemConfig("setSystemConfig"),
+    /**
+     * getWifiConfig - gets the current wifi configuration - no paramters need to be
+     * included
+     * Example Request:
+     * {"id": 22, "method": "getWifiConfig"}
+     * Example Response:
+     * {"method": "getWifiConfig", "id": 22, "env": "pro", "result":
+     * {:["encryptedString"]}
+     */
+    getWifiConfig("getWifiConfig"),
+    /**
+     * setWifiConfig - presumably sets up the system I have NOT attempted to use this method
+     */
+    setWifiConfig("setWifiConfig"),
     /**
      * firstBeat - set by a bulb upon power up
      * Example:
      * {"method": "firstBeat", "id": 0, "env": "pro", "params":
      * {"mac": "bulbMac", "homeId": xxxxxx, "fwVersion": "1.15.2"}}
      */
-    firstBeat("firstBeat");
+    firstBeat("firstBeat"),
+    /**
+     * Unknown - using as a default for inproperly received responses
+     */
+    unknownMethod("unknownMethod");
 
     private String method;
 

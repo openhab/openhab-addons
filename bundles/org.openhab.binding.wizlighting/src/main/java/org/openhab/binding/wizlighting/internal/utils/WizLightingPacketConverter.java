@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 /**
  * Transforms the datagram packet to request/response
@@ -41,7 +42,10 @@ public class WizLightingPacketConverter {
      * Default constructor of the packet converter.
      */
     public WizLightingPacketConverter() {
-        this.wizlightingGsonBuilder = new GsonBuilder().create();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(WizLightingResponse.class, new WizResponseDeserializer());
+        Gson gson = gsonBuilder.create();
+        this.wizlightingGsonBuilder = gson;
     }
 
     /**
@@ -68,13 +72,18 @@ public class WizLightingPacketConverter {
      * @param packet the {@link DatagramPacket}
      * @return the {@link WizLightingResponse}
      */
-    public WizLightingResponse transformSyncResponsePacket(final DatagramPacket packet) {
+    public @Nullable WizLightingResponse transformSyncResponsePacket(final DatagramPacket packet) {
         String responseJson = new String(packet.getData(), 0, packet.getLength());
         logger.debug("Response Json={}", responseJson);
 
         @Nullable
-        WizLightingResponse response = this.wizlightingGsonBuilder.fromJson(responseJson, WizLightingResponse.class);
-        response.setWizResponseIpAddress(packet.getAddress().getHostAddress());
+        WizLightingResponse response = null;
+        try {
+            response = this.wizlightingGsonBuilder.fromJson(responseJson, WizLightingResponse.class);
+            response.setWizResponseIpAddress(packet.getAddress().getHostAddress());
+        } catch (JsonParseException e) {
+            logger.error("Error parsing json! {}", e.getMessage());
+        }
         return response;
     }
 }

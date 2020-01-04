@@ -102,18 +102,16 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      * @param bulbMacAddress the mac address from the device.
      * @param bulbIpAddress the host address from the device.
      */
-    public void discoveredLight(final String lightMacAddress, final String lightIpAddress, final int homeId) {
-        Map<String, Object> properties = new HashMap<>(2);
-        properties.put(BULB_MAC_ADDRESS_ARG, lightMacAddress);
-        properties.put(BULB_IP_ADDRESS_ARG, lightIpAddress);
-        properties.put(HOME_ID_ARG, homeId);
+    public void discoveredLight(final String lightMacAddress, final String lightIpAddress) {
+        Map<String, Object> properties = new HashMap<>(1);
+        properties.put(CONFIG_MAC_ADDRESS, lightMacAddress);
+        properties.put(CONFIG_IP_ADDRESS, lightIpAddress);
 
         ThingUID newThingId = new ThingUID(THING_TYPE_WIZ_BULB, lightMacAddress);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
                 .withLabel("Wizlighting Bulb").withRepresentationProperty(lightMacAddress).build();
 
-        logger.debug("New WiZ bulb sent to inbox! MAC: {}  IP: {}  Home ID: {}", lightMacAddress, lightIpAddress,
-                homeId);
+        logger.debug("New WiZ bulb sent to inbox! MAC: {}  IP: {}", lightMacAddress, lightIpAddress);
 
         this.thingDiscovered(discoveryResult);
     }
