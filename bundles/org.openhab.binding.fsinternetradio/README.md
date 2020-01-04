@@ -33,7 +33,7 @@ If your radio is not discovered, please try to access its API via: `http://<radi
 If you get a 404 error, maybe a different port than the standard port 80 is used by your radio; try scanning the open ports of your radio.<br/>
 If you get a result like `FS_OK 1902014387`, your radio is supported.
 
-If this is the case, please [add your model to this documentation](https://github.com/openhab/openhab2-addons/edit/master/bundles/org.openhab.binding.fsinternetradio/README.md) and/or provide discovery information in [this thread](https://community.openhab.org/t/internet-radio-i-need-your-help/2131).
+If this is the case, please [add your model to this documentation](https://github.com/openhab/openhab-addons/edit/master/bundles/org.openhab.binding.fsinternetradio/README.md) and/or provide discovery information in [this thread](https://community.openhab.org/t/internet-radio-i-need-your-help/2131).
 
 ## Binding Configuration
 
