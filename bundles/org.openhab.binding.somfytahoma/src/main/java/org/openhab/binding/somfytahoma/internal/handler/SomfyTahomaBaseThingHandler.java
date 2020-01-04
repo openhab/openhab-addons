@@ -182,7 +182,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                     return new DecimalType(valDec);
                 case TYPE_STRING:
                 case TYPE_BOOLEAN:
-                    String value = state.getValue().toString().toLowerCase();
+                    String value = state.getValue().toString();
                     if ("String".equals(acceptedState)) {
                         return new StringType(value);
                     } else {
@@ -198,14 +198,14 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private State parseStringState(String value) {
-        switch (value) {
+        switch (value.toLowerCase()) {
             case "on":
             case "true":
                 return OnOffType.ON;
             case "off":
             case "false":
                 return OnOffType.OFF;
-            case "notDetected":
+            case "notdetected":
             case "nopersoninside":
             case "closed":
             case "locked":
@@ -216,6 +216,8 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             case "opened":
             case "unlocked":
                 return OpenClosedType.OPEN;
+            case "unknown":
+                return UnDefType.UNDEF;
             default:
                 logger.debug("Unknown thing state returned: {}", value);
                 return UnDefType.UNDEF;
