@@ -13,6 +13,7 @@ Tested TV models:
 | Model       | State   | Notes                                                                                                                                                  |
 |-------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | UE48J5670SU | PARTIAL | Supported channels: `volume`, `sourceName`                                                                                                             |
+| UE40J6300AU | PARTIAL | Supported channels: `volume`, `mute`, `sourceName`, `power`                                                                                           |
 | UE46E5505   | OK      | Initial contribution is done by this model                                                                                                             |
 | UE46D5700   | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                                                                    |
 | UE40F6500   | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                                                                   |
@@ -40,8 +41,10 @@ Additionally, a refresh interval can be configured in milliseconds to specify ho
 E.g.
 
 ```
-Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, refreshInterval=1000 ]
+Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, macAddress="78:bd:bc:9f:12:34", refreshInterval=1000 ]
 ```
+Different ports are used in different models. It may be 55000, 8001 or 8002.
+Try to scan for new Things in Paper UI to find TV easily.
 
 ## Channels
 
@@ -70,7 +73,14 @@ TVs support the following channels:
 E.g.
 
 ```
-Dimmer  TV_Volume   { channel="samsungtv:tv:livingroom:volume" }
-Switch  TV_Mute     { channel="samsungtv:tv:livingroom:mute" }
-String  TV_KeyCode  { channel="samsungtv:tv:livingroom:keyCode" }
+Group   gLivingRoomTV    "Living room TV" <screen>
+Dimmer  TV_Volume        "Volume"         <soundvolume>        (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:volume" }
+Switch  TV_Mute          "Mute"           <soundvolume_mute>   (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:mute" }
+String  TV_SourceName    "Source Name"                         (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:sourceName" }
+String  TV_SourceApp     "Source App"                          (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:sourceApp" }
+String  TV_ProgramTitle  "Program Title"                       (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:programTitle" }
+String  TV_ChannelName   "Channel Name"                        (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:channelName" }
+String  TV_KeyCode       "Key Code"                            (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:keyCode" }
+Switch  TV_Power         "Power"                               (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:power" }
+Switch  TV_ArtMode       "Art Mode"                            (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artMode" }
 ```
