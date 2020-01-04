@@ -61,7 +61,6 @@
 			<channel id="flashlights" typeId="flashlights" />
 			<channel id="frontdefroster" typeId="frontdefroster" />
 			<channel id="fronttrunk" typeId="fronttrunk" />
-			<channel id="forcerefresh" typeId="forcerefresh" />
 			<channel id="gpstimestamp" typeId="gpstimestamp" />
 			<channel id="heading" typeId="heading" />
 			<channel id="headingestimation" typeId="headingestimation" />

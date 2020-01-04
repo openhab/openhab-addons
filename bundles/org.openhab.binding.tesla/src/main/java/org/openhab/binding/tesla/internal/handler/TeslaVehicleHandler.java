@@ -233,11 +233,18 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         TeslaChannelSelector selector = TeslaChannelSelector.getValueSelectorFromChannelID(channelID);
 
         if (command instanceof RefreshType) {
-            if (allowQuery()) {
-                // Request the state of all known variables. This is sub-optimal, but the requests get scheduled and
-                // throttled so we are safe not to break the Tesla SLA
-                requestAllData();
+            if (!allowQuery()) {
+                if (!isAwake()) {
+                    logger.debug("Waking vehicle to refresh all data");
+                    wakeUp();
+                }
+
+                setActive();
             }
+
+            // Request the state of all known variables. This is sub-optimal, but the requests get scheduled and
+            // throttled so we are safe not to break the Tesla SLA
+            requestAllData();
         } else {
             if (selector != null) {
                 try {
@@ -369,14 +376,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             if (command instanceof OnOffType) {
                                 if (((OnOffType) command) == OnOffType.ON) {
                                     wakeUp();
-                                }
-                            }
-                            break;
-                        }
-                        case FORCE_REFRESH: {
-                            if (command instanceof OnOffType) {
-                                if (((OnOffType) command) == OnOffType.ON) {
-                                    setActive();
                                 }
                             }
                             break;

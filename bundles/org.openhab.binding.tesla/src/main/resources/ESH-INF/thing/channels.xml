@@ -283,11 +283,6 @@
 		<label>Front Trunk</label>
 		<description>Indicates if the front trunk is opened, or open the front trunk when ON is received</description>
 	</channel-type>
-	<channel-type id="forcerefresh" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Force refresh</label>
-		<description>Forces the vehicle data to be refreshed, even when the car is not being polled to allow it to go to sleep.</description>
-	</channel-type>
 	<channel-type id="gpstimestamp" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>GPS Time Stamp</label>
