@@ -140,6 +140,7 @@
 			<parameter name="timeframe" type="integer" min="1" max="90" step="1" required="true">
 				<label>Timeframe</label>
 				<description>The timeframe in days to get the water consumption of</description>
+				<default>1</default>
 			</parameter>
 		</config-description>
 	</channel-type>
