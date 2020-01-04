@@ -248,6 +248,8 @@ public class SomfyTahomaBindingConstants {
     public static final String ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState";
     public static final String CYCLIC_BUTTON_STATE = "core:CyclicButtonState";
     public static final String BATTERY_STATUS_STATE = "internal:BatteryStatusState";
+    public static final String SLATE_ORIENTATION_STATE = "core:SlateOrientationState";
+    public static final String CLOSURE_OR_ROCKER_STATE = "core:ClosureOrRockerPositionState";
     public static final String MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState";
     public static final String UNAVAILABLE = "unavailable";
     public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";

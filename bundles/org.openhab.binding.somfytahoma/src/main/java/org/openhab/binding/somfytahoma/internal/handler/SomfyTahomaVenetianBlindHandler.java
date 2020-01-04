@@ -32,7 +32,7 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
     public SomfyTahomaVenetianBlindHandler(Thing thing) {
         super(thing);
         stateNames.put(CONTROL, "core:ClosureState");
-        stateNames.put(ORIENTATION, "core:SlateOrientationState");
+        stateNames.put(ORIENTATION, SLATE_ORIENTATION_STATE);
     }
 
     @Override
