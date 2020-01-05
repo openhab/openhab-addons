@@ -148,7 +148,7 @@
 		<description>Shelly Plug device with relay and power meter</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug" />
-			<channel-group id="meter" typeId="basicMeter" />
+			<channel-group id="meter" typeId="meter" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 

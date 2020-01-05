@@ -10,7 +10,7 @@
 		</parameter-group>
 
 		<parameter name="userId" type="text" required="false">
-			<label>UserID</label>
+			<label>User</label>
 			<description>User ID for HTTP API access.</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
@@ -22,6 +22,17 @@
 			<label>Device IP Address</label>
 			<description>IP-Address of the Shelly device.</description>
 			<context>network-address</context>
+		</parameter>
+		<parameter name="weakSignal" type="integer" required="false">
+			<label>Weak Signal Threshold</label>
+			<description>An alarm is triggered if a device reports WiFi signal strength below this threshold. Default: -80 dBm</description>
+			<default>-80</default>
+			<unitLabel>%</unitLabel>
+		</parameter>
+		<parameter name="brightnessAutoOn" type="boolean" required="false">
+			<label>Brightness Auto-ON</label>
+			<description>true: Turn device ON if brightness > 0 is set; false: don't touch power status when brightness is set.</description>
+			<default>true</default>
 		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
 			<label>Enable Button Events</label>
@@ -39,7 +50,7 @@
 			<label>Enable Push Events (short/long)</label>
 			<description>True if the binding should register to get the Short/Long Push Events.</description>
 			<advanced>true</advanced>
-			<default>true</default>
+			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
 			<label>Enable CoIoT Events</label>
@@ -72,8 +83,8 @@
 			<context>network-address</context>
 		</parameter>
 		<parameter name="lowBattery" type="integer" required="false">
-			<label>Low Battery</label>
-			<description>Threshold for the battery level, alert will be signed when battery level is below..</description>
+			<label>Low Battery Threshold</label>
+			<description>Threshold for the battery level, alert will be signed when battery level is below. Default: 20%</description>
 			<default>20</default>
 			<unitLabel>%</unitLabel>
 		</parameter>
@@ -89,11 +100,19 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
+		<parameter name="weakSignal" type="integer" required="false">
+			<label>Weak Signal Threshold</label>
+			<description>An alarm is triggered if a device reports WiFi signal strength below this threshold. Default: -80 dBm</description>
+			<advanced>true</advanced>
+			<default>80</default>
+			<unitLabel>%</unitLabel>
+		</parameter>
 		<parameter name="updateInterval" type="integer" required="true">
 			<label>Update Interval</label>
 			<description>Interval in seconds to query an update from the device.</description>
 			<default>3600</default>
 			<unitLabel>sec</unitLabel>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 

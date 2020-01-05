@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyUtils.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -32,10 +32,10 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusLight;
-import org.openhab.binding.shelly.internal.api.ShellyApiJson.ShellyStatusLightChannel;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLight;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
@@ -70,7 +70,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Thing is using class {}", this.getClass());
+        logger.debug("Thing is using  {}", this.getClass());
         super.initialize();
     }
 
@@ -208,7 +208,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             }
 
             // send changed colors to the device
-            sendColors(profile, lightId, oldCol, col);
+            sendColors(profile, lightId, oldCol, col, config.brightnessAutoOn);
         }
 
         return true;
@@ -316,8 +316,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         Validate.notNull(profile, "updateThingStatus(): profile must not be null!");
         Validate.isTrue(profile.isLight,
                 "ERROR: Device " + profile.hostname + " is not a light. but class ShellyHandlerLight is called!");
-
-        Validate.notNull(profile);
         ShellyStatusLight status = api.getLightStatus();
         Validate.notNull(status, "updateThingStatus(): status must not be null!");
         logger.trace("Updating bulb/rgw2 status for {}, in {} mode, {} channel(s)", profile.hostname, profile.mode,
@@ -349,6 +347,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, getOnOff(light.ison));
             updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON, getDecimal(light.autoOn));
             updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF, getDecimal(light.autoOff));
+            updated |= updateInputs(controlGroup, genericStatus, lightId);
             if (getBool(light.overpower)) {
                 postAlarm(ALARM_TYPE_OVERPOWER, false);
             }
@@ -438,7 +437,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
     @SuppressWarnings("null")
     private void sendColors(@Nullable ShellyDeviceProfile profile, Integer lightId, ShellyColorUtils oldCol,
-            ShellyColorUtils newCol) throws IOException {
+            ShellyColorUtils newCol, boolean autoOn) throws IOException {
         Validate.notNull(profile);
 
         // boolean updated = false;
@@ -449,7 +448,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 "{}: New color settings for channel {}: RGB {}/{}/{}, white={}, gain={}, brightness={}, color-temp={}",
                 thingName, channelId, newCol.red, newCol.green, newCol.blue, newCol.white, newCol.gain,
                 newCol.brightness, newCol.temp);
-        parms.put(SHELLY_LIGHT_TURN, profile.inColor || newCol.brightness > 0 ? SHELLY_API_ON : SHELLY_API_OFF);
+        if (autoOn) {
+            parms.put(SHELLY_LIGHT_TURN, profile.inColor || newCol.brightness > 0 ? SHELLY_API_ON : SHELLY_API_OFF);
+        }
         if (profile.inColor) {
             if (!oldCol.red.equals(newCol.red) || !oldCol.green.equals(newCol.green) || !oldCol.blue.equals(newCol.blue)
                     || !oldCol.white.equals(newCol.white)) {

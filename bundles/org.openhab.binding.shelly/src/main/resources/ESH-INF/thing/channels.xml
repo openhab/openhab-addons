@@ -58,11 +58,6 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="dimmerOutput">
-		<item-type>Switch</item-type>
-		<label>Light</label>
-		<description>Turn light ON or OFF</description>
-	</channel-type>
 	<channel-type id="inputState">
 		<item-type>Switch</item-type>
 		<label>Input</label>
@@ -89,13 +84,6 @@
 		<label>Brightness</label>
 		<description>Light brightness in %</description>
 		<category>DimmableLight</category>
-	</channel-type>
-	<channel-type id="dimmerLoadError">
-		<item-type>Switch</item-type>
-		<label>Load Error</label>
-		<description>Error reported load error</description>
-		<state readOnly="true">
-		</state>
 	</channel-type>
 	<channel-type id="meterWatts">
 		<item-type>Number:Power</item-type>
@@ -365,4 +353,20 @@
 			</options>
 		</event>
 	</channel-type>
+
+	<channel-type id="timeoutErrors" advanced="true">
+		<item-type>Number</item-type>
+		<label>Timeouts</label>
+		<description>Number of timeouts while accessing the device API</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="timeoutsRecovered" advanced="true">
+		<item-type>Number</item-type>
+		<label>Timeouts recovered</label>
+		<description>Number of device API timeouts, which could be recovered</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>

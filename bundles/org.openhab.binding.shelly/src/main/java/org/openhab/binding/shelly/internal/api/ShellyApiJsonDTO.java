@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link ShellyApiJson} is used for the JSon/GSon mapping
+ * The {@link ShellyApiJsonDTO} is used for the JSon/GSon mapping
  *
  * @author Markus Michels - Initial contribution
  */
-public class ShellyApiJson {
+public class ShellyApiJsonDTO {
 
     public static final String SHELLY_API_ON = "on";
     public static final String SHELLY_API_OFF = "off";
@@ -223,8 +223,8 @@ public class ShellyApiJson {
     public static final String SHELLY_EVENT_BTN2_OFF = "btn2_off";
     public static final String SHELLY_EVENT_SHORTPUSH = "shortpush";
     public static final String SHELLY_EVENT_LONGPUSH = "longpush";
-    public static final String SHELLY_EVENT_OUT_ON = "btn2_off";
-    public static final String SHELLY_EVENT_OUT_OFF = "btn_on";
+    public static final String SHELLY_EVENT_OUT_ON = "out_on";
+    public static final String SHELLY_EVENT_OUT_OFF = "out_off";
     public static final String SHELLY_EVENT_ROLLER_OPEN = "roller_open";
     public static final String SHELLY_EVENT_ROLLER_CLOSE = "roller_close";
     public static final String SHELLY_EVENT_ROLLER_STOP = "roller_stop";
@@ -310,7 +310,6 @@ public class ShellyApiJson {
         public Double total; // Total consumed energy, Wh
         @SerializedName("total_returned")
         public Double totalReturned; // Total returned energy, Wh
-        public Long timestamp;
     }
 
     public static class ShellySettingsUpdate {
@@ -410,6 +409,7 @@ public class ShellyApiJson {
         public String mac;
         public ArrayList<ShellySettingsRelay> relays;
         public ArrayList<ShellySettingsRoller> rollers;
+        public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellyInputState> inputs;
         public ArrayList<ShellySettingsLight> lights;
         public ArrayList<ShellyShortLightStatus> dimmers;
