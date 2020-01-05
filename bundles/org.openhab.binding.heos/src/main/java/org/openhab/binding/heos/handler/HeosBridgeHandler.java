@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.internal.HeosChannelHandlerFactory;
@@ -94,7 +95,15 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         if (command instanceof RefreshType) {
             return;
         }
-        HeosChannelHandler channelHandler = channelHandlerFactory.getChannelHandler(channelUID);
+        ChannelTypeUID channelTypeUID = null; // Needed to detect the player channels on the bridge
+        Channel channel = this.getThing().getChannel(channelUID.getId());
+        if (channel != null) {
+            channelTypeUID = channel.getChannelTypeUID();
+        } else {
+            logger.debug("No valid channel found");
+            return;
+        }
+        HeosChannelHandler channelHandler = channelHandlerFactory.getChannelHandler(channelUID, channelTypeUID);
         if (channelHandler != null) {
             channelHandler.handleCommand(command, this, channelUID);
         }
