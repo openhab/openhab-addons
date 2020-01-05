@@ -250,13 +250,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 if (hasMyfoxShutter(device)) {
                     deviceDiscovered(device, THING_TYPE_MYFOX_CAMERA);
                 } else {
-                    if (device.getStates().size() > 1) {
-                        //we have a camera with an extra state
-                        logUnsupportedDevice(device);
-                    } else {
-                        //a generic camera
-                        deviceDiscovered(device, THING_TYPE_CAMERA);
-                    }
+                    logUnsupportedDevice(device);
                 }
                 break;
             case THING_PROTOCOL_GATEWAY:
@@ -276,19 +270,20 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         if (!isStateLess(device)) {
             logger.info("Detected a new unsupported device: {}", device.getUiClass());
             logger.info("If you want to add the support, please create a new issue and attach the information below");
-            logger.info("Supported commands: {}", device.getDefinition());
+            logger.info("Device definition:\n{}", device.getDefinition());
 
             StringBuilder sb = new StringBuilder().append('\n');
             for (SomfyTahomaState state : device.getStates()) {
                 sb.append(state.toString()).append('\n');
             }
-            logger.info("Device states: {}", sb);
+            logger.info("Current device states: {}", sb);
         }
     }
 
     private boolean hasState(SomfyTahomaDevice device, String state) {
-        for (SomfyTahomaState st : device.getStates()) {
-            if (state.equals(st.getName())) {
+        SomfyTahomaDeviceDefinition def = device.getDefinition();
+        for (SomfyTahomaDeviceDefinitionState st : def.getStates()) {
+            if (state.equals(st.getQualifiedName())) {
                 return true;
             }
         }

@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 
 /**
@@ -34,10 +35,11 @@ import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaMyfoxCameraHandler extends SomfyTahomaCameraHandler {
+public class SomfyTahomaMyfoxCameraHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaMyfoxCameraHandler(Thing thing) {
         super(thing);
+        stateNames.put(CLOUD_STATUS, "core:CloudDeviceStatusState");
         stateNames.put(SHUTTER, MYFOX_SHUTTER_STATUS_STATE);
     }
 
@@ -54,6 +56,11 @@ public class SomfyTahomaMyfoxCameraHandler extends SomfyTahomaCameraHandler {
                     boolean open = "opened".equals(state.getValue());
                     updateState(ch.getUID(), open ? OnOffType.ON : OnOffType.OFF);
                 }
+            }
+            if (CLOUD_STATUS.equals(state.getName())) {
+                Channel ch = thing.getChannel(CLOUD_STATUS);
+                State newState = parseTahomaState(state);
+                updateState(ch.getUID(), newState);
             }
         }
         updateProperties(properties);

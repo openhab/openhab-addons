@@ -126,9 +126,6 @@ public class SomfyTahomaBindingConstants {
     // Adjustable slats roller shutter
     public static final ThingTypeUID THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "adjustableslatsrollershutter");
 
-    // Camera
-    public static final ThingTypeUID THING_TYPE_CAMERA = new ThingTypeUID(BINDING_ID, "camera");
-
     // MyFox Camera
     public static final ThingTypeUID THING_TYPE_MYFOX_CAMERA = new ThingTypeUID(BINDING_ID, "myfoxcamera");
 
@@ -209,11 +206,9 @@ public class SomfyTahomaBindingConstants {
     public static final String ONOFF_STATE = "onoff";
     public static final String BATTERY = "battery";
 
-    // Camera
-    public static final String CLOUD_STATUS = "cloud_status";
-
     // Myfox Camera
     public static final String SHUTTER = "shutter";
+    public static final String CLOUD_STATUS = "cloud_status";
 
     //Constants
     public static final String TAHOMA_API_URL = "https://www.tahomalink.com/enduser-mobile-web/enduserAPI/";
@@ -305,7 +300,7 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA,
             THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_CURTAIN,
             THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER,
-            THING_TYPE_CAMERA, THING_TYPE_MYFOX_CAMERA));
+            THING_TYPE_MYFOX_CAMERA));
 
     //somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {

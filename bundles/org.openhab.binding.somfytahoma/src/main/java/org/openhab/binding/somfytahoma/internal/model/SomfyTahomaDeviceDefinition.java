@@ -25,19 +25,28 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyTahomaDeviceDefinition {
 
     private ArrayList<SomfyTahomaDeviceDefinitionCommand> commands = new ArrayList<>();
+    private ArrayList<SomfyTahomaDeviceDefinitionState> states = new ArrayList<>();
 
     public ArrayList<SomfyTahomaDeviceDefinitionCommand> getCommands() {
         return commands;
     }
 
+    public ArrayList<SomfyTahomaDeviceDefinitionState> getStates() {
+        return states;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{ ");
+        sb.append("Commands: { ");
         for (SomfyTahomaDeviceDefinitionCommand cmd : commands) {
             sb.append(cmd.toString()).append("; ");
         }
 
+        sb.append("}\nStates: {");
+        for (SomfyTahomaDeviceDefinitionState state : states) {
+            sb.append(state.toString()).append("; ");
+        }
         sb.append("}");
         return sb.toString();
     }
