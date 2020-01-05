@@ -36,15 +36,15 @@
   </modules>
 
   <scm>
-    <connection>scm:git:https://github.com/openhab/openhab2-addons.git</connection>
-    <developerConnection>scm:git:https://github.com/openhab/openhab2-addons.git</developerConnection>
+    <connection>scm:git:https://github.com/openhab/openhab-addons.git</connection>
+    <developerConnection>scm:git:https://github.com/openhab/openhab-addons.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://github.com/openhab/openhab2-addons</url>
+    <url>https://github.com/openhab/openhab-addons</url>
   </scm>
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/openhab/openhab2-addons/issues</url>
+    <url>https://github.com/openhab/openhab-addons/issues</url>
   </issueManagement>
 
   <distributionManagement>
