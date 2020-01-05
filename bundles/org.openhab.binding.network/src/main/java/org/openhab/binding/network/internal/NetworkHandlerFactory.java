@@ -43,6 +43,8 @@ import org.slf4j.LoggerFactory;
 public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
 
+    private final Logger logger = LoggerFactory.getLogger(NetworkHandlerFactory.class);
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return NetworkBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -67,6 +69,7 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
         // configuration, the values are automatically available in all handlers. Because they all
         // share the same instance.
         configuration.update(new Configuration(config).as(NetworkBindingConfiguration.class));
+        logger.debug("Updated binding configuration to {}", configuration);
     }
 
     @Override

@@ -12,20 +12,6 @@
  */
 package org.openhab.binding.network.internal;
 
-import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -39,6 +25,16 @@ import org.openhab.binding.network.internal.utils.PingResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.*;
+import java.util.function.Consumer;
+
 /**
  * The {@link PresenceDetection} handles the connection to the Device
  *
@@ -48,9 +44,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PresenceDetection implements IPRequestReceivedCallback {
-
-    public static final String LATENCY_MODE_PING_PREFERRED = "ping_preferred";
-    public static final String LATENCY_MODE_ONLY_EXECECUTION = "execution";
 
     public static final double NOT_REACHABLE = -1;
     public static final int DESTINATION_TTL = 300 * 1000; // in ms, 300 s
@@ -76,7 +69,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private @NonNullByDefault({}) ExpiringCache<@Nullable InetAddress> destination;
     private @Nullable InetAddress cachedDestination = null;
 
-    private String latencyMode = LATENCY_MODE_PING_PREFERRED;
+    public boolean preferResponseTimeAsLatency;
 
     /// State variables (cannot be final because of test dependency injections)
     ExpiringCacheAsync<PresenceDetectionValue> cache;
@@ -93,12 +86,6 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         cache = new ExpiringCacheAsync<PresenceDetectionValue>(cacheDeviceStateTimeInMS, () -> {
             performPresenceDetection(false);
         });
-    }
-
-    public String getLatencyMode() { return latencyMode; }
-
-    public void setLatencyMode(String latencyMode) {
-        this.latencyMode = latencyMode;
     }
 
     public @Nullable String getHostname() {
@@ -159,6 +146,10 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
     public void setTimeout(int timeout) {
         this.timeoutInMS = timeout;
+    }
+
+    public void setPreferResponseTimeAsLatency(boolean preferResponseTimeAsLatency) {
+        this.preferResponseTimeAsLatency = preferResponseTimeAsLatency;
     }
 
     /**
@@ -485,7 +476,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
             networkUtils.servicePing(destinationAddress.getHostAddress(), tcpPort, timeoutInMS).ifPresent(o -> {
                 if(o.isSuccess()) {
-                    PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.TCP_CONNECTION, getLatency(o, latencyMode));
+                    PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.TCP_CONNECTION, getLatency(o, preferResponseTimeAsLatency));
                     v.addReachableTcpService(tcpPort);
                     updateListener.partialDetectionResult(v);
                 }
@@ -518,7 +509,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
             networkUtils.nativeARPPing(arpPingMethod, arpPingUtilPath, interfaceName,
                     destinationAddress.getHostAddress(), timeoutInMS).ifPresent(o -> {
-                PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ARP_PING, getLatency(o, latencyMode));
+                PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ARP_PING, getLatency(o, preferResponseTimeAsLatency));
                 updateListener.partialDetectionResult(v);
             });
         } catch (IOException e) {
@@ -543,7 +534,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         }
 
         networkUtils.javaPing(timeoutInMS, destinationAddress).ifPresent(o -> {
-            PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ICMP_PING, getLatency(o, latencyMode));
+            PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ICMP_PING, getLatency(o, preferResponseTimeAsLatency));
             updateListener.partialDetectionResult(v);
         });
     }
@@ -558,7 +549,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
             networkUtils.nativePing(pingMethod, destinationAddress.getHostAddress(), timeoutInMS).ifPresent(o -> {
                 if (o.isSuccess()) {
-                    PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ICMP_PING, getLatency(o, latencyMode));
+                    PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ICMP_PING, getLatency(o, preferResponseTimeAsLatency));
                     updateListener.partialDetectionResult(v);
                 }
             });
@@ -571,12 +562,12 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         }
     }
 
-    private double getLatency(PingResult pingResult, String latencyMode) {
-        logger.debug("Getting latency from ping result {} using latency mode {}", pingResult, latencyMode);
+    private double getLatency(PingResult pingResult, boolean preferResponseTimeAsLatency) {
+        logger.debug("Getting latency from ping result {} using latency mode {}", pingResult, preferResponseTimeAsLatency);
         // Execution time is always set and this value is also the default. So lets use it first.
         double latency = pingResult.getExecutionTimeInMS();
 
-        if (LATENCY_MODE_PING_PREFERRED.equals(latencyMode) && pingResult.getResponseTimeInMS().isPresent()) {
+        if (preferResponseTimeAsLatency && pingResult.getResponseTimeInMS().isPresent()) {
             latency = pingResult.getResponseTimeInMS().get();
         }
 
