@@ -60,7 +60,7 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
     private AllPlay allPlay;
     private AllPlayBindingProperties bindingProperties;
 
-    // Bindings should not use the ThingRegistry! See https://github.com/openhab/openhab2-addons/pull/6080 and
+    // Bindings should not use the ThingRegistry! See https://github.com/openhab/openhab-addons/pull/6080 and
     // https://github.com/eclipse/smarthome/issues/5182
     private final ThingRegistry thingRegistry;
     private final AudioHTTPServer audioHTTPServer;
