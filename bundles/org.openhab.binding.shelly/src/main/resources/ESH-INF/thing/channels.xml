@@ -6,13 +6,13 @@
 
 	<channel-type id="timerAutoOn" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Auto ON timer</label>
+		<label>Auto-ON Timer</label>
 		<description>When Off - Turn On After xx seconds; 0 disables the timer</description>
 		<state min="0" step="1" pattern="%d %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="timerAutoOff" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Auto OFF timer</label>
+		<label>Auto-OFF Timer</label>
 		<description>When ON - Turn On After xx seconds; 0 disables the timer</description>
 		<state min="0" step="1" pattern="%d %unit%" readOnly="false"></state>
 	</channel-type>

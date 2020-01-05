@@ -16,7 +16,7 @@
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:generic" />
+		<config-description-ref uri="thing-type:shelly:light" />
 	</thing-type>
 
 	<thing-type id="shellyrgbw2-color">
@@ -30,7 +30,7 @@
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:generic" />
+		<config-description-ref uri="thing-type:shelly:light" />
 	</thing-type>
 
 	<thing-type id="shellyrgbw2-white">
@@ -66,7 +66,7 @@
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:generic" />
+		<config-description-ref uri="thing-type:shelly:light" />
 	</thing-type>
 
 	<channel-group-type id="bulbControl">
