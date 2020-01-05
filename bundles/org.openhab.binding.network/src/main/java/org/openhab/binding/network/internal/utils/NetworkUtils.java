@@ -39,6 +39,8 @@ import java.util.stream.Collectors;
 public class NetworkUtils {
     private final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
 
+    private LatencyParser latencyParser = new LatencyParser();
+
     /**
      * Gets every IPv4 Address on each Interface except the loopback
      * The Address format is ip/subnet
@@ -247,9 +249,6 @@ public class NetworkUtils {
         // not ready.
         // Exception: return code is also 0 in Windows for all requests on the local subnet.
         // see https://superuser.com/questions/403905/ping-from-windows-7-get-no-reply-but-sets-errorlevel-to-0
-        if (method != IpPingMethodEnum.WINDOWS_PING) {
-            return Optional.of(new PingResult(proc.waitFor() == 0, System.currentTimeMillis() - execStartTimeInMS));
-        }
 
         int result = proc.waitFor();
         if (result != 0) {
@@ -262,8 +261,12 @@ public class NetworkUtils {
                 throw new IOException("Received no output from ping process.");
             }
             do {
-                if (line.contains("TTL=")) {
-                    return Optional.of(new PingResult(true, System.currentTimeMillis() - execStartTimeInMS));
+                // Because of the Windows issue, we need to check this. We assume that the ping was successful whenever
+                // this specific string is contained in the output
+                if (line.contains("TTL=") || line.contains("ttl=")) {
+                     PingResult pingResult = new PingResult(true, System.currentTimeMillis() - execStartTimeInMS);
+                     latencyParser.parseLatency(line).ifPresent(pingResult::setResponseTimeInMS);
+                     return Optional.of(pingResult);
                 }
                 line = r.readLine();
             } while (line != null);
@@ -330,8 +333,11 @@ public class NetworkUtils {
         double execStartTimeInMS = System.currentTimeMillis();
 
         try {
-            destinationAddress.isReachable(timeoutInMS);
-            return Optional.of(new PingResult(true, System.currentTimeMillis() - execStartTimeInMS));
+            if(destinationAddress.isReachable(timeoutInMS)) {
+                return Optional.of(new PingResult(true, System.currentTimeMillis() - execStartTimeInMS));
+            } else {
+                return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
+            }
         } catch (IOException e) {
             return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
         }
