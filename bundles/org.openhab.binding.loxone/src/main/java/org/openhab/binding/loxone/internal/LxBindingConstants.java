@@ -36,16 +36,21 @@ public class LxBindingConstants {
     public static final String MINISERVER_CHANNEL_TYPE_DIMMER = "dimmerTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_NUMBER = "numberTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_COLORPICKER = "colorPickerTypeId";
-    public static final String MINISERVER_CHANNEL_TYPE_IROOM_V2_ACTIVE_MODE = "iRoomV2ActiveModeTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_IROOM_MODE = "iRoomModeTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_IROOM_SERVICE_MODE = "iRoomServiceModeTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_IROOM_V2_OPERATING_MODE = "iRoomV2OperatingModeTypeId";
-    public static final String MINISERVER_CHANNEL_TYPE_IROOM_V2_PREPARE_STATE = "iRoomV2PrepareStateTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_IROOM_V2_COMFORT_TOLERANCE = "iRoomV2ComfortToleranceTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_IROOM_TIMER_TEMP_TYPE = "iRCDayTimerTempIdxTypeId";
+
     // Channel Type IDs - read only
     public static final String MINISERVER_CHANNEL_TYPE_RO_TEXT = "roTextTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_SWITCH = "roSwitchTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_ANALOG = "roAnalogTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_NUMBER = "roNumberTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_DATETIME = "roDateTimeTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_RO_IROOM_MANUAL_MODE = "roIRoomManualModeTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_RO_IROOM_V2_ACTIVE_MODE = "roIRoomV2ActiveModeTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_RO_IROOM_V2_PREPARE_STATE = "roIRoomV2PrepareStateTypeId";
 
     // Miniserver properties and parameters
     public static final String MINISERVER_PARAM_HOST = "host";

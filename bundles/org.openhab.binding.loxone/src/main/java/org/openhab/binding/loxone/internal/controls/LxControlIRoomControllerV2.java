@@ -27,8 +27,6 @@ import org.eclipse.smarthome.core.types.StateDescriptionFragment;
 import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.binding.loxone.internal.types.LxTags;
 import org.openhab.binding.loxone.internal.types.LxUuid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An Intelligent Room Controller V2.
@@ -73,8 +71,6 @@ class LxControlIRoomControllerV2 extends LxControl {
     private static final String CMD_SET_ABSENT_MAX_TEMPERATURE = "setAbsentMaxTemperature/";
     private static final String CMD_SET_MANUAL_TEMPERATURE = "setManualTemperature/";
 
-    private final Logger logger = LoggerFactory.getLogger(LxControlIRoomControllerV2.class);
-
     private LxControlIRoomControllerV2(LxUuid uuid) {
         super(uuid);
     }
@@ -94,7 +90,7 @@ class LxControlIRoomControllerV2 extends LxControl {
                     .build();
         }
 
-        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_IROOM_V2_ACTIVE_MODE),
+        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_IROOM_V2_ACTIVE_MODE),
                 defaultChannelLabel + "/ Active Mode", "Active mode", tags, null,
                 () -> getStateDecimalValue(STATE_ACTIVE_MODE));
 
@@ -102,7 +98,7 @@ class LxControlIRoomControllerV2 extends LxControl {
                 defaultChannelLabel + "/ Operating Mode", "Operating mode", tags, this::setOperatingMode,
                 () -> getStateDecimalValue(STATE_OPERATING_MODE));
 
-        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_IROOM_V2_PREPARE_STATE),
+        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_IROOM_V2_PREPARE_STATE),
                 defaultChannelLabel + "/ Prepare State", "Prepare state", tags, null,
                 () -> getStateDecimalValue(STATE_PREPARE_STATE));
 

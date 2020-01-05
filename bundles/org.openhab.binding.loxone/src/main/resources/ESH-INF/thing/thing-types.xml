@@ -206,7 +206,71 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="iRoomV2ActiveModeTypeId">
+	<channel-type id="iRoomModeTypeId">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>Loxone Intelligent Room Controller Mode.</description>
+		<state pattern="%d" min="0" max="6" step="1">
+			<options>
+				<option value="0">Autopilot</option>
+				<option value="1">Autopilot (currently heating)</option>
+				<option value="2">Autopilot (currently cooling)</option>
+				<option value="3">Autopilot heating</option>
+				<option value="4">Autopilot cooling</option>
+				<option value="5">Manual heating</option>
+				<option value="6">Manual cooling</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="iRoomServiceModeTypeId">
+		<item-type>Number</item-type>
+		<label>Service Mode</label>
+		<description>Loxone Intelligent Room Controller Service Mode.</description>
+		<state pattern="%d" min="0" max="4" step="1">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heating and cooling off</option>
+				<option value="2">Heating on, cooling off</option>
+				<option value="3">Heating off, cooling on</option>
+				<option value="4">Heating and cooling on</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="roIRoomManualModeTypeId">
+		<item-type>Number</item-type>
+		<label>Manual Mode</label>
+		<description>Loxone Intelligent Room Controller Manual Mode.</description>
+		<state pattern="%d" min="0" max="4" step="1" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Comfort overriding</option>
+				<option value="2">Economy overriding</option>
+				<option value="3">Timer overriding</option>
+				<option value="4">Movement or presence</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="iRCDayTimerTempIdxTypeId">
+		<item-type>Number</item-type>
+		<label>Temperature Type</label>
+		<description>Loxone Intelligent Room Controller Timer Temperature Type.</description>
+		<state pattern="%d" min="1" max="7" step="1">
+			<options>
+				<option value="1">Comfort heating</option>
+				<option value="2">Comfort cooling</option>
+				<option value="3">Empty house</option>
+				<option value="4">Heat protection</option>
+				<option value="5">Increased heat</option>
+				<option value="6">Party</option>
+				<option value="7">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="roIRoomV2ActiveModeTypeId">
 		<item-type>Number</item-type>
 		<label>Active Mode</label>
 		<description>Loxone Intelligent Room Controller V2 Active Mode.</description>
@@ -236,7 +300,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="iRoomV2PrepareStateTypeId">
+	<channel-type id="roIRoomV2PrepareStateTypeId">
 		<item-type>Number</item-type>
 		<label>Prepare State</label>
 		<description>Loxone Intelligent Room Controller V2 Prepare State.</description>

@@ -838,6 +838,108 @@
 					}
 				}
 			}
+		},
+		"127e7abc-01df-0afc-ffff403fb0c34b9e": {
+			"name": "Intelligent Room Controller V1",
+			"type": "IRoomController",
+			"uuidAction": "127e7abc-01df-0afc-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0fb99a98-02df-46f1-ffff403fb0c34b9e",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"details": {
+				"restrictedToMode": 0,
+				"temperatures": {
+					"0": {
+						"isAbsolute": false
+					},
+					"1": {
+						"isAbsolute": true
+					},
+					"2": {
+						"isAbsolute": true
+					},
+					"3": {
+						"isAbsolute": true
+					},
+					"4": {
+						"isAbsolute": true
+					},
+					"5": {
+						"isAbsolute": false
+					},
+					"6": {
+						"isAbsolute": false
+					}
+				},
+				"format": "%.1f°"
+			},
+			"states": {
+				"tempTarget": "147e7abc-01df-0af6-ffffd2fc4ed5fdc3",
+				"tempActual": "147e7abc-01df-0ad2-ffffd2fc4ed5fdc3",
+				"error": "147e7abc-01df-0af4-ffffd2fc4ed5fdc3",
+				"mode": "147e7abc-01df-0af2-ffffd2fc4ed5fdc3",
+				"serviceMode": "147e7abc-01df-0af3-ffffd2fc4ed5fdc3",
+				"currHeatTempIx": "147e7abc-01df-0ac7-ffffd2fc4ed5fdc3",
+				"currCoolTempIx": "147e7abc-01df-0ac8-ffffd2fc4ed5fdc3",
+				"override": "147e7abc-01df-0af9-ffffd2fc4ed5fdc3",
+				"isPreparing": "147e7abc-01df-0afa-ffffd2fc4ed5fdc3",
+				"valveHeat": "147e7abc-01df-0ae9-ffffd2fc4ed5fdc3",
+				"valveCool": "147e7abc-01df-0aed-ffffd2fc4ed5fdc3",
+				"openWindow": "147e7abc-01df-0ad3-ffffd2fc4ed5fdc3",
+				"stop": "147e7abc-01df-0ada-ffffd2fc4ed5fdc3",
+				"overrideTotal": "147e7abc-01df-0acc-ffffd2fc4ed5fdc3",
+				"movement": "147e7abc-01df-0acb-ffffd2fc4ed5fdc3",
+				"manualMode": "147e7abc-01df-0acd-ffffd2fc4ed5fdc3",
+				"temperatures": [
+					"147e7abc-01df-0adb-ffffd2fc4ed5fdc3",
+					"147e7abc-01df-0adc-ffffd2fc4ed5fdc3",
+					"147e7abc-01df-0add-ffffd2fc4ed5fdc3",
+					"147e7abc-01df-0ae0-ffffd2fc4ed5fdc3",
+					"147e7abc-01df-0ae1-ffffd2fc4ed5fdc3",
+					"147e7abc-01df-0adf-ffffd2fc4ed5fdc3",
+					"147e7abc-01df-0ade-ffffd2fc4ed5fdc3"
+				]
+			},
+			"subControls": {
+				"147e7abc-01df-0ac5-ffffd2fc4ed5fdc3": {
+					"name": "Heating",
+					"type": "IRCDaytimer",
+					"uuidAction": "147e7abc-01df-0ac5-ffffd2fc4ed5fdc3",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"details": {
+						"analog": true,
+						"format": "%.1f°"
+					},
+					"states": {
+						"entriesAndDefaultValue": "147e7abc-01df-0ac5-ffffd2fc4ed5fdc3",
+						"mode": "147e7abc-01df-0af7-ffffd2fc4ed5fdc3",
+						"modeList": "147e7abc-01df-0ac9-ffffd2fc4ed5fdc3",
+						"value": "147e7abc-01df-0ac7-ffffd2fc4ed5fdc3"
+					}
+				},
+				"147e7abc-01df-0ac6-ffffd2fc4ed5fdc3": {
+					"name": "Cooling",
+					"type": "IRCDaytimer",
+					"uuidAction": "147e7abc-01df-0ac6-ffffd2fc4ed5fdc3",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"details": {
+						"analog": true,
+						"format": "%.1f°"
+					},
+					"states": {
+						"entriesAndDefaultValue": "147e7abc-01df-0ac6-ffffd2fc4ed5fdc3",
+						"mode": "147e7abc-01df-0af8-ffffd2fc4ed5fdc3",
+						"modeList": "147e7abc-01df-0aca-ffffd2fc4ed5fdc3",
+						"value": "147e7abc-01df-0ac8-ffffd2fc4ed5fdc3"
+					}
+				}
+			}
 		}
 	},
 	"weatherServer": {

@@ -57,17 +57,17 @@ class LxControlTest {
         handler.loadConfiguration();
     }
 
-    <T> void testControlCreation(Class<T> testClass, int numberOfControls, int numberOfSubcontrols,
+    private <T> void testControlCreation(LxControl c, int numberOfControls, int numberOfSubcontrols,
             int numberOfChannels, int numberOfChannelsWithSubs, int numberOfStates) {
-        assertEquals(numberOfControls, numberOfControls(testClass));
-        LxControl c = getControl(controlUuid);
         assertNotNull(c);
         Map<LxUuid, LxControl> subC = c.getSubControls();
         assertNotNull(subC);
         assertEquals(numberOfSubcontrols, subC.size());
         assertEquals(controlUuid, c.getUuid());
-        assertEquals(controlName, c.getName());
-        assertEquals(controlName, c.getLabel());
+        String[] segments = controlName.split("/");
+        String name = segments[segments.length - 1].trim();
+        assertEquals(name, c.getName());
+        assertEquals(name, c.getLabel());
         LxContainer room = c.getRoom();
         assertNotNull(room);
         assertEquals(roomUuid, room.getUuid());
@@ -79,10 +79,30 @@ class LxControlTest {
         assertEquals(numberOfStates, c.getStates().size());
     }
 
-    void testChannel(LxControl ctrl, String itemType, String namePostFix, BigDecimal min, BigDecimal max,
-            BigDecimal step, String format, Boolean readOnly, List<StateOption> options, Set<String> tags) {
+    <T> void testControlCreation(Class<T> testClass, int numberOfControls, int numberOfSubcontrols,
+            int numberOfChannels, int numberOfChannelsWithSubs, int numberOfStates) {
+        assertEquals(numberOfControls, numberOfControls(testClass));
+        LxControl c = getControl(controlUuid);
+        assertNotNull(c);
+        testControlCreation(c, numberOfControls, numberOfSubcontrols, numberOfChannels, numberOfChannelsWithSubs,
+                numberOfStates);
+    }
+
+    <T> void testSubControlCreation(Class<T> testClass, int numberOfControls, int numberOfSubcontrols,
+            int numberOfChannels, int numberOfChannelsWithSubs, int numberOfStates) {
+        assertEquals(numberOfControls, numberOfSubControls(testClass));
+        LxControl c = getSubControl(controlUuid);
+        assertNotNull(c);
+        testControlCreation(c, numberOfControls, numberOfSubcontrols, numberOfChannels, numberOfChannelsWithSubs,
+                numberOfStates);
+    }
+
+    void testChannel(String channelLabel, LxControl ctrl, String itemType, String namePostFix, BigDecimal min,
+            BigDecimal max, BigDecimal step, String format, Boolean readOnly, List<StateOption> options,
+            Set<String> tags) {
         assertNotNull(ctrl);
-        Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
+        Channel c = getChannel(getExpectedName(channelLabel == null ? controlName : channelLabel,
+                ctrl.getRoom().getName(), namePostFix), ctrl);
         assertNotNull(c);
         assertNotNull(c.getUID());
         assertNotNull(c.getDescription());
@@ -123,7 +143,7 @@ class LxControlTest {
     void testChannel(String itemType, String namePostFix, BigDecimal min, BigDecimal max, BigDecimal step,
             String format, Boolean readOnly, List<StateOption> options, Set<String> tags) {
         LxControl ctrl = getControl(controlUuid);
-        testChannel(ctrl, itemType, namePostFix, min, max, step, format, readOnly, options, tags);
+        testChannel(null, ctrl, itemType, namePostFix, min, max, step, format, readOnly, options, tags);
     }
 
     void testChannel(String itemType) {
@@ -135,11 +155,15 @@ class LxControlTest {
     }
 
     void testChannel(LxControl ctrl, String itemType) {
-        testChannel(ctrl, itemType, null, null, null, null, null, null, null, null);
+        testChannel(null, ctrl, itemType, null, null, null, null, null, null, null, null);
     }
 
     void testChannel(LxControl ctrl, String itemType, Set<String> tags) {
-        testChannel(ctrl, itemType, null, null, null, null, null, null, null, tags);
+        testChannel(null, ctrl, itemType, null, null, null, null, null, null, null, tags);
+    }
+
+    void testChannel(String label, LxControl ctrl, String itemType, Set<String> tags) {
+        testChannel(label, ctrl, itemType, null, null, null, null, null, null, null, tags);
     }
 
     void testChannel(String itemType, String namePostFix) {
@@ -155,11 +179,16 @@ class LxControlTest {
         testChannel(itemType, namePostFix, min, max, step, format, readOnly, options, null);
     }
 
-    State getChannelState(LxControl ctrl, String namePostFix) {
+    State getChannelState(String channelLabel, LxControl ctrl, String namePostFix) {
         assertNotNull(ctrl);
-        Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
+        Channel c = getChannel(getExpectedName(channelLabel == null ? controlName : channelLabel,
+                ctrl.getRoom().getName(), namePostFix), ctrl);
         assertNotNull(c);
         return ctrl.getChannelState(c.getUID());
+    }
+
+    State getChannelState(LxControl ctrl, String namePostFix) {
+        return getChannelState(null, ctrl, namePostFix);
     }
 
     State getChannelState(String namePostFix) {
@@ -168,7 +197,11 @@ class LxControlTest {
     }
 
     void testChannelState(LxControl ctrl, String namePostFix, State expectedValue) {
-        State current = getChannelState(ctrl, namePostFix);
+        testChannelState(null, ctrl, namePostFix, expectedValue);
+    }
+
+    void testChannelState(String channelLabel, LxControl ctrl, String namePostFix, State expectedValue) {
+        State current = getChannelState(channelLabel, ctrl, namePostFix);
         if (expectedValue != null) {
             assertNotNull(current);
         }
@@ -188,6 +221,10 @@ class LxControlTest {
         testChannelState(ctrl, null, expectedValue);
     }
 
+    void testChannelState(String channelLabel, LxControl ctrl, State expectedValue) {
+        testChannelState(channelLabel, ctrl, null, expectedValue);
+    }
+
     void changeLoxoneState(String stateName, Object value) {
         LxControl ctrl = getControl(controlUuid);
         assertNotNull(ctrl);
@@ -196,9 +233,10 @@ class LxControlTest {
         state.setStateValue(value);
     }
 
-    void executeCommand(LxControl ctrl, String namePostFix, Command command) {
+    void executeCommand(String channelLabel, LxControl ctrl, String namePostFix, Command command) {
         assertNotNull(ctrl);
-        Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
+        Channel c = getChannel(getExpectedName(channelLabel == null ? controlName : channelLabel,
+                ctrl.getRoom().getName(), namePostFix), ctrl);
         assertNotNull(c);
         try {
             ctrl.handleCommand(c.getUID(), command);
@@ -207,9 +245,17 @@ class LxControlTest {
         }
     }
 
+    void executeCommand(LxControl ctrl, String namePostFix, Command command) {
+        executeCommand(null, ctrl, namePostFix, command);
+    }
+
     void executeCommand(String namePostFix, Command command) {
         LxControl ctrl = getControl(controlUuid);
         executeCommand(ctrl, namePostFix, command);
+    }
+
+    void executeCommand(String channelLabel, LxControl ctrl, Command command) {
+        executeCommand(channelLabel, ctrl, null, command);
     }
 
     void executeCommand(LxControl ctrl, Command command) {
@@ -252,13 +298,28 @@ class LxControlTest {
         return filtered.get(0);
     }
 
+    private <T> long numberOfControls(Collection<LxControl> collection, Class<T> c) {
+        return collection.stream().filter(o -> c.equals(o.getClass())).collect(Collectors.counting());
+    }
+
     private <T> long numberOfControls(Class<T> c) {
-        Collection<LxControl> v = handler.controls.values();
-        return v.stream().filter(o -> c.equals(o.getClass())).collect(Collectors.counting());
+        return numberOfControls(handler.controls.values(), c);
+    }
+
+    private <T> long numberOfSubControls(Class<T> c) {
+        return numberOfControls(handler.subControls.values(), c);
     }
 
     private LxControl getControl(LxUuid uuid) {
-        return handler.controls.get(uuid);
+        LxControl c = handler.controls.get(uuid);
+        if (c == null) {
+            c = handler.subControls.get(uuid);
+        }
+        return c;
+    }
+
+    private LxControl getSubControl(LxUuid uuid) {
+        return handler.subControls.get(uuid);
     }
 
     private String getExpectedName(String controlName, String roomName, String postFix) {

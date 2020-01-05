@@ -52,6 +52,7 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
     Queue<String> actionQueue = new LinkedList<>();
 
     Map<LxUuid, LxControl> controls;
+    Map<LxUuid, LxControl> subControls = new HashMap<>();
     Map<LxUuid, LxControl> extraControls = new HashMap<>();
     Map<ChannelUID, StateDescription> stateDescriptions = new HashMap<>();
 
@@ -75,6 +76,9 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
         LxConfig config = gson.fromJson(msg, LxConfig.class);
         config.finalize(this);
         controls = config.controls;
+        for (LxControl c : controls.values()) {
+            subControls.putAll(c.getSubControls());
+        }
         assertNotNull(controls);
     }
 
@@ -96,8 +100,6 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
 
     @Override
     public void setChannelState(ChannelUID channelId, State state) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -109,14 +111,11 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
 
     @Override
     public String getSetting(String name) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setSettings(Map<String, String> properties) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override

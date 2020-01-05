@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -74,15 +75,25 @@ public class LxControl {
         private final LxServerHandlerApi thingHandler;
         private final LxContainer room;
         private final LxCategory category;
-
-        LxControlConfig(LxControlConfig config) {
-            this(config.thingHandler, config.room, config.category);
-        }
+        private String channelLabel;
 
         public LxControlConfig(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
             this.room = room;
             this.category = category;
             this.thingHandler = thingHandler;
+            String roomName = room != null ? room.getName() : null;
+            if (roomName != null) {
+                this.channelLabel = roomName + " / ";
+            } else {
+                this.channelLabel = "";
+            }
+        }
+
+        private LxControlConfig(LxControlConfig config) {
+            this.thingHandler = config.thingHandler;
+            this.room = config.room;
+            this.category = config.category;
+            this.channelLabel = config.channelLabel;
         }
     }
 
@@ -230,15 +241,18 @@ public class LxControl {
             JsonObject states = parent.getAsJsonObject("states");
             if (states != null) {
                 states.entrySet().forEach(entry -> {
-                    // temperature state of intelligent home controller object is the only
-                    // one that has state represented as an array, as this is not implemented
-                    // yet, we will skip this state
                     JsonElement element = entry.getValue();
-                    if (element != null && !(element instanceof JsonArray)) {
-                        String value = element.getAsString();
-                        if (value != null) {
-                            String name = entry.getKey().toLowerCase();
-                            control.states.put(name, new LxState(new LxUuid(value), name, control));
+                    if (element != null) {
+                        String name = entry.getKey().toLowerCase();
+                        // temperature state of intelligent home controller object contains
+                        // an array of state IDs for temperatures, we need to create separate state
+                        // for each temperature
+                        if (element instanceof JsonArray) {
+                            final AtomicInteger idx = new AtomicInteger(0);
+                            element.getAsJsonArray().forEach(
+                                    item -> control.addState(name + "-" + idx.getAndIncrement(), item.getAsString()));
+                        } else {
+                            control.addState(name, element.getAsString());
                         }
                     }
                 });
@@ -394,7 +408,8 @@ public class LxControl {
             logger.error("Error, attempt to initialize control that is already initialized: {}", uuid);
             return;
         }
-        config = configToSet;
+        // instantiate new config to allow for expansion of labels to include the subcontrols tree
+        config = new LxControlConfig(configToSet);
 
         if (subControls == null) {
             subControls = new HashMap<>();
@@ -416,11 +431,8 @@ public class LxControl {
             // of some malicious data attack, we'll prevent null pointer exception
             label = "Undefined name";
         }
-        String roomName = config.room != null ? config.room.getName() : null;
-        if (roomName != null) {
-            label = roomName + " / " + label;
-        }
-        defaultChannelLabel = label;
+        defaultChannelLabel = config.channelLabel + label;
+        config.channelLabel = defaultChannelLabel + " / ";
 
         // Propagate to all subcontrols of this control object
         subControls.values().forEach(c -> c.initialize(config));
@@ -703,6 +715,20 @@ public class LxControl {
     void removeAllChannels() {
         channels.clear();
         callbacks.clear();
+    }
+
+    /**
+     * Adds a new state to the control.
+     *
+     * @param name name of the state
+     * @param uuid UUID of the state - can be null
+     */
+    private void addState(String name, String uuid) {
+        if (uuid == null) {
+            logger.warn("Unexpected null UUID in state {} inside state array in control {}", name, this.name);
+            return;
+        }
+        states.put(name, new LxState(new LxUuid(uuid), name, this));
     }
 
     /**

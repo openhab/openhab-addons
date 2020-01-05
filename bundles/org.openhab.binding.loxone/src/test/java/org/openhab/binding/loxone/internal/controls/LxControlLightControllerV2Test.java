@@ -141,9 +141,9 @@ public class LxControlLightControllerV2Test extends LxControlTest {
             handler.extraControls.values().forEach(c -> {
                 LxControlMood m = (LxControlMood) c;
                 if (!m.getId().equals(778)) {
-                    executeCommand(m, OnOffType.ON);
+                    executeCommand(getMoodLabel(m.getName()), m, OnOffType.ON);
                     testAction("addMood/" + m.getId());
-                    executeCommand(m, OnOffType.OFF);
+                    executeCommand(getMoodLabel(m.getName()), m, OnOffType.OFF);
                     testAction("removeMood/" + m.getId());
                 }
             });
@@ -156,13 +156,13 @@ public class LxControlLightControllerV2Test extends LxControlTest {
         for (Integer id : moods) {
             if (!offId.equals(id)) {
                 LxControlMood m = getMood(id);
-                testChannelState(m, OnOffType.ON);
+                testChannelState(getMoodLabel(m.getName()), m, OnOffType.ON);
             }
             ids.add(id);
         }
         handler.extraControls.values().stream()
                 .filter(c -> !ids.contains(((LxControlMood) c).getId()) && !((LxControlMood) c).getId().equals(offId))
-                .forEach(c -> testChannelState(c, OnOffType.OFF));
+                .forEach(c -> testChannelState(getMoodLabel(c.getName()), c, OnOffType.OFF));
 
         if (ids.size() == 1) {
             testChannelState(new DecimalType(ids.get(0)));
@@ -246,7 +246,7 @@ public class LxControlLightControllerV2Test extends LxControlTest {
             assertEquals(0, mood.getChannels().size());
         } else {
             assertEquals(1, mood.getChannels().size());
-            testChannel(mood, "Switch", Collections.singleton("Lighting"));
+            testChannel(getMoodLabel(name), mood, "Switch", Collections.singleton("Lighting"));
         }
     }
 
@@ -260,5 +260,9 @@ public class LxControlLightControllerV2Test extends LxControlTest {
         // mood list comes as a single line JSON from Loxone Miniserver
         msg = msg.replaceAll("[\\t+\\n+]", "");
         return msg;
+    }
+
+    private String getMoodLabel(String name) {
+        return controlName + " / Mood / " + name;
     }
 }

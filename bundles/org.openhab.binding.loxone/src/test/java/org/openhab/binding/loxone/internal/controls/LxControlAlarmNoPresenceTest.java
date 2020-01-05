@@ -47,7 +47,7 @@ public class LxControlAlarmNoPresenceTest extends LxControlTest {
     static final String SENSORS_CHANNEL = " / Sensors";
     static final String QUIT_CHANNEL = " / Acknowledge";
 
-    static private final String numberChannels[] = { NEXT_LEVEL_CHANNEL, NEXT_LEVEL_DELAY_CHANNEL,
+    private static final String NUMBER_CHANNELS[] = { NEXT_LEVEL_CHANNEL, NEXT_LEVEL_DELAY_CHANNEL,
             NEXT_LEVEL_DELAY_TOTAL_CHANNEL, LEVEL_CHANNEL, ARMED_DELAY_CHANNEL, ARMED_TOTAL_DELAY_CHANNEL };
 
     @Before
@@ -175,7 +175,7 @@ public class LxControlAlarmNoPresenceTest extends LxControlTest {
 
     private void testNumberChannel(String channel, String state) {
         Map<String, State> states = new HashMap<>();
-        for (String s : numberChannels) {
+        for (String s : NUMBER_CHANNELS) {
             states.put(s, getChannelState(s));
         }
         for (Double i = -100.0; i <= 100.0; i += 2.341) {
