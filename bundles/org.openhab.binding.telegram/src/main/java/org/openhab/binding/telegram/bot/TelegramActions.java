@@ -342,8 +342,7 @@ public class TelegramActions implements ThingActions {
                 logger.debug("Photo base64 provided; converting to binary.");
                 try {
                     final String photoB64Data;
-                    if (photoURL.startsWith("data:")) // support data URI scheme
-                    {
+                    if (photoURL.startsWith("data:")) { // support data URI scheme
                         String[] photoURLParts = photoURL.split(",");
                         if (photoURLParts.length > 1) {
                             photoB64Data = photoURLParts[1];
@@ -351,12 +350,11 @@ public class TelegramActions implements ThingActions {
                             logger.warn("The provided base64 string is not a valid data URI scheme");
                             return false;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         photoB64Data = photoURL;
                     }
-                    InputStream is = Base64.getDecoder().wrap(new ByteArrayInputStream(photoB64Data.getBytes("UTF-8")));
+                    InputStream is = Base64.getDecoder()
+                            .wrap(new ByteArrayInputStream(photoB64Data.getBytes(StandardCharsets.UTF_8)));
                     try {
                         byte[] photoBytes = IOUtils.toByteArray(is);
                         sendPhoto = new SendPhoto(chatId, photoBytes);
