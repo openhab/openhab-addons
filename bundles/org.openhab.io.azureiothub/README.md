@@ -28,3 +28,10 @@ The openHAB Azure IoT Hub Connector can operate in 2 modes:
 Publish (only) or publish and command.
 In publish mode, openHAB will sync all its devices and its status changes to Azure.
 In publish & command mode, you can also send cloud to device commands.
+
+::: tip Note
+Some issues have been reported when using this connector.
+Although the devices are successfully created in Azure IoT Hub, updating their state causes an error.
+As of 2.5, this connector has been disabled.
+Work is still in progress and it will be re-enabled in one of the next versions.
+:::
