@@ -100,14 +100,15 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         // Remove all state descriptions of this handler
         channelStateByChannelUID.forEach((uid, state) -> stateDescProvider.remove(uid));
         super.dispose();
-        // there is a design flaw, we can't clean up our stuff because it is needed by the super-class on disposal for unsubscribing
+        // there is a design flaw, we can't clean up our stuff because it is needed by the super-class on disposal for
+        // unsubscribing
         channelStateByChannelUID.clear();
     }
 
     @Override
     public CompletableFuture<Void> unsubscribeAll() {
-        return CompletableFuture.allOf(channelStateByChannelUID.values().stream().map(ChannelState::stop)
-                .toArray(CompletableFuture[]::new));
+        return CompletableFuture.allOf(
+                channelStateByChannelUID.values().stream().map(ChannelState::stop).toArray(CompletableFuture[]::new));
     }
 
     /**
@@ -153,9 +154,12 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 Value value = ValueFactory.createValueState(channelConfig, channelTypeUID.getId());
                 ChannelState channelState = createChannelState(channelConfig, channel.getUID(), value);
                 channelStateByChannelUID.put(channel.getUID(), channelState);
-                StateDescription description = value.createStateDescription(channelConfig.unit,
-                        StringUtils.isBlank(channelConfig.commandTopic));
-                stateDescProvider.setDescription(channel.getUID(), description);
+                StateDescription description = value
+                        .createStateDescription(StringUtils.isBlank(channelConfig.commandTopic)).build()
+                        .toStateDescription();
+                if (description != null) {
+                    stateDescProvider.setDescription(channel.getUID(), description);
+                }
             } catch (IllegalArgumentException e) {
                 logger.warn("Channel configuration error", e);
                 configErrors.add(channel.getUID());

@@ -13,9 +13,6 @@
 package org.openhab.binding.mqtt.generic.values;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.Collections;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,11 +23,14 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.UnDefType;
+
+import tec.uom.se.unit.Units;
 
 /**
  * Implements a percentage value. Minimum and maximum are definable.
@@ -47,28 +47,26 @@ import org.eclipse.smarthome.core.types.UnDefType;
  */
 @NonNullByDefault
 public class PercentageValue extends Value {
-    private static final BigDecimal DB100 = BigDecimal.valueOf(100);
-    private final BigDecimal min;
-    private final BigDecimal max;
-    private final BigDecimal span;
-    private final BigDecimal step;
+    private final double min;
+    private final double max;
+    private final double span;
+    private final double step;
     private final @Nullable String onValue;
     private final @Nullable String offValue;
 
     public PercentageValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step,
             @Nullable String onValue, @Nullable String offValue) {
-        super(CoreItemFactory.DIMMER, Stream
-                .of(DecimalType.class, IncreaseDecreaseType.class, OnOffType.class, UpDownType.class, StringType.class)
-                .collect(Collectors.toList()));
+        super(CoreItemFactory.DIMMER, Stream.of(DecimalType.class, QuantityType.class, IncreaseDecreaseType.class,
+                OnOffType.class, UpDownType.class, StringType.class).collect(Collectors.toList()));
         this.onValue = onValue;
         this.offValue = offValue;
-        this.min = min == null ? BigDecimal.ZERO : min;
-        this.max = max == null ? DB100 : max;
-        if (this.min.compareTo(this.max) >= 0) {
+        this.min = min == null ? 0.0 : min.doubleValue();
+        this.max = max == null ? 100.0 : max.doubleValue();
+        if (this.min >= this.max) {
             throw new IllegalArgumentException("Min need to be smaller than max!");
         }
-        this.span = this.max.subtract(this.min);
-        this.step = step == null ? BigDecimal.ONE : step;
+        this.span = this.max - this.min;
+        this.step = step == null ? 1.0 : step.doubleValue();
     }
 
     @Override
@@ -80,18 +78,27 @@ public class PercentageValue extends Value {
         } else //
                // A decimal type need to be converted according to the current min/max values
         if (command instanceof DecimalType) {
-            BigDecimal v = ((DecimalType) command).toBigDecimal();
-            v = v.subtract(min).multiply(DB100).divide(max.subtract(min), MathContext.DECIMAL128).stripTrailingZeros();
-            state = new PercentType(v);
+            double v = ((DecimalType) command).doubleValue();
+            v = (v - min) * 100.0 / (max - min);
+            state = new PercentType(new BigDecimal(v));
+        } else //
+               // A quantity type need to be converted according to the current min/max values
+        if (command instanceof QuantityType) {
+            QuantityType<?> qty = ((QuantityType<?>) command).toUnit(Units.PERCENT);
+            if (qty != null) {
+                double v = qty.doubleValue();
+                v = (v - min) * 100.0 / (max - min);
+                state = new PercentType(new BigDecimal(v));
+            }
         } else //
                // Increase or decrease by "step"
         if (command instanceof IncreaseDecreaseType) {
             if (((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE) {
-                final BigDecimal v = oldvalue.toBigDecimal().add(step);
-                state = new PercentType(v.compareTo(max) <= 0 ? v : max);
+                final double v = oldvalue.doubleValue() + step;
+                state = new PercentType(new BigDecimal(v <= max ? v : max));
             } else {
-                final BigDecimal v = oldvalue.toBigDecimal().subtract(step);
-                state = new PercentType(v.compareTo(min) >= 0 ? v : min);
+                double v = oldvalue.doubleValue() - step;
+                state = new PercentType(new BigDecimal(v >= min ? v : min));
             }
         } else //
                // On/Off equals 100 or 0 percent
@@ -101,19 +108,19 @@ public class PercentageValue extends Value {
               // Increase or decrease by "step"
         if (command instanceof UpDownType) {
             if (((UpDownType) command) == UpDownType.UP) {
-                final BigDecimal v = oldvalue.toBigDecimal().add(step);
-                state = new PercentType(v.compareTo(max) <= 0 ? v : max);
+                final double v = oldvalue.doubleValue() + step;
+                state = new PercentType(new BigDecimal(v <= max ? v : max));
             } else {
-                final BigDecimal v = oldvalue.toBigDecimal().subtract(step);
-                state = new PercentType(v.compareTo(min) >= 0 ? v : min);
+                final double v = oldvalue.doubleValue() - step;
+                state = new PercentType(new BigDecimal(v >= min ? v : min));
             }
         } else //
                // Check against custom on/off values
         if (command instanceof StringType) {
             if (onValue != null && command.toString().equals(onValue)) {
-                state = new PercentType(max);
+                state = new PercentType(new BigDecimal(max));
             } else if (offValue != null && command.toString().equals(offValue)) {
-                state = new PercentType(min);
+                state = new PercentType(new BigDecimal(min));
             } else {
                 throw new IllegalStateException("Unknown String!");
             }
@@ -124,29 +131,20 @@ public class PercentageValue extends Value {
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue() {
         if (state == UnDefType.UNDEF) {
             return "";
         }
-        // Formula: From percentage to custom min/max: value*span/100+min
+        // Formular: From percentage to custom min/max: value*span/100+min
         // Calculation need to happen with big decimals to either return a straight integer or a decimal depending on
         // the value.
-        BigDecimal value = ((PercentType) state).toBigDecimal().multiply(span).divide(DB100, MathContext.DECIMAL128)
-                .add(min).stripTrailingZeros();
-
-        String formatPattern = pattern;
-        if (formatPattern == null || "%s".equals(formatPattern)) {
-            if (value.scale() > 0) {
-                formatPattern = "%." + value.scale() + "f";
-            } else {
-                formatPattern = "%.0f";
-            }
-        }
-        return String.format(Locale.ROOT, formatPattern, value);
+        return ((PercentType) state).toBigDecimal().multiply(BigDecimal.valueOf(span)).divide(BigDecimal.valueOf(100))
+                .add(BigDecimal.valueOf(min)).toString();
     }
 
     @Override
-    public StateDescription createStateDescription(String unit, boolean readOnly) {
-        return new StateDescription(min, max, step, "%s " + unit.replace("%", "%%"), readOnly, Collections.emptyList());
+    public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
+        return super.createStateDescription(readOnly).withMaximum(new BigDecimal(max)).withMinimum(new BigDecimal(min))
+                .withStep(new BigDecimal(step)).withPattern("%s %%");
     }
 }

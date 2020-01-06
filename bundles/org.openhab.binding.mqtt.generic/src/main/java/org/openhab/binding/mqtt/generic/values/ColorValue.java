@@ -109,24 +109,22 @@ public class ColorValue extends Value {
     private static BigDecimal factor = new BigDecimal(2.5);
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue() {
         if (state == UnDefType.UNDEF) {
             return "";
         }
 
-        String formatPattern = pattern;
-        if (formatPattern == null || "%s".equals(formatPattern)) {
-            formatPattern = "%1$d,%2$d,%3$d";
-        }
-        // ignore the pattern. Don't know
         if (isRGB) {
             PercentType[] rgb = ((HSBType) state).toRGB();
-            return String.format(formatPattern, rgb[0].toBigDecimal().multiply(factor).intValue(),
-                    rgb[1].toBigDecimal().multiply(factor).intValue(),
-                    rgb[2].toBigDecimal().multiply(factor).intValue());
+            StringBuilder b = new StringBuilder();
+            b.append(rgb[0].toBigDecimal().multiply(factor).intValue());
+            b.append(',');
+            b.append(rgb[1].toBigDecimal().multiply(factor).intValue());
+            b.append(',');
+            b.append(rgb[2].toBigDecimal().multiply(factor).intValue());
+            return b.toString();
+        } else {
+            return state.toString();
         }
-        HSBType type = (HSBType) state;
-        return String.format(formatPattern, type.getHue().intValue(), type.getSaturation().intValue(),
-                type.getBrightness().intValue());
     }
 }

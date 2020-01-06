@@ -70,7 +70,7 @@ public class OpenCloseValue extends Value {
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue() {
         return (state == OpenClosedType.OPEN) ? openString : closeString;
     }
 }
