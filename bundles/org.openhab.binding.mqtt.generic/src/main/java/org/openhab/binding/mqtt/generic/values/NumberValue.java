@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
@@ -66,6 +67,20 @@ public class NumberValue extends Value {
         }
 
         return true;
+    }
+
+    @Override
+    public @NonNull String getMQTTpublishValue(@Nullable String pattern) {
+        if (state == UnDefType.UNDEF) {
+            return "";
+        }
+
+        String formatPattern = pattern;
+        if (formatPattern == null || "%s".equals(formatPattern)) {
+            formatPattern = "%f";
+        }
+
+        return state.format(formatPattern);
     }
 
     @Override
