@@ -13,27 +13,30 @@
 package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.types.Command;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * This POJO represents Speed Request Param
+ *
+ * The outgoing JSON should look like this:
+ *
+ * {"id": 23, "method": "setPilot", "params": {"sceneId":3,"speed": 20}}
+ *
+ * NOTE: A sceneId MUST also be specified in the request or the bulb will reply
+ * with an error.
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
 @NonNullByDefault
-public class SpeedRequestParam implements Param {
+public class SpeedRequestParam extends SceneRequestParam {
+    @Expose(serialize = true, deserialize = true)
     private int speed;
 
-    public SpeedRequestParam(int speed) {
+    public SpeedRequestParam(int sceneId, int speed) {
+        super(sceneId);
         this.speed = speed;
-    }
-
-    public SpeedRequestParam(Command command) {
-        if (command instanceof PercentType) {
-            this.setSpeed(((PercentType) command).intValue());
-        }
     }
 
     public int getSpeed() {

@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.wizlighting.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -37,22 +36,28 @@ public class WizLightingBindingConstants {
     /**
      * List of all Thing Type UIDs.
      */
-    public static final ThingTypeUID THING_TYPE_WIZ_BULB = new ThingTypeUID(BINDING_ID, "wizBulb");
+    public static final ThingTypeUID THING_TYPE_WIZ_COLOR_BULB = new ThingTypeUID(BINDING_ID, "wizColorBulb");
+    public static final ThingTypeUID THING_TYPE_WIZ_TUNABLE_BULB = new ThingTypeUID(BINDING_ID, "wizTunableBulb");
+    public static final ThingTypeUID THING_TYPE_WIZ_DIMMABLE_BULB = new ThingTypeUID(BINDING_ID, "wizDimmableBulb");
+    public static final ThingTypeUID THING_TYPE_WIZ_SMART_PLUG = new ThingTypeUID(BINDING_ID, "wizPlug");
+
+    /**
+     * The supported thing types.
+     */
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_TYPE_WIZ_COLOR_BULB,
+            THING_TYPE_WIZ_TUNABLE_BULB, THING_TYPE_WIZ_DIMMABLE_BULB, THING_TYPE_WIZ_SMART_PLUG)
+            .collect(Collectors.toSet());
 
     /**
      * List of all Channel ids
      */
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_TEMPERATURE = "temperature";
-    public static final String CHANNEL_SCENE = "scene";
+    public static final String CHANNEL_DIMMING = "dimming";
+    public static final String CHANNEL_SWITCH_STATE = "state";
+    public static final String CHANNEL_LIGHT_MODE = "lightMode";
     public static final String CHANNEL_DYNAMIC_SPEED = "speed";
     public static final String CHANNEL_RSSI = "signalstrength";
-
-    /**
-     * The supported thing types.
-     */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_WIZ_BULB)));
 
     // -------------- Configuration arguments ----------------
     /**
@@ -88,9 +93,8 @@ public class WizLightingBindingConstants {
 
     /**
      * How long before active discovery times out.
-     * This is set at 0 because there is no active discovery.
      */
-    public static final int DISCOVERY_TIMEOUT_SECONDS = 0;
+    public static final int DISCOVERY_TIMEOUT_SECONDS = 2;
 
     /**
      * The number of refresh intervals without a response before a bulb is marked
@@ -109,6 +113,7 @@ public class WizLightingBindingConstants {
 
     // -------------- Bulb Properties ----------------
 
+    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
     public static final String PROPERTY_HOME_ID = "homeId";
     public static final String PROPERTY_ROOM_ID = "roomId";
     public static final String PROPERTY_HOME_LOCK = "homeLock";

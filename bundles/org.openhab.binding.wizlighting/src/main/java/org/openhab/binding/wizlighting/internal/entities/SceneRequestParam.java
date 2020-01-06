@@ -13,25 +13,27 @@
 package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.types.Command;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * This POJO represents one Scene Request Param
+ *
+ * The outgoing JSON should look like this:
+ *
+ * {"id": 22, "method": "setPilot", "params": {"sceneId": 3}} *
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
 @NonNullByDefault
 public class SceneRequestParam extends StateRequestParam {
+    @Expose(serialize = true, deserialize = true)
     private int sceneId;
 
-    public SceneRequestParam(Command command) {
-        super(OnOffType.ON);
-        if (command instanceof StringType) {
-            this.setSceneId(Integer.parseInt(command.toString()));
-        }
+    public SceneRequestParam(int sceneId) {
+        super(true);
+        this.sceneId = sceneId;
     }
 
     public int getSceneId() {

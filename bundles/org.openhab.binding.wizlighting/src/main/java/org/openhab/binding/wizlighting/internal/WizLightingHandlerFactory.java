@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.wizlighting.internal;
 
-import java.util.Collections;
-import java.util.Set;
+import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -26,7 +24,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidException;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingHandler;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
-import org.openhab.binding.wizlighting.internal.utils.NetworkUtils;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -44,19 +41,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.wizlighting", service = ThingHandlerFactory.class)
 public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(WizLightingBindingConstants.THING_TYPE_WIZ_BULB);
-
     private final Logger logger = LoggerFactory.getLogger(WizLightingHandlerFactory.class);
 
-    private @Nullable WizLightingMediator mediator;
-
-    private @Nullable NetworkAddressService networkAddressService;
-
-    private @Nullable String myIpAddress;
-
-    private @Nullable String myMacAddress;
+    @NonNullByDefault({})
+    private WizLightingMediator mediator;
 
     @Override
     protected void activate(ComponentContext componentContext) {
@@ -79,14 +67,14 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
      *
      * @param mediator the mediator
      */
-    public void unsetMediator(final WizLightingMediator mitsubishiMediator) {
+    public void unsetMediator(final WizLightingMediator wizMediator) {
         logger.trace("Mediator has been unsetted from handler factory service.");
         this.mediator = null;
     }
 
     @Override
-    public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
@@ -94,71 +82,30 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.trace("Creating Handler Request for {}", thingTypeUID);
 
-        if (thingTypeUID.equals(WizLightingBindingConstants.THING_TYPE_WIZ_BULB)) {
+        if (supportsThingType(thing.getThingTypeUID())) {
             WizLightingHandler handler;
 
-            String myIp = getMyIpAddress();
-            String myMac = getMyMacAddress();
-            if (myIp != null && myMac != null) {
-                logger.debug("Creating a new WizLightingHandler...");
-                try {
-                    handler = new WizLightingHandler(thing, myIp, myMac);
-                    logger.debug("WizLightingMediator will register the handler.");
-
-                    WizLightingMediator mediator = this.mediator;
-                    if (mediator != null) {
-                        mediator.registerThingAndWizBulbHandler(thing, handler);
-                    } else {
-                        logger.error(
-                                "The mediator is missing on Handler factory. Without one mediator the handler cannot work!");
-                        return null;
-                    }
-                    return handler;
-                } catch (MacAddressNotValidException e) {
-                    logger.debug("The mac address passed by configurations is not valid.");
-                }
-            } else {
-                logger.error("No IP or MAC have been returned by the network service, cannot create handler!");
-                return null;
-            }
-        }
-        return null;
-    }
-
-    private @Nullable String getMyIpAddress() {
-        NetworkAddressService networkAddressService = this.networkAddressService;
-        if (myIpAddress != null) {
-            return myIpAddress;
-        } else if (networkAddressService != null) {
-            myIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (myIpAddress == null) {
-                logger.warn("No network interface could be found.  IP of OpenHab device is unknown");
-                return null;
-            }
-            logger.info("IP of OpenHab device is {}.", myIpAddress);
-            return myIpAddress;
-        } else {
-            return null;
-        }
-    }
-
-    private @Nullable String getMyMacAddress() {
-        if (myMacAddress != null) {
-            return myMacAddress;
-        } else {
+            logger.debug("Creating a new WizLightingHandler...");
             try {
-                myMacAddress = NetworkUtils.getMyMacAddress();
-                if (myMacAddress == null) {
-                    logger.warn("No network interface could be found.  Mac of OpenHab device is unknown.");
+                handler = new WizLightingHandler(thing, this.mediator.getRegistrationParams());
+                logger.debug("WizLightingMediator will register the handler.");
+
+                WizLightingMediator mediator = this.mediator;
+                if (mediator != null) {
+                    mediator.registerThingAndWizBulbHandler(thing, handler);
+                } else {
+                    logger.error(
+                            "The mediator is missing on Handler factory. Without one mediator the handler cannot work!");
                     return null;
                 }
-            } catch (Exception e) {
-                logger.warn("Mac Address of OpenHab device is invalid.");
-                return null;
+                return handler;
+            } catch (MacAddressNotValidException e) {
+                logger.debug("The mac address passed by configurations is not valid.");
             }
-            logger.info("Mac Address of OpenHab device is {}.", myMacAddress);
-            return myMacAddress;
+        } else {
+            logger.info("Thing type {} not supported.", thingTypeUID);
         }
+        return null;
     }
 
     @Override
@@ -168,14 +115,5 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
             mediator.unregisterWizBulbHandlerByThing(thing);
         }
         super.unregisterHandler(thing);
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
     }
 }

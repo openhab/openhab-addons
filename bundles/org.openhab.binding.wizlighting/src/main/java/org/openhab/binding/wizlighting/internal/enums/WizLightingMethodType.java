@@ -22,6 +22,8 @@ public enum WizLightingMethodType {
     /**
      * Registration - used to "register" with the bulb: This notifies the bult that
      * it you want it to send you heartbeat sync packets.
+     * NOTE: The homeId value is optional, other values are required
+     * NOTE: There is no need to register before calling other methods.
      * Example Request:
      * {"method": "registration", "id": 1, "params":
      * {"phoneIp": "10.0.0.xxx", "register": true, "homeId": xxxxxx, "phoneMac": "macOfOpenHab"}}
@@ -60,11 +62,11 @@ public enum WizLightingMethodType {
      * syncPilot - sent by the bulb as heart-beats
      * Example:
      * {"method": "syncPilot", "id": 218, "env": "pro", "params":
-     * { "mac": "bulbMac", "rssi": -72, "src": "udp", "state": true, "sceneId": 0,
+     * { "mac": "bulbMacAddress", "rssi": -72, "src": "udp", "state": true, "sceneId": 0,
      * "temp": 3362, "dimming": 69, "schdPsetId": 5}}
      * Another Example:
      * {"method": "syncPilot", "id": 219, "env": "pro", "params":
-     * { "mac": "bulbMac", "rssi": -72, "src": "hb", "mqttCd": 0, "state": true,
+     * { "mac": "bulbMacAddress", "rssi": -72, "src": "hb", "mqttCd": 0, "state": true,
      * "sceneId": 0, "temp": 3362, "dimming": 69, "schdPsetId": 5}}
      */
     syncPilot("syncPilot"),
@@ -75,7 +77,7 @@ public enum WizLightingMethodType {
      * {"method": "getSystemConfig", "id": 24}
      * Example Response:
      * {"method": "getSystemConfig", "id": 22, "env": "pro",
-     * "result": {"mac": "bulbMac", "homeId": xxxxxx, "roomId": xxxxxx,
+     * "result": {"mac": "bulbMacAddress", "homeId": xxxxxx, "roomId": xxxxxx,
      * "homeLock": false, "pairingLock": false, "typeId": 0, "moduleName":
      * "ESP01_SHRGB1C_31", "fwVersion": "1.15.2", "groupId": 0, "drvConf":[33,1]}}
      */
@@ -103,7 +105,7 @@ public enum WizLightingMethodType {
      * firstBeat - set by a bulb upon power up
      * Example:
      * {"method": "firstBeat", "id": 0, "env": "pro", "params":
-     * {"mac": "bulbMac", "homeId": xxxxxx, "fwVersion": "1.15.2"}}
+     * {"mac": "bulbMacAddress", "homeId": xxxxxx, "fwVersion": "1.15.2"}}
      */
     firstBeat("firstBeat"),
     /**

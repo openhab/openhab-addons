@@ -28,7 +28,7 @@ public enum WizLightingColorMode {
     // Tunable white (color temperature) mode
     CTMode("Tunable White"),
     // Dimming only
-    SetColor("Dimming Only");
+    SingleColorMode("Dimming Only");
 
     private String colorMode;
 
@@ -41,7 +41,7 @@ public enum WizLightingColorMode {
      *
      * @return the colorMode name
      */
-    public String getcolorMode() {
+    public String getColorMode() {
         return colorMode;
     }
 }

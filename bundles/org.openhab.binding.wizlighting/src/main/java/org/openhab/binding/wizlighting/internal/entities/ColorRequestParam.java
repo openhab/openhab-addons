@@ -13,28 +13,54 @@
 package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.openhab.binding.wizlighting.internal.utils.WizColorConverter;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * This POJO represents Color Request Param
+ *
+ * Outgoing JSON should look like this:
+ *
+ * {"id": 24, "method": "setPilot", "params": {"r": 0, "g": 230, "b": 80, "w":
+ * 130, "c": 0, "dimming": 12}}
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
 @NonNullByDefault
-// TODO: Decide if this implements param or extends dimming request
-public class ColorRequestParam implements Param {
+public class ColorRequestParam extends DimmingRequestParam {
+    @Expose(serialize = true, deserialize = true)
     private int r; // red 0-255
+    @Expose(serialize = true, deserialize = true)
     private int g; // green 0-255
+    @Expose(serialize = true, deserialize = true)
     private int b; // blue 0-255
+    @Expose(serialize = true, deserialize = true)
     private int w; // warm white LED's 0-255
+    @Expose(serialize = true, deserialize = true)
     private int c; // cool white LED's 0-255
+    @Expose(serialize = false, deserialize = false)
+    private WizColorConverter colorConverter = new WizColorConverter();
 
-    public ColorRequestParam(int r, int g, int b, int w, int c) {
+    public ColorRequestParam(int r, int g, int b, int w, int c, int dimming) {
+        super(dimming);
         this.r = r;
         this.g = g;
         this.b = b;
         this.w = w;
         this.c = c;
+    }
+
+    public ColorRequestParam(HSBType hsb) {
+        super(hsb.getBrightness().intValue());
+        int rgbw[] = colorConverter.hsbToRgbw(hsb);
+        this.r = rgbw[0];
+        this.g = rgbw[1];
+        this.b = rgbw[2];
+        this.w = rgbw[3];
+        this.c = 0;
     }
 
     public int getB() {

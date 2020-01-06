@@ -14,17 +14,33 @@ package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * This POJO represents Registration request param
+ *
+ * The outgoing JSON should look like this:
+ *
+ * {"id": 22, "method": "registration", "params": {"phoneIp": "10.0.0.xx",
+ * "register": true, "homeId": xxx, "phoneMac": "xxx"}}
+ *
+ * NOTE: This can be sent directly to a single bulb or as a UDP broadcast. When
+ * sent as a broadcast, all bulbs in the network should respond.
  *
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
 @NonNullByDefault
 public class RegistrationRequestParam implements Param {
+    @Expose(serialize = true, deserialize = true)
     private String phoneIp;
+    @Expose(serialize = true, deserialize = true)
     private boolean register;
+    // NOTE: We are NOT exposing the Home id for serialization because it's not
+    // necessary and it's a PITA to find it
+    @Expose(serialize = false, deserialize = true)
     private int homeId;
+    @Expose(serialize = true, deserialize = true)
     private String phoneMac;
 
     public RegistrationRequestParam(String phoneIp, boolean register, int homeId, String phoneMac) {

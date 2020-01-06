@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * This POJO represents one WiZ Lighting UDP Request.
  *
@@ -24,9 +26,11 @@ import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
  */
 @NonNullByDefault
 public class WizLightingRequest {
+    @Expose(serialize = true, deserialize = true)
     private int id;
-
+    @Expose(serialize = true, deserialize = true)
     private WizLightingMethodType method;
+    @Expose(serialize = true, deserialize = true)
     private @Nullable Param params;
 
     /**

@@ -95,7 +95,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
                         packet.getAddress().getHostAddress());
 
                 // Redirect packet to the mediator
-                WizLightingResponse response = this.packetConverter.transformSyncResponsePacket(packet);
+                WizLightingResponse response = this.packetConverter.transformResponsePacket(packet);
                 if (response != null) {
                     this.mediator.processReceivedPacket(response);
                     logger.debug("Message delivered with success to mediator.");

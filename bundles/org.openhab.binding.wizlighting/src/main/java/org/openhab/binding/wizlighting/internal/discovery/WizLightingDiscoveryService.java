@@ -14,6 +14,10 @@ package org.openhab.binding.wizlighting.internal.discovery;
 
 import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstants.*;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +30,11 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.wizlighting.internal.entities.RegistrationRequestParam;
+import org.openhab.binding.wizlighting.internal.entities.WizLightingRequest;
+import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
+import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -45,8 +53,10 @@ import org.slf4j.LoggerFactory;
 public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(WizLightingDiscoveryService.class);
-    private @Nullable WizLightingMediator mediator;
-    // private @Nullable ScheduledFuture<?> keepAliveJob;
+    @NonNullByDefault({})
+    private WizLightingMediator mediator;
+
+    private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
 
     /**
      * Used by OSGI to inject the mediator in the discovery service.
@@ -81,18 +91,49 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
      * @throws IllegalArgumentException if the timeout < 0
      */
     public WizLightingDiscoveryService() throws IllegalArgumentException {
-        super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS);
+        super(SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS);
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return SUPPORTED_THING_TYPES_UIDS;
+        return SUPPORTED_THING_TYPES;
     }
 
     @Override
     protected void startScan() {
-        logger.debug("Don't need to start new scan... background scanning in progress by mediator.");
-        return;
+        DatagramSocket dsocket = null;
+        try {
+            RegistrationRequestParam outParam = this.mediator.getRegistrationParams();
+            String outIpReal = outParam.getPhoneIp();
+            String broadcastIp = outIpReal.substring(0, outIpReal.lastIndexOf(".")) + "255";
+            InetAddress address = InetAddress.getByName(broadcastIp);
+            WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.registration,
+                    this.mediator.getRegistrationParams());
+            // Note: Can request system config without doing any registration. Could
+            // presumably use this to discover and support other bulb types.
+            // WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.getSystemConfig, null);
+            request.setId(0);
+
+            byte[] message = this.converter.transformToByteMessage(request);
+            // logger.trace("Raw packet to send: {}", message);
+
+            // Initialize a datagram packet with data and address
+            DatagramPacket packet = new DatagramPacket(message, message.length, address, DEFAULT_BULB_UDP_PORT);
+
+            // Create a datagram socket, send the packet through it, close it.
+            // For discovery we will "fire and forget" and let the mediator take care of the
+            // responses
+            dsocket = new DatagramSocket();
+            dsocket.send(packet);
+            logger.debug("Sent packet to address: {} and port {}", address, DEFAULT_BULB_UDP_PORT);
+        } catch (IOException exception) {
+            logger.debug("Something wrong happened when broadcasting the packet to port {}... msg: {}",
+                    DEFAULT_BULB_UDP_PORT, exception.getMessage());
+        } finally {
+            if (dsocket != null) {
+                dsocket.close();
+            }
+        }
     }
 
     /**
@@ -107,9 +148,11 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_MAC_ADDRESS, lightMacAddress);
         properties.put(CONFIG_IP_ADDRESS, lightIpAddress);
 
-        ThingUID newThingId = new ThingUID(THING_TYPE_WIZ_BULB, lightMacAddress);
+        // NOTE: Only full color bulbs supported at this time
+        ThingUID newThingId = new ThingUID(THING_TYPE_WIZ_COLOR_BULB, lightMacAddress);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
-                .withLabel("Wizlighting Bulb").withRepresentationProperty(lightMacAddress).build();
+                .withLabel("WiZ Full Color Bulb at " + lightIpAddress).withRepresentationProperty(lightMacAddress)
+                .build();
 
         logger.debug("New WiZ bulb sent to inbox! MAC: {}  IP: {}", lightMacAddress, lightIpAddress);
 

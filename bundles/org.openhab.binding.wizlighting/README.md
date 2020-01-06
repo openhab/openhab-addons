@@ -22,9 +22,11 @@ This binding was created for and tested on the full color with tunable white bul
 
 ## Discovery
 
-New bulbs are discovered only when they are first powered up and connect to the same network as the OpenHab instance.
-The bulbs must first have been set up using the WiZ iOS or Android app.
-To get the binding to find your bulb, unplug it, wait several seconds, and plug it back in.
+New bulbs can be discovered by scanning and may also be discovered by background discovery.
+All discovered bulbs will be assigned as 'Full Color' bulbs.
+Tunable and dimmable bulbs and smart plugs must be created manually.
+The devices must first have been set up using the WiZ iOS or Android app.
+If the binding cannot discover your device, try unplugging it, wait several seconds, and plug it back in.
 
 ## Binding Configuration
 
@@ -33,8 +35,8 @@ You can optionally manually set the IP and MAC address of the OpenHAB instance.
 
 ## Thing Configuration
 
-To create or configure a bulb manually you need its ip address, mac address and homeId.
-These can be found in the ios or android app by entering the settings for bulb in question and clicking on the model name.
+To create or configure a bulb manually you need its ip address and mac address.
+These can be quickly found in the ios or android app by entering the settings for bulb in question and clicking on the model name.
 The refresh interval may also be set; if unset it defaults to 60 seconds.
 
 Wifi Socket thing parameters:
@@ -43,7 +45,6 @@ Wifi Socket thing parameters:
 |--------------|----------------|------|------------------|-----|
 | macAddress | text | true | The MAC address of the bulb |  |
 | ipAddress | text | true | The Ip of the bulb |  |
-| homeId | text | true | Your WiZ homeId |  |
 | updateInterval | integer | false | Update time interval in seconds to request the status of the bulb. | 60 |
 
 
@@ -68,5 +69,5 @@ The Binding supports the following channels:
 Example item linked to a channel:
 
 ```
-Color LivingRoom_Light_Color "Living Room Lamp" (gLivingroom) {channel="wizlighting:wizBulb:accf23343cxx:color"}
+Color LivingRoom_Light_Color "Living Room Lamp" (gLivingroom) {channel="wizlighting:wizColorBulb:accf23343cxx:color"}
 ```

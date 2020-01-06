@@ -17,26 +17,33 @@ import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstan
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.PercentType;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * This POJO represents Color Request Param
+ *
+ * The outgoing JSON should look like this:
+ *
+ * {"id": 24, "method": "setPilot", "params": {"temp": 3000}}
  *
  * @author Alexander Seeliger - Initial contribution
  *
  */
 @NonNullByDefault
 public class ColorTemperatureRequestParam implements Param {
-    private int colorTemperature;
+    @Expose(serialize = true, deserialize = true)
+    private int temp;
 
     public ColorTemperatureRequestParam(PercentType colorPercent) {
-        colorTemperature = MIN_COLOR_TEMPERATURE
-                + Math.round((COLOR_TEMPERATURE_RANGE * colorPercent.floatValue()) / 100);
+        // NOTE: 0% is cold (highest K) and 100% is warm (lowest K)
+        temp = MAX_COLOR_TEMPERATURE - Math.round((COLOR_TEMPERATURE_RANGE * colorPercent.floatValue()) / 100);
     }
 
     public int getColorTemperature() {
-        return colorTemperature;
+        return temp;
     }
 
-    public void setColorTemperature(int temp) {
-        this.colorTemperature = temp;
+    public void SingleColorModeTemperature(int temp) {
+        this.temp = temp;
     }
 }

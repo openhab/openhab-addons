@@ -14,15 +14,23 @@ package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * This POJO represents Pulse Request Param
  *
- * @author Sriram Balakrishnan - Initial contribution
+ * The outgoing JSON should look like this:
+ *
+ * {"id": 22, "method": "pulse", "params": {"delta": 30, "duration": 900}}
+ *
+ * @author Sara Geleskie Damiano - Initial contribution
  *
  */
 @NonNullByDefault
 public class PulseRequestParam implements Param {
+    @Expose(serialize = true, deserialize = true)
     private int delta;
+    @Expose(serialize = true, deserialize = true)
     private int duration;
 
     public PulseRequestParam(int delta, int duration) {

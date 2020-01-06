@@ -13,20 +13,28 @@
 package org.openhab.binding.wizlighting.internal.entities;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * This POJO represents the "params" returned in a "firstBeat"
  *
- * @author Sriram Balakrishnan - Initial contribution
+ * The incoming JSON looks like this:
  *
+ * {"method": "firstBeat", "id": 0, "env": "pro", "params": {"mac": "bulbMacAddress",
+ * "homeId": xxxxxx, "fwVersion": "1.15.2"}}
+ *
+ * @author Sara Geleskie Damiano - Initial contribution
  */
 @NonNullByDefault
 public class FirstBeatResponseParam {
     // The MAC address the response is coming from
-    public @Nullable String mac;
+    @Expose(serialize = true, deserialize = true)
+    public String mac = "bulbMacAddress";
     // Home ID of the bulb
+    @Expose(serialize = false, deserialize = true)
     public int homeId;
     // Firmware version of the bulb
+    @Expose(serialize = true, deserialize = true)
     public String fwVersion = "1.15.2";
 }

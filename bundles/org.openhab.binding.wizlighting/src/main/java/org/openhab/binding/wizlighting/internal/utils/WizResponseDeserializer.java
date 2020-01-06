@@ -95,37 +95,53 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                 case registration:
                     // {"method": "registration", "id": 1, "env": "pro", "result": {"mac":
                     // "macOfOpenHab", "success": true}}
+                    logger.trace("Deserializing registration result");
                     JsonObject registrationResult = jobject.getAsJsonObject("result");
-                    @Nullable
                     String mac = registrationResult.get("mac").getAsString();
                     deserializedResponse.setWizResponseMacAddress(mac);
                     deserializedResponse.setResultSucess(registrationResult.get("success").getAsBoolean());
+                    logger.trace("Registration result deserialized with mac {} and success {}", mac,
+                            registrationResult.get("success").getAsBoolean());
                     break;
 
                 case pulse:
                     // {"method":"pulse","id":22,"env":"pro","result":{"success":true}}
                 case setPilot:
                     // {"method":"setPilot","id":24,"env":"pro","result":{"success":true}}
+                    logger.trace("Deserializing pulse/setPilot");
                     JsonObject setResult = jobject.getAsJsonObject("result");
                     deserializedResponse.setResultSucess(setResult.get("success").getAsBoolean());
+                    logger.trace("Result deserialized - command success {}", setResult.get("success").getAsBoolean());
                     break;
 
                 case firstBeat:
-                    // {"method": "firstBeat", "id": 0, "env": "pro", "params": {"mac": "bulbMac",
+                    // {"method": "firstBeat", "id": 0, "env": "pro", "params": {"mac": "bulbMacAddress",
                     // "homeId": xxxxxx, "fwVersion": "1.15.2"}}
+                    logger.trace("Deserializing firstBeat");
+                    SystemConfigResult parsedFBParams = context.deserialize(jobject.getAsJsonObject("params"),
+                            SystemConfigResult.class);
+                    deserializedResponse.setResultSucess(true);
+                    deserializedResponse.setWizResponseMacAddress(parsedFBParams.mac);
+                    deserializedResponse.setSystemConfigResult(parsedFBParams);
+                    logger.trace("firstBeat result deserialized with mac {}", parsedFBParams.mac);
+                    break;
+
                 case getSystemConfig:
                     // {"method": "getSystemConfig", "id": 22, "env": "pro",
-                    // "result": {"mac": "bulbMac", "homeId": xxxxxx, "roomId": xxxxxx,
+                    // "result": {"mac": "bulbMacAddress", "homeId": xxxxxx, "roomId": xxxxxx,
                     // "homeLock": false, "pairingLock": false, "typeId": 0, "moduleName":
                     // "ESP01_SHRGB1C_31", "fwVersion": "1.15.2", "groupId": 0, "drvConf":[33,1]}}
+                    logger.trace("Deserializing SystemConfig");
                     SystemConfigResult parsedCResult = context.deserialize(jobject.getAsJsonObject("result"),
                             SystemConfigResult.class);
                     deserializedResponse.setResultSucess(true);
                     deserializedResponse.setWizResponseMacAddress(parsedCResult.mac);
                     deserializedResponse.setSystemConfigResult(parsedCResult);
+                    logger.trace("systemConfig result deserialized with mac {}", parsedCResult.mac);
                     break;
 
                 case getPilot:
+                    logger.trace("Deserializing getPilot");
                     // {"method": "getPilot", "id": 22, "env": "pro", "result": {"mac":
                     // "a8bb508f570a", "rssi":-76, "state": true, "sceneId": 0, "temp": 2700,
                     // "dimming": 42, "schdPsetId": 5}}
@@ -134,17 +150,20 @@ public class WizResponseDeserializer implements JsonDeserializer<WizLightingResp
                     deserializedResponse.setResultSucess(true);
                     deserializedResponse.setWizResponseMacAddress(parsedPResult.mac);
                     deserializedResponse.setSyncParams(parsedPResult);
+                    logger.trace("getPilot result deserialized with mac {}", parsedPResult.mac);
                     break;
 
                 case syncPilot:
+                    logger.trace("Deserializing syncPilot");
                     // {"method": "syncPilot", "id": 219, "env": "pro", "params": { "mac":
-                    // "bulbMac", "rssi": -72, "src": "hb", "mqttCd": 0, "state": true, "sceneId":
+                    // "bulbMacAddress", "rssi": -72, "src": "hb", "mqttCd": 0, "state": true, "sceneId":
                     // 0, "temp": 3362, "dimming": 69, "schdPsetId": 5}}
-                    SyncResponseParam parsedPParam = context.deserialize(jobject.getAsJsonObject("param"),
+                    SyncResponseParam parsedPParam = context.deserialize(jobject.getAsJsonObject("params"),
                             SyncResponseParam.class);
                     deserializedResponse.setResultSucess(true);
                     deserializedResponse.setWizResponseMacAddress(parsedPParam.mac);
                     deserializedResponse.setSyncParams(parsedPParam);
+                    logger.trace("syncPilot result deserialized with mac {}", parsedPParam.mac);
                     break;
 
                 case setSystemConfig:

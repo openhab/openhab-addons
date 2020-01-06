@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -30,6 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -40,6 +42,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.wizlighting.internal.entities.ColorRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.ColorTemperatureRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.DimmingRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.Param;
@@ -51,10 +54,9 @@ import org.openhab.binding.wizlighting.internal.entities.SyncResponseParam;
 import org.openhab.binding.wizlighting.internal.entities.SystemConfigResult;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingRequest;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
-import org.openhab.binding.wizlighting.internal.enums.WizLightingColorMode;
+import org.openhab.binding.wizlighting.internal.enums.WizLightingLightMode;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 import org.openhab.binding.wizlighting.internal.exceptions.MacAddressNotValidException;
-import org.openhab.binding.wizlighting.internal.utils.ColorUtils;
 import org.openhab.binding.wizlighting.internal.utils.ValidationUtils;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
 import org.slf4j.Logger;
@@ -83,12 +85,17 @@ public class WizLightingHandler extends BaseThingHandler {
     private int requestId = 0;
 
     /**
+     * We need to remember some states for increase/decrease commands and scene speed commands
+     */
+    protected Map<String, Integer> stateMap = Collections.synchronizedMap(new HashMap<String, Integer>());
+
+    /**
      * Default constructor.
      *
      * @param thing the thing of the handler.
      * @throws MacAddressNotValidException if the mac address isn't valid.
      */
-    public WizLightingHandler(final Thing thing, final String myAddress, final String myMacAddress)
+    public WizLightingHandler(final Thing thing, final RegistrationRequestParam registrationPacket)
             throws MacAddressNotValidException {
         super(thing);
 
@@ -96,12 +103,15 @@ public class WizLightingHandler extends BaseThingHandler {
         savebulbIpAddressFromConfiguration(this.getConfig());
         saveUpdateIntervalFromConfiguration(this.getConfig());
 
-        logger.debug("Setting my host to {} and mac to {}", myAddress, myMacAddress);
-        registrationInfo = new RegistrationRequestParam(myAddress, true, this.homeId, myMacAddress);
+        logger.debug("Setting my host to {} and mac to {}", registrationPacket.getPhoneIp(),
+                registrationPacket.getPhoneMac());
+        this.registrationInfo = registrationPacket;
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        logger.trace("Received command on channel {}: {}", channelUID, command.toFullString());
+
         if (command instanceof RefreshType) {
             handleRefreshCommand();
             return;
@@ -115,6 +125,9 @@ public class WizLightingHandler extends BaseThingHandler {
                     handlePercentCommand((PercentType) command);
                 } else if (command instanceof OnOffType) {
                     handleOnOffCommand((OnOffType) command);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    handleIncreaseDecreaseCommand(
+                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? true : false));
                 }
                 break;
 
@@ -122,26 +135,46 @@ public class WizLightingHandler extends BaseThingHandler {
                 if (command instanceof PercentType) {
                     handleTemperatureCommand((PercentType) command);
                 } else if (command instanceof OnOffType) {
+                    handleTemperatureCommand(
+                            ((OnOffType) command) == OnOffType.ON ? new PercentType(100) : new PercentType(0));
+                } else if (command instanceof IncreaseDecreaseType) {
+                    handleIncreaseDecreaseTemperatureCommand(
+                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? true : false));
+                }
+                break;
+
+            case CHANNEL_DIMMING:
+                if (command instanceof PercentType) {
+                    handlePercentCommand((PercentType) command);
+                } else if (command instanceof OnOffType) {
+                    handleOnOffCommand((OnOffType) command);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    handleIncreaseDecreaseCommand(
+                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? true : false));
+                }
+                break;
+
+            case CHANNEL_SWITCH_STATE:
+                if (command instanceof OnOffType) {
                     handleOnOffCommand((OnOffType) command);
                 }
                 break;
 
-            case CHANNEL_SCENE:
+            case CHANNEL_LIGHT_MODE:
                 logger.trace("Setting bulb light mode.");
-                setPilotCommand(new SceneRequestParam(command));
+                stateMap.put(CHANNEL_LIGHT_MODE, Integer.parseInt(command.toString()));
+                setPilotCommand(new SceneRequestParam(Integer.parseInt(command.toString())));
                 break;
 
             case CHANNEL_DYNAMIC_SPEED:
-                logger.trace("Setting speed of dynamic light mode.");
                 if (command instanceof PercentType) {
-                    setPilotCommand(new SpeedRequestParam(command));
+                    handleSpeedCommand((PercentType) command);
                 } else if (command instanceof OnOffType) {
-                    OnOffType onOffCommand = (OnOffType) command;
-                    if (onOffCommand.equals(OnOffType.ON)) {
-                        setPilotCommand(new SpeedRequestParam(100));
-                    } else {
-                        setPilotCommand(new SpeedRequestParam(0));
-                    }
+                    handleSpeedCommand(
+                            ((OnOffType) command) == OnOffType.ON ? new PercentType(100) : new PercentType(0));
+                } else if (command instanceof IncreaseDecreaseType) {
+                    handleIncreaseDecreaseSpeedCommand(
+                            ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE ? true : false));
                 }
                 break;
         }
@@ -162,6 +195,8 @@ public class WizLightingHandler extends BaseThingHandler {
         logger.trace("Requesting current state from bulb.");
         WizLightingResponse response = sendRequestPacket(WizLightingMethodType.getPilot, null);
         if (response != null) {
+            updateStatus(ThingStatus.ONLINE);
+            latestUpdate = System.currentTimeMillis();
             SyncResponseParam rParam = response.getSyncParams();
             if (rParam != null) {
                 updateStatesFromParams(rParam);
@@ -174,36 +209,96 @@ public class WizLightingHandler extends BaseThingHandler {
     }
 
     private void handleHSBCommand(HSBType hsb) {
-        logger.trace("Setting bulb color.");
+        logger.trace("Setting bulb color to HSB: {}.", hsb.toString());
+        stateMap.put(CHANNEL_DIMMING, hsb.getBrightness().intValue());
         if (hsb.getBrightness().intValue() == 0) {
             logger.trace("Zero intensity requested, turning bulb off.");
-            setPilotCommand(new StateRequestParam(OnOffType.OFF));
+            setPilotCommand(new StateRequestParam(false));
         } else {
             logger.trace("Setting bulb color to {}.", hsb.toString());
-            setPilotCommand(ColorUtils.HSI2RGBW(hsb));
-            // TODO: Decide if we also need to send brightness here
+            setPilotCommand(new ColorRequestParam(hsb));
         }
     }
 
     private void handlePercentCommand(PercentType brightness) {
         logger.trace("Setting bulb brightness.");
+        stateMap.put(CHANNEL_DIMMING, brightness.intValue());
         if (brightness == PercentType.ZERO) {
             logger.trace("Zero brightness requested, turning bulb off.");
-            setPilotCommand(new StateRequestParam(OnOffType.OFF));
+            setPilotCommand(new StateRequestParam(false));
         } else {
             logger.trace("Setting bulb brightness to {}%.", brightness.toString());
-            setPilotCommand(new DimmingRequestParam(brightness));
+            setPilotCommand(new DimmingRequestParam(brightness.intValue()));
         }
     }
 
     private void handleOnOffCommand(OnOffType onOff) {
         logger.trace("Setting bulb state to {}.", onOff.toString());
-        setPilotCommand(new StateRequestParam(onOff));
+        stateMap.put(CHANNEL_DIMMING, onOff == OnOffType.ON ? 100 : 0);
+        setPilotCommand(new StateRequestParam(onOff == OnOffType.ON ? true : false));
+    }
+
+    private void handleIncreaseDecreaseCommand(boolean isIncrease) {
+        int oldDimming = 50;
+        int newDimming = 50;
+        if (stateMap.containsKey(CHANNEL_COLOR)) {
+            oldDimming = stateMap.get(CHANNEL_COLOR);
+        }
+        if (isIncrease) {
+            newDimming = Math.min(100, oldDimming + 5);
+        } else {
+            newDimming = Math.max(10, oldDimming - 5);
+        }
+        logger.trace("Changing bulb brightness from {}% to {}%.", oldDimming, newDimming);
+        handlePercentCommand(new PercentType(newDimming));
     }
 
     private void handleTemperatureCommand(PercentType temperature) {
         logger.trace("Setting bulb color temperature to {}%.", temperature.toString());
+        stateMap.put(CHANNEL_TEMPERATURE, (temperature.intValue()));
         setPilotCommand(new ColorTemperatureRequestParam(temperature));
+    }
+
+    private void handleIncreaseDecreaseTemperatureCommand(boolean isIncrease) {
+        int oldTemp = 50;
+        int newTemp = 50;
+        if (stateMap.containsKey(CHANNEL_TEMPERATURE)) {
+            oldTemp = stateMap.get(CHANNEL_TEMPERATURE);
+        }
+        if (isIncrease) {
+            newTemp = Math.min(100, oldTemp + 5);
+        } else {
+            newTemp = Math.max(10, oldTemp - 5);
+        }
+        logger.trace("Changing color temperature from {}% to {}%.", oldTemp, newTemp);
+        handleTemperatureCommand(new PercentType(newTemp));
+    }
+
+    private void handleSpeedCommand(PercentType speed) {
+        logger.trace("Setting speed of dynamic light mode.");
+        stateMap.put(CHANNEL_DYNAMIC_SPEED, speed.intValue());
+        // NOTE: We cannot set the speed without also setting the scene
+        int currentScene = 1;
+        if (stateMap.containsKey(CHANNEL_LIGHT_MODE)) {
+            currentScene = stateMap.get(CHANNEL_LIGHT_MODE);
+            logger.trace("Adjusting the speed of scene {}", currentScene);
+        }
+        setPilotCommand(new SpeedRequestParam(currentScene, speed.intValue()));
+    }
+
+    private void handleIncreaseDecreaseSpeedCommand(boolean isIncrease) {
+        int oldSpeed = 50;
+        int newSpeed = 50;
+        if (stateMap.containsKey(CHANNEL_DYNAMIC_SPEED)) {
+            oldSpeed = stateMap.get(CHANNEL_DYNAMIC_SPEED);
+        }
+        if (isIncrease) {
+            newSpeed = Math.min(100, oldSpeed + 5);
+        } else {
+            newSpeed = Math.max(10, oldSpeed - 5);
+        }
+        logger.trace("Changing dynamic light mode speed from {}% to {}%.", oldSpeed, newSpeed);
+        handleTemperatureCommand(new PercentType(newSpeed));
     }
 
     /**
@@ -262,8 +357,8 @@ public class WizLightingHandler extends BaseThingHandler {
      * @param receivedMessage the received {@link WizLightingResponse}.
      */
     public void newReceivedResponseMessage(final WizLightingResponse receivedMessage) {
-        // Bump up the request ID number and mark the bulb online
-        requestId = receivedMessage.getId() + 1;
+        // Grab the ID number and mark the bulb online
+        requestId = receivedMessage.getId();
         updateStatus(ThingStatus.ONLINE);
         latestUpdate = System.currentTimeMillis();
 
@@ -280,31 +375,56 @@ public class WizLightingHandler extends BaseThingHandler {
      * @param receivedParam The received {@link SyncResponseParam}
      */
     private void updateStatesFromParams(final SyncResponseParam receivedParam) {
-        if (receivedParam.getColorMode() == WizLightingColorMode.RGBMode) {
-            // update color channel
-            logger.trace("Received color value: {}", receivedParam.getHSBColor());
-            updateState(CHANNEL_COLOR, receivedParam.getHSBColor());
+        if (!receivedParam.state) {
+            logger.debug("Light is off");
+            updateState(CHANNEL_COLOR, HSBType.BLACK);
+            updateState(CHANNEL_DIMMING, PercentType.ZERO);
+            updateState(CHANNEL_SWITCH_STATE, OnOffType.OFF);
+            // Always cache the dimming state
+            stateMap.put(CHANNEL_DIMMING, 0);
         } else {
-            logger.trace("RGBW color not reported, setting color channel to WHITE");
-            updateState(CHANNEL_COLOR, new HSBType("WHITE"));
-        }
-
-        if (receivedParam.getColorMode() == WizLightingColorMode.CTMode) {
-            // update color temperature channel
-            logger.trace("Received color temperature: {} ({}%)", receivedParam.temp,
-                    receivedParam.getTemperaturePercent());
-            updateState(CHANNEL_TEMPERATURE, receivedParam.getTemperaturePercent());
-        } else {
-            logger.trace("Color temperature not reported, setting temperature channel 50%");
-            updateState(CHANNEL_TEMPERATURE, new PercentType(50));
+            stateMap.put(CHANNEL_DIMMING, receivedParam.dimming);
+            switch (receivedParam.getColorMode()) {
+                case RGBMode:
+                    logger.debug("Received color values - R: {} G: {} B: {} W: {} C: {} Dimming: {}", receivedParam.r,
+                            receivedParam.g, receivedParam.b, receivedParam.w, receivedParam.c, receivedParam.dimming);
+                    logger.debug("Translated to HSBValues {}", receivedParam.getHSBColor());
+                    updateState(CHANNEL_COLOR, receivedParam.getHSBColor());
+                    updateState(CHANNEL_TEMPERATURE, new PercentType(50));
+                    updateState(CHANNEL_DIMMING, new PercentType(receivedParam.dimming));
+                    updateState(CHANNEL_SWITCH_STATE, OnOffType.ON);
+                    break;
+                case CTMode:
+                    // update color temperature channel
+                    logger.debug("Received color temperature: {} ({}%)", receivedParam.temp,
+                            receivedParam.getTemperaturePercent());
+                    updateState(CHANNEL_COLOR, new HSBType(new DecimalType(0), new PercentType(0),
+                            new PercentType(receivedParam.getDimming())));
+                    updateState(CHANNEL_TEMPERATURE, receivedParam.getTemperaturePercent());
+                    updateState(CHANNEL_DIMMING, new PercentType(receivedParam.dimming));
+                    updateState(CHANNEL_SWITCH_STATE, OnOffType.ON);
+                    stateMap.put(CHANNEL_TEMPERATURE, receivedParam.getTemperaturePercent().intValue());
+                case SingleColorMode:
+                    updateState(CHANNEL_COLOR, new HSBType(new DecimalType(0), new PercentType(0),
+                            new PercentType(receivedParam.getDimming())));
+                    updateState(CHANNEL_TEMPERATURE, new PercentType(50));
+                    updateState(CHANNEL_DIMMING, new PercentType(receivedParam.dimming));
+                    updateState(CHANNEL_SWITCH_STATE, OnOffType.ON);
+            }
         }
 
         // update scene channel
-        logger.trace("Received scene: {}", receivedParam.sceneId);
-        updateState(CHANNEL_SCENE, new StringType(String.valueOf(receivedParam.sceneId)));
+        if (receivedParam.sceneId > 0) {
+            logger.debug("Received scene: {} ({})", receivedParam.sceneId,
+                    WizLightingLightMode.getNameFromModeId(receivedParam.sceneId));
+            updateState(CHANNEL_LIGHT_MODE, new StringType(String.valueOf(receivedParam.sceneId)));
+            stateMap.put(CHANNEL_LIGHT_MODE, receivedParam.sceneId);
+        }
 
         // update speed channel
+        logger.debug("Received scene speed: {}", receivedParam.speed);
         updateState(CHANNEL_DYNAMIC_SPEED, new PercentType(receivedParam.speed));
+        stateMap.put(CHANNEL_DYNAMIC_SPEED, receivedParam.speed);
 
         // update signal strength
         if (receivedParam.rssi != 0) {
@@ -320,7 +440,7 @@ public class WizLightingHandler extends BaseThingHandler {
             } else {
                 strength = 0;
             }
-            logger.trace("Received RSSI: {}, Signal Strength: {}", receivedParam.rssi, strength);
+            logger.debug("Received RSSI: {}, Signal Strength: {}", receivedParam.rssi, strength);
             updateState(CHANNEL_RSSI, new DecimalType(strength));
         }
     }
@@ -355,10 +475,10 @@ public class WizLightingHandler extends BaseThingHandler {
                 packet = new DatagramPacket(responseMessage, responseMessage.length);
                 dsocket.receive(packet);
 
-                return converter.transformSyncResponsePacket(packet);
+                return converter.transformResponsePacket(packet);
             }
         } catch (IOException exception) {
-            logger.debug("Something wrong happen sending the packet to address: {} and port {}... msg: {}",
+            logger.debug("Something wrong happened when sending the packet to address: {} and port {}... msg: {}",
                     bulbIpAddress, DEFAULT_BULB_UDP_PORT, exception.getMessage());
         } finally {
             if (dsocket != null) {
@@ -394,7 +514,10 @@ public class WizLightingHandler extends BaseThingHandler {
             if (responseResult != null) {
                 // Update all the thing properties based on the result
                 Map<String, String> thingProperties = new HashMap<String, String>();
+                thingProperties.put(PROPERTY_VENDOR, "WiZ Connected");
                 thingProperties.put(PROPERTY_FIRMWARE_VERSION, responseResult.fwVersion);
+                thingProperties.put(PROPERTY_MAC_ADDRESS, responseResult.mac);
+                thingProperties.put(PROPERTY_IP_ADDRESS, registrationResponse.getWizResponseIpAddress());
                 thingProperties.put(PROPERTY_HOME_ID, String.valueOf(responseResult.homeId));
                 thingProperties.put(PROPERTY_ROOM_ID, String.valueOf(responseResult.roomId));
                 thingProperties.put(PROPERTY_HOME_LOCK, String.valueOf(responseResult.homeLock));
@@ -403,9 +526,6 @@ public class WizLightingHandler extends BaseThingHandler {
                 thingProperties.put(PROPERTY_MODULE_NAME, responseResult.moduleName);
                 thingProperties.put(PROPERTY_GROUP_ID, String.valueOf(responseResult.groupId));
                 updateProperties(thingProperties);
-
-                // also update the homeId in the registration information
-                registrationInfo.setHomeId(homeId);
             }
         }
     }
@@ -416,7 +536,7 @@ public class WizLightingHandler extends BaseThingHandler {
      */
     private void registerWithBulb() {
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
-                registrationInfo);
+                this.registrationInfo);
         if (registrationResponse != null) {
             if (registrationResponse.getResultSuccess()) {
                 updateStatus(ThingStatus.ONLINE);
@@ -435,8 +555,8 @@ public class WizLightingHandler extends BaseThingHandler {
             saveUpdateIntervalFromConfiguration(configuration);
 
             // Re-register to get heartbeats
-            registrationInfo.setHomeId(homeId);
             registerWithBulb();
+            updateBulbProperties();
 
             initGetStatusAndKeepAliveThread();
             saveConfigurationsUsingCurrentStates();

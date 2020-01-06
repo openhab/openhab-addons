@@ -44,6 +44,7 @@ public class WizLightingPacketConverter {
     public WizLightingPacketConverter() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(WizLightingResponse.class, new WizResponseDeserializer());
+        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
         Gson gson = gsonBuilder.create();
         this.wizlightingGsonBuilder = gson;
     }
@@ -59,7 +60,7 @@ public class WizLightingPacketConverter {
 
         // {"id":20,"method":"setPilot","params":{"sceneId":18}}
         String jsonCmd = this.wizlightingGsonBuilder.toJson(requestPacket);
-        logger.debug("JsonCmd={{}}", jsonCmd);
+        logger.debug("JSON Command: {}", jsonCmd);
 
         requestDatagram = jsonCmd.getBytes();
         return requestDatagram;
@@ -72,14 +73,16 @@ public class WizLightingPacketConverter {
      * @param packet the {@link DatagramPacket}
      * @return the {@link WizLightingResponse}
      */
-    public @Nullable WizLightingResponse transformSyncResponsePacket(final DatagramPacket packet) {
+    public @Nullable WizLightingResponse transformResponsePacket(final DatagramPacket packet) {
         String responseJson = new String(packet.getData(), 0, packet.getLength());
         logger.debug("Response Json={}", responseJson);
 
         @Nullable
         WizLightingResponse response = null;
         try {
+            logger.trace("Attempting to parse json");
             response = this.wizlightingGsonBuilder.fromJson(responseJson, WizLightingResponse.class);
+            logger.trace("JSON Deserialized!  Adding the IP address.");
             response.setWizResponseIpAddress(packet.getAddress().getHostAddress());
         } catch (JsonParseException e) {
             logger.error("Error parsing json! {}", e.getMessage());
