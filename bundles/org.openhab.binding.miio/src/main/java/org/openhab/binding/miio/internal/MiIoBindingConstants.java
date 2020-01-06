@@ -47,11 +47,13 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_CLEAN_AREA = "status#clean_area";
     public static final String CHANNEL_CLEAN_TIME = "status#clean_time";
     public static final String CHANNEL_DND_ENABLED = "status#dnd_enabled";
+    public static final String CHANNEL_ERROR = "status#error";
     public static final String CHANNEL_ERROR_CODE = "status#error_code";
     public static final String CHANNEL_FAN_POWER = "status#fan_power";
     public static final String CHANNEL_IN_CLEANING = "status#in_cleaning";
     public static final String CHANNEL_MAP_PRESENT = "status#map_present";
     public static final String CHANNEL_STATE = "status#state";
+    public static final String CHANNEL_STATE_CODE = "status#state_code";
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
