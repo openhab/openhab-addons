@@ -35,22 +35,22 @@ public class CosemObjectFactory {
     /**
      * Lookup cache for fixed OBIS Identifiers
      */
-    private final Map<OBISIdentifier, CosemObjectType> obisLookupTableFixed;
+    private final Map<OBISIdentifier, CosemObjectType> obisLookupTableFixed = new HashMap<>();
 
     /**
      * Lookup cache for fixed OBIS Identifiers that has the same id for different data types
      */
-    private final Map<OBISIdentifier, List<CosemObjectType>> obisLookupTableMultipleFixed;
+    private final Map<OBISIdentifier, List<CosemObjectType>> obisLookupTableMultipleFixed = new HashMap<>();
 
     /**
      * Lookup cache for dynamic OBIS Identifiers
      */
-    private final HashMap<OBISIdentifier, CosemObjectType> obisLookupTableDynamic;
+    private final HashMap<OBISIdentifier, CosemObjectType> obisLookupTableDynamic = new HashMap<>();
 
     /**
      * Lookup cache for wild card Cosem Object types
      */
-    private final List<CosemObjectType> obisWildcardCosemTypeList;
+    private final List<CosemObjectType> obisWildcardCosemTypeList = new ArrayList<>();
 
     /**
      * Creates a new CosemObjectFactory
@@ -71,11 +71,6 @@ public class CosemObjectFactory {
          * To facilitate autodiscovery the list has all supported CosemObjectTypes. To improve performance once the
          * correct OBISIdentifier is discovered for a certain OBISMsgType this is added to the obisLookupTableDynamic.
          */
-        obisLookupTableFixed = new HashMap<>();
-        obisLookupTableMultipleFixed = new HashMap<>();
-        obisLookupTableDynamic = new HashMap<>();
-        obisWildcardCosemTypeList = new ArrayList<>();
-
         for (CosemObjectType msgType : CosemObjectType.values()) {
             if (msgType.obisId.reducedOBISIdentifierIsWildCard()) {
                 obisWildcardCosemTypeList.add(msgType);
