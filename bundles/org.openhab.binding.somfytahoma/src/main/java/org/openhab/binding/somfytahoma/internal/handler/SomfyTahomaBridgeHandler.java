@@ -71,6 +71,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     private @Nullable ScheduledFuture<?> statusFuture;
 
     /**
+     * Future to set reconciliation flag
+     */
+    private @Nullable ScheduledFuture<?> reconciliationFuture;
+
+    /**
      * List of executions
      */
     private Map<String, String> executions = new HashMap<>();
@@ -80,6 +85,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     // Silent relogin flag
     private boolean reLoginNeeded = false;
+
+    // Reconciliation flag
+    private boolean reconciliation = false;
 
     /**
      * Our configuration
@@ -127,6 +135,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             refreshTahomaStates();
         }, 60, thingConfig.getStatusTimeout(), TimeUnit.SECONDS);
 
+        reconciliationFuture = scheduler.scheduleWithFixedDelay(() -> {
+            enableReconciliation();
+        }, 300, 600, TimeUnit.SECONDS);
     }
 
     public synchronized void login() {
@@ -320,6 +331,10 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             statusFuture.cancel(true);
             statusFuture = null;
         }
+        if (reconciliationFuture != null && !reconciliationFuture.isCancelled()) {
+            reconciliationFuture.cancel(true);
+            reconciliationFuture = null;
+        }
     }
 
     public List<SomfyTahomaActionGroup> listActionGroups() {
@@ -432,7 +447,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private synchronized void updateThings() {
-        boolean forceUpdate = false;
+        boolean needsUpdate = reconciliation;
+
         for (Thing th : getThing().getThings()) {
             //update gateway status
             if (THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
@@ -442,14 +458,15 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 }
             } else {
                 if (ThingStatus.ONLINE != th.getStatus()) {
-                    forceUpdate = true;
+                    needsUpdate = true;
                 }
             }
         }
 
         //update all states only if necessary
-        if (forceUpdate) {
+        if (needsUpdate) {
             updateAllStates();
+            reconciliation = false;
         }
     }
 
@@ -539,6 +556,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } else {
             logger.debug("Thing handler is null, probably not bound thing.");
         }
+    }
+
+    private void enableReconciliation() {
+        logger.debug("Enabling reconciliation");
+        reconciliation = true;
     }
 
     private void refreshTahomaStates() {
