@@ -59,14 +59,4 @@ Fragment-Host: org.openhab.binding.feed
 	org.ops4j.pax.web.pax-web-api;version='[7.2.11,7.2.12)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[7.2.11,7.2.12)',\
 	org.ops4j.pax.web.pax-web-runtime;version='[7.2.11,7.2.12)',\
-	org.ops4j.pax.web.pax-web-spi;version='[7.2.11,7.2.12)',\
-	org.openhab.binding.feed;version='[3.0.0,3.0.1)',\
-	org.openhab.binding.feed.tests;version='[3.0.0,3.0.1)',\
-	org.openhab.core;version='[3.0.0,3.0.1)',\
-	org.openhab.core.binding.xml;version='[3.0.0,3.0.1)',\
-	org.openhab.core.config.core;version='[3.0.0,3.0.1)',\
-	org.openhab.core.config.xml;version='[3.0.0,3.0.1)',\
-	org.openhab.core.io.console;version='[3.0.0,3.0.1)',\
-	org.openhab.core.test;version='[3.0.0,3.0.1)',\
-	org.openhab.core.thing;version='[3.0.0,3.0.1)',\
-	org.openhab.core.thing.xml;version='[3.0.0,3.0.1)'
+	org.ops4j.pax.web.pax-web-spi;version='[7.2.11,7.2.12)'
