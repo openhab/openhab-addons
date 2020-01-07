@@ -95,7 +95,7 @@ These actions will send a message to all chat ids configured for this bot.
 | sendTelegram(String format, Object... args)          | Sends a formatted message (See https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html for more information).
 | sendTelegramQuery(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png). |
 | sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should *always* call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
-| sendTelegramPhoto(String photoURL, String caption) | Sends a picture. The URL can be specified using the http, https, and file protocols or a base64 encoded image. |
+| sendTelegramPhoto(String photoURL, String caption) | Sends a picture. The URL can be specified using the http, https, and file protocols or a base64 encoded image (simple base64 data or data URI scheme). |
 | sendTelegramPhoto(String photoURL, String caption, String username, String password) | Sends a picture which is downloaded from a username/password protected http/https address. |
 
 ### Actions to send messages to a particular chat
@@ -188,8 +188,13 @@ when
     Item Light_GF_Living_Table changed
 then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    // image as base64 string
     var String base64Image = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
     telegramAction.sendTelegramPhoto(base64Image, "battery of motion sensor is empty")
+    
+    // image as base64 string in data URI scheme
+    var String base64ImageDataURI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
+    telegramAction.sendTelegramPhoto(base64ImageDataURI, "battery of motion sensor is empty")    
 end
 ```
 
