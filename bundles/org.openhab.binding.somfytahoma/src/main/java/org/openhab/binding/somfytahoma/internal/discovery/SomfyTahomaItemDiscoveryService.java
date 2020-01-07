@@ -180,7 +180,11 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             case THING_ROLLER_SHUTTER:
                 if (isSilentRollerShutter(device)) {
                     deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER_SILENT);
+                } else if (isUnoRollerShutter(device)) {
+                    //widget: PositionableRollerShutterUno
+                    deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER_UNO);
                 } else {
+                    //widget: PositionableRollerShutter
                     deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER);
                 }
                 break;
@@ -300,6 +304,10 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
     private boolean isSilentRollerShutter(SomfyTahomaDevice device) {
         return hasCommmand(device, COMMAND_SET_CLOSURESPEED);
+    }
+
+    private boolean isUnoRollerShutter(SomfyTahomaDevice device) {
+        return hasState(device, TARGET_CLOSURE_STATE);
     }
 
     private boolean isOnOffHeatingSystem(SomfyTahomaDevice device) {

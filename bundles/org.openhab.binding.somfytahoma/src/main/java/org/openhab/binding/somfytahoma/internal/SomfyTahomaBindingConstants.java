@@ -42,6 +42,10 @@ public class SomfyTahomaBindingConstants {
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_SILENT = new ThingTypeUID(BINDING_ID,
             "rollershutter_silent");
 
+    // Uno Roller Shutter
+    public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER_UNO = new ThingTypeUID(BINDING_ID,
+            "rollershutter_uno");
+
     // Screen
     public static final ThingTypeUID THING_TYPE_SCREEN = new ThingTypeUID(BINDING_ID, "screen");
 
@@ -246,6 +250,7 @@ public class SomfyTahomaBindingConstants {
     public static final String SLATE_ORIENTATION_STATE = "core:SlateOrientationState";
     public static final String CLOSURE_OR_ROCKER_STATE = "core:ClosureOrRockerPositionState";
     public static final String MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState";
+    public static final String TARGET_CLOSURE_STATE = "core:TargetClosureState";
     public static final String UNAVAILABLE = "unavailable";
     public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
     public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
@@ -300,7 +305,7 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA,
             THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_CURTAIN,
             THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER,
-            THING_TYPE_MYFOX_CAMERA));
+            THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO));
 
     //somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {
