@@ -13,7 +13,8 @@
 package org.openhab.binding.logreader.internal.filereader;
 
 import java.io.File;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
@@ -34,6 +35,7 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
     private final Logger logger = LoggerFactory.getLogger(FileTailer.class);
 
     private Tailer tailer;
+    private final ExecutorService executor = Executors.newFixedThreadPool(1);
 
     TailerListener logListener = new TailerListenerAdapter() {
 
@@ -59,13 +61,12 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
     };
 
     @Override
-    public void start(String filePath, long refreshRate, ScheduledExecutorService scheduler)
-            throws FileReaderException {
+    public void start(String filePath, long refreshRate) throws FileReaderException {
         tailer = new Tailer(new File(filePath), logListener, refreshRate, true, false, true);
 
         try {
             logger.debug("Start executor");
-            scheduler.execute(tailer);
+            executor.execute(tailer);
         } catch (Exception e) {
             throw new FileReaderException(e);
         }
@@ -74,9 +75,9 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
     @Override
     public void stop() {
         logger.debug("Shutdown");
-
         if (tailer != null) {
             tailer.stop();
         }
+        logger.debug("Shutdown complite");
     }
 }
