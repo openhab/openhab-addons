@@ -55,7 +55,7 @@ Thing coffeemachine coffeemachine [uid="001d63fffe020505#190"]
 
 ## Channels
 
-The definition of the channels in use can best be checked in the [source repository](https://github.com/openhab/openhab2-addons/tree/master/bundles/org.openhab.binding.miele/src/main/resources/ESH-INF/thing).
+The definition of the channels in use can best be checked in the [source repository](https://github.com/openhab/openhab-addons/tree/master/bundles/org.openhab.binding.miele/src/main/resources/ESH-INF/thing).
 
 ## Example
 

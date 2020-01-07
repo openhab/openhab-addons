@@ -67,7 +67,7 @@ import org.openhab.io.transport.modbus.PollTask;
  */
 @RunWith(MockitoJUnitRunner.class)
 @Ignore("Tests fail because the thingRegistry field has been removed from BaseThingHandler, "
-        + "see: https://github.com/openhab/openhab2-addons/issues/6171")
+        + "see: https://github.com/openhab/openhab-addons/issues/6171")
 public class ModbusPollerThingHandlerTest {
 
     @Mock
