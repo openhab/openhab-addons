@@ -36,7 +36,7 @@ public interface NibeUplinkCommand extends SuccessListener, FailureListener, Con
      *
      * @param asyncclient client which will handle the command
      */
-    void performAction(@Nullable HttpClient asyncclient);
+    void performAction(HttpClient asyncclient);
 
     /**
      * get the current listener

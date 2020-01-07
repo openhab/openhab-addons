@@ -71,7 +71,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      */
     private final AtomicReference<@Nullable Future<?>> deadChannelHouseKeepingReference;
 
-    public UplinkBaseHandler(Thing thing, @Nullable HttpClient httpClient) {
+    public UplinkBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.webInterface = new UplinkWebInterface(scheduler, this, httpClient);
         this.pollingJobReference = new AtomicReference<>(null);

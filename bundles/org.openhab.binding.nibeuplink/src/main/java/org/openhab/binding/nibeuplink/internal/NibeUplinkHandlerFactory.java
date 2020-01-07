@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.nibeuplink.internal.handler.GenericHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -43,7 +44,12 @@ public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
     /**
      * the shared http client
      */
-    private @Nullable HttpClient httpClient;
+    private final HttpClient httpClient;
+
+    @Activate
+    public NibeUplinkHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -61,16 +67,5 @@ public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        logger.debug("setHttpClientFactory");
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        logger.debug("unsetHttpClientFactory");
-        this.httpClient = null;
     }
 }

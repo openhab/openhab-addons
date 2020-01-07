@@ -34,7 +34,7 @@ public class GenericHandler extends UplinkBaseHandler {
      * @param thing instance of the thing, passed in by the factory
      * @param httpClient the httpclient that communicates with the API
      */
-    public GenericHandler(Thing thing, @Nullable HttpClient httpClient) {
+    public GenericHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
     }
 
