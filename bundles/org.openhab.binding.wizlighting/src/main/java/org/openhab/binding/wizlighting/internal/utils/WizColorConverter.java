@@ -46,7 +46,8 @@ public class WizColorConverter {
      * the color channels. When creating colors, the WiZ bulbs only use the warm
      * white channel, the cool white channel is ignored.
      *
-     * Totally made this up. It's based on the commonly referenced SaikoLED blog, but that doesn't include a separate dimming channel.  I couldn't find any satisfactory conversions that actually
+     * Totally made this up. It's based on the commonly referenced SaikoLED blog, but that doesn't include a separate
+     * dimming channel. I couldn't find any satisfactory conversions that actually
      * included the channels the way that the WiZ bulbs seem to.
      *
      * @param hsbColor the {@link HSBType}.
@@ -55,51 +56,57 @@ public class WizColorConverter {
      */
     public int[] hsbToRgbw(HSBType hsb) {
         logger.trace("Converting hue and saturation to RGBW.  Incoming: {}", hsb);
+        double redD, greenD, blueD;
         int red, green, blue, white;
 
-        double hue = hsb.getHue().doubleValue();
-        double cosHue ;
+        double hue = hsb.getHue().doubleValue() / 100;
+        double cosHue;
         double cos60MinusHue;
 
-        if (hue < 120) {  // red to green
+        if (hue < 120) { // red to green
             cosHue = Math.cos(Math.toRadians(hue));
             cos60MinusHue = Math.cos(Math.toRadians(60 - hue));
-            red = (int) (255 * (1 + cosHue / cos60MinusHue));
-            green = (int) (255 * (1 + (1 - cosHue / cos60MinusHue)));
-            blue = 0;
-        } else if (hue < 240) {  // green to blue
-            hue =hue - 120;
+            redD = (255 * (1 + cosHue / cos60MinusHue));
+            greenD = (255 * (1 + (1 - cosHue / cos60MinusHue)));
+            blueD = 0;
+        } else if (hue < 240) { // green to blue
+            hue = hue - 120;
             cosHue = Math.cos(Math.toRadians(hue));
             cos60MinusHue = Math.cos(Math.toRadians(60 - hue));
-            green = (int) (255 * (1 + cosHue / cos60MinusHue));
-            blue = (int) (255 * (1 + (1 - cosHue / cos60MinusHue)));
-            red = 0;
-        } else {  // blue to red
-            hue =hue - 240;
+            greenD = (255 * (1 + cosHue / cos60MinusHue));
+            blueD = (255 * (1 + (1 - cosHue / cos60MinusHue)));
+            redD = 0;
+        } else { // blue to red
+            hue = hue - 240;
             cosHue = Math.cos(Math.toRadians(hue));
             cos60MinusHue = Math.cos(Math.toRadians(60 - hue));
-            blue = (int) (255 * (1 + cosHue / cos60MinusHue));
-            red = (int) (255 * (1 + (1 - cosHue / cos60MinusHue)));
-            green = 0;
+            blueD = (255 * (1 + cosHue / cos60MinusHue));
+            redD = (255 * (1 + (1 - cosHue / cos60MinusHue)));
+            greenD = 0;
         }
+        logger.trace("Colors from hue R: {} G: {} B: {}", redD, greenD, blueD);
 
         // Convert the "PercentType" to a percent
         double saturationPercent = (hsb.getSaturation().doubleValue() / 100);
 
         // Calculate the white intensity from saturation and adjust down the other colors
         if (saturationPercent < 0.5) {
-            // At less than 50% saturation, maximize white and lower the other intensities by 2x of the saturation percent. (2x to give us full range between 0-50%)
+            // At less than 50% saturation, maximize white and lower the other intensities by 2x of the saturation
+            // percent. (2x to give us full range between 0-50%)
             white = 255;
-            red = (int) (red * (2*saturationPercent));
-            green = (int) (green * (2*saturationPercent));
-            blue = (int) (blue * (2*saturationPercent));
+            red = (int) (redD * (2 * saturationPercent));
+            green = (int) (greenD * (2 * saturationPercent));
+            blue = (int) (blueD * (2 * saturationPercent));
         } else {
             // At >50% saturation, colors are at full and increase saturation by decreasing the white intensity.
-            white = (int) (255 *2*(1 - saturationPercent));
+            white = (int) (255 * 2 * (1 - saturationPercent));
+            red = (int) redD;
+            green = (int) greenD;
+            blue = (int) blueD;
         }
 
         // Note: We're keeping the brightness in a totally separate channel
-        logger.trace("Outgoing R: {} G: {} B: {} W: {}", red, green, blue, white);
+        logger.trace("Outgoing colors, adjusted for saturation R: {} G: {} B: {} W: {}", red, green, blue, white);
         return new int[] { red, green, blue, white };
     }
 
@@ -111,7 +118,7 @@ public class WizColorConverter {
      * @param int blue - the value of the blue component (0-255)
      * @param int white - the value of the white component (0-255)
      *
-     * Totally made this up.
+     *            Totally made this up.
      *
      * @return a {@link ColorRequestParam} with the color components
      */
@@ -125,8 +132,8 @@ public class WizColorConverter {
         if (white < 255) {
             saturationPercent = (int) (1 - (white / (255 * 2)));
         } else {
-            saturationPercent = Math.max(red, Math.max(green, blue)) / (255*2);
+            saturationPercent = Math.max(red, Math.max(green, blue)) / (255 * 2);
         }
-        return new HSBType(hue, new PercentType((int) saturationPercent*100), new PercentType(dimming));
+        return new HSBType(hue, new PercentType((int) saturationPercent * 100), new PercentType(dimming));
     }
 }

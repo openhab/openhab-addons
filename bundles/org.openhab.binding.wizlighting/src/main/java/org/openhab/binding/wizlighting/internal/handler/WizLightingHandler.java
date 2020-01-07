@@ -315,8 +315,8 @@ public class WizLightingHandler extends BaseThingHandler {
             @Override
             public void run() {
                 logger.debug(
-                        "Begin of Socket keep alive thread routine. Current configuration update interval: {} seconds.",
-                        WizLightingHandler.this.updateInterval);
+                        "Begin of Socket keep alive thread routine for bulb at {}. Current configuration update interval: {} seconds.",
+                        bulbIpAddress, updateInterval);
 
                 long now = System.currentTimeMillis();
                 long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
@@ -335,7 +335,6 @@ public class WizLightingHandler extends BaseThingHandler {
 
                 // refresh the current state
                 handleRefreshCommand();
-
             }
         };
         this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, updateInterval, TimeUnit.SECONDS);
@@ -508,6 +507,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * Asks the bulb for its current system configuration
      */
     private void updateBulbProperties() {
+        logger.trace("Updating metadata for bulb at {}", bulbIpAddress);
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.getSystemConfig, null);
         if (registrationResponse != null) {
             SystemConfigResult responseResult = registrationResponse.getSystemConfigResults();
@@ -535,6 +535,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * heartbeat (hb) status updates
      */
     private void registerWithBulb() {
+        logger.trace("Registering for updates with bulb at {}", bulbIpAddress);
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
                 this.registrationInfo);
         if (registrationResponse != null) {
