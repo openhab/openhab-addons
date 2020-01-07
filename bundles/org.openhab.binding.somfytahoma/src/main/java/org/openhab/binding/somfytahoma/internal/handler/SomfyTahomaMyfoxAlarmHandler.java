@@ -15,24 +15,32 @@ package org.openhab.binding.somfytahoma.internal.handler;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 
 /**
- * The {@link SomfyTahomaUnoRollerShutterHandler} is responsible for handling commands,
- * which are sent to one of the channels of the Uno roller shutter things.
+ * The {@link SomfyTahomaMyfoxAlarmHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the Myfox alarm thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaUnoRollerShutterHandler extends SomfyTahomaRollerShutterHandler {
+public class SomfyTahomaMyfoxAlarmHandler extends SomfyTahomaBaseThingHandler {
 
-    public SomfyTahomaUnoRollerShutterHandler(Thing thing) {
+    public SomfyTahomaMyfoxAlarmHandler(Thing thing) {
         super(thing);
-        // clear states set by RollerShutterHandler
-        stateNames.clear();
-        stateNames.put(CONTROL, TARGET_CLOSURE_STATE);
+        stateNames.put(ALARM_STATE, "myfox:AlarmStatusState");
+        stateNames.put(INTRUSION_STATE, "core:IntrusionState");
+        stateNames.put(CLOUD_STATUS, "core:CloudDeviceStatusState");
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+        if (MYFOX_ALARM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
+            sendCommand(command.toString());
+        }
     }
 }

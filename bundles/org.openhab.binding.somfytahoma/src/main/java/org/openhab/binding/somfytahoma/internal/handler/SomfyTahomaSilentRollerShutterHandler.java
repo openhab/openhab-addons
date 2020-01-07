@@ -32,7 +32,6 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaRollerShut
     public SomfyTahomaSilentRollerShutterHandler(Thing thing) {
         super(thing);
         stateNames.put(CONTROL_SILENT, "core:ClosureState");
-        stateNames.put(CONTROL, "core:ClosureState");
     }
 
     @Override

@@ -151,21 +151,26 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 deviceDiscovered(device, THING_TYPE_AWNING);
                 break;
             case THING_CONTACT_SENSOR:
+                // widget: ContactSensor
                 deviceDiscovered(device, THING_TYPE_CONTACTSENSOR);
                 break;
             case THING_CURTAIN:
                 deviceDiscovered(device, THING_TYPE_CURTAIN);
                 break;
             case THING_EXTERIOR_SCREEN:
+                // widget: PositionableScreen
                 deviceDiscovered(device, THING_TYPE_EXTERIORSCREEN);
                 break;
             case THING_EXTERIOR_VENETIAN_BLIND:
+                // widget: PositionableExteriorVenetianBlind
                 deviceDiscovered(device, THING_TYPE_EXTERIORVENETIANBLIND);
                 break;
             case THING_GARAGE_DOOR:
                 deviceDiscovered(device, THING_TYPE_GARAGEDOOR);
                 break;
             case THING_LIGHT:
+                // widget: TimedOnOffLight
+                // widget: StatefulOnOffLight
                 deviceDiscovered(device, THING_TYPE_LIGHT);
                 break;
             case THING_LIGHT_SENSOR:
@@ -175,34 +180,43 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 deviceDiscovered(device, THING_TYPE_OCCUPANCYSENSOR);
                 break;
             case THING_ON_OFF:
+                // widget: StatefulOnOff
                 deviceDiscovered(device, THING_TYPE_ONOFF);
                 break;
             case THING_ROLLER_SHUTTER:
                 if (isSilentRollerShutter(device)) {
+                    // widget: PositionableRollerShutterWithLowSpeedManagement
                     deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER_SILENT);
                 } else if (isUnoRollerShutter(device)) {
-                    //widget: PositionableRollerShutterUno
+                    // widget: PositionableRollerShutterUno
                     deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER_UNO);
                 } else {
-                    //widget: PositionableRollerShutter
+                    // widget: PositionableRollerShutter
                     deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER);
                 }
                 break;
             case THING_SCREEN:
+                // widget: PositionableTiltedScreen
                 deviceDiscovered(device, THING_TYPE_SCREEN);
                 break;
             case THING_SMOKE_SENSOR:
+                // widget: SmokeSensor
                 deviceDiscovered(device, THING_TYPE_SMOKESENSOR);
                 break;
             case THING_VENETIAN_BLIND:
                 deviceDiscovered(device, THING_TYPE_VENETIANBLIND);
                 break;
             case THING_WINDOW:
+                // widget: PositionableTiltedWindow
                 deviceDiscovered(device, THING_TYPE_WINDOW);
                 break;
             case THING_ALARM:
                 if (device.getDeviceURL().startsWith("internal:")) {
+                    // widget: TSKAlarmController
                     deviceDiscovered(device, THING_TYPE_INTERNAL_ALARM);
+                } else if ("MyFoxAlarmController".equals(device.getWidgetName())) {
+                    // widget: MyFoxAlarmController
+                    deviceDiscovered(device, THING_TYPE_MYFOX_ALARM);
                 } else {
                     deviceDiscovered(device, THING_TYPE_EXTERNAL_ALARM);
                 }
@@ -219,13 +233,21 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                     deviceDiscovered(device, THING_TYPE_HEATING_SYSTEM);
                 }
                 break;
+            case THING_HUMIDITY_SENSOR:
+                if (hasState(device, WATER_DETECTION_STATE)) {
+                    deviceDiscovered(device, THING_TYPE_WATERSENSOR);
+                } else {
+                    deviceDiscovered(device, THING_TYPE_HUMIDITYSENSOR);
+                }
             case THING_DOOR_LOCK:
+                // widget: UnlockDoorLockWithUnknownPosition
                 deviceDiscovered(device, THING_TYPE_DOOR_LOCK);
                 break;
             case THING_PERGOLA:
                 deviceDiscovered(device, THING_TYPE_PERGOLA);
                 break;
             case THING_WINDOW_HANDLE:
+                // widget: ThreeWayWindowHandle
                 deviceDiscovered(device, THING_TYPE_WINDOW_HANDLE);
                 break;
             case THING_TEMPERATURE_SENSOR:
@@ -252,6 +274,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 break;
             case THING_CAMERA:
                 if (hasMyfoxShutter(device)) {
+                    // widget: MyFoxSecurityCamera
                     deviceDiscovered(device, THING_TYPE_MYFOX_CAMERA);
                 } else {
                     logUnsupportedDevice(device);
@@ -272,7 +295,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
     private void logUnsupportedDevice(SomfyTahomaDevice device) {
         if (!isStateLess(device)) {
-            logger.info("Detected a new unsupported device: {}", device.getUiClass());
+            logger.info("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(), device.getWidgetName());
             logger.info("If you want to add the support, please create a new issue and attach the information below");
             logger.info("Device definition:\n{}", device.getDefinition());
 

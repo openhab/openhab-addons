@@ -86,12 +86,19 @@ public class SomfyTahomaBindingConstants {
     // Occupancy sensor
     public static final ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
 
+    // Water sensor
+    public static final ThingTypeUID THING_TYPE_WATERSENSOR = new ThingTypeUID(BINDING_ID, "watersensor");
+
+    // Humidity sensor
+    public static final ThingTypeUID THING_TYPE_HUMIDITYSENSOR = new ThingTypeUID(BINDING_ID, "humiditysensor");
+
     // Window
     public static final ThingTypeUID THING_TYPE_WINDOW = new ThingTypeUID(BINDING_ID, "window");
 
     // Alarm
     public static final ThingTypeUID THING_TYPE_INTERNAL_ALARM = new ThingTypeUID(BINDING_ID, "internalalarm");
     public static final ThingTypeUID THING_TYPE_EXTERNAL_ALARM = new ThingTypeUID(BINDING_ID, "externalalarm");
+    public static final ThingTypeUID THING_TYPE_MYFOX_ALARM = new ThingTypeUID(BINDING_ID, "myfoxalarm");
 
     // Pod
     public static final ThingTypeUID THING_TYPE_POD = new ThingTypeUID(BINDING_ID, "pod");
@@ -159,8 +166,11 @@ public class SomfyTahomaBindingConstants {
     public static final String LOCK = "lock";
     public static final String OPEN = "open";
 
-    // Smoke sensor, Occupancy sensor, Contact sensor
+    // Smoke sensor, Occupancy sensor, Contact sensor, Water sensor
     public static final String CONTACT = "contact";
+
+    // Humidity sensor
+    public static final String HUMIDITY = "humidity";
 
     // Smoke sensor
     public static final String ALARM_CHECK = "alarm_check";
@@ -210,9 +220,14 @@ public class SomfyTahomaBindingConstants {
     public static final String ONOFF_STATE = "onoff";
     public static final String BATTERY = "battery";
 
+    // Myfox Alarm
+    public static final String MYFOX_ALARM_COMMAND = "myfox_alarm_command";
+
+    // Myfox Alarm & Camera
+    public static final String CLOUD_STATUS = "cloud_status";
+
     // Myfox Camera
     public static final String SHUTTER = "shutter";
-    public static final String CLOUD_STATUS = "cloud_status";
 
     //Constants
     public static final String TAHOMA_API_URL = "https://www.tahomalink.com/enduser-mobile-web/enduserAPI/";
@@ -251,6 +266,7 @@ public class SomfyTahomaBindingConstants {
     public static final String CLOSURE_OR_ROCKER_STATE = "core:ClosureOrRockerPositionState";
     public static final String MYFOX_SHUTTER_STATUS_STATE = "myfox:ShutterStatusState";
     public static final String TARGET_CLOSURE_STATE = "core:TargetClosureState";
+    public static final String WATER_DETECTION_STATE = "core:WaterDetectionState";
     public static final String UNAVAILABLE = "unavailable";
     public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
     public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
@@ -270,6 +286,7 @@ public class SomfyTahomaBindingConstants {
     public static final String THING_SMOKE_SENSOR = "SmokeSensor";
     public static final String THING_CONTACT_SENSOR = "ContactSensor";
     public static final String THING_OCCUPANCY_SENSOR = "OccupancySensor";
+    public static final String THING_HUMIDITY_SENSOR = "HumiditySensor";
     public static final String THING_WINDOW = "Window";
     public static final String THING_ALARM = "Alarm";
     public static final String THING_POD = "Pod";
@@ -305,7 +322,8 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA,
             THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE, THING_TYPE_CURTAIN,
             THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER,
-            THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO));
+            THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO, THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR,
+            THING_TYPE_MYFOX_ALARM));
 
     //somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {

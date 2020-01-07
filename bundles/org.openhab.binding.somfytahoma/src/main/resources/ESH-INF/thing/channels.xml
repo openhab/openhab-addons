@@ -50,6 +50,19 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="myfox_alarm_command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>A channel used for sending commands to Somfy Myfox Alarm device</description>
+		<state>
+			<options>
+				<option value="arm">ARM</option>
+				<option value="disarm">DISARM</option>
+				<option value="partial">ARM_PARTIAL</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="intrusion_control">
 		<item-type>String</item-type>
 		<label>Intrusion Control</label>
@@ -118,6 +131,13 @@
 		<label>Current Temperature</label>
 		<description>The current temperature of the heating system</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Humidity</label>
+		<description>The current relative humidity</description>
+		<state readOnly="true" min="0" max="100" pattern="%f.1 %unit%" />
 	</channel-type>
 
 	<channel-type id="current_state">
