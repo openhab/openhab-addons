@@ -35,7 +35,7 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
     private final Logger logger = LoggerFactory.getLogger(FileTailer.class);
 
     private Tailer tailer;
-    private final ExecutorService executor = Executors.newFixedThreadPool(1);
+    private ExecutorService executor;
 
     TailerListener logListener = new TailerListenerAdapter() {
 
@@ -63,10 +63,11 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
     @Override
     public void start(String filePath, long refreshRate) throws FileReaderException {
         tailer = new Tailer(new File(filePath), logListener, refreshRate, true, false, true);
-
+        executor = Executors.newFixedThreadPool(1);
         try {
             logger.debug("Start executor");
             executor.execute(tailer);
+            logger.debug("Executor started");
         } catch (Exception e) {
             throw new FileReaderException(e);
         }
@@ -77,6 +78,9 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
         logger.debug("Shutdown");
         if (tailer != null) {
             tailer.stop();
+        }
+        if (executor != null) {
+            executor.shutdown();
         }
         logger.debug("Shutdown complite");
     }
