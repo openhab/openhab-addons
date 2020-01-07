@@ -15,7 +15,6 @@ package org.openhab.binding.wizlighting.internal.entities;
 import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.wizlighting.internal.enums.*;
@@ -108,10 +107,7 @@ public class SyncResponseParam {
 
     public HSBType getHSBColor() {
         if (getColorMode() == WizLightingColorMode.RGBMode) {
-            DecimalType hue = colorConverter.rgbwToHSB(r, g, b, w).getHue();
-            PercentType saturation = colorConverter.rgbwToHSB(r, g, b, w).getSaturation();
-            PercentType brightness = new PercentType(dimming);
-            HSBType newColor = new HSBType(hue, saturation, brightness);
+            HSBType newColor = colorConverter.rgbwDimmingToHSB(r, g, b, w, dimming);
             // NOTE: The WiZ bulbs do not use the cool white LED's in full color mode.
             return newColor;
         } else {
