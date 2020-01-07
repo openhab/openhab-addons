@@ -36,30 +36,23 @@ public class GenericDataResponse implements DataResponse {
     @NonNullByDefault
     public static class Value {
         @SerializedName("VariableId")
-        @Nullable
-        private String variableId;
+        private @Nullable String variableId;
         @SerializedName("CurrentValue")
-        @Nullable
-        private String currentValue;
+        private @Nullable String currentValue;
         @SerializedName("CurrentIntValue")
-        @Nullable
-        private Long currentIntValue;
+        private @Nullable Long currentIntValue;
         @SerializedName("IsLoading")
         private boolean isLoading;
     }
 
     @SerializedName("IsOffline")
-    @Nullable
-    private String isOffline;
+    private @Nullable String isOffline;
     @SerializedName("OnlineImage")
-    @Nullable
-    private String onlineImage;
+    private @Nullable String onlineImage;
     @SerializedName("Date")
-    @Nullable
-    private String date;
+    private @Nullable String date;
     @SerializedName("FuzzyDate")
-    @Nullable
-    private String fuzzyDate;
+    private @Nullable String fuzzyDate;
     @SerializedName("Values")
     private List<Value> values = new ArrayList<>();
 

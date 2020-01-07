@@ -102,7 +102,6 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
         registeredGroups.clear();
         validateChannelsAndRegisterGroups();
 
-        // TODO: activate
         startPolling();
         webInterface.start();
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting for web api login");

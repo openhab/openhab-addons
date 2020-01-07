@@ -46,10 +46,7 @@ public final class ChannelUtil {
      */
     public static boolean isValidNibeChannel(Channel channel) {
         String id = channel.getUID().getIdWithoutGroup();
-        if (id.matches(NibeUplinkBindingConstants.VALID_CHANNEL_ID_REGEX)) {
-            return true;
-        }
-        return false;
+        return id.matches(NibeUplinkBindingConstants.VALID_CHANNEL_ID_REGEX);
     }
 
     /**
@@ -132,18 +129,15 @@ public final class ChannelUtil {
         return suffix;
     }
 
-    @Nullable
-    private static String getOffMapping(Channel channel) {
+    private static @Nullable String getOffMapping(Channel channel) {
         return getPropertyOrParameter(channel, NibeUplinkBindingConstants.PARAMETER_NAME_OFF_MAPPING);
     }
 
-    @Nullable
-    private static String getOnMapping(Channel channel) {
+    private static @Nullable String getOnMapping(Channel channel) {
         return getPropertyOrParameter(channel, NibeUplinkBindingConstants.PARAMETER_NAME_ON_MAPPING);
     }
 
-    @Nullable
-    private static String getPropertyOrParameter(Channel channel, String name) {
+    private static @Nullable String getPropertyOrParameter(Channel channel, String name) {
         String value = channel.getProperties().get(name);
         // also eclipse says this cannot be null, it definitely can!
         if (value == null || value.isEmpty()) {

@@ -62,8 +62,7 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     /**
      * listener to provide updates to the WebInterface class
      */
-    @Nullable
-    private StatusUpdateListener listener;
+    private @Nullable StatusUpdateListener listener;
 
     /**
      * JSON deserializer

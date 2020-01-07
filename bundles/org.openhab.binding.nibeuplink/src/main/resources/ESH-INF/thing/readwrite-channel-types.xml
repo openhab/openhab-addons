@@ -66,7 +66,7 @@
 	</channel-type>
 	<channel-type id="rwtype-hw-mode">
 		<item-type>Number</item-type>
-		<label>Hot water mode</label>
+		<label>Hot Water Mode</label>
 		<state readOnly="false">
 			<options>
 				<option value="0">Economy</option>
