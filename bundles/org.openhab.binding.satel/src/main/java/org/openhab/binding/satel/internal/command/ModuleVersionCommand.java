@@ -46,7 +46,7 @@ public class ModuleVersionCommand extends SatelCommandBase {
     /**
      * @return <code>true</code> if the module supports extended (32-bit) payload for zones/outputs
      */
-    public boolean isExtPayloadSupported() {
+    public boolean hasExtPayloadSupport() {
         return (response.getPayload()[11] & 0x01) != 0;
     }
 
@@ -54,7 +54,7 @@ public class ModuleVersionCommand extends SatelCommandBase {
     public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
         if (super.handleResponse(eventDispatcher, response)) {
             // dispatch version event
-            eventDispatcher.dispatchEvent(new ModuleVersionEvent(getVersion(), isExtPayloadSupported()));
+            eventDispatcher.dispatchEvent(new ModuleVersionEvent(getVersion(), hasExtPayloadSupport()));
             return true;
         } else {
             return false;
