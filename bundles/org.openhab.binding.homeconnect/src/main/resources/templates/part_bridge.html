@@ -1,0 +1,51 @@
+<h2>Authorize bridge "${label} (${uid})"</h2>
+<div class="views-field">
+	<span class="views-label">OAuth Flow</span>
+	<span class="field-content"><code>Authorization Code Grant Flow</code></span>
+</div>
+<div class="views-field">
+	<span class="views-label">Client ID</span>
+	<span class="field-content">
+		<code>${clientId}</code>
+	</span>
+</div>
+<div class="views-field">
+	<span class="views-label">
+		Client Secret
+	</span>
+	<span class="field-content">
+		<code>${clientSecret}</code>
+	</span>
+</div>
+<div class="views-field">
+    <span class="views-label"> Redirect URI</span>
+    <span class="field-content">
+        <code class="redirectUri"></code>
+    </span>
+</div>
+<div class="views-field">
+    <span class="views-label"> Status</span>
+    <span class="field-content">
+        <code>${thingStatus}</code>
+    </span>
+</div>
+<div class="views-field">
+    <p class="desc">Please make sure the redirect URI is matching the one specified at https://developer.home-connect.com/applications/.</p>
+</div>
+<div style="display: flex;">
+    <form action="?uid=${uid}&task=clear" method="post">
+        <button class="cancelbutton" name="Clear" value="Clear stored credentials">Clear stored credentials</button>
+    </form>
+    
+	<form action="?uid=${uid}&task=authorize" method="post">
+		<button class="button" name="Authorize" value="Authorize bridge">Authorize bridge</button>
+	</form>
+</div>
+
+<script type="text/javascript">
+var x = document.getElementsByClassName("redirectUri");
+var i;
+for (i = 0; i < x.length; i++) {
+  x[i].innerHTML = window.location.href.substring(0, window.location.href.lastIndexOf('/homeconnect') + 12);
+}
+</script>

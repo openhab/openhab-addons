@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>openHAB Home Connect log</title>
+<link rel="shortcut icon" href="../paperui/img/logo.ico" />
+
+<style>
+html {
+	font-family: "Roboto", Helvetica, Arial, sans-serif;
+}
+
+body, h1, h2, h3 {
+	font-weight: 300;
+}
+
+table {
+    font-family: monospace;
+    font-size: larger;
+    table-layout: auto;
+    width: 100%;
+}
+
+.TRACE {
+    color: green !important;
+}
+.DEBUG {
+    color: green !important;
+}
+.INFO {
+    color: green !important;
+}
+.WARN {
+    color: yellow !important;
+}
+.ERROR {
+    color: red !important;
+}
+
+tr:nth-child(even) {
+  opacity: 0.75;
+}
+
+
+.api {
+  background-color: #c9d2d9;
+}
+
+.sse {
+  background-color: #f2ced8;
+}
+
+.default {
+  background-color: #f2f2f2;
+}
+
+.detail {
+  font-size: medium;
+  display: none;
+  padding-top: 7px;
+}
+
+tr {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+td {
+    vertical-align: top;
+    padding: 8px;
+}
+
+.nowrap {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+
+pre {
+    display: block;
+    font-family: monospace;
+    white-space: pre;
+    margin: 0em 0px;
+}
+
+.button {
+    color: #ffffff;
+    background: #3ca0dc;
+    padding: 10px 20px;
+    outline: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    display: inline-block;
+    outline: 0;
+    line-height: 1.2;
+    margin-right: 5px;
+    text-decoration: none;
+}
+
+.button:hover {
+    background-color: rgba(60,160,220,0.5);
+    opacity: 1;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.cancelbutton {
+    color: #ffffff;
+    background: #323949;
+    padding: 10px 20px;
+    outline: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    display: inline-block;
+    outline: 0;
+    line-height: 1.2;
+    margin-right: 5px;
+    text-decoration: none;
+}
+
+.cancelbutton:hover {
+    background-color: rgba(50, 57, 72, 0.8);
+    opacity: 1;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+
+</style>
+</head>
+<body>
+    <h1>openHAB Home Connect log</h1>
+    <div style="padding-bottom: 10px;">
+        <a class="cancelbutton" href="?clear=true">Clear log</a>
+        <a class="button" href="?export=true">Export log (pseudonymized)</a>
+        <a class="button" href="?refresh=true">Refresh</a>
+    </div>
+	<table>
+	${logs}
+	</table>
+	
+	<script type="text/javascript">
+	    function toggle_visibility(el) {
+	       var e = el.parentElement.nextElementSibling;
+	       //var e = document.getElementById(id);
+	       if(e.style.display == 'block')
+	          e.style.display = 'none';
+	       else
+	          e.style.display = 'block';
+	    }
+    </script>
+	<script type="text/javascript">window.history.replaceState({}, document.title, window.location.href.substring(0, window.location.href.lastIndexOf('/homeconnectlogs') + 16));</script>
+</body>
+</html>
