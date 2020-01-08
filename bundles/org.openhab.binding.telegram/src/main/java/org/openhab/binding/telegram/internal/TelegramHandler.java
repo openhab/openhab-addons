@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,11 @@ package org.openhab.binding.telegram.internal;
 
 import static org.openhab.binding.telegram.internal.TelegramBindingConstants.*;
 
-import java.time.ZonedDateTime;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -104,7 +106,6 @@ public class TelegramHandler extends BaseThingHandler {
     // answer and need the id of the original message
     private final Map<ReplyKey, Integer> replyIdToMessageId = new HashMap<>();
 
-    
     private @Nullable TelegramBot bot;
     private @Nullable OkHttpClient botLibClient;
     private @Nullable HttpClient downloadDataClient;
@@ -141,85 +142,105 @@ public class TelegramHandler extends BaseThingHandler {
             }
         }
 
-        botLibClient = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS).readTimeout(75, TimeUnit.SECONDS)
-                .build();
+        OkHttpClient.Builder prepareConnection = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS)
+                .readTimeout(75, TimeUnit.SECONDS);
+
+        String proxyHost = config.getProxyHost();
+        String proxyPort = config.getProxyPort();
+        String proxyType = config.getProxyType();
+
+        if (proxyHost != null && proxyPort != null) {
+            InetSocketAddress proxyAddr = new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort));
+
+            Proxy.Type proxyTypeParam = Proxy.Type.SOCKS;
+
+            if (proxyType != null && "HTTP".equals(proxyType)) {
+                proxyTypeParam = Proxy.Type.HTTP;
+            }
+
+            Proxy proxy = new Proxy(proxyTypeParam, proxyAddr);
+
+            logger.debug("{} Proxy {}:{} is used for telegram ", proxyTypeParam, proxyHost, proxyPort);
+            prepareConnection.proxy(proxy);
+        }
+
+        botLibClient = prepareConnection.build();
         updateStatus(ThingStatus.ONLINE);
         TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(botLibClient).build();
         localBot.setUpdatesListener(updates -> {
-                for (Update update : updates) {
-                    String lastMessageText = null;
-                    Integer lastMessageDate = null;
-                    String lastMessageFirstName = null;
-                    String lastMessageLastName = null;
-                    String lastMessageUsername = null;
-                    Long chatId = null;
-                    String replyId = null;
-                    if (update.message() != null && update.message().text() != null) {
-                        Message message = update.message();
-                        chatId = message.chat().id();
-                        if (!chatIds.contains(chatId)) {
-                            logger.warn(
-                                    "Ignored message from unknown chat id {}. If you know the sender of that chat, add it to the list of chat ids in the thing configuration to authorize it",
-                                    chatId);
-                            continue; // this is very important regarding security to avoid commands from an unknown
-                                      // chat
-                        }
-
-                        lastMessageText = message.text();
-                        lastMessageDate = message.date();
-                        lastMessageFirstName = message.from().firstName();
-                        lastMessageLastName = message.from().lastName();
-                        lastMessageUsername = message.from().username();
-                    } else if (update.callbackQuery() != null && update.callbackQuery().message() != null
-                            && update.callbackQuery().message().text() != null) {
-                        String[] callbackData = update.callbackQuery().data().split(" ", 2);
-
-                        if (callbackData.length == 2) {
-                            replyId = callbackData[0];
-                            lastMessageText = callbackData[1];
-                            lastMessageDate = update.callbackQuery().message().date();
-                            lastMessageFirstName = update.callbackQuery().from().firstName();
-                            lastMessageLastName = update.callbackQuery().from().lastName();
-                            lastMessageUsername = update.callbackQuery().from().username();
-                            chatId = update.callbackQuery().message().chat().id();
-                            replyIdToCallbackId.put(new ReplyKey(chatId, replyId), update.callbackQuery().id());
-                            logger.debug("Received callbackId {} for chatId {} and replyId {}",
-                                    update.callbackQuery().id(), chatId, replyId);
-                        } else {
-                            logger.warn(
-                                    "The received callback query {} has not the right format (must be seperated by spaces)",
-                                    update.callbackQuery().data());
-                        }
+            for (Update update : updates) {
+                String lastMessageText = null;
+                Integer lastMessageDate = null;
+                String lastMessageFirstName = null;
+                String lastMessageLastName = null;
+                String lastMessageUsername = null;
+                Long chatId = null;
+                String replyId = null;
+                if (update.message() != null && update.message().text() != null) {
+                    Message message = update.message();
+                    chatId = message.chat().id();
+                    if (!chatIds.contains(chatId)) {
+                        logger.warn(
+                                "Ignored message from unknown chat id {}. If you know the sender of that chat, add it to the list of chat ids in the thing configuration to authorize it",
+                                chatId);
+                        continue; // this is very important regarding security to avoid commands from an unknown
+                                  // chat
                     }
-                    updateChannel(LASTMESSAGETEXT,
-                            lastMessageText != null ? new StringType(lastMessageText) : UnDefType.NULL);
-                    updateChannel(LASTMESSAGEDATE,
-                            lastMessageDate != null
-                                    ? new DateTimeType(ZonedDateTime.ofInstant(
-                                            Instant.ofEpochSecond(lastMessageDate.intValue()), ZoneOffset.UTC))
-                                    : UnDefType.NULL);
-                    updateChannel(LASTMESSAGENAME,
-                            (lastMessageFirstName != null || lastMessageLastName != null)
-                                    ? new StringType((lastMessageFirstName != null ? lastMessageFirstName + " " : "")
-                                            + (lastMessageLastName != null ? lastMessageLastName : ""))
-                                    : UnDefType.NULL);
-                    updateChannel(LASTMESSAGEUSERNAME,
-                            lastMessageUsername != null ? new StringType(lastMessageUsername) : UnDefType.NULL);
-                    updateChannel(CHATID, chatId != null ? new StringType(chatId.toString()) : UnDefType.NULL);
-                    updateChannel(REPLYID, replyId != null ? new StringType(replyId) : UnDefType.NULL);
+
+                    lastMessageText = message.text();
+                    lastMessageDate = message.date();
+                    lastMessageFirstName = message.from().firstName();
+                    lastMessageLastName = message.from().lastName();
+                    lastMessageUsername = message.from().username();
+                } else if (update.callbackQuery() != null && update.callbackQuery().message() != null
+                        && update.callbackQuery().message().text() != null) {
+                    String[] callbackData = update.callbackQuery().data().split(" ", 2);
+
+                    if (callbackData.length == 2) {
+                        replyId = callbackData[0];
+                        lastMessageText = callbackData[1];
+                        lastMessageDate = update.callbackQuery().message().date();
+                        lastMessageFirstName = update.callbackQuery().from().firstName();
+                        lastMessageLastName = update.callbackQuery().from().lastName();
+                        lastMessageUsername = update.callbackQuery().from().username();
+                        chatId = update.callbackQuery().message().chat().id();
+                        replyIdToCallbackId.put(new ReplyKey(chatId, replyId), update.callbackQuery().id());
+                        logger.debug("Received callbackId {} for chatId {} and replyId {}", update.callbackQuery().id(),
+                                chatId, replyId);
+                    } else {
+                        logger.warn(
+                                "The received callback query {} has not the right format (must be seperated by spaces)",
+                                update.callbackQuery().data());
+                    }
                 }
-                return UpdatesListener.CONFIRMED_UPDATES_ALL;
+                updateChannel(LASTMESSAGETEXT,
+                        lastMessageText != null ? new StringType(lastMessageText) : UnDefType.NULL);
+                updateChannel(LASTMESSAGEDATE,
+                        lastMessageDate != null
+                                ? new DateTimeType(ZonedDateTime
+                                        .ofInstant(Instant.ofEpochSecond(lastMessageDate.intValue()), ZoneOffset.UTC))
+                                : UnDefType.NULL);
+                updateChannel(LASTMESSAGENAME, (lastMessageFirstName != null || lastMessageLastName != null)
+                        ? new StringType((lastMessageFirstName != null ? lastMessageFirstName + " " : "")
+                                + (lastMessageLastName != null ? lastMessageLastName : ""))
+                        : UnDefType.NULL);
+                updateChannel(LASTMESSAGEUSERNAME,
+                        lastMessageUsername != null ? new StringType(lastMessageUsername) : UnDefType.NULL);
+                updateChannel(CHATID, chatId != null ? new StringType(chatId.toString()) : UnDefType.NULL);
+                updateChannel(REPLYID, replyId != null ? new StringType(replyId) : UnDefType.NULL);
+            }
+            return UpdatesListener.CONFIRMED_UPDATES_ALL;
         }, exception -> {
-                if (exception != null) {
-                    logger.warn("Telegram exception: {}", exception.getMessage());
-                    if (exception.response() != null) {
-                        BaseResponse localResponse = exception.response();
-                        if (localResponse.errorCode() == 401) {
-                            logger.error("Bot token invalid, disable thing {}", getThing().getUID());
-                            localBot.removeGetUpdatesListener();
-                            updateStatus(ThingStatus.OFFLINE);
-                        }
+            if (exception != null) {
+                logger.warn("Telegram exception: {}", exception.getMessage());
+                if (exception.response() != null) {
+                    BaseResponse localResponse = exception.response();
+                    if (localResponse.errorCode() == 401) {
+                        logger.error("Bot token invalid, disable thing {}", getThing().getUID());
+                        localBot.removeGetUpdatesListener();
+                        updateStatus(ThingStatus.OFFLINE);
                     }
+                }
             }
         });
     }
@@ -277,8 +298,7 @@ public class TelegramHandler extends BaseThingHandler {
     }
 
     @Nullable
-    public HttpClient getClient()
-    {
+    public HttpClient getClient() {
         return downloadDataClient;
     }
 
