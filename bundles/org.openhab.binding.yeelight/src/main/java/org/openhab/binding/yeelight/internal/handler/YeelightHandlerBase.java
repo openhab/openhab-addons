@@ -146,14 +146,15 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
                     updateState(channelUID, new PercentType(s.getBrightness()));
                     break;
                 case CHANNEL_COLOR:
-                case CHANNEL_BACKGROUND_COLOR:
                     updateState(channelUID, HSBType.fromRGB(s.getR(), s.getG(), s.getB()));
                     break;
                 case CHANNEL_COLOR_TEMPERATURE:
                     updateState(channelUID, new PercentType(s.getCt()));
                     break;
-                case CHANNEL_BACKGROUND_BRIGHTNESS:
-                    updateState(channelUID, new PercentType(s.getBackgroundBrightness()));
+                case CHANNEL_BACKGROUND_COLOR:
+                    final HSBType hsbType = new HSBType(new DecimalType(s.getHue()), new PercentType(s.getSat()),
+                            new PercentType(s.getBackgroundBrightness()));
+                    updateState(channelUID, hsbType);
                     break;
                 default:
                     break;
@@ -198,10 +199,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
                 if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
                     handleBackgroundHSBCommand(hsbCommand);
-                }
-                break;
-            case CHANNEL_BACKGROUND_BRIGHTNESS:
-                if (command instanceof PercentType) {
+                } else if (command instanceof PercentType) {
                     handleBackgroundBrightnessPercentMessage((PercentType) command);
                 } else if (command instanceof OnOffType) {
                     handleBackgroundOnOffCommand((OnOffType) command);

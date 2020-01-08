@@ -45,13 +45,10 @@ public class YeelightCeilingWithAmbientHandler extends YeelightCeilingHandler {
         super.updateUI(status);
 
         if (status.isBackgroundIsPowerOff()) {
-            updateState(YeelightBindingConstants.CHANNEL_BACKGROUND_BRIGHTNESS, PercentType.ZERO);
+            updateState(YeelightBindingConstants.CHANNEL_BACKGROUND_COLOR, PercentType.ZERO);
         } else {
-            updateState(YeelightBindingConstants.CHANNEL_BACKGROUND_BRIGHTNESS,
-                    new PercentType(status.getBackgroundBrightness()));
-
             final HSBType hsbType = new HSBType(new DecimalType(status.getBackgroundHue()),
-                    new PercentType(status.getBackgroundSat()), PercentType.HUNDRED);
+                    new PercentType(status.getBackgroundSat()), new PercentType(status.getBackgroundBrightness()));
 
             updateState(YeelightBindingConstants.CHANNEL_BACKGROUND_COLOR, hsbType);
         }

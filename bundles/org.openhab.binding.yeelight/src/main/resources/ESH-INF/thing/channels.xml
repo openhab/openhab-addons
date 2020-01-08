@@ -57,19 +57,6 @@
 		</tags>
 	</channel-type>
 
-	<!-- Background Brightness Channel -->
-	<channel-type id="backgroundBrightness">
-		<item-type>Dimmer</item-type>
-		<label>Background Brightness</label>
-		<description>The brightness channel allows to control the brightness of a light.
-			It is also possible to switch the light on and off.
-		</description>
-		<category>DimmableLight</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-	</channel-type>
-
 	<channel-type id="nightlight">
 		<item-type>Switch</item-type>
 		<label>nightlight</label>

@@ -130,7 +130,7 @@ public class DeviceManager {
                                 StringBuilder buffer = new StringBuilder();
                                 for (int i = 0; i < dpRecv.getLength(); i++) {
                                     // parse /r
-                                    if (bytes[i] == 13) {
+                                    if (bytes[i] == Character.LINE_SEPARATOR) {
                                         continue;
                                     }
                                     buffer.append((char) bytes[i]);
