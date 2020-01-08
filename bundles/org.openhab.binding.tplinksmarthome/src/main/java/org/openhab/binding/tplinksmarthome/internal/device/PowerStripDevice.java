@@ -70,12 +70,8 @@ public class PowerStripDevice extends EnergySwitchDevice {
     @Override
     protected State getOnOffState(final DeviceState deviceState) {
         // Global On/Off state is determined by the combined state of all sockets. If 1 socket is on, the state is on.
-        for (int i = 0; i < childIds.size(); i++) {
-            if (OnOffType.ON.equals(deviceState.getSysinfo().getChildren().get(i).getState())) {
-                return OnOffType.ON;
-            }
-        }
-        return OnOffType.OFF;
+        return OnOffType
+                .from(deviceState.getSysinfo().getChildren().stream().anyMatch(e -> OnOffType.ON.equals(e.getState())));
     }
 
     @Override
