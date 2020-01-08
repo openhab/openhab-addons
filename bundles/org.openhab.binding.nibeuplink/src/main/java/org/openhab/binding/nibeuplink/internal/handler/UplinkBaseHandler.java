@@ -23,10 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -54,7 +56,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     private final long HOUSE_KEEPING_INITIAL_DELAY = 300;
 
     private final Set<Channel> deadChannels = new HashSet<>(100);
-    private final Set<String> registeredGroups = new HashSet<String>(10);
+    private final Set<ChannelGroupUID> registeredGroups = new HashSet<>(10);
 
     /**
      * Interface object for querying the NibeUplink web interface
@@ -121,10 +123,11 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
             } else {
                 logger.debug("Successfully validated channel {} ({})", channel.getUID().getIdWithoutGroup(),
                         channel.getLabel());
-                String group = channel.getUID().getGroupId();
-                if (group != null) {
-                    if (registeredGroups.add(group)) {
-                        logger.debug("Successfully registered channel-group '{}'", group);
+                String groupId = channel.getUID().getGroupId();
+                if (groupId != null) {
+                    ThingUID thingUID = this.getThing().getUID();
+                    if (registeredGroups.add(new ChannelGroupUID(thingUID, groupId))) {
+                        logger.debug("Successfully registered channel-group '{}'", groupId);
                     }
                 }
             }
@@ -197,7 +200,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     public NibeUplinkConfiguration getConfiguration() {
         return this.getConfigAs(NibeUplinkConfiguration.class);
     }
-    public Set<String> getRegisteredGroups() {
+    public Set<ChannelGroupUID> getRegisteredGroups() {
         return registeredGroups;
     }
 

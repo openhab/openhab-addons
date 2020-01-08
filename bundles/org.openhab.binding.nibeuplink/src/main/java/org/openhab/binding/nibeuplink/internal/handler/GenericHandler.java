@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelGroupUID;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 
 /**
@@ -42,8 +44,8 @@ public class GenericHandler extends UplinkBaseHandler {
     public @Nullable Channel getSpecificChannel(String channelId) {
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
-            for (String group : getRegisteredGroups()) {
-                channel = getThing().getChannel(group + "#" + channelId);
+            for (ChannelGroupUID channelGroupUID : getRegisteredGroups()) {
+                channel = getThing().getChannel(new ChannelUID(channelGroupUID, channelId));
                 if (channel != null) {
                     break;
                 }
