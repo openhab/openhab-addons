@@ -58,6 +58,7 @@ public class WizLightingBindingConstants {
     public static final String CHANNEL_LIGHT_MODE = "lightMode";
     public static final String CHANNEL_DYNAMIC_SPEED = "speed";
     public static final String CHANNEL_RSSI = "signalstrength";
+    public static final String CHANNEL_LAST_UPDATE = "lastUpdate";
 
     // -------------- Configuration arguments ----------------
     /**

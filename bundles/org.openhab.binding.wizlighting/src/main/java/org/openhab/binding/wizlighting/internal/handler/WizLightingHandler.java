@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -195,8 +197,7 @@ public class WizLightingHandler extends BaseThingHandler {
         logger.trace("Requesting current state from bulb.");
         WizLightingResponse response = sendRequestPacket(WizLightingMethodType.getPilot, null);
         if (response != null) {
-            updateStatus(ThingStatus.ONLINE);
-            latestUpdate = System.currentTimeMillis();
+            updateTimestamps();
             SyncResponseParam rParam = response.getSyncParams();
             if (rParam != null) {
                 updateStatesFromParams(rParam);
@@ -331,10 +332,10 @@ public class WizLightingHandler extends BaseThingHandler {
                             "Since no updates have been received from mac address {}, setting its status to OFFLINE.",
                             getBulbMacAddress());
                     updateStatus(ThingStatus.OFFLINE);
+                } else {
+                    // refresh the current state
+                    handleRefreshCommand();
                 }
-
-                // refresh the current state
-                handleRefreshCommand();
             }
         };
         this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, updateInterval, TimeUnit.SECONDS);
@@ -342,10 +343,17 @@ public class WizLightingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateBulbProperties();
-        saveConfigurationsUsingCurrentStates();
-        registerWithBulb();
-        initGetStatusAndKeepAliveThread();
+        logger.trace("Beginning initialization for bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
+
+        updateStatus(ThingStatus.UNKNOWN);
+        // start background initialization:
+        scheduler.schedule(() -> {
+            updateBulbProperties();
+            saveConfigurationsUsingCurrentStates();
+            registerWithBulb();
+            initGetStatusAndKeepAliveThread();
+        }, 2, TimeUnit.SECONDS);
+        logger.debug("Finished initialization for bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
     }
 
     /**
@@ -358,8 +366,7 @@ public class WizLightingHandler extends BaseThingHandler {
     public void newReceivedResponseMessage(final WizLightingResponse receivedMessage) {
         // Grab the ID number and mark the bulb online
         requestId = receivedMessage.getId();
-        updateStatus(ThingStatus.ONLINE);
-        latestUpdate = System.currentTimeMillis();
+        updateTimestamps();
 
         // Update the state from the parameters, if possible
         SyncResponseParam params = receivedMessage.getSyncParams();
@@ -466,7 +473,10 @@ public class WizLightingHandler extends BaseThingHandler {
                 DatagramPacket packet = new DatagramPacket(message, message.length, address, DEFAULT_BULB_UDP_PORT);
 
                 // Create a datagram socket, send the packet through it, close it.
-                dsocket = new DatagramSocket();
+                dsocket = new DatagramSocket(null);
+                dsocket.setReuseAddress(true);
+                dsocket.setBroadcast(true);
+                dsocket.setSoTimeout(1000);  // Timeout in 1s
                 dsocket.send(packet);
                 logger.debug("Sent packet to address: {} and port {}", address, DEFAULT_BULB_UDP_PORT);
 
@@ -476,10 +486,13 @@ public class WizLightingHandler extends BaseThingHandler {
 
                 return converter.transformResponsePacket(packet);
             }
+        } catch (SocketTimeoutException e) {
+            logger.trace("Socket timeout after sending command; no response from {} - {}", getBulbIpAddress(),
+                    getBulbMacAddress());
         } catch (IOException exception) {
             logger.debug("Something wrong happened when sending the packet to address: {} and port {}... msg: {}",
                     bulbIpAddress, DEFAULT_BULB_UDP_PORT, exception.getMessage());
-        } finally {
+        }  finally {
             if (dsocket != null) {
                 dsocket.close();
             }
@@ -495,12 +508,20 @@ public class WizLightingHandler extends BaseThingHandler {
         if (response != null) {
             boolean setSucceeded = response.getResultSuccess();
             if (setSucceeded) {
-                updateStatus(ThingStatus.ONLINE);
-                latestUpdate = System.currentTimeMillis();
+                updateTimestamps();
                 return setSucceeded;
             }
         }
         return false;
+    }
+
+    /**
+     * Makes note of the latest timestamps
+     */
+    private void updateTimestamps() {
+        updateStatus(ThingStatus.ONLINE);
+        latestUpdate = System.currentTimeMillis();
+        updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
     }
 
     /**
@@ -526,7 +547,19 @@ public class WizLightingHandler extends BaseThingHandler {
                 thingProperties.put(PROPERTY_MODULE_NAME, responseResult.moduleName);
                 thingProperties.put(PROPERTY_GROUP_ID, String.valueOf(responseResult.groupId));
                 updateProperties(thingProperties);
+                updateTimestamps();
+            } else {
+                logger.debug(
+                        "Received response to getConfigRequest from bulb at {} - {}, but id did not contain bulb configuration information.",
+                        getBulbIpAddress(), getBulbMacAddress());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
+        } else {
+            logger.debug("No response to registration request from bulb at {} - {}", getBulbIpAddress(),
+                    getBulbMacAddress());
+            // Not calling it "gone" because it's probably just been powered off and will be
+            // back any time
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 
@@ -535,13 +568,24 @@ public class WizLightingHandler extends BaseThingHandler {
      * heartbeat (hb) status updates
      */
     private void registerWithBulb() {
-        logger.trace("Registering for updates with bulb at {}", bulbIpAddress);
+        logger.trace("Registering for updates with bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
                 this.registrationInfo);
         if (registrationResponse != null) {
             if (registrationResponse.getResultSuccess()) {
-                updateStatus(ThingStatus.ONLINE);
+                updateTimestamps();
+            } else {
+                logger.debug(
+                        "Received response to getConfigRequest from bulb at {} - {}, but id did not contain bulb configuration information.",
+                        getBulbIpAddress(), getBulbMacAddress());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
+        } else {
+            logger.debug("No response to registration request from bulb at {} - {}", getBulbIpAddress(),
+                    getBulbMacAddress());
+            // Not calling it "gone" because it's probably just been powered off and will be
+            // back any time
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 
@@ -556,8 +600,8 @@ public class WizLightingHandler extends BaseThingHandler {
             saveUpdateIntervalFromConfiguration(configuration);
 
             // Re-register to get heartbeats
-            registerWithBulb();
             updateBulbProperties();
+            registerWithBulb();
 
             initGetStatusAndKeepAliveThread();
             saveConfigurationsUsingCurrentStates();
