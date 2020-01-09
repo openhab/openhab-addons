@@ -115,7 +115,7 @@
 	</channel-type>
 	<channel-type id="error_code">
 		<item-type>Number</item-type>
-		<label>Error</label>
+		<label>Error Code</label>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="fan_power">
@@ -146,7 +146,7 @@
 	</channel-type>
 	<channel-type id="state_code">
 		<item-type>Number</item-type>
-		<label>State</label>
+		<label>State Code</label>
 		<state readOnly="true" />
 	</channel-type>
 
