@@ -69,7 +69,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Marcel Verpaalen - Initial contribution
  */
 public class MiIoBasicHandler extends MiIoAbstractHandler {
-    private static final int MAX_PROPERTIES = 5;
+
     private final Logger logger = LoggerFactory.getLogger(MiIoBasicHandler.class);
     private boolean hasChannelStructure;
 
@@ -217,13 +217,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     private boolean refreshProperties(MiIoBasicDevice device) {
         MiIoCommand command = MiIoCommand.getCommand(device.getDevice().getPropertyMethod());
-        if (command == MiIoCommand.UNKNOWN) {
-            command = MiIoCommand.GET_PROPERTY;
-        }
-        int maxProperties = MAX_PROPERTIES;
-        if (device.getDevice().getMaxProperties() != 0) {
-            maxProperties = device.getDevice().getMaxProperties();
-        }
+        int maxProperties = device.getDevice().getMaxProperties();
         JsonArray getPropString = new JsonArray();
         for (MiIoBasicChannel miChannel : refreshList) {
             getPropString.add(miChannel.getProperty());
