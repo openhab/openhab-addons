@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 
 /**
  * The {@link MiIoVacuumHandler} is responsible for handling commands, which are
@@ -186,6 +187,18 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             updateState(CHANNEL_CONTROL, new StringType(control));
         }
         updateState(CHANNEL_VACUUM, vacuum);
+        JsonElement statusWaterBox = statusData.get("water_box_status");
+        if (statusWaterBox == null) {
+            updateState(CHANNEL_WATER_BOX_STATUS, OnOffType.OFF);
+        } else {
+            updateState(CHANNEL_WATER_BOX_STATUS, new DecimalType(statusWaterBox.getAsBigDecimal()));
+        }
+        JsonElement statusWaterBoxCarriage = statusData.get("water_box_carriage_status");
+        if (statusWaterBoxCarriage == null) {
+            updateState(CHANNEL_WATER_BOX_CARRIAGE_STATUS, OnOffType.OFF);
+        } else {
+            updateState(CHANNEL_WATER_BOX_CARRIAGE_STATUS, new DecimalType(statusWaterBoxCarriage.getAsBigDecimal()));
+        }
         return true;
     }
 

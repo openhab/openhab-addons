@@ -45,6 +45,8 @@
 			<channel id="in_cleaning" typeId="in_cleaning" />
 			<channel id="dnd_enabled" typeId="dnd_enabled" />
 			<channel id="map_present" typeId="map_present" />
+			<channel id="water_box_status" typeId="water_box_status" />
+			<channel id="water_box_carriage_status" typeId="water_box_carriage_status" />
 			<channel id="state" typeId="state" />
 		</channels>
 	</channel-group-type>
@@ -126,6 +128,14 @@
 		<label>Map Present</label>
 		<category>Energy</category>
 		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="water_box_status">
+		<item-type>Switch</item-type>
+		<label>Water Box State</label>
+	</channel-type>
+	<channel-type id="water_box_carriage_status">
+		<item-type>Switch</item-type>
+		<label>Water Box Carriage State</label>
 	</channel-type>
 	<channel-type id="msg_seq" advanced="true">
 		<item-type>Number</item-type>

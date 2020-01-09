@@ -51,6 +51,8 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_FAN_POWER = "status#fan_power";
     public static final String CHANNEL_IN_CLEANING = "status#in_cleaning";
     public static final String CHANNEL_MAP_PRESENT = "status#map_present";
+    public static final String CHANNEL_WATER_BOX_STATUS = "status#water_box_status";
+    public static final String CHANNEL_WATER_BOX_CARRIAGE_STATUS = "status#water_box_carriage_status";
     public static final String CHANNEL_STATE = "status#state";
 
     public static final String CHANNEL_CONTROL = "actions#control";
