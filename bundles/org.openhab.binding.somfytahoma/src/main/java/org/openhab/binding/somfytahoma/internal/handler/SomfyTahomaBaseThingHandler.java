@@ -257,7 +257,9 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                     if (ch != null && isChannelLinked(ch)) {
                         logger.trace("updating channel: {} with value: {}", entry.getKey(), state.getValue());
                         State newState = parseTahomaState(ch.getAcceptedItemType(), state);
-                        updateState(ch.getUID(), newState);
+                        if (newState != null) {
+                            updateState(ch.getUID(), newState);
+                        }
                     }
                 }
             }

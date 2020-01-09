@@ -66,14 +66,18 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
                     }
                     if (ch != null) {
                         State newState = parseTahomaState(state);
-                        updateState(ch.getUID(), newState);
+                        if (newState != null) {
+                            updateState(ch.getUID(), newState);
+                        }
                     }
                 }
             } else if ("core:SlateOrientationState".equals(state.getName())) {
                 Channel ch = thing.getChannel(ORIENTATION);
                 if (ch != null) {
                     State newState = parseTahomaState(state);
-                    updateState(ch.getUID(), newState);
+                    if (newState != null) {
+                        updateState(ch.getUID(), newState);
+                    }
                 }
             }
 
