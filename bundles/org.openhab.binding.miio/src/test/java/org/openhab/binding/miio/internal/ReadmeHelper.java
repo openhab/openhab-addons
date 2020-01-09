@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Ignore;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
@@ -46,6 +48,7 @@ import com.google.gson.JsonParser;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class ReadmeHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadmeHelper.class);
     private static final String BASEFILE = "./README.base.md";
@@ -53,14 +56,14 @@ public class ReadmeHelper {
     @Ignore
     public static void main(String[] args) {
         ReadmeHelper rm = new ReadmeHelper();
-        System.out.println("## Creating device list\n");
+        LOGGER.info("## Creating device list");
         StringWriter deviceList = rm.deviceList();
         rm.checkDatabaseEntrys();
-        System.out.println("## Creating channel list for basic devices\n");
+        LOGGER.info("## Creating channel list for basic devices");
         StringWriter channelList = rm.channelList();
-        System.out.println("## Creating Item Files for miio:basic devices\n");
+        LOGGER.info("## Creating Item Files for miio:basic devices");
         StringWriter itemFileExamples = rm.itemFileExamples();
-        System.out.println("## Done");
+        LOGGER.info("## Done");
         try {
             File file = new File(BASEFILE);
             String baseDoc = FileUtils.readFileToString(file, "UTF-8");
@@ -122,7 +125,7 @@ public class ReadmeHelper {
                     sw.write("\r\n");
 
                 } else {
-                    System.out.println("Pls check: Device not found in db " + device.toString());
+                    LOGGER.info("Pls check: Device not found in db: {}", device);
                 }
             }
         });
@@ -159,12 +162,13 @@ public class ReadmeHelper {
         for (MiIoBasicDevice entry : findDatabaseEntrys()) {
             for (String id : entry.getDevice().getId()) {
                 if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
-                    System.out.println("id :" + id + " not found");
+                    LOGGER.info("id :" + id + " not found");
                 }
             }
         }
     }
 
+    @Nullable
     private MiIoBasicDevice findDatabaseEntry(String deviceName) {
         for (MiIoBasicDevice entry : findDatabaseEntrys()) {
             for (String id : entry.getDevice().getId()) {
@@ -189,9 +193,8 @@ public class ReadmeHelper {
                     MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
                     arrayList.add(devdb);
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    // not relevant
                     LOGGER.debug("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
+                    LOGGER.info(e.getMessage());
                 }
             }
         }
@@ -200,10 +203,6 @@ public class ReadmeHelper {
 
     private static String minLengthString(String string, int length) {
         return String.format("%-" + length + "s", string);
-    }
-
-    private static String fixedLengthString(String string, int length) {
-        return String.format("%1$" + length + "s", string);
     }
 
     JsonObject convertFileToJSON(String fileName) {
