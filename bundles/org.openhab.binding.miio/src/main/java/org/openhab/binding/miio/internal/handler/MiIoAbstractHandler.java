@@ -24,6 +24,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -474,6 +475,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
     }
 
+    @Nullable
     protected URL findDatabaseEntry(String deviceName) {
         List<URL> urlEntries = new Utils().findDatabaseFiles(logger);
         for (URL db : urlEntries) {
@@ -481,6 +483,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             try {
                 JsonObject deviceMapping = Utils.convertFileToJSON(db);
                 Gson gson = new GsonBuilder().serializeNulls().create();
+                @Nullable
                 MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
                 for (String id : devdb.getDevice().getId()) {
                     if (deviceName.equals(id)) {
