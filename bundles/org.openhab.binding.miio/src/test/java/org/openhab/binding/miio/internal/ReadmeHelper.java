@@ -190,6 +190,7 @@ public class ReadmeHelper {
                 try {
                     JsonObject deviceMapping = convertFileToJSON(path + file.getName());
                     Gson gson = new GsonBuilder().serializeNulls().create();
+                    @Nullable
                     MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
                     arrayList.add(devdb);
                 } catch (Exception e) {
