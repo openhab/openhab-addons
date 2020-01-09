@@ -44,7 +44,7 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
         stateNames.put(CONTROL, "core:ClosureOrRockerPositionState");
         stateNames.put(ROCKER, "core:ClosureOrRockerPositionState");
         stateNames.put(ORIENTATION, "core:SlateOrientationState");
-        //override state type because the control may return string 'rocker'
+        // override state type because the control may return string 'rocker'
         cacheStateType(CONTROL, TYPE_PERCENT);
     }
 
@@ -83,7 +83,8 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (!ROCKER.equals(channelUID.getId()) && !CONTROL.equals(channelUID.getId()) && !ORIENTATION.equals(channelUID.getId())) {
+        if (!ROCKER.equals(channelUID.getId()) && !CONTROL.equals(channelUID.getId())
+                && !ORIENTATION.equals(channelUID.getId())) {
             return;
         }
 
@@ -98,13 +99,15 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
             if (COMMAND_SET_ROCKERPOSITION.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //Check if the roller shutter is moving and rocker is sent => STOP it
+                    // Check if the roller shutter is moving and rocker is sent => STOP it
                     cancelExecution(executionId);
                 } else {
                     sendCommand(COMMAND_SET_ROCKERPOSITION);
                 }
             } else {
-                String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd)) ? "[" + command.toString() + "]" : "[]";
+                String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd))
+                        ? "[" + command.toString() + "]"
+                        : "[]";
                 sendCommand(cmd, param);
             }
         }

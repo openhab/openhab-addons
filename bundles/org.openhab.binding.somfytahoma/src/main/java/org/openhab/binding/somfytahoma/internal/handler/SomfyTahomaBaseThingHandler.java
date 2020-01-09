@@ -19,8 +19,16 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.*;
-import org.eclipse.smarthome.core.thing.*;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -68,7 +76,8 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private String getURL() {
-        return getThing().getConfiguration().get("url") != null ? getThing().getConfiguration().get("url").toString() : "";
+        return getThing().getConfiguration().get("url") != null ? getThing().getConfiguration().get("url").toString()
+                : "";
     }
 
     private void setAvailable() {
@@ -135,7 +144,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
-    protected  @Nullable State parseTahomaState(@Nullable SomfyTahomaState state) {
+    protected @Nullable State parseTahomaState(@Nullable SomfyTahomaState state) {
         return parseTahomaState(null, state);
     }
 
@@ -223,8 +232,8 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     private void updateThingStatus(@Nullable SomfyTahomaState state) {
         if (state == null) {
-            //Most probably we are dealing with RTS device which does not return states
-            //so we have to setup ONLINE status manually
+            // Most probably we are dealing with RTS device which does not return states
+            // so we have to setup ONLINE status manually
             setAvailable();
             return;
         }
@@ -242,8 +251,8 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             logger.trace("processing state: {} with value: {}", state.getName(), state.getValue());
             updateProperty(state.getName(), state.getValue().toString());
             for (HashMap.Entry<String, String> entry : stateNames.entrySet()) {
-                if (entry.getValue().equals(state.getName()) ) {
-                    //get channel and update it if linked
+                if (entry.getValue().equals(state.getName())) {
+                    // get channel and update it if linked
                     Channel ch = thing.getChannel(entry.getKey());
                     if (ch != null && isChannelLinked(ch)) {
                         logger.trace("updating channel: {} with value: {}", entry.getKey(), state.getValue());
