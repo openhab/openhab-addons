@@ -90,7 +90,7 @@ Each of the following channels is supported in all of the channel groups.
 
 ## Units Of Measurement
 
-Having your channels display the values in the anticipated unit (mph or kmh , Degrees or Farenheit, ...) you need to cast the items acordingly using the avaialable OpenHAB "Units Of Measurement" option. Have a look t the Openhab Documentation, Concepts section, [UnitsOfMeasurement](https://www.openhab.org/docs/concepts/units-of-measurement.html) chapter for details.
+Having your channels display the values in the anticipated unit (mph or kmh , degrees or fahrenheit, ...) you need to cast the items accordingly using the available OpenHAB "Units Of Measurement" option. Have a look t the OpenHAB documentation, concepts section, [UnitsOfMeasurement](https://www.openhab.org/docs/concepts/units-of-measurement.html) chapter for details.
 
 
 ## Image Icons
