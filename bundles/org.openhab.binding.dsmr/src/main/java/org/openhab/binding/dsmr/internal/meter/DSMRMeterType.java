@@ -291,7 +291,31 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L1, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L2,
                     CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L3, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L1,
                     CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L2, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L3,
-                    });
+                    }),
+    /** Belgium Smart Meter for the e-MUCS specification */
+    DEVICE_EMUCS_V1_0(DSMRMeterKind.DEVICE, CosemObjectType.UNKNOWN,
+            CosemObjectType.P1_TEXT_STRING, CosemObjectType.P1_TEXT_STRING, CosemObjectType.P1_EMUCS_VERSION_OUTPUT,
+            CosemObjectType.P1_TIMESTAMP),
+
+    /** Belgium Smart Electricity Meter for the e-MUCS specification */
+    ELECTRICITY_EMUCS_V1_0(DSMRMeterKind.MAIN_ELECTRICITY, CosemObjectType.EMETER_EQUIPMENT_IDENTIFIER,
+            new CosemObjectType[] {
+                    CosemObjectType.EMETER_EQUIPMENT_IDENTIFIER, CosemObjectType.EMETER_DELIVERY_TARIFF1,
+                    CosemObjectType.EMETER_DELIVERY_TARIFF2, CosemObjectType.EMETER_PRODUCTION_TARIFF1,
+                    CosemObjectType.EMETER_PRODUCTION_TARIFF2, CosemObjectType.EMETER_TARIFF_INDICATOR,
+                    CosemObjectType.EMETER_ACTUAL_DELIVERY, CosemObjectType.EMETER_ACTUAL_PRODUCTION,
+                    CosemObjectType.EMETER_TRESHOLD_KWH, CosemObjectType.EMETER_SWITCH_POSITION},
+            new CosemObjectType[] {
+                    CosemObjectType.EMETER_INSTANT_CURRENT_L1, CosemObjectType.EMETER_INSTANT_CURRENT_L2,
+                    CosemObjectType.EMETER_INSTANT_CURRENT_L3, CosemObjectType.EMETER_INSTANT_VOLTAGE_L1,
+                    CosemObjectType.EMETER_INSTANT_VOLTAGE_L2, CosemObjectType.EMETER_INSTANT_VOLTAGE_L3
+                    }),
+
+    /** Belgium Smart Gas Meter for the e-MUCS specification */
+    GAS_EMUCS_V1_0(DSMRMeterKind.GAS, CosemObjectType.EMETER_EQUIPMENT_IDENTIFIER,
+            new CosemObjectType[] {
+                    CosemObjectType.EMETER_EQUIPMENT_IDENTIFIER, CosemObjectType.METER_DEVICE_TYPE,
+                    CosemObjectType.GMETER_LAST_VALUE, CosemObjectType.METER_VALVE_SWITCH_POSITION });
     // @formatter:on
 
     public static final Set<ThingTypeUID> METER_THING_TYPES = Arrays.asList(DSMRMeterType.values()).stream()
@@ -377,6 +401,8 @@ public enum DSMRMeterType {
             if (!availableCosemObjects.containsKey(objectType)) {
                 logger.trace("Required objectType {} not found", objectType);
                 return null;
+            } else {
+                logger.trace("FOUND Required objectType {}", objectType);
             }
             CosemObject cosemObject = availableCosemObjects.get(objectType);
 

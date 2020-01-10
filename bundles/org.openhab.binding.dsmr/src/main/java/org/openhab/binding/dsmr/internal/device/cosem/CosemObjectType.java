@@ -43,6 +43,7 @@ public enum CosemObjectType {
 
     /* General messages */
     P1_VERSION_OUTPUT(new OBISIdentifier(1, 3, 0, 2, 8, null), CosemString.INSTANCE),
+    P1_EMUCS_VERSION_OUTPUT(new OBISIdentifier(0, 0, 96, 1, 4, null), CosemString.INSTANCE),
     P1_TIMESTAMP(new OBISIdentifier(0, 0, 1, 0, 0, null), new CosemDate("")),
     P1_TEXT_CODE(new OBISIdentifier(0, 0, 96, 13, 1, null), CosemHexString.INSTANCE),
     P1_TEXT_STRING(new OBISIdentifier(0, 0, 96, 13, 0, null), CosemHexString.INSTANCE),
@@ -70,8 +71,8 @@ public enum CosemObjectType {
     EMETER_ACTUAL_DELIVERY(new OBISIdentifier(1, 0, 1, 7, 0, null), CosemQuantity.KILO_WATT),
     EMETER_ACTUAL_PRODUCTION(new OBISIdentifier(1, 0, 2, 7, 0, null), CosemQuantity.KILO_WATT),
     EMETER_TRESHOLD_A_V2_1(new OBISIdentifier(1, 0, 17, 0, 0, null), CosemQuantity.AMPERE),
-    EMETER_TRESHOLD_A(new OBISIdentifier(0, 0, 17, 0, 0, null), CosemQuantity.AMPERE),
-    EMETER_TRESHOLD_KWH(new OBISIdentifier(0, 0, 17, 0, 0, null), CosemQuantity.KILO_WATT),
+    EMETER_TRESHOLD_A(new OBISIdentifier(0, 0, 17, 0, 0, null, true), CosemQuantity.AMPERE),
+    EMETER_TRESHOLD_KWH(new OBISIdentifier(0, 0, 17, 0, 0, null, true), CosemQuantity.KILO_WATT),
     EMETER_SWITCH_POSITION_V2_1(new OBISIdentifier(1, 0, 96, 3, 10, null), CosemDecimal.INSTANCE),
     EMETER_SWITCH_POSITION(new OBISIdentifier(0, 0, 96, 3, 10, null), CosemDecimal.INSTANCE),
     EMETER_POWER_FAILURES(new OBISIdentifier(0, 0, 96, 7, 21, null), CosemDecimal.INSTANCE),
@@ -104,6 +105,7 @@ public enum CosemObjectType {
     GMETER_24H_DELIVERY_V2(new OBISIdentifier(7, 0, 23, 1, 0, null), CosemQuantity.CUBIC_METRE, CosemDate.INSTANCE),
     GMETER_24H_DELIVERY_COMPENSATED_V2(new OBISIdentifier(7, 0, 23, 2, 0, null), CosemQuantity.CUBIC_METRE,
             CosemDate.INSTANCE),
+    GMETER_LAST_VALUE(new OBISIdentifier(0, null, 24, 2, 3, null), CosemDate.INSTANCE, CosemQuantity.CUBIC_METRE),
     GMETER_VALUE_V3(new OBISIdentifier(0, null, 24, 3, 0, null), CosemDate.INSTANCE, // Time stamp off the reading
             new CosemString("val1"), // Specification is not clear what this value is
             new CosemDecimal("val2"), // Specification is not clear what this value is
@@ -143,7 +145,7 @@ public enum CosemObjectType {
     // The actual reactive's and threshold have no unit in the data and therefore are not quantity types.
     EMETER_ACTUAL_REACTIVE_DELIVERY(new OBISIdentifier(1, 0, 3, 7, 0, null), CosemDecimal.INSTANCE),
     EMETER_ACTUAL_REACTIVE_PRODUCTION(new OBISIdentifier(1, 0, 4, 7, 0, null), CosemDecimal.INSTANCE),
-    EMETER_ACTIVE_THRESHOLD_SMAX(new OBISIdentifier(0, 0, 17, 0, 0, null), CosemDecimal.INSTANCE),
+    EMETER_ACTIVE_THRESHOLD_SMAX(new OBISIdentifier(0, 0, 17, 0, 0, null, true), CosemDecimal.INSTANCE),
     EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L1(new OBISIdentifier(1, 0, 23, 7, 0, null), CosemQuantity.KILO_VAR),
     EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L2(new OBISIdentifier(1, 0, 43, 7, 0, null), CosemQuantity.KILO_VAR),
     EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L3(new OBISIdentifier(1, 0, 63, 7, 0, null), CosemQuantity.KILO_VAR),

@@ -37,10 +37,11 @@ public class P1TelegramParserTest {
     @Parameters(name = "{0}")
     public static final List<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            { "ace4000", 57, },
+            { "ace4000", 59, },
             { "dsmr_40", 39, },
             { "dsmr_42", 39, },
             { "dsmr_50", 41, },
+            { "flu5", 20, },
             { "Iskra_AM550", 41, },
             { "Landis_Gyr_E350", 10, },
             { "Landis_Gyr_ZCF110", 25, },
