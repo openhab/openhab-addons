@@ -2,11 +2,11 @@
 
 This binding can be used to receive image files from FTP clients.
 The binding acts as a FTP server.
-Images stored on the FTP server are not saved to the file system, therefore the binding shouldn't cause any problems on flash based openHAB installations.
+Images stored on the FTP server are not saved to the file system, therefore the binding shouldn't cause any problems on flash based openHAB installations if files are uploaded to FTP server continuously (e.g. network camera images).
 
 ## Supported Things
 
-This binding supports Things of type ```ftpupload```.
+This binding supports Things of type `ftpupload`.
 Every Thing is identified by FTP user name.
 Therefore, every thing should use unique user name to login FTP server.
 
@@ -23,14 +23,25 @@ The binding has the following configuration options:
 | port        | TCP Port     | TCP port of the FTP server                                                                                             | no       | 2121          |
 | idleTimeout | Idle timeout | The number of seconds before an inactive client is disconnected. If this value is set to 0, the idle time is disabled. | no       | 60            |
 
+## Thing Configuration
+
+The `ftpupload` Thing has the following configuration parameters:
+
+| Parameter                   | Description                                                                                                         | Required | Default value |
+|-----------------------------|---------------------------------------------------------------------------------------------------------------------|----------|---------------|
+| userName                    | User name to login to the FTP server. User name is used to identify the Thing, so it should be unique per Thing.    | yes      |               |
+| password                    | Password to login to the FTP server.                                                                                | yes      |               |
+
+
 ## Channels
 
 This binding currently supports the following channels:
 
-| Channel Type ID | Item Type    | Description                                                                            |
-|-----------------|--------------|----------------------------------------------------------------------------------------|
-| image           | Image        | Image file received via FTP.                                                           |
+| Channel         | Channel Type Id | Item Type    | Description                                                                            |
+|-----------------|-----------------|--------------|----------------------------------------------------------------------------------------|
+| image           | image-channel   | Image file received via FTP.                                                                          |
 
+Additionally user can introduce custom image-channel's to Thing (see examples).
 When an image file is uploaded to FTP server, the binding tries to find the channel whose filename matches the uploaded image filename.
 If no match is found, no channel is updated.
 The filename parameter supports regular expression patterns.
@@ -156,7 +167,7 @@ Frame label="Garage network camera" icon="camera" {
 
 ## Logging and Problem Solving
 
-For problem solving, if binding logging is not enough, Apache FTP server logging can also be enabled by the following command in the karaf console:
+For problem solving, if binding logging is not enough, Apache FTP server logging can also be enabled by the following command in the Karaf console:
 
 ```
 log:set DEBUG org.apache.ftpserver
