@@ -200,7 +200,6 @@
 /bundles/org.openhab.binding.zway/ @pathec
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
-/bundles/org.openhab.io.azureiothub/ @nikotanghe
 /bundles/org.openhab.io.homekit/ @beowulfe
 /bundles/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
 /bundles/org.openhab.io.imperihome/ @pdegeus
