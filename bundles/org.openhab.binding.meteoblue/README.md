@@ -88,6 +88,11 @@ Each of the following channels is supported in all of the channel groups.
 | humidityGreater90Hours   | Number             | Total hours of the day with relative humidity greater than 90% |
 
 
+## Units Of Measurement
+
+Having your channels display the values in the anticipated unit (mph or kmh , Degrees or Farenheit, ...) you need to cast the items acordingly using the avaialable OpenHAB "Units Of Measurement" option. Have a look t the Openhab Documentation, Concepts section, [UnitsOfMeasurement](https://www.openhab.org/docs/concepts/units-of-measurement.html) chapter for details.
+
+
 ## Image Icons
 
 To show the weather image icons in the UI, the [image files](https://content.meteoblue.com/hu/service-specifications/standards/symbols-and-pictograms) need to be downloaded and installed in the `conf/icons/classic` folder.
@@ -127,8 +132,8 @@ String todayPCode    "Pictocode [%d]"  <iday>  (weatherDay0)  {channel="meteoblu
 String todayCond     "Condition [%s]"  <iday>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}
 String todayIcon     "Icon [%s]"       (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#icon"}
 Number todayUV       "UV Index [%d]"  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#UVIndex"}
-Number:Temperature  todayTempL  "Low Temp [%.2f °F]"   <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#minTemperature"}
-Number:Temperature  todayTempH  "High Temp [%.2f °F]"  <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#maxTemperature"}
+Number:Temperature  todayTempL  "Low Temp [%.2f Â°F]"   <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#minTemperature"}
+Number:Temperature  todayTempH  "High Temp [%.2f Â°F]"  <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#maxTemperature"}
 Number todayHumM     "Mean Humidity [%d %%]"  <humidity>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#relativeHumidityMean"}
 Number todayPrecPr   "Prec. Prob. [%d %%]"  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#precipitationProbability"}
 Number:Length todayPrec     "Total Prec. [%.2f in]"  <rain>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#precipitation"}
