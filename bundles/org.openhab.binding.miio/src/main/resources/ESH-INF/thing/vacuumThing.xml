@@ -132,10 +132,12 @@
 	<channel-type id="water_box_status">
 		<item-type>Switch</item-type>
 		<label>Water Box State</label>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="water_box_carriage_status">
 		<item-type>Switch</item-type>
 		<label>Water Box Carriage State</label>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="msg_seq" advanced="true">
 		<item-type>Number</item-type>
