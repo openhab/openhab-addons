@@ -63,7 +63,7 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
     @Override
     public void start(String filePath, long refreshRate) throws FileReaderException {
         tailer = new Tailer(new File(filePath), logListener, refreshRate, true, false, true);
-        executor = Executors.newFixedThreadPool(1);
+        executor = Executors.newSingleThreadExecutor();
         try {
             logger.debug("Start executor");
             executor.execute(tailer);
