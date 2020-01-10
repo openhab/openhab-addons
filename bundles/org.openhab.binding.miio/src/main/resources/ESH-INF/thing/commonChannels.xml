@@ -320,7 +320,7 @@
 	</channel-type>
 	<channel-type id="airFreshDisplayDirection">
 		<item-type>String</item-type>
-		<label>Display direction</label>
+		<label>Display Direction</label>
 		<state>
 			<options>
 				<option value="forward">Normal</option>
