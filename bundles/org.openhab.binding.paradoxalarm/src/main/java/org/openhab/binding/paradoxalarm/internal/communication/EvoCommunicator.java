@@ -53,17 +53,17 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     private Map<EntityType, Map<Integer, String>> entityLabelsMap = new HashMap<>();
 
     private PanelType panelType = PanelType.UNKNOWN;
-    private Integer maxZones;
     private Integer maxPartitions;
+    private Integer maxZones;
 
-    private EvoCommunicator(EvoCommunicatorBuilder builder) throws UnknownHostException, IOException {
-        super(builder.ipAddress, builder.tcpPort, builder.ip150Password, builder.pcPassword, builder.scheduler);
-        this.panelType = builder.panelType;
-        logger.debug("PanelType={}", panelType);
-        this.maxZones = builder.maxZones;
-        logger.debug("Max Zones={}", maxZones);
-        this.maxPartitions = builder.maxPartitions;
-        logger.debug("Max partitions={}", maxPartitions);
+    private EvoCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword,
+            ScheduledExecutorService scheduler, PanelType panelType, Integer maxPartitions, Integer maxZones)
+            throws UnknownHostException, IOException {
+        super(ipAddress, tcpPort, ip150Password, pcPassword, scheduler);
+        this.panelType = panelType;
+        this.maxPartitions = maxPartitions;
+        this.maxZones = maxZones;
+        logger.debug("PanelType={}, max partitions={}, max Zones={}", panelType, maxPartitions, maxZones);
         initializeMemoryMap();
     }
 
@@ -345,7 +345,8 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             }
 
             try {
-                return new EvoCommunicator(this);
+                return new EvoCommunicator(ipAddress, tcpPort, ip150Password, pcPassword, scheduler, panelType,
+                        maxPartitions, maxZones);
             } catch (IOException e) {
                 logger.warn("Unable to create communicator for Panel={}. Message={}", panelType, e.getMessage());
                 throw new ParadoxRuntimeException(e);

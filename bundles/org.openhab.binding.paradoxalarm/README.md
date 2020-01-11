@@ -36,8 +36,8 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | port              | The port used for data communication. Default value is 10000.|
 | panelType         | Not mandatory. Will be used if discovery does not identify the panel. Otherwise provide EVO48, EVO96, EVO192, etc...|
 | reconnectWaitTime | Value is in seconds. The time to wait before a reconnect occurs after socket timeout.|
-| maxPartitions     | Non mandatory parameter which sets maximum partitions to use during refresh. If not set, maximum allowed amount from panelType will be used.|
-| maxZones          | Non mandatory parameter which sets maximum zones to use during refresh. If not set, maximum allowed amount from panelType will be used.|
+| maxPartitions     | Optional parameter which sets maximum partitions to use during refresh. If not set, maximum allowed amount from panelType will be used.|
+| maxZones          | Optional parameter which sets maximum zones to use during refresh. If not set, maximum allowed amount from panelType will be used.|
 
 ### IP150 channels
 
