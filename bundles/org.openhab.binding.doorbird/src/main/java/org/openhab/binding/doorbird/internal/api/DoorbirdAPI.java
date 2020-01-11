@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public final class DoorbirdAPI {
-    private static final long API_REQUEST_TIMEOUT_SECONDS = 8L;
+    private static final long API_REQUEST_TIMEOUT_SECONDS = 16L;
 
     // Single Gson instance shared by multiple classes
     private static final Gson GSON = new Gson();

@@ -31,12 +31,12 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "doorbird")
 @NonNullByDefault
 public class DoorbirdActions implements ThingActions {
-    private final static Logger logger = LoggerFactory.getLogger(DoorbirdActions.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DoorbirdActions.class);
 
     private @Nullable DoorbellHandler handler;
 
     public DoorbirdActions() {
-        logger.debug("DoorbirdActions service created");
+        LOGGER.debug("DoorbirdActions service created");
     }
 
     @Override
@@ -53,11 +53,11 @@ public class DoorbirdActions implements ThingActions {
 
     @RuleAction(label = "Restart Doorbird", description = "Restarts the Doorbird device")
     public void restart() {
-        logger.debug("Doorbird action 'restart' called");
+        LOGGER.debug("Doorbird action 'restart' called");
         if (handler != null) {
             handler.actionRestart();
         } else {
-            logger.info("Doorbird Action service ThingHandler is null!");
+            LOGGER.info("Doorbird Action service ThingHandler is null!");
         }
     }
 
@@ -71,11 +71,11 @@ public class DoorbirdActions implements ThingActions {
 
     @RuleAction(label = "SIP Hangup", description = "Hangup SIP call")
     public void sipHangup() {
-        logger.debug("Doorbird action 'sipHangup' called");
+        LOGGER.debug("Doorbird action 'sipHangup' called");
         if (handler != null) {
             handler.actionSIPHangup();
         } else {
-            logger.info("Doorbird Action service ThingHandler is null!");
+            LOGGER.info("Doorbird Action service ThingHandler is null!");
         }
     }
 
@@ -89,11 +89,11 @@ public class DoorbirdActions implements ThingActions {
 
     @RuleAction(label = "Get Ring Time Limit", description = "Get the value of RING_TIME_LIMIT")
     public @ActionOutput(name = "getRingTimeLimit", type = "java.lang.String") String getRingTimeLimit() {
-        logger.debug("Doorbird action 'getRingTimeLimit' called");
+        LOGGER.debug("Doorbird action 'getRingTimeLimit' called");
         if (handler != null) {
             return handler.actionGetRingTimeLimit();
         } else {
-            logger.info("Doorbird Action service ThingHandler is null!");
+            LOGGER.info("Doorbird Action service ThingHandler is null!");
             return "";
         }
     }
@@ -108,11 +108,11 @@ public class DoorbirdActions implements ThingActions {
 
     @RuleAction(label = "Get Call Time Limit", description = "Get the value of CALL_TIME_LIMIT")
     public @ActionOutput(name = "getCallTimeLimit", type = "java.lang.String") String getCallTimeLimit() {
-        logger.debug("Doorbird action 'getCallTimeLimit' called");
+        LOGGER.debug("Doorbird action 'getCallTimeLimit' called");
         if (handler != null) {
             return handler.actionGetCallTimeLimit();
         } else {
-            logger.info("Doorbird Action service ThingHandler is null!");
+            LOGGER.info("Doorbird Action service ThingHandler is null!");
             return "";
         }
     }
@@ -127,11 +127,11 @@ public class DoorbirdActions implements ThingActions {
 
     @RuleAction(label = "Get Last Error Code", description = "Get the value of LASTERRORCODE")
     public @ActionOutput(name = "getLastErrorCode", type = "java.lang.String") String getLastErrorCode() {
-        logger.debug("Doorbird action 'getLastErrorCode' called");
+        LOGGER.debug("Doorbird action 'getLastErrorCode' called");
         if (handler != null) {
             return handler.actionGetLastErrorCode();
         } else {
-            logger.info("Doorbird Action service ThingHandler is null!");
+            LOGGER.info("Doorbird Action service ThingHandler is null!");
             return "";
         }
     }
@@ -146,11 +146,11 @@ public class DoorbirdActions implements ThingActions {
 
     @RuleAction(label = "Get Last Error Text", description = "Get the value of LASTERRORTEXT")
     public @ActionOutput(name = "getLastErrorText", type = "java.lang.String") String getLastErrorText() {
-        logger.debug("Doorbird action 'getLastErrorText' called");
+        LOGGER.debug("Doorbird action 'getLastErrorText' called");
         if (handler != null) {
             return handler.actionGetLastErrorText();
         } else {
-            logger.info("Doorbird Action service ThingHandler is null!");
+            LOGGER.info("Doorbird Action service ThingHandler is null!");
             return "";
         }
     }

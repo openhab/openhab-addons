@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,12 +15,12 @@ package org.openhab.binding.doorbird.internal.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link DoorbirdInfoJson} models the JSON response returned by the Doorbird in response
+ * The {@link DoorbirdInfoDTO} models the JSON response returned by the Doorbird in response
  * to calling the info.cgi API.
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class DoorbirdInfoJson {
+public class DoorbirdInfoDTO {
     /**
      * Top level container of information about the Doorbird configuration
      */

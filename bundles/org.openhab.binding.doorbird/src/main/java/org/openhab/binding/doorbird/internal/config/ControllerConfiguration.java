@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,25 +12,29 @@
  */
 package org.openhab.binding.doorbird.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link DoorbirdConfig} class contains fields mapping thing configuration parameters
  * for the Doorbird A1081 Controller..
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class ControllerConfiguration {
     /**
      * Hostname or IP address of the Doorbird doorbell to which the controller is assigned
      */
-    public String doorbirdHost;
+    public @Nullable String doorbirdHost;
 
     /**
      * User ID of the Doorbird doorbell to which the controller is assigned
      */
-    public String userId;
+    public @Nullable String userId;
 
     /**
      * Password of the Doorbird doorbell to which the controller is assigned
      */
-    public String userPassword;
+    public @Nullable String userPassword;
 }

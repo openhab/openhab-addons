@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,14 +14,17 @@ package org.openhab.binding.doorbird.internal;
 
 import static org.junit.Assert.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.doorbird.internal.api.DoorbirdInfo;
 
 /**
- * The {@link DoorbirdInfoTest} is responsible for
+ * The {@link DoorbirdInfoTest} is responsible for testing the functionality
+ * of Doorbird "info" message parsing.
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class DoorbirdInfoTest {
 
     private final String infoWithControllerId =

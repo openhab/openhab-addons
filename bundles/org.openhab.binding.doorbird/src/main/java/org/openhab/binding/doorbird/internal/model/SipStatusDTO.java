@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,12 +15,12 @@ package org.openhab.binding.doorbird.internal.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link SipStatusJson} models the JSON response returned by the Doorbird in response
+ * The {@link SipStatusDTO} models the JSON response returned by the Doorbird in response
  * to calling the sip.cgi status API.
  *
  * @author Mark Hilbush - Initial contribution
  */
-public class SipStatusJson {
+public class SipStatusDTO {
     /**
      * Top level container of information about the Doorbird status
      */

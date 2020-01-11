@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,9 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.doorbird.internal.model.DoorbirdInfoJson;
-import org.openhab.binding.doorbird.internal.model.DoorbirdInfoJson.DoorbirdInfoBha;
-import org.openhab.binding.doorbird.internal.model.DoorbirdInfoJson.DoorbirdInfoBha.DoorbirdInfoArray;
+import org.openhab.binding.doorbird.internal.model.DoorbirdInfoDTO;
+import org.openhab.binding.doorbird.internal.model.DoorbirdInfoDTO.DoorbirdInfoBha;
+import org.openhab.binding.doorbird.internal.model.DoorbirdInfoDTO.DoorbirdInfoBha.DoorbirdInfoArray;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -39,7 +39,7 @@ public class DoorbirdInfo {
     private ArrayList<String> relays = new ArrayList<>();
 
     public DoorbirdInfo(String infoJson) throws JsonSyntaxException {
-        DoorbirdInfoJson info = DoorbirdAPI.fromJson(infoJson, DoorbirdInfoJson.class);
+        DoorbirdInfoDTO info = DoorbirdAPI.fromJson(infoJson, DoorbirdInfoDTO.class);
         if (info != null) {
             DoorbirdInfoBha bha = info.bha;
             returnCode = bha.returnCode;

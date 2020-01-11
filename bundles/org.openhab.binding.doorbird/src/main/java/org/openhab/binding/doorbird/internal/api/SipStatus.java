@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,9 @@
 package org.openhab.binding.doorbird.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.doorbird.internal.model.SipStatusJson;
-import org.openhab.binding.doorbird.internal.model.SipStatusJson.SipStatusBha;
-import org.openhab.binding.doorbird.internal.model.SipStatusJson.SipStatusBha.SipStatusArray;
+import org.openhab.binding.doorbird.internal.model.SipStatusDTO;
+import org.openhab.binding.doorbird.internal.model.SipStatusDTO.SipStatusBha;
+import org.openhab.binding.doorbird.internal.model.SipStatusDTO.SipStatusBha.SipStatusArray;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -49,7 +49,7 @@ public class SipStatus {
     private String callTimeLimit = "";
 
     public SipStatus(String sipStatusJson) throws JsonSyntaxException {
-        SipStatusJson sipStatus = DoorbirdAPI.fromJson(sipStatusJson, SipStatusJson.class);
+        SipStatusDTO sipStatus = DoorbirdAPI.fromJson(sipStatusJson, SipStatusDTO.class);
         if (sipStatus != null) {
             SipStatusBha bha = sipStatus.bha;
             returnCode = bha.returnCode;
