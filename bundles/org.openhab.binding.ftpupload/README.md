@@ -39,7 +39,7 @@ This binding currently supports the following channels:
 
 | Channel         | Channel Type Id | Item Type    | Description                                                                            |
 |-----------------|-----------------|--------------|----------------------------------------------------------------------------------------|
-| image           | image-channel   | Image file received via FTP.                                                                          |
+| image           | image-channel   | Image        | Image file received via FTP.                                                           |
 
 Additionally user can introduce custom image-channel's to Thing (see examples).
 When an image file is uploaded to FTP server, the binding tries to find the channel whose filename matches the uploaded image filename.
