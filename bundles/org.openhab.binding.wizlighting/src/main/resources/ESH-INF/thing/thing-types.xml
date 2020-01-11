@@ -15,7 +15,7 @@
 			<channel id="lightMode" typeId="lightMode" />
 			<channel id="speed" typeId="speed" />
 			<channel id="signalstrength" typeId="system.signal-strength" />
-			<channel id="lastUpdate" typeId="timestamp" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
 		</channels>
 		<config-description-ref uri="thing-type:wiz:light" />
 	</thing-type>
@@ -31,7 +31,7 @@
 			<channel id="lightMode" typeId="lightMode" />
 			<channel id="speed" typeId="speed" />
 			<channel id="signalstrength" typeId="system.signal-strength" />
-			<channel id="lastUpdate" typeId="timestamp" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
 		</channels>
 		<config-description-ref uri="thing-type:wiz:light" />
 	</thing-type>
@@ -46,7 +46,7 @@
 			<channel id="lightMode" typeId="lightMode" />
 			<channel id="speed" typeId="speed" />
 			<channel id="signalstrength" typeId="system.signal-strength" />
-			<channel id="lastUpdate" typeId="timestamp" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
 		</channels>
 		<config-description-ref uri="thing-type:wiz:light" />
 	</thing-type>
@@ -59,7 +59,7 @@
 		<channels>
 			<channel id="state" typeId="system.power" />
 			<channel id="signalstrength" typeId="system.signal-strength" />
-			<channel id="lastUpdate" typeId="timestamp" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
 		</channels>
 		<config-description-ref uri="thing-type:wiz:light" />
 	</thing-type>
@@ -118,12 +118,11 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="lastUpdate" advanced="true">
+	<channel-type id="lastUpdate">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Timestamp of last status update</description>
-		<state readOnly="true">
-		</state>
+		<state readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

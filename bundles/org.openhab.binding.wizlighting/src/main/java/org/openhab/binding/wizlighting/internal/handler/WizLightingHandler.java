@@ -114,8 +114,8 @@ public class WizLightingHandler extends BaseThingHandler {
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         logger.trace("Received command on channel {}: {}", channelUID, command.toFullString());
 
+        // Be patient...
         if (command instanceof RefreshType) {
-            handleRefreshCommand();
             return;
         }
 
@@ -191,22 +191,6 @@ public class WizLightingHandler extends BaseThingHandler {
             ;
         }
         super.handleRemoval();
-    }
-
-    private void handleRefreshCommand() {
-        logger.trace("Requesting current state from bulb.");
-        WizLightingResponse response = sendRequestPacket(WizLightingMethodType.getPilot, null);
-        if (response != null) {
-            updateTimestamps();
-            SyncResponseParam rParam = response.getSyncParams();
-            if (rParam != null) {
-                updateStatesFromParams(rParam);
-            } else {
-                logger.trace("No parameters in getPilot response!");
-            }
-        } else {
-            logger.trace("No response from getPilot request!");
-        }
     }
 
     private void handleHSBCommand(HSBType hsb) {
@@ -315,26 +299,32 @@ public class WizLightingHandler extends BaseThingHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                logger.debug(
-                        "Begin of Socket keep alive thread routine for bulb at {}. Current configuration update interval: {} seconds.",
-                        bulbIpAddress, updateInterval);
-
                 long now = System.currentTimeMillis();
                 long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
 
-                logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", bulbMacAddress,
-                        latestUpdate, now, timePassedFromLastUpdateInSeconds);
-
-                boolean considerThingOffline = (latestUpdate < 0)
-                        || (timePassedFromLastUpdateInSeconds > (updateInterval * INTERVALS_BEFORE_OFFLINE));
-                if (considerThingOffline) {
+                if (getThing().getStatus() != ThingStatus.OFFLINE) {
                     logger.debug(
-                            "Since no updates have been received from mac address {}, setting its status to OFFLINE.",
-                            getBulbMacAddress());
-                    updateStatus(ThingStatus.OFFLINE);
+                            "Begin of Socket keep alive thread routine for bulb at {}. Current configuration update interval: {} seconds.",
+                            bulbIpAddress, updateInterval);
+
+                    logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", bulbMacAddress,
+                            latestUpdate, now, timePassedFromLastUpdateInSeconds);
+
+                    boolean considerThingOffline = (latestUpdate < 0)
+                            || (timePassedFromLastUpdateInSeconds > (updateInterval * INTERVALS_BEFORE_OFFLINE));
+                    if (considerThingOffline) {
+                        logger.debug(
+                                "Since no updates have been received from mac address {}, setting its status to OFFLINE.",
+                                getBulbMacAddress());
+                        updateStatus(ThingStatus.OFFLINE);
+                    } else {
+                        // refresh the current state
+                        getPilot();
+                    }
                 } else {
-                    // refresh the current state
-                    handleRefreshCommand();
+                    logger.debug(
+                            "Bulb at {} - {} is offline.  Will not query for status until a firstBeat is received.",
+                            getBulbIpAddress(), getBulbMacAddress());
                 }
             }
         };
@@ -346,14 +336,27 @@ public class WizLightingHandler extends BaseThingHandler {
         logger.trace("Beginning initialization for bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
 
         updateStatus(ThingStatus.UNKNOWN);
-        // start background initialization:
-        scheduler.schedule(() -> {
-            updateBulbProperties();
-            saveConfigurationsUsingCurrentStates();
-            registerWithBulb();
-            initGetStatusAndKeepAliveThread();
-        }, 2, TimeUnit.SECONDS);
+        updateBulbProperties();
+        saveConfigurationsUsingCurrentStates();
+        // registerWithBulb();
+        initGetStatusAndKeepAliveThread();
         logger.debug("Finished initialization for bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
+    }
+
+    private void getPilot() {
+        logger.trace("Requesting current state from bulb.");
+        WizLightingResponse response = sendRequestPacket(WizLightingMethodType.getPilot, null);
+        if (response != null) {
+            SyncResponseParam rParam = response.getSyncParams();
+            if (rParam != null) {
+                updateTimestamps();
+                updateStatesFromParams(rParam);
+            } else {
+                logger.trace("No parameters in getPilot response!");
+            }
+        } else {
+            logger.trace("No response from getPilot request!");
+        }
     }
 
     /**
@@ -476,7 +479,7 @@ public class WizLightingHandler extends BaseThingHandler {
                 dsocket = new DatagramSocket(null);
                 dsocket.setReuseAddress(true);
                 dsocket.setBroadcast(true);
-                dsocket.setSoTimeout(1000);  // Timeout in 1s
+                dsocket.setSoTimeout(500); // Timeout in 500ms
                 dsocket.send(packet);
                 logger.debug("Sent packet to address: {} and port {}", address, DEFAULT_BULB_UDP_PORT);
 
@@ -487,12 +490,12 @@ public class WizLightingHandler extends BaseThingHandler {
                 return converter.transformResponsePacket(packet);
             }
         } catch (SocketTimeoutException e) {
-            logger.trace("Socket timeout after sending command; no response from {} - {}", getBulbIpAddress(),
-                    getBulbMacAddress());
+            logger.trace("Socket timeout after sending command; no response from {} - {} within 500ms",
+                    getBulbIpAddress(), getBulbMacAddress());
         } catch (IOException exception) {
             logger.debug("Something wrong happened when sending the packet to address: {} and port {}... msg: {}",
                     bulbIpAddress, DEFAULT_BULB_UDP_PORT, exception.getMessage());
-        }  finally {
+        } finally {
             if (dsocket != null) {
                 dsocket.close();
             }
@@ -567,6 +570,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * Registers with the bulb - this tells the bulb to begin sending 5-second
      * heartbeat (hb) status updates
      */
+    /*
     private void registerWithBulb() {
         logger.trace("Registering for updates with bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
@@ -588,6 +592,7 @@ public class WizLightingHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE);
         }
     }
+    */
 
     @Override
     protected void updateConfiguration(final Configuration configuration) {
@@ -600,11 +605,12 @@ public class WizLightingHandler extends BaseThingHandler {
             saveUpdateIntervalFromConfiguration(configuration);
 
             // Re-register to get heartbeats
-            updateBulbProperties();
-            registerWithBulb();
+            // registerWithBulb();
 
-            initGetStatusAndKeepAliveThread();
+            // Check the bulb's system configuration
+            updateBulbProperties();
             saveConfigurationsUsingCurrentStates();
+            initGetStatusAndKeepAliveThread();
         } catch (MacAddressNotValidException e) {
             logger.error("The Mac address passed is not valid! {}", e.getBulbMacAddress());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);

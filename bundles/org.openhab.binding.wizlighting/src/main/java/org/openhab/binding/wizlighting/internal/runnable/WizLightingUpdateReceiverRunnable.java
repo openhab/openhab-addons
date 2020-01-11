@@ -103,7 +103,8 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
                     logger.debug("No WizLightingResponse was parsed from returned packet");
                 }
             } catch (SocketTimeoutException e) {
-                logger.trace("Socket Timeout receiving packet.");
+                logger.trace("No incoming data on port {} during {} ms socket was listening.", listeningPort,
+                        TIMEOUT_TO_DATAGRAM_RECEPTION);
             } catch (IOException e) {
                 logger.debug("One exception has occurred: {} ", e.getMessage());
             }
@@ -117,7 +118,7 @@ public class WizLightingUpdateReceiverRunnable implements Runnable {
     private void datagramSocketHealthRoutine() {
         DatagramSocket datagramSocket = this.datagramSocket;
         if (datagramSocket.isClosed() || !datagramSocket.isConnected()) {
-            logger.trace("Datagram Socket is disconnected or has been closed, will reconnect again...");
+            logger.trace("Datagram Socket is disconnected or has been closed (probably timed out), reconnecting...");
             try {
                 // close the socket before trying to reopen
                 this.datagramSocket.close();

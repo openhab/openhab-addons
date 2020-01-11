@@ -43,7 +43,7 @@ public class ColorTemperatureRequestParam implements Param {
         return temp;
     }
 
-    public void SingleColorModeTemperature(int temp) {
+    public void setColorTemperature(int temp) {
         this.temp = temp;
     }
 }
