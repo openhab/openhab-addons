@@ -128,16 +128,13 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private boolean updateVacuumStatus(JsonObject statusData) {
         updateState(CHANNEL_BATTERY, new DecimalType(statusData.get("battery").getAsBigDecimal()));
         updateState(CHANNEL_CLEAN_AREA, new DecimalType(statusData.get("clean_area").getAsDouble() / 1000000.0));
-        updateState(CHANNEL_CLEAN_TIME,
-                new DecimalType(TimeUnit.SECONDS.toMinutes(statusData.get("clean_time").getAsLong())));
+        updateState(CHANNEL_CLEAN_TIME, new DecimalType(TimeUnit.SECONDS.toMinutes(statusData.get("clean_time").getAsLong())));
         updateState(CHANNEL_DND_ENABLED, new DecimalType(statusData.get("dnd_enabled").getAsBigDecimal()));
-        VacuumErrorType errorCode = VacuumErrorType.getType(statusData.get("error_code").getAsInt());
-        updateState(CHANNEL_ERROR_CODE, new StringType(errorCode.getDescription()));
+        updateState(CHANNEL_ERROR_CODE, new StringType(VacuumErrorType.getType(statusData.get("error_code").getAsInt()).getDescription()));
         updateState(CHANNEL_ERROR_ID, new DecimalType(statusData.get("error_code").getAsInt()));
         int fanLevel = statusData.get("fan_power").getAsInt();
-        FanModeType fanPower = FanModeType.getType(fanLevel);
         updateState(CHANNEL_FAN_POWER, new DecimalType(fanLevel));
-        updateState(CHANNEL_FAN_CONTROL, new DecimalType(fanPower.getId()));
+        updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(fanLevel).getId()));
         updateState(CHANNEL_IN_CLEANING, new DecimalType(statusData.get("in_cleaning").getAsBigDecimal()));
         updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
         StatusType state = StatusType.getType(statusData.get("state").getAsInt());
