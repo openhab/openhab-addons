@@ -29,7 +29,8 @@ import su.litvak.chromecast.api.v2.Status;
  * @author Jason Holmes - Initial contribution
  */
 public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListener, ChromeCastConnectionEventListener {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(ChromecastEventReceiver.class);
+
     private final ChromecastScheduler scheduler;
     private final ChromecastStatusUpdater statusUpdater;
 
@@ -46,7 +47,6 @@ public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListen
         } else {
             scheduler.cancelRefresh();
             statusUpdater.updateStatus(ThingStatus.OFFLINE);
-
             // We might have just had a connection problem, let's try to reconnect.
             scheduler.scheduleConnect();
         }
