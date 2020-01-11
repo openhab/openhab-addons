@@ -83,7 +83,7 @@ public class WizLightingHandler extends BaseThingHandler {
     private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
     private @Nullable ScheduledFuture<?> keepAliveJob;
     private long latestUpdate = -1;
-    private RegistrationRequestParam registrationInfo;
+    // private RegistrationRequestParam registrationInfo;
     private int requestId = 0;
 
     /**
@@ -107,7 +107,7 @@ public class WizLightingHandler extends BaseThingHandler {
 
         logger.debug("Setting my host to {} and mac to {}", registrationPacket.getPhoneIp(),
                 registrationPacket.getPhoneMac());
-        this.registrationInfo = registrationPacket;
+        // this.registrationInfo = registrationPacket;
     }
 
     @Override
@@ -571,28 +571,29 @@ public class WizLightingHandler extends BaseThingHandler {
      * heartbeat (hb) status updates
      */
     /*
-    private void registerWithBulb() {
-        logger.trace("Registering for updates with bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
-        WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
-                this.registrationInfo);
-        if (registrationResponse != null) {
-            if (registrationResponse.getResultSuccess()) {
-                updateTimestamps();
-            } else {
-                logger.debug(
-                        "Received response to getConfigRequest from bulb at {} - {}, but id did not contain bulb configuration information.",
-                        getBulbIpAddress(), getBulbMacAddress());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-        } else {
-            logger.debug("No response to registration request from bulb at {} - {}", getBulbIpAddress(),
-                    getBulbMacAddress());
-            // Not calling it "gone" because it's probably just been powered off and will be
-            // back any time
-            updateStatus(ThingStatus.OFFLINE);
-        }
-    }
-    */
+     * private void registerWithBulb() {
+     * logger.trace("Registering for updates with bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
+     * WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.registration,
+     * this.registrationInfo);
+     * if (registrationResponse != null) {
+     * if (registrationResponse.getResultSuccess()) {
+     * updateTimestamps();
+     * } else {
+     * logger.debug(
+     * "Received response to getConfigRequest from bulb at {} - {}, but id did not contain bulb configuration information."
+     * ,
+     * getBulbIpAddress(), getBulbMacAddress());
+     * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+     * }
+     * } else {
+     * logger.debug("No response to registration request from bulb at {} - {}", getBulbIpAddress(),
+     * getBulbMacAddress());
+     * // Not calling it "gone" because it's probably just been powered off and will be
+     * // back any time
+     * updateStatus(ThingStatus.OFFLINE);
+     * }
+     * }
+     */
 
     @Override
     protected void updateConfiguration(final Configuration configuration) {
