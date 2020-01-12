@@ -40,11 +40,7 @@ public class IntegraVersionCommand extends SatelCommandBase {
      * @return Integra firmware version and release date
      */
     public String getVersion() {
-        // build version string
-        String verStr = new String(response.getPayload(), 1, 1) + "." + new String(response.getPayload(), 2, 2) + " "
-                + new String(response.getPayload(), 4, 4) + "-" + new String(response.getPayload(), 8, 2) + "-"
-                + new String(response.getPayload(), 10, 2);
-        return verStr;
+        return getVersion(1);
     }
 
     /**

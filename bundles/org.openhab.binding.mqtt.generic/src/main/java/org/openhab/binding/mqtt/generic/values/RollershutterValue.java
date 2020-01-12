@@ -113,7 +113,7 @@ public class RollershutterValue extends Value {
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue() {
         final String upString = this.upString;
         final String downString = this.downString;
         if (this.nextIsStop) {

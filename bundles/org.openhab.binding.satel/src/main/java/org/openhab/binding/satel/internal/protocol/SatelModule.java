@@ -22,11 +22,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.openhab.binding.satel.internal.command.IntegraVersionCommand;
+import org.openhab.binding.satel.internal.command.ModuleVersionCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand.State;
 import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.IntegraVersionEvent;
+import org.openhab.binding.satel.internal.event.ModuleVersionEvent;
 import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.event.SatelEventListener;
 import org.openhab.binding.satel.internal.types.IntegraType;
@@ -52,11 +54,12 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
 
     private final BlockingQueue<SatelCommand> sendQueue = new LinkedBlockingQueue<SatelCommand>();
 
-    private IntegraType integraType;
-    private int timeout;
-    private String integraVersion;
+    private final int timeout;
+    private volatile IntegraType integraType;
+    private volatile String integraVersion;
+    private volatile boolean extPayloadSupport;
     private CommunicationChannel channel;
-    private Object channelLock;
+    private final Object channelLock = new Object();
     private CommunicationWatchdog communicationWatchdog;
 
     /*
@@ -107,9 +110,9 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      *                    operations
      */
     public SatelModule(int timeout) {
-        this.integraType = IntegraType.UNKNOWN;
         this.timeout = timeout;
-        this.channelLock = new Object();
+        this.integraType = IntegraType.UNKNOWN;
+        this.extPayloadSupport = false;
 
         addEventListener(this);
     }
@@ -153,6 +156,15 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      */
     public boolean isInitialized() {
         return this.integraType != IntegraType.UNKNOWN;
+    }
+
+    /**
+     * Returns extended payload flag.
+     *
+     * @return <code>true</code> if the module supports extended (32-bit) payload for zones/outputs
+     */
+    public boolean hasExtPayloadSupport() {
+        return this.extPayloadSupport;
     }
 
     protected abstract CommunicationChannel connect() throws ConnectionFailureException;
@@ -227,18 +239,23 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
 
     @Override
     public void incomingEvent(SatelEvent event) {
-        if (event instanceof IntegraVersionEvent) {
+        if (event instanceof ModuleVersionEvent) {
+            ModuleVersionEvent versionEvent = (ModuleVersionEvent) event;
+            this.extPayloadSupport = versionEvent.hasExtPayloadSupport();
+            logger.info("Module version: {}.", versionEvent.getVersion());
+        } else if (event instanceof IntegraVersionEvent) {
             IntegraVersionEvent versionEvent = (IntegraVersionEvent) event;
             this.integraType = IntegraType.valueOf(versionEvent.getType() & 0xFF);
             this.integraVersion = versionEvent.getVersion();
-            logger.info("Connection to {} initialized. Version: {}.", this.integraType.getName(), this.integraVersion);
+            logger.info("Connection to {} initialized. INTEGRA version: {}.", this.integraType.getName(),
+                    this.integraVersion);
         }
     }
 
     private SatelMessage readMessage() throws InterruptedException {
         try {
-            InputStream is = this.channel.getInputStream();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final InputStream is = this.channel.getInputStream();
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             boolean inMessage = false;
             int syncBytes = 0;
 
@@ -312,7 +329,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
 
     private boolean writeMessage(SatelMessage message) {
         try {
-            OutputStream os = this.channel.getOutputStream();
+            final OutputStream os = this.channel.getOutputStream();
 
             os.write(FRAME_START);
             for (byte b : message.getBytes()) {
@@ -492,6 +509,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
             this.thread.start();
             // if module is not initialized yet, send version command
             if (!SatelModule.this.isInitialized()) {
+                SatelModule.this.sendCommand(new ModuleVersionCommand());
                 SatelModule.this.sendCommand(new IntegraVersionCommand());
             }
         }

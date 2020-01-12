@@ -33,7 +33,6 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
             super("MQTT Binary Sensor");
         }
 
-        protected String unit_of_measurement = "";
         protected @Nullable String device_class;
         protected boolean force_update = false;
         protected int expire_after = 0;
@@ -53,7 +52,6 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
         buildChannel(sensorChannelID, new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off),
                 channelConfiguration.name, componentConfiguration.getUpdateListener())//
                         .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
-                        .unit(channelConfiguration.unit_of_measurement)//
                         .build();
     }
 }

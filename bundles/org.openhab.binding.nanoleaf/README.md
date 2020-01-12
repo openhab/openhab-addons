@@ -22,7 +22,7 @@ You can set the color for each panel or turn it on (white) or off (black).
 ## Discovery
 
 A controller (bridge) device is discovered automatically through mDNS in the local network.
-Alternatively, you can also provide a things file (see below for more details).
+Alternatively, you can also provide the usual files to configure the binding (see [Full Example](#full-example) below for more details).
 After the device is discovered and added as a thing, it needs a valid authentication token that must be obtained by pairing it with your openHAB instance.
 Without the token the light panels remain in status OFFLINE.
 
@@ -96,6 +96,14 @@ Bridge nanoleaf:controller:MyLightPanels [ address="192.168.1.100", port=16021, 
 }
 ```
 
+Note: To generate the `authToken`:
+* On the Nanoleaf controller, hold the on-off button for 5-7 seconds until the LED starts flashing.
+* Send a POST request to the authorization endpoint within 30 seconds of activating pairing, like this:
+
+`http://<address>:16021/api/v1/new`
+
+e.g. via command line `curl --location --request POST 'http://<address>:16021/api/v1/new'`
+
 ### nanoleaf.items
 
 ```
@@ -112,7 +120,6 @@ Switch NanoleafRhythmState "Rhythm connected [MAP(nanoleaf.map):%s]" { channel="
 Switch NanoleafRhythmActive "Rhythm active [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmActive" }
 Number NanoleafRhythmSource  "Rhythm source [%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmMode" }
 Color Panel1Color "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:panelColor" }
-Dimmer Panel1Brightness "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:panelColor" }
 Color Panel2Color "Panel 2" { channel="nanoleaf:lightpanel:MyLightPanels:158:panelColor" }
 Switch NanoleafRainbowScene "Show Rainbow Scene"
 ```
@@ -139,7 +146,6 @@ sitemap nanoleaf label="Nanoleaf"
     
     Frame label="Panels" {
         Colorpicker item=Panel1Color
-        Slider item=Panel1Brightness
         Colorpicker item=Panel2Color
     }
     

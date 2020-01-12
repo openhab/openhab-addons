@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="gas_emucs_v1_0" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="dsmrBridge" />
+		</supported-bridge-type-refs>
+
+		<label>Gas Meter (e-MUCS V1.0)</label>
+		<description>This is a gas meter that complies to the e-MUCS V1.0 specification.</description>
+
+		<channels>
+			<channel id="meter_device_type" typeId="deviceType" />
+			<channel id="meter_equipment_identifier" typeId="equipmentIdType" />
+			<channel id="gmeter_last_value" typeId="gasLastDeliveryType" />
+			<channel id="gmeter_last_value_timestamp" typeId="gasLastTimestampType" />
+			<channel id="meter_valve_switch_position" typeId="gasValvePositionType" />
+		</channels>
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
+	</thing-type>
+</thing:thing-descriptions>

@@ -42,20 +42,20 @@ public class P1TelegramParser implements TelegramParser {
      * State of the parser
      */
     private enum State {
-    /** Wait for the '/' character */
-    WAIT_FOR_START,
-    /** '/' character seen */
-    HEADER,
-    /** Waiting for the header to end with a CR & LF */
-    CRLF,
-    /** Handling OBIS Identifier */
-    DATA_OBIS_ID,
-    /** Parsing OBIS value */
-    DATA_OBIS_VALUE,
-    /** OBIS value end seen ')' */
-    DATA_OBIS_VALUE_END,
-    /** Parsing CRC value following '!' */
-    CRC_VALUE
+        /** Wait for the '/' character */
+        WAIT_FOR_START,
+        /** '/' character seen */
+        HEADER,
+        /** Waiting for the header to end with a CR & LF */
+        CRLF,
+        /** Handling OBIS Identifier */
+        DATA_OBIS_ID,
+        /** Parsing OBIS value */
+        DATA_OBIS_VALUE,
+        /** OBIS value end seen ')' */
+        DATA_OBIS_VALUE_END,
+        /** Parsing CRC value following '!' */
+        CRC_VALUE
     }
 
     /**

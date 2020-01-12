@@ -97,6 +97,7 @@ public class TeslaVehicleDiscoveryService extends AbstractDiscoveryService
         logger.debug("Found a {} vehicle", vehicleConfig.car_type);
         switch (vehicleConfig.car_type) {
             case "models":
+            case "models2":
                 return TeslaBindingConstants.THING_TYPE_MODELS;
             case "modelx":
                 return TeslaBindingConstants.THING_TYPE_MODELX;

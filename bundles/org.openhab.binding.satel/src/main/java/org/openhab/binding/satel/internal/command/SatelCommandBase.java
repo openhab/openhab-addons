@@ -40,11 +40,8 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     /**
      * Creates new command basing on command code and extended command flag.
      *
-     * @param commandCode
-     *            command code
-     * @param extended
-     *            if <code>true</code> command will be sent as extended (256
-     *            zones or outputs)
+     * @param commandCode command code
+     * @param extended    if <code>true</code> command will be sent as extended (256 zones or outputs)
      */
     public SatelCommandBase(byte commandCode, boolean extended) {
         this(commandCode, extended ? EXTENDED_CMD_PAYLOAD : EMPTY_PAYLOAD);
@@ -53,10 +50,8 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     /**
      * Creates new instance with specified command code and payload.
      *
-     * @param command
-     *            command code
-     * @param payload
-     *            command payload
+     * @param command command code
+     * @param payload command payload
      */
     public SatelCommandBase(byte commandCode, byte[] payload) {
         super(commandCode, payload);
@@ -189,6 +184,22 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
             logger.info("{}. {}", errorMsg, getRequest());
         }
         return false;
+    }
+
+    /**
+     * Decodes firmware version and release date from command payload
+     *
+     * @param offset starting offset in payload
+     * @return decoded firmware version and release date as string
+     */
+    public String getVersion(int offset) {
+        // build version string
+        String verStr = new String(response.getPayload(), offset, 1) + "."
+                + new String(response.getPayload(), offset + 1, 2) + " "
+                + new String(response.getPayload(), offset + 3, 4) + "-"
+                + new String(response.getPayload(), offset + 7, 2) + "-"
+                + new String(response.getPayload(), offset + 9, 2);
+        return verStr;
     }
 
 }

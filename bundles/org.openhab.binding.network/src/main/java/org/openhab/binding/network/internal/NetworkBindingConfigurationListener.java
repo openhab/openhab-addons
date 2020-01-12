@@ -10,15 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.toon.internal.config;
+package org.openhab.binding.network.internal;
 
 /**
- * The {@link ToonBridgeConfiguration} class defines the configuration properties as used by the bridge.
+ * Listener for binding configuration changes.
  *
- * @author Jorg de Jong - Initial contribution
+ * @author Andreas Hirsch - Initial contribution
  */
-public class ToonBridgeConfiguration {
-    public String username;
-    public String password;
-    public int refreshInterval;
+public interface NetworkBindingConfigurationListener {
+
+    void bindingConfigurationChanged();
 }
