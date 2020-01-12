@@ -14,9 +14,9 @@ package org.openhab.binding.telegram.internal;
 
 import static org.openhab.binding.telegram.internal.TelegramBindingConstants.*;
 
-import java.time.ZonedDateTime;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
