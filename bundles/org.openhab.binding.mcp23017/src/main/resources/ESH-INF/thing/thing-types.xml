@@ -18,10 +18,13 @@
 			</parameter>
 			<parameter name="bus_number" type="integer" required="true">
 				<label>I2C BUS Number</label>
-				<description>I2C Bus number (0,1)</description>
+				<description>I2C Bus number (0,1,2,3,4)</description>
 				<options>
 					<option value="0">0</option>
 					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
 				</options>
 				<default>1</default>
 			</parameter>
