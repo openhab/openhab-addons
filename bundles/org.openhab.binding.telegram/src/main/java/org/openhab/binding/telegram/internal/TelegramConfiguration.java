@@ -31,6 +31,9 @@ public class TelegramConfiguration {
     private @Nullable String botUsername;
     private @Nullable String botToken;
     private @Nullable List<String> chatIds;
+    private @Nullable String proxyHost;
+    private @Nullable String proxyPort;
+    private @Nullable String proxyType;
     private String parseMode = "";
 
     public @Nullable String getBotUsername() {

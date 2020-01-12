@@ -58,12 +58,14 @@ Please note that the things cannot be used to send messages. In order to send a 
 
 
 telegram.thing (no proxy):
+
 ```
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >" ]
 ```
 
 
 telegram.thing (SOCKS5 proxy server is used): 
+
 ```
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >", proxyHost="< HOST >", proxyPort="< PORT >", proxyType="< TYPE >" ]
 ```
