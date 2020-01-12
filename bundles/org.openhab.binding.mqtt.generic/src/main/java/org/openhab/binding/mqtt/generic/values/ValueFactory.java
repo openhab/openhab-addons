@@ -47,7 +47,7 @@ public class ValueFactory {
                 value = new LocationValue();
                 break;
             case MqttBindingConstants.NUMBER:
-                value = new NumberValue(config.min, config.max, config.step);
+                value = new NumberValue(config.min, config.max, config.step, config.unit);
                 break;
             case MqttBindingConstants.DIMMER:
                 value = new PercentageValue(config.min, config.max, config.step, config.on, config.off);

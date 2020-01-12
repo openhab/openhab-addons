@@ -87,7 +87,7 @@ public class OnOffValue extends Value {
     }
 
     @Override
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue() {
         return (state == OnOffType.ON) ? onCommand : offCommand;
     }
 }
