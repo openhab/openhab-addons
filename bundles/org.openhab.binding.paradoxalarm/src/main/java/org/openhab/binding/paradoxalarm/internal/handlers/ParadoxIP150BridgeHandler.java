@@ -145,8 +145,6 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
         scheduler.schedule(() -> createDiscoveredCommunicatorJob(panelType), 3, TimeUnit.SECONDS);
     }
 
-    // test line endings #3
-
     protected void createDiscoveredCommunicatorJob(PanelType panelType) {
         // If not detected properly, use the value from config
         if (panelType == PanelType.UNKNOWN) {
