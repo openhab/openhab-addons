@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.IllegalFormatException;
 import java.util.concurrent.ScheduledFuture;
@@ -52,9 +53,20 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Constantin Piber - Added better argument support (delimiter and pass to bash)
  */
 @NonNullByDefault
 public class ExecHandler extends BaseThingHandler {
+    /**
+     * Use this to separate between command and parameter, and also between parameters.
+     */
+    public static final String CMD_LINE_DELIMITER = "@@";
+
+    /**
+     * Shell executables
+     */
+    public static final String SHELL_WINDOWS = "cmd";
+    public static final String SHELL_NIX = "sh";
 
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
 
@@ -97,9 +109,8 @@ public class ExecHandler extends BaseThingHandler {
                     lastInput = command.toString();
                     if (lastInput != null && !lastInput.equals(previousInput)) {
                         if (getConfig().get(AUTORUN) != null && ((Boolean) getConfig().get(AUTORUN)).booleanValue()) {
-                            lastInput = command.toString();
                             logger.trace("Executing command '{}' after a change of the input channel to '{}'",
-                                    getConfig().get(COMMAND), command.toString());
+                                    getConfig().get(COMMAND), lastInput);
                             scheduler.schedule(periodicExecutionRunnable, 0, TimeUnit.SECONDS);
                         }
                     }
@@ -167,14 +178,58 @@ public class ExecHandler extends BaseThingHandler {
                     return;
                 }
 
-                logger.trace("The command to be executed will be '{}'", commandLine);
+                String[] cmdArray;
+                boolean didSplit = false;
+                String shell = "";
+                if (commandLine.contains(CMD_LINE_DELIMITER)) {
+                    didSplit = true;
+                    try {
+                        cmdArray = commandLine.split(CMD_LINE_DELIMITER);
+                    } catch (Exception e) {
+                        logger.error("An exception occurred while splitting '{}' : '{}'",
+                                new Object[] { commandLine.toString(), e.getMessage() });
+                        updateState(RUN, OnOffType.OFF);
+                        updateState(OUTPUT, new StringType(e.getMessage()));
+                        return;
+                    }
+                } else {
+                    // Invoke shell with 'c' option and pass string
+                    logger.debug("Sending to shell for parsing command.");
+                    if (Util.getOS() == Util.OS.WINDOWS) {
+                        shell = SHELL_WINDOWS;
+                        cmdArray = new String[] {shell, "/c", commandLine.toString()};
+                        logger.debug("OS: WINDOWS ({})",
+                                new Object[] { Util.getOSString() });
+                    } else if (Util.getOS() != Util.OS.UNKOWN) {
+                        // assume sh is present, should all be POSIX-compliant
+                        shell = SHELL_NIX;
+                        cmdArray = new String[] {shell, "-c", commandLine.toString()};
+                        logger.debug("OS: *NIX ({})",
+                                new Object[] { Util.getOSString() });
+                    } else {
+                        String err = "OS not supported, please manually split commands!";
+                        logger.debug("OS: Unknown ({})",
+                                new Object[] { Util.getOSString() });
+                        logger.error(err);
+                        updateState(RUN, OnOffType.OFF);
+                        updateState(OUTPUT, new StringType(err));
+                        return;
+                    }
+                }
+
+                logger.trace("The command to be executed will be '{}'", Arrays.asList(cmdArray));
 
                 Process proc = null;
                 try {
-                    proc = rt.exec(commandLine.toString());
+                    proc = rt.exec(cmdArray);
                 } catch (Exception e) {
                     logger.error("An exception occurred while executing '{}' : '{}'",
-                            new Object[] { commandLine.toString(), e.getMessage() });
+                            new Object[] { Arrays.asList(cmdArray), e.getMessage() });
+                    if (!didSplit) {
+                        logger.info("This command has been passed to `{}` for parsing. " +
+                                "Maybe you could try manually separating arguments.",
+                                new Object[] { shell });
+                    }
                     updateState(RUN, OnOffType.OFF);
                     updateState(OUTPUT, new StringType(e.getMessage()));
                     return;
@@ -298,4 +353,42 @@ public class ExecHandler extends BaseThingHandler {
         return new String[] { type, pattern };
     }
 
+}
+
+
+/**
+ * Contains information about which operating system openHAB is running on.
+ * Found on https://stackoverflow.com/a/31547504/7508309, slightly modified
+ *
+ * @author Constantin Piber (for Memin) - Initial contribution
+ */
+class Util {
+    public enum OS {
+        WINDOWS, LINUX, MAC, SOLARIS, UNKOWN
+    };// Operating systems.
+
+    private static OS os = null;
+
+    public static OS getOS() {
+        if (os == null) {
+            String operSys = System.getProperty("os.name").toLowerCase();
+            if (operSys.contains("win")) {
+                os = OS.WINDOWS;
+            } else if (operSys.contains("nix") || operSys.contains("nux")
+                    || operSys.contains("aix")) {
+                os = OS.LINUX;
+            } else if (operSys.contains("mac")) {
+                os = OS.MAC;
+            } else if (operSys.contains("sunos")) {
+                os = OS.SOLARIS;
+            } else {
+                os = OS.UNKOWN;
+            }
+        }
+        return os;
+    }
+
+    public static String getOSString() {
+        return System.getProperty("os.name");
+    }
 }
