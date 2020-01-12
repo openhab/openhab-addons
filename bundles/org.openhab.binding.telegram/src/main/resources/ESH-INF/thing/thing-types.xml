@@ -37,22 +37,22 @@
 				<description>Support for formatted messages, values: Markdown or HTML. Default: no formatting is used.</description>
 			</parameter>
 			<parameter name="proxyHost" type="text" required="false" multiple="false">
-                                <label>Proxy Host</label>
-                                <description>Enter your proxy host. It will be used for telegram binding only and doesn't affect entire system.</description>
-                        </parameter>
-                        <parameter name="proxyPort" type="text" required="false" multiple="false">
-                                <label>Proxy Port</label>
-                                <description>Enter your proxy port.</description>
-                        </parameter>
-                        <parameter name="proxyType" type="text" required="false" multiple="false">
-                                <label>Proxy Type</label>
-                                <options>
-                                        <option value="SOCKS5">SOCKS5</option>
-                                        <option value="HTTP">HTTP</option>
-                                </options>
-                                <default>"SOCKS5"</default>
-                                <description>Enter your proxy type. Default: SOCKS5</description>
-                        </parameter>
+				<label>Proxy Host</label>
+				<description>Enter your proxy host. It will be used for telegram binding only and doesn't affect entire system.</description>
+			</parameter>
+			<parameter name="proxyPort" type="text" required="false" multiple="false">
+				<label>Proxy Port</label>
+				<description>Enter your proxy port.</description>
+			</parameter>
+			<parameter name="proxyType" type="text" required="false" multiple="false">
+				<label>Proxy Type</label>
+				<options>
+					<option value="SOCKS5">SOCKS5</option>
+					<option value="HTTP">HTTP</option>
+				</options>
+				<default>SOCKS5</default>
+				<description>Enter your proxy type. Default: SOCKS5</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
