@@ -48,5 +48,16 @@ public class TelegramConfiguration {
     public String getParseMode() {
         return parseMode;
     }
+    
+    public @Nullable String getProxyHost() {
+        return proxyHost;
+    }
 
+    public @Nullable String getProxyPort() {
+        return proxyPort;
+    }
+
+    public @Nullable String getProxyType() {
+        return proxyType;
+    }
 }
