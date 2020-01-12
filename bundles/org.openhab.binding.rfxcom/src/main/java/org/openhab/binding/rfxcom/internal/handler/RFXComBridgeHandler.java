@@ -240,7 +240,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                     RFXComInterfaceMessage msg = (RFXComInterfaceMessage) message;
                     if (msg.subType == SubType.RESPONSE) {
                         if (msg.command == Commands.GET_STATUS) {
-                            logger.info("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
+                            logger.debug("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
                                     msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2,
                                     msg.firmwareVersion);
                             thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION,
