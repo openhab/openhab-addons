@@ -509,8 +509,10 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
             networkUtils.nativeARPPing(arpPingMethod, arpPingUtilPath, interfaceName,
                     destinationAddress.getHostAddress(), timeoutInMS).ifPresent(o -> {
-                PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ARP_PING, getLatency(o, preferResponseTimeAsLatency));
-                updateListener.partialDetectionResult(v);
+                        if (o.isSuccess()) {
+                            PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ARP_PING, getLatency(o, preferResponseTimeAsLatency));
+                            updateListener.partialDetectionResult(v);
+                        }
             });
         } catch (IOException e) {
             logger.trace("Failed to execute an arp ping for ip {}", hostname, e);
@@ -534,8 +536,10 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         }
 
         networkUtils.javaPing(timeoutInMS, destinationAddress).ifPresent(o -> {
-            PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ICMP_PING, getLatency(o, preferResponseTimeAsLatency));
-            updateListener.partialDetectionResult(v);
+            if (o.isSuccess()) {
+                PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ICMP_PING, getLatency(o, preferResponseTimeAsLatency));
+                updateListener.partialDetectionResult(v);
+            }
         });
     }
 
