@@ -157,6 +157,18 @@ iptables -A PREROUTING -t mangle -p udp ! -s 127.0.0.1 --dport 67 -j TEE --gatew
 iptables -A OUTPUT -t nat -p udp -s 127.0.0.1/32 --dport 67 -j DNAT --to 127.0.0.1:6767
 ```
 
+Above iptables solutions to check *dhcp_state* are not working when OpenHAB is started in Docker. Use another workaround
+
+```shell
+iptables -I PREROUTING -t nat -p udp --src 0.0.0.0 --dport 67 -j DNAT --to 0.0.0.0:6767
+```
+
+To verify PREROUTING list use below command
+
+```shell
+iptables -L -n -t nat
+```
+
 ## Channels
 
 Things support the following channels:
