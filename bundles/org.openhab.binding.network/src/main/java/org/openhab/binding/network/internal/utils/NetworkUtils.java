@@ -12,28 +12,6 @@
  */
 package org.openhab.binding.network.internal.utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ConnectException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.NoRouteToHostException;
-import java.net.PortUnreachableException;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
@@ -45,6 +23,13 @@ import org.eclipse.smarthome.io.net.exec.ExecUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
  *
@@ -53,6 +38,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NetworkUtils {
     private final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
+
+    private LatencyParser latencyParser = new LatencyParser();
 
     /**
      * Gets every IPv4 Address on each Interface except the loopback
@@ -75,7 +62,7 @@ public class NetworkUtils {
 
         try {
             // For each interface ...
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
                 NetworkInterface networkInterface = en.nextElement();
                 if (!networkInterface.isLoopback()) {
                     result.add(networkInterface.getName());
@@ -101,7 +88,7 @@ public class NetworkUtils {
     /**
      * Takes the interfaceIPs and fetches every IP which can be assigned on their network
      *
-     * @param networkIPs The IPs which are assigned to the Network Interfaces
+     * @param interfaceIPs The IPs which are assigned to the Network Interfaces
      * @param maximumPerInterface The maximum of IP addresses per interface or 0 to get all.
      * @return Every single IP which can be assigned on the Networks the computer is connected to
      */
@@ -150,17 +137,18 @@ public class NetworkUtils {
      * @param host The IP or hostname
      * @param port The tcp port. Must be not 0.
      * @param timeout Timeout in ms
-     * @param logger A slf4j logger instance to log IOException
-     * @return
+     * @return Ping result information. Optional is empty if ping command was not executed.
      * @throws IOException
      */
-    public boolean servicePing(String host, int port, int timeout) throws IOException {
+    public Optional<PingResult> servicePing(String host, int port, int timeout) throws IOException {
+        double execStartTimeInMS = System.currentTimeMillis();
+
         SocketAddress socketAddress = new InetSocketAddress(host, port);
         try (Socket socket = new Socket()) {
             socket.connect(socketAddress, timeout);
-            return true;
+            return Optional.of(new PingResult(true, System.currentTimeMillis() - execStartTimeInMS));
         } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
-            return false;
+            return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
         }
     }
 
@@ -182,7 +170,8 @@ public class NetworkUtils {
         }
 
         try {
-            if (nativePing(method, "127.0.0.1", 1000)) {
+            Optional<PingResult> pingResult = nativePing(method, "127.0.0.1", 1000);
+            if (pingResult.isPresent() && pingResult.get().isSuccess()) {
                 return method;
             }
         } catch (IOException ignored) {
@@ -225,14 +214,16 @@ public class NetworkUtils {
      *
      * @param hostname The DNS name, IPv4 or IPv6 address. Must not be null.
      * @param timeoutInMS Timeout in milliseconds. Be aware that DNS resolution is not part of this timeout.
-     * @return Returns true if the device responded
+     * @return Ping result information. Optional is empty if ping command was not executed.
      * @throws IOException The ping command could probably not be found
      */
-    public boolean nativePing(@Nullable IpPingMethodEnum method, String hostname, int timeoutInMS)
+    public Optional<PingResult> nativePing(@Nullable IpPingMethodEnum method, String hostname, int timeoutInMS)
             throws IOException, InterruptedException {
+        double execStartTimeInMS = System.currentTimeMillis();
+
         Process proc;
         if (method == null) {
-            return false;
+            return Optional.empty();
         }
         // Yes, all supported operating systems have their own ping utility with a different command line
         switch (method) {
@@ -250,7 +241,7 @@ public class NetworkUtils {
             case JAVA_PING:
             default:
                 // We cannot estimate the command line for any other operating system and just return false
-                return false;
+                return Optional.empty();
         }
 
         // The return code is 0 for a successful ping, 1 if device didn't
@@ -258,13 +249,10 @@ public class NetworkUtils {
         // not ready.
         // Exception: return code is also 0 in Windows for all requests on the local subnet.
         // see https://superuser.com/questions/403905/ping-from-windows-7-get-no-reply-but-sets-errorlevel-to-0
-        if (method != IpPingMethodEnum.WINDOWS_PING) {
-            return proc.waitFor() == 0;
-        }
 
         int result = proc.waitFor();
         if (result != 0) {
-            return false;
+            return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
         }
 
         try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
@@ -273,13 +261,17 @@ public class NetworkUtils {
                 throw new IOException("Received no output from ping process.");
             }
             do {
-                if (line.contains("TTL=")) {
-                    return true;
+                // Because of the Windows issue, we need to check this. We assume that the ping was successful whenever
+                // this specific string is contained in the output
+                if (line.contains("TTL=") || line.contains("ttl=")) {
+                     PingResult pingResult = new PingResult(true, System.currentTimeMillis() - execStartTimeInMS);
+                     latencyParser.parseLatency(line).ifPresent(pingResult::setResponseTimeInMS);
+                     return Optional.of(pingResult);
                 }
                 line = r.readLine();
             } while (line != null);
 
-            return false;
+            return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
         }
     }
 
@@ -302,13 +294,15 @@ public class NetworkUtils {
      * @param interfaceName An interface name, on linux for example "wlp58s0", shown by ifconfig. Must not be null.
      * @param ipV4address The ipV4 address. Must not be null.
      * @param timeoutInMS A timeout in milliseconds
-     * @return Return true if the device responded
+     * @return Ping result information. Optional is empty if ping command was not executed.
      * @throws IOException The ping command could probably not be found
      */
-    public boolean nativeARPPing(@Nullable ArpPingUtilEnum arpingTool, @Nullable String arpUtilPath,
-            String interfaceName, String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
+    public Optional<PingResult> nativeARPPing(@Nullable ArpPingUtilEnum arpingTool, @Nullable String arpUtilPath,
+                                              String interfaceName, String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
+        double execStartTimeInMS = System.currentTimeMillis();
+
         if (arpUtilPath == null || arpingTool == null || arpingTool == ArpPingUtilEnum.UNKNOWN_TOOL) {
-            return false;
+            return Optional.empty();
         }
         Process proc;
         if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
@@ -325,7 +319,28 @@ public class NetworkUtils {
 
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
         // network interface not ready.
-        return proc.waitFor() == 0;
+        return Optional.of(new PingResult(proc.waitFor() == 0, System.currentTimeMillis() - execStartTimeInMS));
+    }
+
+    /**
+     * Execute a Java ping.
+     *
+     * @param timeoutInMS A timeout in milliseconds
+     * @param destinationAddress The address to check
+     * @return Ping result information. Optional is empty if ping command was not executed.
+     */
+    public Optional<PingResult> javaPing(int timeoutInMS, InetAddress destinationAddress) {
+        double execStartTimeInMS = System.currentTimeMillis();
+
+        try {
+            if(destinationAddress.isReachable(timeoutInMS)) {
+                return Optional.of(new PingResult(true, System.currentTimeMillis() - execStartTimeInMS));
+            } else {
+                return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
+            }
+        } catch (IOException e) {
+            return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
+        }
     }
 
     /**
