@@ -223,7 +223,7 @@ public class ExecHandler extends BaseThingHandler {
                     proc = rt.exec(cmdArray);
                 } catch (Exception e) {
                     logger.error("An exception occurred while executing '{}' : '{}'",
-                            new Object[] { Arrays.asList(cmdArray), e.getMessage() });
+                            Arrays.asList(cmdArray), e.getMessage());
                     if (!didSplit) {
                         logger.info("This command has been passed to `{}` for parsing. " +
                                 "Maybe you could try manually separating arguments.", shell);
@@ -318,7 +318,7 @@ public class ExecHandler extends BaseThingHandler {
             }
         } catch (TransformationException te) {
             logger.error("An exception occurred while transforming '{}' with '{}' : '{}'",
-                    new Object[] { response, transformation, te.getMessage() });
+                    response, transformation, te.getMessage());
 
             // in case of an error we return the response without any transformation
             transformedResponse = response;
