@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.IllegalFormatException;
 import java.util.concurrent.ScheduledFuture;
@@ -66,6 +67,7 @@ public class ExecHandler extends BaseThingHandler {
     public static final String COMMAND = "command";
     public static final String TRANSFORM = "transform";
     public static final String AUTORUN = "autorun";
+    public static final String CMD_LINE_DELIMITER = "@@";
 
     // RegEx to extract a parse a function String <code>'(.*?)\((.*)\)'</code>
     private static final Pattern EXTRACT_FUNCTION_PATTERN = Pattern.compile("(.*?)\\((.*)\\)");
@@ -141,107 +143,114 @@ public class ExecHandler extends BaseThingHandler {
                 timeOut = ((BigDecimal) getConfig().get(TIME_OUT)).intValue() * 1000;
             }
 
-            if (commandLine != null && !commandLine.isEmpty()) {
-                updateState(RUN, OnOffType.ON);
-
-                // For some obscure reason, when using Apache Common Exec, or using a straight implementation of
-                // Runtime.Exec(), on Mac OS X (Yosemite and El Capitan), there seems to be a lock race condition
-                // randomly appearing (on UNIXProcess) *when* one tries to gobble up the stdout and sterr output of the
-                // subprocess in separate threads. It seems to be common "wisdom" to do that in separate threads, but
-                // only when keeping everything between .exec() and .waitfor() in the same thread, this lock race
-                // condition seems to go away. This approach of not reading the outputs in separate threads *might* be a
-                // problem for external commands that generate a lot of output, but this will be dependent on the limits
-                // of the underlying operating system.
-
-                try {
-                    if (lastInput != null) {
-                        commandLine = String.format(commandLine, Calendar.getInstance().getTime(), lastInput);
-                    } else {
-                        commandLine = String.format(commandLine, Calendar.getInstance().getTime());
-                    }
-                } catch (IllegalFormatException e) {
-                    logger.error(
-                            "An exception occurred while formatting the command line with the current time and input values : '{}'",
-                            e.getMessage());
-                    updateState(RUN, OnOffType.OFF);
-                    return;
-                }
-
-                logger.trace("The command to be executed will be '{}'", commandLine);
-
-                Process proc = null;
-                try {
-                    proc = rt.exec(commandLine.toString());
-                } catch (Exception e) {
-                    logger.error("An exception occurred while executing '{}' : '{}'",
-                            new Object[] { commandLine.toString(), e.getMessage() });
-                    updateState(RUN, OnOffType.OFF);
-                    updateState(OUTPUT, new StringType(e.getMessage()));
-                    return;
-                }
-
-                StringBuilder outputBuilder = new StringBuilder();
-                StringBuilder errorBuilder = new StringBuilder();
-
-                try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-                        BufferedReader br = new BufferedReader(isr)) {
-                    String line = null;
-                    while ((line = br.readLine()) != null) {
-                        outputBuilder.append(line).append("\n");
-                        logger.debug("Exec [{}]: '{}'", "OUTPUT", line);
-                    }
-                    isr.close();
-                } catch (IOException e) {
-                    logger.error("An exception occurred while reading the stdout when executing '{}' : '{}'",
-                            new Object[] { commandLine.toString(), e.getMessage() });
-                }
-
-                try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                        BufferedReader br = new BufferedReader(isr)) {
-                    String line = null;
-                    while ((line = br.readLine()) != null) {
-                        errorBuilder.append(line).append("\n");
-                        logger.debug("Exec [{}]: '{}'", "ERROR", line);
-                    }
-                    isr.close();
-                } catch (IOException e) {
-                    logger.error("An exception occurred while reading the stderr when executing '{}' : '{}'",
-                            new Object[] { commandLine.toString(), e.getMessage() });
-                }
-
-                boolean exitVal = false;
-                try {
-                    exitVal = proc.waitFor(timeOut, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    logger.error("An exception occurred while waiting for the process ('{}') to finish : '{}'",
-                            new Object[] { commandLine.toString(), e.getMessage() });
-                }
-
-                if (!exitVal) {
-                    logger.warn("Forcibly termininating the process ('{}') after a timeout of {} ms",
-                            new Object[] { commandLine.toString(), timeOut });
-                    proc.destroyForcibly();
-                }
-
-                updateState(RUN, OnOffType.OFF);
-                updateState(EXIT, new DecimalType(proc.exitValue()));
-
-                outputBuilder.append(errorBuilder.toString());
-
-                outputBuilder.append(errorBuilder.toString());
-
-                String transformedResponse = StringUtils.chomp(outputBuilder.toString());
-                String transformation = (String) getConfig().get(TRANSFORM);
-
-                if (transformation != null && transformation.length() > 0) {
-                    transformedResponse = transformResponse(transformedResponse, transformation);
-                }
-
-                updateState(OUTPUT, new StringType(transformedResponse));
-
-                DateTimeType stampType = new DateTimeType(ZonedDateTime.now());
-                updateState(LAST_EXECUTION, stampType);
+            if (StringUtils.isBlank(commandLine)) {
+                logger.warn("Null or empty command. Cannot execute.");
+                return;
             }
+
+            updateState(RUN, OnOffType.ON);
+
+            // For some obscure reason, when using Apache Common Exec, or using a straight implementation of
+            // Runtime.Exec(), on Mac OS X (Yosemite and El Capitan), there seems to be a lock race condition
+            // randomly appearing (on UNIXProcess) *when* one tries to gobble up the stdout and sterr output of the
+            // subprocess in separate threads. It seems to be common "wisdom" to do that in separate threads, but
+            // only when keeping everything between .exec() and .waitfor() in the same thread, this lock race
+            // condition seems to go away. This approach of not reading the outputs in separate threads *might* be a
+            // problem for external commands that generate a lot of output, but this will be dependent on the limits
+            // of the underlying operating system.
+
+            try {
+                if (lastInput != null) {
+                    commandLine = String.format(commandLine, Calendar.getInstance().getTime(), lastInput);
+                } else {
+                    commandLine = String.format(commandLine, Calendar.getInstance().getTime());
+                }
+            } catch (IllegalFormatException e) {
+                logger.warn(
+                        "An exception occurred while formatting the command line with the current time and input values : '{}'",
+                        e.getMessage());
+                updateState(RUN, OnOffType.OFF);
+                return;
+            }
+
+            Process proc = null;
+            try {
+                if (commandLine.contains(CMD_LINE_DELIMITER)) {
+                    String[] cmdArray = commandLine.split(CMD_LINE_DELIMITER);
+                    logger.trace("The command to be executed will be '{}'", Arrays.asList(cmdArray));
+                    proc = rt.exec(cmdArray);
+                }
+                else {
+                    logger.trace("The command to be executed will be '{}'", commandLine);
+                    proc = rt.exec(commandLine.toString());
+                }
+            } catch (Exception e) {
+                logger.warn("An exception occurred while executing '{}' : '{}'",
+                        new Object[] { commandLine.toString(), e.getMessage() });
+                updateState(RUN, OnOffType.OFF);
+                updateState(OUTPUT, new StringType(e.getMessage()));
+                return;
+            }
+
+            StringBuilder outputBuilder = new StringBuilder();
+            StringBuilder errorBuilder = new StringBuilder();
+
+            try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+                    BufferedReader br = new BufferedReader(isr)) {
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    outputBuilder.append(line).append("\n");
+                    logger.debug("Exec [{}]: '{}'", "OUTPUT", line);
+                }
+                isr.close();
+            } catch (IOException e) {
+                logger.warn("An exception occurred while reading the stdout when executing '{}' : '{}'",
+                        new Object[] { commandLine.toString(), e.getMessage() });
+            }
+
+            try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
+                    BufferedReader br = new BufferedReader(isr)) {
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    errorBuilder.append(line).append("\n");
+                    logger.debug("Exec [{}]: '{}'", "ERROR", line);
+                }
+                isr.close();
+            } catch (IOException e) {
+                logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'",
+                        new Object[] { commandLine.toString(), e.getMessage() });
+            }
+
+            boolean exitVal = false;
+            try {
+                exitVal = proc.waitFor(timeOut, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                logger.warn("An exception occurred while waiting for the process ('{}') to finish : '{}'",
+                        new Object[] { commandLine.toString(), e.getMessage() });
+            }
+
+            if (!exitVal) {
+                logger.warn("Forcibly terminating the process ('{}') after a timeout of {} ms",
+                        new Object[] { commandLine.toString(), timeOut });
+                proc.destroyForcibly();
+            }
+
+            updateState(RUN, OnOffType.OFF);
+            updateState(EXIT, new DecimalType(proc.exitValue()));
+
+            outputBuilder.append(errorBuilder.toString());
+
+            String transformedResponse = StringUtils.chomp(outputBuilder.toString());
+            String transformation = (String) getConfig().get(TRANSFORM);
+
+            if (transformation != null && transformation.length() > 0) {
+                transformedResponse = transformResponse(transformedResponse, transformation);
+            }
+
+            updateState(OUTPUT, new StringType(transformedResponse));
+
+            DateTimeType stampType = new DateTimeType(ZonedDateTime.now());
+            updateState(LAST_EXECUTION, stampType);
         }
 
     };
