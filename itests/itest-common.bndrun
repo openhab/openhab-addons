@@ -16,7 +16,7 @@ Import-Package: org.osgi.framework.*;version="[1.8,2)",*
 -runsystempackages: sun.reflect
 
 -runfw: org.eclipse.osgi
--runee: JavaSE-1.8
+-runee: JavaSE-11
 
 # The integration test itself does not export anything.
 Export-Package: 
