@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.IllegalFormatException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.PatternSyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Karel Goderis - Initial contribution
- * @author Constantin Piber - Added better argument support (delimiter and pass to bash)
+ * @author Constantin Piber - Added better argument support (delimiter and pass to shell)
  */
 @NonNullByDefault
 public class ExecHandler extends BaseThingHandler {
@@ -183,33 +184,31 @@ public class ExecHandler extends BaseThingHandler {
                 String shell = "";
                 if (commandLine.contains(CMD_LINE_DELIMITER)) {
                     didSplit = true;
+                    logger.debug("Splitting by '{}'", CMD_LINE_DELIMITER);
                     try {
                         cmdArray = commandLine.split(CMD_LINE_DELIMITER);
-                    } catch (Exception e) {
+                    } catch (PatternSyntaxException e) {
                         logger.error("An exception occurred while splitting '{}' : '{}'",
-                                new Object[] { commandLine.toString(), e.getMessage() });
+                                commandLine.toString(), e.getMessage());
                         updateState(RUN, OnOffType.OFF);
                         updateState(OUTPUT, new StringType(e.getMessage()));
                         return;
                     }
                 } else {
                     // Invoke shell with 'c' option and pass string
-                    logger.debug("Sending to shell for parsing command.");
-                    if (Util.getOS() == Util.OS.WINDOWS) {
+                    logger.debug("Passing to shell for parsing command.");
+                    if (getOperatingSystemType() == OS.WINDOWS) {
                         shell = SHELL_WINDOWS;
                         cmdArray = new String[] {shell, "/c", commandLine.toString()};
-                        logger.debug("OS: WINDOWS ({})",
-                                new Object[] { Util.getOSString() });
-                    } else if (Util.getOS() != Util.OS.UNKOWN) {
+                        logger.debug("OS: WINDOWS ({})", getOperatingSystemName());
+                    } else if (getOperatingSystemType() != OS.UNKNOWN) {
                         // assume sh is present, should all be POSIX-compliant
                         shell = SHELL_NIX;
                         cmdArray = new String[] {shell, "-c", commandLine.toString()};
-                        logger.debug("OS: *NIX ({})",
-                                new Object[] { Util.getOSString() });
+                        logger.debug("OS: *NIX ({})", getOperatingSystemName());
                     } else {
                         String err = "OS not supported, please manually split commands!";
-                        logger.debug("OS: Unknown ({})",
-                                new Object[] { Util.getOSString() });
+                        logger.debug("OS: Unknown ({})", getOperatingSystemName());
                         logger.error(err);
                         updateState(RUN, OnOffType.OFF);
                         updateState(OUTPUT, new StringType(err));
@@ -227,8 +226,7 @@ public class ExecHandler extends BaseThingHandler {
                             new Object[] { Arrays.asList(cmdArray), e.getMessage() });
                     if (!didSplit) {
                         logger.info("This command has been passed to `{}` for parsing. " +
-                                "Maybe you could try manually separating arguments.",
-                                new Object[] { shell });
+                                "Maybe you could try manually separating arguments.", shell);
                     }
                     updateState(RUN, OnOffType.OFF);
                     updateState(OUTPUT, new StringType(e.getMessage()));
@@ -248,7 +246,7 @@ public class ExecHandler extends BaseThingHandler {
                     isr.close();
                 } catch (IOException e) {
                     logger.error("An exception occurred while reading the stdout when executing '{}' : '{}'",
-                            new Object[] { commandLine.toString(), e.getMessage() });
+                            commandLine.toString(), e.getMessage());
                 }
 
                 try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
@@ -261,7 +259,7 @@ public class ExecHandler extends BaseThingHandler {
                     isr.close();
                 } catch (IOException e) {
                     logger.error("An exception occurred while reading the stderr when executing '{}' : '{}'",
-                            new Object[] { commandLine.toString(), e.getMessage() });
+                            commandLine.toString(), e.getMessage());
                 }
 
                 boolean exitVal = false;
@@ -269,12 +267,12 @@ public class ExecHandler extends BaseThingHandler {
                     exitVal = proc.waitFor(timeOut, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
                     logger.error("An exception occurred while waiting for the process ('{}') to finish : '{}'",
-                            new Object[] { commandLine.toString(), e.getMessage() });
+                            commandLine.toString(), e.getMessage());
                 }
 
                 if (!exitVal) {
                     logger.warn("Forcibly termininating the process ('{}') after a timeout of {} ms",
-                            new Object[] { commandLine.toString(), timeOut });
+                            commandLine.toString(), timeOut);
                     proc.destroyForcibly();
                 }
 
@@ -353,24 +351,22 @@ public class ExecHandler extends BaseThingHandler {
         return new String[] { type, pattern };
     }
 
-}
 
 
-/**
- * Contains information about which operating system openHAB is running on.
- * Found on https://stackoverflow.com/a/31547504/7508309, slightly modified
- *
- * @author Constantin Piber (for Memin) - Initial contribution
- */
-class Util {
+    /**
+     * Contains information about which operating system openHAB is running on.
+     * Found on https://stackoverflow.com/a/31547504/7508309, slightly modified
+     *
+     * @author Constantin Piber (for Memin) - Initial contribution
+     */
     public enum OS {
-        WINDOWS, LINUX, MAC, SOLARIS, UNKOWN
-    };// Operating systems.
+        WINDOWS, LINUX, MAC, SOLARIS, UNKNOWN, NOT_SET
+    };
 
-    private static OS os = null;
+    private static OS os = OS.NOT_SET;
 
-    public static OS getOS() {
-        if (os == null) {
+    public static OS getOperatingSystemType() {
+        if (os == OS.NOT_SET) {
             String operSys = System.getProperty("os.name").toLowerCase();
             if (operSys.contains("win")) {
                 os = OS.WINDOWS;
@@ -382,13 +378,14 @@ class Util {
             } else if (operSys.contains("sunos")) {
                 os = OS.SOLARIS;
             } else {
-                os = OS.UNKOWN;
+                os = OS.UNKNOWN;
             }
         }
         return os;
     }
 
-    public static String getOSString() {
+    public static String getOperatingSystemName() {
         return System.getProperty("os.name");
     }
+
 }
