@@ -31,8 +31,8 @@ Fragment-Host: org.openhab.binding.wemo
 	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
 	org.jupnp;version='[2.5.2,2.5.3)',\
 	org.objenesis;version='[2.6.0,2.6.1)',\
-	org.openhab.binding.wemo;version='[2.5.1,2.5.2)',\
-	org.openhab.binding.wemo.tests;version='[2.5.1,2.5.2)',\
+	org.openhab.binding.wemo;version='[2.5.2,2.5.3)',\
+	org.openhab.binding.wemo.tests;version='[2.5.2,2.5.3)',\
 	org.openhab.core;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.core;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.discovery;version='[2.5.0,2.5.1)',\
