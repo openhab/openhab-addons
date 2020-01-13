@@ -61,17 +61,16 @@ public class WizColorConverter {
         int red, green, blue, white;
 
         // Since we're going to use the white lights to control saturation, recalculate what
-        // the HSBvalue would be if the color was fully saturated.
+        // the HSBvalue would be if the color was at full brightness and saturation
         DecimalType hue = hsb.getHue();
-        PercentType valueBrightness = hsb.getBrightness();
         // Create the new hue
-        HSBType fullySaturatedHue = new HSBType(hue, new PercentType(100), valueBrightness);
+        HSBType fullySaturatedHue = new HSBType(hue, new PercentType(100), new PercentType(100));
         // get the RGB from the saturated colors
         redD = fullySaturatedHue.getRed().doubleValue();
         greenD = fullySaturatedHue.getGreen().doubleValue();
         blueD = fullySaturatedHue.getBlue().doubleValue();
 
-        logger.debug("Colors from hue, assuming full saturation R: {} G: {} B: {}", redD, greenD, blueD);
+        logger.debug("Colors from hue, assuming full saturation and brightness R: {} G: {} B: {}", redD, greenD, blueD);
 
         // Convert the "PercentType" to a percent
         double saturationPercent = (hsb.getSaturation().doubleValue() / 100);

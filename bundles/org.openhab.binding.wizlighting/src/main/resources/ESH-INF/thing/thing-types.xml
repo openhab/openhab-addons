@@ -12,6 +12,9 @@
 		<channels>
 			<channel id="color" typeId="system.color" />
 			<channel id="temperature" typeId="system.color-temperature" />
+			<channel id="dimming" typeId="system.brightness" />
+			<!-- NOTE:  Keeping brightness in two places, color and brightness -->
+			<!-- NOTE:  Having it in both places allows the brighness to be changed while in color temperature mode -->
 			<channel id="lightMode" typeId="lightMode" />
 			<channel id="speed" typeId="speed" />
 			<channel id="signalstrength" typeId="system.signal-strength" />
