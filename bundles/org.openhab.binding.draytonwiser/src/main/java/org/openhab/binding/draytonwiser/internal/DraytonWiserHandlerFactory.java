@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,32 +12,26 @@
  */
 package org.openhab.binding.draytonwiser.internal;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
-import org.openhab.binding.draytonwiser.handler.ControllerHandler;
-import org.openhab.binding.draytonwiser.handler.HeatHubHandler;
-import org.openhab.binding.draytonwiser.handler.HotWaterHandler;
-import org.openhab.binding.draytonwiser.handler.RoomHandler;
-import org.openhab.binding.draytonwiser.handler.RoomStatHandler;
-import org.openhab.binding.draytonwiser.handler.SmartPlugHandler;
-import org.openhab.binding.draytonwiser.handler.TRVHandler;
-import org.openhab.binding.draytonwiser.internal.discovery.DraytonWiserDiscoveryService;
-import org.osgi.framework.ServiceRegistration;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.openhab.binding.draytonwiser.internal.handler.ControllerHandler;
+import org.openhab.binding.draytonwiser.internal.handler.HeatHubHandler;
+import org.openhab.binding.draytonwiser.internal.handler.HotWaterHandler;
+import org.openhab.binding.draytonwiser.internal.handler.RoomHandler;
+import org.openhab.binding.draytonwiser.internal.handler.RoomStatHandler;
+import org.openhab.binding.draytonwiser.internal.handler.SmartPlugHandler;
+import org.openhab.binding.draytonwiser.internal.handler.TRVHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link DraytonWiserHandlerFactory} is responsible for creating things and thing
@@ -45,63 +39,42 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Andrew Schofield - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.draytonwiser")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.draytonwiser")
 @NonNullByDefault
 public class DraytonWiserHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = DraytonWiserBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+    private final HttpClient httpClient;
 
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-
-    @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    @Activate
+    public DraytonWiserHandlerFactory(@Reference final HttpClientFactory factory) {
+        httpClient = factory.getCommonHttpClient();
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+    public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
+        return DraytonWiserBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
 
-        if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_BRIDGE)) {
-            HeatHubHandler handler = new HeatHubHandler((Bridge) thing);
-            registerApplianceDiscoveryService(handler);
-            return handler;
-        } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_ROOM)) {
+    @Override
+    protected @Nullable ThingHandler createHandler(final Thing thing) {
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+
+        if (DraytonWiserBindingConstants.THING_TYPE_BRIDGE.equals(thingTypeUID)) {
+            return new HeatHubHandler((Bridge) thing, httpClient);
+        } else if (DraytonWiserBindingConstants.THING_TYPE_ROOM.equals(thingTypeUID)) {
             return new RoomHandler(thing);
-        } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_ROOMSTAT)) {
+        } else if (DraytonWiserBindingConstants.THING_TYPE_ROOMSTAT.equals(thingTypeUID)) {
             return new RoomStatHandler(thing);
-        } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_ITRV)) {
+        } else if (DraytonWiserBindingConstants.THING_TYPE_ITRV.equals(thingTypeUID)) {
             return new TRVHandler(thing);
-        } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_CONTROLLER)) {
+        } else if (DraytonWiserBindingConstants.THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
             return new ControllerHandler(thing);
-        } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_HOTWATER)) {
+        } else if (DraytonWiserBindingConstants.THING_TYPE_HOTWATER.equals(thingTypeUID)) {
             return new HotWaterHandler(thing);
-        } else if (thingTypeUID.equals(DraytonWiserBindingConstants.THING_TYPE_SMARTPLUG)) {
+        } else if (DraytonWiserBindingConstants.THING_TYPE_SMARTPLUG.equals(thingTypeUID)) {
             return new SmartPlugHandler(thing);
         }
 
         return null;
-    }
-
-    private synchronized void registerApplianceDiscoveryService(HeatHubHandler bridgeHandler) {
-        DraytonWiserDiscoveryService discoveryService = new DraytonWiserDiscoveryService(bridgeHandler);
-        discoveryService.activate();
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof HeatHubHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                // remove discovery service, if bridge handler is removed
-                DraytonWiserDiscoveryService service = (DraytonWiserDiscoveryService) bundleContext
-                        .getService(serviceReg.getReference());
-                service.deactivate();
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            }
-        }
     }
 }

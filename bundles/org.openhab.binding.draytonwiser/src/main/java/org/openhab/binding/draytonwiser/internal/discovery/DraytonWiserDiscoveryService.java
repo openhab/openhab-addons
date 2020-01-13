@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,26 +12,30 @@
  */
 package org.openhab.binding.draytonwiser.internal.discovery;
 
-import static org.openhab.binding.draytonwiser.DraytonWiserBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
-import org.openhab.binding.draytonwiser.handler.HeatHubHandler;
-import org.openhab.binding.draytonwiser.internal.config.Device;
-import org.openhab.binding.draytonwiser.internal.config.HotWater;
-import org.openhab.binding.draytonwiser.internal.config.Room;
-import org.openhab.binding.draytonwiser.internal.config.RoomStat;
-import org.openhab.binding.draytonwiser.internal.config.SmartPlug;
-import org.openhab.binding.draytonwiser.internal.config.SmartValve;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.openhab.binding.draytonwiser.internal.DraytonWiserRefreshListener;
+import org.openhab.binding.draytonwiser.internal.handler.DraytonWiserPropertyHelper;
+import org.openhab.binding.draytonwiser.internal.handler.HeatHubHandler;
+import org.openhab.binding.draytonwiser.internal.model.DeviceDTO;
+import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
+import org.openhab.binding.draytonwiser.internal.model.HotWaterDTO;
+import org.openhab.binding.draytonwiser.internal.model.RoomDTO;
+import org.openhab.binding.draytonwiser.internal.model.RoomStatDTO;
+import org.openhab.binding.draytonwiser.internal.model.SmartPlugDTO;
+import org.openhab.binding.draytonwiser.internal.model.SmartValveDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,24 +44,20 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Schofield - Initial contribution
  */
-public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
+@NonNullByDefault
+public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
+implements DiscoveryService, ThingHandlerService, DraytonWiserRefreshListener {
+
     private final Logger logger = LoggerFactory.getLogger(DraytonWiserDiscoveryService.class);
 
-    private HeatHubHandler bridgeHandler;
+    private @Nullable HeatHubHandler bridgeHandler;
+    private @Nullable ThingUID bridgeUID;
 
-    public DraytonWiserDiscoveryService(HeatHubHandler bridgeHandler) {
+    public DraytonWiserDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 30, false);
-        this.bridgeHandler = bridgeHandler;
     }
 
     @Override
-    public Set<ThingTypeUID> getSupportedThingTypes() {
-        return SUPPORTED_THING_TYPES_UIDS;
-    }
-
-    /**
-     * Called on component activation.
-     */
     public void activate() {
         super.activate(null);
     }
@@ -69,87 +69,67 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        onControllerAdded();
-        List<Room> rooms = bridgeHandler.getRooms();
-        if(rooms != null)
-        {
-            for (Room r : rooms) {
-                onRoomAdded(r);
-            }
+        if (bridgeHandler == null) {
+            return;
         }
-        List<RoomStat> roomStats = bridgeHandler.getRoomStats();
-        if(roomStats != null)
-        {
-            for (RoomStat r : roomStats) {
-                onRoomStatAdded(r);
-            }
-        }
-        List<SmartValve> smartValves = bridgeHandler.getSmartValves();
-        if(smartValves!= null)
-        {
-            for (SmartValve v : smartValves) {
-                onSmartValveAdded(v);
-            }
-        }
-        List<HotWater> hotWater = bridgeHandler.getHotWater();
-        if (hotWater != null && hotWater.size() > 0) {
-            onHotWaterAdded();
-        }
-        List<SmartPlug> smartPlugs = bridgeHandler.getSmartPlugs();
-        if(smartPlugs != null)
-        {
-            for (SmartPlug p : smartPlugs) {
-                onSmartPlugAdded(p);
-            }
-        }
-
+        removeOlderResults(getTimestampOfLastScan());
+        bridgeHandler.setDiscoveryService(this);
     }
 
-    private void onControllerAdded() {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        Map<String, Object> properties = new HashMap<>();
-        Device device = bridgeHandler.getExtendedDeviceProperties(0);
-        if (device != null) {
-            properties.put("Device Type", device.getProductIdentifier());
-            properties.put("Firmware Version", device.getActiveFirmwareVersion());
-            properties.put("Manufacturer", device.getManufacturer());
-            properties.put("Model", device.getModelIdentifier());
+    @Override
+    public void onRefresh(final DraytonWiserDTO domainDTOProxy) {
+        logger.debug("Received data from Drayton Wise device. Parsing to discover devices.");
+        onControllerAdded(domainDTOProxy);
+        domainDTOProxy.getRooms().forEach(this::onRoomAdded);
+        domainDTOProxy.getRoomStats().forEach(r -> onRoomStatAdded(domainDTOProxy, r));
+        domainDTOProxy.getSmartValves().forEach(sv -> onSmartValveAdded(domainDTOProxy, sv));
+        domainDTOProxy.getHotWater().forEach(hw -> onHotWaterAdded(domainDTOProxy, hw));
+        domainDTOProxy.getSmartPlugs().forEach(sp -> onSmartPlugAdded(domainDTOProxy, sp));
+    }
 
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_CONTROLLER, bridgeUID, "controller"))
-                    .withProperties(properties).withBridge(bridgeUID).withLabel("Controller").build();
+    private void onControllerAdded(final DraytonWiserDTO domainDTOProxy) {
+        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(0);
+
+        if (device != null) {
+            logger.debug("Controller discovered, model: {}", device.getModelIdentifier());
+            final Map<String, Object> properties = new HashMap<>();
+
+            DraytonWiserPropertyHelper.setControllerProperties(device, properties);
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(THING_TYPE_CONTROLLER, bridgeUID, "controller")).withProperties(properties)
+                    .withBridge(bridgeUID).withLabel("Controller").build();
 
             thingDiscovered(discoveryResult);
         }
     }
 
-    private void onHotWaterAdded() {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_HOTWATER, bridgeUID, "controller"))
-                .withBridge(bridgeUID).withLabel("Hot Water").build();
+    private void onHotWaterAdded(final DraytonWiserDTO domainDTOProxy, final HotWaterDTO hotWater) {
+        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(hotWater.getId());
 
-        thingDiscovered(discoveryResult);
+        if (device != null) {
+            logger.debug("Hot Water discovered, serialnumber: {}", device.getSerialNumber());
+            final RoomDTO assignedRoom = domainDTOProxy.getRoomForDeviceId(hotWater.getId());
+            final String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(THING_TYPE_HOTWATER, bridgeUID, "hotwater")).withBridge(bridgeUID)
+                    .withLabel(assignedRoomName + " - Hot Water").withRepresentationProperty(device.getSerialNumber()).build();
+
+            thingDiscovered(discoveryResult);
+        }
     }
 
-    private void onRoomStatAdded(RoomStat r) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        Map<String, Object> properties = new HashMap<>();
-        Device device = bridgeHandler.getExtendedDeviceProperties(r.getId());
+    private void onRoomStatAdded(final DraytonWiserDTO domainDTOProxy, final RoomStatDTO roomStat) {
+        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(roomStat.getId());
+
         if (device != null) {
-            properties.put("serialNumber", device.getSerialNumber());
-            properties.put("Device Type", device.getModelIdentifier());
-            properties.put("Firmware Version", device.getActiveFirmwareVersion());
-            properties.put("Manufacturer", device.getManufacturer());
-            properties.put("Model", device.getProductModel());
-            properties.put("Serial Number", device.getSerialNumber());
+            logger.debug("Smart Value discovered, serialnumber: {}", device.getSerialNumber());
+            final Map<String, Object> properties = new HashMap<>();
 
-            Room assignedRoom = bridgeHandler.getRoomForDeviceId(r.getId());
-            String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
-
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ROOMSTAT, bridgeUID,
-                            device.getSerialNumber().toString()))
+            DraytonWiserPropertyHelper.setRoomStatProperties(device, properties);
+            final RoomDTO assignedRoom = domainDTOProxy.getRoomForDeviceId(roomStat.getId());
+            final String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(THING_TYPE_ROOMSTAT, bridgeUID, device.getSerialNumber()))
                     .withProperties(properties).withBridge(bridgeUID).withLabel(assignedRoomName + " - Thermostat")
                     .withRepresentationProperty(device.getSerialNumber()).build();
 
@@ -157,36 +137,32 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void onRoomAdded(Room r) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("name", r.getName());
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ROOM, bridgeUID,
-                        r.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))
-                .withBridge(bridgeUID).withProperties(properties).withLabel(r.getName()).build();
+    private void onRoomAdded(final RoomDTO room) {
+        final Map<String, Object> properties = new HashMap<>();
+
+        logger.debug("Room discovered: {}", room.getName());
+        properties.put("name", room.getName());
+        final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                .create(new ThingUID(THING_TYPE_ROOM, bridgeUID,
+                        room.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))
+                .withBridge(bridgeUID).withProperties(properties).withLabel(room.getName()).build();
 
         thingDiscovered(discoveryResult);
     }
 
-    private void onSmartValveAdded(SmartValve r) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        Map<String, Object> properties = new HashMap<>();
-        Device device = bridgeHandler.getExtendedDeviceProperties(r.getId());
+    private void onSmartValveAdded(final DraytonWiserDTO domainDTOProxy, final SmartValveDTO smartValve) {
+        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(smartValve.getId());
+
         if (device != null) {
-            properties.put("serialNumber", device.getSerialNumber());
-            properties.put("Device Type", device.getModelIdentifier());
-            properties.put("Firmware Version", device.getActiveFirmwareVersion());
-            properties.put("Manufacturer", device.getManufacturer());
-            properties.put("Model", device.getProductModel());
-            properties.put("Serial Number", device.getSerialNumber());
+            logger.debug("Smart Value discovered, serialnumber: {}", device.getSerialNumber());
+            final Map<String, Object> properties = new HashMap<>();
 
-            Room assignedRoom = bridgeHandler.getRoomForDeviceId(r.getId());
-            String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
+            DraytonWiserPropertyHelper.setSmartValveProperties(device, properties);
+            final RoomDTO assignedRoom = domainDTOProxy.getRoomForDeviceId(smartValve.getId());
+            final String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
 
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_ITRV, bridgeUID,
-                            device.getSerialNumber().toString()))
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(THING_TYPE_ITRV, bridgeUID, device.getSerialNumber()))
                     .withProperties(properties).withBridge(bridgeUID).withLabel(assignedRoomName + " - TRV")
                     .withRepresentationProperty(device.getSerialNumber()).build();
 
@@ -194,23 +170,18 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void onSmartPlugAdded(SmartPlug r) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        Map<String, Object> properties = new HashMap<>();
-        Device device = bridgeHandler.getExtendedDeviceProperties(r.getId());
-        if (device != null) {
-            properties.put("serialNumber", device.getSerialNumber());
-            properties.put("Device Type", device.getModelIdentifier());
-            properties.put("Firmware Version", device.getActiveFirmwareVersion());
-            properties.put("Manufacturer", device.getManufacturer());
-            properties.put("Model", device.getProductModel());
-            properties.put("Serial Number", device.getSerialNumber());
-            properties.put("plugName", r.getName());
+    private void onSmartPlugAdded(final DraytonWiserDTO domainDTOProxy, final SmartPlugDTO smartPlug) {
+        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(smartPlug.getId());
 
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_SMARTPLUG, bridgeUID,
-                            r.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))
-                    .withProperties(properties).withBridge(bridgeUID).withLabel(r.getName() + " - Smart Plug")
+        if (device != null) {
+            logger.debug("Smart Value discovered, serialnumber: {}", device.getSerialNumber());
+            final Map<String, Object> properties = new HashMap<>();
+
+            DraytonWiserPropertyHelper.setSmartPlugProperties(device, properties, smartPlug.getName());
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(THING_TYPE_SMARTPLUG, bridgeUID,
+                            smartPlug.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))
+                    .withProperties(properties).withBridge(bridgeUID).withLabel(smartPlug.getName() + " - Smart Plug")
                     .withRepresentationProperty(device.getSerialNumber()).build();
 
             thingDiscovered(discoveryResult);
@@ -219,7 +190,25 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public synchronized void stopScan() {
+        if (bridgeHandler != null) {
+            bridgeHandler.unsetDiscoveryService();
+        }
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan());
+    }
+
+    @Override
+    public void setThingHandler(@Nullable final ThingHandler handler) {
+        if (handler instanceof HeatHubHandler) {
+            bridgeHandler = (HeatHubHandler) handler;
+            bridgeUID = bridgeHandler.getThing().getUID();
+        } else {
+            bridgeHandler = null;
+            bridgeUID = null;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 }

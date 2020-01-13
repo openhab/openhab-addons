@@ -44,137 +44,137 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 
 #### Boiler Controller
 
-| Channel                        | Description                                              |
-|--------------------------------|----------------------------------------------------------|
-| `heatingOverride`              | State of the heating override button on the controller   |         
-| `heatChannel1Demand`           | Current demand level of heating channel 1                |
-| `heatChannel1DemandState`      | Is channel 1 calling the boiler for heat                 |
-| `heatChannel2Demand`           | Current demand level of heating channel 2                |
-| `heatChannel2DemandState`      | Is channel 2 calling the boiler for heat                 |
-| `currentSignalRSSI`            | Relative Signal Strength Indicator                       |
-| `currentWiserSignalStrength`   | Human readable signal strength                           |
-| `currentSignalStrength`        | Signal strength value that maps to qualityofservice icon |
+| Channel                      | Item Type            | Description                                              |
+|------------------------------|----------------------|----------------------------------------------------------|
+| `heatingOverride`            | Switch               | State of the heating override button on the controller   |
+| `heatChannel1Demand`         | Number:Dimensionless | Current demand level of heating channel 1                |
+| `heatChannel1DemandState`    | Switch               | Is channel 1 calling the boiler for heat                 |
+| `heatChannel2Demand`         | Number:Dimensionless | Current demand level of heating channel 2                |
+| `heatChannel2DemandState`    | Switch               | Is channel 2 calling the boiler for heat                 |
+| `currentSignalRSSI`          | Number               | Relative Signal Strength Indicator                       |
+| `currentWiserSignalStrength` | String               | Human readable signal strength                           |
+| `currentSignalStrength`      | Number               | Signal strength value that maps to qualityofservice icon |
 
 #### Hot Water
 
-| Channel                   | Description                                              |
-|---------------------------|----------------------------------------------------------|
-| `hotWaterOverride`        | State of the hot water override button on the controller |
-| `hotWaterDemandState`     | Is hot water calling the boiler for heat                 |
-| `hotWaterBoosted`         | Is hot water currently being boosted                     |
-| `hotWaterBoostRemaining`  | How long until the boost deactivates in minutes          |
+| Channel                  | Item Type    | Description                                              |
+|--------------------------|--------------|----------------------------------------------------------|
+| `hotWaterOverride`       | Switch       | State of the hot water override button on the controller |
+| `hotWaterDemandState`    | Switch       | Is hot water calling the boiler for heat                 |
+| `hotWaterBoosted`        | Switch       | Is hot water currently being boosted                     |
+| `hotWaterBoostRemaining` | Number       | How long until the boost deactivates in minutes          |
 
 #### Room
 
-| Channel              | Description                                                                  |
-|----------------------|------------------------------------------------------------------------------|
-| `currentTemperature` | Currently reported temperature                                               |
-| `currentHumidity`    | Currently reported humidity (if there is a room stat configured in this room |
-| `currentDemand`      | Current heat demand percentage of the room                                   |
-| `heatRequest`        | Is the room actively requesting heat from the controller                     |
-| `roomBoosted`        | Is the room currently being boosted                                          |
-| `roomBoostRemaining` | How long until the boost deactivates in minutes                              |
-| `windowState`        | Is the window open or closed?                                                |
+| Channel              | Item Type            | Description                                                                  |
+|----------------------|----------------------|------------------------------------------------------------------------------|
+| `currentTemperature` | Number:Temperature   | Currently reported temperature                                               |
+| `currentHumidity`    | Number:Humidity      | Currently reported humidity (if there is a room stat configured in this room |
+| `currentDemand`      | Number:Dimensionless | Current heat demand percentage of the room                                   |
+| `heatRequest`        | Switch               | Is the room actively requesting heat from the controller                     |
+| `roomBoosted`        | Switch               | Is the room currently being boosted                                          |
+| `roomBoostRemaining` | Number               | How long until the boost deactivates in minutes                              |
+| `windowState`        | Switch               | Is the window open or closed?                                                |
 
 #### Room Stat
 
-| Channel                        | Description                                              |
-|--------------------------------|----------------------------------------------------------|
-| `currentTemperature`           | Currently reported temperature                           |
-| `currentHumidity`              | Currently reported humidity                              |
-| `currentSetPoint`              | Currently reported set point                             |
-| `currentBatteryVoltage`        | Currently reported battery voltage                       |
-| `currentWiserBatteryLevel`     | Human readable battery level                             |
-| `currentBatteryLevel`          | Battery level in percent                                 |
-| `currentSignalRSSI`            | Relative Signal Strength Indicator                       |
-| `currentSignalLQI`             | Link Quality Indicator                                   |
-| `currentWiserSignalStrength`   | Human readable signal strength                           |
-| `currentSignalStrength`        | Signal strength value that maps to qualityofservice icon |
-| `zigbeeConnected`              | Is the roomstat joined to network                        |
+| Channel                      | Item Type                | Description                                              |
+|------------------------------|--------------------------|----------------------------------------------------------|
+| `currentTemperature`         | Number:Temperature       | Currently reported temperature                           |
+| `currentHumidity`            | Number:Humidity          | Currently reported humidity                              |
+| `currentSetPoint`            | Number:Temperature       | Currently reported set point                             |
+| `currentBatteryVoltage`      | Number:ElectricPotential | Currently reported battery voltage                       |
+| `currentWiserBatteryLevel`   | String                   | Human readable battery level                             |
+| `currentBatteryLevel`        | Number                   | Battery level in percent                                 |
+| `currentSignalRSSI`          | Number                   | Relative Signal Strength Indicator                       |
+| `currentSignalLQI`           | Number                   | Link Quality Indicator                                   |
+| `currentWiserSignalStrength` | String                   | Human readable signal strength                           |
+| `currentSignalStrength`      | Number                   | Signal strength value that maps to qualityofservice icon |
+| `zigbeeConnected`            | Switch                   | Is the roomstat joined to network                        |
 
 #### Smart TRV
 
-| Channel                        | Description                                              |
-|--------------------------------|----------------------------------------------------------|
-| `currentTemperature`           | Currently reported temperature                           |
-| `currentDemand`                | Current heat demand percentage of the TRV                |
-| `currentSetPoint`              | Currently reported set point                             |
-| `currentBatteryVoltage`        | Currently reported battery voltage                       |
-| `currentWiserBatteryLevel`     | Human readable battery level                             |
-| `currentBatteryLevel`          | Battery level in percent                                 |
-| `currentSignalRSSI`            | Relative Signal Strength Indicator                       |
-| `currentSignalLQI`             | Link Quality Indicator                                   |
-| `currentWiserSignalStrength`   | Human readable signal strength                           |
-| `currentSignalStrength`        | Signal strength value that maps to qualityofservice icon |
-| `zigbeeConnected`              | Is the TRV joined to network                             |
+| Channel                      | Item Type                | Description                                              |
+|------------------------------|--------------------------|----------------------------------------------------------|
+| `currentTemperature`         | Number:Temperature       | Currently reported temperature                           |
+| `currentDemand`              | Number:Dimensionless     | Current heat demand percentage of the TRV                |
+| `currentSetPoint`            | Number:Temperature       | Currently reported set point                             |
+| `currentBatteryVoltage`      | Number:ElectricPotential | Currently reported battery voltage                       |
+| `currentWiserBatteryLevel`   | String                   | Human readable battery level                             |
+| `currentBatteryLevel`        | Number                   | Battery level in percent                                 |
+| `currentSignalRSSI`          | Number                   | Relative Signal Strength Indicator                       |
+| `currentSignalLQI`           | Number                   | Link Quality Indicator                                   |
+| `currentWiserSignalStrength` | String                   | Human readable signal strength                           |
+| `currentSignalStrength`      | Number                   | Signal strength value that maps to qualityofservice icon |
+| `zigbeeConnected`            | Switch                   | Is the TRV joined to network                             |
 
 #### Smart Plug
 
-| Channel             | Description                        |
-|---------------------|------------------------------------|
-| `currentSignalRSSI` | Relative Signal Strength Indicator |
-| `currentSignalLQI`  | Link Quality Indicator             |
-| `zigbeeConnected`   | Is the TRV joined to network       |
+| Channel             | Item Type    | Description                        |
+|---------------------|--------------|------------------------------------|
+| `currentSignalRSSI` | Number       | Relative Signal Strength Indicator |
+| `currentSignalLQI`  | Number       | Link Quality Indicator             |
+| `zigbeeConnected`   | Switch       | Is the TRV joined to network       |
 
-### Writeable Channels
+### Command Channels
 
 #### Boiler Controller
 
-| Channel            | Description                |
-|--------------------|----------------------------|
-| `awayModeState`    | Has away mode been enabled |
-| `ecoModeState`     | Has eco mode been enabled  |
+| Channel         | Item Type    | Description                |
+|-----------------|--------------|----------------------------|
+| `awayModeState` | Switch       | Has away mode been enabled |
+| `ecoModeState`  | Switch       | Has eco mode been enabled  |
 
 #### Hot Water
 
-| Channel                 | Description                                |
-|-------------------------|--------------------------------------------|
-| `manualModeState`       | Has manual mode been enabled               |
-| `hotWaterSetPoint`      | The current hot water setpoint (on or off) |
-| `hotWaterBoostDuration` | Period in hours to boost the hot water     |
-| `masterSchedule`        | The current schedule JSON for hot water    |
+| Channel                 | Item Type    | Description                                |
+|-------------------------|--------------|--------------------------------------------|
+| `manualModeState`       | Switch       | Has manual mode been enabled               |
+| `hotWaterSetPoint`      | Switch       | The current hot water setpoint (on or off) |
+| `hotWaterBoostDuration` | Number       | Period in hours to boost the hot water     |
+| `masterSchedule`        | String       | The current schedule JSON for hot water    |
 
 #### Room
 
-| Channel                | Description                                    |
-|------------------------|------------------------------------------------|
-| `currentSetPoint`      | The current set point temperature for the room |
-| `manualModeState`      | Has manual mode been enabled                   |
-| `roomBoostDuration`    | Period in hours to boost the room temperature  |
-| `windowStateDetection` | Detect whether windows are open                |
-| `masterSchedule`       | The current schedule JSON for the room         |
+| Channel                | Item Type          | Description                                    |
+|------------------------|--------------------|------------------------------------------------|
+| `currentSetPoint`      | Number:Temperature | The current set point temperature for the room |
+| `manualModeState`      | Switch             | Has manual mode been enabled                   |
+| `roomBoostDuration`    | Number             | Period in hours to boost the room temperature  |
+| `windowStateDetection` | Switch             | Detect whether windows are open                |
+| `masterSchedule`       | String             | The current schedule JSON for the room         |
 
 #### Room Stat
 
-| Channel        | Description                      |
-|----------------|----------------------------------|
-| `deviceLocked` | Is the roomstat interface locked |
+| Channel        | Item Type    | Description                      |
+|----------------|--------------|----------------------------------|
+| `deviceLocked` | Switch       | Is the roomstat interface locked |
 
 #### Smart TRV
 
-| Channel        | Description                 |
-|----------------|-----------------------------|
-| `deviceLocked` | Are the TRV controls locked |
+| Channel        | Item Type    | Description                 |
+|----------------|--------------|-----------------------------|
+| `deviceLocked` | Switch       | Are the TRV controls locked |
 
 #### Smart Plug
 
-| Channel           | Description                                  |
-|-------------------|----------------------------------------------|
-| `plugOutputState` | The current on/off state of the smart plug   |
-| `plugAwayAction`  | Should the plug switch off when in away mode |
-| `manualModeState` | Has manual mode been enabled                 |
-| `deviceLocked`    | Are the Smart Plug controls locked           |
-| `masterSchedule`  | The current schedule JSON for the smart plug |
+| Channel           | Item Type    | Description                                  |
+|-------------------|--------------|----------------------------------------------|
+| `plugOutputState` | Switch       | The current on/off state of the smart plug   |
+| `plugAwayAction`  | Switch       | Should the plug switch off when in away mode |
+| `manualModeState` | Switch       | Has manual mode been enabled                 |
+| `deviceLocked`    | Switch       | Are the Smart Plug controls locked           |
+| `masterSchedule`  | String       | The current schedule JSON for the smart plug |
 
 When updating the `masterSchedule` state, only the schedule portion of the JSON that is returned when querying the state is required.
 The `id`, `Type`, `CurrentSetPoint`, `NextEventTime` and `NextEventSetpoint` should not be sent.
 
 #### Known string responses for specific channels:
 
-| Channel                 | Known responses                                                    |
-|-------------------------|--------------------------------------------------------------------|
-| `currentSignalStrength` | `{ "VeryGood", "Good", "Medium", "Poor", "NoSignal" }`             |
-| `currentBatteryLevel`   | `{ "Full", "Normal", "TwoThirds", "OneThird", "Low", "Critical" }` |
+| Channel                      | Known responses                                                    |
+|------------------------------|--------------------------------------------------------------------|
+| `currentWiserSignalStrength` | `{ "VeryGood", "Good", "Medium", "Poor", "NoSignal" }`             |
+| `currentWiserBatteryLevel`   | `{ "Full", "Normal", "TwoThirds", "OneThird", "Low", "Critical" }` |
 
 ## Full Example
 
