@@ -14,10 +14,6 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -39,31 +35,24 @@ public class SomfyTahomaMyfoxCameraHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaMyfoxCameraHandler(Thing thing) {
         super(thing);
-        stateNames.put(CLOUD_STATUS, "core:CloudDeviceStatusState");
+        stateNames.put(CLOUD_STATUS, CLOUD_DEVICE_STATUS_STATE);
         stateNames.put(SHUTTER, MYFOX_SHUTTER_STATUS_STATE);
     }
 
     @Override
-    public void updateThingChannels(List<SomfyTahomaState> states) {
-        Map<String, String> properties = new HashMap<>();
-        for (SomfyTahomaState state : states) {
-            getLogger().trace("processing state: {} with value: {}", state.getName(), state.getValue());
-            properties.put(state.getName(), state.getValue().toString());
-            if (MYFOX_SHUTTER_STATUS_STATE.equals(state.getName())) {
-                Channel ch = thing.getChannel(SHUTTER);
-                if (ch != null) {
-                    //we need to covert opened/closed values to ON/OFF
-                    boolean open = "opened".equals(state.getValue());
-                    updateState(ch.getUID(), open ? OnOffType.ON : OnOffType.OFF);
-                }
+    public void updateThingChannels(SomfyTahomaState state) {
+        if (MYFOX_SHUTTER_STATUS_STATE.equals(state.getName())) {
+            Channel ch = thing.getChannel(SHUTTER);
+            if (ch != null) {
+                //we need to covert opened/closed values to ON/OFF
+                boolean open = "opened".equals(state.getValue());
+                updateState(ch.getUID(), open ? OnOffType.ON : OnOffType.OFF);
             }
-            if (CLOUD_STATUS.equals(state.getName())) {
-                Channel ch = thing.getChannel(CLOUD_STATUS);
-                State newState = parseTahomaState(state);
-                updateState(ch.getUID(), newState);
-            }
+        } else if (CLOUD_DEVICE_STATUS_STATE.equals(state.getName())) {
+            Channel ch = thing.getChannel(CLOUD_STATUS);
+            State newState = parseTahomaState(ch.getAcceptedItemType(), state);
+            updateState(ch.getUID(), newState);
         }
-        updateProperties(properties);
     }
 
     @Override

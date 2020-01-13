@@ -49,31 +49,18 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
     }
 
     @Override
-    public void updateThingChannels(List<SomfyTahomaState> states) {
-        Map<String, String> properties = new HashMap<>();
-        for (SomfyTahomaState state : states) {
-            getLogger().trace("processing state: {} with value: {}", state.getName(), state.getValue());
-            properties.put(state.getName(), state.getValue().toString());
-            if (CLOSURE_OR_ROCKER_STATE.equals(state.getName())) {
-                Channel ch = thing.getChannel(CONTROL);
-                Channel chRocker = thing.getChannel(ROCKER);
-                if ("rocker".equals(state.getValue())) {
-                    if (chRocker != null) {
-                        updateState(chRocker.getUID(), OnOffType.ON);
-                    }
-                } else {
-                    if (chRocker != null) {
-                        updateState(chRocker.getUID(), OnOffType.OFF);
-                    }
-                    if (ch != null) {
-                        State newState = parseTahomaState(state);
-                        if (newState != null) {
-                            updateState(ch.getUID(), newState);
-                        }
-                    }
+    public void updateThingChannels(SomfyTahomaState state) {
+        if (CLOSURE_OR_ROCKER_STATE.equals(state.getName())) {
+            Channel ch = thing.getChannel(CONTROL);
+            Channel chRocker = thing.getChannel(ROCKER);
+            if ("rocker".equals(state.getValue())) {
+                if (chRocker != null) {
+                    updateState(chRocker.getUID(), OnOffType.ON);
                 }
-            } else if (SLATE_ORIENTATION_STATE.equals(state.getName())) {
-                Channel ch = thing.getChannel(ORIENTATION);
+            } else {
+                if (chRocker != null) {
+                    updateState(chRocker.getUID(), OnOffType.OFF);
+                }
                 if (ch != null) {
                     State newState = parseTahomaState(state);
                     if (newState != null) {
@@ -81,8 +68,13 @@ public class SomfyTahomaAdjustableSlatsRollerShutterHandler extends SomfyTahomaB
                     }
                 }
             }
+        } else if (SLATE_ORIENTATION_STATE.equals(state.getName())) {
+            Channel ch = thing.getChannel(ORIENTATION);
+            if (ch != null) {
+                State newState = parseTahomaState(state);
+                updateState(ch.getUID(), newState);
+            }
         }
-        updateProperties(properties);
     }
 
     @Override

@@ -153,7 +153,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         return parseTahomaState(null, state);
     }
 
-    private @Nullable State parseTahomaState(@Nullable String acceptedState, @Nullable SomfyTahomaState state) {
+    protected @Nullable State parseTahomaState(@Nullable String acceptedState, @Nullable SomfyTahomaState state) {
         if (state == null) {
             return UnDefType.NULL;
         }
@@ -198,6 +198,13 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private State parseStringState(String value) {
+        if (value.endsWith("%")) {
+            // convert "100%" to 100 decimal
+            String val = value.replace("%", "");
+            logger.trace("converting: {} to value: {}", value, val);
+            Double valDec = Double.parseDouble(val);
+            return new DecimalType(valDec);
+        }
         switch (value.toLowerCase()) {
             case "on":
             case "true":
@@ -259,20 +266,22 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         for (SomfyTahomaState state : states) {
             logger.trace("processing state: {} with value: {}", state.getName(), state.getValue());
             properties.put(state.getName(), state.getValue().toString());
-            for (HashMap.Entry<String, String> entry : stateNames.entrySet()) {
-                if (entry.getValue().equals(state.getName())) {
-                    // get channel and update it if linked
-                    Channel ch = thing.getChannel(entry.getKey());
-                    if (ch != null && isChannelLinked(ch)) {
-                        logger.trace("updating channel: {} with value: {}", entry.getKey(), state.getValue());
-                        State newState = parseTahomaState(ch.getAcceptedItemType(), state);
-                        if (newState != null) {
-                            updateState(ch.getUID(), newState);
-                        }
-                    }
+            updateThingChannels(state);
+        }
+        updateProperties(properties);
+    }
+
+    public void updateThingChannels(SomfyTahomaState state) {
+        for (HashMap.Entry<String, String> entry : stateNames.entrySet()) {
+            if (entry.getValue().equals(state.getName()) ) {
+                //get channel and update it if linked
+                Channel ch = thing.getChannel(entry.getKey());
+                if (ch != null && isChannelLinked(ch)) {
+                    logger.trace("updating channel: {} with value: {}", entry.getKey(), state.getValue());
+                    State newState = parseTahomaState(ch.getAcceptedItemType(), state);
+                    updateState(ch.getUID(), newState);
                 }
             }
         }
-        updateProperties(properties);
     }
 }

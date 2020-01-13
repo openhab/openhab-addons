@@ -110,7 +110,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaWaterSensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_HUMIDITYSENSOR)) {
             return new SomfyTahomaHumiditySensorHandler(thing);
-        }else if (thingTypeUID.equals(THING_TYPE_WINDOW)) {
+        } else if (thingTypeUID.equals(THING_TYPE_WINDOW)) {
             return new SomfyTahomaWindowHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_INTERNAL_ALARM)) {
             return new SomfyTahomaInternalAlarmHandler(thing);
@@ -146,7 +146,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaMyfoxCameraHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_MYFOX_ALARM)) {
             return new SomfyTahomaMyfoxAlarmHandler(thing);
-        }else {
+        } else {
             return null;
         }
     }

@@ -177,6 +177,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 deviceDiscovered(device, THING_TYPE_LIGHTSENSOR);
                 break;
             case THING_OCCUPANCY_SENSOR:
+                // widget: OccupancySensor
                 deviceDiscovered(device, THING_TYPE_OCCUPANCYSENSOR);
                 break;
             case THING_ON_OFF:
@@ -192,6 +193,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                     deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER_UNO);
                 } else {
                     // widget: PositionableRollerShutter
+                    // widget: PositionableTiltedRollerShutter
                     deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER);
                 }
                 break;
@@ -214,7 +216,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 if (device.getDeviceURL().startsWith("internal:")) {
                     // widget: TSKAlarmController
                     deviceDiscovered(device, THING_TYPE_INTERNAL_ALARM);
-                } else if ("MyFoxAlarmController".equals(device.getWidgetName())) {
+                } else if ("MyFoxAlarmController".equals(device.getWidget())) {
                     // widget: MyFoxAlarmController
                     deviceDiscovered(device, THING_TYPE_MYFOX_ALARM);
                 } else {
@@ -282,6 +284,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 break;
             case THING_PROTOCOL_GATEWAY:
             case THING_REMOTE_CONTROLLER:
+                // widget: AlarmRemoteController
             case THING_NETWORK_COMPONENT:
                 break;
             default:
@@ -295,7 +298,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
     private void logUnsupportedDevice(SomfyTahomaDevice device) {
         if (!isStateLess(device)) {
-            logger.info("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(), device.getWidgetName());
+            logger.info("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(), device.getWidget());
             logger.info("If you want to add the support, please create a new issue and attach the information below");
             logger.info("Device definition:\n{}", device.getDefinition());
 

@@ -33,7 +33,7 @@ public class SomfyTahomaMyfoxAlarmHandler extends SomfyTahomaBaseThingHandler {
         super(thing);
         stateNames.put(ALARM_STATE, "myfox:AlarmStatusState");
         stateNames.put(INTRUSION_STATE, "core:IntrusionState");
-        stateNames.put(CLOUD_STATUS, "core:CloudDeviceStatusState");
+        stateNames.put(CLOUD_STATUS, CLOUD_DEVICE_STATUS_STATE);
     }
 
     @Override
