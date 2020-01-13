@@ -1,5 +1,32 @@
 # For Developers
 
+## Debugging an addon
+
+Please follow IDE setup guide at https://www.openhab.org/docs/developer/ide/eclipse.html.
+
+When configuring dependencies in `openhab-distro/launch/app/pom.xml`, add all dependencies, including the transitive dependencies:
+
+```xml
+<dependency>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.binding.modbus</artifactId>
+    <version>${project.version}</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.io.transport.modbus</artifactId>
+    <version>${project.version}</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>org.openhab.osgiify</groupId>
+    <artifactId>net.wimpi.jamod</artifactId>
+    <version>1.2.3.OH</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
 ## Testing Serial Implementation
 
 You can use test serial slaves without any hardware on Linux using these steps:
