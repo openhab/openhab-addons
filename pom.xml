@@ -13,7 +13,7 @@
 
   <packaging>pom</packaging>
 
-  <name>openHAB 2 Add-ons</name>
+  <name>openHAB Add-ons</name>
   <description>This project contains the official add-ons of openHAB</description>
 
   <organization>
