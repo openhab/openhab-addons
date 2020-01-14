@@ -16,7 +16,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
@@ -52,6 +54,9 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
+    private final ReentrantLock inactiveCleanupJobLock = new ReentrantLock();
+    private volatile ScheduledFuture<?> inactiveCleanupJob;
+
     /**
      * Constructor
      *
@@ -84,16 +89,18 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      *
      * This method should always be called directly after creating a new object instance.
      */
-    public synchronized void initialize() {
+    public void initialize() {
         scheduler.submit(() -> {
-            if (this.device == null) {
-                tinyb.BluetoothDevice tinybDevice = findTinybDevice(address.toString());
-                if (tinybDevice != null) {
-                    device = tinybDevice;
+            synchronized (BlueZBluetoothDevice.this) {
+                if (this.device == null) {
+                    tinyb.BluetoothDevice tinybDevice = findTinybDevice(address.toString());
+                    if (tinybDevice != null) {
+                        device = tinybDevice;
+                        enableNotifications();
+                    }
+                } else {
                     enableNotifications();
                 }
-            } else {
-                enableNotifications();
             }
         });
     }
@@ -133,12 +140,14 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     private void enableNotifications() {
         logger.debug("Enabling notifications for device '{}'", device.getAddress());
         device.enableRSSINotifications(n -> {
+            onActivity();
             rssi = (int) n;
             BluetoothScanNotification notification = new BluetoothScanNotification();
             notification.setRssi(n);
             notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
         });
         device.enableManufacturerDataNotifications(n -> {
+            onActivity();
             for (Map.Entry<Short, byte[]> entry : n.entrySet()) {
                 BluetoothScanNotification notification = new BluetoothScanNotification();
                 byte[] data = new byte[entry.getValue().length + 2];
@@ -390,10 +399,49 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         return null;
     }
 
+    private void cancelInactiveCleanupJob() {
+        try {
+            inactiveCleanupJobLock.lock();
+            if (inactiveCleanupJob != null) {
+                inactiveCleanupJob.cancel(true);
+                inactiveCleanupJob = null;
+            }
+        } finally {
+            inactiveCleanupJobLock.unlock();
+        }
+    }
+
+    private void onActivity() {
+        logger.trace("device scanned: {}", device.getAddress());
+        try {
+            inactiveCleanupJobLock.lock();
+            cancelInactiveCleanupJob();
+            inactiveCleanupJob = scheduler.schedule(() -> {
+                synchronized (BlueZBluetoothDevice.this) {
+                    if (device != null) {
+                        logger.debug("Removing device '{}' due to inactivity", device.getAddress());
+                        try {
+                            disableNotifications();
+                            device.remove();
+                        } catch (tinyb.BluetoothException ex) {
+                            // this happens when the underlying device has already been removed
+                            // but we don't have a way to check if that is the case beforehand so
+                            // we will just eat the error here.
+                        }
+                        device = null;
+                    }
+                }
+            }, 10, TimeUnit.MINUTES);
+        } finally {
+            inactiveCleanupJobLock.unlock();
+        }
+    }
+
     /**
      * Clean up and release memory.
      */
     public void dispose() {
+        cancelInactiveCleanupJob();
         disableNotifications();
     }
 }
