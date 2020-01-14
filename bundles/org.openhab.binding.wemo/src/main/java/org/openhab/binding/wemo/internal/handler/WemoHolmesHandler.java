@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -257,7 +257,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                 wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
             }
         } catch (Exception e) {
-            logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(), e);
+            logger.error("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         updateStatus(ThingStatus.ONLINE);
@@ -553,7 +553,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e);
+            logger.error("Failed to get actual state for device '{}':", getThing().getUID(), e);
         }
     }
 
