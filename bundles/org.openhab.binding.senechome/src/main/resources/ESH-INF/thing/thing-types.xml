@@ -17,7 +17,7 @@
 			<channel id="energyProduction" typeId="energyProduction" />
 			<channel id="batteryPower" typeId="batteryPower" />
 			<channel id="batteryFuelCharge" typeId="batteryFuelCharge" />
-			<channel id="batteryState" typeId="batteryState" />
+			<channel id="batteryState" typeId="battery-level" />
 			<channel id="gridPower" typeId="gridPower" />
 			<channel id="gridPowerSupply" typeId="gridPowerSupply" />
 			<channel id="gridPowerDraw" typeId="gridPowerDraw" />
