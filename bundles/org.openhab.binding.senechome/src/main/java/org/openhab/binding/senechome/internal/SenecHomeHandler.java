@@ -165,7 +165,7 @@ public class SenecHomeHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
-            logger.info("Error refreshing source '{}'", getThing().getUID(), e);
+            logger.warn("Error refreshing source '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to Senec web interface:" + e.getMessage());
         }
