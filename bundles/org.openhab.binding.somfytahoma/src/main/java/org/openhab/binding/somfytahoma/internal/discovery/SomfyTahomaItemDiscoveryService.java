@@ -55,7 +55,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     private @Nullable ScheduledFuture<?> discoveryJob;
 
     private static final int DISCOVERY_TIMEOUT_SEC = 10;
-    private static final int DISCOVERY_REFRESH_SEC = 1800;
+    private static final int DISCOVERY_REFRESH_SEC = 3600;
 
     public SomfyTahomaItemDiscoveryService(SomfyTahomaBridgeHandler bridgeHandler) {
         super(DISCOVERY_TIMEOUT_SEC);

@@ -232,8 +232,10 @@ public class SomfyTahomaBindingConstants {
     // Constants
     public static final String TAHOMA_API_URL = "https://www.tahomalink.com/enduser-mobile-web/enduserAPI/";
     public static final String TAHOMA_EVENTS_URL = TAHOMA_API_URL + "events/";
-    public static final String SETUP_URL = TAHOMA_API_URL + "setup/gateways/";
-    public static final String REFRESH_URL = TAHOMA_API_URL + "setup/devices/states/refresh";
+    public static final String SETUP_URL = TAHOMA_API_URL + "setup/";
+    public static final String GATEWAYS_URL = SETUP_URL + "gateways/";
+    public static final String DEVICES_URL = SETUP_URL + "devices/";
+    public static final String REFRESH_URL = DEVICES_URL + "states/refresh";
     public static final String EXEC_URL = TAHOMA_API_URL + "exec/";
     public static final String DELETE_URL = EXEC_URL + "current/setup/";
     public static final String TAHOMA_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
@@ -247,6 +249,7 @@ public class SomfyTahomaBindingConstants {
     public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
     public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
     public static final int SUSPEND_TIME = 120;
+    public static final int RECONCILIATION_TIME = 600;
 
     // Commands
     public static final String COMMAND_MY = "my";

@@ -137,7 +137,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
         reconciliationFuture = scheduler.scheduleWithFixedDelay(() -> {
             enableReconciliation();
-        }, 300, 600, TimeUnit.SECONDS);
+        }, RECONCILIATION_TIME, RECONCILIATION_TIME, TimeUnit.SECONDS);
     }
 
     public synchronized void login() {
@@ -181,7 +181,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                     eventsId = id;
                     logger.debug("Events id: {}", eventsId);
                     updateStatus(ThingStatus.ONLINE);
-                    updateThings();
                 } else {
                     logger.debug("Events id error: {}", id);
                 }
@@ -409,6 +408,34 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         return null;
     }
 
+    public @Nullable List<SomfyTahomaDevice> getDevices() {
+        String url;
+        String line = "";
+
+        try {
+            url = SETUP_URL + "devices";
+            line = sendGetToTahomaWithCookie(url);
+            return Arrays.asList(gson.fromJson(line, SomfyTahomaDevice[].class));
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received data: {} is not JSON", line, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
+        } catch (ExecutionException e) {
+            if (isAuthenticationChallenge(e)) {
+                reLogin();
+            } else {
+                logger.debug("Cannot send get devices command!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
+            logger.debug("Cannot send get devices command!", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        return null;
+    }
+
     private void getTahomaUpdates() {
         logger.debug("Getting Tahoma Updates...");
         if (ThingStatus.OFFLINE == thing.getStatus() && !reLogin()) {
@@ -450,16 +477,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         boolean needsUpdate = reconciliation;
 
         for (Thing th : getThing().getThings()) {
-            //update gateway status
-            if (THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
-                SomfyTahomaGatewayHandler gatewayHandler = (SomfyTahomaGatewayHandler) th.getHandler();
-                if (gatewayHandler != null) {
-                    gatewayHandler.updateStatus();
-                }
-            } else {
-                if (ThingStatus.ONLINE != th.getStatus()) {
-                    needsUpdate = true;
-                }
+            if (ThingStatus.ONLINE != th.getStatus()) {
+                needsUpdate = true;
             }
         }
 
@@ -512,7 +531,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             if (THING_TYPE_GATEWAY.equals(th.getThingTypeUID())) {
                 SomfyTahomaGatewayHandler gatewayHandler = (SomfyTahomaGatewayHandler) th.getHandler();
                 if (gatewayHandler.getGateWayId().equals(event.getGatewayId())) {
-                    gatewayHandler.updateStatus();
+                    gatewayHandler.refresh(STATUS);
                 }
             }
         }
@@ -520,21 +539,29 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private synchronized void updateAllStates() {
         logger.debug("Updating all states");
-        SomfyTahomaSetup setup = getSetup();
-        if (setup != null) {
-            for (SomfyTahomaDevice device : setup.getDevices()) {
-                String url = device.getDeviceURL();
-                List<SomfyTahomaState> states = device.getStates();
-                Thing th = getThingByDeviceUrl(url);
-                if (th == null) {
-                    continue;
-                }
-                SomfyTahomaBaseThingHandler handler = (SomfyTahomaBaseThingHandler) th.getHandler();
-                if (handler != null) {
-                    handler.updateThingStatus(states);
-                    handler.updateThingChannels(states);
-                }
+        List<SomfyTahomaDevice> devices = getDevices();
+        if (devices != null) {
+            for (SomfyTahomaDevice device : devices) {
+                updateDevice(device);
             }
+        }
+    }
+
+    private void updateDevice(SomfyTahomaDevice device) {
+        String url = device.getDeviceURL();
+        List<SomfyTahomaState> states = device.getStates();
+        updateDevice(url, states);
+    }
+
+    private void updateDevice(String url, List<SomfyTahomaState> states) {
+        Thing th = getThingByDeviceUrl(url);
+        if (th == null) {
+            return;
+        }
+        SomfyTahomaBaseThingHandler handler = (SomfyTahomaBaseThingHandler) th.getHandler();
+        if (handler != null) {
+            handler.updateThingStatus(states);
+            handler.updateThingChannels(states);
         }
     }
 
@@ -570,7 +597,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         }
 
         //force Tahoma to ask for actual states
-        refreshDeviceStates();
+        forceGatewaySync();
     }
 
     private @Nullable Thing getThingByDeviceUrl(String deviceUrl) {
@@ -804,18 +831,18 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         return null;
     }
 
-    public void refreshDeviceStates() {
+    public void forceGatewaySync() {
         try {
             sendPutToTahomaWithCookie(REFRESH_URL);
         } catch (ExecutionException e) {
             if (isAuthenticationChallenge(e)) {
                 reLogin();
             } else {
-                logger.debug("Cannot refresh device states!", e);
+                logger.debug("Cannot sync gateway!", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (InterruptedException | TimeoutException e) {
-            logger.debug("Cannot refresh device states!", e);
+            logger.debug("Cannot sync gateway!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
@@ -826,7 +853,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     public SomfyTahomaStatus getTahomaStatus(String gatewayId) {
         String line = "";
         try {
-            String url = SETUP_URL + gatewayId;
+            String url = GATEWAYS_URL + gatewayId;
             line = sendGetToTahomaWithCookie(url);
             SomfyTahomaStatusResponse data = gson.fromJson(line, SomfyTahomaStatusResponse.class);
             logger.debug("Tahoma status: {}", data.getConnectivity().getStatus());
@@ -865,6 +892,32 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         }
         if (configurationParameters.containsKey("password")) {
             thingConfig.setPassword(configurationParameters.get("password").toString());
+        }
+    }
+
+    public synchronized void refresh(String url, String stateName) {
+        try {
+            String line = sendGetToTahomaWithCookie(DEVICES_URL + urlEncode(url) + "/states/" + stateName);
+            SomfyTahomaState state = gson.fromJson(line, SomfyTahomaState.class);
+            if (StringUtils.isNotEmpty(state.getName())) {
+                updateDevice(url, Arrays.asList(state));
+            }
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("Unsupported encoding!", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        } catch (ExecutionException e) {
+            if (isAuthenticationChallenge(e)) {
+                reLogin();
+            } else {
+                logger.debug("Cannot refresh device states!", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        } catch (InterruptedException | TimeoutException e) {
+            logger.debug("Cannot refresh device states!", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }

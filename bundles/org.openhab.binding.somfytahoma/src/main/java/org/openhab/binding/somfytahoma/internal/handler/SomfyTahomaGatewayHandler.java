@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
 
 /**
@@ -39,9 +40,7 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void initialize() {
-        if (getBridge().getStatus() == ThingStatus.ONLINE) {
-            updateStatus();
-        }
+        super.initialize();
     }
 
     @Override
@@ -49,11 +48,12 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
         super.handleCommand(channelUID, command);
     }
 
-    public void updateStatus() {
+    @Override
+    public void refresh(String channel) {
         String id = getGateWayId();
         SomfyTahomaStatus status = getTahomaStatus(id);
         String tahomaStatus = status.getStatus();
-        Channel ch = thing.getChannel(STATUS);
+        Channel ch = thing.getChannel(channel);
         if (ch != null) {
             updateState(ch.getUID(), new StringType(tahomaStatus));
         }

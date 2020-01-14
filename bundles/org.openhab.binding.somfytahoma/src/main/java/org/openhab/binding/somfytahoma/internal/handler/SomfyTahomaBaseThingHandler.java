@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
@@ -61,11 +62,15 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
+        if (RefreshType.REFRESH.equals(command)) {
+            refresh(channelUID.getId());
+        }
     }
 
     public Logger getLogger() {
@@ -108,6 +113,12 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     protected void sendCommand(String cmd, String param) {
         if (getBridgeHandler() != null) {
             getBridgeHandler().sendCommand(getURL(), cmd, param);
+        }
+    }
+
+    protected void refresh(String channel) {
+        if (getBridgeHandler() != null && stateNames.containsKey(channel)) {
+            getBridgeHandler().refresh(getURL(), stateNames.get(channel));
         }
     }
 
@@ -277,7 +288,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                 //get channel and update it if linked
                 Channel ch = thing.getChannel(entry.getKey());
                 if (ch != null && isChannelLinked(ch)) {
-                    logger.trace("updating channel: {} with value: {}", entry.getKey(), state.getValue());
+                    logger.debug("updating channel: {} with value: {}", entry.getKey(), state.getValue());
                     State newState = parseTahomaState(ch.getAcceptedItemType(), state);
                     updateState(ch.getUID(), newState);
                 }
