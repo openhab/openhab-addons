@@ -56,7 +56,7 @@ public class NumberValue extends Value {
                 .collect(Collectors.toList()));
         this.min = min;
         this.max = max;
-        this.step = step == null ? BigDecimal.ONE : step;
+        this.step = step == null ? new BigDecimal(1.0) : step;
         this.unit = unit == null ? "" : unit;
     }
 
@@ -71,6 +71,20 @@ public class NumberValue extends Value {
         }
 
         return true;
+    }
+
+    @Override
+    public String getMQTTpublishValue(@Nullable String pattern) {
+        if (state == UnDefType.UNDEF) {
+            return "";
+        }
+
+        String formatPattern = pattern;
+        if (formatPattern == null || "%s".equals(formatPattern)) {
+            formatPattern = "%f";
+        }
+
+        return state.format(formatPattern);
     }
 
     @Override
