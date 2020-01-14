@@ -22,7 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link RunningDTO} contains information indicating what equipment
  * is running.
  *
- * @author Mark Hilbush - Initial contribution
+ * @author John Cocula - Initial contribution
+ * @author Mark Hilbush - Adapt for OH2/3
  */
 @NonNullByDefault
 public class RunningDTO {

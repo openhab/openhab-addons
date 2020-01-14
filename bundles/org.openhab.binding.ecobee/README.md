@@ -87,277 +87,277 @@ The following configuration parameters are available on the Ecobee Remote Sensor
 
 The following channels are available on the Ecobee Thermostat.
 
-| Channel              | Group            | Type                  | Description  |
-|----------------------|------------------|-----------------------|--------------|
-| identifier | info | String | Identifier |
-| name | info | String | Name |
-| thermostatRev | info | String | Thermostat Rev |
-| isRegistered | info | Switch | Is Registered |
-| modelNumber | info | String | Model Number |
-| brand | info | String | Brand |
-| features | info | String | Features |
-| lastModified | info | DateTime | Last Modified |
-| thermostatTime | info | DateTime | Thermostat Time |
-| equipmentStatus | equipmentStatus | String | Equipment Status |
-| runtimeRev | runtime | String | Runtime Rev |
-| connected | runtime | Switch | Connected |
-| firstConnected | runtime | DateTime | First Connected |
-| connectDateTime | runtime | DateTime | Connected Date Time |
-| disconnectDateTime | runtime | DateTime | Disconnected Date Timee |
-| lastModified | runtime | DateTime | Last Modified |
-| lastStatusModified | runtime | DateTime | Last Status Modified |
-| runtimeDate | runtime | String | Runtime Date |
-| runtimeInterval | runtime | Number | Runtime Interval |
-| actualTemperature | runtime | Number:Temperature | Actual Temperature |
-| actualHumidity | runtime | Number:Dimensionless | Actual Humidity |
-| rawTemperature | runtime | Number:Temperature | Raw Temperature |
-| showIconMode | runtime | Number | Show Icon Mode |
-| desiredHeat | runtime | Number:Temperature | Desired Heat |
-| desiredCool | runtime | Number:Temperature | Desired Cool |
-| desiredHumidity | runtime | Number:Dimensionless | Desired Humidity |
-| desiredDehumidity | runtime | Number:Dimensionless | Desired Dehumidity |
-| desiredFanMode | runtime | String | Desired Fan Mode |
-| desiredHeatRangeLow | runtime | Number:Temperature | Desired Heat Range Low |
-| desiredHeatRangeHigh | runtime | Number:Temperature | Desired Heat Range High |
-| desiredCoolRangeLow | runtime | Number:Temperature | Desired Cool Range Low |
-| desiredCoolRangeHigh | runtime | Number:Temperature | Desired Cool Range High |
-| hvacMode | settings | String | HVAC Mode |
-| lastServiceDate | settings | String | Last Service Date |
-| serviceRemindMe | settings | Switch | Service Remind Me |
-| monthsBetweenService | settings | Number | Months Between Service |
-| remindMeDate | settings | String | Remind Me Date |
-| vent | settings | String | Vent |
-| ventilatorMinOnTime | settings | Number | Ventilator Min On Time |
-| serviceRemindTechnician | settings | Switch | Service Remind Technician |
-| eiLocation | settings | String | EI Location |
-| coldTempAlert | settings | Number:Temperature | Cold Temp Alert |
-| coldTempAlertEnabled | settings | Switch | Cold Temp Alert Enabled |
-| hotTempAlert | settings | Number:Temperature | Hot Temp Alert |
-| hotTempAlertEnabled | settings | Switch | Hot Temp Alert Enabled |
-| coolStages | settings | Number | Cool Stages |
-| heatStages | settings | Number | Heat Stages |
-| maxSetBack | settings | Number | Max Set Back |
-| maxSetForward | settings | Number | Max Set Forward |
-| quickSaveSetBack | settings | Number | Quick Save Set Back |
-| quickSaveSetForward | settings | Number | Quick Save Set Forward |
-| hasHeatPump | settings | Switch | Has Heat Pump |
-| hasForcedAir | settings | Switch | Has Forced Air |
-| hasBoiler | settings | Switch | Has Boiler |
-| hasHumidifier | settings | Switch | Has Humidifier |
-| hasErv | settings | Switch | Has ERV |
-| hasHrv | settings | Switch | Has HRV |
-| condensationAvoid | settings | Switch | Condensation Avoid |
-| useCelsius | settings | Switch | Use Celsius |
-| useTimeFormat12 | settings | Switch | Use Time Format 12 |
-| locale | settings | String | Locale |
-| humidity | settings | String | Humidity |
-| humidifierMode | settings | String | Humidifier Mode |
-| backlightOnIntensity | settings | Number | Backlight On Intensity |
-| backlightSleepIntensity | settings | Number | Backlight Sleep Intensity |
-| backlightOffTime | settings | Number | Backlight Off Time |
-| soundTickVolume | settings | Number | Sound Tick Volume |
-| soundAlertVolume | settings | Number | Sound Alert Volume |
-| compressorProtectionMinTime | settings | Number | Compressor Protection Min Time |
-| compressorProtectionMinTemp | settings | Number:Temperature | Compressor Protection Min Temp |
-| stage1HeatingDifferentialTemp | settings | Number | Stage 1 Heating Differential Temp |
-| stage1CoolingDifferentialTemp | settings | Number | Stage 1 Cooling Differential Temp |
-| stage1HeatingDissipationTime | settings | Number | Stage 1 Heating Dissipation Time |
-| stage1CoolingDissipationTime | settings | Number | Stage 1 Cooling Dissipation Time |
-| heatPumpReversalOnCool | settings | Switch | Heat Pump Reversal On Cool |
-| fanControlRequired | settings | Switch | Fan Control Required |
-| fanMinOnTime | settings | Number | Fan Min On Time |
-| heatCoolMinDelta | settings | Number | Heat Cool Min Delta |
-| tempCorrection | settings | Number | Temp Correction |
-| holdAction | settings | String | Hold Action |
-| heatPumpGroundWater | settings | Switch | Heat Pump Ground Water |
-| hasElectric | settings | Switch | Has Electric |
-| hasDehumidifier | settings | Switch | Has Dehumidifier |
-| dehumidifierMode | settings | String | Dehumidifier Mode |
-| dehumidifierLevel | settings | Number | Dehumidifier Level |
-| dehumidifyWithAC | settings | Switch | Dehumidify With AC |
-| dehumidifyOvercoolOffset | settings | Number | Dehumidify Overcool Effect |
-| autoHeatCoolFeatureEnabled | settings | Switch | Auto Heat Cool Feature Enabled |
-| wifiOfflineAlert | settings | Switch | WiFi Offline Alert |
-| heatMinTemp | settings | Number:Temperature | Heat Min Temp |
-| heatMaxTemp | settings | Number:Temperature | Heat Max Temp |
-| coolMinTemp | settings | Number:Temperature | Cool Min Temp |
-| coolMaxTemp | settings | Number:Temperature | Cool Max Temp |
-| heatRangeHigh | settings | Number:Temperature | Heat Range High |
-| heatRangeLow | settings | Number:Temperature | Heat Range Low |
-| coolRangeHigh | settings | Number:Temperature | Cool Range High |
-| coolRangeLow | settings | Number:Temperature | Cool Range Low |
-| userAccessCode | settings | String | User Access Code |
-| userAccessSetting | settings | Number | User Access Settings |
-| auxRuntimeAlert | settings | Number | Aux Runtime Alert |
-| auxOutdoorTempAlert | settings | Number:Temperature | Aux Outdoor Temp Alert |
-| auxMaxOutdoorTemp | settings | Number:Temperature | Aux Max Outdoor Temp |
-| auxRuntimeAlertNotify | settings | Switch | Aux Runtime Alert Notify |
-| auxOutdoorTempAlertNotify | settings | Switch | Aux Outdoor Temp Alert Notify |
-| auxRuntimeAlertNotifyTechnician | settings | Switch | Aux Runtime Alert Notify Technician |
-| auxOutdoorTempAlertNotifyTechnician | settings | Switch | Aux Outdoor Temp Alert Notify Technician |
-| disablePreHeating | settings | Switch | Disable Pre Heating |
-| disablePreCooling | settings | Switch | Disable Pre Cooling |
-| installerCodeRequired | settings | Switch | Installer Code Required |
-| drAccept | settings | String | DR Accept |
-| isRentalProperty | settings | Switch | Is Rental Property |
-| useZoneController | settings | Switch | Use Zone Controller |
-| randomStartDelayCool | settings | Number | Random Start Delay Cool |
-| randomStartDelayHeat | settings | Number | Random Start Delay Heat |
-| humidityHighAlert | settings | Number:Dimensionless | Humidity High Alert |
-| humidityLowAlert | settings | Number:Dimensionless | Humidity Low Alert |
-| disableHeatPumpAlerts | settings | Switch | Disable Heat Pump Alerts |
-| disableAlertsOnIdt | settings | Switch | Disable Alerts On IDT |
-| humidityAlertNotify | settings | Switch | Humidity Alert Notify |
-| humidityAlertNotifyTechnician | settings | Switch | Humidity Alert Notify Technician |
-| tempAlertNotify | settings | Switch | Temp Alert Notify |
-| tempAlertNotifyTechnician | settings | Switch | Temp Alert Notify Technician |
-| monthlyElectricityBillLimit | settings | Number | Monthly Electricity Bill Limit |
-| enableElectricityBillAlert | settings | Switch | Enable Electricity Bill Alert |
-| enableProjectedElectricityBillAlert | settings | Switch | Enable Projected Electricity Bill Alert |
-| electricityBillingDayOfMonth | settings | Number | Electricity Billing Day Of Month |
-| electricityBillCycleMonths | settings | Number | Electricity Bill Cycle Months |
-| electricityBillStartMonth | settings | Number | Electricity Bill Start Month |
-| ventilatorMinOnTimeHome | settings | Number | Ventilator Min On Time Home |
-| ventilatorMinOnTimeAway | settings | Number | Ventilator Min On Time Away |
-| backlightOffDuringSleep | settings | Switch | Backlight Off During Sleep |
-| autoAway | settings | Switch | Auto Away |
-| smartCirculation | settings | Switch | Smart Circulation |
-| followMeComfort | settings | Switch | Follow Me Comfort |
-| ventilatorType | settings | String | Ventilator Type |
-| isVentilatorTimerOn | settings | Switch | Is Ventilator Timer On |
-| ventilatorOffDateTime | settings | String | Ventilator Off Date Time |
-| hasUVFilter | settings | Switch | Has UV Filter |
-| coolingLockout | settings | Switch | Cooling Lockout |
-| ventilatorFreeCooling | settings | Switch | Ventilator Free Cooling |
-| dehumidifyWhenHeating | settings | Switch | Dehumidify When Heating |
-| ventilatorDehumidify | settings | Switch | Ventilator Dehumidify |
-| groupRef | settings | String | Group Ref |
-| groupName | settings | String | Group Name |
-| groupSetting | settings | Number | Group Setting |
-| acknowledgeRef | alerts | String | Acknowledge Ref |
-| date | alerts | String | Date |
-| time | alerts | String | Time |
-| severity | alerts | String | Severity |
-| text | alerts | String | Text |
-| number | alerts | Number | Number |
-| type | alerts | String | Type |
-| isOperatorAlert | alerts | Switch | Is Operator Alert |
-| reminder | alerts | String | Reminder |
-| showIdt | alerts | Switch | Show IDT |
-| showWeb | alerts | Switch | Show Web |
-| sendEmail | alerts | Switch | Send Email |
-| acknowledgement | alerts | String | Acknowledgement |
-| remindMeLater | alerts | Switch | Remind Me Later |
-| thermostatIdentifier | alerts | String | Thermostat Identifier |
-| notificationType | alerts | String | Notification Type |
-| currentClimateRef | program | String | Current Climate Ref |
-| name | events | String | Event Name |
-| type | events | String | Event Type |
-| running | events | Switch | Event is Running |
-| startDate | events | String | Event Start Date |
-| startTime | events | String | Event Start Time |
-| endDate | events | String | Event End Date |
-| endTime | events | String | Event End Time |
-| isOccupied | events | Switch | Is Occupied |
-| isCoolOff | events | Switch | Is Cool Off |
-| isHeatOff | events | Switch | Is Heat Off |
-| coolHoldTemp | events | Number:Temperature | Cool Hold Temp |
-| heatHoldTemp | events | Number:Temperature | Heat Hold Temp |
-| fan | events | String | Fan |
-| vent | events | String | Vent |
-| ventilatorMinOnTime | events | Number | Ventilator Min On Time |
-| isOptional | events | Switch | Is Optional |
-| isTemperatureRelative | events | Switch | Is Temperature Relative |
-| coolRelativeTemp | events | Number | Cool Relative Temp |
-| heatRelativeTemp | events | Number | Heat Relative Temp |
-| isTemperatureAbsolute | events | Switch | Is Temperature Absolute |
-| dutyCyclePercentage | events | Number | Duty Cycle Percentage |
-| fanMinOnTime | events | Number | Fan Min On Time |
-| occupiedSensorActive | events | Switch | Occupied Sensor Active |
-| unoccupiedSensorActive | events | Switch | Unoccupied Sensor Active |
-| drRampUpTemp | events | Number | DR Ramp Up Temp |
-| drRampUpTime | events | Number | DR Ramp Up Time |
-| linkRef | events | String | Link Ref |
-| holdClimateRef | events | String | Hold Climate Ref |
-| timestamp | weather | DateTime | Timestamp |
-| weatherStation | weather | String | Weather Station |
-| weatherSymbol | weather | Number | Symbol |
-| weatherSymbolText | weather | String | Symbol Text |
-| dateTime | forecast0..9 | DateTime | Date Time |
-| condition | forecast0..9 | String | Condition |
-| temperature | forecast0..9 | Number:Temperature | Temperature |
-| pressure | forecast0..9 | Number:Pressure | Pressure |
-| relativeHumidity | forecast0..9 | Number:Dimensionless | Relative Humidity |
-| dewpoint | forecast0..9 | Number:Temperature | Dewpoint |
-| visibility | forecast0..9 | Number | Visibility |
-| windSpeed | forecast0..9 | Number:Speed | Wind Speed |
-| windGust | forecast0..9 | Number:Speed | Wind Gust |
-| windDirection | forecast0..9 | String | Wind Direction |
-| windBearing | forecast0..9 | Number:Angle | Wind Bearing |
-| pop | forecast0..9 | Number:Dimensionless | Probability of Precipitation |
-| tempHigh | forecast0..9 | Number:Temperature | High Temperature |
-| tempLow | forecast0..9 | Number:Temperature | Low Temperature |
-| sky | forecast0..9 | Number | Sky |
-| skyText | forecast0..9 | String | Sky Text |
-| style | houseDetails | String | Style |
-| size | houseDetails | Number | Size |
-| numberOfFloors | houseDetails | Number | Number of Floors |
-| numberOfRooms | houseDetails | Number | Number of Rooms |
-| numberOfOccupants | houseDetails | Number | Number of Occupants |
-| age | houseDetails | Number | Age |
-| windowEfficiency | houseDetails | Number | Window Efficiency |
-| timeZoneOffsetMinutes | location | Number | Time Zone Offset Minutes |
-| timeZone | location | String | Time Zone |
-| isDaylightSaving | location | Switch | Is Daylight Saving |
-| streetAddress | location | String | Street Address |
-| city | location | String | City |
-| provinceState | location | String | Province/State |
-| country | location | String | Country |
-| postalCode | location | String | Postal Code |
-| phoneNumber | location | String | Phone Number |
-| mapCoordinates | location | Location | Thermostat Location |
-| administrativeContact | management | String | Administrative Contact |
-| billingContact | management | String | Billing Contact |
-| name | management | String | Name |
-| phone | management | String | Phone |
-| email | management | String | Email |
-| web | management | String | Web |
-| showAlertIdt | management | Switch | Show Alert Idt |
-| showAlertWeb | management | Switch | Show Alert Web |
-| contractorRef | technician | String | Contractor Ref |
-| name | technician | String | Name |
-| phone | technician | String | Phone |
-| streetAddress | technician | String | Street Address |
-| city | technician | String | City |
-| provinceState | technician | String | Province/State |
-| country | technician | String | Country |
-| postalCode | technician | String | Postal Code |
-| email | technician | String | Email |
-| web | technician | String | Web |
-| thermostatFirmwareVersion | version | String | Firmware Version |
+| Channel  | Group  | Type  | ReadWrite | Description  |
+|----------|--------|-------|-----------|--------------|
+| identifier | info | String |     | Identifier |
+| name | info | String |  x   | Name |
+| thermostatRev | info | String |     | Thermostat Rev |
+| isRegistered | info | Switch |     | Is Registered |
+| modelNumber | info | String |     | Model Number |
+| brand | info | String |     | Brand |
+| features | info | String |     | Features |
+| lastModified | info | DateTime |     | Last Modified |
+| thermostatTime | info | DateTime |     | Thermostat Time |
+| equipmentStatus | equipmentStatus | String |     | Equipment Status |
+| currentClimateRef | program | String |     | Current Climate Ref |
+| runtimeRev | runtime | String |     | Runtime Rev |
+| connected | runtime | Switch |     | Connected |
+| firstConnected | runtime | DateTime |     | First Connected |
+| connectDateTime | runtime | DateTime |     | Connected Date Time |
+| disconnectDateTime | runtime | DateTime |     | Disconnected Date Timee |
+| lastModified | runtime | DateTime |     | Last Modified |
+| lastStatusModified | runtime | DateTime |     | Last Status Modified |
+| runtimeDate | runtime | String |     | Runtime Date |
+| runtimeInterval | runtime | Number |     | Runtime Interval |
+| actualTemperature | runtime | Number:Temperature |     | Actual Temperature |
+| actualHumidity | runtime | Number:Dimensionless |     | Actual Humidity |
+| rawTemperature | runtime | Number:Temperature |     | Raw Temperature |
+| showIconMode | runtime | Number |     | Show Icon Mode |
+| desiredHeat | runtime | Number:Temperature |     | Desired Heat |
+| desiredCool | runtime | Number:Temperature |     | Desired Cool |
+| desiredHumidity | runtime | Number:Dimensionless |     | Desired Humidity |
+| desiredDehumidity | runtime | Number:Dimensionless |     | Desired Dehumidity |
+| desiredFanMode | runtime | String |     | Desired Fan Mode |
+| desiredHeatRangeLow | runtime | Number:Temperature |     | Desired Heat Range Low |
+| desiredHeatRangeHigh | runtime | Number:Temperature |     | Desired Heat Range High |
+| desiredCoolRangeLow | runtime | Number:Temperature |     | Desired Cool Range Low |
+| desiredCoolRangeHigh | runtime | Number:Temperature |     | Desired Cool Range High |
+| hvacMode | settings | String |  x   | HVAC Mode |
+| lastServiceDate | settings | String |  x   | Last Service Date |
+| serviceRemindMe | settings | Switch |  x   | Service Remind Me |
+| monthsBetweenService | settings | Number |  x   | Months Between Service |
+| remindMeDate | settings | String |  x   | Remind Me Date |
+| vent | settings | String |  x   | Vent |
+| ventilatorMinOnTime | settings | Number |  x   | Ventilator Min On Time |
+| serviceRemindTechnician | settings | Switch |  x   | Service Remind Technician |
+| eiLocation | settings | String |  x   | EI Location |
+| coldTempAlert | settings | Number:Temperature |  x   | Cold Temp Alert |
+| coldTempAlertEnabled | settings | Switch |  x   | Cold Temp Alert Enabled |
+| hotTempAlert | settings | Number:Temperature |  x   | Hot Temp Alert |
+| hotTempAlertEnabled | settings | Switch |  x   | Hot Temp Alert Enabled |
+| coolStages | settings | Number |     | Cool Stages |
+| heatStages | settings | Number |     | Heat Stages |
+| maxSetBack | settings | Number |  x   | Max Set Back |
+| maxSetForward | settings | Number |  x   | Max Set Forward |
+| quickSaveSetBack | settings | Number |  x   | Quick Save Set Back |
+| quickSaveSetForward | settings | Number |  x   | Quick Save Set Forward |
+| hasHeatPump | settings | Switch |     | Has Heat Pump |
+| hasForcedAir | settings | Switch |     | Has Forced Air |
+| hasBoiler | settings | Switch |     | Has Boiler |
+| hasHumidifier | settings | Switch |     | Has Humidifier |
+| hasElectric | settings | Switch |     | Has Electric |
+| hasDehumidifier | settings | Switch |     | Has Dehumidifier |
+| hasErv | settings | Switch |     | Has ERV |
+| hasHrv | settings | Switch |     | Has HRV |
+| condensationAvoid | settings | Switch |  x  | Condensation Avoid |
+| useCelsius | settings | Switch |  x   | Use Celsius |
+| useTimeFormat12 | settings | Switch |  x   | Use Time Format 12 |
+| locale | settings | String |  x   | Locale |
+| humidity | settings | String |  x   | Humidity |
+| humidifierMode | settings | String |  x   | Humidifier Mode |
+| backlightOnIntensity | settings | Number |  x   | Backlight On Intensity |
+| backlightSleepIntensity | settings | Number |  x   | Backlight Sleep Intensity |
+| backlightOffTime | settings | Number |  x   | Backlight Off Time |
+| soundTickVolume | settings | Number |  x   | Sound Tick Volume |
+| soundAlertVolume | settings | Number |  x   | Sound Alert Volume |
+| compressorProtectionMinTime | settings | Number |  x   | Compressor Protection Min Time |
+| compressorProtectionMinTemp | settings | Number:Temperature |  x   | Compressor Protection Min Temp |
+| stage1HeatingDifferentialTemp | settings | Number |  x   | Stage 1 Heating Differential Temp |
+| stage1CoolingDifferentialTemp | settings | Number |  x   | Stage 1 Cooling Differential Temp |
+| stage1HeatingDissipationTime | settings | Number |  x   | Stage 1 Heating Dissipation Time |
+| stage1CoolingDissipationTime | settings | Number |  x   | Stage 1 Cooling Dissipation Time |
+| heatPumpReversalOnCool | settings | Switch |  x   | Heat Pump Reversal On Cool |
+| fanControlRequired | settings | Switch |  x   | Fan Control Required |
+| fanMinOnTime | settings | Number |  x   | Fan Min On Time |
+| heatCoolMinDelta | settings | Number |  x   | Heat Cool Min Delta |
+| tempCorrection | settings | Number |  x   | Temp Correction |
+| holdAction | settings | String |  x   | Hold Action |
+| heatPumpGroundWater | settings | Switch |     | Heat Pump Ground Water |
+| dehumidifierMode | settings | String |  x   | Dehumidifier Mode |
+| dehumidifierLevel | settings | Number |  x   | Dehumidifier Level |
+| dehumidifyWithAC | settings | Switch |  x   | Dehumidify With AC |
+| dehumidifyOvercoolOffset | settings | Number |  x   | Dehumidify Overcool Effect |
+| autoHeatCoolFeatureEnabled | settings | Switch |  x   | Auto Heat Cool Feature Enabled |
+| wifiOfflineAlert | settings | Switch |  x   | WiFi Offline Alert |
+| heatMinTemp | settings | Number:Temperature |     | Heat Min Temp |
+| heatMaxTemp | settings | Number:Temperature |     | Heat Max Temp |
+| coolMinTemp | settings | Number:Temperature |     | Cool Min Temp |
+| coolMaxTemp | settings | Number:Temperature |     | Cool Max Temp |
+| heatRangeHigh | settings | Number:Temperature |  x   | Heat Range High |
+| heatRangeLow | settings | Number:Temperature |  x   | Heat Range Low |
+| coolRangeHigh | settings | Number:Temperature |  x   | Cool Range High |
+| coolRangeLow | settings | Number:Temperature |  x   | Cool Range Low |
+| userAccessCode | settings | String |     | User Access Code |
+| userAccessSetting | settings | Number |     | User Access Settings |
+| auxRuntimeAlert | settings | Number |  x   | Aux Runtime Alert |
+| auxOutdoorTempAlert | settings | Number:Temperature |  x   | Aux Outdoor Temp Alert |
+| auxMaxOutdoorTemp | settings | Number:Temperature |  x   | Aux Max Outdoor Temp |
+| auxRuntimeAlertNotify | settings | Switch |  x   | Aux Runtime Alert Notify |
+| auxOutdoorTempAlertNotify | settings | Switch |  x   | Aux Outdoor Temp Alert Notify |
+| auxRuntimeAlertNotifyTechnician | settings | Switch |  x   | Aux Runtime Alert Notify Technician |
+| auxOutdoorTempAlertNotifyTechnician | settings | Switch |  x   | Aux Outdoor Temp Alert Notify Technician |
+| disablePreHeating | settings | Switch |  x   | Disable Pre Heating |
+| disablePreCooling | settings | Switch |  x   | Disable Pre Cooling |
+| installerCodeRequired | settings | Switch |  x   | Installer Code Required |
+| drAccept | settings | String |  x   | DR Accept |
+| isRentalProperty | settings | Switch |  x   | Is Rental Property |
+| useZoneController | settings | Switch |  x   | Use Zone Controller |
+| randomStartDelayCool | settings | Number |  x   | Random Start Delay Cool |
+| randomStartDelayHeat | settings | Number |  x   | Random Start Delay Heat |
+| humidityHighAlert | settings | Number:Dimensionless |  x   | Humidity High Alert |
+| humidityLowAlert | settings | Number:Dimensionless |  x   | Humidity Low Alert |
+| disableHeatPumpAlerts | settings | Switch |  x   | Disable Heat Pump Alerts |
+| disableAlertsOnIdt | settings | Switch |  x   | Disable Alerts On IDT |
+| humidityAlertNotify | settings | Switch |  x   | Humidity Alert Notify |
+| humidityAlertNotifyTechnician | settings | Switch |  x   | Humidity Alert Notify Technician |
+| tempAlertNotify | settings | Switch |  x   | Temp Alert Notify |
+| tempAlertNotifyTechnician | settings | Switch |  x   | Temp Alert Notify Technician |
+| monthlyElectricityBillLimit | settings | Number |  x   | Monthly Electricity Bill Limit |
+| enableElectricityBillAlert | settings | Switch |  x   | Enable Electricity Bill Alert |
+| enableProjectedElectricityBillAlert | settings | Switch |  x   | Enable Projected Electricity Bill Alert |
+| electricityBillingDayOfMonth | settings | Number |  x   | Electricity Billing Day Of Month |
+| electricityBillCycleMonths | settings | Number |  x   | Electricity Bill Cycle Months |
+| electricityBillStartMonth | settings | Number |  x   | Electricity Bill Start Month |
+| ventilatorMinOnTimeHome | settings | Number |  x   | Ventilator Min On Time Home |
+| ventilatorMinOnTimeAway | settings | Number |  x   | Ventilator Min On Time Away |
+| backlightOffDuringSleep | settings | Switch |  x   | Backlight Off During Sleep |
+| autoAway | settings | Switch |  x   | Auto Away |
+| smartCirculation | settings | Switch |  x   | Smart Circulation |
+| followMeComfort | settings | Switch |  x   | Follow Me Comfort |
+| ventilatorType | settings | String |     | Ventilator Type |
+| isVentilatorTimerOn | settings | Switch |  x   | Is Ventilator Timer On |
+| ventilatorOffDateTime | settings | String |     | Ventilator Off Date Time |
+| hasUVFilter | settings | Switch |  x   | Has UV Filter |
+| coolingLockout | settings | Switch |  x   | Cooling Lockout |
+| ventilatorFreeCooling | settings | Switch |  x   | Ventilator Free Cooling |
+| dehumidifyWhenHeating | settings | Switch |  x   | Dehumidify When Heating |
+| ventilatorDehumidify | settings | Switch |  x   | Ventilator Dehumidify |
+| groupRef | settings | String |  x   | Group Ref |
+| groupName | settings | String |  x   | Group Name |
+| groupSetting | settings | Number |  x   | Group Setting |
+| acknowledgeRef | alerts | String |     | Acknowledge Ref |
+| date | alerts | String |     | Date |
+| time | alerts | String |     | Time |
+| severity | alerts | String |     | Severity |
+| text | alerts | String |     | Text |
+| number | alerts | Number |     | Number |
+| type | alerts | String |     | Type |
+| isOperatorAlert | alerts | Switch |     | Is Operator Alert |
+| reminder | alerts | String |     | Reminder |
+| showIdt | alerts | Switch |     | Show IDT |
+| showWeb | alerts | Switch |     | Show Web |
+| sendEmail | alerts | Switch |     | Send Email |
+| acknowledgement | alerts | String |     | Acknowledgement |
+| remindMeLater | alerts | Switch |     | Remind Me Later |
+| thermostatIdentifier | alerts | String |     | Thermostat Identifier |
+| notificationType | alerts | String |     | Notification Type |
+| name | events | String |     | Event Name |
+| type | events | String |     | Event Type |
+| running | events | Switch |     | Event is Running |
+| startDate | events | String |     | Event Start Date |
+| startTime | events | String |     | Event Start Time |
+| endDate | events | String |     | Event End Date |
+| endTime | events | String |     | Event End Time |
+| isOccupied | events | Switch |     | Is Occupied |
+| isCoolOff | events | Switch |     | Is Cool Off |
+| isHeatOff | events | Switch |     | Is Heat Off |
+| coolHoldTemp | events | Number:Temperature |     | Cool Hold Temp |
+| heatHoldTemp | events | Number:Temperature |     | Heat Hold Temp |
+| fan | events | String |     | Fan |
+| vent | events | String |     | Vent |
+| ventilatorMinOnTime | events | Number |     | Ventilator Min On Time |
+| isOptional | events | Switch |     | Is Optional |
+| isTemperatureRelative | events | Switch |     | Is Temperature Relative |
+| coolRelativeTemp | events | Number |     | Cool Relative Temp |
+| heatRelativeTemp | events | Number |     | Heat Relative Temp |
+| isTemperatureAbsolute | events | Switch |     | Is Temperature Absolute |
+| dutyCyclePercentage | events | Number |     | Duty Cycle Percentage |
+| fanMinOnTime | events | Number |     | Fan Min On Time |
+| occupiedSensorActive | events | Switch |     | Occupied Sensor Active |
+| unoccupiedSensorActive | events | Switch |     | Unoccupied Sensor Active |
+| drRampUpTemp | events | Number |     | DR Ramp Up Temp |
+| drRampUpTime | events | Number |     | DR Ramp Up Time |
+| linkRef | events | String |     | Link Ref |
+| holdClimateRef | events | String |     | Hold Climate Ref |
+| timestamp | weather | DateTime |     | Timestamp |
+| weatherStation | weather | String |     | Weather Station |
+| weatherSymbol | weather | Number |     | Symbol |
+| weatherSymbolText | weather | String |     | Symbol Text |
+| dateTime | forecast0..9 | DateTime |     | Date Time |
+| condition | forecast0..9 | String |     | Condition |
+| temperature | forecast0..9 | Number:Temperature |     | Temperature |
+| pressure | forecast0..9 | Number:Pressure |     | Pressure |
+| relativeHumidity | forecast0..9 | Number:Dimensionless |     | Relative Humidity |
+| dewpoint | forecast0..9 | Number:Temperature |     | Dewpoint |
+| visibility | forecast0..9 | Number |     | Visibility |
+| windSpeed | forecast0..9 | Number:Speed |     | Wind Speed |
+| windGust | forecast0..9 | Number:Speed |     | Wind Gust |
+| windDirection | forecast0..9 | String |     | Wind Direction |
+| windBearing | forecast0..9 | Number:Angle |     | Wind Bearing |
+| pop | forecast0..9 | Number:Dimensionless |     | Probability of Precipitation |
+| tempHigh | forecast0..9 | Number:Temperature |     | High Temperature |
+| tempLow | forecast0..9 | Number:Temperature |     | Low Temperature |
+| sky | forecast0..9 | Number |     | Sky |
+| skyText | forecast0..9 | String |     | Sky Text |
+| timeZoneOffsetMinutes | location | Number |     | Time Zone Offset Minutes |
+| timeZone | location | String |  x   | Time Zone |
+| isDaylightSaving | location | Switch |     | Is Daylight Saving |
+| streetAddress | location | String |   x  | Street Address |
+| city | location | String |  x   | City |
+| provinceState | location | String |  x   | Province/State |
+| country | location | String |  x   | Country |
+| postalCode | location | String |  x   | Postal Code |
+| phoneNumber | location | String |  x   | Phone Number |
+| mapCoordinates | location | Location |  x   | Thermostat Location |
+| style | houseDetails | String |  x   | Style |
+| size | houseDetails | Number |  x   | Size |
+| numberOfFloors | houseDetails | Number |  x   | Number of Floors |
+| numberOfRooms | houseDetails | Number |  x   | Number of Rooms |
+| numberOfOccupants | houseDetails | Number |  x   | Number of Occupants |
+| age | houseDetails | Number |  x   | Age |
+| windowEfficiency | houseDetails | Number |  x   | Window Efficiency |
+| administrativeContact | management | String |     | Administrative Contact |
+| billingContact | management | String |     | Billing Contact |
+| name | management | String |     | Name |
+| phone | management | String |     | Phone |
+| email | management | String |     | Email |
+| web | management | String |     | Web |
+| showAlertIdt | management | Switch |     | Show Alert Idt |
+| showAlertWeb | management | Switch |     | Show Alert Web |
+| contractorRef | technician | String |     | Contractor Ref |
+| name | technician | String |     | Name |
+| phone | technician | String |     | Phone |
+| streetAddress | technician | String |     | Street Address |
+| city | technician | String |     | City |
+| provinceState | technician | String |  x   | Province/State |
+| country | technician | String |     | Country |
+| postalCode | technician | String |     | Postal Code |
+| email | technician | String |     | Email |
+| web | technician | String |     | Web |
+| thermostatFirmwareVersion | version | String |     | Firmware Version |
 
 ### Remote Sensor Channels
 
 The following channels are available on the Ecobee Remote Sensor.
 
-| Channel              | Type                  | Description  |
-|----------------------|-----------------------|--------------|
-| id                   | String                | Sensor ID assigned by thermostat  |
-| name                 | String                | Name given to the remote sensor by the user  |
-| type                 | String                | The type of sensor  |
-| code                 | String                | The unique 4-digit alphanumeric sensor code  |
-| inUse                | Switch                | Indicates whether the remote sensor is currently in use by a comfort setting  |
+| Channel      | Type     | ReadWrite   | Description  |
+|--------------|----------|-------------|--------------|
+| id           | String   |             | Sensor ID assigned by thermostat  |
+| name         | String   |             | Name given to the remote sensor by the user  |
+| type         | String   |             | The type of sensor  |
+| code         | String   |             | The unique 4-digit alphanumeric sensor code  |
+| inUse        | Switch   |             | Indicates whether the remote sensor is currently in use by a comfort setting  |
 
 Some or all of the following Remote Sensor channels will be added dynamically depending on the capabilities of the sensor.
 
-| Channel              | Type                  | Description  |
-|----------------------|-----------------------|--------------|
-| temperature          | Number:Temperature    | Temperature reported by the sensor  |
-| humidity             | Number:Dimensionless  | Humidity reported by the sensor  |
-| occupancy            | Switch                | Occupancy status reported by the sensor  |
-| co2                  | String                | CO2 reported by the sensor  |
-| dryContact           | String                | Dry contact status reported by the sensor  |
-| adc                  | String                | ADC reported by the sensor  |
+| Channel      | Type                  | ReadWrite | Description  |
+|--------------|-----------------------|-----------|--------------|
+| temperature  | Number:Temperature    |           | Temperature reported by the sensor  |
+| humidity     | Number:Dimensionless  |           | Humidity reported by the sensor  |
+| occupancy    | Switch                |           | Occupancy status reported by the sensor  |
+| co2          | String                |           | CO2 reported by the sensor  |
+| dryContact   | String                |           | Dry contact status reported by the sensor  |
+| adc          | String                |           | ADC reported by the sensor  |
 
 ## Thing Actions
 

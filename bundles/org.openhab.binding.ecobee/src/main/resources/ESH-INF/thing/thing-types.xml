@@ -551,7 +551,7 @@
 	<channel-type id="hasElectric">
 		<item-type>Switch</item-type>
 		<label>Has Electric</label>
-		<state readOnly="false" pattern="%s" />
+		<state readOnly="true" pattern="%s" />
 	</channel-type>
 	<channel-type id="hasDehumidifier">
 		<item-type>Switch</item-type>
