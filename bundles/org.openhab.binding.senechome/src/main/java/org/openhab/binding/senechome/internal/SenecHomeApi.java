@@ -28,21 +28,28 @@ import org.openhab.binding.senechome.internal.json.SenecHomeResponse;
 
 import com.google.gson.Gson;
 
+/**
+ * The {@link SenecHomeApi} class configures http client and
+ * performs status requests
+ *
+ * @author Steven.Schwarznau - Initial contribution
+ *
+ */
 public class SenecHomeApi {
-	private static final int HTTP_OK_CODE = 200;
-	private static final String HTTP_PROTO_PREFIX = "http://";
-	
-	private String hostname;
-	private HttpClient httpClient;
-	private Gson gson;
-	
-	public SenecHomeApi(HttpClient httpClient, Gson gson, SenecHomeConfiguration config) {
-		this.httpClient = httpClient;
-		this.gson = gson;
-		this.hostname = config.hostname;
-	}
+    private static final int HTTP_OK_CODE = 200;
+    private static final String HTTP_PROTO_PREFIX = "http://";
 
-	/**
+    private String hostname;
+    private HttpClient httpClient;
+    private Gson gson;
+
+    public SenecHomeApi(HttpClient httpClient, Gson gson, SenecHomeConfiguration config) {
+        this.httpClient = httpClient;
+        this.gson = gson;
+        this.hostname = config.hostname;
+    }
+
+    /**
      * POST json with empty, but expected fields, to lala.cgi of Senec webinterface
      * the response will contain the same fields, but with the corresponding values
      *
@@ -53,20 +60,20 @@ public class SenecHomeApi {
      * @throws MalformedURLException Configuration/URL is wrong
      * @throws IOException           Communication failed
      */
-	public SenecHomeResponse getStatistics() throws InterruptedException, TimeoutException, ExecutionException, IOException {
-		String location = HTTP_PROTO_PREFIX + hostname;
-		
-		Request request = httpClient.newRequest(location);
-		request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
-		request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.FORM_ENCODED.asString());
-		ContentResponse response = request.method(HttpMethod.POST)
-				.content(new StringContentProvider(gson.toJson(new SenecHomeResponse())))
-				.send();
-		
-		if (response.getStatus() == HTTP_OK_CODE) {
-			return gson.fromJson(response.getContentAsString(), SenecHomeResponse.class);
-		} else {
-			throw new IOException("Got unexpected response code "+response.getStatus());
-		}
-	}
+    public SenecHomeResponse getStatistics() throws InterruptedException, TimeoutException, ExecutionException, IOException {
+        String location = HTTP_PROTO_PREFIX + hostname;
+        
+        Request request = httpClient.newRequest(location);
+        request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
+        request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.FORM_ENCODED.asString());
+        ContentResponse response = request.method(HttpMethod.POST)
+                .content(new StringContentProvider(gson.toJson(new SenecHomeResponse())))
+                .send();
+        
+        if (response.getStatus() == HTTP_OK_CODE) {
+            return gson.fromJson(response.getContentAsString(), SenecHomeResponse.class);
+        } else {
+            throw new IOException("Got unexpected response code "+response.getStatus());
+        }
+    }
 }

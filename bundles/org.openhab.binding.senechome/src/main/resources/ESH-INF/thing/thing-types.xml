@@ -17,7 +17,7 @@
 			<channel id="energyProduction" typeId="energyProduction" />
 			<channel id="batteryPower" typeId="batteryPower" />
 			<channel id="batteryFuelCharge" typeId="batteryFuelCharge" />
-			<channel id="batteryState" typeId="battery-level" />
+			<channel id="batteryState" typeId="system.battery-level" />
 			<channel id="gridPower" typeId="gridPower" />
 			<channel id="gridPowerSupply" typeId="gridPowerSupply" />
 			<channel id="gridPowerDraw" typeId="gridPowerDraw" />
@@ -61,13 +61,6 @@
 		<item-type>Switch</item-type>
 		<label>Limitation State</label>
 		<category>Energy</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="batteryState">
-		<item-type>String</item-type>
-		<label>Battery Status</label>
-		<category>Battery</category>
 		<state readOnly="true" />
 	</channel-type>
 

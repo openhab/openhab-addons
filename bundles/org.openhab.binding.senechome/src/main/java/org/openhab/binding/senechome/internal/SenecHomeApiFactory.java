@@ -28,8 +28,8 @@ import com.google.gson.Gson;
  */
 @Component(service = SenecHomeApiFactory.class)
 public class SenecHomeApiFactory {
-	
-	private @NonNull HttpClient httpClient;
+
+    private @NonNull HttpClient httpClient;
 
     @Activate
     public SenecHomeApiFactory(@Reference HttpClientFactory httpClientFactory) {
@@ -37,6 +37,6 @@ public class SenecHomeApiFactory {
     }
 
     public SenecHomeApi getHttpApi(SenecHomeConfiguration config, Gson gson) {
-    	return new SenecHomeApi(this.httpClient, gson, config);
+        return new SenecHomeApi(this.httpClient, gson, config);
     }
 }
