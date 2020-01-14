@@ -157,7 +157,7 @@
 			<parameter name="pollingInterval" type="integer" required="false" min="15" max="180">
 				<label>Polling Interval</label>
 				<description>Interval polling the WeMo Coffee Maker.
-                </description>
+				</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -297,8 +297,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>The brightness channel allows to control the brightness of a light.
-            It is also possible to switch the light on and off.
-        </description>
+			It is also possible to switch the light on and off.
+		</description>
 		<category>DimmableLight</category>
 	</channel-type>
 
