@@ -56,6 +56,7 @@ Thing energenie:pms2lan:pms2lan [ host="xxx.xxx.xxx.xxx", password="your passwor
 Thing energenie:pmswlan:pmswlan [ host="xxx.xxx.xxx.xxx", password="your password" ]
 Thing energenie:pwmlan:pwmlan [ host="xxx.xxx.xxx.xxx", password="your password" ]
 ```
+
 Items
 
 ```
@@ -92,4 +93,3 @@ sitemap energenie label="Energenie Devices"
        }
 }
 ```
-       

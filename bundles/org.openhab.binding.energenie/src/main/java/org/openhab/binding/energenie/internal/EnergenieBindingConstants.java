@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.energenie.internal;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,10 +32,9 @@ public class EnergenieBindingConstants {
 
     private static final String BINDING_ID = "energenie";
 
-    // private static final String HOST = "host";
     public static final int TCP_PORT = 5000;
 
-    public static final int STRTCRYP_LEN = 4;
+    public static final int STATCRYP_LEN = 4;
     public static final int CTRLCRYP_LEN = 4;
     public static final int KEY_LEN = 8;
     public static final int TASK_LEN = 4;
@@ -44,8 +44,6 @@ public class EnergenieBindingConstants {
     public static final String STATE_ON_NO_VOLTAGE = "0x12";
     public static final String STATE_OFF = "0x22";
     public static final String STATE_OFF_NO_VOLTAGE = "0x21";
-
-    // public static final byte STATE_INVALID = 0xFF; // for internal use
 
     public static final String V21_STATE_ON = "0x41";
     public static final String V21_STATE_OFF = "0x82";
@@ -67,10 +65,7 @@ public class EnergenieBindingConstants {
     public static final ThingTypeUID THING_TYPE_PWMLAN = new ThingTypeUID(BINDING_ID, "pwmlan");
 
     // List of all Channel ids
-    public static final String SOCKET_1 = "socket1";
-    public static final String SOCKET_2 = "socket2";
-    public static final String SOCKET_3 = "socket3";
-    public static final String SOCKET_4 = "socket4";
+    public static final Pattern CHANNEL_SOCKET = Pattern.compile("socket(\\d)");
 
     public static final String VOLTAGE = "voltage";
     public static final String CURRENT = "current";

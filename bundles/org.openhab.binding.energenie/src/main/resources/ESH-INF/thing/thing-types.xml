@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="pm2lan">
-		<label>Energenie EG-PM2-LAN</label>
+		<label>EG-PM2-LAN</label>
 		<description>Energenie programmable power strip with LAN interface</description>
 
 		<channels>
@@ -81,25 +81,25 @@
 
 	<channel-type id="socket1">
 		<item-type>Switch</item-type>
-		<label>Socket 1 state</label>
+		<label>Socket 1 State</label>
 		<description>Channel representing the state of socket 1</description>
 	</channel-type>
 
 	<channel-type id="socket2">
 		<item-type>Switch</item-type>
-		<label>Socket 2 state</label>
+		<label>Socket 2 State</label>
 		<description>Channel representing the state of socket 2</description>
 	</channel-type>
 
 	<channel-type id="socket3">
 		<item-type>Switch</item-type>
-		<label>Socket 3 state</label>
+		<label>Socket 3 State</label>
 		<description>Channel representing the state of socket 3</description>
 	</channel-type>
 
 	<channel-type id="socket4">
 		<item-type>Switch</item-type>
-		<label>Socket 4 state</label>
+		<label>Socket 4 State</label>
 		<description>Channel representing the state of socket 4</description>
 	</channel-type>
 

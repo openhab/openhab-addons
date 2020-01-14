@@ -3,7 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
-
 	<config-description uri="thing-type:energenie:config">
 		<parameter name="host" type="text" required="true">
 			<label>IP-Address</label>
@@ -17,5 +16,4 @@
 			<context>password</context>
 		</parameter>
 	</config-description>
-
-</config-description:config-descriptions>    
+</config-description:config-descriptions>
