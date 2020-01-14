@@ -14,7 +14,6 @@ package org.openhab.binding.mqtt.generic.values;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -146,14 +145,11 @@ public class PercentageValue extends Value {
                 .add(min).stripTrailingZeros();
 
         String formatPattern = pattern;
-        if (formatPattern == null || "%s".equals(formatPattern)) {
-            if (value.scale() > 0) {
-                formatPattern = "%." + value.scale() + "f";
-            } else {
-                formatPattern = "%.0f";
-            }
+        if (formatPattern == null) {
+            formatPattern = "%s";
         }
-        return String.format(Locale.ROOT, formatPattern, value);
+
+        return new DecimalType(value).format(formatPattern);
     }
 
     @Override

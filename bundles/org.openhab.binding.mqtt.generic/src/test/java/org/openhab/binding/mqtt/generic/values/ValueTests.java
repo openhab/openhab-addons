@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
@@ -222,11 +221,13 @@ public class ValueTests {
     @Test
     public void percentMQTTValue() {
         PercentageValue v = new PercentageValue(null, null, null, null, null);
-        v.update(new QuantityType<>("70 %"));
-        assertThat(v.getMQTTpublishValue(null), is("70"));
+        v.update(new DecimalType("10.10000"));
+        assertThat(v.getMQTTpublishValue(null), is("10.1"));
+        for (int i = 0; i <= 100; i++) {
+            v.update(new DecimalType(i));
+            assertThat(v.getMQTTpublishValue(null), is("" + i));
+        }
 
-        v.update(new DecimalType(10.0));
-        assertThat(v.getMQTTpublishValue(null), is("10"));
     }
 
     @Test
