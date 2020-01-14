@@ -54,9 +54,9 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_CROCKPOT);
 
-    private Map<String, Boolean> subscriptionState = new HashMap<String, Boolean>();
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
-    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
+    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private UpnpIOService service;
 
@@ -71,16 +71,11 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
         @Override
         public void run() {
-            try {
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("WeMo UPnP device {} not yet registered", getUDN());
-                }
-
-                updateWemoState();
+            updateWemoState();
+            if (!isUpnpDeviceRegistered()) {
+                logger.debug("WeMo UPnP device {} not yet registered", getUDN());
+            } else {
                 onSubscription();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     };
@@ -138,7 +133,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
             } catch (Exception e) {
                 logger.debug("Exception during poll", e);
             }
-        } else if (channelUID.getId().equals(CHANNEL_COOKMODE)) {
+        } else if (CHANNEL_COOKMODE.equals(channelUID.getId())) {
             String commandString = command.toString();
             switch (commandString) {
                 case "OFF":
@@ -168,9 +163,8 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                     wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                 }
             } catch (Exception e) {
-                logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
-                        e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             updateStatus(ThingStatus.ONLINE);
         }
@@ -184,8 +178,8 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
     @Override
     public void onValueReceived(String variable, String value, String service) {
-        logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
+        logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'", variable, value, service,
+                this.getThing().getUID());
 
         updateStatus(ThingStatus.ONLINE);
         this.stateMap.put(variable, value);

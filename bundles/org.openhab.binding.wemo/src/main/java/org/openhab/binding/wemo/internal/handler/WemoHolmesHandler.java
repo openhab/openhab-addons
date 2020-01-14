@@ -66,9 +66,9 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PURIFIER);
 
-    private Map<String, Boolean> subscriptionState = new HashMap<String, Boolean>();
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
-    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
+    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private UpnpIOService service;
 
@@ -86,16 +86,11 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
 
         @Override
         public void run() {
-            try {
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("WeMo UPnP device {} not yet registered", getUDN());
-                }
-
+            if (!isUpnpDeviceRegistered()) {
+                logger.debug("WeMo UPnP device {} not yet registered", getUDN());
+            } else {
                 updateWemoState();
                 onSubscription();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     };
@@ -154,7 +149,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
             } catch (Exception e) {
                 logger.debug("Exception during poll", e);
             }
-        } else if (channelUID.getId().equals(CHANNEL_PURIFIERMODE)) {
+        } else if (CHANNEL_PURIFIERMODE.equals(channelUID.getId())) {
             attribute = "Mode";
             String commandString = command.toString();
             switch (commandString) {
@@ -174,14 +169,14 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                     value = "4";
                     break;
             }
-        } else if (channelUID.getId().equals(CHANNEL_IONIZER)) {
+        } else if (CHANNEL_IONIZER.equals(channelUID.getId())) {
             attribute = "Ionizer";
-            if (command.equals(OnOffType.ON)) {
+            if (OnOffType.ON.equals(command)) {
                 value = "1";
-            } else if (command.equals(OnOffType.OFF)) {
+            } else if (OnOffType.OFF.equals(command)) {
                 value = "0";
             }
-        } else if (channelUID.getId().equals(CHANNEL_HUMIDIFIERMODE)) {
+        } else if (CHANNEL_HUMIDIFIERMODE.equals(channelUID.getId())) {
             attribute = "FanMode";
             String commandString = command.toString();
             switch (commandString) {
@@ -204,7 +199,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                     value = "5";
                     break;
             }
-        } else if (channelUID.getId().equals(CHANNEL_DESIREDHUMIDITY)) {
+        } else if (CHANNEL_DESIREDHUMIDITY.equals(channelUID.getId())) {
             attribute = "DesiredHumidity";
             String commandString = command.toString();
             switch (commandString) {
@@ -224,7 +219,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                     value = "4";
                     break;
             }
-        } else if (channelUID.getId().equals(CHANNEL_HEATERMODE)) {
+        } else if (CHANNEL_HEATERMODE.equals(channelUID.getId())) {
             attribute = "Mode";
             String commandString = command.toString();
             switch (commandString) {
@@ -244,7 +239,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                     value = "4";
                     break;
             }
-        } else if (channelUID.getId().equals(CHANNEL_TARGETTEMP)) {
+        } else if (CHANNEL_TARGETTEMP.equals(channelUID.getId())) {
             attribute = "SetTemperature";
             value = command.toString();
         }
@@ -262,9 +257,8 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                 wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
             }
         } catch (Exception e) {
-            logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
-                    e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         updateStatus(ThingStatus.ONLINE);
     }
@@ -277,8 +271,8 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
 
     @Override
     public void onValueReceived(String variable, String value, String service) {
-        logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
+        logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'", variable, value, service,
+                this.getThing().getUID());
 
         updateStatus(ThingStatus.ONLINE);
         this.stateMap.put(variable, value);
@@ -398,7 +392,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                         State newMode = new StringType();
                         switch (attributeName) {
                             case "Mode":
-                                if (getThing().getThingTypeUID().getId().equals("purifier")) {
+                                if ("purifier".equals(getThing().getThingTypeUID().getId())) {
                                     switch (attributeValue) {
                                         case "0":
                                             newMode = new StringType("OFF");
@@ -465,7 +459,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                                 break;
                             case "FilterLife":
                                 int filterLife = Integer.valueOf(attributeValue);
-                                if (getThing().getThingTypeUID().getId().equals("purifier")) {
+                                if ("purifier".equals(getThing().getThingTypeUID().getId())) {
                                     filterLife = Math.round((filterLife / filterLifeMins) * 100);
                                 } else {
                                     filterLife = Math.round((filterLife / 60480) * 100);
@@ -559,7 +553,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+            logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e);
         }
     }
 
