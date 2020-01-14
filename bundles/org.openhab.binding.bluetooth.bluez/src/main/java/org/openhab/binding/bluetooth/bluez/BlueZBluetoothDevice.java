@@ -285,8 +285,8 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                         : BluetoothCompletionStatus.ERROR;
                 notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic, successStatus);
             } catch (BluetoothException e) {
-                logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
-                        e.getMessage());
+                logger.debug("Exception occurred when trying to write characteristic '{}': {}",
+                        characteristic.getUuid(), e.getMessage());
                 notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic,
                         BluetoothCompletionStatus.ERROR);
             }
@@ -423,10 +423,15 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                         try {
                             disableNotifications();
                             device.remove();
-                        } catch (tinyb.BluetoothException ex) {
-                            // this happens when the underlying device has already been removed
-                            // but we don't have a way to check if that is the case beforehand so
-                            // we will just eat the error here.
+                        } catch (BluetoothException ex) {
+                            if (ex.getMessage().contains("Does Not Exist")) {
+                                // this happens when the underlying device has already been removed
+                                // but we don't have a way to check if that is the case beforehand so
+                                // we will just eat the error here.
+                            } else {
+                                logger.debug("Exception occurred when trying to remove inactive device '{}': {}",
+                                        device.getAddress(), ex.getMessage());
+                            }
                         }
                         device = null;
                     }
