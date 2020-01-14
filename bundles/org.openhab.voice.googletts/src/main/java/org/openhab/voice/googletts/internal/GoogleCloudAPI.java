@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.MimeTypes;
@@ -67,6 +66,10 @@ import com.google.gson.GsonBuilder;
  * @author Gabor Bicskei - Initial contribution and API
  */
 class GoogleCloudAPI {
+
+    private static final char EXTENSION_SEPARATOR = '.';
+    private static final char UNIX_SEPARATOR = '/';
+    private static final char WINDOWS_SEPARATOR = '\\';
 
     private static final String BEARER = "Bearer ";
 
@@ -370,7 +373,7 @@ class GoogleCloudAPI {
 
         // write text to file for transparency too
         // this allows to know which contents is in which audio file
-        String textFileName = FilenameUtils.removeExtension(cacheFile.getName()) + ".txt";
+        String textFileName = removeExtension(cacheFile.getName()) + ".txt";
         logger.debug("Caching text file {}", textFileName);
         try (FileOutputStream textFileOutputStream = new FileOutputStream(new File(cacheFolder, textFileName))) {
             // @formatter:off
@@ -385,6 +388,18 @@ class GoogleCloudAPI {
             // @formatter:on
             textFileOutputStream.write(sb.toString().getBytes(StandardCharsets.UTF_8));
         }
+    }
+
+    /**
+     * Removes the extension of a file name.
+     *
+     * @param fileName the file name to remove the extension of
+     * @return the filename without the extension
+     */
+    private String removeExtension(String fileName) {
+        int extensionPos = fileName.lastIndexOf(EXTENSION_SEPARATOR);
+        int lastSeparator = Math.max(fileName.lastIndexOf(UNIX_SEPARATOR), fileName.lastIndexOf(WINDOWS_SEPARATOR));
+        return lastSeparator > extensionPos ? fileName : fileName.substring(0, extensionPos);
     }
 
     /**
