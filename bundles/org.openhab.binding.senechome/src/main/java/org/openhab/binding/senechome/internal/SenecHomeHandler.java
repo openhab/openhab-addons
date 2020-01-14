@@ -12,15 +12,9 @@
  */
 package org.openhab.binding.senechome.internal;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -43,10 +37,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.senechome.internal.PowerLimitationStatus;
-import org.openhab.binding.senechome.internal.SenecBatteryStatus;
-import org.openhab.binding.senechome.internal.SenecHomeBindingConstants;
-import org.openhab.binding.senechome.internal.SenecHomeConfiguration;
 import org.openhab.binding.senechome.internal.json.SenecHomeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,7 +167,7 @@ public class SenecHomeHandler extends BaseThingHandler {
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.info("Error refreshing source '{}'", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    e.getClass().getName() + ":" + e.getMessage());
+                    "Could not connect to Senec web interface:" + e.getMessage());
         }
     }
 
@@ -194,7 +184,6 @@ public class SenecHomeHandler extends BaseThingHandler {
             logger.warn("Unknown value type [{}]", type[0]);
         }
 
-        // TODO: good choice?
         return BigDecimal.ZERO;
     }
 

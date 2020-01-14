@@ -11,15 +11,16 @@
 
 		<channels>
 			<channel id="powerLimitation" typeId="powerLimitation" />
-            <channel id="powerLimitationState" typeId="powerLimitationState" />
-            <channel id="houseConsumption" typeId="houseConsumption" />
-            <channel id="energyProduction" typeId="energyProduction" />
-            <channel id="batteryPower" typeId="batteryPower" />
-            <channel id="batteryFuelCharge" typeId="batteryFuelCharge" />
-            <channel id="batteryState" typeId="batteryState" />
-            <channel id="gridPower" typeId="gridPower" />
-            <channel id="gridPowerSupply" typeId="gridPowerSupply" />
-            <channel id="gridPowerDraw" typeId="gridPowerDraw" />
+			<channel id="powerLimitationState"
+				typeId="powerLimitationState" />
+			<channel id="houseConsumption" typeId="houseConsumption" />
+			<channel id="energyProduction" typeId="energyProduction" />
+			<channel id="batteryPower" typeId="batteryPower" />
+			<channel id="batteryFuelCharge" typeId="batteryFuelCharge" />
+			<channel id="batteryState" typeId="batteryState" />
+			<channel id="gridPower" typeId="gridPower" />
+			<channel id="gridPowerSupply" typeId="gridPowerSupply" />
+			<channel id="gridPowerDraw" typeId="gridPowerDraw" />
 		</channels>
 
 		<config-description>
@@ -27,93 +28,96 @@
 				<label>Hostname/IP Address</label>
 				<description>Enter the hostname or ip address of your Senec Home device</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" min="1" unit="s">
-                <label>Refresh Interval</label>
-                <description>Rate of refreshing details (in s)</description>
-                <default>15</default>
-            </parameter>
-            <parameter name="limitationTresholdValue" type="integer" min="0" max="100" unit="%">
-                <label>Limitation Treshold</label>
-                <description>Treshold in percent, defines when limitation state is enabled</description>
-                <default>95</default>
-            </parameter>
-            <parameter name="limitationDuration" type="integer" unit="s" min="1" max="1200">
-                <label>Limitation Duration</label>
-                <description>Duration of stable values until state is changed, defined in seconds</description>
-                <default>120</default>
-            </parameter>
+			<parameter name="refreshInterval" type="integer" min="1"
+				unit="s">
+				<label>Refresh Interval</label>
+				<description>Rate of refreshing details (in s)</description>
+				<default>15</default>
+			</parameter>
+			<parameter name="limitationTresholdValue" type="integer"
+				min="0" max="100" unit="%">
+				<label>Limitation Treshold</label>
+				<description>Treshold in percent, defines when limitation state is enabled</description>
+				<default>95</default>
+			</parameter>
+			<parameter name="limitationDuration" type="integer"
+				unit="s" min="1" max="1200">
+				<label>Limitation Duration</label>
+				<description>Duration of stable values until state is changed, defined in seconds</description>
+				<default>120</default>
+			</parameter>
 		</config-description>
 
 	</thing-type>
 
 	<channel-type id="powerLimitation">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Power limitation</label>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.0f %unit%" />
-    </channel-type>
-    
-    <channel-type id="powerLimitationState">
-        <item-type>Switch</item-type>
-        <label>Limitation State</label>
-        <category>Energy</category>
-        <state readOnly="true" />
-    </channel-type>
-    
-    <channel-type id="batteryState">
-        <item-type>String</item-type>
-        <label>Battery Status</label>
-        <category>Battery</category>
-        <state readOnly="true" />
-    </channel-type>
-    
-    <channel-type id="houseConsumption">
-        <item-type>Number:Power</item-type>
-        <label>Home Power Consumption</label>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.2f %unit%" />
-    </channel-type>
-    
-    <channel-type id="batteryPower">
-        <item-type>Number:Power</item-type>
-        <label>Battery Power</label>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.2f %unit%" />
-    </channel-type>
-    
-    <channel-type id="batteryFuelCharge">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Battery Fuel</label>
-        <category>Battery</category>
-        <state readOnly="true" pattern="%.0f %unit%" />
-    </channel-type>
-    
-    <channel-type id="energyProduction">
-        <item-type>Number:Power</item-type>
-        <label>Solar Production</label>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.0f %unit%" />
-    </channel-type>
-    
-    <channel-type id="gridPower">
-        <item-type>Number:Power</item-type>
-        <label>Grid Power</label>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.2f %unit%" />
-    </channel-type>
-    
-    <channel-type id="gridPowerSupply">
-        <item-type>Number:Power</item-type>
-        <label>Grid Supply</label>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.2f %unit%" />
-    </channel-type>
-    
-    <channel-type id="gridPowerDraw">
-        <item-type>Number:Power</item-type>
-        <label>Grid Draw</label>
-        <category>Energy</category>
-        <state readOnly="true" pattern="%.2f %unit%" />
-    </channel-type>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Power limitation</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+
+	<channel-type id="powerLimitationState">
+		<item-type>Switch</item-type>
+		<label>Limitation State</label>
+		<category>Energy</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="batteryState">
+		<item-type>String</item-type>
+		<label>Battery Status</label>
+		<category>Battery</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="houseConsumption">
+		<item-type>Number:Power</item-type>
+		<label>Home Power Consumption</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="batteryPower">
+		<item-type>Number:Power</item-type>
+		<label>Battery Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="batteryFuelCharge">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Fuel</label>
+		<category>Battery</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+
+	<channel-type id="energyProduction">
+		<item-type>Number:Power</item-type>
+		<label>Solar Production</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+
+	<channel-type id="gridPower">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="gridPowerSupply">
+		<item-type>Number:Power</item-type>
+		<label>Grid Supply</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="gridPowerDraw">
+		<item-type>Number:Power</item-type>
+		<label>Grid Draw</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
 
 </thing:thing-descriptions>
