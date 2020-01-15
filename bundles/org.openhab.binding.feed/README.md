@@ -44,6 +44,12 @@ The binding supports following channels
 | description        | String    | Description of the feed                             |
 | last-update        | DateTime  | The last update date of the feed                    |
 | number-of-entries  | Number    | Number of entries in the feed                       |
+|                    |           |                                                     |
+| item-title         | String    | The title of the feed item                          |
+| item-description   | String    | Description of the feed item                        |
+| item-pubdate       | DateTime  | Publication date of the feed item                   |
+| item-link          | String    | Link of the feed item                               |
+
 
 ## Example
 
@@ -66,4 +72,45 @@ String description            {channel="feed:feed:bbc:description"}
 String author                 {channel="feed:feed:bbc:author"}
 DateTime published_date       {channel="feed:feed:bbc:last-update"}
 String title                  {channel="feed:feed:bbc:title"}
+
+DateTime	item01_update	{channel="feed:feeditems:tagesschau:item01#item-pubdate"}
+String		item01_title			{channel="feed:feeditems:tagesschau:item01#item-title"}
+String		item01_link				{channel="feed:feeditems:tagesschau:item01#item-link"}
+String		item01_description		{channel="feed:feeditems:tagesschau:item01#item-description"}
+DateTime	item02_update	{channel="feed:feeditems:tagesschau:item02#item-pubdate"}
+String		item02_title			{channel="feed:feeditems:tagesschau:item02#item-title"}
+String		item02_link				{channel="feed:feeditems:tagesschau:item02#item-link"}
+String		item02_description		{channel="feed:feeditems:tagesschau:item02#item-description"}
+DateTime	item03_update	{channel="feed:feeditems:tagesschau:item03#item-pubdate"}
+String		item03_title			{channel="feed:feeditems:tagesschau:item03#item-title"}
+String		item03_link				{channel="feed:feeditems:tagesschau:item03#item-link"}
+String		item03_description		{channel="feed:feeditems:tagesschau:item03#item-description"}
+DateTime	item04_update	{channel="feed:feeditems:tagesschau:item04#item-pubdate"}
+String		item04_title			{channel="feed:feeditems:tagesschau:item04#item-title"}
+String		item04_link				{channel="feed:feeditems:tagesschau:item04#item-link"}
+String		item04_description		{channel="feed:feeditems:tagesschau:item04#item-description"}
+DateTime	item05_update	{channel="feed:feeditems:tagesschau:item05#item-pubdate"}
+String		item05_title			{channel="feed:feeditems:tagesschau:item05#item-title"}
+String		item05_link				{channel="feed:feeditems:tagesschau:item05#item-link"}
+String		item05_description		{channel="feed:feeditems:tagesschau:item05#item-description"}
+DateTime	item06_update	{channel="feed:feeditems:tagesschau:item06#item-pubdate"}
+String		item06_title			{channel="feed:feeditems:tagesschau:item06#item-title"}
+String		item06_link				{channel="feed:feeditems:tagesschau:item06#item-link"}
+String		item06_description		{channel="feed:feeditems:tagesschau:item06#item-description"}
+DateTime	item07_update	{channel="feed:feeditems:tagesschau:item07#item-pubdate"}
+String		item07_title			{channel="feed:feeditems:tagesschau:item07#item-title"}
+String		item07_link				{channel="feed:feeditems:tagesschau:item07#item-link"}
+String		item07_description		{channel="feed:feeditems:tagesschau:item07#item-description"}
+DateTime	item08_update	{channel="feed:feeditems:tagesschau:item08#item-pubdate"}
+String		item08_title			{channel="feed:feeditems:tagesschau:item08#item-title"}
+String		item08_link				{channel="feed:feeditems:tagesschau:item08#item-link"}
+String		item08_description		{channel="feed:feeditems:tagesschau:item08#item-description"}
+DateTime	item09_update	{channel="feed:feeditems:tagesschau:item09#item-pubdate"}
+String		item09_title			{channel="feed:feeditems:tagesschau:item09#item-title"}
+String		item09_link				{channel="feed:feeditems:tagesschau:item09#item-link"}
+String		item09_description		{channel="feed:feeditems:tagesschau:item09#item-description"}
+DateTime	item10_update	{channel="feed:feeditems:tagesschau:item10#item-pubdate"}
+String		item10_title			{channel="feed:feeditems:tagesschau:item10#item-title"}
+String		item10_link				{channel="feed:feeditems:tagesschau:item10#item-link"}
+String		item10_description		{channel="feed:feeditems:tagesschau:item10#item-description"}
 ```
