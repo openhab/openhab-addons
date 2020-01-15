@@ -418,7 +418,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             cancelInactiveCleanupJob();
             inactiveCleanupJob = scheduler.schedule(() -> {
                 synchronized (BlueZBluetoothDevice.this) {
-                    if (device != null) {
+                    if (device != null && !device.getConnected()) {
                         logger.debug("Removing device '{}' due to inactivity", device.getAddress());
                         try {
                             disableNotifications();
@@ -436,7 +436,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                         device = null;
                     }
                 }
-            }, 10, TimeUnit.MINUTES);
+            }, 5, TimeUnit.MINUTES);
         } finally {
             inactiveCleanupJobLock.unlock();
         }

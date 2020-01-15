@@ -126,7 +126,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is not connected.");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Signal lost");
         }
     }
 
@@ -158,7 +158,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
                 });
                 break;
             case DISCONNECTED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Disconnected");
                 break;
             default:
                 break;
