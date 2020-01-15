@@ -55,14 +55,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void temperatureChannel() {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -84,14 +78,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void humidityChannel() {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -119,14 +107,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void voltageChannel() {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -148,14 +130,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void currentChannel() {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -178,14 +154,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void lightChannel() {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -214,14 +184,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void supplyVoltageChannel() {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -243,14 +207,8 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void noChannel() {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);

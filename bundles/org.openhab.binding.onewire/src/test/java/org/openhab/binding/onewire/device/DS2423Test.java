@@ -52,18 +52,12 @@ public class DS2423Test extends DeviceTestParent {
 
     @Test
     public void counterChannelTest() {
-        instantiateDevice();
-
         List<State> returnValue = new ArrayList<>();
         returnValue.add(new DecimalType(1408));
         returnValue.add(new DecimalType(3105));
 
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);

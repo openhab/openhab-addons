@@ -16,10 +16,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -57,14 +54,9 @@ public class BAE0910Test extends DeviceTestParent {
     @Test
     public void counter() {
         addChannel(CHANNEL_COUNTER, "Number");
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        ;
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -137,14 +129,9 @@ public class BAE0910Test extends DeviceTestParent {
         Map<String, Object> channelConfig = new HashMap<>();
         channelConfig.put("hires", "true");
         addChannel(CHANNEL_VOLTAGE, "Number:ElectricPotential", new Configuration(channelConfig));
-        instantiateDevice();
 
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -217,14 +204,9 @@ public class BAE0910Test extends DeviceTestParent {
      */
     private void digitalBaseChannel(String channel, BitSet configBitSet, int configRegister, String channelParam,
             BitSet returnBitSet, boolean isOutput) {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        ;
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -277,14 +259,9 @@ public class BAE0910Test extends DeviceTestParent {
         channelConfig.put("prescaler", 5);
         addChannel(freqChannel, "Number:Frequency", new Configuration(channelConfig));
         addChannel(dutyChannel, "Number:Dimensionless");
-        instantiateDevice();
 
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -344,11 +321,7 @@ public class BAE0910Test extends DeviceTestParent {
     private BitSet checkConfiguration(int registerIndex) throws OwException {
         ArgumentCaptor<BitSet> configArgumentCaptor = ArgumentCaptor.forClass(BitSet.class);
 
-        final InOrder inOrder = this.inOrder;
-        if (inOrder == null) {
-            Assert.fail("inOrder is null");
-            throw new OwException("inOrder is null)");
-        }
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/outc")),
                 configArgumentCaptor.capture());

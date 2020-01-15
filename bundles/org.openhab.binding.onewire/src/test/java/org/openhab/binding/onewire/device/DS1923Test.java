@@ -50,14 +50,9 @@ public class DS1923Test extends DeviceTestParent {
 
     @Test
     public void temperatureChannel() {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        ;
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -78,14 +73,9 @@ public class DS1923Test extends DeviceTestParent {
 
     @Test
     public void humidityChannel() {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        ;
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);

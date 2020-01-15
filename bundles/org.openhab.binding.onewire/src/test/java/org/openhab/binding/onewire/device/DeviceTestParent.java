@@ -17,6 +17,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_PRESENT;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +45,6 @@ import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 @NonNullByDefault
 public abstract class DeviceTestParent {
     protected @Nullable Class<? extends AbstractOwDevice> deviceTestClazz;
-    protected @Nullable AbstractOwDevice testDevice;
 
     @Mock
     @NonNullByDefault({})
@@ -58,14 +58,10 @@ public abstract class DeviceTestParent {
     @NonNullByDefault({})
     protected Thing mockThing;
 
-    protected @Nullable InOrder inOrder;
-
     protected SensorId testSensorId = new SensorId("00.000000000000");
 
     public void setupMocks(ThingTypeUID thingTypeUID) {
         initMocks(this);
-
-        inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         Mockito.when(mockThingHandler.getThing()).thenReturn(mockThing);
         Mockito.when(mockThing.getUID()).thenReturn(new ThingUID(thingTypeUID, "testsensor"));
@@ -90,48 +86,44 @@ public abstract class DeviceTestParent {
         Mockito.when(mockThing.getChannel(channelId)).thenReturn(channel);
     }
 
-    public @Nullable AbstractOwDevice instantiateDevice() {
+    public AbstractOwDevice instantiateDevice() throws IllegalStateException {
         final Class<? extends AbstractOwDevice> deviceTestClazz = this.deviceTestClazz;
         if (deviceTestClazz == null) {
-            Assert.fail("deviceTestClazz is null");
-            return null;
+            throw new IllegalStateException("deviceTestClazz is null");
         }
         try {
             Constructor<?> constructor = deviceTestClazz.getConstructor(SensorId.class, OwBaseThingHandler.class);
-            testDevice = (AbstractOwDevice) constructor.newInstance(new Object[] { testSensorId, mockThingHandler });
+            AbstractOwDevice testDevice = (AbstractOwDevice) constructor
+                    .newInstance(new Object[] { testSensorId, mockThingHandler });
+            Assert.assertNotNull(testDevice);
             return testDevice;
-        } catch (Exception e) {
-            Assert.fail("Couldn't create test device: " + e.getMessage());
-            return null;
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
+                | InvocationTargetException e) {
+            throw new IllegalStateException(e);
         }
     }
 
-    public @Nullable AbstractOwDevice instantiateDevice(OwSensorType sensorType) {
+    public AbstractOwDevice instantiateDevice(OwSensorType sensorType) {
         final Class<? extends AbstractOwDevice> deviceTestClazz = this.deviceTestClazz;
         if (deviceTestClazz == null) {
-            Assert.fail("deviceTestClazz is null");
-            return null;
+            throw new IllegalStateException("deviceTestClazz is null");
         }
         try {
             Constructor<?> constructor = deviceTestClazz.getConstructor(SensorId.class, OwSensorType.class,
                     OwBaseThingHandler.class);
-            testDevice = (AbstractOwDevice) constructor
+            AbstractOwDevice testDevice = (AbstractOwDevice) constructor
                     .newInstance(new Object[] { testSensorId, sensorType, mockThingHandler });
+            Assert.assertNotNull(testDevice);
             return testDevice;
-        } catch (Exception e) {
-            Assert.fail("Couldn't create test device: " + e.getMessage());
-            return null;
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
+                | InvocationTargetException e) {
+            throw new IllegalStateException(e);
         }
     }
 
     public void presenceTest(OnOffType state) {
-        instantiateDevice();
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(state);
             testDevice.checkPresence(mockBridgeHandler);

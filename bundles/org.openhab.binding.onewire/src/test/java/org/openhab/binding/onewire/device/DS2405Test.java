@@ -52,14 +52,9 @@ public class DS2405Test extends DeviceTestParent {
     }
 
     private void digitalChannelTest(OnOffType state, int channelNo) {
-        instantiateDevice();
-
-        final AbstractOwDevice testDevice = this.testDevice;
-        final InOrder inOrder = this.inOrder;
-        if (testDevice == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
-            return;
-        }
+        final AbstractOwDevice testDevice = instantiateDevice();
+        ;
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         BitSet returnValue = new BitSet(8);
         if (state == OnOffType.ON) {
