@@ -161,6 +161,7 @@ Bridge nanoleaf:controller:MyLightPanels [ address="192.168.1.100", port=16021, 
 ```
 
 Note: To generate the `authToken`:
+    
 * On the Nanoleaf controller, hold the on-off button for 5-7 seconds until the LED starts flashing.
 * Send a POST request to the authorization endpoint within 30 seconds of activating pairing, like this:
 
