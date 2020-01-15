@@ -14,6 +14,7 @@ package org.openhab.binding.wemo.internal.handler;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -26,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -52,6 +54,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * The {@link WemoHolmesHandler} is responsible for handling commands, which are
@@ -256,8 +259,8 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
             if (wemoURL != null) {
                 wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
             }
-        } catch (Exception e) {
-            logger.error("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
+        } catch (RuntimeException e) {
+            logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         updateStatus(ThingStatus.ONLINE);
@@ -552,9 +555,11 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                     }
                 }
             }
-        } catch (Exception e) {
-            logger.error("Failed to get actual state for device '{}':", getThing().getUID(), e);
+        } catch (RuntimeException | ParserConfigurationException | SAXException | IOException e) {
+            logger.debug("Failed to get actual state for device '{}':", getThing().getUID(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     public String getWemoURL(String actionService) {

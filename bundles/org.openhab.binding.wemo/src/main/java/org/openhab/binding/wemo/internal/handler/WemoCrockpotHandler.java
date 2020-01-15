@@ -162,8 +162,8 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                 if (wemoURL != null) {
                     wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                 }
-            } catch (Exception e) {
-                logger.error("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
+            } catch (RuntimeException e) {
+                logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             updateStatus(ThingStatus.ONLINE);
@@ -294,9 +294,11 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                     }
                 }
             }
-        } catch (Exception e) {
-            logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+        } catch (RuntimeException e) {
+            logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     public String getWemoURL(String actionService) {
