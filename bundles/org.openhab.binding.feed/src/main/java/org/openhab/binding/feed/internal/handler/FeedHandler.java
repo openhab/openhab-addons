@@ -21,8 +21,8 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.time.ZonedDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -64,11 +64,13 @@ public class FeedHandler extends BaseThingHandler {
     private BigDecimal refreshTime;
     private ScheduledFuture<?> refreshTask;
     private SyndFeed currentFeedState;
+    private int thingTyp;
     private long lastRefreshTime;
 
-    public FeedHandler(Thing thing) {
+    public FeedHandler(Thing thing, int thingTyp) {
         super(thing);
         currentFeedState = null;
+        this.thingTyp = thingTyp;
     }
 
     @Override
@@ -121,6 +123,8 @@ public class FeedHandler extends BaseThingHandler {
 
     private void publishChannelIfLinked(ChannelUID channelUID) {
         String channelID = channelUID.getId();
+        String orgChannelID = channelID;
+        Integer itemNr = 0;
 
         if (currentFeedState == null) {
             // This will happen if the binding could not download data from the server
@@ -132,19 +136,25 @@ public class FeedHandler extends BaseThingHandler {
             return;
         }
 
+        if (thingTyp == 2) {
+            String num = channelID.substring(4, 6);
+            itemNr = Integer.parseInt(num) - 1;
+            channelID = channelID.substring(7, channelID.length());
+        }
         State state = null;
         switch (channelID) {
             case CHANNEL_LATEST_TITLE:
-                String title = getLatestEntry(currentFeedState).getTitle();
+                String title = getOneEntry(currentFeedState, itemNr).getTitle();
                 state = new StringType(getValueSafely(title));
                 break;
             case CHANNEL_LATEST_DESCRIPTION:
-                String description = getLatestEntry(currentFeedState).getDescription().getValue();
+                String description = getOneEntry(currentFeedState, itemNr).getDescription().getValue();
                 state = new StringType(getValueSafely(description));
                 break;
             case CHANNEL_LATEST_PUBLISHED_DATE:
             case CHANNEL_LAST_UPDATE:
-                Date date = getLatestEntry(currentFeedState).getPublishedDate();
+            case CHANNEL_PUBLISHED_DATE:
+                Date date = getOneEntry(currentFeedState, itemNr).getPublishedDate();
                 if (date == null) {
                     logger.debug("Cannot update date channel. No date found in feed.");
                     return;
@@ -168,14 +178,18 @@ public class FeedHandler extends BaseThingHandler {
                 int numberOfEntries = currentFeedState.getEntries().size();
                 state = new DecimalType(numberOfEntries);
                 break;
+            case CHANNEL_LINK:
+                String link = getOneEntry(currentFeedState, itemNr).getLink();
+                state = new StringType(getValueSafely(link));
+                break;
             default:
-                logger.debug("Unrecognized channel: {}", channelID);
+                logger.debug("Unrecognized channel: {}", orgChannelID);
         }
 
         if (state != null) {
-            updateState(channelID, state);
+            updateState(orgChannelID, state);
         } else {
-            logger.debug("Cannot update channel with ID {}", channelID);
+            logger.debug("Cannot update channel with ID {}", orgChannelID);
         }
     }
 
@@ -248,7 +262,6 @@ public class FeedHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         }
-
         return feed;
     }
 
@@ -256,19 +269,26 @@ public class FeedHandler extends BaseThingHandler {
      * Returns the most recent entry or null, if no entries are found.
      */
     private SyndEntry getLatestEntry(SyndFeed feed) {
+        return getOneEntry(feed, 0);
+    }
+
+    /**
+     * Returns the most recent entry or null, if no entries are found.
+     */
+    private SyndEntry getOneEntry(SyndFeed feed, int pos) {
         List<SyndEntry> allEntries = feed.getEntries();
-        SyndEntry lastEntry = null;
+        SyndEntry oneEntry = null;
         if (allEntries.size() >= 1) {
             /*
              * The entries are stored in the SyndFeed object in the following order -
              * the newest entry has index 0. The order is determined from the time the entry was posted, not the
              * published time of the entry.
              */
-            lastEntry = allEntries.get(0);
+            oneEntry = allEntries.get(pos);
         } else {
             logger.debug("No entries found");
         }
-        return lastEntry;
+        return oneEntry;
     }
 
     @Override

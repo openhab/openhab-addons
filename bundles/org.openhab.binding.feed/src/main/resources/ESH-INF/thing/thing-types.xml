@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="feed" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="feed"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -42,23 +43,70 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="feeditems">
+		<label>Feed items</label>
+		<description>Provides items of a feed.</description>
+
+		<channel-groups>
+			<channel-group id="item01" typeId="feeditem" />
+			<channel-group id="item02" typeId="feeditem" />
+			<channel-group id="item03" typeId="feeditem" />
+			<channel-group id="item04" typeId="feeditem" />
+			<channel-group id="item05" typeId="feeditem" />
+			<channel-group id="item06" typeId="feeditem" />
+			<channel-group id="item07" typeId="feeditem" />
+			<channel-group id="item08" typeId="feeditem" />
+			<channel-group id="item09" typeId="feeditem" />
+			<channel-group id="item10" typeId="feeditem" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="URL" type="text" required="true">
+				<label>Feed URL</label>
+				<description>The URL of the feed</description>
+			</parameter>
+
+			<!--After the refresh time interval expires, the bindings checks for updates in the Feed, and if the information is not 
+				up to date, updates the feed content stored in the channel -->
+
+			<parameter name="refresh" type="integer">
+				<label>Refresh time interval</label>
+				<description>Refresh time interval in minutes.</description>
+				<default>20</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="feeditem">
+		<label>Feed Item</label>
+		<description>This is an item of the feed</description>
+		<category>Text</category>
+		<channels>
+			<channel id="latest-description" typeId="latest-description" />
+			<channel id="latest-title" typeId="latest-title" />
+			<channel id="pubdate" typeId="pubdate" />
+			<channel id="link" typeId="link" />
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="latest-title">
 		<item-type>String</item-type>
-		<label>Latest Title</label>
+		<label>Latest title</label>
 		<description>Contains the title of the last feed entry.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
 	<channel-type id="latest-description">
 		<item-type>String</item-type>
-		<label>Latest Description</label>
+		<label>Latest description</label>
 		<description>Contains the description of last feed entry.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
 	<channel-type id="latest-date">
 		<item-type>DateTime</item-type>
-		<label>Latest Published Date</label>
+		<label>Latest published date</label>
 		<description>Contains the published date of the last feed entry.</description>
 		<state readOnly="true" pattern="%tc %n" />
 	</channel-type>
@@ -77,6 +125,13 @@
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
+	<channel-type id="link" advanced="true">
+		<item-type>String</item-type>
+		<label>Link</label>
+		<description>The link of the feed-item</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
 	<channel-type id="description" advanced="true">
 		<item-type>String</item-type>
 		<label>Description</label>
@@ -84,16 +139,23 @@
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
+	<channel-type id="pubdate" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Publication date</label>
+		<description>The publication date of the feed item</description>
+		<state readOnly="true" pattern="%tc %n" />
+	</channel-type>
+
 	<channel-type id="last-update" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Last Update</label>
+		<label>Last update</label>
 		<description>The last update date of the feed</description>
 		<state readOnly="true" pattern="%tc %n" />
 	</channel-type>
 
 	<channel-type id="number-of-entries" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number of Entries</label>
+		<label>Number of entries</label>
 		<description>Number of entries in the feed</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>

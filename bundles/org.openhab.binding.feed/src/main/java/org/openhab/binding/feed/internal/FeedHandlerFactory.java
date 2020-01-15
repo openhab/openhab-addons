@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.feed.internal;
 
-import static org.openhab.binding.feed.internal.FeedBindingConstants.FEED_THING_TYPE_UID;
+import static org.openhab.binding.feed.internal.FeedBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -34,7 +35,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.feed")
 public class FeedHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(FEED_THING_TYPE_UID);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(FEED_THING_TYPE_UID, FEED_ITEMS_THING_TYPE_UID).collect(Collectors.toSet());
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,7 +48,9 @@ public class FeedHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(FEED_THING_TYPE_UID)) {
-            return new FeedHandler(thing);
+            return new FeedHandler(thing, 1);
+        } else if (thingTypeUID.equals(FEED_ITEMS_THING_TYPE_UID)) {
+            return new FeedHandler(thing, 2);
         }
 
         return null;

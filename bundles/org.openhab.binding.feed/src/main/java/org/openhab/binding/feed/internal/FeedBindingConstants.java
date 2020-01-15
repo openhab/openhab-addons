@@ -29,9 +29,15 @@ public class FeedBindingConstants {
     public static final String BINDING_ID = "feed";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID FEED_THING_TYPE_UID = new ThingTypeUID("feed", "feed");
+    public static final ThingTypeUID FEED_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "feed");
+    public static final ThingTypeUID FEED_ITEMS_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "feeditems");
 
     // List of all Channel IDs
+    /**
+     * Contains the published date of the feed item.
+     */
+    public static final String CHANNEL_PUBLISHED_DATE = "pubdate";
+
     /**
      * Contains the published date of the last feed entry.
      */
@@ -61,6 +67,11 @@ public class FeedBindingConstants {
      * The name of the feed author, if author is present.
      */
     public static final String CHANNEL_AUTHOR = "author";
+
+    /**
+     * The link of the feed item.
+     */
+    public static final String CHANNEL_LINK = "link";
 
     /**
      * The title of the feed.
