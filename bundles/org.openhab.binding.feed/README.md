@@ -10,7 +10,7 @@ RSS 0.91 Netscape, RSS 0.90, Atom 1.0, Atom 0.3.
 
 ## Supported Things
 
-This binding supports one Thing type: `feed`.
+This binding supports one Thing type: `feed`, `feeditems`.
 
 ## Discovery
 
@@ -52,6 +52,7 @@ Things:
 ```java
 feed:feed:bbc  [ URL="http://feeds.bbci.co.uk/news/video_and_audio/news_front_page/rss.xml?edition=uk"]
 feed:feed:techCrunch [ URL="http://feeds.feedburner.com/TechCrunch/", refresh=60]
+feed:feeditems:tagesschau [ URL="https://www.tagesschau.de/xml/rss2", refresh=30]
 ```
 
 Items:
