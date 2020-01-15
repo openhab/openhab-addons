@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tibber" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" 
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+		
+	<thing-type id="tibberapi">   
+		<label>Tibber API</label>
+		<description>Tibber API connector</description>
+		<channels>
+			<channel id="current_total" typeId="current_total" />
+			<channel id="current_startsAt" typeId="current_startsAt" />
+			<channel id="daily_from" typeId="daily_from" />
+			<channel id="daily_to" typeId="daily_to" />
+			<channel id="daily_cost" typeId="daily_cost" />
+			<channel id="daily_consumption" typeId="daily_consumption" />
+			<channel id="hourly_from" typeId="hourly_from" />
+			<channel id="hourly_to" typeId="hourly_to" />
+			<channel id="hourly_cost" typeId="hourly_cost" />
+			<channel id="hourly_consumption" typeId="hourly_consumption" />
+			<channel id="live_timestamp" typeId="live_timestamp" />
+			<channel id="live_power" typeId="live_power" />
+			<channel id="live_lastMeterConsumption" typeId="live_lastMeterConsumption" />
+			<channel id="live_accumulatedConsumption" typeId="live_accumulatedConsumption" />
+			<channel id="live_accumulatedCost" typeId="live_accumulatedCost" />
+			<channel id="live_currency" typeId="live_currency" />
+			<channel id="live_minPower" typeId="live_minPower" />
+			<channel id="live_averagePower" typeId="live_averagePower" />
+			<channel id="live_maxPower" typeId="live_maxPower" />
+			<channel id="live_voltage1" typeId="live_voltage" />
+			<channel id="live_voltage2" typeId="live_voltage" />
+			<channel id="live_voltage3" typeId="live_voltage" />
+			<channel id="live_current1" typeId="live_current" />
+			<channel id="live_current2" typeId="live_current" />
+			<channel id="live_current3" typeId="live_current" />
+			<channel id="live_powerProduction" typeId="live_powerProduction" />
+			<channel id="live_accumulatedProduction" typeId="live_accumulatedProduction" />
+			<channel id="live_minPowerproduction" typeId="live_minPowerproduction" />
+			<channel id="live_maxPowerproduction" typeId="live_maxPowerproduction" />
+		</channels>
+		<properties>
+			<property name="vendor">Tibber</property>
+		</properties>
+		<config-description>
+			<parameter name="token" type="text"> 
+				<required>true</required>
+				<label>Token</label>
+				<description>Tibber Personal Token</description>
+			</parameter>
+			<parameter name="homeid" type="text"> 
+				<required>true</required>
+				<label>HomeID</label>
+				<description>Tibber Home ID</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1"> 
+				<required>true</required>
+				<label>Refresh Interval</label>
+				<default>1</default>
+				<description>Manually Set Polling Frequency (minutes)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="id">
+		<item-type>String</item-type>
+		<label>Home ID</label>
+		<description>Home ID as retrieved from Tibber</description>
+	</channel-type>    
+	<channel-type id="current_total">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Current Total Price</label>
+		<description>Total Price: Energy + Tax</description>
+		<state pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="current_startsAt">
+		<item-type>String</item-type>
+		<label>Timestamp Current</label>
+		<description>Timestamp for current electricity price</description>
+	</channel-type>
+	<channel-type id="daily_from">
+		<item-type>String</item-type>
+		<label>Timestamp Daily From</label>
+		<description>Timestamp for daily cost/consumption (from)</description>
+	</channel-type>
+	<channel-type id="daily_to">
+		<item-type>String</item-type>
+		<label>Timestamp Daily To</label>
+		<description>Timestamp for daily cost/consumption (to)</description>
+	</channel-type>
+	<channel-type id="daily_cost">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Total Daily Cost</label>
+		<description>Total Price: Energy + Tax</description>
+		<state pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="daily_consumption">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Total Daily Consumption</label>
+		<description>Total Price: Energy + Tax</description>
+		<state pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="hourly_from">
+		<item-type>String</item-type>
+		<label>Timestamp Hourly From</label>
+		<description>Timestamp for daily cost/consumption (from)</description>
+	</channel-type>
+	<channel-type id="hourly_to">
+		<item-type>String</item-type>
+		<label>Timestamp Hourly To</label>
+		<description>Timestamp for daily cost/consumption (to)</description>
+	</channel-type>
+	<channel-type id="hourly_cost">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Total Hourly Cost</label>
+		<description>Total Price: Energy + Tax</description>
+		<state pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="hourly_consumption">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Total Hourly Consumption</label>
+		<description>Total Price: Energy + Tax</description>
+		<state pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_timestamp">
+		<item-type>String</item-type>
+		<label>Live Timestamp</label>
+		<description>Timestamp for live measurements</description>
+	</channel-type>
+	<channel-type id="live_power">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Live Consumption</label>
+		<description>Live Consumption</description>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_lastMeterConsumption">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Last Meter Consumption</label>
+		<description>Last Meter Active Import </description>
+		<state pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_accumulatedConsumption">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Accumulated Consumption</label>
+		<description>Accumulated Consumption since Midnight</description>
+		<state pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_accumulatedCost">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Accumulated Cost</label>
+		<description>Accumulated Cost since Midnight</description>
+		<state pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_currency">
+		<item-type>String</item-type>
+		<label>Currency</label>
+		<description>Currency of Displayed Cost</description>
+	</channel-type>
+	<channel-type id="live_minPower">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Min Consumption</label>
+		<description>Min Consumption since Midnight</description>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_averagePower">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Average Consumption</label>
+		<description>Average Consumption since Midnight</description>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_maxPower">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Max Consumption</label>
+		<description>Max Consumption since Midnight</description>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_voltage">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Voltage</label>
+		<description>Voltage on given Phase</description>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_current">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Current</label>
+		<description>Current on given Phase</description>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_powerProduction">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Live Production</label>
+		<description>Live Production</description>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_accumulatedProduction">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Accumulated Production</label>
+		<description>Accumulated Production since Midnight</description>
+		<state pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_minPowerproduction">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Min Production</label>
+		<description>Min Production since Midnight</description>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="live_maxPowerproduction">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Max Production</label>
+		<description>Max Production since Midnight</description>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+</thing:thing-descriptions>
