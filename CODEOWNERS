@@ -212,8 +212,8 @@
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.binding.urtsi/ @OLibutzki
+/bundles/org.openhab.binding.vallox/ @gitMiguel
 /bundles/org.openhab.binding.valloxmv/ @bjoernbrings
-/bundles/org.openhab.binding.vallox/ @gitMiguel @bjoernbrings
 /bundles/org.openhab.binding.vektiva/ @octa22
 /bundles/org.openhab.binding.velbus/ @cedricboon
 /bundles/org.openhab.binding.velux/ @gs4711

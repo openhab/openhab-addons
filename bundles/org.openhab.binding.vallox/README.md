@@ -1,6 +1,8 @@
 # Vallox Binding
 
-This binding connects to Vallox central venting units and supports only older SE models.
+This binding connects to Vallox central venting units and supports only older SE models. Currently this DOES NOT support MV models.
+[See here: Vallox MV binding](https://www.openhab.org/addons/bindings/valloxmv/)
+Please note that in 3.0.0 release of openHAB it is planned that the MV binding is merged into this. After that there would be only one Vallox binding that supports all models.
 
 ## Supported Things
 
