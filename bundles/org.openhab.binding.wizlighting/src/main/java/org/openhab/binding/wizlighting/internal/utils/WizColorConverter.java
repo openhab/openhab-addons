@@ -46,10 +46,7 @@ public class WizColorConverter {
      * the color channels. When creating colors, the WiZ bulbs only use the warm
      * white channel, the cool white channel is ignored.
      *
-     * Totally made this up. It's based on the commonly referenced SaikoLED blog,
-     * but that doesn't include a separate but that doesn't include a
-     * separate dimming channel. I couldn't find any satisfactory conversions that
-     * actually included the channels the way that the WiZ bulbs seem to.
+     * Taken from Tasmota HsToRGB
      *
      * @param hsbColor the {@link HSBType}.
      *
@@ -57,35 +54,83 @@ public class WizColorConverter {
      */
     public int[] hsbToRgbw(HSBType hsb) {
         logger.debug("Converting hue and saturation to RGBW.  Incoming: {}", hsb);
-        double redD, greenD, blueD;
-        int red, green, blue, white;
+        double redD = 255.;
+        double greenD = 255.;
+        double blueD = 255.;
+        int red = 255;
+        int green = 255;
+        int blue = 255;
+        int white = 255;
 
         // Since we're going to use the white lights to control saturation, recalculate what
         // the HSBvalue would be if the color was at full brightness and saturation
-        DecimalType hue = hsb.getHue();
-        // Create the new hue
-        HSBType fullySaturatedHue = new HSBType(hue, new PercentType(100), new PercentType(100));
-        // get the RGB from the saturated colors
-        redD = fullySaturatedHue.getRed().doubleValue();
-        greenD = fullySaturatedHue.getGreen().doubleValue();
-        blueD = fullySaturatedHue.getBlue().doubleValue();
+        Double hue = hsb.getHue().doubleValue();
+        Double sat_255 = ((hsb.getSaturation().doubleValue()) / 100) * 255;
 
-        logger.debug("Colors from hue, assuming full saturation and brightness R: {} G: {} B: {}", redD, greenD, blueD);
+        if (sat_255 > 0) {
+            int i = (int) (hue / 60); // color quadrant 0..2555
+            double f = hue % 60; // 0..59
+            double q = 255 - ((f / 60) * sat_255);
+            // double p = 255 - sat_255;
+            // double t = 255 - (((60 - f) / 60) * sat_255);
+            double p = 0;
+            double t = 255 - (((60 - f) / 60) * 255);
+
+            switch (i) {
+                case 0:
+                    // redD = 255;
+                    greenD = t;
+                    blueD = p;
+                    break;
+                case 1:
+                    redD = q;
+                    // greenD = 255;
+                    blueD = p;
+                    break;
+                case 2:
+                    redD = p;
+                    // greenD = 255;
+                    blueD = t;
+                    break;
+                case 3:
+                    redD = p;
+                    greenD = q;
+                    // blueD = 255;
+                    break;
+                case 4:
+                    redD = t;
+                    greenD = p;
+                    // blueD = 255;
+                    break;
+                default:
+                    // redD = 255;
+                    greenD = p;
+                    blueD = q;
+                    break;
+            }
+        }
+
+        logger.debug("Colors from hue, assuming full brightness R: {} G: {} B: {}", redD, greenD, blueD);
 
         // Convert the "PercentType" to a percent
         double saturationPercent = (hsb.getSaturation().doubleValue() / 100);
 
         // Calculate the white intensity from saturation and adjust down the other colors
+        // This is approximately what the WiZ app does. Personally, I think it undersaturates everything
         if (saturationPercent < 0.5) {
             // At less than 50% saturation, maximize white and lower the other intensities by 2x of the saturation
             // percent. (2x to give us full range between 0-50%)
-            white = 255;
+            // white = 255;
+            // ^^ WiZ does this.. I think it's very undersaturated that way
+            white = 255 / 2; // Divide by two to not undersaturate
             red = (int) (redD * (2 * saturationPercent));
             green = (int) (greenD * (2 * saturationPercent));
             blue = (int) (blueD * (2 * saturationPercent));
         } else {
             // At >50% saturation, colors are at full and increase saturation by decreasing the white intensity.
-            white = (int) (255 * 2 * (1 - saturationPercent));
+            // white = (int) (255 * 2 * (1 - saturationPercent));
+            // ^^ WiZ does this.. I think it's very undersaturated that way
+            white = (int) ((255 / 2) * 2 * (1 - saturationPercent));
             red = (int) redD;
             green = (int) greenD;
             blue = (int) blueD;

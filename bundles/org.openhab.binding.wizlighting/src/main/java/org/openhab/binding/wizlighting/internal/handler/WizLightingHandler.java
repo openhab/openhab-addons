@@ -290,7 +290,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * Starts one thread that querys the state of the socket, after the defined
      * refresh interval.
      */
-    private void initGetStatusAndKeepAliveThread() {
+    private synchronized void initGetStatusAndKeepAliveThread() {
         ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
         if (keepAliveJob != null) {
             keepAliveJob.cancel(true);
@@ -304,7 +304,7 @@ public class WizLightingHandler extends BaseThingHandler {
 
                 if (getThing().getStatus() != ThingStatus.OFFLINE) {
                     logger.debug(
-                            "Begin of Socket keep alive thread routine for bulb at {}. Current configuration update interval: {} seconds.",
+                            "Begin socket keep alive thread routine for bulb at {}. Current configuration update interval: {} seconds.",
                             bulbIpAddress, updateInterval);
 
                     logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", bulbMacAddress,
@@ -343,7 +343,7 @@ public class WizLightingHandler extends BaseThingHandler {
         logger.debug("Finished initialization for bulb at {} - {}", getBulbIpAddress(), getBulbMacAddress());
     }
 
-    private void getPilot() {
+    private synchronized void getPilot() {
         logger.trace("Requesting current state from bulb.");
         WizLightingResponse response = sendRequestPacket(WizLightingMethodType.getPilot, null);
         if (response != null) {
@@ -366,7 +366,7 @@ public class WizLightingHandler extends BaseThingHandler {
      *
      * @param receivedMessage the received {@link WizLightingResponse}.
      */
-    public void newReceivedResponseMessage(final WizLightingResponse receivedMessage) {
+    public synchronized void newReceivedResponseMessage(final WizLightingResponse receivedMessage) {
         // Grab the ID number and mark the bulb online
         requestId = receivedMessage.getId();
         updateTimestamps();
@@ -383,7 +383,7 @@ public class WizLightingHandler extends BaseThingHandler {
      *
      * @param receivedParam The received {@link SyncResponseParam}
      */
-    private void updateStatesFromParams(final SyncResponseParam receivedParam) {
+    private synchronized void updateStatesFromParams(final SyncResponseParam receivedParam) {
         if (!receivedParam.state) {
             logger.debug("Light is off");
             updateState(CHANNEL_COLOR, HSBType.BLACK);
@@ -460,7 +460,7 @@ public class WizLightingHandler extends BaseThingHandler {
      * @param requestPacket the {@link WizLightingRequest}.
      * @param address the {@link InetAddress}.
      */
-    private @Nullable WizLightingResponse sendRequestPacket(final WizLightingMethodType method,
+    private synchronized @Nullable WizLightingResponse sendRequestPacket(final WizLightingMethodType method,
             final @Nullable Param param) {
         DatagramSocket dsocket = null;
         try {
@@ -521,7 +521,7 @@ public class WizLightingHandler extends BaseThingHandler {
     /**
      * Makes note of the latest timestamps
      */
-    private void updateTimestamps() {
+    private synchronized void updateTimestamps() {
         updateStatus(ThingStatus.ONLINE);
         latestUpdate = System.currentTimeMillis();
         updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
@@ -530,7 +530,7 @@ public class WizLightingHandler extends BaseThingHandler {
     /**
      * Asks the bulb for its current system configuration
      */
-    private void updateBulbProperties() {
+    private synchronized void updateBulbProperties() {
         logger.trace("Updating metadata for bulb at {}", bulbIpAddress);
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.getSystemConfig, null);
         if (registrationResponse != null) {
