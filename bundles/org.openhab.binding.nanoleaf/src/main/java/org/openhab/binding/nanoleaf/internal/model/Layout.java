@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import java.util.List;
-import java.util.TreeMap;
 
 /**
  * Represents layout of the light panels
@@ -59,24 +60,36 @@ public class Layout {
      * Returns an text representation for a canvas layout.
      *
      * Note only canvas supported currently due to its easy geometry
+     * 
      * @return a String containing the layout
      */
     public String getLayoutView() {
-        if (positionData!=null) {
+        if (positionData != null) {
             String view = "";
 
-            int minx = Integer.MAX_VALUE, maxx = Integer.MIN_VALUE, miny = Integer.MAX_VALUE, maxy = Integer.MIN_VALUE;
-
+            int minx = Integer.MAX_VALUE;
+            int maxx = Integer.MIN_VALUE;
+            int miny = Integer.MAX_VALUE;
+            int maxy = Integer.MIN_VALUE;
 
             for (int index = 0; index < numPanels; index++) {
                 if (positionData != null) {
-                    @Nullable PositionDatum panel = positionData.get(index);
+                    @Nullable
+                    PositionDatum panel = positionData.get(index);
 
                     if (panel != null) {
-                        if (panel.getPosX() < minx) minx = panel.getPosX();
-                        if (panel.getPosX() > maxx) maxx = panel.getPosX();
-                        if (panel.getPosY() < miny) miny = panel.getPosY();
-                        if (panel.getPosY() > maxy) maxy = panel.getPosY();
+                        if (panel.getPosX() < minx) {
+                            minx = panel.getPosX();
+                        }
+                        if (panel.getPosX() > maxx) {
+                            maxx = panel.getPosX();
+                        }
+                        if (panel.getPosY() < miny) {
+                            miny = panel.getPosY();
+                        }
+                        if (panel.getPosY() > maxy) {
+                            maxy = panel.getPosY();
+                        }
                     }
                 }
             }
@@ -84,37 +97,34 @@ public class Layout {
             int shiftWidth = getSideLength() / 2;
 
             int lineY = maxy;
-            TreeMap<Integer, PositionDatum> map = new TreeMap<>();
+            Map<Integer, PositionDatum> map = new TreeMap<>();
 
             while (lineY >= miny) {
                 map = new TreeMap<>();
                 for (int index = 0; index < numPanels; index++) {
 
                     if (positionData != null) {
-                        @Nullable PositionDatum panel = positionData.get(index);
+                        @Nullable
+                        PositionDatum panel = positionData.get(index);
 
-                        if (panel!=null && panel.getPosY() == lineY)
+                        if (panel != null && panel.getPosY() == lineY)
                             map.put(panel.getPosX(), panel);
                     }
                 }
                 lineY -= shiftWidth;
-
                 for (int x = minx; x <= maxx; x += shiftWidth) {
-
-
                     if (map.containsKey(x)) {
-                        @Nullable PositionDatum panel = map.get(x);
+                        @Nullable
+                        PositionDatum panel = map.get(x);
                         view += String.format("%5s ", panel.getPanelId());
                     } else
                         view += "      ";
-
                 }
                 view += "\n";
             }
 
             return view;
-        }
-        else
+        } else
             return "";
-        }
+    }
 }

@@ -12,16 +12,17 @@
  */
 package org.openhab.binding.nanoleaf.internal;
 
-import com.google.gson.Gson;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Test;
 import org.openhab.binding.nanoleaf.internal.model.TouchEvent;
 import org.openhab.binding.nanoleaf.internal.model.TouchEvents;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import com.google.gson.Gson;
 
 /**
  * Test for the TouchEvents
@@ -37,11 +38,13 @@ public class TouchTest {
     @Test
     public void testTheRightLayoutView() {
         String json = "{\"events\":[{\"panelId\":48111,\"gesture\":1}]}";
-        @Nullable TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
-        assertThat(touchEvents.getEvents().size(),greaterThan(0));
+        @Nullable
+        TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
+        assertThat(touchEvents.getEvents().size(), greaterThan(0));
         assertThat(touchEvents.getEvents().size(), is(1));
-        @Nullable TouchEvent touchEvent = touchEvents.getEvents().get(0);
-        assertThat(touchEvent.getPanelId(),is("48111"));
-        assertThat(touchEvent.getGesture(),is(1));
+        @Nullable
+        TouchEvent touchEvent = touchEvents.getEvents().get(0);
+        assertThat(touchEvent.getPanelId(), is("48111"));
+        assertThat(touchEvent.getGesture(), is(1));
     }
 }

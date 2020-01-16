@@ -71,8 +71,8 @@ public class NanoleafBindingConstants {
     public static final String API_MIN_FW_VER_CANVAS = "1.1.0";
     public static final String MODEL_ID_LIGHTPANELS = "NL22";
     public static final String MODEL_ID_CANVAS = "NL29";
-    public static final String DEVICE_TYPE_LIGHTPANELS ="lightPanels";
-    public static final String DEVICE_TYPE_CANVAS ="canvas";
+    public static final String DEVICE_TYPE_LIGHTPANELS = "lightPanels";
+    public static final String DEVICE_TYPE_CANVAS = "canvas";
 
     // mDNS discovery service type
     // see http://forum.nanoleaf.me/docs/openapi#_gf9l5guxt8r0

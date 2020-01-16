@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface BooleanState {
 
-    public boolean getValue();
+    boolean getValue();
 
-    public void setValue(boolean value);
+    void setValue(boolean value);
 }

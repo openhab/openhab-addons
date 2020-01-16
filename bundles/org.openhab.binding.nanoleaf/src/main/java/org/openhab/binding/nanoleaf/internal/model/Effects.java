@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import java.util.List;
 
 /**
  * Represents effect commands for select and write

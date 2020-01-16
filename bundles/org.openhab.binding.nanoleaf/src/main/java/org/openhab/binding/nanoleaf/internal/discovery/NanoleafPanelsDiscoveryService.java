@@ -76,21 +76,24 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService imp
     /**
      * Called by the controller handler with bridge and panel data
      *
-     * @param bridge         The controller
+     * @param bridge The controller
      * @param controllerInfo Panel data (and more)
      */
     @Override
     public void onControllerInfoFetched(ThingUID bridge, ControllerInfo controllerInfo) {
         logger.debug("Discover panels connected to controller with id {}", bridge.getAsString());
         final PanelLayout panelLayout = controllerInfo.getPanelLayout();
-        @Nullable Layout layout = panelLayout.getLayout();
+        @Nullable
+        Layout layout = panelLayout.getLayout();
 
-        if (layout!= null && layout.getNumPanels() > 0) {
-            @Nullable final List<PositionDatum> positionData = layout.getPositionData();
-            if (positionData!=null) {
+        if (layout != null && layout.getNumPanels() > 0) {
+            @Nullable
+            final List<PositionDatum> positionData = layout.getPositionData();
+            if (positionData != null) {
                 Iterator<PositionDatum> iterator = positionData.iterator();
                 while (iterator.hasNext()) {
-                    @Nullable PositionDatum panel = iterator.next();
+                    @Nullable
+                    PositionDatum panel = iterator.next();
                     ThingUID newPanelThingUID = new ThingUID(NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL, bridge,
                             Integer.toString(panel.getPanelId()));
 

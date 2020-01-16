@@ -28,14 +28,14 @@ public class NanoleafControllerConfig {
     public String address = "";
     /** Port number of the light panels controller */
     public static final String PORT = "port";
-    public int port=16021;
+    public int port = 16021;
     /** Authorization token for controller API */
     public static final String AUTH_TOKEN = "authToken";
     public @Nullable String authToken;
     /** Light panels status refresh interval */
     public static final String REFRESH_INTERVAL = "refreshInterval";
-    public int refreshInterval=60;
+    public int refreshInterval = 60;
     /** Nanoleaf device type: Light panels or Canvas */
     public static final String DEVICE_TYPE = "deviceType";
-    public String deviceType="lightPanels";
+    public String deviceType = "lightPanels";
 }

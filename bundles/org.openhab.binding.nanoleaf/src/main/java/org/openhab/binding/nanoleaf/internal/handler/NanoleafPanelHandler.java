@@ -85,7 +85,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         Bridge controller = getBridge();
         if (controller == null) {
             initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, ""));
-        } else if (controller.getStatus().equals(ThingStatus.OFFLINE)) {
+        } else if (ThingStatus.OFFLINE.equals(controller.getStatus())) {
             initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "@text/error.nanoleaf.panel.controllerOffline"));
         } else {
@@ -95,7 +95,9 @@ public class NanoleafPanelHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo controllerStatusInfo) {
-        logger.debug("Controller status changed to {} -- {}", controllerStatusInfo, controllerStatusInfo.getDescription()+"/"+controllerStatusInfo.getStatus()+"/"+controllerStatusInfo.hashCode());
+        logger.debug("Controller status changed to {} -- {}", controllerStatusInfo,
+                controllerStatusInfo.getDescription() + "/" + controllerStatusInfo.getStatus() + "/"
+                        + controllerStatusInfo.hashCode());
         if (controllerStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
             initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "@text/error.nanoleaf.panel.controllerOffline"));
@@ -196,7 +198,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             return;
         }
         // store panel's new HSB value
-        panelInfo.put(getThing().getConfiguration().get(NanoleafBindingConstants.CONFIG_PANEL_ID).toString(),
+        panelInfo.put(getThing().getConfiguration().get(CONFIG_PANEL_ID).toString(),
                 newPanelColor);
         // transform to RGB
         PercentType[] rgbPercent = newPanelColor.toRGB();
@@ -213,21 +215,24 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             Write write = new Write();
             write.setCommand("display");
             write.setAnimType("static");
-            String panelID = this.thing.getConfiguration().get(NanoleafBindingConstants.CONFIG_PANEL_ID).toString();
-            @Nullable BridgeHandler handler = bridge.getHandler();
-            if (handler!=null) {
+            String panelID = this.thing.getConfiguration().get(CONFIG_PANEL_ID).toString();
+            @Nullable
+            BridgeHandler handler = bridge.getHandler();
+            if (handler != null) {
                 NanoleafControllerConfig config = ((NanoleafControllerHandler) handler).getControllerConfig();
                 // Light Panels and Canvas use different stream commands
-                if (config.deviceType.equals(NanoleafBindingConstants.CONFIG_DEVICE_TYPE_LIGHTPANELS)) {
+                if (config.deviceType.equals(CONFIG_DEVICE_TYPE_LIGHTPANELS)) {
                     write.setAnimData(String.format("1 %s 1 %d %d %d 0 10", panelID, red, green, blue));
                 } else {
                     int quotient = Integer.divideUnsigned(Integer.valueOf(panelID), 256);
                     int remainder = Integer.remainderUnsigned(Integer.valueOf(panelID), 256);
-                    write.setAnimData(String.format("0 1 %d %d %d %d %d 0 0 10", quotient, remainder, red, green, blue));
+                    write.setAnimData(
+                            String.format("0 1 %d %d %d %d %d 0 0 10", quotient, remainder, red, green, blue));
                 }
                 write.setLoop(false);
                 effects.setWrite(write);
-                Request setNewRenderedEffectRequest = OpenAPIUtils.requestBuilder(httpClient, config, API_EFFECT, HttpMethod.PUT);
+                Request setNewRenderedEffectRequest = OpenAPIUtils.requestBuilder(httpClient, config, API_EFFECT,
+                        HttpMethod.PUT);
                 String content = gson.toJson(effects);
                 logger.debug("sending effect command from panel {}: {}", getThing().getUID(), content);
                 setNewRenderedEffectRequest.content(new StringContentProvider(content), "application/json");
@@ -239,8 +244,9 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     }
 
     public void updatePanelColorChannel() {
-        @Nullable HSBType panelColor = getPanelColor();
-        if (panelColor!=null)
+        @Nullable
+        HSBType panelColor = getPanelColor();
+        if (panelColor != null)
             updateState(CHANNEL_PANEL_COLOR, panelColor);
     }
 
@@ -250,38 +256,36 @@ public class NanoleafPanelHandler extends BaseThingHandler {
      * @param gesture Only 0=single tap and 1=double tap are supported
      */
     public void updatePanelGesture(int gesture) {
-        switch (gesture){
+        switch (gesture) {
             case 0:
                 updateState(CHANNEL_PANEL_SINGLE_TAP, OnOffType.ON);
                 singleTapJob = scheduler.schedule(this::resetSingleTap, 1, TimeUnit.SECONDS);
-                logger.debug("Asserting single tap of panel {} to ON",getPanelID());
+                logger.debug("Asserting single tap of panel {} to ON", getPanelID());
                 break;
             case 1:
                 updateState(CHANNEL_PANEL_DOUBLE_TAP, OnOffType.ON);
                 doubleTapJob = scheduler.schedule(this::resetDoubleTap, 1, TimeUnit.SECONDS);
-                logger.debug("Asserting double tap of panel {} to ON",getPanelID());
+                logger.debug("Asserting double tap of panel {} to ON", getPanelID());
                 break;
         }
     }
 
     private void resetSingleTap() {
         updateState(CHANNEL_PANEL_SINGLE_TAP, OnOffType.OFF);
-        logger.debug("Resetting single tap of panel {} to OFF",getPanelID());
+        logger.debug("Resetting single tap of panel {} to OFF", getPanelID());
     }
 
     private void resetDoubleTap() {
         updateState(CHANNEL_PANEL_DOUBLE_TAP, OnOffType.OFF);
-        logger.debug("Resetting double tap of panel {} to OFF",getPanelID());
+        logger.debug("Resetting double tap of panel {} to OFF", getPanelID());
     }
 
-
-
     public String getPanelID() {
-        String panelID = getThing().getConfiguration().get(NanoleafBindingConstants.CONFIG_PANEL_ID).toString();
+        String panelID = getThing().getConfiguration().get(CONFIG_PANEL_ID).toString();
         return panelID;
     }
 
-    private @Nullable  HSBType getPanelColor() {
+    private @Nullable HSBType getPanelColor() {
         String panelID = getPanelID();
 
         // get panel color data from controller
@@ -294,7 +298,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             Bridge bridge = getBridge();
             if (bridge != null) {
                 NanoleafControllerHandler handler = (NanoleafControllerHandler) bridge.getHandler();
-                if (handler!= null) {
+                if (handler != null) {
                     NanoleafControllerConfig config = handler.getControllerConfig();
                     logger.debug("Sending Request from Panel for getColor()");
                     Request setPanelUpdateRequest = OpenAPIUtils.requestBuilder(httpClient, config, API_EFFECT,
@@ -307,7 +311,8 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 }
             }
         } catch (NanoleafNotFoundException nfe) {
-            logger.warn("Panel data could not be retrieved as no data was returned (static type missing?) : {}", nfe.getMessage());
+            logger.warn("Panel data could not be retrieved as no data was returned (static type missing?) : {}",
+                    nfe.getMessage());
         } catch (NanoleafException nue) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.panel.communication");
@@ -319,15 +324,16 @@ public class NanoleafPanelHandler extends BaseThingHandler {
 
     void parsePanelData(String panelID, NanoleafControllerConfig config, ContentResponse panelData) {
         // panelData is in format (numPanels, (PanelId, 1, R, G, B, W, TransitionTime) * numPanel)
-        @Nullable Write response = gson.fromJson(panelData.getContentAsString(), Write.class);
-        if (response!=null) {
+        @Nullable
+        Write response = gson.fromJson(panelData.getContentAsString(), Write.class);
+        if (response != null) {
             String[] tokenizedData = response.getAnimData().split(" ");
-            if (config.deviceType.equals(NanoleafBindingConstants.CONFIG_DEVICE_TYPE_LIGHTPANELS)
-                    || config.deviceType.equals(NanoleafBindingConstants.CONFIG_DEVICE_TYPE_CANVAS)) {
+            if (config.deviceType.equals(CONFIG_DEVICE_TYPE_LIGHTPANELS)
+                    || config.deviceType.equals(CONFIG_DEVICE_TYPE_CANVAS)) {
                 // panelData is in format (numPanels (PanelId 1 R G B W TransitionTime) * numPanel)
                 String[] panelDataPoints = Arrays.copyOfRange(tokenizedData, 1, tokenizedData.length);
                 for (int i = 0; i < panelDataPoints.length; i++) {
-                    if ((i % 7) == 0) {
+                    if (i % 7 == 0) {
                         String id = panelDataPoints[i];
                         if (id.equals(panelID)) {
                             // found panel data - store it
@@ -343,10 +349,10 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 // quotient(TransitionTime) remainder(TransitionTime)) * numPanel)
                 String[] panelDataPoints = Arrays.copyOfRange(tokenizedData, 2, tokenizedData.length);
                 for (int i = 0; i < panelDataPoints.length; i++) {
-                    if ((i % 8) == 0) {
+                    if (i % 8 == 0) {
                         String idQuotient = panelDataPoints[i];
                         String idRemainder = panelDataPoints[i + 1];
-                        Integer idNum = (Integer.valueOf(idQuotient) * 256) + Integer.valueOf(idRemainder);
+                        Integer idNum = Integer.valueOf(idQuotient) * 256 + Integer.valueOf(idRemainder);
                         if (String.valueOf(idNum).equals(panelID)) {
                             // found panel data - store it
                             panelInfo.put(panelID,

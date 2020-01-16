@@ -29,7 +29,7 @@ public interface NanoleafControllerListener {
     /**
      * This method is called after the bridge thing handler fetched the controller info
      *
-     * @param bridge         the Nanoleaf controller.
+     * @param bridge the Nanoleaf controller.
      * @param controllerInfo the controller data with panel information
      */
     void onControllerInfoFetched(ThingUID bridge, ControllerInfo controllerInfo);
