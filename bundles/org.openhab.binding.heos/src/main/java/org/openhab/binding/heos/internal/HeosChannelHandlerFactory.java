@@ -17,7 +17,6 @@ import static org.openhab.binding.heos.HeosBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
@@ -65,24 +64,17 @@ public class HeosChannelHandlerFactory {
         this.api = api;
     }
 
-    public HeosChannelHandler getChannelHandler(ChannelUID channelUID) {
+    public HeosChannelHandler getChannelHandler(ChannelUID channelUID, ChannelTypeUID channelTypeUID) {
         if (handlerStorageMap.containsKey(channelUID)) {
             return handlerStorageMap.get(channelUID);
         } else {
-            HeosChannelHandler createdChannelHandler = createNewChannelHandler(channelUID);
+            HeosChannelHandler createdChannelHandler = createNewChannelHandler(channelUID, channelTypeUID);
             handlerStorageMap.put(channelUID, createdChannelHandler);
             return createdChannelHandler;
         }
     }
 
-    private HeosChannelHandler createNewChannelHandler(ChannelUID channelUID) {
-        ChannelTypeUID channelTypeUID;
-        Channel channel = bridge.getThing().getChannel(channelUID.getId());
-        if (channel == null) {
-            channelTypeUID = null;
-        } else {
-            channelTypeUID = channel.getChannelTypeUID();
-        }
+    private HeosChannelHandler createNewChannelHandler(ChannelUID channelUID, ChannelTypeUID channelTypeUID) {
         switch (channelUID.getId()) {
             case CH_ID_CONTROL:
                 return new HeosChannelHandlerControl(bridge, api);
