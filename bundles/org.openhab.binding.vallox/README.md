@@ -145,21 +145,3 @@ Switch FaultIndicator           "Fault indicator"   { channel="vallox:se-tcp:val
 Number LastErrorNumber          "Last error number" { channel="vallox:se-tcp:vallox:alarm#lastErrorNumber" }
 ```
 
-
-## Troubleshooting
-
-### Thing status
-
-Check thing status and `openhab.log` for errors.
-
-### Verbose logging
-
-Enable DEBUG or even TRACE logging in karaf console to see more precise error messages:
-
-`log:set DEBUG org.openhab.binding.vallox`
-
-or
-
-`log:set TRACE org.openhab.binding.vallox`
-
-Remember to set logging level back to `INFO` after troubleshooting. See [openHAB2 logging docs](http://docs.openhab.org/administration/logging.html#defining-what-to-log) for more help.
