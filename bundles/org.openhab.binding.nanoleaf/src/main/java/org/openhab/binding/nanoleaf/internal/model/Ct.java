@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Martin Raepple - Initial contribution
  */
 @NonNullByDefault
-public class Ct implements IntegerState  {
+public class Ct implements IntegerState {
 
     private int value;
     private @Nullable Integer max;

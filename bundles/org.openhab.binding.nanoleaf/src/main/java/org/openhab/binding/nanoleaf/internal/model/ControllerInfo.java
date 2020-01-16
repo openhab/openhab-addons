@@ -22,14 +22,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ControllerInfo {
 
-    private String name="";
-    private String serialNo="";
-    private String manufacturer="";
-    private String firmwareVersion="";
-    private String model="";
+    private String name = "";
+    private String serialNo = "";
+    private String manufacturer = "";
+    private String firmwareVersion = "";
+    private String model = "";
     private State state = new State();
     private Effects effects = new Effects();
-    private PanelLayout panelLayout= new PanelLayout();
+    private PanelLayout panelLayout = new PanelLayout();
     private Rhythm rhythm = new Rhythm();
 
     public String getName() {

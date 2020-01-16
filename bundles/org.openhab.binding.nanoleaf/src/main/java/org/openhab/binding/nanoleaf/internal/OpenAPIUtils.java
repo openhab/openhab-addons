@@ -53,12 +53,14 @@ public class OpenAPIUtils {
     public static Request requestBuilder(HttpClient httpClient, NanoleafControllerConfig controllerConfig,
             String apiOperation, HttpMethod method) throws NanoleafException, NanoleafUnauthorizedException {
         URI requestURI = getUri(controllerConfig, apiOperation, null);
-        LOGGER.trace("RequestBuilder: Sending Request {}:{} {} ",requestURI.getHost(), requestURI.getPort(), requestURI.getPath());
+        LOGGER.trace("RequestBuilder: Sending Request {}:{} {} ", requestURI.getHost(), requestURI.getPort(),
+                requestURI.getPath());
 
         return httpClient.newRequest(requestURI).method(method);
     }
 
-    public static URI getUri(NanoleafControllerConfig controllerConfig, String apiOperation, @Nullable String query) throws NanoleafException {
+    public static URI getUri(NanoleafControllerConfig controllerConfig, String apiOperation, @Nullable String query)
+            throws NanoleafException {
         String path;
 
         // get network settings from configuration
@@ -67,8 +69,7 @@ public class OpenAPIUtils {
 
         if (apiOperation.equals(API_ADD_USER)) {
             path = String.format("%s%s", API_V1_BASE_URL, apiOperation);
-        }
-        else {
+        } else {
             String authToken = controllerConfig.authToken;
             if (authToken != null) {
                 path = String.format("%s/%s%s", API_V1_BASE_URL, authToken, apiOperation);
@@ -89,17 +90,7 @@ public class OpenAPIUtils {
     public static ContentResponse sendOpenAPIRequest(Request request)
             throws NanoleafException, NanoleafUnauthorizedException {
         try {
-            LOGGER.trace("Sending Request {} {}",request.getURI(), request.getQuery() == null ? "no query parameters": request.getQuery());
-            LOGGER.trace("Request method:{} uri:{} params{}\n", request.getMethod(), request.getURI(), request.getParams());
-            if (request.getContent()!=null) {
-                Iterator<ByteBuffer> iter = request.getContent().iterator();
-                if (iter!=null) {
-                    while (iter.hasNext()) {
-                        @Nullable ByteBuffer buffer = iter.next();
-                        LOGGER.trace("Content {}", StandardCharsets.UTF_8.decode(buffer).toString());
-                    }
-                }
-            }
+            traceSendRequest(request);
 
             ContentResponse openAPIResponse = request.send();
             if (LOGGER.isTraceEnabled()) {
@@ -112,7 +103,7 @@ public class OpenAPIUtils {
             } else {
                 if (openAPIResponse.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     throw new NanoleafUnauthorizedException("OpenAPI request unauthorized");
-                }else if (openAPIResponse.getStatus() == HttpStatus.NOT_FOUND_404) {
+                } else if (openAPIResponse.getStatus() == HttpStatus.NOT_FOUND_404) {
                     throw new NanoleafNotFoundException("OpenAPI request did not get any result back");
                 } else {
                     throw new NanoleafException(String.format("OpenAPI request failed. HTTP response code %s",
@@ -127,8 +118,27 @@ public class OpenAPIUtils {
                     throw new NanoleafUnauthorizedException("Invalid authorization token");
                 }
             }
-            throw new NanoleafException(
-                    String.format("Failed to send OpenAPI request: %s exception class: %s", clientException.getMessage(), clientException.getClass()));
+            throw new NanoleafException(String.format("Failed to send OpenAPI request: %s exception class: %s",
+                    clientException.getMessage(), clientException.getClass()));
+        }
+    }
+
+    private static void traceSendRequest(Request request) {
+        if (!LOGGER.isTraceEnabled())
+            return;
+        LOGGER.trace("Sending Request {} {}", request.getURI(),
+                request.getQuery() == null ? "no query parameters" : request.getQuery());
+        LOGGER.trace("Request method:{} uri:{} params{}\n", request.getMethod(), request.getURI(),
+                request.getParams());
+        if (request.getContent() != null) {
+            Iterator<ByteBuffer> iter = request.getContent().iterator();
+            if (iter != null) {
+                while (iter.hasNext()) {
+                    @Nullable
+                    ByteBuffer buffer = iter.next();
+                    LOGGER.trace("Content {}", StandardCharsets.UTF_8.decode(buffer).toString());
+                }
+            }
         }
     }
 

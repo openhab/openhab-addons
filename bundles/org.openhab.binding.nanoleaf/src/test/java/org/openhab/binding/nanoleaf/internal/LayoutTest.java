@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.nanoleaf.internal;
 
-import com.google.gson.Gson;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.nanoleaf.internal.model.Layout;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import com.google.gson.Gson;
 
 /**
  * Test for the Layout
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertThat;
 public class LayoutTest {
 
     private final Gson gson = new Gson();
-    String layout1Json="";
+    String layout1Json = "";
 
     @Before
     public void setup() {
@@ -41,16 +42,16 @@ public class LayoutTest {
 
     @Test
     public void testTheRightLayoutView() {
-        @Nullable Layout layout = gson.fromJson(layout1Json, Layout.class);
+        @Nullable
+        Layout layout = gson.fromJson(layout1Json, Layout.class);
         String layoutView = layout.getLayoutView();
-        assertThat(layoutView,is(equalTo(
-                "            31413                    9162       13276                         \n"+
-                         "                                                                              \n" +
-                         "55836       56093       48111       38724       17870        5164       64279 \n" +
-                         "                                           8134                               \n" +
-                         "                        58086                               39755             \n" +
-                         "                                                                              \n" +
-                         "                                          41451                               \n"
-        )));
+        assertThat(layoutView,
+                is(equalTo("            31413                    9162       13276                         \n"
+                        + "                                                                              \n"
+                        + "55836       56093       48111       38724       17870        5164       64279 \n"
+                        + "                                           8134                               \n"
+                        + "                        58086                               39755             \n"
+                        + "                                                                              \n"
+                        + "                                          41451                               \n")));
     }
 }

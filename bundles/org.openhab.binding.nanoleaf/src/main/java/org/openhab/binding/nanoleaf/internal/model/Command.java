@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents color temperature of the light panels

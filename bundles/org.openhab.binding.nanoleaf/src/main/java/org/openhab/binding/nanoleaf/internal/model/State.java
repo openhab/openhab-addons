@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents overall state settings of the light panels
@@ -66,7 +67,9 @@ public class State {
         this.saturation = sat;
     }
 
-    public @Nullable Ct getColorTemperature() { return colorTemperature; }
+    public @Nullable Ct getColorTemperature() {
+        return colorTemperature;
+    }
 
     public void setColorTemperature(Ct ct) {
         this.colorTemperature = ct;

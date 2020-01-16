@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Represents write command to set solid color effect
@@ -25,12 +25,12 @@ import java.util.List;
 @NonNullByDefault
 public class Write {
 
-    private String command ="";
-    private String animType ="";
-    private String animName ="";
+    private String command = "";
+    private String animType = "";
+    private String animName = "";
     private List<Palette> palette = new ArrayList<>();
-    private String colorType="";
-    private String animData="";
+    private String colorType = "";
+    private String animData = "";
     private boolean loop = false;
 
     public String getCommand() {

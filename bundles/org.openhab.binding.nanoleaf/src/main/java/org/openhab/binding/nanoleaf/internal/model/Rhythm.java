@@ -26,8 +26,8 @@ public class Rhythm {
     private boolean rhythmConnected;
     private boolean rhythmActive;
     private int rhythmId;
-    private String hardwareVersion="";
-    private String firmwareVersion="";
+    private String hardwareVersion = "";
+    private String firmwareVersion = "";
     private boolean auxAvailable;
     private int rhythmMode;
     private @Nullable RhythmPos rhythmPos;

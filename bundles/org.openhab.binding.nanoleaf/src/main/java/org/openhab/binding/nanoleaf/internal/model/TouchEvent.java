@@ -20,12 +20,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * JSON
  * {"events":
- *    [
- *     { "panelId":48111,
- *       "gesture":0},
- *     { "panelId":48112,
- *  *       "gesture":1}
- *    ]
+ * [
+ * { "panelId":48111,
+ * "gesture":0},
+ * { "panelId":48112,
+ * * "gesture":1}
+ * ]
  * }
  *
  *
@@ -34,8 +34,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TouchEvent {
 
-    private String panelId ="";
-    private int gesture=-1;
+    private String panelId = "";
+    private int gesture = -1;
 
     public String getPanelId() {
         return panelId;
@@ -53,5 +53,3 @@ public class TouchEvent {
         this.gesture = gesture;
     }
 }
-
-

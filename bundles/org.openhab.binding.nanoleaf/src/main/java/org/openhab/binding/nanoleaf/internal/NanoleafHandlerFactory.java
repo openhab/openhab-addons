@@ -110,9 +110,10 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
 
     @SuppressWarnings("null")
     private synchronized void unregisterDiscoveryService(Thing thing) {
-        @Nullable  ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
+        @Nullable
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
         // would require null check but "if (response!=null)" throws warning on comoile time :´-(
-        if (serviceReg!=null)
+        if (serviceReg != null)
             serviceReg.unregister();
         logger.debug("Discovery service for panels removed.");
     }
