@@ -180,10 +180,8 @@ public class ExecHandler extends BaseThingHandler {
                 }
 
                 String[] cmdArray;
-                boolean didSplit = false;
                 String shell = "";
                 if (commandLine.contains(CMD_LINE_DELIMITER)) {
-                    didSplit = true;
                     logger.debug("Splitting by '{}'", CMD_LINE_DELIMITER);
                     try {
                         cmdArray = commandLine.split(CMD_LINE_DELIMITER);
@@ -199,12 +197,12 @@ public class ExecHandler extends BaseThingHandler {
                     logger.debug("Passing to shell for parsing command.");
                     if (getOperatingSystemType() == OS.WINDOWS) {
                         shell = SHELL_WINDOWS;
-                        cmdArray = new String[] {shell, "/c", commandLine.toString()};
+                        cmdArray = new String[] {shell, "/c", commandLine};
                         logger.debug("OS: WINDOWS ({})", getOperatingSystemName());
                     } else if (getOperatingSystemType() != OS.UNKNOWN) {
                         // assume sh is present, should all be POSIX-compliant
                         shell = SHELL_NIX;
-                        cmdArray = new String[] {shell, "-c", commandLine.toString()};
+                        cmdArray = new String[] {shell, "-c", commandLine};
                         logger.debug("OS: *NIX ({})", getOperatingSystemName());
                     } else {
                         String err = "OS not supported, please manually split commands!";
@@ -224,10 +222,6 @@ public class ExecHandler extends BaseThingHandler {
                 } catch (Exception e) {
                     logger.error("An exception occurred while executing '{}' : '{}'",
                             Arrays.asList(cmdArray), e.getMessage());
-                    if (!didSplit) {
-                        logger.info("This command has been passed to `{}` for parsing. " +
-                                "Maybe you could try manually separating arguments.", shell);
-                    }
                     updateState(RUN, OnOffType.OFF);
                     updateState(OUTPUT, new StringType(e.getMessage()));
                     return;
