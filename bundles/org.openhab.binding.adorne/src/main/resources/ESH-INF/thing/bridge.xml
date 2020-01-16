@@ -17,11 +17,8 @@
 			</parameter>
 			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
-				<description>
-					Port 
-				</description>
 			</parameter>
-		</config-description>	
+		</config-description>
 	</bridge-type>
 
 </thing:thing-descriptions>

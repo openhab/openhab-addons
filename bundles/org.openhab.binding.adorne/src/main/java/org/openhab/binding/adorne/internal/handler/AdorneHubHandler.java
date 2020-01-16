@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -39,12 +38,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChangeNotify {
     private Logger logger = LoggerFactory.getLogger(AdorneHubHandler.class);
-    private Bridge bridge;
     private @Nullable AdorneHubController adorneHubController = null;
 
     public AdorneHubHandler(Bridge bridge) {
         super(bridge);
-        this.bridge = bridge;
     }
 
     /**
@@ -63,14 +60,14 @@ public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChan
      */
     @Override
     public void initialize() {
-        logger.debug("Initializing hub {}", bridge.getLabel());
+        logger.debug("Initializing hub {}", getThing().getLabel());
 
         updateStatus(ThingStatus.UNKNOWN);
         AdorneHubConfiguration config = getConfigAs(AdorneHubConfiguration.class);
         logger.debug("Configuration host:{} port:{}", config.host, config.port);
 
-        AdorneHubController adorneHubController = this.adorneHubController = new AdorneHubController(config.host,
-                config.port, scheduler);
+        AdorneHubController adorneHubController = new AdorneHubController(config, scheduler);
+        this.adorneHubController = adorneHubController;
         // We want to know about changes from the hub so we can update devices as needed
         adorneHubController.setChangeListener(this);
         // Kick off the hub controller that handles all interactions with the hub for us
@@ -105,16 +102,15 @@ public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChan
     @Override
     public void stateChangeNotify(int zoneId, boolean onOff, int brightness) {
         logger.debug("State changed (zoneId:{} onOff:{} brightness:{})", zoneId, onOff, brightness);
-        AdorneSwitchHandler thingHandler;
-        for (Thing thing : bridge.getThings()) {
-            thingHandler = (AdorneSwitchHandler) thing.getHandler();
+        getThing().getThings().forEach(thing -> {
+            AdorneSwitchHandler thingHandler = (AdorneSwitchHandler) thing.getHandler();
             if (thingHandler != null && thingHandler.getZoneId() == zoneId) {
                 thingHandler.updateState(CHANNEL_POWER, onOff ? OnOffType.ON : OnOffType.OFF);
                 if (thing.getThingTypeUID().equals(THING_TYPE_DIMMER)) {
                     thingHandler.updateState(CHANNEL_BRIGHTNESS, new PercentType(brightness));
                 }
             }
-        }
+        });
     }
 
     /**
@@ -127,13 +123,12 @@ public class AdorneHubHandler extends BaseBridgeHandler implements AdorneHubChan
 
         if (connected) {
             // Refresh all of our things in case thing states changed while we were disconnected
-            AdorneSwitchHandler thingHandler;
-            for (Thing thing : bridge.getThings()) {
-                thingHandler = (AdorneSwitchHandler) thing.getHandler();
+            getThing().getThings().forEach(thing -> {
+                AdorneSwitchHandler thingHandler = (AdorneSwitchHandler) thing.getHandler();
                 if (thingHandler != null) {
                     thingHandler.refresh();
                 }
-            }
+            });
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

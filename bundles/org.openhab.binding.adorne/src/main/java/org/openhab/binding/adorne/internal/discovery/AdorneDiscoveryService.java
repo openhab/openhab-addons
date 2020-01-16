@@ -23,6 +23,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.adorne.internal.configuration.AdorneHubConfiguration;
 import org.openhab.binding.adorne.internal.hub.AdorneHubController;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -60,7 +61,8 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
 
         // We create the hub controller with default host and port. In the future we could let users create hubs
         // manually with custom host and port settings and then perform discovery here for those hubs.
-        AdorneHubController adorneHubController = new AdorneHubController(null, null, scheduler);
+        AdorneHubConfiguration config = new AdorneHubConfiguration(); // Use default configuration
+        AdorneHubController adorneHubController = new AdorneHubController(config, scheduler);
 
         // Limit life of hub controller to the duration of discovery
         adorneHubController.stopBy(System.currentTimeMillis() + DISCOVERY_TIMEOUT_SECONDS * 1000);
@@ -80,9 +82,9 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
             // We have fully discovered the hub
             thingDiscovered(DiscoveryResultBuilder.create(bridgeUID[0]).withLabel(DISCOVERY_HUB_LABEL).build());
             return adorneHubController.getZones();
-        }).thenApply(zoneIds -> {
-            for (int zoneId : zoneIds) {
-                adorneHubController.getState(zoneId).thenApply(state -> {
+        }).thenAccept(zoneIds -> {
+            zoneIds.forEach(zoneId -> {
+                adorneHubController.getState(zoneId).thenAccept(state -> {
                     // Strip zone ID's name to become a valid ThingUID
                     StringBuilder id = new StringBuilder(state.name);
                     for (int i = 0; i < id.length(); i++) {
@@ -96,14 +98,12 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService {
                             .create(new ThingUID(state.deviceType, bridgeUID[0], id.toString().toLowerCase()))
                             .withLabel(state.name).withBridge(bridgeUID[0])
                             .withProperty(DISCOVERY_ZONE_ID, state.zoneId).build());
-                    return null;
                 }).exceptionally(e -> {
                     logger.warn("Discovery of zone ID {} failed ({})", zoneId, e.getMessage());
                     return null;
                 });
-            }
+            });
             adorneHubController.stopWhenCommandsServed(); // Shut down hub once all discovery requests have been served
-            return null;
         }).exceptionally(e -> {
             logger.warn("Discovery failed ({})", e.getMessage());
             return null;

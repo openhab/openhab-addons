@@ -13,19 +13,16 @@
 		<description>Controls an Adorne switch or outlet.</description>
 
 		<channels>
-			<channel id="power" typeId="system.power"/>
+			<channel id="power" typeId="system.power" />
 		</channels>
-		
+
 		<config-description>
 			<parameter name="zoneId" type="integer" required="true">
 				<label>Zone ID</label>
-				<description>
-					Zone ID 
-				</description>
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<thing-type id="dimmer">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="hub" />
@@ -35,16 +32,13 @@
 		<description>Controls an Adorne dimmer switch.</description>
 
 		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="power" typeId="system.power" />
+			<channel id="brightness" typeId="system.brightness" />
 		</channels>
-		
+
 		<config-description>
 			<parameter name="zoneId" type="integer" required="true">
 				<label>Zone ID</label>
-				<description>
-					Zone ID 
-				</description>
 			</parameter>
 		</config-description>
 	</thing-type>

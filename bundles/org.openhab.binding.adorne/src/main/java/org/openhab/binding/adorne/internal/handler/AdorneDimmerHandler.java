@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AdorneDimmerHandler extends AdorneSwitchHandler {
-
     private final Logger logger = LoggerFactory.getLogger(AdorneDimmerHandler.class);
 
     public AdorneDimmerHandler(Thing thing) {
@@ -81,10 +80,9 @@ public class AdorneDimmerHandler extends AdorneSwitchHandler {
     public void refreshBrightness() {
         // Asynchronously get our brightness from the hub controller and update our state accordingly
         AdorneHubController adorneHubController = getAdorneHubController();
-        adorneHubController.getState(zoneId).thenApply(state -> {
+        adorneHubController.getState(zoneId).thenAccept(state -> {
             updateState(CHANNEL_BRIGHTNESS, new PercentType(state.brightness));
             logger.debug("Refreshed dimmer {} with brightness {}", getThing().getLabel(), state.brightness);
-            return null;
         });
     }
 

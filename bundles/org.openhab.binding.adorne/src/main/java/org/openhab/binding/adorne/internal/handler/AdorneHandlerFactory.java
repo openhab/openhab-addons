@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.adorne", service = ThingHandlerFactory.class)
 public class AdorneHandlerFactory extends BaseThingHandlerFactory {
-
     private Logger logger = LoggerFactory.getLogger(AdorneHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_HUB, THING_TYPE_SWITCH, THING_TYPE_DIMMER).collect(Collectors.toSet()));
@@ -60,15 +59,11 @@ public class AdorneHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("Creating an AdorneSwitchHandler for thing '{}'", thing.getUID());
 
             return new AdorneSwitchHandler(thing);
-        }
-
-        if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
+        } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
             logger.debug("Creating an AdorneDimmerHandler for thing '{}'", thing.getUID());
 
             return new AdorneDimmerHandler(thing);
-        }
-
-        if (thingTypeUID.equals(THING_TYPE_HUB)) {
+        } else if (thingTypeUID.equals(THING_TYPE_HUB)) {
             logger.debug("Creating an AdorneHubHandler for bridge '{}'", thing.getUID());
 
             return new AdorneHubHandler((Bridge) thing);

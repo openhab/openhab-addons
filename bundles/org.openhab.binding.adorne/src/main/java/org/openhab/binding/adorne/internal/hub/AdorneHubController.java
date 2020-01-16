@@ -26,12 +26,14 @@ import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.adorne.internal.AdorneDeviceState;
+import org.openhab.binding.adorne.internal.configuration.AdorneHubConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,10 +53,8 @@ public class AdorneHubController implements Runnable {
     private Logger logger = LoggerFactory.getLogger(AdorneHubController.class);
 
     private static final int HUB_CONNECT_TIMEOUT = 15000;
-    private static final int HUB_RECONNECT_SLEEP_MIN = 1000;
-    private static final int HUB_RECONNECT_SLEEP_MAX = 15 * 60 * 1000;
-    private static final String HUB_DEFAULT_HOST = "LCM1.local";
-    private static final int HUB_DEFAULT_PORT = 2112;
+    private static final int HUB_RECONNECT_SLEEP_MINIMUM = 1;
+    private static final int HUB_RECONNECT_SLEEP_MAXIMUM = 15 * 60;
 
     // Hub rest commands
     private static final String HUB_REST_SET_ONOFF = "{\"ID\":%d,\"Service\":\"SetZoneProperties\",\"ZID\":%d,\"PropertyList\":{\"Power\":%b}}\0";
@@ -113,17 +113,16 @@ public class AdorneHubController implements Runnable {
         }
     }
 
-    public AdorneHubController(@Nullable String hubHost, @Nullable Integer hubPort,
-            ScheduledExecutorService scheduler) {
+    public AdorneHubController(AdorneHubConfiguration config, ScheduledExecutorService scheduler) {
         hubController = null;
-        this.hubHost = (hubHost == null) ? HUB_DEFAULT_HOST : hubHost;
-        this.hubPort = hubPort == null ? HUB_DEFAULT_PORT : hubPort;
+        this.hubHost = config.host;
+        this.hubPort = config.port;
         hubSocket = null;
         hubOut = null;
         hubIn = null;
         hubControllerConnected = new CompletableFuture<>();
-        ;
         this.scheduler = scheduler;
+        hubReconnectSleep = HUB_RECONNECT_SLEEP_MINIMUM;
 
         stop = new AtomicBoolean(false);
         stopWhenCommandsServed = new AtomicBoolean(false);
@@ -146,6 +145,7 @@ public class AdorneHubController implements Runnable {
     public CompletableFuture<@Nullable Void> start() {
         stop.set(false);
         CompletableFuture<@Nullable Void> hubControllerConnected = this.hubControllerConnected = new CompletableFuture<>();
+        logger.info("Starting hub controller");
         hubController = scheduler.submit(this);
         return (hubControllerConnected);
     }
@@ -153,24 +153,22 @@ public class AdorneHubController implements Runnable {
     /**
      * Stops the hub controller. Can't restart afterwards.
      */
-    public void stop() {
+    public synchronized void stop() {
         // Need to use 3 different mechanisms to cover all of our bases of stopping the controller quickly
         stop.set(true); // 1) Stop the controller message loop
 
-        synchronized (this) {
-            Socket hubSocket = this.hubSocket;
-            if (hubSocket != null) {
-                try {
-                    hubSocket.shutdownInput(); // 2) Stop the input stream in case controller is waiting on input
-                } catch (IOException e) {
-                    logger.warn("Couldn't shutdown hub socket");
-                }
+        Socket hubSocket = this.hubSocket;
+        if (hubSocket != null) {
+            try {
+                hubSocket.shutdownInput(); // 2) Stop the input stream in case controller is waiting on input
+            } catch (IOException e) {
+                logger.warn("Couldn't shutdown hub socket");
             }
         }
 
         Future<?> hubController = this.hubController;
         if (hubController != null) {
-            hubController.cancel(true); // 3) Interrupt the controller in case it is sleeping
+            hubController.cancel(true); // 3) Cancel the controller in case it has scheduled a re-connect
         }
     }
 
@@ -187,7 +185,6 @@ public class AdorneHubController implements Runnable {
      * @param stopTimestamp timestamp to stop after
      */
     public void stopBy(long stopTimestamp) {
-        logger.debug("Stopping hub controller");
         synchronized (this) {
             this.stopTimestamp = stopTimestamp;
         }
@@ -286,16 +283,26 @@ public class AdorneHubController implements Runnable {
      */
     @Override
     public void run() {
-        logger.info("Starting hub controller");
         try {
             Map<String, @Nullable Object> hubMsg;
             String service;
-            hubReconnectSleep = HUB_RECONNECT_SLEEP_MIN;
 
             // Main message loop listening for updates from the hub
+            logger.debug("Starting message loop");
             while (!shouldStop()) {
                 if (!connect()) {
-                    continue;
+                    int sleep = hubReconnectSleep;
+                    logger.debug("Waiting {} seconds before re-attempting to connect.", sleep);
+                    if (hubReconnectSleep < HUB_RECONNECT_SLEEP_MAXIMUM) {
+                        hubReconnectSleep = hubReconnectSleep * 2; // Increase sleep time exponentially
+                    }
+                    // Re-start message loop after sleep time
+                    synchronized (this) {
+                        hubController = scheduler.schedule(this, sleep, TimeUnit.SECONDS);
+                    }
+                    return;
+                } else {
+                    hubReconnectSleep = HUB_RECONNECT_SLEEP_MINIMUM; // Reset
                 }
 
                 if ((hubMsg = getHubMsg()) == null) {
@@ -317,23 +324,25 @@ public class AdorneHubController implements Runnable {
                     processMsgSystemInfo(hubMsg);
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Hub controller failed ({})", e.getMessage());
-        } finally {
-            synchronized (this) {
-                // If there are still pending requests we need to cancel them
-                for (AdorneHubController.ZoneIDFutureRecord stateCommand : stateCommands) {
-                    stateCommand.future.cancel(false);
-                }
-                for (CompletableFuture<List<Integer>> zoneCommand : zoneCommands) {
-                    zoneCommand.cancel(false);
-                }
-                for (CompletableFuture<String> macAddressCommand : macAddressCommands) {
-                    macAddressCommand.cancel(false);
-                }
-                CompletableFuture<@Nullable Void> hubControllerConnected = this.hubControllerConnected;
-                hubControllerConnected.cancel(false);
+        }
+
+        // Shut down
+        synchronized (this) {
+            // If there are still pending requests we need to cancel them
+            for (AdorneHubController.ZoneIDFutureRecord stateCommand : stateCommands) {
+                stateCommand.future.cancel(false);
             }
+            for (CompletableFuture<List<Integer>> zoneCommand : zoneCommands) {
+                zoneCommand.cancel(false);
+            }
+            for (CompletableFuture<String> macAddressCommand : macAddressCommands) {
+                macAddressCommand.cancel(false);
+            }
+            CompletableFuture<@Nullable Void> hubControllerConnected = this.hubControllerConnected;
+            hubControllerConnected.cancel(false);
+
             disconnect();
             logger.info("Exiting hub controller");
         }
@@ -351,12 +360,19 @@ public class AdorneHubController implements Runnable {
         try {
             synchronized (this) {
                 if (hubSocket == null) {
-                    Socket hubSocket = this.hubSocket = new Socket(hubHost, hubPort);
+                    Socket hubSocket = new Socket(hubHost, hubPort);
+                    this.hubSocket = hubSocket;
                     hubSocket.setSoTimeout(HUB_CONNECT_TIMEOUT);
                     hubOut = new PrintStream(hubSocket.getOutputStream());
-                    Scanner hubIn = this.hubIn = new Scanner(hubSocket.getInputStream());
+                    Scanner hubIn = new Scanner(hubSocket.getInputStream());
+                    this.hubIn = hubIn;
                     hubIn.useDelimiter("\0");
                     logger.debug("Hub connection established");
+
+                    // Working around an Adorne Hub bug: the first command sent from a new connection intermittently
+                    // gets lost in the hub. We are requesting the MAC address here simply to get this fragile first
+                    // command out of the way. Requesting the MAC address and ignoring the result doesn't do any harm.
+                    getMACAddress();
 
                     CompletableFuture<@Nullable Void> hubControllerConnected = this.hubControllerConnected;
                     hubControllerConnected.complete(null);
@@ -369,23 +385,13 @@ public class AdorneHubController implements Runnable {
             }
             return true;
         } catch (IOException e) {
-            try {
-                logger.debug("Couldn't establish hub connection ({}). Sleep {} ms before re-trying.", e.getMessage(),
-                        hubReconnectSleep);
-                Thread.sleep(hubReconnectSleep);
-                if (hubReconnectSleep < HUB_RECONNECT_SLEEP_MAX) {
-                    hubReconnectSleep = hubReconnectSleep * 2;
-                }
-            } catch (InterruptedException e2) {
-                // We got interrupted. Nothing to do other than moving on (and exiting our message loop).
-                logger.debug("Sleep before re-trying connection got interrupted");
-            }
+            logger.debug("Couldn't establish hub connection ({}).", e.getMessage());
+            return false;
         }
-        return false;
     }
 
     private void disconnect() {
-        hubReconnectSleep = HUB_RECONNECT_SLEEP_MIN; // Reset our reconnect sleep time
+        hubReconnectSleep = HUB_RECONNECT_SLEEP_MINIMUM; // Reset our reconnect sleep time
         synchronized (this) {
             try {
                 Scanner hubIn = this.hubIn;
@@ -483,9 +489,7 @@ public class AdorneHubController implements Runnable {
                     removeStateCommands.add(stateCommand);
                 }
             }
-            for (AdorneHubController.ZoneIDFutureRecord stateCommand : removeStateCommands) {
-                stateCommands.remove(stateCommand);
-            }
+            stateCommands.removeAll(removeStateCommands);
         }
     }
 

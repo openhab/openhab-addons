@@ -13,7 +13,6 @@
 package org.openhab.binding.adorne.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link AdorneHubConfiguration} class represents the hub configuration options.
@@ -22,6 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class AdorneHubConfiguration {
-    public @Nullable String host;
-    public @Nullable Integer port;
+    public String host = "LCM1.local";
+    public Integer port = 2112;
 }
