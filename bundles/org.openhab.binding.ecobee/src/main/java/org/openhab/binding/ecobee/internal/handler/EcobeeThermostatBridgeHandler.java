@@ -93,14 +93,6 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
     private static final int SENSOR_DISCOVERY_STARTUP_DELAY_SECONDS = 30;
     private static final int SENSOR_DISCOVERY_INTERVAL_SECONDS = 300;
 
-    private static final AlertDTO EMPTY_ALERT = new AlertDTO();
-    private static final EventDTO EMPTY_EVENT = new EventDTO();
-    private static final LocationDTO EMPTY_LOCATION = new LocationDTO();
-    private static final HouseDetailsDTO EMPTY_HOUSEDETAILS = new HouseDetailsDTO();
-    private static final ManagementDTO EMPTY_MANAGEMENT = new ManagementDTO();
-    private static final TechnicianDTO EMPTY_TECHNICIAN = new TechnicianDTO();
-    private static final List<RemoteSensorDTO> EMPTY_SENSORS = Collections.<RemoteSensorDTO> emptyList();
-
     private final Logger logger = LoggerFactory.getLogger(EcobeeThermostatBridgeHandler.class);
 
     private TimeZoneProvider timeZoneProvider;

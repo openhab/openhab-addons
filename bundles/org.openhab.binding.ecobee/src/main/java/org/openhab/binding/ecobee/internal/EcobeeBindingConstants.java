@@ -20,6 +20,14 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.ecobee.internal.dto.thermostat.AlertDTO;
+import org.openhab.binding.ecobee.internal.dto.thermostat.EventDTO;
+import org.openhab.binding.ecobee.internal.dto.thermostat.HouseDetailsDTO;
+import org.openhab.binding.ecobee.internal.dto.thermostat.LocationDTO;
+import org.openhab.binding.ecobee.internal.dto.thermostat.ManagementDTO;
+import org.openhab.binding.ecobee.internal.dto.thermostat.RemoteSensorDTO;
+import org.openhab.binding.ecobee.internal.dto.thermostat.TechnicianDTO;
+import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatDTO;
 
 /**
  * The {@link EcobeeBindingConstants} class defines common constants that are
@@ -367,4 +375,18 @@ public class EcobeeBindingConstants {
     public static final String CH_SENSOR_TYPE = "type";
     public static final String CH_SENSOR_CODE = "code";
     public static final String CH_SENSOR_IN_USE = "inUse";
+
+    public static final AlertDTO EMPTY_ALERT = new AlertDTO();
+    public static final EventDTO EMPTY_EVENT = new EventDTO();
+    public static final LocationDTO EMPTY_LOCATION = new LocationDTO();
+    public static final HouseDetailsDTO EMPTY_HOUSEDETAILS = new HouseDetailsDTO();
+    public static final ManagementDTO EMPTY_MANAGEMENT = new ManagementDTO();
+    public static final TechnicianDTO EMPTY_TECHNICIAN = new TechnicianDTO();
+    public static final List<RemoteSensorDTO> EMPTY_SENSORS = Collections.<RemoteSensorDTO> emptyList();
+    public static final List<ThermostatDTO> EMPTY_THERMOSTATS = Collections.<ThermostatDTO> emptyList();
+
+    public static final String ECOBEE_BASE_URL = "https://api.ecobee.com/";
+    public static final String ECOBEE_AUTHORIZE_URL = ECOBEE_BASE_URL + "authorize";
+    public static final String ECOBEE_TOKEN_URL = ECOBEE_BASE_URL + "token";
+    public static final String ECOBEE_SCOPE = "smartWrite";
 }

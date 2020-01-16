@@ -28,7 +28,7 @@ public class TokenResponseDTO extends AbstractAuthResponseDTO {
     public String accessToken;
 
     /*
-     *
+     * Contains the string "Bearer"
      */
     @SerializedName("token_type")
     public String tokenType;

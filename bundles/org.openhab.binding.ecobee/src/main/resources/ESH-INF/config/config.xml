@@ -6,7 +6,7 @@
 		<parameter name="apiKey" type="text" required="true">
 			<label>API Key</label>
 			<description>Enter the API key</description>
-			<!-- <context>password</context> -->
+			<context>password</context>
 		</parameter>
 		<parameter name="refreshIntervalNormal" type="integer" min="2" required="false" unit="s">
 			<label>Refresh Interval (Normal)</label>

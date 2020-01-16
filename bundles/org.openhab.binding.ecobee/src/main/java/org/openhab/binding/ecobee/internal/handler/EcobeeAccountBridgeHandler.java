@@ -28,6 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -67,6 +69,9 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EcobeeAccountBridgeHandler.class);
 
+    private final OAuthFactory oAuthFactory;
+    private final HttpClient httpClient;
+
     private @NonNullByDefault({}) EcobeeApi api;
     private @NonNullByDefault({}) String apiKey;
     private int refreshIntervalNormal;
@@ -85,8 +90,10 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable SummaryResponseDTO previousSummary;
 
-    public EcobeeAccountBridgeHandler(final Bridge bridge) {
+    public EcobeeAccountBridgeHandler(final Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
         super(bridge);
+        this.oAuthFactory = oAuthFactory;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -102,16 +109,17 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
         refreshIntervalQuick = value == null ? DEFAULT_REFRESH_INTERVAL_QUICK_SECONDS : value;
 
         value = getConfigAs(EcobeeAccountConfiguration.class).apiTimeout;
-        apiTimeout = value == null ? DEFAULT_API_TIMEOUT_SECONDS : value;
+        apiTimeout = (value == null ? DEFAULT_API_TIMEOUT_SECONDS : value) * 1000;
 
         Boolean booleanValue = getConfigAs(EcobeeAccountConfiguration.class).discoveryEnabled;
         discoveryEnabled = booleanValue == null ? false : booleanValue.booleanValue();
-        logger.info("AccountBridge: Ecobee thermostat and sensor discoveryEnabled is {}!", discoveryEnabled);
+        logger.info("AccountBridge: Thermostat and sensor discovery is {}", discoveryEnabled ? "enabled" : "disabled");
 
         value = getConfigAs(EcobeeAccountConfiguration.class).discoveryInterval;
         discoveryInterval = value == null ? DISCOVERY_INTERVAL_SECONDS : value;
 
-        api = new EcobeeApi(this, apiKey, apiTimeout);
+        api = new EcobeeApi(this, apiKey, apiTimeout, oAuthFactory, httpClient);
+
         scheduleRefreshJob();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking authorization");
     }
@@ -119,6 +127,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         cancelRefreshJob();
+        api.closeOAuthClientService();
         logger.debug("AccountBridge: Disposing");
     }
 
@@ -155,6 +164,14 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     public boolean isDiscoveryEnabled() {
         return discoveryEnabled;
+    }
+
+    public void updateBridgeStatus(ThingStatus status) {
+        updateStatus(status);
+    }
+
+    public void updateBridgeStatus(ThingStatus status, ThingStatusDetail statusDetail, String statusMessage) {
+        updateStatus(status, statusDetail, statusMessage);
     }
 
     public boolean performThermostatFunction(FunctionRequest request) {
@@ -211,7 +228,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
         if (refreshThermostatsCounter.getAndDecrement() == 0) {
             refreshThermostatsCounter.set(refreshIntervalNormal);
             SummaryResponseDTO summary = api.performThermostatSummaryQuery();
-            if (summary != null && summary.hasChanged(previousSummary)) {
+            if (summary != null && summary.hasChanged(previousSummary) && !thermostatIds.isEmpty()) {
                 for (ThermostatDTO thermostat : api.performThermostatQuery(thermostatIds)) {
                     EcobeeThermostatBridgeHandler handler = thermostatHandlers.get(thermostat.identifier);
                     if (handler != null) {

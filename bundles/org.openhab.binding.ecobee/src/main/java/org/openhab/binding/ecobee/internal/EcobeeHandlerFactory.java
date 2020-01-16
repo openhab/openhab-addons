@@ -16,6 +16,8 @@ import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -24,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.ecobee.internal.handler.EcobeeAccountBridgeHandler;
 import org.openhab.binding.ecobee.internal.handler.EcobeeSensorThingHandler;
 import org.openhab.binding.ecobee.internal.handler.EcobeeThermostatBridgeHandler;
@@ -43,12 +46,17 @@ public class EcobeeHandlerFactory extends BaseThingHandlerFactory {
 
     private final TimeZoneProvider timeZoneProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
+    private final OAuthFactory oAuthFactory;
+    private final HttpClient httpClient;
 
     @Activate
     public EcobeeHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
-            @Reference ChannelTypeRegistry channelTypeRegistry) {
+            @Reference ChannelTypeRegistry channelTypeRegistry, @Reference OAuthFactory oAuthFactory,
+            @Reference HttpClientFactory httpClientFactory) {
         this.timeZoneProvider = timeZoneProvider;
         this.channelTypeRegistry = channelTypeRegistry;
+        this.oAuthFactory = oAuthFactory;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -61,7 +69,7 @@ public class EcobeeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_ACCOUNT_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new EcobeeAccountBridgeHandler((Bridge) thing);
+            return new EcobeeAccountBridgeHandler((Bridge) thing, oAuthFactory, httpClient);
         }
         if (SUPPORTED_THERMOSTAT_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new EcobeeThermostatBridgeHandler((Bridge) thing, timeZoneProvider, channelTypeRegistry);

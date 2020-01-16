@@ -54,7 +54,7 @@ public class SummaryResponseDTO extends AbstractResponseDTO {
 
     public boolean hasChanged(@Nullable SummaryResponseDTO previousSummary) {
         if (previousSummary == null) {
-            logger.debug("SummaryResponse: No previous summary. Do full query.");
+            logger.debug("SummaryResponse: No previous summary");
             return true;
         }
 
@@ -71,14 +71,14 @@ public class SummaryResponseDTO extends AbstractResponseDTO {
     private boolean revisionHasChanged(@Nullable List<RevisionDTO> previousList) {
         List<RevisionDTO> currentList = revisionList;
         if (previousList == null || currentList == null) {
-            logger.debug("SummaryResponse: Previous and/or current revision list is null. Do full query.");
+            logger.debug("SummaryResponse: Previous and/or current revision list is null");
             return true;
         }
         // Check to see if there are different thermostat Ids in current vs previous
         Set<String> previousIds = previousList.stream().map(RevisionDTO::getId).collect(Collectors.toSet());
         Set<String> currentIds = currentList.stream().map(RevisionDTO::getId).collect(Collectors.toSet());
         if (!previousIds.equals(currentIds)) {
-            logger.debug("SummaryResponse: Thermostat id maps are different. Do full query.");
+            logger.debug("SummaryResponse: Thermostat id maps are different");
             logger.trace("               : Curr: {}", Arrays.toString(currentIds.toArray()));
             logger.trace("               : Prev: {}", Arrays.toString(previousIds.toArray()));
             return true;
@@ -90,7 +90,7 @@ public class SummaryResponseDTO extends AbstractResponseDTO {
         for (RevisionDTO current : currentList) {
             RevisionDTO previous = previousMap.get(current.getId());
             if (current.hasChanged(previous)) {
-                logger.debug("SummaryResponse: Revisions have changed. Do full query.");
+                logger.debug("SummaryResponse: Revisions has changed");
                 logger.trace("               : Curr: {}", current.toString());
                 logger.trace("               : Prev: {}", previous.toString());
                 return true;
@@ -102,26 +102,26 @@ public class SummaryResponseDTO extends AbstractResponseDTO {
     private boolean runningHasChanged(@Nullable List<RunningDTO> previousList) {
         List<RunningDTO> currentList = runningList;
         if (previousList == null || currentList == null) {
-            logger.debug("SummaryResponse: Previous and/or current running list is null. Do full query.");
+            logger.debug("SummaryResponse: Previous and/or current running list is null");
             return true;
         }
         // Check to see if there are different thermostat Ids in current vs previous
         Set<String> previousIds = previousList.stream().map(RunningDTO::getId).collect(Collectors.toSet());
         Set<String> currentIds = currentList.stream().map(RunningDTO::getId).collect(Collectors.toSet());
         if (!previousIds.equals(currentIds)) {
-            logger.debug("SummaryResponse: Thermostat id maps are different. Do full query.");
+            logger.debug("SummaryResponse: Thermostat id maps are different");
             logger.trace("               : Curr: {}", Arrays.toString(currentIds.toArray()));
             logger.trace("               : Prev: {}", Arrays.toString(previousIds.toArray()));
             return true;
         }
-        // Create a map of each thermostat id with its RevisionDTO object
+        // Create a map of each thermostat id with its RunningDTO object
         Map<String, RunningDTO> previousMap = previousList.stream()
                 .collect(Collectors.toMap(RunningDTO::getId, RunningDTO::getThis));
         // Go through list of current RunningDTOs to see if something has changed
         for (RunningDTO current : currentList) {
             RunningDTO previous = previousMap.get(current.getId());
             if (current.hasChanged(previous)) {
-                logger.debug("SummaryResponse: Running Equipment has changed. Do full query.");
+                logger.debug("SummaryResponse: Running Equipment has changed");
                 logger.trace("               : Curr: {}", current.toString());
                 logger.trace("               : Prev: {}", previous.toString());
                 return true;
