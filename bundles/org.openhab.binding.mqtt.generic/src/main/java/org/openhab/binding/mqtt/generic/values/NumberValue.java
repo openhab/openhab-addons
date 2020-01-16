@@ -56,7 +56,7 @@ public class NumberValue extends Value {
                 .collect(Collectors.toList()));
         this.min = min;
         this.max = max;
-        this.step = step == null ? new BigDecimal(1.0) : step;
+        this.step = step == null ? BigDecimal.ONE : step;
         this.unit = unit == null ? "" : unit;
     }
 

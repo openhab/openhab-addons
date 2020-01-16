@@ -48,7 +48,7 @@ import tec.uom.se.unit.Units;
  */
 @NonNullByDefault
 public class PercentageValue extends Value {
-    private static final BigDecimal DB100 = BigDecimal.valueOf(100);
+    private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
     private final BigDecimal min;
     private final BigDecimal max;
     private final BigDecimal span;
@@ -63,7 +63,7 @@ public class PercentageValue extends Value {
         this.onValue = onValue;
         this.offValue = offValue;
         this.min = min == null ? BigDecimal.ZERO : min;
-        this.max = max == null ? DB100 : max;
+        this.max = max == null ? HUNDRED : max;
         if (this.min.compareTo(this.max) >= 0) {
             throw new IllegalArgumentException("Min need to be smaller than max!");
         }
@@ -81,7 +81,7 @@ public class PercentageValue extends Value {
                // A decimal type need to be converted according to the current min/max values
         if (command instanceof DecimalType) {
             BigDecimal v = ((DecimalType) command).toBigDecimal();
-            v = v.subtract(min).multiply(DB100).divide(max.subtract(min), MathContext.DECIMAL128).stripTrailingZeros();
+            v = v.subtract(min).multiply(HUNDRED).divide(max.subtract(min), MathContext.DECIMAL128);
             state = new PercentType(v);
         } else //
                // A quantity type need to be converted according to the current min/max values
@@ -89,8 +89,7 @@ public class PercentageValue extends Value {
             QuantityType<?> qty = ((QuantityType<?>) command).toUnit(Units.PERCENT);
             if (qty != null) {
                 BigDecimal v = qty.toBigDecimal();
-                v = v.subtract(min).multiply(DB100).divide(max.subtract(min), MathContext.DECIMAL128)
-                        .stripTrailingZeros();
+                v = v.subtract(min).multiply(HUNDRED).divide(max.subtract(min), MathContext.DECIMAL128);
                 state = new PercentType(v);
             }
         } else //
@@ -141,7 +140,7 @@ public class PercentageValue extends Value {
         // Formula: From percentage to custom min/max: value*span/100+min
         // Calculation need to happen with big decimals to either return a straight integer or a decimal depending on
         // the value.
-        BigDecimal value = ((PercentType) state).toBigDecimal().multiply(span).divide(DB100, MathContext.DECIMAL128)
+        BigDecimal value = ((PercentType) state).toBigDecimal().multiply(span).divide(HUNDRED, MathContext.DECIMAL128)
                 .add(min).stripTrailingZeros();
 
         String formatPattern = pattern;
