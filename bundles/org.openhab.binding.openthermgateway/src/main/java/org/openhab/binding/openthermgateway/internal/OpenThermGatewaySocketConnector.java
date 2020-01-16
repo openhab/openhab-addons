@@ -26,8 +26,9 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.openthermgateway.handler.TypeConverter;
 
 /**
  * The {@link OpenThermGatewaySocketConnector} is responsible for handling the socket connection
@@ -37,8 +38,8 @@ import org.openhab.binding.openthermgateway.handler.TypeConverter;
  */
 @NonNullByDefault
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
-    private static final int COMMAND_RESPONSE_TIME = 100;
-    private static final int COMMAND_TIMEOUT = 5000;
+    private static final int COMMAND_RESPONSE_TIME_MILLISECONDS = 100;
+    private static final int COMMAND_TIMEOUT_MILLISECONDS = 5000;
 
     private OpenThermGatewayCallback callback;
     private String ipaddress;
@@ -63,14 +64,14 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         connected = false;
 
         try {
-            callback.log(LogLevel.Info,
+            callback.log(LogLevel.INFO,
                     String.format("Connecting OpenThermGatewaySocketConnector to %s:%s", this.ipaddress, this.port));
 
             callback.connecting();
 
             socket = new Socket();
-            socket.connect(new InetSocketAddress(this.ipaddress, this.port), COMMAND_TIMEOUT);
-            socket.setSoTimeout(COMMAND_TIMEOUT);
+            socket.connect(new InetSocketAddress(this.ipaddress, this.port), COMMAND_TIMEOUT_MILLISECONDS);
+            socket.setSoTimeout(COMMAND_TIMEOUT_MILLISECONDS);
             writer = new PrintWriter(socket.getOutputStream(), true);
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -78,28 +79,27 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             callback.connected();
 
-            callback.log(LogLevel.Debug, "OpenThermGatewaySocketConnector connected");
+            callback.log(LogLevel.DEBUG, "OpenThermGatewaySocketConnector connected");
 
             sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintReport, "A"));
             // Set the OTGW to report every message it receives and transmits
             sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintSummary, "0"));
 
             while (!stopping && !Thread.currentThread().isInterrupted()) {
-                @Nullable
-                String message = reader.readLine();
+                @Nullable String message = reader.readLine();
 
                 if (message != null) {
                     handleMessage(message);
                 } else {
-                    callback.log(LogLevel.Info, "Connection closed by OpenTherm Gateway");
+                    callback.log(LogLevel.INFO, "Connection closed by OpenTherm Gateway");
                     break;
                 }
             }
 
-            callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
+            callback.log(LogLevel.DEBUG, "Stopping OpenThermGatewaySocketConnector");
 
         } catch (Exception e) {
-            callback.log(LogLevel.Error, "An error occured in OpenThermGatewaySocketConnector: %s", e.getMessage());
+            callback.log(LogLevel.ERROR, "An error occured in OpenThermGatewaySocketConnector: %s", e.getMessage());
         } finally {
 
             if (writer != null) {
@@ -112,14 +112,14 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             connected = false;
 
-            callback.log(LogLevel.Debug, "OpenThermGatewaySocketConnector disconnected");
+            callback.log(LogLevel.DEBUG, "OpenThermGatewaySocketConnector disconnected");
             callback.disconnected();
         }
     }
 
     @Override
     public synchronized void stop() {
-        callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
+        callback.log(LogLevel.DEBUG, "Stopping OpenThermGatewaySocketConnector");
 
         stopping = true;
 
@@ -141,10 +141,10 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 new AbstractMap.SimpleImmutableEntry<>(System.currentTimeMillis(), command));
 
         if (connected) {
-            callback.log(LogLevel.Debug, "Sending message: %s", msg);
+            callback.log(LogLevel.DEBUG, "Sending message: %s", msg);
             writer.printf("%s\r\n", msg);
         } else {
-            callback.log(LogLevel.Debug,
+            callback.log(LogLevel.DEBUG,
                     "Unable to send message: %s. OpenThermGatewaySocketConnector is not connected.", msg);
         }
     }
@@ -153,17 +153,17 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         if (message.length() > 2 && message.charAt(2) == ':') {
             String code = message.substring(0, 2);
             String value = message.substring(3);
-            callback.log(LogLevel.Debug, String.format("Received command confirmation: %s: %s", code, value));
+            callback.log(LogLevel.DEBUG, String.format("Received command confirmation: %s: %s", code, value));
             pendingCommands.remove(code);
             return;
         }
 
         for (Entry<Long, GatewayCommand> timeAndCommand : pendingCommands.values()) {
-            if (System.currentTimeMillis() > timeAndCommand.getKey() + COMMAND_RESPONSE_TIME) {
-                callback.log(LogLevel.Debug,
+            if (System.currentTimeMillis() > timeAndCommand.getKey() + COMMAND_RESPONSE_TIME_MILLISECONDS) {
+                callback.log(LogLevel.DEBUG,
                         String.format("Resending command: %s", timeAndCommand.getValue().toFullString()));
                 sendCommand(timeAndCommand.getValue());
-            } else if (System.currentTimeMillis() > timeAndCommand.getKey() + COMMAND_TIMEOUT) {
+            } else if (System.currentTimeMillis() > timeAndCommand.getKey() + COMMAND_TIMEOUT_MILLISECONDS) {
                 pendingCommands.remove(timeAndCommand.getValue().getCode());
             }
         }
@@ -171,46 +171,44 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         Message msg = Message.parse(message);
 
         if (msg == null) {
-            callback.log(LogLevel.Debug, "Received message: %s, (unknown)", message);
+            callback.log(LogLevel.DEBUG, "Received message: %s, (unknown)", message);
             return;
         } else {
-            callback.log(LogLevel.Debug, String.format("Received message: %s, %d %s %s", message, msg.getID(),
+            callback.log(LogLevel.DEBUG, String.format("Received message: %s, %d %s %s", message, msg.getID(),
                     msg.getCode(), msg.getMessageType().toString()));
         }
 
         if (DataItemGroup.dataItemGroups.containsKey(msg.getID())) {
             DataItem[] dataItems = DataItemGroup.dataItemGroups.get(msg.getID());
 
-            for (int i = 0; i < dataItems.length; i++) {
-                DataItem dataItem = dataItems[i];
-
+            for (DataItem dataItem : dataItems) {
                 State state = null;
 
                 switch (dataItem.getDataType()) {
-                    case Flags:
-                        state = TypeConverter.toOnOffType(msg.getBit(dataItem.getByteType(), dataItem.getBitPos()));
+                    case FLAGS:
+                        state = OnOffType.from(msg.getBit(dataItem.getByteType(), dataItem.getBitPos()));
                         break;
-                    case Uint8:
-                    case Uint16:
-                        state = TypeConverter.toDecimalType(msg.getUInt(dataItem.getByteType()));
+                    case UINT8:
+                    case UINT16:
+                        state = new DecimalType(msg.getUInt(dataItem.getByteType()));
                         break;
-                    case Int8:
-                    case Int16:
-                        state = TypeConverter.toDecimalType(msg.getInt(dataItem.getByteType()));
+                    case INT8:
+                    case INT16:
+                        state = new DecimalType(msg.getInt(dataItem.getByteType()));
                         break;
-                    case Float:
-                        state = TypeConverter.toDecimalType(msg.getFloat());
+                    case FLOAT:
+                        state = new DecimalType(msg.getFloat());
                         break;
-                    case DoWToD:
+                    case DOWTOD:
                         break;
                 }
-                callback.log(LogLevel.Trace,
-                        String.format("  Data %d: %d %s %s %s", i, dataItem.getID(), dataItem.getSubject(),
+                callback.log(LogLevel.DEBUG,
+                        String.format("  Data: %d %s %s %s", dataItem.getID(), dataItem.getSubject(),
                                 dataItem.getDataType().toString(), state == null ? "" : state.toString()));
             }
         }
 
-        if (msg.getMessageType() == MessageType.ReadAck || msg.getMessageType() == MessageType.WriteData) {
+        if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA) {
             receiveMessage(msg);
         }
     }

@@ -16,11 +16,11 @@ package org.openhab.binding.openthermgateway.internal;
  * @author Arjen Korevaar - Initial contribution
  */
 public enum DataType {
-    Flags,
-    Uint8,
-    Int8,
-    Float,
-    Uint16,
-    Int16,
-    DoWToD
+    FLAGS,
+    UINT8,
+    INT8,
+    FLOAT,
+    UINT16,
+    INT16,
+    DOWTOD
 }

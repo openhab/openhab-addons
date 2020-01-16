@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Arjen Korevaar - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.openthermgateway")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.openthermgateway")
 @NonNullByDefault
 public class OpenThermGatewayHandlerFactory extends BaseThingHandlerFactory {
 

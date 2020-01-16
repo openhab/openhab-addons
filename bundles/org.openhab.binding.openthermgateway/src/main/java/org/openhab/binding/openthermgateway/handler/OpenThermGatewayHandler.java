@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -48,11 +50,9 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewayHandler.class);
 
-    @Nullable
-    private OpenThermGatewayConfiguration config;
+    @Nullable private OpenThermGatewayConfiguration config;
 
-    @Nullable
-    private OpenThermGatewayConnector connector;
+    @Nullable private OpenThermGatewayConnector connector;
 
     public OpenThermGatewayHandler(Thing thing) {
         super(thing);
@@ -126,7 +126,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                             connect();
                         }
                     }
-                }, config.connectionRetryInterval * 1000, TimeUnit.MILLISECONDS);
+                }, config.connectionRetryInterval, TimeUnit.SECONDS);
             }
         } catch (IllegalStateException ex) {
         }
@@ -137,9 +137,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         if (DataItemGroup.dataItemGroups.containsKey(message.getID())) {
             DataItem[] dataItems = DataItemGroup.dataItemGroups.get(message.getID());
 
-            for (int i = 0; i < dataItems.length; i++) {
-                DataItem dataItem = dataItems[i];
-
+            for (DataItem dataItem: dataItems) {
                 String channelId = dataItem.getSubject();
 
                 if (!OpenThermGatewayBindingConstants.SUPPORTED_CHANNEL_IDS.contains(channelId)) {
@@ -149,31 +147,27 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 State state = null;
 
                 switch (dataItem.getDataType()) {
-                    case Flags:
-                        state = TypeConverter.toOnOffType(message.getBit(dataItem.getByteType(), dataItem.getBitPos()));
+                    case FLAGS:
+                        state = OnOffType.from(message.getBit(dataItem.getByteType(), dataItem.getBitPos()));
                         break;
-                    case Uint8:
-                    case Uint16:
-                        state = TypeConverter.toDecimalType(message.getUInt(dataItem.getByteType()));
+                    case UINT8:
+                    case UINT16:
+                        state = new DecimalType(message.getUInt(dataItem.getByteType()));
                         break;
-                    case Int8:
-                    case Int16:
-                        state = TypeConverter.toDecimalType(message.getInt(dataItem.getByteType()));
+                    case INT8:
+                    case INT16:
+                        state = new DecimalType(message.getInt(dataItem.getByteType()));
                         break;
-                    case Float:
-                        state = TypeConverter.toDecimalType(message.getFloat());
+                    case FLOAT:
+                        state = new DecimalType(message.getFloat());
                         break;
-                    case DoWToD:
+                    case DOWTOD:
                         break;
                 }
 
                 if (state != null) {
                     logger.debug("Received update for channel '{}': {}", channelId, state.toFullString());
-                    try {
-                        updateState(channelId, state);
-                    } catch (IllegalStateException e) {
-                        // Missing callback, possibly due to incorrect initialization. how to handle correctly ?
-                    }
+                    updateState(channelId, state);
                 }
             }
         }
@@ -188,19 +182,19 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void log(LogLevel loglevel, String message, Throwable t) {
         switch (loglevel) {
-            case Trace:
+            case TRACE:
                 logger.trace("{}", message, t);
                 break;
-            case Debug:
+            case DEBUG:
                 logger.debug("{}", message, t);
                 break;
-            case Info:
+            case INFO:
                 logger.info("{}", message, t);
                 break;
-            case Warning:
+            case WARNING:
                 logger.warn("{}", message, t);
                 break;
-            case Error:
+            case ERROR:
                 logger.error("{}", message, t);
                 break;
             default:
@@ -211,19 +205,19 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void log(LogLevel loglevel, String message) {
         switch (loglevel) {
-            case Trace:
+            case TRACE:
                 logger.trace("{}", message);
                 break;
-            case Debug:
+            case DEBUG:
                 logger.debug("{}", message);
                 break;
-            case Info:
+            case INFO:
                 logger.info("{}", message);
                 break;
-            case Warning:
+            case WARNING:
                 logger.warn("{}", message);
                 break;
-            case Error:
+            case ERROR:
                 logger.error("{}", message);
                 break;
             default:

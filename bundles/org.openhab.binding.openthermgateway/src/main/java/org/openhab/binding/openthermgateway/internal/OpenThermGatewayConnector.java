@@ -19,9 +19,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface OpenThermGatewayConnector extends Runnable {
-    public void sendCommand(GatewayCommand command);
+    void sendCommand(GatewayCommand command);
 
-    public boolean isConnected();
+    boolean isConnected();
 
-    public void stop();
+    void stop();
 }

@@ -16,9 +16,9 @@ package org.openhab.binding.openthermgateway.internal;
  * @author Arjen Korevaar - Initial contribution
  */
 public enum LogLevel {
-    Trace,
-    Debug,
-    Info,
-    Error,
-    Warning,
+    TRACE,
+    DEBUG,
+    INFO,
+    ERROR,
+    WARNING,
 }

@@ -19,17 +19,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface OpenThermGatewayCallback {
-    public void connecting();
+    void connecting();
 
-    public void connected();
+    void connected();
 
-    public void disconnected();
+    void disconnected();
 
-    public void receiveMessage(Message message);
+    void receiveMessage(Message message);
 
-    public void log(LogLevel loglevel, String message);
+    void log(LogLevel loglevel, String message);
 
-    public void log(LogLevel loglevel, String format, String arg);
+    void log(LogLevel loglevel, String format, String arg);
 
-    public void log(LogLevel loglevel, String format, Throwable t);
+    void log(LogLevel loglevel, String format, Throwable t);
 }

@@ -16,7 +16,7 @@ package org.openhab.binding.openthermgateway.internal;
  * @author Arjen Korevaar - Initial contribution
  */
 public enum ByteType {
-    HighByte,
-    LowByte,
-    Both
+    HIGHBYTE,
+    LOWBYTE,
+    BOTH
 }

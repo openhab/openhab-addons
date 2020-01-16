@@ -54,14 +54,14 @@ public class GatewayCommand {
     }
 
     private boolean validate() {
-        if (this.validationSet == null || this.validationSet == "") {
+        if (this.validationSet == null || this.validationSet.isEmpty()) {
             return true;
         }
 
         String[] validations = this.validationSet.split(",");
 
-        for (int i = 0; i < validations.length; i++) {
-            if (this.message.equals(validations[i])) {
+        for (String validation : validations) {
+            if (this.message.equals(validation)) {
                 return true;
             }
         }
@@ -70,7 +70,7 @@ public class GatewayCommand {
     }
 
     public static GatewayCommand parse(String code, String message) throws Exception {
-        if ((code == null || code == "") && message.length() > 2 && message.charAt(2) == '=') {
+        if ((code == null || code.isEmpty()) && message.length() > 2 && message.charAt(2) == '=') {
             return parse(message.substring(0, 2), message.substring(3));
         }
 

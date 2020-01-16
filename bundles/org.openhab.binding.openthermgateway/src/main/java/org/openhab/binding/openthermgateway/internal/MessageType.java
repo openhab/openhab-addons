@@ -16,12 +16,12 @@ package org.openhab.binding.openthermgateway.internal;
  * @author Arjen Korevaar - Initial contribution
  */
 public enum MessageType {
-    ReadData, // 000
-    ReadAck, // 100
-    WriteData, // 001
-    WriteAck, // 101
-    InvalidData, // 010
-    DataInvalid, // 110
-    Reserved, // 011
-    UnknownDataId // 111
+    READDATA, // 000
+    READACK, // 100
+    WRITEDATA, // 001
+    WRITEACK, // 101
+    INVALIDDATA, // 010
+    DATAINVALID, // 110
+    RESERVED, // 011
+    UNKNOWNDATAID // 111
 }

@@ -51,11 +51,11 @@ public class Message {
     public @Nullable String getData(ByteType byteType) {
         if (this.data.length() == 4) {
             switch (byteType) {
-                case HighByte:
+                case HIGHBYTE:
                     return this.data.substring(0, 2);
-                case LowByte:
+                case LOWBYTE:
                     return this.data.substring(2, 4);
-                case Both:
+                case BOTH:
                     return this.data;
             }
         }
@@ -64,8 +64,7 @@ public class Message {
     }
 
     public boolean getBit(ByteType byteType, int pos) {
-        @Nullable
-        String data = getData(byteType);
+        @Nullable String data = getData(byteType);
 
         if (data != null) {
             // First parse the hex value to an integer
@@ -80,8 +79,7 @@ public class Message {
     }
 
     public int getUInt(ByteType byteType) {
-        @Nullable
-        String data = getData(byteType);
+        @Nullable String data = getData(byteType);
 
         if (data != null) {
             return Integer.parseInt(data, 16);
@@ -91,8 +89,7 @@ public class Message {
     }
 
     public int getInt(ByteType byteType) {
-        @Nullable
-        String data = getData(byteType);
+        @Nullable String data = getData(byteType);
 
         if (data != null) {
             return parseSignedInteger(data);
@@ -103,8 +100,7 @@ public class Message {
 
     public float getFloat() {
         // f8.8, two's complement
-        @Nullable
-        String data = getData(ByteType.Both);
+        @Nullable String data = getData(ByteType.BOTH);
 
         if (data != null) {
             long value = Long.parseLong(data, 16);
@@ -133,11 +129,7 @@ public class Message {
         // If the message is a Request sent to the boiler or an Answer returned to the
         // thermostat, and it's ID is equal to the previous message, then this is an
         // override sent by the OpenTherm Gateway
-        if (other != null && this.getID() == other.getID() && (this.getCode() == "R" || this.getCode() == "A")) {
-            return true;
-        }
-
-        return false;
+        return other != null && this.getID() == other.getID() && ("R".equals(this.getCode()) || "A".equals(this.getCode()));
     }
 
     @Override
@@ -180,31 +172,28 @@ public class Message {
 
         switch (cutoff) {
             case 0: // 000
-                return MessageType.ReadData;
+                return MessageType.READDATA;
             case 1: // 001
-                return MessageType.WriteData;
+                return MessageType.WRITEDATA;
             case 2: // 010
-                return MessageType.InvalidData;
+                return MessageType.INVALIDDATA;
             case 3: // 011
-                return MessageType.Reserved;
+                return MessageType.RESERVED;
             case 4: // 100
-                return MessageType.ReadAck;
+                return MessageType.READACK;
             case 5: // 101
-                return MessageType.WriteAck;
+                return MessageType.WRITEACK;
             case 6: // 110
-                return MessageType.DataInvalid;
+                return MessageType.DATAINVALID;
             case 7: // 111
             default:
-                return MessageType.UnknownDataId;
+                return MessageType.UNKNOWNDATAID;
         }
     }
 
     private int parseSignedInteger(String data) {
         // First parse the hex value to an unsigned integer value
         int result = Integer.parseInt(data, 16);
-
-        // TODO: more elegant way of determining the bitmask based on the parsed integer
-        // value
 
         if (data.length() == 4) {
             // This is a two byte value, apply a bitmask of 01111111 11111111 (32767) to cut
