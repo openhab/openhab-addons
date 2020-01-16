@@ -172,7 +172,7 @@ public class ExecHandler extends BaseThingHandler {
                         commandLine = String.format(commandLine, Calendar.getInstance().getTime());
                     }
                 } catch (IllegalFormatException e) {
-                    logger.error(
+                    logger.warn(
                             "An exception occurred while formatting the command line with the current time and input values : '{}'",
                             e.getMessage());
                     updateState(RUN, OnOffType.OFF);
@@ -188,7 +188,7 @@ public class ExecHandler extends BaseThingHandler {
                     try {
                         cmdArray = commandLine.split(CMD_LINE_DELIMITER);
                     } catch (PatternSyntaxException e) {
-                        logger.error("An exception occurred while splitting '{}' : '{}'",
+                        logger.warn("An exception occurred while splitting '{}' : '{}'",
                                 commandLine.toString(), e.getMessage());
                         updateState(RUN, OnOffType.OFF);
                         updateState(OUTPUT, new StringType(e.getMessage()));
@@ -209,7 +209,7 @@ public class ExecHandler extends BaseThingHandler {
                     } else {
                         String err = "OS not supported, please manually split commands!";
                         logger.debug("OS: Unknown ({})", getOperatingSystemName());
-                        logger.error(err);
+                        logger.warn(err);
                         updateState(RUN, OnOffType.OFF);
                         updateState(OUTPUT, new StringType(err));
                         return;
@@ -317,7 +317,7 @@ public class ExecHandler extends BaseThingHandler {
                         transformationType);
             }
         } catch (TransformationException te) {
-            logger.error("An exception occurred while transforming '{}' with '{}' : '{}'",
+            logger.warn("An exception occurred while transforming '{}' with '{}' : '{}'",
                     response, transformation, te.getMessage());
 
             // in case of an error we return the response without any transformation
