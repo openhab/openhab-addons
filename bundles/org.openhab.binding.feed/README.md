@@ -113,4 +113,3 @@ DateTime    item10_update             {channel="feed:feeditems:tagesschau:item10
 String      item10_title              {channel="feed:feeditems:tagesschau:item10#item-title"}
 String      item10_link               {channel="feed:feeditems:tagesschau:item10#item-link"}
 String      item10_description        {channel="feed:feeditems:tagesschau:item10#item-description"}
-```
