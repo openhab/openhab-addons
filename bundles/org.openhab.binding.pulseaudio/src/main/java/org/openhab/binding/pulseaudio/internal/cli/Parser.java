@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class Parser {
     private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
-    private static final Pattern PATTERN = Pattern.compile("^\\s+([a-z\\s._]+)[:=]\\s*<?\"?([^>\"]+)\"?>?$");
+    private static final Pattern PATTERN = Pattern.compile("^\\s*([a-z\\s._]+)[:=]\\s*<?\\\"?([^>\\\"]+)\\\"?>?$");
     private static final Pattern VOLUME_PATTERN = Pattern
             .compile("^([\\w\\-]+):( *[\\d]+ \\/)? *([\\d]+)% *\\/? *([\\d\\-., dB]+)?$");
     private static final Pattern FALL_BACK_PATTERN = Pattern
