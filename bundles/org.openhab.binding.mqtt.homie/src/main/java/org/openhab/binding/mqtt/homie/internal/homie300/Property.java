@@ -188,8 +188,8 @@ public class Property implements AttributeChanged {
                 BigDecimal min = s.length == 2 ? convertFromString(s[0]) : null;
                 BigDecimal max = s.length == 2 ? convertFromString(s[1]) : null;
                 BigDecimal step = (min != null && max != null)
-                           ? max.subtract(min).divide(new BigDecimal(100.0), new MathContext(isDecimal ? 2 : 0))
-                           : null;
+                        ? max.subtract(min).divide(new BigDecimal(100.0), new MathContext(isDecimal ? 2 : 0))
+                        : null;
                 if (step != null && !isDecimal && step.intValue() <= 0) {
                         step = new BigDecimal(1);
                 }
