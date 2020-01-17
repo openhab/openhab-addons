@@ -61,11 +61,12 @@ public class PulseaudioDiscoveryParticipant implements MDNSDiscoveryParticipant 
             }
             // remove the domain from the name
             String hostname = info.getServer().replace("." + info.getDomain() + ".", "");
-            try (Socket testSocket = new Socket(hostname, 4712)) {
-                logger.debug("testing connection to pulseaudio server {}:4712", hostname);
+            try (Socket testSocket = new Socket(hostname, 4713)) {
+                logger.debug("testing connection to pulseaudio server {}:4713", hostname);
 
                 if (testSocket.isConnected()) {
                     properties.put(PulseaudioBindingConstants.BRIDGE_PARAMETER_HOST, hostname);
+                    // below comment does not make sense to me since the default port is 4713 according do pulseaudio documentation
                     // we do not read the port here because the given port is 4713 and we need 4712 to query the server
                     result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
 

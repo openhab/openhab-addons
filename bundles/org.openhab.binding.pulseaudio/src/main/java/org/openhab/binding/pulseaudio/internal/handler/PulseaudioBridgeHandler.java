@@ -52,7 +52,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
             .singleton(PulseaudioBindingConstants.BRIDGE_THING_TYPE);
 
     public String host = "localhost";
-    public int port = 4712;
+    public int port = 4713;
 
     public int refreshInterval = 30000;
 

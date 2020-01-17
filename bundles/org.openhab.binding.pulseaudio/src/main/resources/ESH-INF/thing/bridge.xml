@@ -16,7 +16,7 @@
 			<parameter name="port" type="integer">
 				<label>Port</label>
 				<description>Port of the pulseaudio server</description>
-				<default>4712</default>
+				<default>4713</default>
 				<required>false</required>
 			</parameter>
 			<parameter name="refreshInterval" type="integer">

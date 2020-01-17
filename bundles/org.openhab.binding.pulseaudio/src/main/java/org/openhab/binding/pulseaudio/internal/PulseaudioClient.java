@@ -117,7 +117,7 @@ public class PulseaudioClient {
     private static final String MODULE_COMBINE_SINK = "module-combine-sink";
 
     public PulseaudioClient() throws IOException {
-        this("localhost", 4712);
+        this("localhost", 4713);
     }
 
     public PulseaudioClient(String host, int port) throws IOException {
