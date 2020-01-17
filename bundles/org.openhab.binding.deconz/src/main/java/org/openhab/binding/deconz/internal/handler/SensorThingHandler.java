@@ -55,6 +55,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -269,6 +270,12 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
             if (newState.state.tampered != null) {
                 createChannel(CHANNEL_TAMPERED);
             }
+
+            // e.g. Aqara Cube
+            if (newState.state.gesture != null) {
+                createChannel(CHANNEL_GESTURE);
+                createChannel(CHANNEL_GESTUREEVENT, ChannelKind.TRIGGER);
+            }
             ignoreConfigurationUpdate = false;
 
             // Initial data
@@ -291,6 +298,10 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
     }
 
     private @Nullable Channel createChannel(String channelId) {
+        return createChannel(channelId, ChannelKind.STATE);
+    }
+
+    private @Nullable Channel createChannel(String channelId, ChannelKind kind) {
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
@@ -306,7 +317,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
                     channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
                     break;
             }
-            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
+            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).withKind(kind).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
             return channel;
         }
@@ -337,6 +348,7 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
         this.state = newState;
 
         Integer buttonevent = newState.buttonevent;
+        Integer gesture = newState.gesture;
         String lastUpdated = newState.lastupdated;
         Integer status = newState.status;
         Boolean presence = newState.presence;
@@ -458,6 +470,16 @@ public class SensorThingHandler extends BaseThingHandler implements WebSocketVal
             case CHANNEL_BUTTONEVENT:
                 if (buttonevent != null && !initializing) {
                     triggerChannel(channelUID, String.valueOf(buttonevent));
+                }
+                break;
+            case CHANNEL_GESTURE:
+                if (gesture != null) {
+                    updateState(channelUID, new DecimalType(gesture));
+                }
+                break;
+            case CHANNEL_GESTUREEVENT:
+                if (gesture != null && !initializing) {
+                    triggerChannel(channelUID, String.valueOf(gesture));
                 }
                 break;
             case CHANNEL_LAST_UPDATED:
