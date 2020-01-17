@@ -112,6 +112,15 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
      * @param tinybDevice the new device instance to use for communication
      */
     public synchronized void updateTinybDevice(tinyb.BluetoothDevice tinybDevice) {
+        try {
+            inactiveCleanupJobLock.lock();
+            if (inactiveCleanupJob == null || inactiveCleanupJob.isDone()) {
+                onActivity();
+            }
+        } finally {
+            inactiveCleanupJobLock.unlock();
+        }
+
         if (device != null && !tinybDevice.equals(device)) {
             // we need to replace the instance - let's deactivate notifications on the old one
             disableNotifications();
@@ -256,6 +265,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             throw new IllegalStateException("TinyB device is not yet set");
         }
         BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
+        if (c == null) {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+            return false;
+        }
         scheduler.submit(() -> {
             try {
                 byte[] value = c.readValue();
@@ -278,6 +291,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             throw new IllegalStateException("TinyB device is not yet set");
         }
         BluetoothGattCharacteristic c = getTinybCharacteristicByUUID(characteristic.getUuid().toString());
+        if (c == null) {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+            return false;
+        }
         scheduler.submit(() -> {
             try {
                 BluetoothCompletionStatus successStatus = c.writeValue(characteristic.getByteValue())
@@ -433,7 +450,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                                         device.getAddress(), ex.getMessage());
                             }
                         }
-                        device = null;
+                        // device = null;
                     }
                 }
             }, 5, TimeUnit.MINUTES);
