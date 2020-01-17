@@ -26,12 +26,11 @@ import org.openhab.binding.onewire.internal.device.DS2401;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class DS2401Test extends DeviceTestParent {
+public class DS2401Test extends DeviceTestParent<DS2401> {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_BASIC);
-        deviceTestClazz = DS2401.class;
+        setupMocks(THING_TYPE_BASIC, DS2401.class);
     }
 
     @Test

@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
-import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.DS1923;
 
 /**
@@ -36,11 +35,10 @@ import org.openhab.binding.onewire.internal.device.DS1923;
  * @author Michał Wójcik - Adapted to DS1923
  */
 @NonNullByDefault
-public class DS1923Test extends DeviceTestParent {
+public class DS1923Test extends DeviceTestParent<DS1923> {
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_MS_TX);
-        deviceTestClazz = DS1923.class;
+        setupMocks(THING_TYPE_MS_TX, DS1923.class);
 
         addChannel(CHANNEL_TEMPERATURE, "Number:Temperature");
         addChannel(CHANNEL_HUMIDITY, "Number:Dimensionless");
@@ -50,8 +48,7 @@ public class DS1923Test extends DeviceTestParent {
 
     @Test
     public void temperatureChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice();
-        ;
+        final DS1923 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -73,8 +70,7 @@ public class DS1923Test extends DeviceTestParent {
 
     @Test
     public void humidityChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice();
-        ;
+        final DS1923 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {

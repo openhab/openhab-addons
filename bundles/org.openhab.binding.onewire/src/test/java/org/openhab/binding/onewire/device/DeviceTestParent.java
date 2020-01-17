@@ -43,7 +43,7 @@ import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public abstract class DeviceTestParent {
+public abstract class DeviceTestParent<T extends AbstractOwDevice> {
     protected @Nullable Class<? extends AbstractOwDevice> deviceTestClazz;
 
     @Mock
@@ -60,7 +60,8 @@ public abstract class DeviceTestParent {
 
     protected SensorId testSensorId = new SensorId("00.000000000000");
 
-    public void setupMocks(ThingTypeUID thingTypeUID) {
+    public void setupMocks(ThingTypeUID thingTypeUID, Class<? extends AbstractOwDevice> deviceTestClazz) {
+        this.deviceTestClazz = deviceTestClazz;
         initMocks(this);
 
         Mockito.when(mockThingHandler.getThing()).thenReturn(mockThing);
@@ -86,15 +87,15 @@ public abstract class DeviceTestParent {
         Mockito.when(mockThing.getChannel(channelId)).thenReturn(channel);
     }
 
-    public AbstractOwDevice instantiateDevice() throws IllegalStateException {
+    @SuppressWarnings("unchecked")
+    public T instantiateDevice() {
         final Class<? extends AbstractOwDevice> deviceTestClazz = this.deviceTestClazz;
         if (deviceTestClazz == null) {
             throw new IllegalStateException("deviceTestClazz is null");
         }
         try {
             Constructor<?> constructor = deviceTestClazz.getConstructor(SensorId.class, OwBaseThingHandler.class);
-            AbstractOwDevice testDevice = (AbstractOwDevice) constructor
-                    .newInstance(new Object[] { testSensorId, mockThingHandler });
+            T testDevice = (T) constructor.newInstance(new Object[] { testSensorId, mockThingHandler });
             Assert.assertNotNull(testDevice);
             return testDevice;
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
@@ -103,7 +104,8 @@ public abstract class DeviceTestParent {
         }
     }
 
-    public AbstractOwDevice instantiateDevice(OwSensorType sensorType) {
+    @SuppressWarnings("unchecked")
+    public T instantiateDevice(OwSensorType sensorType) {
         final Class<? extends AbstractOwDevice> deviceTestClazz = this.deviceTestClazz;
         if (deviceTestClazz == null) {
             throw new IllegalStateException("deviceTestClazz is null");
@@ -111,8 +113,7 @@ public abstract class DeviceTestParent {
         try {
             Constructor<?> constructor = deviceTestClazz.getConstructor(SensorId.class, OwSensorType.class,
                     OwBaseThingHandler.class);
-            AbstractOwDevice testDevice = (AbstractOwDevice) constructor
-                    .newInstance(new Object[] { testSensorId, sensorType, mockThingHandler });
+            T testDevice = (T) constructor.newInstance(new Object[] { testSensorId, sensorType, mockThingHandler });
             Assert.assertNotNull(testDevice);
             return testDevice;
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
@@ -122,7 +123,7 @@ public abstract class DeviceTestParent {
     }
 
     public void presenceTest(OnOffType state) {
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final T testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(state);

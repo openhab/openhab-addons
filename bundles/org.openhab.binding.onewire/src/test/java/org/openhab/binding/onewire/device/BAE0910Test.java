@@ -32,7 +32,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
-import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.BAE0910;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 
@@ -42,11 +41,10 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class BAE0910Test extends DeviceTestParent {
+public class BAE0910Test extends DeviceTestParent<BAE0910> {
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_BAE091X);
-        deviceTestClazz = BAE0910.class;
+        setupMocks(THING_TYPE_BAE091X, BAE0910.class);
     }
 
     // pin 1: counter
@@ -54,8 +52,7 @@ public class BAE0910Test extends DeviceTestParent {
     @Test
     public void counter() {
         addChannel(CHANNEL_COUNTER, "Number");
-        final AbstractOwDevice testDevice = instantiateDevice();
-        ;
+        final BAE0910 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -65,7 +62,7 @@ public class BAE0910Test extends DeviceTestParent {
                     .thenReturn(new DecimalType(34567));
 
             testDevice.enableChannel(CHANNEL_COUNTER);
-            ((BAE0910) testDevice).configureChannels(mockBridgeHandler);
+            testDevice.configureChannels(mockBridgeHandler);
 
             // refresh
             ArgumentCaptor<State> stateArgumentCaptor = ArgumentCaptor.forClass(State.class);
@@ -76,8 +73,7 @@ public class BAE0910Test extends DeviceTestParent {
             assertEquals(new DecimalType(34567), stateArgumentCaptor.getValue());
 
             // write
-            assertFalse(
-                    ((BAE0910) testDevice).writeChannel(mockBridgeHandler, CHANNEL_COUNTER, new DecimalType(12345)));
+            assertFalse(testDevice.writeChannel(mockBridgeHandler, CHANNEL_COUNTER, new DecimalType(12345)));
 
             inOrder.verifyNoMoreInteractions();
         } catch (OwException e) {
@@ -130,7 +126,7 @@ public class BAE0910Test extends DeviceTestParent {
         channelConfig.put("hires", "true");
         addChannel(CHANNEL_VOLTAGE, "Number:ElectricPotential", new Configuration(channelConfig));
 
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final BAE0910 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -139,7 +135,7 @@ public class BAE0910Test extends DeviceTestParent {
                     .thenReturn(new DecimalType(5.2));
 
             testDevice.enableChannel(CHANNEL_VOLTAGE);
-            ((BAE0910) testDevice).configureChannels(mockBridgeHandler);
+            testDevice.configureChannels(mockBridgeHandler);
 
             // test configuration
             assertEquals(bitSet(3, 4), checkConfiguration(2));
@@ -153,8 +149,7 @@ public class BAE0910Test extends DeviceTestParent {
             assertEquals(new QuantityType<>("5.2 V"), stateArgumentCaptor.getValue());
 
             // write (should fail)
-            assertFalse(
-                    ((BAE0910) testDevice).writeChannel(mockBridgeHandler, CHANNEL_VOLTAGE, new QuantityType<>("3 V")));
+            assertFalse(testDevice.writeChannel(mockBridgeHandler, CHANNEL_VOLTAGE, new QuantityType<>("3 V")));
 
             inOrder.verifyNoMoreInteractions();
         } catch (OwException e) {
@@ -204,8 +199,7 @@ public class BAE0910Test extends DeviceTestParent {
      */
     private void digitalBaseChannel(String channel, BitSet configBitSet, int configRegister, String channelParam,
             BitSet returnBitSet, boolean isOutput) {
-        final AbstractOwDevice testDevice = instantiateDevice();
-        ;
+        final BAE0910 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -214,7 +208,7 @@ public class BAE0910Test extends DeviceTestParent {
                     .thenReturn(returnBitSet);
 
             testDevice.enableChannel(channel);
-            ((BAE0910) testDevice).configureChannels(mockBridgeHandler);
+            testDevice.configureChannels(mockBridgeHandler);
 
             // test configuration
             assertEquals(configBitSet, checkConfiguration(configRegister));
@@ -230,12 +224,12 @@ public class BAE0910Test extends DeviceTestParent {
             // write
             if (isOutput) {
                 ArgumentCaptor<BitSet> bitSetArgumentCaptor = ArgumentCaptor.forClass(BitSet.class);
-                assertTrue(((BAE0910) testDevice).writeChannel(mockBridgeHandler, channel, OnOffType.ON));
+                assertTrue(testDevice.writeChannel(mockBridgeHandler, channel, OnOffType.ON));
                 inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId),
                         eq(new OwserverDeviceParameter(channelParam)), bitSetArgumentCaptor.capture());
                 assertEquals(returnBitSet, bitSetArgumentCaptor.getValue());
             } else {
-                assertFalse(((BAE0910) testDevice).writeChannel(mockBridgeHandler, channel, OnOffType.ON));
+                assertFalse(testDevice.writeChannel(mockBridgeHandler, channel, OnOffType.ON));
             }
 
             inOrder.verifyNoMoreInteractions();
@@ -260,7 +254,7 @@ public class BAE0910Test extends DeviceTestParent {
         addChannel(freqChannel, "Number:Frequency", new Configuration(channelConfig));
         addChannel(dutyChannel, "Number:Dimensionless");
 
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final BAE0910 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -274,7 +268,7 @@ public class BAE0910Test extends DeviceTestParent {
 
             testDevice.enableChannel(freqChannel);
             testDevice.enableChannel(dutyChannel);
-            ((BAE0910) testDevice).configureChannels(mockBridgeHandler);
+            testDevice.configureChannels(mockBridgeHandler);
 
             // test configuration
             assertEquals(bitSet(0, 2), checkConfiguration(registerIndex + 2));
@@ -293,12 +287,11 @@ public class BAE0910Test extends DeviceTestParent {
 
             // write
             ArgumentCaptor<DecimalType> decimalTypeArgumentCaptor = ArgumentCaptor.forClass(DecimalType.class);
-            assertTrue(((BAE0910) testDevice).writeChannel(mockBridgeHandler, freqChannel,
-                    new QuantityType<>("50000 Hz")));
+            assertTrue(testDevice.writeChannel(mockBridgeHandler, freqChannel, new QuantityType<>("50000 Hz")));
             inOrder.verify(mockBridgeHandler).writeDecimalType(eq(testSensorId),
                     eq(new OwserverDeviceParameter(freqParam)), decimalTypeArgumentCaptor.capture());
             assertEquals(new DecimalType(10), decimalTypeArgumentCaptor.getValue());
-            ((BAE0910) testDevice).writeChannel(mockBridgeHandler, dutyChannel, new QuantityType<>("25 %"));
+            testDevice.writeChannel(mockBridgeHandler, dutyChannel, new QuantityType<>("25 %"));
             inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId),
                     eq(new OwserverDeviceParameter(freqParam)));
             inOrder.verify(mockBridgeHandler).writeDecimalType(eq(testSensorId),
@@ -320,7 +313,6 @@ public class BAE0910Test extends DeviceTestParent {
      */
     private BitSet checkConfiguration(int registerIndex) throws OwException {
         ArgumentCaptor<BitSet> configArgumentCaptor = ArgumentCaptor.forClass(BitSet.class);
-
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/outc")),

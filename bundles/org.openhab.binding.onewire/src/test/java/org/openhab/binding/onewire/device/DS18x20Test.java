@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.onewire.device;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
@@ -30,7 +31,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
-import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.DS18x20;
 
 /**
@@ -39,12 +39,11 @@ import org.openhab.binding.onewire.internal.device.DS18x20;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class DS18x20Test extends DeviceTestParent {
+public class DS18x20Test extends DeviceTestParent<DS18x20> {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_BASIC);
-        deviceTestClazz = DS18x20.class;
+        setupMocks(THING_TYPE_BASIC, DS18x20.class);
 
         Map<String, Object> channelConfig = new HashMap<>();
         channelConfig.put(CONFIG_IGNORE_POR, true);
@@ -53,7 +52,7 @@ public class DS18x20Test extends DeviceTestParent {
 
     @Test
     public void temperatureTest() {
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final DS18x20 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -73,7 +72,7 @@ public class DS18x20Test extends DeviceTestParent {
 
     @Test
     public void temperatureIgnorePORTest() {
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final DS18x20 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {

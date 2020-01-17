@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
-import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.EDS006x;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 
@@ -36,12 +35,11 @@ import org.openhab.binding.onewire.internal.device.OwSensorType;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class EDS006xTest extends DeviceTestParent {
+public class EDS006xTest extends DeviceTestParent<EDS006x> {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_EDS_ENV);
-        deviceTestClazz = EDS006x.class;
+        setupMocks(THING_TYPE_EDS_ENV, EDS006x.class);
 
         addChannel(CHANNEL_TEMPERATURE, "Number:Temperature");
         addChannel(CHANNEL_HUMIDITY, "Number:Dimensionless");
@@ -53,7 +51,7 @@ public class EDS006xTest extends DeviceTestParent {
 
     @Test
     public void temperatureChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice(OwSensorType.EDS0068);
+        final EDS006x testDevice = instantiateDevice(OwSensorType.EDS0068);
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -75,7 +73,7 @@ public class EDS006xTest extends DeviceTestParent {
 
     @Test
     public void humidityChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice(OwSensorType.EDS0068);
+        final EDS006x testDevice = instantiateDevice(OwSensorType.EDS0068);
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -103,7 +101,7 @@ public class EDS006xTest extends DeviceTestParent {
 
     @Test
     public void pressureChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice(OwSensorType.EDS0068);
+        final EDS006x testDevice = instantiateDevice(OwSensorType.EDS0068);
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -125,7 +123,7 @@ public class EDS006xTest extends DeviceTestParent {
 
     @Test
     public void lightChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice(OwSensorType.EDS0068);
+        final EDS006x testDevice = instantiateDevice(OwSensorType.EDS0068);
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -147,7 +145,7 @@ public class EDS006xTest extends DeviceTestParent {
 
     @Test
     public void noChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice(OwSensorType.EDS0068);
+        final EDS006x testDevice = instantiateDevice(OwSensorType.EDS0068);
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {

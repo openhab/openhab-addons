@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
-import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.DS2438;
 import org.openhab.binding.onewire.internal.device.DS2438.LightSensorType;
 
@@ -36,12 +35,11 @@ import org.openhab.binding.onewire.internal.device.DS2438.LightSensorType;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class DS2438Test extends DeviceTestParent {
+public class DS2438Test extends DeviceTestParent<DS2438> {
 
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_MS_TX);
-        deviceTestClazz = DS2438.class;
+        setupMocks(THING_TYPE_MS_TX, DS2438.class);
 
         addChannel(CHANNEL_TEMPERATURE, "Number:Temperature");
         addChannel(CHANNEL_HUMIDITY, "Number:Dimensionless");
@@ -55,7 +53,7 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void temperatureChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -78,7 +76,7 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void humidityChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -107,7 +105,7 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void voltageChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -130,7 +128,7 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void currentChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -154,7 +152,7 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void lightChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -164,13 +162,13 @@ public class DS2438Test extends DeviceTestParent {
             testDevice.enableChannel(CHANNEL_LIGHT);
             testDevice.configureChannels();
             inOrder.verify(mockThingHandler).getThing();
-            ((DS2438) testDevice).setLightSensorType(LightSensorType.ELABNET_V1);
+            testDevice.setLightSensorType(LightSensorType.ELABNET_V1);
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId), any());
             inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_LIGHT), eq(new QuantityType<>("97442 lx")));
 
-            ((DS2438) testDevice).setLightSensorType(LightSensorType.ELABNET_V2);
+            testDevice.setLightSensorType(LightSensorType.ELABNET_V2);
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId), any());
@@ -184,7 +182,7 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void supplyVoltageChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
@@ -207,7 +205,7 @@ public class DS2438Test extends DeviceTestParent {
 
     @Test
     public void noChannel() {
-        final AbstractOwDevice testDevice = instantiateDevice();
+        final DS2438 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
