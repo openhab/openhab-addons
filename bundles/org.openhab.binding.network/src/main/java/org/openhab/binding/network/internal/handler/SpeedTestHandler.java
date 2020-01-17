@@ -130,7 +130,17 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
             freeRefreshTask();
             return;
-        } else if (SpeedTestError.SOCKET_TIMEOUT.equals(testError) || SpeedTestError.SOCKET_ERROR.equals(testError)
+        } else if (SpeedTestError.SOCKET_TIMEOUT.equals(testError)) {
+            timeouts--;
+            if (timeouts <= 0) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Max timeout count reached");
+                freeRefreshTask();
+            } else {
+                logger.warn("Speedtest timed out, {} attempts left. Message '{}'", timeouts, errorMessage);
+                stopSpeedTest();
+            }
+            return;
+        } else if (SpeedTestError.SOCKET_ERROR.equals(testError)
                 || SpeedTestError.INVALID_HTTP_RESPONSE.equals(testError)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             freeRefreshTask();
