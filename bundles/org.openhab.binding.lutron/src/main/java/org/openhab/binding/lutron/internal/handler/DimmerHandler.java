@@ -15,7 +15,10 @@ package org.openhab.binding.lutron.internal.handler;
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL_LIGHTLEVEL;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -23,9 +26,12 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lutron.action.DimmerActions;
 import org.openhab.binding.lutron.internal.config.DimmerConfig;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
+import org.openhab.binding.lutron.internal.protocol.LutronDuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +47,16 @@ public class DimmerHandler extends LutronHandler {
     private final Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
 
     private DimmerConfig config;
+    private LutronDuration fadeInTime = new LutronDuration(config.fadeInTime);
+    private LutronDuration fadeOutTime = new LutronDuration(config.fadeOutTime);
 
     public DimmerHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(DimmerActions.class);
     }
 
     @Override
@@ -94,14 +107,18 @@ public class DimmerHandler extends LutronHandler {
         if (channelUID.getId().equals(CHANNEL_LIGHTLEVEL)) {
             if (command instanceof Number) {
                 int level = ((Number) command).intValue();
-
                 output(ACTION_ZONELEVEL, level, 0.25);
             } else if (command.equals(OnOffType.ON)) {
-                output(ACTION_ZONELEVEL, 100, this.config.fadeInTime);
+                output(ACTION_ZONELEVEL, 100, fadeInTime);
             } else if (command.equals(OnOffType.OFF)) {
-                output(ACTION_ZONELEVEL, 0, this.config.fadeOutTime);
+                output(ACTION_ZONELEVEL, 0, fadeOutTime);
             }
         }
+    }
+
+    public void setLightLevel(DecimalType level, LutronDuration fade, LutronDuration delay) {
+        int intLevel = level.intValue();
+        output(ACTION_ZONELEVEL, intLevel, fade, delay);
     }
 
     @Override
