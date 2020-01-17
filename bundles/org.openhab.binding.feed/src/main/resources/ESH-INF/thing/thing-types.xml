@@ -83,17 +83,31 @@
 		<description>This is an item of the feed</description>
 		<category>Text</category>
 		<channels>
-			<channel id="latest-description" typeId="latest-description" />
-			<channel id="latest-title" typeId="latest-title" />
-			<channel id="pubdate" typeId="pubdate" />
-			<channel id="link" typeId="link" />
+			<channel id="item-description" typeId="item-description" />
+			<channel id="item-title" typeId="item-title" />
+			<channel id="item-pubdate" typeId="item-pubdate" />
+			<channel id="item-link" typeId="item-link" />
 		</channels>
 	</channel-group-type>
+
+	<channel-type id="item-title">
+		<item-type>String</item-type>
+		<label>Item title</label>
+		<description>Contains the title of the feed item.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
 
 	<channel-type id="latest-title">
 		<item-type>String</item-type>
 		<label>Latest title</label>
 		<description>Contains the title of the last feed entry.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="item-description">
+		<item-type>String</item-type>
+		<label>Item description</label>
+		<description>Contains the description of feed item.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
@@ -125,10 +139,10 @@
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
-	<channel-type id="link" advanced="true">
+	<channel-type id="item-link" advanced="true">
 		<item-type>String</item-type>
-		<label>Link</label>
-		<description>The link of the feed-item</description>
+		<label>Item link</label>
+		<description>The link of the feed item</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
@@ -139,9 +153,9 @@
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
-	<channel-type id="pubdate" advanced="true">
+	<channel-type id="item-pubdate" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Publication date</label>
+		<label>Item publication date</label>
 		<description>The publication date of the feed item</description>
 		<state readOnly="true" pattern="%tc %n" />
 	</channel-type>

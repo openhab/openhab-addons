@@ -36,7 +36,7 @@ public class FeedBindingConstants {
     /**
      * Contains the published date of the feed item.
      */
-    public static final String CHANNEL_PUBLISHED_DATE = "pubdate";
+    public static final String CHANNEL_ITEM_PUBLISHED_DATE = "item-pubdate";
 
     /**
      * Contains the published date of the last feed entry.
@@ -49,9 +49,19 @@ public class FeedBindingConstants {
     public static final String CHANNEL_LATEST_TITLE = "latest-title";
 
     /**
+     * Contains the title of the feed item.
+     */
+    public static final String CHANNEL_ITEM_TITLE = "item-title";
+
+    /**
      * Contains the description of last feed entry.
      */
     public static final String CHANNEL_LATEST_DESCRIPTION = "latest-description";
+
+    /**
+     * Contains the description of feed item.
+     */
+    public static final String CHANNEL_ITEM_DESCRIPTION = "item-description";
 
     /**
      * Description of the feed.
@@ -71,7 +81,7 @@ public class FeedBindingConstants {
     /**
      * The link of the feed item.
      */
-    public static final String CHANNEL_LINK = "link";
+    public static final String CHANNEL_ITEM_LINK = "item-link";
 
     /**
      * The title of the feed.

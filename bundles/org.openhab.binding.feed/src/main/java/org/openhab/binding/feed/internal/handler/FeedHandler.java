@@ -143,17 +143,19 @@ public class FeedHandler extends BaseThingHandler {
         }
         State state = null;
         switch (channelID) {
+            case CHANNEL_ITEM_TITLE:
             case CHANNEL_LATEST_TITLE:
                 String title = getOneEntry(currentFeedState, itemNr).getTitle();
                 state = new StringType(getValueSafely(title));
                 break;
+            case CHANNEL_ITEM_DESCRIPTION:
             case CHANNEL_LATEST_DESCRIPTION:
                 String description = getOneEntry(currentFeedState, itemNr).getDescription().getValue();
                 state = new StringType(getValueSafely(description));
                 break;
             case CHANNEL_LATEST_PUBLISHED_DATE:
             case CHANNEL_LAST_UPDATE:
-            case CHANNEL_PUBLISHED_DATE:
+            case CHANNEL_ITEM_PUBLISHED_DATE:
                 Date date = getOneEntry(currentFeedState, itemNr).getPublishedDate();
                 if (date == null) {
                     logger.debug("Cannot update date channel. No date found in feed.");
@@ -178,7 +180,7 @@ public class FeedHandler extends BaseThingHandler {
                 int numberOfEntries = currentFeedState.getEntries().size();
                 state = new DecimalType(numberOfEntries);
                 break;
-            case CHANNEL_LINK:
+            case CHANNEL_ITEM_LINK:
                 String link = getOneEntry(currentFeedState, itemNr).getLink();
                 state = new StringType(getValueSafely(link));
                 break;
