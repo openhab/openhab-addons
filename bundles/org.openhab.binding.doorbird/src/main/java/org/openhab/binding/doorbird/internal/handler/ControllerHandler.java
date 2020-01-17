@@ -79,11 +79,6 @@ public class ControllerHandler extends BaseThingHandler {
     }
 
     @Override
-    public void dispose() {
-        super.dispose();
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Got command {} for channel {} of thing {}", command, channelUID, getThing().getUID());
 

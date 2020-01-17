@@ -25,10 +25,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Authorization {
-    private String host;
-    private String userId;
-    private String userPassword;
-    private String authorization;
+    private final String host;
+    private final String userId;
+    private final String userPassword;
+    private final String authorization;
 
     public Authorization(String host, String userId, String userPassword) {
         this.host = host;

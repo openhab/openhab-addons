@@ -206,7 +206,7 @@ Frame {
 
 ### Rule
 
-Using the trigger channel:
+Using the doorbell trigger channel to detect if the doorbell has been pressed:
 
 ```
 rule "Doorbell Button Pressed"
@@ -217,7 +217,7 @@ then
 end
 ```
 
-Alternatively, using an item that references the *rawbutton-on-off-switch* profile:
+Alternatively, detecting a doorbell press using an item that references the *rawbutton-on-off-switch* profile:
 
 ```
 rule "Doorbell Button Pressed"
@@ -225,5 +225,16 @@ when
     Item Doorbell_Pressed received command ON
 then
     // Do something when the doorbell is pressed
+end
+```
+
+Using the doorbell motion channel to detect motion:
+
+```
+rule "Motion Detected"
+when
+    Item Doorbell_Motion received command ON
+then
+    // Do something when motion is detected
 end
 ```

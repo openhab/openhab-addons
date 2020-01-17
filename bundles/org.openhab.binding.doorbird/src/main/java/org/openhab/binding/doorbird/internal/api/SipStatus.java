@@ -48,12 +48,15 @@ public class SipStatus {
     private String ringTimeLimit = "";
     private String callTimeLimit = "";
 
+    @SuppressWarnings("null")
     public SipStatus(String sipStatusJson) throws JsonSyntaxException {
         SipStatusDTO sipStatus = DoorbirdAPI.fromJson(sipStatusJson, SipStatusDTO.class);
         if (sipStatus != null) {
             SipStatusBha bha = sipStatus.bha;
             returnCode = bha.returnCode;
-            for (SipStatusArray sip : bha.sipStatusArray) {
+            // SIP array should have only one entry
+            if (bha.sipStatusArray.length == 1) {
+                SipStatusArray sip = bha.sipStatusArray[0];
                 enable = sip.enable != null ? sip.enable : "";
                 prioritizeApp = sip.prioritizeApp != null ? sip.prioritizeApp : "";
                 registerUrl = sip.registerUrl != null ? sip.registerUrl : "";

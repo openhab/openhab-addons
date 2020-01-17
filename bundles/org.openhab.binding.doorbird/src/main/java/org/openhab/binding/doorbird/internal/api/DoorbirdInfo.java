@@ -38,12 +38,14 @@ public class DoorbirdInfo {
     private @Nullable String controllerId;
     private ArrayList<String> relays = new ArrayList<>();
 
+    @SuppressWarnings("null")
     public DoorbirdInfo(String infoJson) throws JsonSyntaxException {
         DoorbirdInfoDTO info = DoorbirdAPI.fromJson(infoJson, DoorbirdInfoDTO.class);
         if (info != null) {
             DoorbirdInfoBha bha = info.bha;
             returnCode = bha.returnCode;
-            for (DoorbirdInfoArray doorbirdInfo : bha.doorbirdInfoArray) {
+            if (bha.doorbirdInfoArray.length == 1) {
+                DoorbirdInfoArray doorbirdInfo = bha.doorbirdInfoArray[0];
                 firmwareVersion = doorbirdInfo.firmwareVersion;
                 buildNumber = doorbirdInfo.buildNumber;
                 primaryMacAddress = doorbirdInfo.primaryMacAddress;

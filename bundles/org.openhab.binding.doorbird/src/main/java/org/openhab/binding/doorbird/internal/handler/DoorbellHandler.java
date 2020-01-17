@@ -30,7 +30,6 @@ import java.util.function.Function;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -84,6 +83,8 @@ public class DoorbellHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> doorbellOffJob;
     private @Nullable ScheduledFuture<?> motionOffJob;
 
+    private @NonNullByDefault({}) DoorbellConfiguration config;
+
     private DoorbirdAPI api = new DoorbirdAPI();
 
     private final TimeZoneProvider timeZoneProvider;
@@ -98,25 +99,24 @@ public class DoorbellHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        String host = getConfigAs(DoorbellConfiguration.class).doorbirdHost;
-        if (StringUtils.isEmpty(host)) {
+        config = getConfigAs(DoorbellConfiguration.class);
+        String host = config.doorbirdHost;
+        if (host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Doorbird host not provided");
             return;
         }
-        String user = getConfigAs(DoorbellConfiguration.class).userId;
-        if (StringUtils.isEmpty(user)) {
+        String user = config.userId;
+        if (user == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User ID not provided");
             return;
         }
-        String password = getConfigAs(DoorbellConfiguration.class).userPassword;
-        if (StringUtils.isEmpty(password)) {
+        String password = config.userPassword;
+        if (password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User password not provided");
             return;
         }
-
         api.setAuthorization(host, user, password);
         api.setHttpClient(httpClient);
-
         startImageRefreshJob();
         startUDPListenerJob();
         updateStatus(ThingStatus.ONLINE);
@@ -133,17 +133,17 @@ public class DoorbellHandler extends BaseThingHandler {
 
     // Callback used by listener to get Doorbird host name
     public @Nullable String getDoorbirdHost() {
-        return getConfigAs(DoorbellConfiguration.class).doorbirdHost;
+        return config.doorbirdHost;
     }
 
     // Callback used by listener to get Doorbird password
     public @Nullable String getUserId() {
-        return getConfigAs(DoorbellConfiguration.class).userId;
+        return config.userId;
     }
 
     // Callback used by listener to get Doorbird password
     public @Nullable String getUserPassword() {
-        return getConfigAs(DoorbellConfiguration.class).userPassword;
+        return config.userPassword;
     }
 
     // Callback used by listener to update doorbell channel
@@ -334,7 +334,7 @@ public class DoorbellHandler extends BaseThingHandler {
     }
 
     private void startImageRefreshJob() {
-        Integer imageRefreshRate = getConfigAs(DoorbellConfiguration.class).imageRefreshRate;
+        Integer imageRefreshRate = config.imageRefreshRate;
         if (imageRefreshRate != null) {
             imageRefreshJob = scheduler.scheduleWithFixedDelay(() -> {
                 try {
@@ -369,7 +369,7 @@ public class DoorbellHandler extends BaseThingHandler {
     }
 
     private void startDoorbellOffJob() {
-        Integer offDelay = getConfigAs(DoorbellConfiguration.class).doorbellOffDelay;
+        Integer offDelay = config.doorbellOffDelay;
         if (offDelay == null) {
             return;
         }
@@ -391,7 +391,7 @@ public class DoorbellHandler extends BaseThingHandler {
     }
 
     private void startMotionOffJob() {
-        Integer offDelay = getConfigAs(DoorbellConfiguration.class).motionOffDelay;
+        Integer offDelay = config.motionOffDelay;
         if (offDelay == null) {
             return;
         }
@@ -413,7 +413,7 @@ public class DoorbellHandler extends BaseThingHandler {
     }
 
     private void updateDoorbellMontage() {
-        if (getConfigAs(DoorbellConfiguration.class).montageNumImages == 0) {
+        if (config.montageNumImages == 0) {
             return;
         }
         logger.debug("Scheduling DOORBELL montage update to run in {} seconds", MONTAGE_UPDATE_DELAY_SECONDS);
@@ -423,7 +423,7 @@ public class DoorbellHandler extends BaseThingHandler {
     }
 
     private void updateMotionMontage() {
-        if (getConfigAs(DoorbellConfiguration.class).montageNumImages == 0) {
+        if (config.montageNumImages == 0) {
             return;
         }
         logger.debug("Scheduling MOTION montage update to run in {} seconds", MONTAGE_UPDATE_DELAY_SECONDS);
@@ -450,56 +450,61 @@ public class DoorbellHandler extends BaseThingHandler {
     // Get an array list of history images
     private ArrayList<BufferedImage> getImages(String channelId) {
         ArrayList<BufferedImage> images = new ArrayList<>();
-        int numberOfImages = getConfigAs(DoorbellConfiguration.class).montageNumImages;
-        for (int imageNumber = 1; imageNumber <= numberOfImages; imageNumber++) {
-            logger.debug("Downloading montage image {} for channel '{}'", imageNumber, channelId);
-            DoorbirdImage historyImage = CHANNEL_DOORBELL_IMAGE_MONTAGE.equals(channelId)
-                    ? api.downloadDoorbellHistoryImage(String.valueOf(imageNumber))
-                    : api.downloadMotionHistoryImage(String.valueOf(imageNumber));
-            if (historyImage != null) {
-                RawType image = historyImage.getImage();
-                if (image != null) {
-                    try {
-                        BufferedImage i = ImageIO.read(new ByteArrayInputStream(image.getBytes()));
-                        images.add(i);
-                    } catch (IOException e) {
-                        logger.debug("IOException creating BufferedImage from downloaded image: {}", e.getMessage());
+        Integer numberOfImages = config.montageNumImages;
+        if (numberOfImages != null) {
+            for (int imageNumber = 1; imageNumber <= numberOfImages; imageNumber++) {
+                logger.debug("Downloading montage image {} for channel '{}'", imageNumber, channelId);
+                DoorbirdImage historyImage = CHANNEL_DOORBELL_IMAGE_MONTAGE.equals(channelId)
+                        ? api.downloadDoorbellHistoryImage(String.valueOf(imageNumber))
+                        : api.downloadMotionHistoryImage(String.valueOf(imageNumber));
+                if (historyImage != null) {
+                    RawType image = historyImage.getImage();
+                    if (image != null) {
+                        try {
+                            BufferedImage i = ImageIO.read(new ByteArrayInputStream(image.getBytes()));
+                            images.add(i);
+                        } catch (IOException e) {
+                            logger.debug("IOException creating BufferedImage from downloaded image: {}",
+                                    e.getMessage());
+                        }
                     }
                 }
             }
-        }
-        if (images.size() < numberOfImages) {
-            logger.debug("Some images could not be downloaded: wanted={}, actual={}", numberOfImages, images.size());
+            if (images.size() < numberOfImages) {
+                logger.debug("Some images could not be downloaded: wanted={}, actual={}", numberOfImages,
+                        images.size());
+            }
         }
         return images;
     }
 
     // Assemble the array of images into a single scaled image
     private @Nullable State createMontage(ArrayList<BufferedImage> images) {
-        int height = (int) (images.get(0).getHeight()
-                * (getConfigAs(DoorbellConfiguration.class).montageScaleFactor / 100.0));
-        int width = (int) (images.get(0).getWidth()
-                * (getConfigAs(DoorbellConfiguration.class).montageScaleFactor / 100.0));
-        int widthTotal = width * images.size();
-        logger.debug("Dimensions of final montage image: w={}, h={}", widthTotal, height);
-
-        // Create concatenated image
-        int currentWidth = 0;
-        BufferedImage concatImage = new BufferedImage(widthTotal, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = concatImage.createGraphics();
-        logger.debug("Concatenating images array into single image");
-        for (int j = 0; j < images.size(); j++) {
-            g2d.drawImage(images.get(j), currentWidth, 0, width, height, null);
-            currentWidth += width;
-        }
-        g2d.dispose();
-
-        // Convert image to a state
-        logger.debug("Rendering image to byte array and converting to RawType state");
-        byte[] imageBytes = convertImageToByteArray(concatImage);
         State state = null;
-        if (imageBytes != null) {
-            state = new RawType(imageBytes, "image/png");
+        Integer montageScaleFactor = config.montageScaleFactor;
+        if (montageScaleFactor != null) {
+            int height = (int) (images.get(0).getHeight() * (montageScaleFactor / 100.0));
+            int width = (int) (images.get(0).getWidth() * (montageScaleFactor / 100.0));
+            int widthTotal = width * images.size();
+            logger.debug("Dimensions of final montage image: w={}, h={}", widthTotal, height);
+
+            // Create concatenated image
+            int currentWidth = 0;
+            BufferedImage concatImage = new BufferedImage(widthTotal, height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2d = concatImage.createGraphics();
+            logger.debug("Concatenating images array into single image");
+            for (int j = 0; j < images.size(); j++) {
+                g2d.drawImage(images.get(j), currentWidth, 0, width, height, null);
+                currentWidth += width;
+            }
+            g2d.dispose();
+
+            // Convert image to a state
+            logger.debug("Rendering image to byte array and converting to RawType state");
+            byte[] imageBytes = convertImageToByteArray(concatImage);
+            if (imageBytes != null) {
+                state = new RawType(imageBytes, "image/png");
+            }
         }
         return state;
     }
