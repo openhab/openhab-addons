@@ -637,6 +637,13 @@ Import-Package: \\
         </executions>
       </plugin>
     </plugins>
+    <extensions>
+       <extension>
+          <groupId>org.openhab.tools.sat</groupId>
+          <artifactId>sat-extension</artifactId>
+          <version>${sat.version}</version>
+       </extension>
+    </extensions>
   </build>
 
   <profiles>
