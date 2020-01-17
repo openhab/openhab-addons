@@ -68,7 +68,7 @@
     <ohc.version>2.5.0</ohc.version>
     <bnd.version>4.3.0</bnd.version>
     <karaf.version>4.2.7</karaf.version>
-    <sat.version>0.8.0</sat.version>
+    <sat.version>0.9.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage/>
