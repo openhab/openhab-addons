@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.openthermgateway.OpenThermGatewayBindingConstants;
 import org.openhab.binding.openthermgateway.internal.DataItem;
@@ -73,25 +74,21 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
-        try {
-            if (command.toFullString() != "REFRESH") {
-                String channel = channelUID.getId();
-                String code = getGatewayCodeFromChannel(channel);
+        if (command.toFullString() != "REFRESH") {
+            String channel = channelUID.getId();
+            String code = getGatewayCodeFromChannel(channel);
 
-                GatewayCommand gatewayCommand;
-                if (command instanceof QuantityType) {
-                    gatewayCommand = GatewayCommand.parse(code,
-                            Double.toString(((QuantityType) command).doubleValue()));
-                } else {
-                    gatewayCommand = GatewayCommand.parse(code, command.toFullString());
-                }
-
-                if (gatewayCommand != null && checkConnection()) {
-                    connector.sendCommand(gatewayCommand);
-                }
+            GatewayCommand gatewayCommand;
+            if (command instanceof QuantityType) {
+                gatewayCommand = GatewayCommand.parse(code,
+                        Double.toString(((QuantityType) command).doubleValue()));
+            } else {
+                gatewayCommand = GatewayCommand.parse(code, command.toFullString());
             }
-        } catch (Exception ex) {
-            logger.error("error", ex);
+
+            if (gatewayCommand != null && checkConnection()) {
+                connector.sendCommand(gatewayCommand);
+            }
         }
     }
 
@@ -112,20 +109,17 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void disconnected() {
         connecting = false;
+        
+        updateStatus(ThingStatus.OFFLINE);
 
-        try {
-            updateStatus(ThingStatus.OFFLINE);
-
-            // retry connection if disconnect is not explicitly requested
-            if (!explicitDisconnect && config.connectionRetryInterval > 0) {
-                scheduler.schedule(() -> {
-                    if (connector != null && !connecting && !connector.isConnected()) {
-                        connect();
-                    }
-                }, config.connectionRetryInterval, TimeUnit.SECONDS);
-            }
-        } catch (IllegalStateException ex) {
-        }
+        // retry connection if disconnect is not explicitly requested
+        if (!explicitDisconnect && config.connectionRetryInterval > 0) {
+            scheduler.schedule(() -> {
+                if (connector != null && !connecting && !connector.isConnected()) {
+                    connect();
+                }
+            }, config.connectionRetryInterval, TimeUnit.SECONDS);
+        }    
     }
 
     @Override
@@ -243,7 +237,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     }
 
     private synchronized boolean connect() {
-        try {
+       try {
             disconnect();
 
             logger.info("Starting OpenTherm Gateway connector");
@@ -256,11 +250,12 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             logger.info("OpenTherm Gateway connector started");
 
             return true;
-        } catch (Exception ex) {
-            logger.error("error", ex);
-        }
+       }
+       catch (Exception ex) {
+            disconnected();
+       }
 
-        return false;
+       return false;
     }
 
     boolean explicitDisconnect = false;
@@ -278,7 +273,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         }
     }
 
-    private String getGatewayCodeFromChannel(String channel) throws Exception {
+    private String getGatewayCodeFromChannel(String channel) throws IllegalArgumentException {
         switch (channel) {
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_TEMPORARY:
                 return GatewayCommandCode.TemperatureTemporary;

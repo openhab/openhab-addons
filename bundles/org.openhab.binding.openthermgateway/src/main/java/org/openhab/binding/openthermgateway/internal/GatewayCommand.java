@@ -42,14 +42,13 @@ public class GatewayCommand {
         return this.code + "=" + this.message;
     }
 
-    private GatewayCommand(String code, String message, String validationSet) throws Exception {
+    private GatewayCommand(String code, String message, String validationSet) throws IllegalArgumentException {
         this.code = code;
         this.message = message;
         this.validationSet = validationSet;
 
         if (!validate()) {
-            throw new IllegalArgumentException(
-                    String.format("Invalid value '%s' for code '%s'", this.message, this.code));
+            throw new IllegalArgumentException(String.format("Invalid value '%s' for code '%s'", this.message, this.code));
         }
     }
 
@@ -69,7 +68,7 @@ public class GatewayCommand {
         return false;
     }
 
-    public static GatewayCommand parse(String code, String message) throws Exception {
+    public static GatewayCommand parse(String code, String message) throws IllegalArgumentException {
         if ((code == null || code.isEmpty()) && message.length() > 2 && message.charAt(2) == '=') {
             return parse(message.substring(0, 2), message.substring(3));
         }
@@ -85,8 +84,7 @@ public class GatewayCommand {
             }
         }
 
-        throw new IllegalArgumentException(
-                String.format("Unable to parse gateway command with code '%s' and message '%s'", code, message));
+        throw new IllegalArgumentException(String.format("Unable to parse gateway command with code '%s' and message '%s'", code, message));
     }
 
     private static final HashMap<String, @Nullable String> supportedCommands = getSupportedCommands();
