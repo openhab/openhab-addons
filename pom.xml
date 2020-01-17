@@ -548,6 +548,9 @@ Import-Package: \\
                 <excludes>
                   <exclude>**/pom.xml</exclude>
                 </excludes>
+                <excludes>
+                  <exclude>**/feature.xml</exclude>
+                </excludes>
                 <eclipseWtp>
                   <type>XML</type>
                   <files>
@@ -557,6 +560,21 @@ Import-Package: \\
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>
+              </format>
+              <format>
+                <!-- feature.xml -->
+                <includes>
+                  <include>src/main/feature/feature.xml</include>
+                </includes>
+                <eclipseWtp>
+                  <type>XML</type>
+                  <files>
+                    <file>openhab_wst_feature_file.prefs</file>
+                  </files>
+                  <version>4.12.0</version>
+                </eclipseWtp>
+                <trimTrailingWhitespace />
+                <endWithNewline />
               </format>
               <format>
                 <!-- pom.xml -->
