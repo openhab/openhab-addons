@@ -56,6 +56,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     private @NonNullByDefault({}) ScheduledFuture<?> refreshTask;
     private @NonNullByDefault({}) SpeedTestConfiguration configuration;
     private State bufferedProgress = UnDefType.UNDEF;
+    private int timeouts;
 
     public SpeedTestHandler(Thing thing) {
         super(thing);
@@ -64,11 +65,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     @Override
     public void initialize() {
         configuration = getConfigAs(SpeedTestConfiguration.class);
-        logger.info("Speedtests starts in {} minutes, then refreshes every {} minutes", configuration.initialDelay,
-                configuration.refreshInterval);
-        refreshTask = scheduler.scheduleWithFixedDelay(this::startSpeedTest, configuration.initialDelay,
-                configuration.refreshInterval, TimeUnit.MINUTES);
-        updateStatus(ThingStatus.ONLINE);
+        startRefreshTask();
     }
 
     synchronized private void startSpeedTest() {
@@ -103,6 +100,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
 
     @Override
     public void onCompletion(final @Nullable SpeedTestReport testReport) {
+        timeouts = configuration.maxTimeout;
         if (testReport != null) {
             BigDecimal rate = testReport.getTransferRateBit();
             QuantityType<DataTransferRate> quantity = new QuantityType<DataTransferRate>(rate, BIT_PER_SECOND)
@@ -157,14 +155,20 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_TEST_ISRUNNING.equals(channelUID.getId())) {
-            if (command == OnOffType.ON) {
-                startSpeedTest();
-            } else if (command == OnOffType.OFF) {
-                stopSpeedTest();
-            }
+        if (command == OnOffType.ON
+                && ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR == getThing().getStatusInfo().getStatusDetail()) {
+            logger.debug("Speedtest was offline, restarting it upon command to do so");
+            startRefreshTask();
         } else {
-            logger.debug("Command {} is not supported for channel: {}.", command, channelUID.getId());
+            if (CHANNEL_TEST_ISRUNNING.equals(channelUID.getId())) {
+                if (command == OnOffType.ON) {
+                    startSpeedTest();
+                } else if (command == OnOffType.OFF) {
+                    stopSpeedTest();
+                }
+            } else {
+                logger.debug("Command {} is not supported for channel: {}.", command, channelUID.getId());
+            }
         }
     }
 
@@ -179,5 +183,14 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
             refreshTask.cancel(true);
             refreshTask = null;
         }
+    }
+
+    private void startRefreshTask() {
+        logger.info("Speedtests starts in {} minutes, then refreshes every {} minutes", configuration.initialDelay,
+                configuration.refreshInterval);
+        refreshTask = scheduler.scheduleWithFixedDelay(this::startSpeedTest, configuration.initialDelay,
+                configuration.refreshInterval, TimeUnit.MINUTES);
+        timeouts = configuration.maxTimeout;
+        updateStatus(ThingStatus.ONLINE);
     }
 }
