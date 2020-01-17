@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.onewiregpio.internal;
 
+import java.math.BigDecimal;
+
 /**
- * The {@link OneWireGpioConfiguration} Configuration class for easier configuration read through the reflection method in
+ * The {@link OneWireGpioConfiguration} Configuration class for easier configuration read through the reflection method
+ * in
  * the framework.
  *
  * @author Konstantin Polihronov - Initial contribution
@@ -21,5 +24,5 @@ package org.openhab.binding.onewiregpio.internal;
 public class OneWireGpioConfiguration {
     public String gpio_bus_file;
     public Integer refresh_time;
-    public Integer precision;
+    public BigDecimal precision;
 }

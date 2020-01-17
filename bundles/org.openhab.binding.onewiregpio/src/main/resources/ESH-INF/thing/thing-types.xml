@@ -26,6 +26,13 @@
 				<label>Sensor Precision</label>
 				<description>Sensor precision after floating point.</description>
 				<required>false</required>
+				<options>
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
 				<default>3</default>
 			</parameter>
 

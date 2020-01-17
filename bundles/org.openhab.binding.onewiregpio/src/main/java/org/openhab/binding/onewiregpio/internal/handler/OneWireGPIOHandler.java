@@ -80,7 +80,8 @@ public class OneWireGPIOHandler extends BaseThingHandler {
         OneWireGpioConfiguration configuration = getConfigAs(OneWireGpioConfiguration.class);
         gpioBusFile = configuration.gpio_bus_file;
         refreshTime = configuration.refresh_time;
-        precision = configuration.precision;
+        precision = configuration.precision.intValue();
+        logger.debug("GPIO Busfile={}, RefreshTime={}, precision={}", gpioBusFile, refreshTime, precision);
 
         if (checkConfiguration()) {
             startAutomaticRefresh();
