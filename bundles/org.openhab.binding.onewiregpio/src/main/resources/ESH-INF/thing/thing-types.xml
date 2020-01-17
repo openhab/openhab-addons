@@ -23,7 +23,7 @@
 			</parameter>
 
 			<parameter name="precision" type="integer">
-				<label>Sensor precision</label>
+				<label>Sensor Precision</label>
 				<description>Sensor precision after floating point.</description>
 				<required>false</required>
 				<default>3</default>

@@ -107,7 +107,8 @@ public class OneWireGPIOHandler extends BaseThingHandler {
         }
 
         if (precision < 0 || precision > MAX_PRECISION_VALUE) {
-            logger.debug("Precision value {} is outside allowed values [0 - 3]. Falling back to default value: {}.",
+            logger.debug(
+                    "Precision value {} is outside allowed values [0 - {}]. Falling back to maximum precision value.",
                     precision, MAX_PRECISION_VALUE);
             precision = MAX_PRECISION_VALUE;
         }
